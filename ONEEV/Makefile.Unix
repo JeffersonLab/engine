@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.13  2003/02/14 18:25:17  jones
+# added if statements for Alpha OSF1 systems (E. Brash)
+#
 # Revision 1.12  1999/11/04 20:36:11  saw
 # Linux/G77 compatibility fixes
 #
@@ -93,6 +96,10 @@ endif
 ifeq ($(ARCH),ULTRIX)
   OTHERLIBS = -L$(CODA)/ULTRIX/lib \
 	-lana -lmsg -lcoda -L$(CERN_ROOT)/lib $(CERNLIBS) -L/usr/lib -lX11 -lm
+endif
+
+ifeq ($(ARCH),OSF1)
+  OTHERLIBS = -L$(CERN_ROOT)/lib $(CERNLIBS) -L/usr/lib -lX11 -lm
 endif
 
 ifeq ($(ARCH),SunOS)
