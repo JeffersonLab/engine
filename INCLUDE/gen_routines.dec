@@ -1,5 +1,8 @@
 **************** begin: GEN_routines.DEC ***************************
 * $Log$
+* Revision 1.9  2004/07/08 18:11:52  saw
+* Add routines for manipulating ROOT trees
+*
 * Revision 1.8  1996/01/17 15:46:25  cdaq
 * (SAW) Add CTP group routines
 *
@@ -97,6 +100,8 @@
       EXTERNAL threp, threpa
       INTEGER thgethit, thgethitb, thgethitg
       EXTERNAL thgethit, thgethitb, thgethitg
+      INTEGER thtreeexeg, thtreecloseg, thtreewriteg
+      EXTERNAL thtreeexeg, thtreecloseg, thtreewriteg
 *-
       integer  clnt_create
       external clnt_create
