@@ -11,6 +11,10 @@
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *
 * $Log$
+* Revision 1.6  1996/09/04 15:17:33  saw
+* (JRA) Make SSNUM_FPTRACK.gt.0 instead of SNTRACKS_FP .gt. 0 the
+*       criteria for adding to ntuples
+*
 * Revision 1.5  1996/01/16 16:42:34  cdaq
 * no change
 *
@@ -48,7 +52,7 @@
       ABORT= .FALSE.
       err= ' '
 *
-      if(SNTRACKS_FP .gt. 0)call s_ntuple_keep(ABORT,err) ! check for tracks.
+      if(SSNUM_FPTRACK.gt.0) call s_ntuple_keep(ABORT,err)! check for good tracks.
 * proceed only if tracks found is greater than zero.   
 *
 *
@@ -57,7 +61,7 @@
       ELSE
          err= ' '
       ENDIF
-       if(SNTRACKS_FP.gt.0)call s_sv_nt_keep(ABORT,err)
+       if(SSNUM_FPTRACK.gt.0)call s_sv_nt_keep(ABORT,err)
 *
       IF(ABORT) THEN
          call G_add_path(here,err)
