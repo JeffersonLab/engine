@@ -11,9 +11,12 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.2  1994/02/22 19:04:58  cdaq
-*-    (SAW) HNUM_DC_PLANES -> HMAX_NUM_DC_PLANES
+*-    Revision 1.3  1994/03/01 20:14:24  cdaq
+*-    (SAW) Add zeroing of the raw total hits counter for the drift chambers
 *-
+* Revision 1.2  1994/02/22  19:04:58  cdaq
+* (SAW) HNUM_DC_PLANES -> HMAX_NUM_DC_PLANES
+*
 * Revision 1.1  1994/02/04  22:14:24  cdaq
 * Initial revision
 *
@@ -39,13 +42,19 @@
 *
 *--------------------------------------------------------
 *
+      HDC_RAW_TOT_HITS = 0
+*
       HDC_TOT_HITS= 0
-
+*
       DO plane= 1,HMAX_NUM_DC_PLANES
          HDC_HITS_PER_PLANE(plane)= 0
       ENDDO
 *
-      HSCIN_TOT_HITS= 0
+      HSCIN_TOT_HITS = 0
+*
+      DO plane=1,HNUM_SCIN_PLANES
+         HSCIN_HITS_PER_PLANE(plane) = 0
+      ENDDO
 *
 *     HMS CALORIMETER HITS
 *
