@@ -10,7 +10,10 @@
 *-                                Change lun
 *-                7 Apr 1884      DFG   Change print order
 * $Log$
-* Revision 1.1  1994/04/13 15:41:33  cdaq
+* Revision 1.2  1995/01/27 20:26:00  cdaq
+* (JRA) Subtract pedestal from ADC value
+*
+* Revision 1.1  1994/04/13  15:41:33  cdaq
 * Initial revision
 *
 *-----------------------------------------------------------------------
@@ -19,6 +22,8 @@
       save
 *
       integer*4 hit      !Hit number
+      integer*4 row,col,nb
+      real*4 adc
 *
       include 'gen_data_structures.cmn'
       include 'hms_calorimeter.cmn'
@@ -33,9 +38,13 @@
       if(hcal_tot_hits.le.0) return
 *
       do hit=1,hcal_tot_hits
-         write(hlun_dbg_cal,20)
-     &   hit,hcal_column(hit),hcal_row(hit),hcal_adc(hit)
-   20    format(i5,3x,i5,4x,i5,7x,i5)
+        row=hcal_row(hit)
+        col=hcal_column(hit)
+        nb =row+hmax_cal_rows*(col-1)
+        adc=hcal_adc(hit)-hcal_ped_mean(nb)
+        write(hlun_dbg_cal,20)
+     &       hit,hcal_column(hit),hcal_row(hit),adc
+ 20     format(i5,3x,i5,4x,i5,7x,i5)
       enddo
 *
       return
