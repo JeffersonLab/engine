@@ -1,5 +1,9 @@
 *    This include file contains all the variables required for h_physics
 * $Log$
+* Revision 1.6  1996/09/04 16:11:28  saw
+* (JRA,DD) Add some egamma variables and some angle/momentum offset
+* variables
+*
 * Revision 1.5  1996/04/30 13:39:20  saw
 * (JRA) Add pathlength, rf, and photodisintigration variables
 *
@@ -124,15 +128,34 @@ c     M.Miller, NPL UIUC, 10-Sept-1995, miller5@uiuc.edu
 *     CTPTYPE=parm
 *
       real*4 hphoto_mtarget    ! Mass of target [Gev/c^2]
-      real*4 hphoto_mparticle  ! Mass of detected particle [Gev/c^2]
       real*4 hphoto_mrecoil    ! Mass of recoil system [Gev/c^2]
 *
 *     CTPTYPE=event
 *
       real*4 hsegamma
+      real*4 hsegamma_p        !Egamma, assuming proton
+      real*4 hsegamma_d        !Egamma, assuming deuteron
 
       common /hms_photo_param/
      &     hphoto_mtarget,
-     &     hphoto_mparticle,
      &     hphoto_mrecoil,
-     &     hsegamma
+     &     hsegamma,
+     &     hsegamma_p,
+     &     hsegamma_d
+
+*
+*     CTPTYPE=parm
+*
+c    D.Dutta, 24th-Apr-1996
+      real*4 hdelta_offset     ! hms delta offset
+      real*4 htheta_offset     ! hms scatteringangel offset
+      real*4 hphi_offset
+      real*4 hmomentum_factor    ! multiplier for the hms momentum
+*
+*     CTPTYPE=event
+*
+      common /hms_offsets/
+     &     hdelta_offset,
+     &     htheta_offset,
+     &     hphi_offset,
+     &     hmomentum_factor
