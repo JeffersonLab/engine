@@ -12,9 +12,12 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.7  1995/04/01 19:50:55  cdaq
-*-    (SAW) Add BPM hitlist
+*-    Revision 1.8  1995/07/27 19:39:25  cdaq
+*-    (SAW) Disable monte carlo (GMC)
 *-
+* Revision 1.7  1995/04/01  19:50:55  cdaq
+* (SAW) Add BPM hitlist
+*
 * Revision 1.6  1994/06/22  20:24:23  cdaq
 * (SAW) Zero out uninstrumented channel hit data structure
 *
@@ -73,9 +76,9 @@
       GUNINST_TOT_HITS = 0
 *
       do hit=1,CMAX_BPM_HITS
-        CBPM_DEVICE = 0
-        CBPM_ADCNUM = 0
-        CBPM_ADCVAL = 0
+        CBPM_DEVICE(hit) = 0
+        CBPM_ADCNUM(hit) = 0
+        CBPM_ADCVAL(hit) = 0
       enddo
       CBPM_TOT_HITS = 0
 *
@@ -85,7 +88,7 @@
 *     
       call C_reset_event(COIN_ABORT,COIN_err)
 *     
-      call gmc_mc_reset(gmc_abort, gmc_err)
+*      call gmc_mc_reset(gmc_abort, gmc_err)
 *     
       abort = hms_abort.or.sos_abort.or.coin_abort.or.gmc_abort
 *
