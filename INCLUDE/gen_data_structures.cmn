@@ -5,7 +5,11 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
-* Revision 1.8  1994/04/14 16:25:43  cdaq
+* Revision 1.9  1994/06/14 03:05:42  cdaq
+* (DFG) Add hms_physics, sos_physics, and coin_physics
+*       Add particle mass to hms_spectrometer and sos_spectrometer
+*
+* Revision 1.8  1994/04/14  16:25:43  cdaq
 * (SAW) Fix typo
 *
 * Revision 1.7  1994/04/12  20:42:22  cdaq
@@ -91,11 +95,13 @@
       REAL*4  HPHI_LAB       ! HMS LAB ANGLE PHI 
       REAL*4  HPCENTRAL      ! HMS CENTRAL MOMENUTM (GEV)
       REAL*4  HBFIELD        ! HMS B FIELD INCLUDING SIGN
+      REAL*4  HPARTMASS      ! EXPECTED MASS OF DETECTED PARTICLE IN HMS
       COMMON/HMS_SPECTROMETER/
      &     HTHETA_LAB,
      &     HPHI_LAB,
      &     HPCENTRAL,
-     &     HBFIELD 
+     &     HBFIELD,
+     &     HPARTMASS
 *
 *     STHETA_LAB             SOS LAB ANGLE THETA (RADIANS)
 *     SPHI_LAB               SOS LAB ANGLE PHI 
@@ -106,11 +112,13 @@
       REAL*4  SPHI_LAB       ! SOS LAB ANGLE PHI 
       REAL*4  SPCENTRAL      ! SOS CENTRAL MOMENUTM (GEV)
       REAL*4  SBFIELD        ! SOS B FIELD INCLUDING SIGN
+      REAL*4  SPARTMASS      ! EXPECTED MASS OF DETECTED PARTICLE IN SOS
       COMMON/SOS_SPECTROMETER/
      &     STHETA_LAB,
      &     SPHI_LAB,
      &     SPCENTRAL,
-     &     SBFIELD
+     &     SBFIELD,
+     &     SPARTMASS
 *
 *     HMS  DECODED DATA
 *
@@ -450,6 +458,78 @@
      E     HNUM_SCIN_HIT                ! NUMBER OF HITSIN EACH ROW OF
      F                                  ! HSCIN_HIT
 *                                          
+*     HMS SINGLES PHYSICS COMMON BLOCKS
+*     THESE ARE FILLED BY H_PHYSICS
+* 
+*  
+      REAL*4 HSP                 ! Lab momentum of chosen track in GeV/c
+      REAL*4 HSENERGY            ! Lab total energy of chosen track in GeV
+      REAL*4 HSDELTA             ! Spectrometer delta of chosen track
+      REAL*4 HSTHETA             ! Lab Scattering angle in radians
+      REAL*4 HSPHI               ! Lab Azymuthal angle in radians
+      REAL*4 HSMINV              ! Invariant Mass of remaing hadronic system
+      REAL*4 HSZBEAM             ! Lab Z coordinate of intersection of beam
+                                 ! track with spectrometer ray
+      REAL*4 HSDEDX1             ! DEDX of chosen track in 1st scin plane
+      REAL*4 HSDEDX2             ! DEDX of chosen track in 2nd scin plane
+      REAL*4 HSDEDX3             ! DEDX of chosen track in 3rd scin plane
+      REAL*4 HSDEDX4             ! DEDX of chosen track in 4th scin plane
+      REAL*4 HSBETA           ! BETA of chosen track
+      REAL*4 HSTRACK_ET      ! Total shower energy of chosen track
+      REAL*4 HSTRACK_PRESHOWER_E  ! preshower of chosen track
+      REAL*4 HSTIME_AT_FP 
+      REAL*4 HSX_FP           ! X focal plane position 
+      REAL*4 HSY_FP 
+      REAL*4 HSXP_FP 
+      REAL*4 HSYP_FP 
+      REAL*4 HSCHI2PERDEG    ! CHI2 per degree of freedom of chosen track.
+      REAL*4 HSX_TAR 
+      REAL*4 HSY_TAR 
+      REAL*4 HSXP_TAR 
+      REAL*4 HSYP_TAR 
+       
+
+*
+      INTEGER*4 HSNUM_FPTRACK    ! Index of focal plane track chosen
+      INTEGER*4 HSNUM_TARTRACK   ! Index of target track chosen
+      INTEGER*4 HSID_LUND        ! LUND particle ID code -- not yet filled
+      INTEGER*4 HSNFREE_FP 
+*
+*
+      COMMON/HMS_PHYSICS_R4/
+     & HSP,
+     & HSENERGY,
+     & HSDELTA,
+     & HSTHETA,
+     & HSPHI,
+     & HSMINV,
+     & HSZBEAM,
+     & HSDEDX1,
+     & HSDEDX2,
+     & HSDEDX3,
+     & HSDEDX4,
+     & HSBETA,
+     & HSTRACK_ET,
+     & HSTRACK_PRESHOWER_E, 
+     & HSTIME_AT_FP,
+     & HSX_FP ,
+     & HSY_FP ,
+     & HSXP_FP ,
+     & HSYP_FP ,
+     & HSCHI2PERDEG ,
+     & HSX_TAR ,
+     & HSY_TAR ,
+     & HSXP_TAR ,
+     & HSYP_TAR 
+*
+      COMMON/HMS_PHYSICS_I4/
+     & HSNUM_FPTRACK,
+     & HSNUM_TARTRACK,
+     & HSID_LUND,
+     & HSNFREE_FP 
+
+
+*
 *
 *
 *     SOS  DATA
@@ -627,15 +707,15 @@
 *                                    #3
 *                                    #4
 *         TOTAL ENERGY IN THE CALORIMETER
-      INTEGER*4 SNHITS_CAL      !NUMBER OF CALORIMETER HITS ABOVE THRESHOLD
-      REAL*4 SBLOCK_XC          !X COORDINATE OF BLOCK CENTER
-      REAL*4 SBLOCK_ZC          !Z COORDINATE OF BLOCK CENTER
-      REAL*4 SBLOCK_DE          !ENERGY DEPOSITION IN THE BLOCKS
-      REAL*4 SCAL_E1            !ENERGY DEPOSITION IN COLUMN #1
-      REAL*4 SCAL_E2            !                            #2
-      REAL*4 SCAL_E3            !                            #3
-      REAL*4 SCAL_E4            !                            #4
-      REAL*4 SCAL_ET            !TOTAL ENERGY IN THE CALORIMETER
+      INTEGER*4 SNHITS_CAL         !NUMBER OF CALORIMETER HITS ABOVE THRESHOLD
+      REAL*4 SBLOCK_XC             !X COORDINATE OF BLOCK CENTER
+      REAL*4 SBLOCK_ZC             !Z COORDINATE OF BLOCK CENTER
+      REAL*4 SBLOCK_DE             !ENERGY DEPOSITION IN THE BLOCKS
+      REAL*4 SCAL_E1               !ENERGY DEPOSITION IN COLUMN #1
+      REAL*4 SCAL_E2               !                            #2
+      REAL*4 SCAL_E3               !                            #3
+      REAL*4 SCAL_E4               !                            #4
+      REAL*4 SCAL_ET               !TOTAL ENERGY IN THE CALORIMETER
       COMMON/SOS_DECODED_CAL/
      &     SBLOCK_XC(SMAX_CAL_BLOCKS),
      &     SBLOCK_ZC(SMAX_CAL_BLOCKS),
@@ -688,7 +768,7 @@
       REAL*4  SYP_FP               ! Y SLOPE OF TRACK IN FOCAL PLANE
       REAL*4  SCHI2_FP             ! FIT QUALITY IN FOCAL PLANE
       INTEGER*4 SNFREE_FP          ! NUMBER OF DEGREES OF FREEDOM IN FIT
-      INTEGER*4 SNTRACK_HITS      ! LIST OF HITS ON EACH TRACK
+      INTEGER*4 SNTRACK_HITS       ! LIST OF HITS ON EACH TRACK
       REAL*4  SDEL_FP              !  FOCAL PLANE ERROR MATRIX
 * THE FOCAL PLANE ERROR MATRIX IS A 4 BY 4 BY SNTRACK_MAX ARRAY
 * THE FOUR INDECIES FOR EACH TRACK ARE X, XP, Y,  YP
@@ -774,21 +854,114 @@
 *
 *
       COMMON/SOS_TRACK_TESTS/
-     1     STRACK_E1,                   ! ENERGY IN FIRST CALORIMETER COLUMN NEAR TRACK
-     2     STRACK_E2,                   !           SECOND COLUMN
-     3     STRACK_E3,                   !           THIRD COLUMN
-     4     STRACK_E4,                   !           FOURTH COLUMN
-     5     STRACK_ET,                   ! TOTAL SHOWER ENERGY ALONG TRACK
-     6     STRACK_PRESHOWER_E,          ! Preshower energy on track Note exp dependent.
-     7     SDEDX,                       ! 
-     8     SBETA,                       ! VELOCITY OF TRACK
-     9     SBETA_CHISQ,                 ! CHISQ OF FIT TO BETA OF TRACK
-     A     STIME_AT_FP,                 ! 
-     B     SNBLOCKS_CAL,                ! NUMBER OF SHOWER BLOCKS ON EACH TRACK
-     C     SSCIN_HIT,                   ! ARRAY OF SCIN HITS ASSOCIATED WITH
-     D                                  ! EACH TRACK
-     E     SNUM_SCIN_HIT                ! NUMBER OF HIT ScIN EACH ROW OF
-     F                                  ! SSCIN_HIT
+     1     STRACK_E1,              ! ENERGY IN FIRST CALORIMETER COLUMN NEAR TRACK
+     2     STRACK_E2,              !           SECOND COLUMN
+     3     STRACK_E3,              !           THIRD COLUMN
+     4     STRACK_E4,              !           FOURTH COLUMN
+     5     STRACK_ET,              ! TOTAL SHOWER ENERGY ALONG TRACK
+     6     STRACK_PRESHOWER_E,     ! Preshower energy on track Note exp dependent.
+     7     SDEDX,                  ! 
+     8     SBETA,                  ! VELOCITY OF TRACK
+     9     SBETA_CHISQ,            ! CHISQ OF FIT TO BETA OF TRACK
+     A     STIME_AT_FP,            ! 
+     B     SNBLOCKS_CAL,           ! NUMBER OF SHOWER BLOCKS ON EACH TRACK
+     C     SSCIN_HIT,              ! ARRAY OF SCIN HITS ASSOCIATED WITH
+     D                             ! EACH TRACK
+     E     SNUM_SCIN_HIT           ! NUMBER OF HIT ScIN EACH ROW OF
+     F                             ! SSCIN_HIT
+*
+*
+*     SOS SINGLES PHYSICS COMMON BLOCKS
+*     THESE ARE FILLED BY S_PHYSICS
+* 
+*  
+      REAL*4 SSP                   ! Lab momentum of chosen track in GeV/c
+      REAL*4 SSENERGY              ! Lab total energy of chosen track in GeV
+      REAL*4 SSDELTA               ! Spectrometer delta of chosen track
+      REAL*4 SSTHETA               ! Lab Scattering angle in radians
+      REAL*4 SSPHI                 ! Lab Azymuthal angle in radians
+      REAL*4 SSMINV                ! Invariant Mass of remaing hadronic system
+      REAL*4 SSZBEAM               ! Lab Z coordinate of intersection of beam
+                                   ! track with spectrometer ray
+      REAL*4 SSDEDX1               ! DEDX of chosen track in 1st scin plane
+      REAL*4 SSDEDX2               ! DEDX of chosen track in 2nd scin plane
+      REAL*4 SSDEDX3               ! DEDX of chosen track in 3rd scin plane
+      REAL*4 SSDEDX4               ! DEDX of chosen track in 4th scin plane
+      REAL*4 SSBETA                ! BETA of chosen track
+      REAL*4 SSTRACK_ET            ! Total shower energy of chosen track
+      REAL*4 SSTRACK_PRESHOWER_E   ! preshower of chosen track
+      REAL*4 SSTIME_AT_FP 
+      REAL*4 SSX_FP                ! X focal plane position 
+      REAL*4 SSY_FP 
+      REAL*4 SSXP_FP 
+      REAL*4 SSYP_FP 
+      REAL*4 SSCHI2PERDEG    ! CHI2 per degree of freedom of chosen track.
+      REAL*4 SSX_TAR 
+      REAL*4 SSY_TAR 
+      REAL*4 SSXP_TAR 
+      REAL*4 SSYP_TAR 
+       
+
+*
+      INTEGER*4 SSNUM_FPTRACK      ! Index of focal plane track chosen
+      INTEGER*4 SSNUM_TARTRACK     ! Index of target track chosen
+      INTEGER*4 SSID_LUND          ! LUND particle ID code -- not yet filled
+      INTEGER*4 SSNFREE_FP 
+*
+*
+      COMMON/SOS_PHYSICS_R4/
+     & SSP,
+     & SSENERGY,
+     & SSDELTA,
+     & SSTHETA,
+     & SSPHI,
+     & SSMINV,
+     & SSZBEAM,
+     & SSDEDX1,
+     & SSDEDX2,
+     & SSDEDX3,
+     & SSDEDX4,
+     & SSBETA,
+     & SSTRACK_ET,
+     & SSTRACK_PRESHOWER_E, 
+     & SSTIME_AT_FP,
+     & SSX_FP ,
+     & SSY_FP ,
+     & SSXP_FP ,
+     & SSYP_FP ,
+     & SSCHI2PERDEG ,
+     & SSX_TAR ,
+     & SSY_TAR ,
+     & SSXP_TAR ,
+     & SSYP_TAR 
+*
+      COMMON/SOS_PHYSICS_I4/
+     & SSNUM_FPTRACK,
+     & SSNUM_TARTRACK,
+     & SSID_LUND,
+     & SSNFREE_FP 
+
+
+****************************************************************************
+*  COIN_PHYSICS COMMON BLOCKS
+*
+*  These are filled by C_PHYSICS.
+* 
+      REAL*4 CMISSING_MASS         ! Missing mass of undetected hadron system
+      REAL*4 CMISSING_MOM          ! Magnitude of missing momentum 
+      REAL*4 CMISSING_MOMX         ! X component of missing momentum
+      REAL*4 CMISSING_MOMY         ! Y component of missing momentum
+      REAL*4 CMISSING_MOMZ         ! Z component of missing momentum
+      REAL*4 CTIME_COIN_COR        ! Corrected Coincidence time
+      COMMON/COIN_PHYSICS_R4/
+     &     CMISSING_MASS,
+     &     CMISSING_MOM,
+     &     CMISSING_MOMX,
+     &     CMISSING_MOMY,
+     &     CMISSING_MOMZ,
+     &     CTIME_COIN_COR
+*
+
 *
 *     Hits from Uninstrumented fastbus channels
 *     filled by G_decode_event_by_banks
@@ -807,5 +980,6 @@
 *     Local Variables:
 *     mode: fortran
 *     fortran-continuation-string: "&"
+*     comment-column: 35
 *     End:
 
