@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.19  1996/04/29 19:47:42  saw
+* (JRA) Add call to engine_command_line
+*
 * Revision 1.18  1996/01/22 15:18:12  saw
 * (JRA) Add call to g_target_initialize.  Remove call to
 * g_kludge_up_kinematics
@@ -113,7 +116,7 @@
 *
 * set the runtime variable to avoid divide by zero during report
 *
-      g_time = 0.001
+      g_run_time = 0.0001
 *
 *     Book the histograms, tests and parameters
 *
@@ -159,6 +162,9 @@
           endif
         endif
       endif
+
+      call engine_command_line          ! Reset CTP vars from command line
+
       if((first_time.or.g_hist_rebook).and.g_ctp_hist_filename.ne.' ') then
         file = g_ctp_hist_filename
         call g_sub_run_number(file,gen_run_number)
