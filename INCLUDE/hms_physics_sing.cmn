@@ -1,5 +1,9 @@
 *    This include file contains all the variables required for h_physics
 * $Log$
+* Revision 1.8  2002/09/24 20:29:04  jones
+*     add parameters hphicentral_offset, hpcentral_offset,
+*                hthetacentral_offset
+*
 * Revision 1.7  1999/02/23 19:16:52  csa
 * Add some physics vars
 *
@@ -154,6 +158,10 @@ c    D.Dutta, 24th-Apr-1996
       real*4 htheta_offset     ! hms scatteringangel offset
       real*4 hphi_offset
       real*4 hmomentum_factor    ! multiplier for the hms momentum
+c    J.Volmer, 9th-Jul-1999
+      real*4 hpcentral_offset  ! hms central momentum offset
+      real*4 hthetacentral_offset ! hms central angle offset
+      real*4 hphicentral_offset   ! hms central oop angle offset
 *
 *     CTPTYPE=event
 *
@@ -161,7 +169,10 @@ c    D.Dutta, 24th-Apr-1996
      &     hdelta_offset,
      &     htheta_offset,
      &     hphi_offset,
-     &     hmomentum_factor
+     &     hmomentum_factor,
+     &     hpcentral_offset,
+     &     hthetacentral_offset,
+     &     hphicentral_offset
 *
 *     CTPTYPE=event
 *
