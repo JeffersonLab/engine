@@ -2,6 +2,9 @@
 *
 *-Common block with filenames
 * $Log$
+* Revision 1.7  2005/02/16 20:44:57  saw
+* Missing ,
+*
 * Revision 1.6  2005/02/16 20:43:40  saw
 * Add filename for coincidence root tree
 *
@@ -30,6 +33,6 @@
       common /coin_filenames/
      $     c_report_template_filename,
      $     c_report_blockname,
-     $     c_report_output_filename
+     $     c_report_output_filename,
      $     c_tree_filename
 *
