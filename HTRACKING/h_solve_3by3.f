@@ -1,10 +1,13 @@
-      subroutine solve_3by3_hdc(TT,pindex,stub,ierr)
+      subroutine h_solve_3by3(TT,pindex,stub,ierr)
 *     Explicit solution of a symmetric three by three equation TT = AA * STUB
 *     Remember AA must be a symmetrix matrix
 *     Used in find_best_stub.f
 
 * $Log$
-* Revision 1.1  1994/10/12 18:42:59  cdaq
+* Revision 1.2  1994/11/22 20:07:20  cdaq
+* (SAW) Change name, add h to aainv3, move to HTRACKING directory.
+*
+* Revision 1.1  1994/10/12  18:42:59  cdaq
 * Initial revision
 *
 *
@@ -32,12 +35,12 @@
 *
       if(pindex.ge.1 .and. pindex.le.14)then     !accept 5/6 or 6/6 good planes
         ierr=0
-        stub(1)=AAINV3(1,1,pindex)*TT(1) + AAINV3(1,2,pindex)*TT(2) + 
-     & AAINV3(1,3,pindex)*TT(3)
-        stub(2)=AAINV3(1,2,pindex)*TT(1) + AAINV3(2,2,pindex)*TT(2) + 
-     & AAINV3(2,3,pindex)*TT(3)
-        stub(3)=AAINV3(1,3,pindex)*TT(1) + AAINV3(2,3,pindex)*TT(2) + 
-     & AAINV3(3,3,pindex)*TT(3)
+        stub(1)=HAAINV3(1,1,pindex)*TT(1) + HAAINV3(1,2,pindex)*TT(2) + 
+     & HAAINV3(1,3,pindex)*TT(3)
+        stub(2)=HAAINV3(1,2,pindex)*TT(1) + HAAINV3(2,2,pindex)*TT(2) + 
+     & HAAINV3(2,3,pindex)*TT(3)
+        stub(3)=HAAINV3(1,3,pindex)*TT(1) + HAAINV3(2,3,pindex)*TT(2) + 
+     & HAAINV3(3,3,pindex)*TT(3)
       endif          !end test on plane index
  
 *      write(6,*)'TT i=1,2,3',TT(1),TT(2),TT(3)
