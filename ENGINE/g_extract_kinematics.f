@@ -1,5 +1,8 @@
       subroutine g_extract_kinematics(ebeam,phms,thms,psos,tsos)
 * $Log$
+* Revision 1.2  1996/01/16 18:35:02  cdaq
+* (JRA) Minor bug fix
+*
 * Revision 1.1  1995/11/28 19:10:48  cdaq
 * Initial revision
 *
@@ -26,39 +29,39 @@ c     the line is a comment, print it out, otherwise parse it.
 c
       i = 1
       mode = 0            ! Mode 0 => Parse each line
-      do
-        j = find_char (buffer, i, 10) ! 10 = NewLine character
+      do while (.true.)
+        j = find_char (buffer, i, 10)   ! 10 = NewLine character
         if (i.eq.j) goto 10
         if (buffer(i:i+7).eq.'comment') then
-          mode = 1      ! Mode 1 => Print out each line
+          mode = 1                      ! Mode 1 => Print out each line
           i = i + 8
         endif
         if (mode.eq.0) then
           call parse_line (buffer(i:j), j-i, name, value)
           if (name(1:11).eq.'Beam Energy') then
-c            write(6,*) name(1:11),'=',value
+c     write(6,*) name(1:11),'=',value
             ebeam=value
           else if (name(1:12).eq.'HMS Momentum') then
-c            write(6,*) name(1:11),'=',value
+c     write(6,*) name(1:11),'=',value
             phms=value
           else if (name(1:9).eq.'HMS Angle') then
-c            write(6,*) name(1:11),'=',value
+c     write(6,*) name(1:11),'=',value
             thms=value
           else if (name(1:12).eq.'SOS Momentum') then
-c            write(6,*) name(1:11),'=',value
+c     write(6,*) name(1:11),'=',value
             psos=value
           else if (name(1:9).eq.'SOS Angle') then
-c            write(6,*) name(1:11),'=',value
+c     write(6,*) name(1:11),'=',value
             tsos=value
-          else if (name(1:14).eq.'B2 Current Set') then  !last field with standard {} format
+          else if (name(1:14).eq.'B2 Current Set') then !last field with standard {} format
             goto 10
           endif
         else
           type *, buffer(i:j-1)
         endif
         i = j + 1
-        enddo
-10    continue
+      enddo
+ 10   continue
       return
       end
 
@@ -79,6 +82,7 @@ c      write(6,*) line(1:line_len)
       name_start = index(line,'{')+1
       name_stop = index(line,'}')-1
       if (name_start.le.name_stop) name = line(name_start:name_stop)
+      if (name_stop+2.gt.line_len) goto 999
       tmpline = line(name_stop+2:line_len)
       value_start = index(tmpline,'{')+1
       value_stop = index(tmpline,'}')-1
