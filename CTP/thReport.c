@@ -16,6 +16,9 @@
  *
  * Revision History:
  * $Log$
+ * Revision 1.3  2002/07/31 20:07:48  saw
+ * Add files for ROOT Trees
+ *
  * Revision 1.2  1999/11/04 20:34:06  saw
  * Alpha compatibility.
  * New RPC call needed for root event display.
@@ -80,8 +83,10 @@ int threp_
 		     ?repname:(memcpy(BR=(char *) malloc(l_repname+1)
 				      ,repname,l_repname)
 			       ,BR[l_repname]='\0',kill_trailing(BR,' '))),fd);
-  else
+  else {
     A0 = S_FAILURE;
+    fprintf(stderr,"Failed to open file %s\n",BF);
+  }
   if(fd) fclose(fd);
   if(BF) free(BF);
   if(BR) free(BR);
