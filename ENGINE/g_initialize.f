@@ -10,10 +10,13 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.12  1995/04/01 19:47:22  cdaq
-*-    (SAW) One report file for each of g, h, s, c instead of a single report file
-*-          Allow %d for run number in filenames
+*-    Revision 1.13  1995/05/22 20:41:40  cdaq
+*-    (SAW) Split g_init_histid into h_init_histid and s_init_histid
 *-
+* Revision 1.12  1995/04/01  19:47:22  cdaq
+* (SAW) One report file for each of g, h, s, c instead of a single report file
+*       Allow %d for run number in filenames
+*
 * Revision 1.11  1994/10/11  18:39:40  cdaq
 * (SAW) Add some hacks for event display
 *
@@ -151,7 +154,8 @@
 *
 *     Recalculate all histogram id's of user (hard wired) histograms
 *
-        call g_init_histid(ABORT,err)
+        call h_init_histid(ABORT,err)
+        call s_init_histid(ABORT,err)
 *
         if(g_alias_filename.ne.' ') then
           file = g_alias_filename
