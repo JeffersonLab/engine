@@ -8,7 +8,10 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
-* Revision 1.2  1994/06/17 02:44:38  cdaq
+* Revision 1.3  1995/01/27 20:10:27  cdaq
+* (JRA) Add Gas cerenkov to ntuple
+*
+* Revision 1.2  1994/06/17  02:44:38  cdaq
 * (KBB) Upgrade
 *
 * Revision 1.1  1994/04/12  16:15:21  cdaq
@@ -42,6 +45,10 @@
 ************************************************
       m= 0
 *  
+      m= m+1
+      h_Ntuple_contents(m)= HCER_ADC(1) ! cerenkov adc #1
+      m= m+1
+      h_Ntuple_contents(m)= HCER_ADC(2) ! cerenkov adc #2
       m= m+1
       h_Ntuple_contents(m)= HSP	! Lab momentum of chosen track in GeV/c
       m= m+1

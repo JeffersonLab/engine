@@ -10,7 +10,10 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
-* Revision 1.2  1994/06/17 02:34:12  cdaq
+* Revision 1.3  1995/01/27 20:09:59  cdaq
+* (JRA) Add Gas cerenkov to ntuple
+*
+* Revision 1.2  1994/06/17  02:34:12  cdaq
 * (KBB) Upgrade
 *
 * Revision 1.1  1994/04/12  16:15:02  cdaq
@@ -30,6 +33,7 @@
       INCLUDE 'h_ntuple.cmn'
       INCLUDE 'h_ntuple.dte'
       INCLUDE 'gen_routines.dec'
+      include 'gen_data_structures.cmn'
 *
       character*80 default_name
       parameter (default_name= 'HMSntuple')
@@ -112,6 +116,10 @@
 **********begin insert description of contents of HMS tuple ******
       m= 0
 *  
+      m= m+1
+      h_Ntuple_tag(m)= 'Hcer_1'	! cerenkov adc # 1
+      m= m+1
+      h_Ntuple_tag(m)= 'Hcer_2'	! cerenkov adc # 2
       m= m+1
       h_Ntuple_tag(m)= 'HSP'	! Lab momentum of chosen track in GeV/c
       m= m+1
