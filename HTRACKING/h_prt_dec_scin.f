@@ -10,7 +10,10 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
-* Revision 1.3  1994/08/02 20:00:48  cdaq
+* Revision 1.4  1994/09/13 20:20:21  cdaq
+* (JRA) Change output format, add missing variables
+*
+* Revision 1.3  1994/08/02  20:00:48  cdaq
 * (JRA) Print out some additional information
 *
 * Revision 1.2  1994/05/12  21:01:39  cdaq
@@ -39,10 +42,10 @@
       ABORT = .FALSE.
       err = ' '
 
-      write(hluno,'(''        HMS_REAL_SCIN BANKS'')')
+      write(hluno,'(''           ***HMS_REAL_SCIN BANKS***'')')
       write(hluno,'(''     HSCIN_TOT_HITS='',I4)') HSCIN_TOT_HITS
       if(HSCIN_TOT_HITS.GT.0) then
-        write(hluno,'('' Num  Plane    Counter        ADC_POS''
+        write(hluno,'('' Num  Plane    Counter        ADC_POS'',
      &       '' ADC_NEG  TDC_POS  TDC_NEG'')')
         write(hluno,'(1x,i2,2x,i3,7x,i4,8x,4i8)')
      &       (j,HSCIN_PLANE_NUM(j),HSCIN_COUNTER_NUM(j),
@@ -57,20 +60,18 @@
         write(hluno,'('' Plane  '',10i4)') (j,j=1,HNUM_SCIN_PLANES)   
         write(hluno,'('' Number '',10i4)') 
      &       (HSCIN_HITS_PER_PLANE(j),j=1,HNUM_SCIN_PLANES)
-        write(hluno,'('' Num    ZPOS    CENTER  HIT_COORD WIDTH  SLOPE''
+        write(hluno,'('' Num    ZPOS    CENTER  HIT_COORD SLOP'',
      &       ''  COR_ADC  COR_TDC  TWO_GOOD'')')
-        write(hluno,'(1x,i2,2x,5f8.3,2f10.3,4x,l2)')
+        write(hluno,'(1x,i2,2x,4f8.3,2f10.3,4x,l2)')
      &       (j,HSCIN_ZPOS(j),HSCIN_CENTER_COORD(j),
-     &       HSCIN_DEC_HIT_COORD(j),HSCIN_WIDTH(j),
+     &       HSCIN_DEC_HIT_COORD(j),
      &       HSCIN_SLOP(j),HSCIN_COR_ADC(j),HSCIN_COR_TIME(j),
      &       HTWO_GOOD_TIMES(j), 
      &       j=1,HSCIN_TOT_HITS)    
-        write(hluno,'('' HGOOD_START_TIME='', l2,
-     &       ''  HGOOD_START_PLANE'',l2)')
-     &       HGOOD_START_TIME,  HGOOD_START_PLANE
-        write(hluno,'('' HSTART_TIME='',e10.4, 
-     &       '' HSTART_HITNUM='',i3,''   HSTART_HITSIDE='',i3)')
-     &       HSTART_TIME, HSTART_HITNUM, HSTART_HITSIDE
+        write(hluno,'('' HGOOD_START_TIME='', l2)')
+        &       HGOOD_START_TIME
+        write(hluno,'('' HSTART_TIME='',e10.4)') HSTART_TIME
+        write(hluno,*)
       endif
       RETURN
       END
