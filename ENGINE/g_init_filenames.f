@@ -23,9 +23,12 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 *-    $Log$
-*-    Revision 1.7  1994/10/19 19:51:55  cdaq
-*-    (SAW) Add g_label variable for labels on reports
+*-    Revision 1.8  1995/04/01 19:46:13  cdaq
+*-    (SAW) One report file for each of g, h, s, c instead of a single report file
 *-
+* Revision 1.7  1994/10/19  19:51:55  cdaq
+* (SAW) Add g_label variable for labels on reports
+*
 * Revision 1.6  1994/06/22  20:57:14  cdaq
 * (SAW) Add more variables for reports
 *
@@ -85,7 +88,10 @@
       g_report_template_filename = ' '
       c_report_template_filename = ' '
 *
+      h_report_output_filename = ' '
+      s_report_output_filename = ' '
       g_report_output_filename = ' '
+      c_report_output_filename = ' '
 *
       h_report_blockname = ' '
       s_report_blockname = ' '

@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.5  1994/08/04 03:45:46  cdaq
-*-    (SAW) Add call to Breuer's hack_shutdown
+*-    Revision 1.6  1995/04/01 19:42:36  cdaq
+*-    (SAW) One report file for each of g, h, s, c instead of a single report file
 *-
+* Revision 1.5  1994/08/04  03:45:46  cdaq
+* (SAW) Add call to Breuer's hack_shutdown
+*
 * Revision 1.4  1994/06/22  19:49:31  cdaq
 * (SAW) Create report file and append g_report_template to it
 *
@@ -47,29 +50,12 @@
       include 'gen_routines.dec'
       include 'gen_run_info.cmn'
 *
-      integer SPAREID
-      parameter (SPAREID=67)
-*     
       integer ierr
+      character*132 file
 *--------------------------------------------------------
       bad_report = .TRUE.
       err_report = 'Failed to open report file'
-      open(unit=SPAREID,type='UNKNOWN',access='SEQUENTIAL',
-     $     file=g_report_output_filename,err=999)
-      write(SPAREID,'("Run #",i6)') gen_run_number
-      close(unit=SPAREID)               ! Just get the file created
-*
-      bad_report = .false.
-      err_report = ' '
-*
-      ierr = threpa(g_report_blockname,g_report_output_filename)
-      if(ierr.ne.0) then
-         bad_report = .true.
-         err = 'threpa failed to append report'
-      endif
-*
- 999  continue
-*
+
 *-chance to flush any statistics, etc.
       call H_proper_shutdown(bad_HMS,err_HMS)
 *     
@@ -80,6 +66,22 @@
       call hack_shutdown(bad_hack,err_hack)
 *
       call g_dump_histograms(bad_HBK,err_HBK)
+*
+      bad_report = .false.
+      err_report = ' '
+*
+      if(g_report_blockname.ne.' '.and.
+     $     g_report_output_filename.ne.' ') then
+
+        file = g_report_output_filename
+        call g_sub_run_number(file, gen_run_number)
+
+        ierr = threp(g_report_blockname,file)
+        if(ierr.ne.0) then
+          bad_report = .true.
+          err_report = 'threp failed to create report in file '//file
+        endif
+      endif
 *
       ABORT= bad_HMS .or. bad_SOS .or. bad_COIN .or. bad_HBK
      $     .or. bad_report
