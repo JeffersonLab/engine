@@ -1,6 +1,9 @@
       subroutine h_analyze_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.5  1996/01/24 15:55:06  saw
+* (JRA) Add ped analysis for misc channels
+*
 * Revision 1.4  1995/10/09 20:07:35  cdaq
 * (JRA) Use hcer_raw_adc instead of hcer_adc
 *
@@ -28,9 +31,11 @@
       integer*4 row,col
       integer*4 blk
       integer*4 pmt
+      integer*4 ind
 *
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_pedestals.cmn'
+      INCLUDE 'hms_scin_parms.cmn'
 *
 *
 * HODOSCOPE PEDESTALS
@@ -49,6 +54,13 @@
      &          hscin_all_adc_neg(ihit)
         hhodo_pos_ped_num(pln,cnt) = hhodo_pos_ped_num(pln,cnt) + 1
         hhodo_neg_ped_num(pln,cnt) = hhodo_neg_ped_num(pln,cnt) + 1
+
+* fill pedestal histograms.
+c        histval = hscin_all_adc_pos(ihit)-hscin_all_ped_pos(pln,cnt)
+c        call hf1(hidsumposadc(pln),histval,1.)
+c        histval = hscin_all_adc_neg(ihit)-hscin_all_ped_neg(pln,cnt)
+c        call hf1(hidsumnegadc(pln),histval,1.)
+
       enddo
 *
 *
@@ -73,6 +85,20 @@
      $       hcer_raw_adc(ihit)*hcer_raw_adc(ihit)
         hcer_ped_sum(pmt) = hcer_ped_sum(pmt) + hcer_raw_adc(ihit)
         hcer_ped_num(pmt) = hcer_ped_num(pmt) + 1
+      enddo
+*
+*
+* MISC PEDESTALS
+*
+      do ihit = 1 , hmisc_tot_hits
+        if (hmisc_raw_addr1(ihit).eq.2) then   !ADCs
+          ind=hmisc_raw_addr2(ihit)      ! no sparsification yet - NEED TO FIX!!!!
+          hmisc_ped_sum2(ind) = hmisc_ped_sum2(ind) +
+     $         hmisc_raw_data(ihit)*hmisc_raw_data(ihit)
+          hmisc_ped_sum(ind) = hmisc_ped_sum(ind) + hmisc_raw_data(ihit)
+          hmisc_ped_num(ind) = hmisc_ped_num(ind) + 1
+c         write(6,*) hmisc_raw_addr1(ihit),hmisc_raw_addr2(ihit),hmisc_ped_sum(ind),hmisc_ped_num(ind)
+        endif
       enddo
 
       return
