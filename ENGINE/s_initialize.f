@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 *-    $Log$
-*-    Revision 1.7  1994/04/13 18:15:23  cdaq
-*-    (DFG) Add scin and cal init
+*-    Revision 1.8  1994/05/13 03:13:45  cdaq
+*-    (DFG) Add call to s_targ_trans_init
 *-
+* Revision 1.7  1994/04/13  18:15:23  cdaq
+* (DFG) Add scin and cal init
+*
 * Revision 1.6  1994/04/12  17:31:09  cdaq
 * (KBB) Add ntuple call
 *
@@ -45,6 +48,8 @@
 *
       logical ABORT
       character*(*) err
+      character*20 err1
+      integer*4 istat 
 *
 *--------------------------------------------------------
       ABORT = .FALSE.
@@ -56,10 +61,22 @@
 *
 *     calculate secondary scintillator and time of flight parameters
       call s_init_scin(ABORT,err)
-*
+      if(ABORT) then
+         call g_add_path(here,err)
+      endif
 *     calculate secondary calorimeter parameters
       call s_init_cal(ABORT,err)
-*
+      if(ABORT) then
+         call g_add_path(here,err)
+      endif
+*     read in Optical matrix elements
+      call s_targ_trans_init(ABORT,err,istat)
+      if(ABORT) then
+         call g_build_note(':istat=@','@',istat,' ',1.,'(I3)',err1)
+         call G_prepend(err1,err)
+         call g_rep_err(ABORT,err)
+         call g_add_path(here,err)
+      endif
       ABORT = .FALSE.
 *
       call s_ntuple_init(ABORT,err)
