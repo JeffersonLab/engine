@@ -9,7 +9,11 @@
 *                              remove minuit. Make fit linear
 *                              still does not do errors properly
 * $Log$
-* Revision 1.4  1994/09/01 12:29:07  cdaq
+* Revision 1.5  1994/10/12 18:52:06  cdaq
+* (DJM) Initialize some variables
+* (SAW) Prettify indentation
+*
+* Revision 1.4  1994/09/01  12:29:07  cdaq
 * (DJM) Make registered versions of residuals
 *
 * Revision 1.3  1994/08/18  02:45:53  cdaq
@@ -63,6 +67,11 @@
         do plane=1,HMAX_NUM_DC_PLANES
           hdc_residual(itrack,plane)=1000
           hdc_sing_res(itrack,plane)=1000
+          hdc1_sing_res(plane)=1000
+          hdc2_sing_res(plane)=1000
+          hdc1_dbl_res(plane)=1000
+          hdc2_dbl_res(plane)=1000
+
         enddo
       enddo
 
@@ -78,74 +87,78 @@
           if(HNFREE_FP(itrack).gt.0) then
 
 *     initialize parameters
-           do i=1,hnum_fpray_param
-            TT(i)=0.
-            do ihit=2,HNTRACK_HITS(itrack,1)+1
-              hit=HNTRACK_HITS(itrack,ihit)
-              plane=HDC_PLANE_NUM(hit)
-              TT(i)=TT(i)+((HDC_WIRE_COORD(hit)*
-     &          hplane_coeff(remap(i),plane))
-     &          /(hdc_sigma(plane)*hdc_sigma(plane)))
-            enddo 
-           enddo
-          do i=1,hnum_fpray_param
-           do j=1,hnum_fpray_param
-           AA(i,j)=0.
-            do ihit=2,HNTRACK_HITS(itrack,1)+1
-              hit=HNTRACK_HITS(itrack,ihit)
-              plane=HDC_PLANE_NUM(hit)
-              AA(i,j)=AA(i,j) + (
-     &           hplane_coeff(remap(i),plane)*hplane_coeff(remap(j),plane)
-     &          /(hdc_sigma(plane)*hdc_sigma(plane)))
-            enddo               ! end loop on ihit
-           enddo                ! end loop on j
-          enddo                 ! end loop on i
+            do i=1,hnum_fpray_param
+              TT(i)=0.
+              do ihit=2,HNTRACK_HITS(itrack,1)+1
+                hit=HNTRACK_HITS(itrack,ihit)
+                plane=HDC_PLANE_NUM(hit)
+                TT(i)=TT(i)+((HDC_WIRE_COORD(hit)*
+     &               hplane_coeff(remap(i),plane))
+     &               /(hdc_sigma(plane)*hdc_sigma(plane)))
+              enddo 
+            enddo
+            do i=1,hnum_fpray_param
+              do j=1,hnum_fpray_param
+                AA(i,j)=0.
+                if(j.lt.i)then
+                  AA(i,j)=AA(j,i)
+                else 
+                  do ihit=2,HNTRACK_HITS(itrack,1)+1
+                    hit=HNTRACK_HITS(itrack,ihit)
+                    plane=HDC_PLANE_NUM(hit)
+                    AA(i,j)=AA(i,j) + (
+     &                   hplane_coeff(remap(i),plane)*hplane_coeff(remap(j)
+     $                   ,plane)/(hdc_sigma(plane)*hdc_sigma(plane)))
+                  enddo                 ! end loop on ihit
+                endif                   ! end test on j .lt. i
+              enddo                     ! end loop on j
+            enddo                       ! end loop on i
 *
 *     solve four by four equations
-         call solve_four_by_four(TT,AA,dray,ierr)
+            call solve_four_by_four(TT,AA,dray,ierr)
 *
-      if(ierr.ne.0) then
-         dray(1)=10000.
-         dray(2)=10000.
-         dray(3)=2.
-         dray(4)=2.
-      else
-*      calculate chi2
-        chi2=0.
-
-        ray(1)=dray(1)
-        ray(2)=dray(2)
-        ray(3)=dray(3)
-        ray(4)=dray(4)
-         do ihit=2,HNTRACK_HITS(itrack,1)+1
-              hit=HNTRACK_HITS(itrack,ihit)
-              plane=HDC_PLANE_NUM(hit)
+            if(ierr.ne.0) then
+              dray(1)=10000.
+              dray(2)=10000.
+              dray(3)=2.
+              dray(4)=2.
+            else
+*     calculate chi2
+              chi2=0.
+              
+              ray(1)=dray(1)
+              ray(2)=dray(2)
+              ray(3)=dray(3)
+              ray(4)=dray(4)
+              do ihit=2,HNTRACK_HITS(itrack,1)+1
+                hit=HNTRACK_HITS(itrack,ihit)
+                plane=HDC_PLANE_NUM(hit)
 
 * note chi2 is single precision
-           hdc_sing_res(itrack,plane)=
-     &         (HDC_WIRE_COORD(hit)
-     &         -hplane_coeff(remap(1),plane)*ray(1)
-     &         -hplane_coeff(remap(2),plane)*ray(2)
-     &         -hplane_coeff(remap(3),plane)*ray(3)
-     &         -hplane_coeff(remap(4),plane)*ray(4))
-           chi2=chi2+((hdc_sing_res(itrack,plane))**2
-     &         )/(hdc_sigma(plane)*hdc_sigma(plane))
+                hdc_sing_res(itrack,plane)=
+     &               (HDC_WIRE_COORD(hit)
+     &               -hplane_coeff(remap(1),plane)*ray(1)
+     &               -hplane_coeff(remap(2),plane)*ray(2)
+     &               -hplane_coeff(remap(3),plane)*ray(3)
+     &               -hplane_coeff(remap(4),plane)*ray(4))
+                chi2=chi2+((hdc_sing_res(itrack,plane))**2
+     &               )/(hdc_sigma(plane)*hdc_sigma(plane))
 *djm
-            if(itrack.eq.1 .and. plane.ge.1 .and. plane.le.6)
-     &        hdc1_sing_res(plane) = hdc_sing_res(itrack,plane)
-            if(itrack.eq.2 .and. plane.ge.7 .and. plane.le.12)
-     &        hdc2_sing_res(plane) = hdc_sing_res(itrack,plane)
-        enddo
-      endif
+                if(itrack.eq.1 .and. plane.ge.1 .and. plane.le.6)
+     &               hdc1_sing_res(plane) = hdc_sing_res(itrack,plane)
+                if(itrack.eq.2 .and. plane.ge.7 .and. plane.le.12)
+     &               hdc2_sing_res(plane) = hdc_sing_res(itrack,plane)
+              enddo
+            endif
 
-           HX_FP(itrack)=ray(1)
-           HY_FP(itrack)=ray(2)
-           HZ_FP(itrack)=0.                   ! z=0 of tracking.
-           HXP_FP(itrack)=ray(3)
-           HYP_FP(itrack)=ray(4)
-          endif                               ! end test on degrees of freedom
+            HX_FP(itrack)=ray(1)
+            HY_FP(itrack)=ray(2)
+            HZ_FP(itrack)=0.            ! z=0 of tracking.
+            HXP_FP(itrack)=ray(3)
+            HYP_FP(itrack)=ray(4)
+          endif                         ! end test on degrees of freedom
           HCHI2_FP(itrack)=chi2
-        enddo                                 ! end loop over tracks
+        enddo                           ! end loop over tracks
       endif
 
 * calculate residuals for each chamber if in single stub mode
@@ -168,42 +181,42 @@
 * ray1 is ray from first chamber fit
 * ray2 is ray from second chamber fit
 
-            ray1(1)=dble(HX_FP(1))
-            ray1(2)=dble(HY_FP(1))
-            ray1(3)=dble(HXP_FP(1))
-            ray1(4)=dble(HYP_FP(1))
-            ray2(1)=dble(HX_FP(2))
-            ray2(2)=dble(HY_FP(2))
-            ray2(3)=dble(HXP_FP(2))
-            ray2(4)=dble(HYP_FP(2))
+              ray1(1)=dble(HX_FP(1))
+              ray1(2)=dble(HY_FP(1))
+              ray1(3)=dble(HXP_FP(1))
+              ray1(4)=dble(HYP_FP(1))
+              ray2(1)=dble(HX_FP(2))
+              ray2(2)=dble(HY_FP(2))
+              ray2(3)=dble(HXP_FP(2))
+              ray2(4)=dble(HYP_FP(2))
 
-            itrack=1
+              itrack=1
 * loop over hits in second chamber
-            do ihit=1,HNTRACK_HITS(itrack+1,1)
+              do ihit=1,HNTRACK_HITS(itrack+1,1)
 
 * calculate residual in second chamber from first chamber track
-              hit=HNTRACK_HITS(itrack+1,ihit+1)
-              plane=HDC_PLANE_NUM(hit)
-              pos=H_DPSIFUN(ray1,plane)
-              hdc_residual(itrack,plane)=HDC_WIRE_COORD(hit)-pos
+                hit=HNTRACK_HITS(itrack+1,ihit+1)
+                plane=HDC_PLANE_NUM(hit)
+                pos=H_DPSIFUN(ray1,plane)
+                hdc_residual(itrack,plane)=HDC_WIRE_COORD(hit)-pos
 * djm 8/31/94 stuff this variable into 1d array we can register
-              hdc2_dbl_res(plane) = hdc_residual(1,plane)
+                hdc2_dbl_res(plane) = hdc_residual(1,plane)
 
-            enddo
+              enddo
 
-            itrack=2
+              itrack=2
 * loop over hits in first chamber
-            do ihit=1,HNTRACK_HITS(itrack-1,1)
+              do ihit=1,HNTRACK_HITS(itrack-1,1)
 
 * calculate residual in first chamber from second chamber track
-              hit=HNTRACK_HITS(itrack-1,ihit+1)
-              plane=HDC_PLANE_NUM(hit)
-              pos=H_DPSIFUN(ray2,plane)
-              hdc_residual(itrack,plane)=HDC_WIRE_COORD(hit)-pos
+                hit=HNTRACK_HITS(itrack-1,ihit+1)
+                plane=HDC_PLANE_NUM(hit)
+                pos=H_DPSIFUN(ray2,plane)
+                hdc_residual(itrack,plane)=HDC_WIRE_COORD(hit)-pos
 * djm 8/31/94 stuff this variable into 1d array we can register
-              hdc1_dbl_res(plane) = hdc_residual(2,plane)
+                hdc1_dbl_res(plane) = hdc_residual(2,plane)
 
-            enddo
+              enddo
             endif                       ! end plane ge 7
           endif                         ! end plane le 6
         endif                           ! end HNTRACKS_FP eq 2
@@ -211,9 +224,9 @@
 
 *     test if we want to dump out trackfit results
       if(hdebugtrackprint.ne.0) then
-         call h_print_tracks
-      endif                                   ! end test on zero tracks
-1000  return
+        call h_print_tracks
+      endif                             ! end test on zero tracks
+ 1000 return
       end
 
 *
