@@ -1,6 +1,9 @@
 *
 *      SOS calorimeter. Parameters from sos_positions.parm
 * $Log$
+* Revision 1.8  1996/09/04 16:26:21  saw
+* (JRA) Add variable for normalized sum of first 3 layers on track.
+*
 * Revision 1.7  1996/01/17 15:13:07  cdaq
 * (JRA) Add normalized event quantities
 *
@@ -244,6 +247,7 @@
       real*4 ssshsum        !normalized total sum.
       real*4 ssprtrk        !normalized PR sum on track.
       real*4 ssshtrk        !normalized total sum on track.
+      real*4 ssshtrk3       !normalized sum of first 3 layers on track.
 
       common /sos_cal_normalized/
      &    sscal_suma,
@@ -253,4 +257,5 @@
      &    ssprsum,
      &    ssshsum,
      &    ssprtrk,
-     &    ssshtrk
+     &    ssshtrk,
+     &    ssshtrk3
