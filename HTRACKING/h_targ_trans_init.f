@@ -7,6 +7,9 @@
 *
 * Version:  0.1 (In development)
 * $Log$
+* Revision 1.5  1996/09/04 13:34:30  saw
+* (JRA) Add target x to track definition
+*
 * Revision 1.4  1995/08/08 16:01:37  cdaq
 * (DD) Add detector and angular offsets
 *
@@ -47,6 +50,7 @@
 * Include files.
 
       include 'hms_recon_elements.cmn'  !Recon coefficients.
+      include 'gen_filenames.cmn'
  
 * Misc. variables.
 
@@ -66,6 +70,7 @@
             h_recon_coeff(i,j) = 0.
             h_recon_expon(i,j) = 0.
          enddo
+         h_recon_expon(5,j) = 0.
       enddo
       h_ang_slope_x=0.0
       h_ang_slope_y=0.0
@@ -77,7 +82,8 @@
 
       istat = 1                         !Assume success.
 * Get an I/O unit to open datafiles.
-      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
+c      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
+      chan = G_LUN_TEMP
 
 * Open and read in coefficients.
 
@@ -109,7 +115,7 @@
          h_num_recon_terms = h_num_recon_terms + 1
          if (h_num_recon_terms.gt.hmax_recon_elements) goto 96
          read (line,1200,err=94) (h_recon_coeff(i,h_num_recon_terms),i=1,4)
-     $        ,(h_recon_expon(j,h_num_recon_terms),j=1,4)
+     $        ,(h_recon_expon(j,h_num_recon_terms),j=1,5)
          read (chan,1001,err=94) line
       enddo
 
@@ -122,31 +128,31 @@
 
  92   istat = 2                         !Error opening file.
 * If file does not exist, report err and then continue for development
-      err = 'error opening file hms_recon_elements.dat'
+      err = 'error opening file hms_recon_coeff.dat'
       call g_rep_err(ABORT,err)
       goto 100
 
  94   istat = 4                         !Error reading or processing data.
       ABORT=.true.
-      err = 'error processing file hms_recon_elements.dat'
+      err = 'error processing file hms_recon_coeff.dat'
       goto 100
 
  96   istat = 6                         !Too much data in file for arrays.
       ABORT=.true.
-      err = 'too much data in file hms_recon_elements.dat'
+      err = 'too much data in file hms_recon_coeff.dat'
       goto 100
 
 * Done with open file.
 
  100  close (unit=chan)
 *     free lun
-      call G_IO_control(chan,'FREE',ABORT,err) !"FINISH"="FREE"
+c      call G_IO_control(chan,'FREE',ABORT,err) !"FINISH"="FREE"
       return
 
 *============================ Format Statements ===============================
 
  1001 format(a)
- 1200 format(1x,4g16.9,1x,4i1)
+ 1200 format(1x,4g16.9,1x,5i1)
  1201 format(17x,g16.9)
       
       end
