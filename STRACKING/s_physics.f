@@ -19,7 +19,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.2  1994/06/14 03:41:10  cdaq
+* Revision 1.3  1994/11/23 13:55:03  cdaq
+* (SPB) Recopied from hms file and modified names for SOS
+*
+* Revision 1.2  1994/06/14  03:41:10  cdaq
 * (DFG) Calculate physics quantities
 *
 * Revision 1.1  1994/02/21  16:15:43  cdaq
@@ -43,10 +46,11 @@
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       INCLUDE 'sos_physics_sing.cmn'
+      INCLUDE 'mc_structures.cmn'
 *     
 *     local variables 
       integer*4 goodtrack,track
-      real*4    COSGAMMA,COSSSTHETA,SINSSTHETA,TANDELPHI,DELPHI,SINSPHI
+      real*4    COSGAMMA,COSSSTHETA,SINSSTHETA,TANDELPHI,SINSPHI
       real*4    p3, t1,ta,t3,sminv2,chi2min,chi2perdeg
 *--------------------------------------------------------
 *
@@ -57,6 +61,7 @@
          chi2min= 1e10
          goodtrack = 0
          do track = 1, SNTRACKS_FP
+
             if( SNFREE_FP(track).ge. ssel_ndegreesmin) then
                chi2perdeg = SCHI2_FP(track)/FLOAT(SNFREE_FP(track))
                if(chi2perdeg .lt. chi2min) then
@@ -75,6 +80,7 @@
          SSNUM_TARTRACK = goodtrack
          SSNUM_FPTRACK  = goodtrack
          if(goodtrack.eq.0) return      ! return if no valid tracks
+
 *     ! with zero set in SSNUM_...
          SSP = SP_TAR(SSNUM_TARTRACK)
          SSENERGY = SQRT(SSP*SSP+SPARTMASS*SPARTMASS)
@@ -89,6 +95,7 @@
          SSDEDX3   = SDEDX(SSNUM_FPTRACK,3)
          SSDEDX4   = SDEDX(SSNUM_FPTRACK,4)
          SSBETA   = SBETA(SSNUM_FPTRACK)
+         SSBETA_CHISQ = SBETA_CHISQ(SSNUM_FPTRACK)
          SSTRACK_ET   = STRACK_ET(SSNUM_FPTRACK)
          SSTRACK_PRESHOWER_E   = STRACK_PRESHOWER_E(SSNUM_FPTRACK)
          SSTIME_AT_FP   = STIME_AT_FP(SSNUM_FPTRACK)

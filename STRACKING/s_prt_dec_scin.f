@@ -10,7 +10,10 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
-* Revision 1.2  1994/05/13 03:22:48  cdaq
+* Revision 1.3  1994/11/23 13:56:18  cdaq
+* (SPB) Recopied from hms file and modified names for SOS
+*
+* Revision 1.2  1994/05/13  03:22:48  cdaq
 * (DFG) Fix logical format statement
 *
 * Revision 1.1  1994/04/13  18:21:29  cdaq
@@ -35,6 +38,19 @@
 *--------------------------------------------------------
       ABORT = .FALSE.
       err = ' '
+      
+      write(sluno,'(''        ***SOS_REAL_SCIN BANKS***'')')
+      write(sluno,'(''     SSCIN_TOT_HITS='',I4)') SSCIN_TOT_HITS
+      if(SSCIN_TOT_HITS.GT.0) then
+        write(sluno,'('' Num  Plane    Counter        ADC_POS'',
+     &       '' ADC_NEG  TDC_POS  TDC_NEG'')')
+        write(sluno,'(1x,i2,2x,i3,7x,i4,8x,4i8)')
+     &       (j,SSCIN_PLANE_NUM(j),SSCIN_COUNTER_NUM(j),
+     &       SSCIN_ADC_POS(j),SSCIN_ADC_NEG(j),
+     &       SSCIN_TDC_POS(j),SSCIN_TDC_NEG(j),
+     &       j=1,SSCIN_TOT_HITS )
+      endif
+      
       write(sluno,'(''        SOS_DECODED_SCIN BANKS'')')
       if(SSCIN_TOT_HITS.GT.0) then
          write(sluno,'('' Scintillator hits per plane'')')
@@ -45,16 +61,14 @@
      &        ''   COR_ADC  COR_TDC  TWO_GOOD'')')
          write(sluno,'(1x,i2,2x,5f8.3,2f10.3,4x,l2)')
      &        (j,SSCIN_ZPOS(j),SSCIN_CENTER_COORD(j),
-     &        SSCIN_DEC_HIT_COORD(j),SSCIN_WIDTH(j),
+     &        SSCIN_DEC_HIT_COORD(j),
      &        SSCIN_SLOP(j),SSCIN_COR_ADC(j),SSCIN_COR_TIME(j),
      &        STWO_GOOD_TIMES(j), 
      &        j=1,SSCIN_TOT_HITS)    
-         write(sluno,'('' SGOOD_START_TIME='', l2,
-     &        ''  SGOOD_START_PLANE'',l2)')
-     &        SGOOD_START_TIME,  SGOOD_START_PLANE
-         write(sluno,'('' SSTART_TIME='',e10.4, 
-     &        '' SSTART_HITNUM='',i3,''   SSTART_HITSIDE='',i3)')
-     &        SSTART_TIME, SSTART_HITNUM, SSTART_HITSIDE
+         write(sluno,'('' SGOOD_START_TIME='', l2)')
+     &        SGOOD_START_TIME
+         write(sluno,'('' SSTART_TIME='',e10.4)') SSTART_TIME 
+         write(sluno,*)
       endif
       RETURN
       END

@@ -19,7 +19,10 @@
 *-Modified 21-JAN-94  D.F.Geesaman
 *-            Add ABORT and err
 * $Log$
-* Revision 1.5  1994/08/18 04:35:28  cdaq
+* Revision 1.6  1994/11/23 14:03:27  cdaq
+* (SPB) Recopied from hms file and modified names for SOS
+*
+* Revision 1.5  1994/08/18  04:35:28  cdaq
 * (SAW) ???
 *
 * Revision 1.4  1994/06/14  04:33:22  cdaq
@@ -67,7 +70,7 @@
 *
 * Misc. variables.
 
-      integer*4        i,j,k,l,m,n,itrk
+      integer*4        i,j,itrk
       
       real*8           sum(4),hut(4),term,temp
 
@@ -131,7 +134,8 @@
          if(sum(3).lt. -1.0) sum(3)= -.99
    
 * Load output values.
-
+**ROLF         sxp_tar(itrk) = atan(sum(1))    !Slope (dX/dZ)
+**ROLF         syp_tar(itrk) = atan(sum(3))   !Slope (dY/dZ)
          sx_tar(itrk) = sum(2)*100.     !cm.
          sxp_tar(itrk) = tan(asin(sum(1))) !Slope (dX/dZ)
          sy_tar(itrk) = 0.              ! ** No beam raster **

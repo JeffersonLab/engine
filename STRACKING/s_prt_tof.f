@@ -1,4 +1,4 @@
-        subroutine s_prt_tof(itrk)
+      subroutine s_prt_tof(itrk)
 
 *-------------------------------------------------------------------
 * author: John Arrington
@@ -8,47 +8,52 @@
 *
 * modifications:
 * $Log$
-* Revision 1.1  1994/04/13 18:22:01  cdaq
+* Revision 1.2  1994/11/23 13:57:39  cdaq
+* (SPB) Recopied from hms file and modified names for SOS
+*
+* Revision 1.1  1994/04/13  18:22:01  cdaq
 * Initial revision
 *
 *-------------------------------------------------------------------
 
-        implicit none
+      implicit none
 
-        include 'gen_data_structures.cmn'
-        include 'sos_scin_parms.cmn'
-        include 'sos_scin_tof.cmn'
-        include 'sos_tracking.cmn'
+      include 'gen_data_structures.cmn'
+      include 'sos_scin_parms.cmn'
+      include 'sos_scin_tof.cmn'
+      include 'sos_tracking.cmn'
 
-        logical abort
-        integer*4 ihit, itrk
-        character*1024 errmsg
-        character*25 here
-        parameter (here = 's_prt_tof')
+      integer*4 ihit, itrk
 
-        save
+      save
 
-        write(sluno,'(''        H_SCIN_TOF BANK'')')
-        write(sluno,'(''        TRACK NUMBER'',i3)') itrk
-        write(sluno,'(''POSITION/CALIBRATION VARIABLES:'')')
-        write(sluno,'(''  +coord  -coord vel_light +phc_coef'',
-     &        '' -phc_coef  pos_dt  neg_dt  +sigma  +sigma'')')
-        do ihit=1,sscin_tot_hits
-          write(sluno,'(f8.3,f8.3,f10.4,2f10.4,2f8.3,2f8.3)')
-     &          sscin_pos_coord(ihit), sscin_neg_coord(ihit),
-     &          sscin_vel_light(ihit), 
-     &          sscin_pos_phc_coeff(ihit), sscin_neg_phc_coeff(ihit),
-     &          sscin_neg_time_offset(ihit), sscin_pos_time_offset(ihit)
-        enddo
-        write(sluno,'(''HIT POSITION AND OTHER CALCULATED VARIABLES:'')')
-        write(sluno,'(''  long_coord trans_coord    +time    -time'',
-     &        '' scin_time scin_sig'')')
-        do ihit=1,sscin_tot_hits
-          write(sluno,'(2f12.4,2f9.3,2f10.3)')
-     &          sscin_long_coord(ihit), sscin_trans_coord(ihit),
-     &          sscin_pos_time(ihit), sscin_neg_time(ihit),
-     &          sscin_time(ihit),  sscin_sigma(ihit)
-        enddo
+      write(sluno,'(''              ***S_SCIN_TOF BANK***'')')
+      write(sluno,'(''        TRACK NUMBER'',i3)') itrk
+      write(sluno,'(''POSITION/CALIBRATION VARIABLES:'')')
+      write(sluno,'(''  +coord  -coord '',
+     &     '' pos_dt  neg_dt  +sigma  +sigma'')')
+      do ihit=1,sscin_tot_hits
+        write(sluno,'(f8.3,f8.3,2f8.3,2f8.3)')
+     &       sscin_pos_coord(ihit), sscin_neg_coord(ihit),
+     &       sscin_neg_time_offset(ihit), sscin_pos_time_offset(ihit),
+     &       sscin_pos_sigma(ihit), sscin_neg_sigma(ihit)
+      enddo
+      write(sluno,'(''HIT POSITION AND OTHER CALCULATED VARIABLES:'')')
+      write(sluno,'(''  long_coord trans_coord    +time    -time'',
+     &     '' scin_time scin_sig  on_track  time@fp'')')
+      do ihit=1,sscin_tot_hits
+        write(sluno,'(2f12.4,2f9.3,2f10.3,l2,f10.3)')
+     &       sscin_long_coord(ihit), sscin_trans_coord(ihit),
+     &       sscin_pos_time(ihit), sscin_neg_time(ihit),
+     &       sscin_time(ihit),  sscin_sigma(ihit),
+     &       sscin_on_track(itrk,ihit),sscin_time_fp(ihit)
+      enddo
+      write(sluno,'(''  trk  beta     chisq_beta  fp_time '',
+     &     ''num_scin_hit'')')
+      write(sluno,'(i4,f8.4,f14.3,f9.3,i8)') itrk,
+     &     sbeta(itrk), sbeta_chisq(itrk), stime_at_fp(itrk),
+     &     snum_scin_hit(itrk)
+      write(sluno,*)
 
-        return
-        end
+      return
+      end
