@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.32.2.5  2003/04/21 23:45:58  cdaq
+* Modified so only one message about scaler kludge is printed. (MKJ)
+*
 * Revision 1.32.2.4  2003/04/14 18:02:06  jones
 * Modified so that engine will not analyze events until after first scaler read.
 *
@@ -185,6 +188,8 @@ c
       integer time
       integer*4 preprocessor_keep_event
       external time
+c
+      integer*4 skipped_events_scal
 *
 *
 *--------------------------------------------------------
@@ -196,6 +201,7 @@ c
 
       total_event_count= 0                      ! Need to register this
       lastdump=0
+      skipped_events_scal = 0      
       do i=0,gen_max_trigger_types
         analyzed_events(i)=0
         recorded_events(i)=0
@@ -550,10 +556,13 @@ c
             else				!REAL physics event.
 c
                if (analyzed_events(0) .le. 1 .and. gen_event_type .le. 3) then
+                  if (skipped_events_scal .eq. 0 ) then
                   write(*,*) '************'
                   write(*,*) ' Kludge, will not analyze SOS,HMS or coin events until after first scaler read'
                   write(*,*) ' Analyzed events :',(analyzed_events(mkj),mkj=1,4)
                   write(*,*) '************'
+                  endif
+                  skipped_events_scal = skipped_events_scal + 1
                   goto 868      ! kludge mkj
                endif
 c
