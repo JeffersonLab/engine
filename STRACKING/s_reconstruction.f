@@ -9,6 +9,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.11  1996/04/30 17:14:36  saw
+* (JRA) Add call to aerogel routine
+*
 * Revision 1.10  1995/10/10 17:33:31  cdaq
 * (JRA) Don't make an error just because no track is found
 *
@@ -190,6 +193,16 @@ c         err=":no tracks found!"
 *            return
          endif                                  ! end test of S_CER ABORT
        endif                                    ! end test on sbypass_cer
+*     Next Aerogel Cerenkov information
+*     SOS_DECODED_AER ====> SOS_TRACK_TESTS
+*
+       if(sbypass_aero.eq.0) then
+         call S_AERO(ABORT,err)
+         if(ABORT) then
+            call G_add_path(here,err)
+*            return
+         endif                                  ! end test of S_AERO ABORT
+       endif                                    ! end test on sbypass_aero
 *
 *     Dump SOS_TRACK_TESTS if sdebugprinttracktests is set
           if( sdebugprinttracktests .ne. 0 ) then
