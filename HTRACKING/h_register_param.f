@@ -13,7 +13,10 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
-* Revision 1.2  1994/02/22 18:52:06  cdaq
+* Revision 1.3  1994/02/22 20:39:21  cdaq
+* (SAW) Fix booboo
+*
+* Revision 1.2  1994/02/22  18:52:06  cdaq
 * (SAW) Move regpar declarations to gen_routines.dec.  Make title arg null.
 *
 *-
@@ -130,17 +133,17 @@
       ierr= regparmint('hluno',hluno,0)
       IF(ierr.NE.0) err= 'unable to register "hluno"'
       ABORT= ierr.EQ.0 .or. ABORT
-      ierr= regparmint('hdebug0psi',hdebug0psi,0)
-      IF(ierr.NE.0) err= 'unable to register "hdebug0psi"'
+      ierr= regparmint('hdebugflagpsi',hdebugflagpsi,0)
+      IF(ierr.NE.0) err= 'unable to register "hdebugflagpsi"'
       ABORT= ierr.EQ.0 .or. ABORT
-      ierr= regparmint('hdebug0geometry',hdebug0geometry,0)
-      IF(ierr.NE.0) err= 'unable to register "hdebug0geometry"'
+      ierr= regparmint('hdebugflaggeometry',hdebugflaggeometry,0)
+      IF(ierr.NE.0) err= 'unable to register "hdebugflaggeometry"'
       ABORT= ierr.EQ.0 .or. ABORT
-      ierr= regparmint('hdebug0pr',hdebug0pr,0)
-      IF(ierr.NE.0) err= 'unable to register "hdebug0ppr"'
+      ierr= regparmint('hdebugflagpr',hdebugflagpr,0)
+      IF(ierr.NE.0) err= 'unable to register "hdebugflagppr"'
       ABORT= ierr.EQ.0 .or. ABORT
-      ierr= regparmint('hdebug0stubs',hdebug0stubs,0)
-      IF(ierr.NE.0) err= 'unable to register "hdebug0stubs"'
+      ierr= regparmint('hdebugflagstubs',hdebugflagstubs,0)
+      IF(ierr.NE.0) err= 'unable to register "hdebugflagstubs"'
       ABORT= ierr.EQ.0 .or. ABORT
       ierr= regparmint('hdebuglinkstubs',hdebuglinkstubs,0)
       IF(ierr.NE.0) err= 'unable to register "hdebuglinkstubs"'

@@ -13,7 +13,10 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
-* Revision 1.2  1994/02/22 18:52:19  cdaq
+* Revision 1.3  1994/02/22 20:39:28  cdaq
+* (SAW) Fix booboo
+*
+* Revision 1.2  1994/02/22  18:52:19  cdaq
 * (SAW) Move regpar declarations to gen_routines.dec.  Make title arg null.
 *
 * Revision 1.1  1994/02/22  18:42:21  cdaq
@@ -128,17 +131,17 @@
       ierr= regparmint('sluno',sluno,0)
       IF(ierr.NE.0) err= 'unable to register "sluno"'
       ABORT= ierr.EQ.0 .or. ABORT
-      ierr= regparmint('sdebug0psi',sdebug0psi,0)
-      IF(ierr.NE.0) err= 'unable to register "sdebug0psi"'
+      ierr= regparmint('sdebugflagpsi',sdebugflagpsi,0)
+      IF(ierr.NE.0) err= 'unable to register "sdebugflagpsi"'
       ABORT= ierr.EQ.0 .or. ABORT
-      ierr= regparmint('sdebug0geometry',sdebug0geometry,0)
-      IF(ierr.NE.0) err= 'unable to register "sdebug0geometry"'
+      ierr= regparmint('sdebugflaggeometry',sdebugflaggeometry,0)
+      IF(ierr.NE.0) err= 'unable to register "sdebugflaggeometry"'
       ABORT= ierr.EQ.0 .or. ABORT
-      ierr= regparmint('sdebug0pr',sdebug0pr,0)
-      IF(ierr.NE.0) err= 'unable to register "sdebug0ppr"'
+      ierr= regparmint('sdebugflagpr',sdebugflagpr,0)
+      IF(ierr.NE.0) err= 'unable to register "sdebugflagppr"'
       ABORT= ierr.EQ.0 .or. ABORT
-      ierr= regparmint('sdebug0stubs',sdebug0stubs,0)
-      IF(ierr.NE.0) err= 'unable to register "sdebug0stubs"'
+      ierr= regparmint('sdebugflagstubs',sdebugflagstubs,0)
+      IF(ierr.NE.0) err= 'unable to register "sdebugflagstubs"'
       ABORT= ierr.EQ.0 .or. ABORT
       ierr= regparmint('sdebuglinkstubs',sdebuglinkstubs,0)
       IF(ierr.NE.0) err= 'unable to register "sdebuglinkstubs"'
