@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.2  1994/05/19 13:55:04  cdaq
+# Revision 1.3  1994/06/07 18:49:33  cdaq
+# Add register_bypass and register_statistics routines
+#
+# Revision 1.2  1994/05/19  13:55:04  cdaq
 # Add new routines from DFG
 #
 # Revision 1.1  1994/04/15  20:30:16  cdaq
@@ -25,7 +28,8 @@ newstuff = h_clusters_cal.f h_correct_cal.f \
 	h_prt_cal_tracks.f h_prt_dec_scin.f h_prt_raw_scin.f h_prt_tof.f \
 	h_prt_track_tests.f h_raw_dump_all.f h_sparsify_cal.f h_tof_fit.f \
 	h_tof_init.f h_tracks_cal.f h_fill_scin_raw_hist.f
-newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f
+newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f h_register_bypass.f \
+	h_register_statistics.f
 
 libsources = $(sources) $(newstuff) $(newerstuff)
 
