@@ -10,7 +10,10 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
-* Revision 1.1  1994/04/12 21:13:42  cdaq
+* Revision 1.2  1994/05/13 04:00:50  cdaq
+* (DFG) Add s_fill_dc_target_hist id's
+*
+* Revision 1.1  1994/04/12  21:13:42  cdaq
 * Initial revision
 *
 *
@@ -20,7 +23,8 @@
       integer*4 siddcwirecent(smax_num_dc_planes)
       integer*4 sidsx_fp,sidsy_fp,sidsxp_fp,sidsyp_fp,sidslogchi2_fp,
      &     sidsnfree_fp,sidschi2perdeg_fp
-
+      integer*4 sidsx_tar, sidsy_tar, sidsz_tar, sidsxp_tar, sidsyp_tar,
+     &     sidsdelta_tar, sidsp_tar
       
       common/sos_tracking_histid/
      &     siddcwiremap,
@@ -33,13 +37,22 @@
      &     sidsyp_fp,
      &     sidslogchi2_fp,
      &     sidsnfree_fp,
-     &     sidschi2perdeg_fp
+     &     sidschi2perdeg_fp,
+     &     sidsx_tar,
+     &     sidsy_tar,
+     &     sidsz_tar,
+     &     sidsxp_tar,
+     &     sidsyp_tar,
+     &     sidsdelta_tar,
+     &     sidsp_tar
 
 
 
 
       integer*4 sturnon_decoded_dc_hist
       integer*4 sturnon_focal_plane_hist
+      integer*4 sturnon_target_hist
       common/sos_hist_flags/
      &     sturnon_decoded_dc_hist,
-     &     sturnon_focal_plane_hist
+     &     sturnon_focal_plane_hist,
+     &     sturnon_target_hist
