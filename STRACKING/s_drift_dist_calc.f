@@ -5,6 +5,9 @@
 *
 *     d.f. geesaman              17 feb 1994
 * $Log$
+* Revision 1.4  1995/10/10 13:02:39  cdaq
+* (JRA) Remove check for zero drift bin size
+*
 * Revision 1.3  1995/05/22 19:45:35  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -34,17 +37,17 @@
 
 * look in the appropriate drift time to distance table and perform a linear
 * interpolation. minimum and maximum distance values are 0.0cm and 0.5cm. 
-      if( sdriftbinsz.eq.0.0)then
-        fractinterp = -1.0
-        s_drift_dist_calc = 0.5*fractinterp
-        return
-      endif      
-      ilo = int(time/sdriftbinsz) - int(sdrift1stbin/sdriftbinsz) + 1
+c      if( sdriftbinsz.eq.0.0)then
+c        fractinterp = -1.0
+c        s_drift_dist_calc = 0.5*fractinterp
+c        return
+c      endif      
+      ilo = int((time-sdrift1stbin)/sdriftbinsz) + 1
       ihi = ilo + 1
       if( ilo.ge.1 .and. ihi.le.sdriftbins)then 
         fractinterp = sfract(ilo,plane) + 
      &    ( (sfract(ilo+1,plane)-sfract(ilo,plane))/sdriftbinsz )*
-     &    (time - (ilo-1)*sdriftbinsz - sdrift1stbin)
+     &    (time - sdrift1stbin - (ilo-1)*sdriftbinsz)
       else
         if( ilo.lt.1 )then
           fractinterp = 0.0

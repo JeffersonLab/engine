@@ -5,6 +5,9 @@
 *
 *     d.f. geesaman              17 feb 1994
 * $Log$
+* Revision 1.6  1995/10/10 13:01:04  cdaq
+* (JRA) Remove check for zero drift bin size
+*
 * Revision 1.5  1995/05/22 19:39:09  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -23,7 +26,7 @@
 *
 * Revision 1.1  1994/02/19  06:13:44  cdaq
 * Initial revision
-*  
+*
       implicit none
       include 'hms_data_structures.cmn'
       include 'hms_geometry.cmn'
@@ -41,18 +44,18 @@
 *
 
 * look in the appropriate drift time to distance table and perform a linear
-* interpolation. minimum and maximum distance values are 0.0cm and 0.5cm. 
-      if( hdriftbinsz.eq.0.0)then
-        fractinterp = -1.0
-        h_drift_dist_calc = 0.5*fractinterp
-        return
-      endif      
-      ilo = int(time/hdriftbinsz) - int(hdrift1stbin/hdriftbinsz) + 1
+* interpolation. minimum and maximum distance values are 0.0cm and 0.5cm.
+c      if( hdriftbinsz.eq.0.0)then
+c        fractinterp = -1.0
+c        h_drift_dist_calc = 0.5*fractinterp
+c        return
+c      endif
+      ilo = int((time-hdrift1stbin)/hdriftbinsz) + 1
       ihi = ilo + 1
-      if( ilo.ge.1 .and. ihi.le.hdriftbins)then 
-        fractinterp = hfract(ilo,plane) + 
+      if( ilo.ge.1 .and. ihi.le.hdriftbins)then
+        fractinterp = hfract(ilo,plane) +
      &    ( (hfract(ilo+1,plane)-hfract(ilo,plane))/hdriftbinsz )*
-     &    (time - (ilo-1)*hdriftbinsz - hdrift1stbin)
+     &    (time - hdrift1stbin - (ilo-1)*hdriftbinsz)
       else
         if( ilo.lt.1 )then
           fractinterp = 0.0
@@ -60,7 +63,6 @@
           if( ihi.gt.hdriftbins )fractinterp = 1.0
         endif
       endif
-
       h_drift_dist_calc = 0.5*fractinterp
 
       return
