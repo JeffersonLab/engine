@@ -9,9 +9,12 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 *-    $Log$
-*-    Revision 1.1  1994/02/04 21:04:59  cdaq
-*-    Initial revision
+*-    Revision 1.2  1994/02/11 18:32:06  cdaq
+*-    Split off CTP variables registration from initialize routines
 *-
+* Revision 1.1  1994/02/04  21:04:59  cdaq
+* Initial revision
+*
 *- 
 *--------------------------------------------------------
       IMPLICIT NONE
@@ -33,8 +36,17 @@
       err= ' '
       type *
 *
-      total_event_count= 0
-      call G_initialize(ABORT,err)             !includes a total reset
+      total_event_count= 0                      ! Need to register this
+
+      call g_register_variables(ABORT,err)
+      initOK= .NOT.ABORT
+      if(ABORT.or.err.ne.' ') then
+        call G_add_path(here,err)
+        call G_rep_err(ABORT,err)
+        If(initOK) err= ' '
+      ENDIF
+*
+      call G_initialize(ABORT,err)              !includes a total reset
       initOK= .NOT.ABORT
       IF(ABORT.or.err.NE.' ') THEN
         call G_add_path(here,err)

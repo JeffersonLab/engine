@@ -23,12 +23,15 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 *-    $Log$
-*-    Revision 1.2  1994/02/03 18:12:17  cdaq
-*-    Use CTP parameter block to get the filenames
+*-    Revision 1.3  1994/02/11 18:34:34  cdaq
+*-    Split off CTP variables registration from initialize routines
 *-
-c Revision 1.1  1994/02/02  20:08:15  cdaq
-c Initial revision
-c
+* Revision 1.2  1994/02/03  18:12:17  cdaq
+* Use CTP parameter block to get the filenames
+*
+* Revision 1.1  1994/02/02  20:08:15  cdaq
+* Initial revision
+*
 *----------------------------------------------------------------------
       implicit none
       SAVE
@@ -43,61 +46,7 @@ c
       include 'gen_filenames.cmn'
       include 'gen_routines.dec'
 *
-      integer ierr,flag
-*
-*     Register the variables that contain the filenames and other
-*     configuration variables.
-*
-      error = ' '
-      ierr = regparmstring('hist_filename',g_ctp_hist_filename,0)
-      if(ierr.ne.0) error = 'unable to register "hist_filename"'
-      abort = ierr.ne.0
-      ierr = regparmstring('parm_filename',g_ctp_parm_filename,0)
-      if(ierr.ne.0) error = 'unable to register "parm_filename"'
-      abort = ierr.ne.0
-      ierr = regparmstring('test_filename',g_ctp_test_filename,0)
-      if(ierr.ne.0) error = 'unable to register "test_filename"'
-      abort = ierr.ne.0
-      ierr = regparmstring('data_source_filename'
-     $     ,g_data_source_filename,0)
-      if(ierr.ne.0) error = 'unable to register "data_source_filename"'
-      abort = ierr.ne.0
-      ierr = regparmstring('alias_filename',g_alias_filename,0)
-      if(ierr.ne.0) error = 'unable to register "alias_filename"'
-      abort = ierr.ne.0
-      ierr = regparmstring('histout_filename',g_histout_filename,0)
-      if(ierr.ne.0) error = 'unable to register "histout_filename"'
-      abort = ierr.ne.0
-      ierr = regparmstring('decode_map_filename'
-     $     ,g_decode_map_filename,0)
-      if(ierr.ne.0) error = 'unable to register "decode_map_filename"'
-      abort = ierr.ne.0
-      ierr = regparmstring('alias_filename',g_alias_filename,0)
-      if(ierr.ne.0) error = 'unable to register "alias_filename"'
-      abort = ierr.ne.0
-      ierr = regparmstring('max_events',g_max_events,0)
-      if(ierr.ne.0) error = 'unable to register "max_events"'
-      abort = ierr.ne.0
-*
-      if(abort) then
-         call g_add_path(here,error)
-         return
-      endif
-*
-      
-*
-*     The variables used for string manipulation should be i*2 or
-*     else strange things may happen.
-*
-*     Book the histograms, tests and parameters
-*
-      g_hist_rebook = .false.
-      g_test_rebook = .false.
-      g_parm_rebook = .false.
-      g_alias_filename = ' '
-      g_data_source_opened = .false.     !not opened yet
-      g_data_source_in_hndl= 0           !none
-      g_data_source_filename= ' '        !undefined
+      integer ierr
 c     
       call getenv(env_var,g_config_filename)
 *
@@ -111,28 +60,11 @@ c
       if(ierr.ne.0) goto 999
       ierr = thbook()                             ! a CTP parm file
       if(ierr.eq.0) then
-*
-*     Need to move this code to another routine.
-*
-         if(g_ctp_parm_filename.ne.' ') g_parm_rebook = .true.
-         if(g_ctp_test_filename.ne.' ') g_test_rebook = .true.
-         if(g_ctp_hist_filename.ne.' ') g_hist_rebook = .true.
-         if(g_parm_rebook) call thload(g_ctp_parm_filename)
-         if(g_test_rebook) call thload(g_ctp_test_filename)
-         if(g_hist_rebook) call thload(g_ctp_hist_filename)
-*
-         if(g_parm_rebook .or. g_test_rebook .or. g_hist_rebook) then
-            call thbook
-            if(g_alias_filename.ne.' ') then
-               ierr = thwhalias(g_alias_filename)
-               type *,'called haliaswrite',ierr
-            endif
-         endif
-*
          g_config_loaded = .true.
       else
          g_config_loaded = .false.
       endif
+
       ABORT= .NOT.g_config_loaded
       IF(ABORT) THEN
         error= ':opened OK, but thload command failed from "'//

@@ -13,8 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.1  1994/02/11 04:18:24  cdaq
-*     Initial revision
+*     Revision 1.2  1994/02/11 18:36:17  cdaq
+*     Split off CTP variables registration from initialize routines
+*
+* Revision 1.1  1994/02/11  04:18:24  cdaq
+* Initial revision
 *
 *
 *----------------------------------------------------------------------
@@ -30,6 +33,7 @@
       INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_routines.dec'
 *
+      integer ierr
 *--------------------------------------------------------
       err= ' '
       ABORT = .FALSE.
