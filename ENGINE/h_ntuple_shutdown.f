@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, HU: added Ntuples
 * $Log$
+* Revision 1.5  1998/12/01 15:56:25  saw
+* (SAW) Clean out archaic g_build_note stuff
+*
 * Revision 1.4  1996/01/16 17:01:06  cdaq
 * (SAW) Comment out an info message
 *
@@ -40,8 +43,8 @@
 *
       logical FAIL
       character*80 why,directory,name
-      character*1000 pat,msg
-      integer io,id,cycle,m,iv(10)
+      character*1000 msg
+      integer io,id,cycle,m
 *
 *--------------------------------------------------------
       err= ' '
@@ -56,26 +59,25 @@
 *
       ABORT= .NOT.HEXIST(id)
       IF(ABORT) THEN
-         pat= ': Ntuple ID#$ does not exist'
-         call G_build_note(pat,'$',id,' ',0.,err)
-         call G_add_path(here,err)
-         If(io.GT.0) Then
-           call G_IO_control(io,'FREE',FAIL,why) !free up
-           if(.NOT.FAIL) CLOSE(io)
-         EndIf
-         h_Ntuple_exists= .FALSE.
-         h_Ntuple_ID= 0
-         h_Ntuple_name= ' '
-         h_Ntuple_IOchannel= 0
-         h_Ntuple_file= ' '
-         h_Ntuple_title= ' '
-         h_Ntuple_directory= ' '
-         h_Ntuple_size= 0
-         do m=1,HMAX_Ntuple_size
-           h_Ntuple_tag(m)= ' '
-           h_Ntuple_contents(m)= 0.
-         enddo
-         RETURN
+        write(err,'(": Ntuple ID#",i5," does not exist")') id
+        call G_add_path(here,err)
+        If(io.GT.0) Then
+          call G_IO_control(io,'FREE',FAIL,why) !free up
+          if(.NOT.FAIL) CLOSE(io)
+        EndIf
+        h_Ntuple_exists= .FALSE.
+        h_Ntuple_ID= 0
+        h_Ntuple_name= ' '
+        h_Ntuple_IOchannel= 0
+        h_Ntuple_file= ' '
+        h_Ntuple_title= ' '
+        h_Ntuple_directory= ' '
+        h_Ntuple_size= 0
+        do m=1,HMAX_Ntuple_size
+          h_Ntuple_tag(m)= ' '
+          h_Ntuple_contents(m)= 0.
+        enddo
+        RETURN
       ENDIF
 *
       id= h_Ntuple_ID
@@ -83,10 +85,7 @@
       name= h_Ntuple_name
       call HCDIR(h_Ntuple_directory,' ')      !goto Ntuple directory
 *
-      iv(1)= id
-      iv(2)= io
-      pat= 'closing ID#$ IO#$ "'//h_Ntuple_file//'"'
-      call G_build_note(pat,'$',iv,' ',0.,' ',msg)
+      write(msg,'("closing ID#",i5," IO#",i3," ",a)') id,io,h_ntuple_file
       call G_add_path(here,msg)
 c      call G_log_message('INFO: '//msg)
 *
