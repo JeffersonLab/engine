@@ -1,12 +1,7 @@
-my_objs = 
+
 disp_objs = glvolu.o 
 
-#ifndef Csoft
-#Csoft = /group/hallc/Csoft/Analyzer
-Csoft = /work/hallc/e93026/jones/Analyzer
-#Csoft = /group/hallc/saw/Analyzer
-#Csoft = /group/hallc/csa/Analyzer
-#endif
+Csoft=$(PWD)
 
 RM        = rm -f 
 SHELL     = /bin/sh
@@ -108,15 +103,22 @@ evdisplay.o: evdisplay.f
 %.o: %.f
 	$(F77) $(FFLAGS) -c $< -o $@
 
-engine_replay_$(MYOS): Makefile  $(my_objs) $(OURLIBS)
+engine_replay_$(MYOS): Makefile  ../ENGINE/O.$(MYOS)/engine.o  $(OURLIBS)
 	echo $(MYVERSION)
 	cp ../ENGINE/O.$(MYOS)/engine.o engine.o
-	$(F77) -o $@ $(FFLAGS) engine.o $(my_objs) $(OURLIBS) $(OTHERLIBS)
+	$(F77) -o $@ $(FFLAGS) engine.o $(OURLIBS) $(OTHERLIBS)
+	$(RM) engine.o
 
 engine_replay: engine_replay_$(MYOS)
 	$(RM) ../../$(MYOS)/bin/engine_replay
 #	ln -s $< $@
 	cp engine_replay_$(MYOS) ../../$(MYOS)/bin/engine_replay
+	$(RM) engine_replay_$(MYOS)
+engine.o:
+	cp ../ENGINE/O.$(MYOS)/engine.o engine.o
+
+$(OURLIBS):
+	cp ../ENGINE/O.$(MYOS)/engine.o engine.o
 
 evdisplay: $(disp_objs) Makefile evdisplay.o $(disp_objs) $(ONEEVLIB) $(OURLIBS) 
 	$(F77) -o $@ $(DISPFLAGS) evdisplay.o $(disp_objs) $(ONEEVLIB) $(OURLIBS) $(OTHERLIBS)
