@@ -9,6 +9,10 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.20  1996/01/24 16:11:10  saw
+* (JRA) Change evtype to registered gen_event_type.  Refresh statistics
+*       file at a time interval rather than event interval
+*
 * Revision 1.19  1996/01/16 21:12:41  cdaq
 * (JRA) Add tcl run statistics display
 *
@@ -90,7 +94,6 @@
       include 'gen_run_pref.cmn'
       include 'gen_routines.dec'
       include 'gen_scalers.cmn'
-c      include 'hms_filenames.cmn'
       include 'gen_data_structures.cmn'
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
@@ -103,10 +106,7 @@ c      include 'hms_filenames.cmn'
       integer recorded_events(0:gen_max_trigger_types)
       integer sum_recorded
       integer i,since_cnt,itmp,lastdump
-      integer evtype
       integer rpc_pend                  ! # Pending asynchronous RPC requests
-*      integer SPAREID
-*      parameter (SPAREID=67)
 *
       character*80 g_config_environmental_var
       parameter (g_config_environmental_var= 'ENGINE_CONFIG_FILE')
@@ -303,14 +303,13 @@ c      if (itmp.ne.0) gen_run_hist_dump_interval=itmp
 *     Check if this is a physics event or a CODA control event.
 *
         if(.not.problems) then
-          evtype = jishft(craw(2),-16)
-          if(evtype.le.gen_MAX_trigger_types) then
-            recorded_events(evtype)=recorded_events(evtype)+1
+          gen_event_type = jishft(craw(2),-16)
+          if(gen_event_type.le.gen_MAX_trigger_types) then
+            recorded_events(gen_event_type)=recorded_events(gen_event_type)+1
             sum_recorded=sum_recorded+1
           endif
-          gen_event_type= evtype        ! reassigned later? 
 
-          if (evtype.eq.130) then       !run info event (get e,p,theta)
+          if (gen_event_type.eq.130) then       !run info event (get e,p,theta)
 c            call g_extract_kinematics(ebeam,phms,thms,psos,tsos)
 c            if (cpbeam .ge. 7. .and. ebeam.le.7.) then !sometimes ebeam in MeV
 c              cpbeam=abs(ebeam)
@@ -337,8 +336,8 @@ c            endif
 
           if(jiand(CRAW(2),'FFFF'x).eq.'10CC'x) then ! Physics event
 *     
-            if(evtype.le.gen_MAX_trigger_types .and.
-     $           gen_run_enable(evtype-1).ne.0) then
+            if(gen_event_type.le.gen_MAX_trigger_types .and.
+     $           gen_run_enable(gen_event_type-1).ne.0) then
                   
               call g_examine_physics_event(CRAW,ABORT,err)
               problems = problems .or.ABORT
@@ -349,13 +348,14 @@ c            endif
                 mss= err
               endif
 *     
-              IF(gen_run_starting_event.LE.gen_event_ID_number) THEN
+              IF(gen_run_starting_event.LE.gen_event_ID_number .or.
+     $             gen_event_type.eq.4) THEN ! always analyze peds.
                 if(gen_run_starting_event.eq.gen_event_id_number)
      &               start_time=time()  !reset start time for analysis rate
                 if(.NOT.problems) then
                   call G_reconstruction(CRAW,ABORT,err) !COMMONs
                   physics_events = physics_events + 1
-                  analyzed_events(evtype)=analyzed_events(evtype)+1
+                  analyzed_events(gen_event_type)=analyzed_events(gen_event_type)+1
                   sum_analyzed=sum_analyzed+1
                   problems= problems .OR. ABORT
                 endif
@@ -413,7 +413,7 @@ c            endif
               ENDIF
             endif
           Else
-            if(evtype.eq.129) then
+            if(gen_event_type.eq.129) then
               call g_analyze_scalers(CRAW,ABORT,err)
 *  Dump report at first scaler event AFTER hist_dump_interval to keep hardware
 *  and software scalers in sync.
@@ -425,7 +425,7 @@ c            endif
      &               ,physics_events," events"
  112            format (a,i8,a)
               endif
-            else if (evtype.eq.133) then  !SAW's new go_info events
+            else if (gen_event_type.eq.133) then  !SAW's new go_info events
               call g_examine_go_info(CRAW,ABORT,err)
             else
               call g_examine_control_event(CRAW,ABORT,err)
@@ -434,9 +434,8 @@ c            endif
           EndIf
         endif
 *
-*Now write the statistics report every 100 events...
+*Now write the statistics report every 2 sec...
 *
-ccc        if((physics_events/200)*200.eq.physics_events) then
          if (g_real_time-lasttime.ge.2.) then  !dump every 2 seconds
            lasttime=g_real_time
            if(g_stats_blockname.ne.' '.and.
@@ -462,7 +461,8 @@ ccc        if((physics_events/200)*200.eq.physics_events) then
 *
         If(gen_run_stopping_event.GT.0 .and. 
      &       gen_event_ID_number.GT.0) Then
-          EoF= EoF .or. gen_run_stopping_event.LE.sum_analyzed
+          EoF= EoF .or. gen_run_stopping_event.LE.sum_analyzed-
+     $         analyzed_events(4)
         EndIf
 *
 *- Here is where we insert a check for an Remote Proceedure Call (RPC) 
