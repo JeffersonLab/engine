@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.11  1999/03/19 15:23:16  saw
+# Fix CTP library ordering so that event display links on SunOS.
+#
 # Revision 1.10  1998/12/09 16:31:16  saw
 # Remove dependence on Csoft environment variable
 #
@@ -89,7 +92,8 @@ ifeq ($(ARCH),ULTRIX)
 endif
 
 ifeq ($(ARCH),SunOS)
-  OTHERLIBS = -L$(LIBROOT) -lctpclient -lctp -L$(CERN_ROOT)/lib $(CERNLIBS) -lX11
+  OTHERLIBS = -L$(LIBROOT) -lctpclient -lctp -L$(CERN_ROOT)/lib $(CERNLIBS) \
+	-lnsl -lsocket -lX11
 endif
 
 ifeq ($(ARCH),AIX)
