@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.6  1995/05/22 13:30:11  cdaq
-*-    (JRA) Make a listing of potential detector problems
+*-    Revision 1.7  1995/07/27 19:02:19  cdaq
+*-    (SAW) Move ntuple shutdown to g_ntuple_shutdown
 *-
+* Revision 1.6  1995/05/22  13:30:11  cdaq
+* (JRA) Make a listing of potential detector problems
+*
 * Revision 1.5  1995/04/01  19:43:57  cdaq
 * (SAW) One report file for each of g, h, s, c instead of a single report file
 *       Allow %d for run number in filenames
@@ -57,7 +60,7 @@
       ABORT= .FALSE.
       err = ' '
 *
-      call c_ntuple_shutdown(ABORT,err)
+*      call c_ntuple_shutdown(ABORT,err)
 *
       if(c_report_blockname.ne.' '.and.
      $     c_report_output_filename.ne.' ') then
