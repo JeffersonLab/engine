@@ -51,7 +51,7 @@
         write(*,*) ' Enabled SOS central momentum correction'
         write(*,*) ' Using C. Xu parametrization (2003)'
         write(*,*) ' Before correction: central  mom = ',spcentral
-        sosp0corr=3.99168e-03 - 0.288891*e-01*spcentral
+        sosp0corr=3.99168e-03 - 0.288891e-01*spcentral
      >       -5.68732e-4*exp(2.341*(spcentral**2.156))
         spcentral = spcentral*(1+sosp0corr/100.)
         write(*,*) ' After correction: central  mom = ',spcentral
