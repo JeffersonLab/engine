@@ -8,22 +8,12 @@
 * Derek van Westrum (vanwestr@cebaf.gov)
 *
 * $Log$
+* Revision 1.2  1995/09/18 14:38:09  cdaq
+* (SAW) Remove unneeded declartions
+*
 * Revision 1.1  1995/07/31 15:23:05  cdaq
 * Initial revision
 *
-
-      implicit none
-
-      include 'sos_one_ev.par'
-      include 's_one_ev_hodo.inc'
-      include 's_one_ev_cal.inc'
-      include 's_one_ev_wc.inc'
-
-      integer iset, idet
-      character*4 varinames(3) /'x', 'y', 'z'/
-      integer     varibits(3)  /32, 32, 32/
-      real origin(3) /SHUT_HEIGHT, SHUT_HEIGHT, SHUT_HEIGHT/
-      real factor(3) /1e3, 1e3, 1e3/
 
       call s_one_ev_hodo
       call s_one_ev_cal
