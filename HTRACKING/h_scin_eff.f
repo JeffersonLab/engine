@@ -15,6 +15,9 @@
 * h_scin_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
+* Revision 1.7.2.1  2003/04/02 22:26:55  cdaq
+* added some extra scint. effic calculations (from oct 1999 online) - JRA
+*
 * Revision 1.7  2002/10/02 13:42:43  saw
 * Check that user hists are defined before filling
 *
@@ -54,11 +57,17 @@
       include 'hms_statistics.cmn'
       include 'hms_id_histid.cmn'
 
-      integer pln,cnt
+      integer pln,cnt,pln2
       integer hit_cnt(hnum_scin_planes)
       integer nhit
       real dist, histval
       real hit_pos(hnum_scin_planes),hit_dist(hnum_scin_planes)
+      real xatback,yatback
+
+      logical good_tdc_oneside(hnum_scin_planes)
+      logical good_tdc_bothsides(hnum_scin_planes)
+      logical otherthreehit
+
       save
 
 * find counters on track, and distance from center.
@@ -84,6 +93,12 @@
       hit_cnt(4)=nint((hhodo_center(4,1)-hit_pos(4))/hscin_2y_spacing)+1
       hit_cnt(4)=max(min(hit_cnt(4),nint(hnum_scin_counters(4))),1)
       hit_dist(4)=hit_pos(4)-(hhodo_center(4,1)-hscin_2y_spacing*(hit_cnt(4)-1))
+
+      do pln=1,hnum_scin_planes
+        good_tdc_oneside(pln) = .false.
+        good_tdc_bothsides(pln) = .false.
+      enddo
+
 
 *   Fill dpos (pos. track - pos. hit) histograms
       do nhit=1,hscin_tot_hits
@@ -148,6 +163,59 @@
         endif
 
       enddo                 !loop over hsnum_pmt_hit
+
+*  Determine if one or both PMTs had a good tdc.
+        if (hgood_tdc_pos(hsnum_fptrack,nhit) .and. 
+     &      hgood_tdc_neg(hsnum_fptrack,nhit) ) good_tdc_bothsides(pln)=.true.
+        if (hgood_tdc_pos(hsnum_fptrack,nhit) .or. 
+     &      hgood_tdc_neg(hsnum_fptrack,nhit) ) good_tdc_oneside(pln)=.true.
+
+      enddo                 !loop over hsnum_pmt_hit
+
+*  For each plane, see of other 3 fired.  This means that they were enough
+*  to form a 3/4 trigger, and so the fraction of times this plane fired is
+*  the plane trigger efficiency.  NOTE: we only require a TDC hit, not a
+*  TDC hit within the SCIN 3/4 trigger window, so high rates will make
+*  this seem better than it is.  Also, make sure we're not near the edge
+*  of the hodoscope (at the last plane), using the same hhodo_slop param. as for h_tof.f
+*  NOTE ALSO: to make this check simpler, we are assuming that all planes
+*  have identical active areas.  y_scin = y_cent + y_offset, so shift track
+*  position by offset for comparing to edges.
+
+      xatback = hsx_fp+hsxp_fp*hscin_2y_zpos - hscin_2x_offset
+      yatback = hsy_fp+hsyp_fp*hscin_2y_zpos - hscin_2y_offset
+
+      if ( xatback.lt.(hscin_2y_bot  -2.*hhodo_slop(3))  .and.
+     &     xatback.gt.(hscin_2y_top  +2.*hhodo_slop(3))  .and.
+     &     yatback.lt.(hscin_2x_left -2.*hhodo_slop(3))  .and.
+     &     yatback.gt.(hscin_2x_right+2.*hhodo_slop(3))) then
+
+        do pln = 1,hnum_scin_planes
+          otherthreehit = .true.
+          do pln2 = 1,hnum_scin_planes	!see of one of the others missed or pln2=pln
+	    if (.not.(good_tdc_bothsides(pln2) .or. pln2.eq.pln)) then
+	      otherthreehit = .false.
+	    endif
+	  enddo
+	  if (otherthreehit) then
+	    htrig_hodoshouldflag(pln) = .true.
+	    if (good_tdc_bothsides(pln)) then
+              htrig_hododidflag(pln) = .true.
+	    else
+              htrig_hododidflag(pln) = .false.
+	    endif
+          else
+	    htrig_hodoshouldflag(pln) = .false.
+	    htrig_hododidflag(pln) = .false.
+	  endif
+	enddo
+
+      else		!outside of fiducial region
+        do pln=1,hnum_scin_planes
+          htrig_hodoshouldflag(pln) = .false.
+          htrig_hododidflag(pln) = .false.
+        enddo
+      endif
 
       return
       end
