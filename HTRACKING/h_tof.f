@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.17  1997/03/19 18:43:45  saw
+* (JRA) Don't neglect negative side of hodoscopes
+*
 * Revision 1.16  1996/09/04 13:36:00  saw
 * (JRA) Include actual beta in calculation of focal plane time.
 *
@@ -218,15 +221,15 @@
               else
                 hscin_time(hit) = hscin_pos_time(hit)
                 hscin_sigma(hit) = hscin_pos_sigma(hit)
-*                hgood_scin_time(trk,hit) = .true.
-                hgood_scin_time(trk,hit) = .false.
+                hgood_scin_time(trk,hit) = .true.
+*                hgood_scin_time(trk,hit) = .false.
               endif
             else                        ! if hgood_tdc_neg = .false.
               if (hgood_tdc_neg(trk,hit)) then
                 hscin_time(hit) = hscin_neg_time(hit)
                 hscin_sigma(hit) = hscin_neg_sigma(hit)
-*                hgood_scin_time(trk,hit) = .true.
-                hgood_scin_time(trk,hit) = .false.
+                hgood_scin_time(trk,hit) = .true.
+*                hgood_scin_time(trk,hit) = .false.
               endif
             endif
 c     Get time at focal plane
