@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-    $Log$
-*-    Revision 1.12  1995/01/27 20:09:07  cdaq
-*-    (SAW) Add call to sieve slit ntuple initialization
+*-    Revision 1.13  1995/09/01 13:37:27  cdaq
+*-    (JRA) Initialize Cerenkov parameters
 *-
+* Revision 1.12  1995/01/27  20:09:07  cdaq
+* (SAW) Add call to sieve slit ntuple initialization
+*
 * Revision 1.11  1994/10/11  18:44:11  cdaq
 * (SAW) Add hacks for event display
 *
@@ -71,6 +74,15 @@
 *-calculate secondary scintillator and time of flight parameters
       call h_init_scin(FAIL,why)
       if(why.NE.' ') then
+        err= why
+      endif
+      ABORT= ABORT .or. FAIL
+*
+*-calculate secondary cerenkov parameters
+      call h_init_cer(FAIL,why)
+      if(err.NE.' ' .and. why.NE.' ') then
+        call G_append(err,' & '//why)
+      elseif(why.NE.' ') then
         err= why
       endif
       ABORT= ABORT .or. FAIL
