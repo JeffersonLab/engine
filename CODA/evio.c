@@ -23,6 +23,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.3  1999/11/04 20:30:48  saw
+ *   Add code to write coda output to stdout or pipes
+ *
  *   Revision 1.2  1998/12/01 13:54:12  saw
  *   (saw) Alpha 64 bit fixes, input from std input, pipes and compressed
  *   files
@@ -108,6 +111,7 @@ typedef struct evBinarySearch{
 #define EV_READ 0
 #define EV_WRITE 1
 #define EV_PIPE 2 
+#define EV_PIPEWRITE 3 
 #define EV_VERSION 1
 #define EV_MAGIC 0xc0da0100
 #define EV_HDSIZ 8
@@ -269,8 +273,15 @@ int evOpen(char *filename,char *flags,int *handle)
     }
     break;
   case 'w': case 'W':
-    a->file = fopen(filename,"w");
     a->rw = EV_WRITE;
+    if(strcmp(filename,"-")==0) {
+      a->file = stdout;
+    } else if(filename[0] == '|') {
+      a->file = popen(filename+1,"r");
+      a->rw = EV_PIPEWRITE;	/* Make sure we know to use pclose */
+    } else {
+      a->file = fopen(filename,"w");
+    }
     if (a->file) {
       a->buf = (int *) malloc(EVBLOCKSIZE*4);
       if (!(a->buf)) {
@@ -514,7 +525,7 @@ int evIoctl(int handle,char *request,void *argp)
   if (a->magic != EV_MAGIC) return(S_EVFILE_BADHANDLE);
   switch (*request) {
   case 'b': case 'B':
-    if (a->rw != EV_WRITE) return(S_EVFILE_BADSIZEREQ);
+    if (a->rw != EV_WRITE && a->rw != EV_PIPEWRITE) return(S_EVFILE_BADSIZEREQ);
     if (a->blknum != 0) return(S_EVFILE_BADSIZEREQ);
     if (a->buf[EV_HD_START] != 0) return(S_EVFILE_BADSIZEREQ);
     free (a->buf);
@@ -561,7 +572,7 @@ int evClose(int handle)
   a = (EVFILE *)handle;
 #endif
   if (a->magic != EV_MAGIC) return(S_EVFILE_BADHANDLE);
-  if(a->rw == EV_WRITE)
+  if(a->rw == EV_WRITE || a->rw==EV_PIPEWRITE)
     status = evFlush(a);
   if(a->rw == EV_PIPE) {
     status2 = pclose(a->file);
