@@ -27,6 +27,10 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.18  1995/10/09 18:20:51  cdaq
+* (JRA) Change HCER_ADC to HCER_RAW_ADC
+*       Replace g_decode_getdid call with explicit calculation (for speed)
+*
 * Revision 1.17  1995/07/27 19:06:02  cdaq
 * (SAW) Use specific bit manipulation routines for f2c compatibility
 *       Get FB roc from header on parallel link banks
@@ -89,18 +93,18 @@
       include 'gen_decode_common.cmn'
       include 'mc_structures.cmn'
 
-      integer*4 pointer                         ! Pointer FB data word
+      integer*4 pointer                 ! Pointer FB data word
       integer*4 banklength,maxwords
       integer*4 roc,subadd,slot,lastslot
       integer*4 stat_roc
-      integer*4 did                             ! Detector ID
-      integer*4 g_decode_getdid                 ! Get detector ID routine
-      integer*4 g_decode_fb_detector            ! Detector unpacking routine
-      integer*4 i
+      integer*4 slotp                   ! temp variable
+      integer*4 did                     ! Detector ID
+*      integer*4 g_decode_getdid         ! Get detector ID routine
+      integer*4 g_decode_fb_detector    ! Detector unpacking routine
 *
       integer*4 jiand, jishft           ! Declare to help f2c
 
-      banklength = bank(1) + 1                  ! Bank length including count
+      banklength = bank(1) + 1          ! Bank length including count
 
 c      stat_roc = ishft(bank(2),-16)
       stat_roc = jishft(bank(2),-16)
@@ -168,7 +172,15 @@ c          subadd = iand(ishft(bank(pointer),
           if (subadd .lt. '7F'X) then   ! Only valid subaddress
                                         ! This skips module headers
 
-            did = g_decode_getdid(roc,slot,subadd) ! Map into detector ID
+***   replace call with explicit calculation.
+***            did = g_decode_getdid(roc,slot,subadd) ! Map into detector ID
+            slotp = g_decode_slotpointer(roc+1,slot)
+            if (slotp.gt.0) then
+              did = g_decode_didmap(slotp+subadd)
+            else
+              did = UNINST_ID
+            endif
+
             maxwords = banklength - pointer + 1
 *
 *        1         2         3         4         5         6         7
@@ -207,7 +219,7 @@ c          subadd = iand(ishft(bank(pointer),
      $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &             maxwords, did, 
      $             HMAX_CER_HITS, HCER_TOT_HITS, HCER_PLANE,
-     $             HCER_TUBE_NUM, 1, HCER_ADC, 0, 0, 0)
+     $             HCER_TUBE_NUM, 1, HCER_RAW_ADC, 0, 0, 0)
 
             else if (did.eq.HMISC_ID) then
 *
@@ -255,7 +267,7 @@ c          subadd = iand(ishft(bank(pointer),
      $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &             maxwords, did,
      $             SMAX_CER_HITS, SCER_TOT_HITS, SCER_PLANE,
-     $             SCER_TUBE_NUM, 1, SCER_ADC, 0, 0, 0)
+     $             SCER_TUBE_NUM, 1, SCER_RAW_ADC, 0, 0, 0)
 
             else if (did.eq.SAER_ID) then
 *
