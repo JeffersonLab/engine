@@ -13,6 +13,9 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to h_raw_dump_all
 * $Log$
+* Revision 1.10  1999/02/23 18:48:45  csa
+* (JRA) Add neg cal hf1 call
+*
 * Revision 1.9  1999/02/03 21:13:24  saw
 * Code for new Shower counter tubes
 *
@@ -86,7 +89,6 @@
          adc_pos=hcal_adc_pos(nh)
          adc_neg=hcal_adc_neg(nh)
 *
-*
 *------Check the validity of raw data
 c         abort=row.le.0.or.row.gt.hmax_cal_rows
 c         if(abort) then
@@ -116,20 +118,19 @@ c         endif
 *------Sparsify the raw data
          nb =row+hmax_cal_rows*(col-1)
 
-         hcal_realadc_pos(nb) = 1.0
-         hcal_realadc_neg(nb) = 1.0
-*     Need to do this right
          hcal_realadc_pos(nb) = float(adc_pos) - hcal_pos_ped_mean(nb)
          hcal_realadc_neg(nb) = float(adc_neg) - hcal_neg_ped_mean(nb)
-         if (hcal_realadc_pos(nb).le.200)
-     $        call hf1(hidcalsumadc,hcal_realadc_pos(nb),1.)
-* ??
+         if (hcal_realadc_pos(nb).le.200 .and. adc_pos.gt.0)
+     &        call hf1(hidcalsumadc,hcal_realadc_pos(nb),1.)
+         if (hcal_realadc_neg(nb).le.200 .and. adc_neg.gt.0)
+     &        call hf1(hidcalsumadc,hcal_realadc_neg(nb),1.)
+
          if(hcal_realadc_pos(nb).gt.hcal_pos_threshold(nb) .or.
-     $        hcal_realadc_neg(nb).gt.hcal_neg_threshold(nb)) then
+     &        hcal_realadc_neg(nb).gt.hcal_neg_threshold(nb)) then
             hcal_num_hits           =hcal_num_hits+1
             hcal_rows(hcal_num_hits)=row
             hcal_cols(hcal_num_hits)=col
-            if(adc_pos.lt.0) then
+            if(adc_pos.lt.0) then	!initialized to -1 if no hit.
                hcal_adcs_pos(hcal_num_hits)= 0.0
             else
                hcal_adcs_pos(hcal_num_hits)=hcal_realadc_pos(nb)
