@@ -8,7 +8,10 @@
 * needed for the drift chamber and tof analysis.
 *
 * $Log$
-* Revision 1.2  1994/04/13 19:00:06  cdaq
+* Revision 1.3  1994/04/13 20:07:02  cdaq
+* (SAW) Fix a typo
+*
+* Revision 1.2  1994/04/13  19:00:06  cdaq
 * (DFG) 3/24  Add s_prt_scin_raw    raw bank dump routine
 *             Add s_prt_scin_dec    decoded print routine
 *             Add test for zero hits and skip all but initialization
@@ -61,7 +64,7 @@
         sgood_start_plane = .false.
       if( hscin_tot_hits .gt. 0)  then
 * histogram raw scin
-        call h_fill_scin_raw_hist(abort,errmsg)
+        call s_fill_scin_raw_hist(abort,errmsg)
         if (abort) then
           call g_prepend(here,errmsg)
           return
