@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.5  1996/09/04 15:49:31  saw
+* (SAW) Double of all ' 's in comments
+*
 * Revision 1.4  1996/01/24 16:18:59  saw
 * (JRA) Cosmetic change
 *
@@ -154,7 +157,7 @@
       INTEGER*4 HSCIN_TDC_POS
       INTEGER*4 HSCIN_TDC_NEG
       INTEGER*4 HSCIN_TOT_HITS 
-      INTEGER*4 HSCIN_SING_COUNTER ! DJM's registered hit counter
+      INTEGER*4 HSCIN_SING_COUNTER ! DJM''s registered hit counter
 *
       COMMON/HMS_REAL_SCIN/
      &     HSCIN_PLANE_NUM(HMAX_SCIN_HITS),
@@ -299,7 +302,7 @@
 *
       INTEGER*4 HCER_NUM_HITS      ! NUMBER OF CERENKOV HITS ABOVE THRESHOLD
       REAL*4 HCER_NPE              ! ADC CONVERTED TO NUMBER OF PHOTOELECTRONS
-      REAL*4 HCER_NPE_SUM          ! SUM OVER TUBES OF NPE'S
+      REAL*4 HCER_NPE_SUM          ! SUM OVER TUBES OF NPE''S
       REAL*4 HCER_ADC              ! PED SUBTRACTED ADC FOR EACH *TUBE*
       COMMON/HCER_DECODED_CER/
      &     HCER_NUM_HITS,
@@ -477,7 +480,7 @@
       real*4 hsthetaq, hsphiq      ! Direction of q3
       real*4 hsbigq2               ! Q**2
       real*4 hsx                   ! fraction of nucleon p carried by quark
-      real*4 hsy                   ! fraction of lepton's E lost in lab
+      real*4 hsy                   ! fraction of lepton''s E lost in lab
       real*4 hsw                   ! Invariant mass of recoil system
       real*4 hsw2                  ! Invariant mass**2 of recoil system
 *
