@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.2  1995/01/27 21:08:31  cdaq
+# Revision 1.3  1995/04/06 20:12:33  cdaq
+# (SAW) Remove tmp_pedestals.dte
+#
+# Revision 1.2  1995/01/27  21:08:31  cdaq
 # *** empty log message ***
 #
 # Revision 1.1  1994/04/15  20:29:37  cdaq
@@ -24,7 +27,7 @@ cmn = c_ntuple.cmn hack_.cmn s_ntuple.cmn coin_filenames.cmn \
 	sos_track_histid.cmn h_ntuple.cmn hms_tracking.cmn sos_tracking.cmn \
 	h_sieve_ntuple.cmn mc_structures.cmn
 
-dte = c_ntuple.dte gen_run_pref.dte h_sieve_ntuple.dte tmp_pedestals.dte \
+dte = c_ntuple.dte gen_run_pref.dte h_sieve_ntuple.dte \
 	gen_run_info.dte h_ntuple.dte s_ntuple.dte
 
 par = gen_constants.par gen_detectorids.par gen_units.par
