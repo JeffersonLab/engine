@@ -1,0 +1,182 @@
+#
+# $Log$
+# Revision 1.1  1998/12/01 20:56:12  saw
+# Initial revision
+#
+NEWSTYLE = 1
+include $(Csoft)/etc/Makefile
+
+t20_sources = g_register_variables.f g_initialize.f \
+	g_decode_fb_bank.f g_decode_fb_detector.f \
+	g_clear_event.f g_reset_event.f g_reconstruction.f \
+	g_init_filenames.f g_proper_shutdown.f g_analyze_pedestal.f \
+	g_calc_pedestal.f t_test_straw_analyze.f t_clear_event.f \
+	t_reset_event.f t_reconstruction.f t_register_variables.f \
+	t_ntuple_register.f t_register_param.f t_initialize.f \
+	t_analyze_pedestal.f t_calc_pedestal.f t_dump_peds.f \
+	t_proper_shutdown.f t_init_physics.f t_init_histid.f \
+	t_raw_dump_all.f t_prt_raw_mwpc.f t_prt_raw_hodo.f \
+	t_hodos.f t_misc.f t_mwpc.f t_hms.f \
+	g_examine_go_info.f g_scaler.f g_trans_misc.f g_analyze_misc.f \
+	g_analyze_scalers.f g_get_next_event.f g_open_source.f \
+	h_ntuple_init.f h_ntuple_keep.f
+
+# Sources that are not changed, but that need to be rebuilt because of include files
+unchanged_sources = g_analyze_beam_pedestal.f g_calc_beam_pedestal.f
+
+t20_makereg_sources = r_t20_bypass_switches.f r_t20_data_structures.f \
+	r_t20_test_detectors.f r_t_ntuple.f r_t20_tracking.f \
+	r_t20_pedestals.f r_t20_filenames.f r_t20_test_histid.f \
+	r_gen_run_info.f r_t20_test_histid.f r_t20_test_detectors.f \
+	r_t20_hodo.f r_t20_geometry.f r_t20_track_histid.f r_t20_hms.f \
+	r_t20_misc.f r_gen_misc.f r_gen_data_structures.f
+
+include_files = gen_detectorids.par t20_filenames.cmn t20_test_histid.cmn \
+	t20_hodo_parms.cmn t20_tracking.cmn t20_bypass_switches.cmn \
+	t20_pedestals.cmn t_ntuple.cmn t20_data_structures.cmn \
+	t20_test_detectors.cmn gen_run_info.cmn
+
+treplay_source = tengine.f
+
+libsources = $(t20_sources) $(unchaged_sources) $(t20_makereg_sources)
+
+sources = $(libsources) $(treplay_source)
+
+lib_targets := $(patsubst %.f, libt20.a(%.o), $(libsources))
+bin_targets = tengine
+
+install-dirs := lib bin
+
+
+T20LIB = $(LIBROOT)/libt20.a
+
+DEPLIBS = $(LIBROOT)/libengine.a \
+	$(LIBROOT)/libhtracking.a \
+	$(LIBROOT)/libtracking.a $(LIBROOT)/libhack.a \
+	$(LIBROOT)/libutils.a
+
+CTPCLIENT = $(LIBROOT)/libctpclient.a
+CTP =  $(LIBROOT)/libctp.a
+
+GEANTVER = 321
+#CERNLIBS = -lgeant$(GEANTVER) -lpawlib -lgraflib -lgrafX11 -lpacklib -lmathlib
+CERNLIBS = -lpacklib
+ifeq ($(ARCH),HPUX)
+  FFLAGS = -g +ppu +es -O +Obb1000 +FPVZOU 
+  OTHERLIBS = -Wl,-L$(LIBROOT) -lctpclient -lctp -Wl,-L$(CODA)/HP_UX/lib \
+	-Wl,-L$(CERN_ROOT)/lib $(CERNLIBS) -lU77 -lm
+	
+endif
+
+ifeq ($(ARCH),IRIX)
+  OTHERLIBS = -L$(LIBROOT) -lctpclient -lctp \
+        -L$(CERN_ROOT)/lib $(CERNLIBS) \
+        -L/usr/lib -lX11 -lm
+endif
+
+ifeq ($(ARCH),ULTRIX)
+  OTHERLIBS = -L$(CODA)/ULTRIX/lib \
+	-lana -lmsg -lcoda -L$(CERN_ROOT)/lib $(CERNLIBS) -L/usr/lib -lX11 -lm
+endif
+
+ifeq ($(ARCH),SunOS)
+  OTHERLIBS = -L$(LIBROOT) -lctpclient -lctp -L$(CERN_ROOT)/lib $(CERNLIBS) -lX11
+endif
+
+ifeq ($(ARCH),AIX)
+  OTHERLIBS = -L$(LIBROOT) -lctpclient -lctp \
+	-L$(CERN_ROOT)/lib $(CERNLIBS) -lX11
+endif
+
+ifeq ($(ARCH),Linux)
+#  CERNLIBS = -lgeant$(GEANTVER) -lpawlib -lgraflib -lgrafX11 -lmathlib -lpacklib -lkernlib -lmathlib -lpacklib
+  OTHERLIBS = -L$(LIBROOT) -lctpclient -lctp -L$(CERN_ROOT)/lib \
+	$(CERNLIBS) -L/usr/X11/lib -lX11 -lm
+  DEPLIBS := $(DEPLIBS) $(LIBROOT)/libport.a
+
+$(LIBROOT)/libport.a:
+	@make -C $(Csoft)/SRC/PORT
+
+endif
+
+ifeq ($(ARCH),OSF1)
+tengine: $(T20LIB) $(DEPLIBS)
+	$(AR) x $(T20LIB) tengine.o
+	$(F77) $(FLDFLAGS) -o tengine tengine.o $(T20LIB) $(DEPLIBS) $(OTHERLIBS)
+	$(RM) tengine.o
+else
+tengine: $(T20LIB) $(DEPLIBS)
+	$(AR) x $(T20LIB) tengine.o
+	$(F77) $(FFLAGS) -o tengine tengine.o $(T20LIB) $(DEPLIBS) $(OTHERLIBS)
+	$(RM) tengine.o
+endif
+
+ifdef NFSDIRECTORY
+../%.f : $(NFSDIRECTORY)/T20/%.f
+	ln -s $< $@
+
+../t%.cmn : $(NFSDIRECTORY)/T20/t%.cmn
+	ln -s $< $@
+
+../gen_data_structures.cmn : $(NFSDIRECTORY)/T20/gen_data_structures.cmn
+	ln -s $< $@
+
+../gen_misc.cmn : $(NFSDIRECTORY)/T20/gen_misc.cmn
+	ln -s $< $@
+
+../gen_run_info.cmn : $(NFSDIRECTORY)/T20/gen_run_info.cmn
+	ln -s $< $@
+
+../gen_detectorids.par : $(NFSDIRECTORY)/T20/gen_detectorids.par
+	ln -s $< $@
+
+.PRECIOUS: ../%.f ../t%.cmn
+.PRECIOUS: ../gen_data_structures.cmn ../gen_misc.cmn ../gen_run_info.cmn
+.PRECIOUS: ../gen_detectorids.par
+else
+#
+# Rule for making the register subroutines
+#
+../r_%.f : ../%.cmn $(MAKEREG)
+	(cd .. ; $(MAKEREG) $(<F) -o $(@F) -e /dev/null)
+
+.PRECIOUS: ../r_%.f
+endif
+#
+# Get include files from INCLUDE directory.  Need an exclusion
+# on replacements for gen_* include files.  How do I do this?
+# For now, it is only gen_detectorids.par that is reused.  We'll
+# just put in explicit rules for .par files as needed.
+#
+
+%.cmn : ../%.cmn
+	$(CP) $< $@
+
+../%.cmn :: ../../INCLUDE/%.cmn
+	$(CP) $< $@
+
+%.dec : ../%.dec
+	$(CP) $< $@
+
+../%.dec :: ../../INCLUDE/%.dec
+	$(CP) $< $@
+
+%.par : ../%.par
+	$(CP) $< $@
+
+../gen_units.par :: ../../INCLUDE/gen_units.par
+	$(CP) $< $@
+
+../gen_constants.par :: ../../INCLUDE/gen_constants.par
+	$(CP) $< $@
+
+%.dte : ../%.dte
+	$(CP) $< $@
+
+../%.dte :: ../../INCLUDE/%.dte
+	$(CP) $< $@
+
+include $(sources:.f=.d)
+
+
+

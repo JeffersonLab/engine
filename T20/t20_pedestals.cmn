@@ -1,0 +1,16 @@
+*
+*     Refer to sos_pedestals.cmn or hms_pedestals.cmn for examples of
+*     what to put here.
+*
+* t20_pedestals.cmn -  counters used for calculating pedestals from the set
+*                      of pedestal events at the beginning of each run.
+*
+* $Log$
+* Revision 1.1  1998/12/01 21:02:30  saw
+* Initial revision
+*
+*
+*%%   include 't20_data_structures.cmn'
+*
+*     CTPTYPE=event
+*

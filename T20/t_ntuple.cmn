@@ -1,0 +1,38 @@
+**************************begin: s_Ntuple.cmn ***********************
+*- 
+*-   Created    22-Jan-1997   Stephen A. Wood
+*........................................................................
+*- Misc. info. required for T20 Ntuple
+* $Log$
+* Revision 1.1  1998/12/01 21:01:41  saw
+* Initial revision
+*
+*
+      integer TMAX_Ntuple_size
+      parameter (TMAX_Ntuple_size= 100)
+      integer default_t_Ntuple_ID
+      parameter (default_t_Ntuple_ID= 9030)
+*
+*     CTPTYPE=parm
+*
+      logical t_Ntuple_exists
+      integer t_Ntuple_ID
+      integer t_Ntuple_size
+      integer t_Ntuple_IOchannel
+      character*80 t_Ntuple_name
+      character*80 t_Ntuple_title
+      character*132 t_Ntuple_directory
+      character*256 t_Ntuple_file
+      character*8 t_Ntuple_tag(TMAX_Ntuple_size)
+*
+*     CTPTYPE=event
+*
+      real t_Ntuple_contents(TMAX_Ntuple_size)
+*
+      COMMON /T20_Ntuple/ t_Ntuple_exists,t_Ntuple_ID,
+     &                     t_Ntuple_size,t_Ntuple_IOchannel,
+     &                      t_Ntuple_name,t_Ntuple_title,
+     &                       t_Ntuple_directory,t_Ntuple_file,
+     &                        t_Ntuple_tag,t_Ntuple_contents
+*
+****************************end: t_ntuple.cmn ***********************

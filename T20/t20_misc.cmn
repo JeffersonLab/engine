@@ -1,0 +1,82 @@
+*     file name: t20_misc.cmn
+*
+* $Log$
+* Revision 1.1  1998/12/01 21:04:53  saw
+* Initial revision
+*
+*     purpose: defines variables for
+*     - start and veto scintillators of Polder
+*
+*    CTPTYPE=event
+*      
+      integer*4 traw_adc(7:32)
+      integer*4 traw_mhtdc(6:32)
+      integer*4 traw_hrtdc(1:16)
+
+      integer*4 traw_adc_s11
+      integer*4 traw_adc_s12
+      integer*4 traw_adc_s21
+      integer*4 traw_adc_s22
+      integer*4 traw_adc_veto1
+      integer*4 traw_adc_veto2
+
+      integer*4 traw_mhtdc_s11
+      integer*4 traw_mhtdc_s12
+      integer*4 traw_mhtdc_s21
+      integer*4 traw_mhtdc_s22
+      integer*4 traw_mhtdc_veto
+      integer*4 traw_adc_s1sum
+      integer*4 traw_adc_s2sum
+      integer*4 traw_adc_s1s2sum
+      integer*4 traw_adc_vetosum
+
+      integer*4 				!test detector setup
+     3 traw_adc_tts1l, traw_adc_tts1r, traw_adc_tts2l, traw_adc_tts2r,
+     3 traw_mhtdc_s1, traw_mhtdc_s2
+
+      integer*4 		!tdc's used for flagging of event type
+     2 tfl_mhtdc_dc, tfl_mhtdc_hms, tfl_mhtdc_hms_dc, tfl_mhtdc_big1,
+     2 tfl_mhtdc_ce, tfl_mhtdc_polder, tfl_mhtdc_h1m3, tfl_mhtdc_h2m3
+
+      integer*4                   ! POLDER Upstairs HRTDC
+     4 traw_hrtdc_hms,
+     4 traw_hrtdc_dc,
+     4 traw_hrtdc_hms_dc,
+     4 traw_hrtdc_polder,
+     4 traw_hrtdc_hms_nb,
+     4 traw_hrtdc_pldr_nb,
+     4 traw_hrtdc_ce
+
+*
+*
+      common/t_miscellaneous/
+     &	    traw_adc,
+     &      traw_mhtdc,
+     &      traw_hrtdc,
+     &      traw_adc_s11,
+     &      traw_adc_s12,
+     &      traw_adc_s21,
+     &      traw_adc_s22,
+     &      traw_adc_veto1,
+     &      traw_adc_veto2,
+     &      traw_mhtdc_s11,
+     &      traw_mhtdc_s12,
+     &      traw_mhtdc_s21,
+     &      traw_mhtdc_s22,
+     &      traw_mhtdc_veto,
+     1      traw_adc_s1sum,
+     1      traw_adc_s2sum,
+     1      traw_adc_s1s2sum,
+     1      traw_adc_vetosum,
+     2 tfl_mhtdc_dc, tfl_mhtdc_hms, tfl_mhtdc_hms_dc, tfl_mhtdc_big1,
+     2 tfl_mhtdc_ce, tfl_mhtdc_polder, tfl_mhtdc_h1m3, tfl_mhtdc_h2m3,
+     3 traw_adc_tts1l, traw_adc_tts1r, traw_adc_tts2l, traw_adc_tts2r,
+     3 traw_mhtdc_s1, traw_mhtdc_s2,
+     4 traw_hrtdc_hms,
+     4 traw_hrtdc_dc,
+     4 traw_hrtdc_hms_dc,
+     4 traw_hrtdc_polder,
+     4 traw_hrtdc_hms_nb,
+     4 traw_hrtdc_pldr_nb,
+     4 traw_hrtdc_ce
+*

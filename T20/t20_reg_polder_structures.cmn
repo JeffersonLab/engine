@@ -1,0 +1,406 @@
+c*****	definition common POLDER variables
+c*****	--> used to fill the polder structures
+c*****	<-- filled after analysis by polder structures
+c*****	j.s. real 14 feb 1997
+c*****	DO NOT CHANGE THIS FILE BY HAND!
+c*****	This file is generate from  def_polder_structures.h (1)
+c*****	using exp_structures translation software.
+c*****	The following definitions and the order of commons block
+c*****	are very sensitive and should be the same as in (1)
+c
+* $Log$
+* Revision 1.1  1998/12/01 21:05:04  saw
+* Initial revision
+* 
+
+
+*     CTPTYPE=parm
+
+c	structure /file/	! 22 + 544 + 43 + 120 int*4 =
+      logical*4	tfile_open
+      integer*4	tfile_iunit
+      character*8	tfile_name
+      integer*4	tfile_record
+      integer*4	tfile_runnb
+      character*20	tfile_device
+      integer*4	tfile_position
+      character*4	tfile_sort
+      real*4	tfile_Ed
+      integer*4	tfile_divNinci
+      integer*4	tfile_posHod
+      real*4	tfile_cur_HMS
+      real*4	tfile_ang_HMS
+      integer*4	tfile_q2_point
+      integer*4	tfile_tailleBuf
+      integer*4	tfile_longBufRead
+      integer*4	tfile_numBuf
+      integer*4	tfile_NBevent
+      integer*4	tfile_NbCEevent
+      integer*4	tfile_nbevtreste
+      integer*4	tfile_nbposfinDeBurst
+      integer*4	tfile_cuts_tdc_shift	! value of shift for raw tdc cuts (spectra random)
+      integer*4	tfile_cuts_diftdcinf(4)	! Lower (inferior) cut on the difference in time betwee
+      integer*4	tfile_cuts_diftdcsup(4)	! Upper (superior) cut on the difference in time betwee
+      real*4	tfile_cuts_mwpcxinf(3)		! Lower cut on the x position of a hit in a MWPC
+      real*4	tfile_cuts_mwpcyinf(3)		! Lower cut on the y position of a hit in a MWPC
+      real*4	tfile_cuts_mwpcxsup(3)		! Upper cut on the x position of a hit in a MWPC
+      real*4	tfile_cuts_mwpcysup(3)		! Upper cut on the y position of a hit in a MWPC
+      integer*4	tfile_cuts_fenmin(3,2)		! Lower cut on the wire hit-time in MWPC 1 and 2
+      integer*4	tfile_cuts_fenmax(3,2)		! Upper cut on the wire hit-time in MWPC 1 and 2
+      integer*4	tfile_cuts_adcmin(3)		! Lower cut on the QDC spectra deuteron
+      integer*4	tfile_cuts_adcmax(3)		! Upper cut on the QDC spectra deuteron
+      integer*4	tfile_cuts_adcminp(3)		! Lower cut on the QDC spectra proton
+      integer*4	tfile_cuts_adcmaxp(3)		! Upper cut on the QDC spectra proton
+      integer*4	tfile_cuts_tofmin(1:6)		! Lower cut on the time coincidence
+      integer*4	tfile_cuts_tofmax(1:6)		! Upper cut on the time coincidence
+      integer*4	tfile_cuts_RpLmin(3)		! Lower cut on the right plus left spectra for the planes
+      integer*4	tfile_cuts_RpLmax(3)		! Upper cut on the right plus left spectra for the planes
+      integer*4	tfile_cuts_tbbi(0:29,4)	! Lower cuts on the raw TDC spectra for the individual
+      integer*4	tfile_cuts_tbbs(0:29,4)	! Upper cuts on the raw TDC spectra for the individual
+      integer*4	tfile_cuts_tcbi(0:29,4)	! Lower cuts on the corrected TDC spectra for the indiv
+      integer*4	tfile_cuts_tcbs(0:29,4)	! Upper cuts on the corrected TDC spectra for the indiv
+      real*4	tfile_cuts_raypmax		! Exterior cone cut for PH
+      real*4	tfile_cuts_raygmax		! Exterior cone cut for GH
+      real*4	tfile_cuts_raypmin		! inner cone cut for PH
+      real*4	tfile_cuts_raypmin33		! inner cone cut for PH mul. 3 x 3
+      real*4	tfile_cuts_raygmin		! inner cone cut for GH
+      real*4	tfile_cuts_raygmin33		! iner cone cut for GH mul. 3 x 3
+      real*4	tfile_cuts_rayopt		! optique ray for tuning d channel
+      character*80	tfile_param_dirdata
+      character*80	tfile_param_dirzero
+      character*80	tfile_param_dircumul
+      character*80	tfile_param_dirresult
+      integer*4	tfile_param_user_cuts
+      integer*4	tfile_param_nPC
+      integer*4	tfile_param_nConf
+      integer*4	tfile_param_refgene(3)
+      integer*4	tfile_param_paramEvent(0:20)
+      real*4	tfile_param_dph
+      real*4	tfile_param_dgh
+      real*4	tfile_param_dispg
+      real*4	tfile_param_dispg2
+      real*4	tfile_param_dph2
+      real*4	tfile_param_dgh2
+      real*4	tfile_param_dis2c
+      real*4	tfile_param_dghch1
+      real*4	tfile_param_dphch1
+      real*4	tfile_param_convtq
+      real*4	tfile_param_cexch1
+      real*4	tfile_param_ceych1
+      real*4	tfile_param_xpme
+      real*4	tfile_param_ypme
+      real*4	tfile_param_xgme
+      real*4	tfile_param_ygme
+      real*4	tfile_param_beta
+      real*4	tfile_corre_abstdc(0:29,4)	! Correction to bring the center of each each hodoscope
+c	end structure
+
+      common/polder_file/
+     &tfile_open,
+     &tfile_iunit,
+     &tfile_name,
+     &tfile_record,
+     &tfile_runnb,
+     &tfile_device,
+     &tfile_position,
+     &tfile_sort,
+     &tfile_Ed,
+     &tfile_divNinci,
+     &tfile_posHod,
+     &tfile_cur_HMS,
+     &tfile_ang_HMS,
+     &tfile_q2_point,
+     &tfile_tailleBuf,
+     &tfile_longBufRead,
+     &tfile_numBuf,
+     &tfile_NBevent,
+     &tfile_NbCEevent,
+     &tfile_nbevtreste,
+     &tfile_nbposfinDeBurst,
+     &tfile_cuts_tdc_shift,
+     &tfile_cuts_diftdcinf,
+     &tfile_cuts_diftdcsup,
+     &tfile_cuts_mwpcxinf,
+     &tfile_cuts_mwpcyinf,
+     &tfile_cuts_mwpcxsup,
+     &tfile_cuts_mwpcysup,
+     &tfile_cuts_fenmin,
+     &tfile_cuts_fenmax,
+     &tfile_cuts_adcmin,
+     &tfile_cuts_adcmax,
+     &tfile_cuts_adcminp,
+     &tfile_cuts_adcmaxp,
+     &tfile_cuts_tofmin,
+     &tfile_cuts_tofmax,
+     &tfile_cuts_RpLmin,
+     &tfile_cuts_RpLmax,
+     &tfile_cuts_tbbi,
+     &tfile_cuts_tbbs,
+     &tfile_cuts_tcbi,
+     &tfile_cuts_tcbs,
+     &tfile_cuts_raypmax,
+     &tfile_cuts_raygmax,
+     &tfile_cuts_raypmin,
+     &tfile_cuts_raypmin33,
+     &tfile_cuts_raygmin,
+     &tfile_cuts_raygmin33,
+     &tfile_cuts_rayopt,
+     &tfile_param_dirdata,
+     &tfile_param_dirzero,
+     &tfile_param_dircumul,
+     &tfile_param_dirresult,
+     &tfile_param_user_cuts,
+     &tfile_param_nPC,
+     &tfile_param_nConf,
+     &tfile_param_refgene,
+     &tfile_param_paramEvent,
+     &tfile_param_dph,
+     &tfile_param_dgh,
+     &tfile_param_dispg,
+     &tfile_param_dispg2,
+     &tfile_param_dph2,
+     &tfile_param_dgh2,
+     &tfile_param_dis2c,
+     &tfile_param_dghch1,
+     &tfile_param_dphch1,
+     &tfile_param_convtq,
+     &tfile_param_cexch1,
+     &tfile_param_ceych1,
+     &tfile_param_xpme,
+     &tfile_param_ypme,
+     &tfile_param_xgme,
+     &tfile_param_ygme,
+     &tfile_param_beta,
+     &tfile_corre_abstdc
+
+
+*     CTPTYPE=event
+
+c	structure /event/
+      logical*4	tfinDeBurst
+      logical*4	tVeto
+      logical*4	tBeamSampl
+      logical*4	tGeneCh3
+      logical*4	tCE
+      logical*4	tT3
+      logical*4	tmwpc_ok
+      logical*4	tgood_event
+      logical*4	ttc_tof_ok
+      logical*4	ttc_adc_ok
+      logical*4	ttc_mwpc_ok
+      integer*4	tnbpartch
+      integer*4	tTdc_Veto
+      integer*4	tadc_Veto1
+      integer*4	tadc_Veto2
+      integer*4	tadc_Vetosum
+      integer*4	tspin
+      integer*4	ttof(1:6)
+      integer*4	tadc_s11
+      integer*4	tadc_s12
+      integer*4	tadc_s1sum
+      integer*4	tadc_s21
+      integer*4	tadc_s22
+      integer*4	tadc_s2sum
+      integer*4	ttdc_s11
+      integer*4	ttdc_s12
+      integer*4	ttdc_s21
+      integer*4	ttdc_s22
+      integer*4	tnumburst
+      integer*4	tparamEvent(0:20)
+      integer*4	tmwpc1_nbp(3)
+      integer*4	tmwpc1_fil(40,3)
+      integer*4	tmwpc1_temps(0:158,3)
+      logical*4	tmwpc1_mwpc_ok(0:3)
+      integer*4	tmwpc1_nbpart(3)
+      integer*4	tmwpc2_nbp(3)
+      integer*4	tmwpc2_fil(40,3)
+      integer*4	tmwpc2_temps(0:158,3)
+      logical*4	tmwpc2_mwpc_ok(0:3)
+      integer*4	tmwpc2_nbpart(3)
+      integer*4	tmwpc3_R(3)
+      integer*4	tmwpc3_L(3)
+      integer*4	tmwpc3_RmL(3)
+      integer*4	tmwpc3_RpL(3)
+      logical*4	tmwpc3_mwpc_ok(0:3)
+      integer*4	tmwpc3_nbpart(3)
+      integer*4	thod1_nbp
+      integer*4	thod1_barre(100)
+      integer*4	thod1_tdcb(100)
+      integer*4	thod1_tdc(100)
+      integer*4	thod2_nbp
+      integer*4	thod2_barre(100)
+      integer*4	thod2_tdcb(100)
+      integer*4	thod2_tdc(100)
+      integer*4	thod3_nbp
+      integer*4	thod3_barre(100)
+      integer*4	thod3_tdcb(100)
+      integer*4	thod3_tdc(100)
+      integer*4	thod4_nbp
+      integer*4	thod4_barre(100)
+      integer*4	thod4_tdcb(100)
+      integer*4	thod4_tdc(100)
+      integer*4	thod5_nbp
+      integer*4	thod5_barre(100)
+      integer*4	thod5_tdcb(100)
+      integer*4	thod5_tdc(100)
+      integer*4	thod6_nbp
+      integer*4	thod6_barre(100)
+      integer*4	thod6_tdcb(100)
+      integer*4	thod6_tdc(100)
+      integer*4	tdeuton1_type		!   1=deutce, 2=prot, 3=deutbruit
+      real*4	tdeuton1_dir(4)		! x, y, z, norm
+      real*4	tdeuton1_x(6)		! ch1, ch2, cible, ho1, ho2, ch3
+      real*4	tdeuton1_y(6)
+      real*4	tdeuton1_z(6)
+      real*4	tdeuton1_raypmieu
+      real*4	tdeuton1_rayp
+      real*4	tdeuton1_raygmieu
+      real*4	tdeuton1_rayg
+      integer*4	tdeuton1_tof
+      integer*4	tdeuton1_hms_tof
+      integer*4	tdeuton1_mh_tof(16)
+      integer*4	tdeuton1_mh_hms_tof(16)
+      integer*4	tdeuton2_type		!   1=deutce, 2=prot, 3=deutbruit
+      real*4	tdeuton2_dir(4)		! x, y, z, norm
+      real*4	tdeuton2_x(6)		! ch1, ch2, cible, ho1, ho2, ch3
+      real*4	tdeuton2_y(6)
+      real*4	tdeuton2_z(6)
+      real*4	tdeuton2_raypmieu
+      real*4	tdeuton2_rayp
+      real*4	tdeuton2_raygmieu
+      real*4	tdeuton2_rayg
+      integer*4	tdeuton2_tof
+      integer*4	tdeuton2_hms_tof
+      integer*4	tdeuton2_mh_tof(16)
+      integer*4	tdeuton2_mh_hms_tof(16)
+      real*4	tproton1_dir(4)		! x, y, z, norm
+      real*4	tproton1_x(4)		! cible, ho1, ho2, ch3
+      real*4	tproton1_y(4)
+      real*4	tproton1_z(4)
+      real*4	tproton1_rayp
+      real*4	tproton1_rayg
+      real*4	tproton1_tdcbrut(4)	! ho1x, ho1y, ho2x, ho2y
+      real*4	tproton1_tdccorr(4)
+      real*4	tproton1_barhod(4)
+      real*4	tproton2_dir(4)		! x, y, z, norm
+      real*4	tproton2_x(4)		! cible, ho1, ho2, ch3
+      real*4	tproton2_y(4)
+      real*4	tproton2_z(4)
+      real*4	tproton2_rayp
+      real*4	tproton2_rayg
+      real*4	tproton2_tdcbrut(4)	! ho1x, ho1y, ho2x, ho2y
+      real*4	tproton2_tdccorr(4)
+      real*4	tproton2_barhod(4)
+      real*4	tcpp_dir(4)		! x, y, z, norm
+      real*4	tcpp_x(4)		! cible, ho1, ho2, ch3
+      real*4	tcpp_y(4)
+      real*4	tcpp_z(4)
+      real*4	tcpp_diftdc(4)	! ho1x, ho1y, ho2x, ho2y
+      real*4	tcpp_tetaqk
+      real*4	tcpp_tetaerl
+      real*4	tcpp_erl
+      real*4	tcpp_teta
+      real*4	tcpp_q
+      real*4	tcpp_phi
+c	end structure
+
+      common/polder_event/
+     &tfinDeBurst, tVeto, tBeamSampl, tGeneCh3, tCE, tT3,
+     &tmwpc_ok, tgood_event, ttc_tof_ok, ttc_adc_ok, ttc_mwpc_ok,
+     &tnbpartch, tTdc_Veto,
+     &tadc_Veto1, tadc_Veto2, tadc_Vetosum, tspin,
+     &ttof,
+     &tadc_s11, tadc_s12, tadc_s1sum, tadc_s21, tadc_s22, tadc_s2sum,
+     &ttdc_s11, ttdc_s12, ttdc_s21, ttdc_s22,
+     &tnumburst, tparamEvent,
+     &tmwpc1_nbp, tmwpc1_fil, tmwpc1_temps, tmwpc1_mwpc_ok, tmwpc1_nbpart,
+     &tmwpc2_nbp,
+     &tmwpc2_fil,
+     &tmwpc2_temps,
+     &tmwpc2_mwpc_ok,
+     &tmwpc2_nbpart,
+     &tmwpc3_R,
+     &tmwpc3_L,
+     &tmwpc3_RmL,
+     &tmwpc3_RpL,
+     &tmwpc3_mwpc_ok,
+     &tmwpc3_nbpart,
+     &thod1_nbp,
+     &thod1_barre,
+     &thod1_tdcb,
+     &thod1_tdc,
+     &thod2_nbp,
+     &thod2_barre,
+     &thod2_tdcb,
+     &thod2_tdc,
+     &thod3_nbp,
+     &thod3_barre,
+     &thod3_tdcb,
+     &thod3_tdc,
+     &thod4_nbp,
+     &thod4_barre,
+     &thod4_tdcb,
+     &thod4_tdc,
+     &thod5_nbp,
+     &thod5_barre,
+     &thod5_tdcb,
+     &thod5_tdc,
+     &thod6_nbp,
+     &thod6_barre,
+     &thod6_tdcb,
+     &thod6_tdc,
+     &tdeuton1_type,
+     &tdeuton1_dir,
+     &tdeuton1_x,
+     &tdeuton1_y,
+     &tdeuton1_z,
+     &tdeuton1_raypmieu,
+     &tdeuton1_rayp,
+     &tdeuton1_raygmieu,
+     &tdeuton1_rayg,
+     &tdeuton1_tof,
+     &tdeuton1_hms_tof,
+     &tdeuton1_mh_tof,
+     &tdeuton1_mh_hms_tof,
+     &tdeuton2_type,
+     &tdeuton2_dir,
+     &tdeuton2_x,
+     &tdeuton2_y,
+     &tdeuton2_z,
+     &tdeuton2_raypmieu,
+     &tdeuton2_rayp,
+     &tdeuton2_raygmieu,
+     &tdeuton2_rayg,
+     &tdeuton2_tof,
+     &tdeuton2_hms_tof,
+     &tdeuton2_mh_tof,
+     &tdeuton2_mh_hms_tof,
+     &tproton1_dir,
+     &tproton1_x,
+     &tproton1_y,
+     &tproton1_z,
+     &tproton1_rayp,
+     &tproton1_rayg,
+     &tproton1_tdcbrut,
+     &tproton1_tdccorr,
+     &tproton1_barhod,
+     &tproton2_dir,
+     &tproton2_x,
+     &tproton2_y,
+     &tproton2_z,
+     &tproton2_rayp,
+     &tproton2_rayg,
+     &tproton2_tdcbrut,
+     &tproton2_tdccorr,
+     &tproton2_barhod,
+     &tcpp_dir,
+     &tcpp_x,
+     &tcpp_y,
+     &tcpp_z,
+     &tcpp_diftdc,
+     &tcpp_tetaqk,
+     &tcpp_tetaerl,
+     &tcpp_erl,
+     &tcpp_teta,
+     &tcpp_q,
+     &tcpp_phi

@@ -1,0 +1,19 @@
+*     file name: t20_hms.cmn
+
+*     CTPTYPE=event
+
+      REAL*4  tsinhtheta    ! Sin half lab Scattering angle 
+      REAL*4  te_v          ! Beam energy in GEV
+      REAL*4  thms_td1      ! Deuteron energy from electron energy
+      REAL*4  thms_td2      ! Deuteron energy from electron angle
+      REAL*4  tq2           ! Q**2
+      INTEGER*4 hr_start_hms
+*
+      COMMON/T20_Ed/
+     &     tsinhtheta,
+     &     te_v,
+     &     thms_td1,
+     &     thms_td2,
+     &     tq2,
+     &     hr_start_hms
+*   

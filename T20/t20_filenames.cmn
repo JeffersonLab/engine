@@ -1,0 +1,25 @@
+******************* begin: t20_filenames.cmn ***********************
+*
+*-Common block with filenames
+* $Log$
+* Revision 1.1  1998/12/01 21:04:18  saw
+* Initial revision
+*
+*
+*     CTPTYPE=parm
+*
+      character*80 t_recon_coeff_filename
+      character*80 t_report_template_filename    ! CTP file with sos report
+      character*80 t_report_blockname   ! Name of block for sos report template
+      character*80 t_report_output_filename
+      character*80 t_threshold_output_filename
+      character*80 t_pedestal_output_filename
+*
+      common /t20_filenames/
+     $     t_recon_coeff_filename,
+     $     t_report_template_filename,
+     $     t_report_blockname,
+     $     t_report_output_filename,
+     $     t_threshold_output_filename,
+     $     t_pedestal_output_filename
+*
