@@ -1,6 +1,9 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
+* Revision 1.7  1995/10/09 17:55:32  cdaq
+* (JRA) Add arrays for previous scalers and differences from previous scalers
+*
 * Revision 1.6  1995/09/01 13:41:25  cdaq
 * (JRA) Calculate time of run
 *
@@ -60,44 +63,50 @@ c
 *
       evlen = event(1) + 1
       if(evlen.gt.3) then           ! We have a scaler bank
-         pointer = 3
+        pointer = 3
 *
-         do while(pointer.lt.evlen)
+        do while(pointer.lt.evlen)
 *
-            scalid = jiand(jishft(event(pointer),-16),'FF'x)
-            countinmod = jiand(event(pointer),'FFFF'x)
+          scalid = jiand(jishft(event(pointer),-16),'FF'x)
+          countinmod = jiand(event(pointer),'FFFF'x)
 *
 *     Might want to check that count is not to big.
 *
-            if(countinmod.ne.16) then
-               err = 'Scaler module header word has count<>16'
-               ABORT = .true.
-               call g_add_path(here,err)
-               return                   ! Safest action
-            endif
+          if(countinmod.ne.16) then
+            err = 'Scaler module header word has count<>16'
+            ABORT = .true.
+            call g_add_path(here,err)
+            return                      ! Safest action
+          endif
 *
-            address = scalid*16
-            do counter = 1,countinmod
-              index=address+counter
-              realscal=float(event(pointer+counter))
-              if (realscal.lt.-0.5) then
-                  realscal=realscal+4294967296.
-              endif
-              if ( (realscal+float(nroll(index))*4294967296.) .ge.
-     &              scalers(index) ) then       ! 2**32 = 4.295e+9
-                scalers(index) = realscal + nroll(index)*4294967296.
-              else                              !32 bit scaler rolled over.
-                nroll(index)=nroll(index)+1
-                scalers(index) = realscal + nroll(index)*4294967296.
-              endif
-            enddo
-            pointer = pointer + countinmod + 1 ! Add 17 to pointer
-         enddo
+          address = scalid*16
+          do counter = 1,countinmod
+            index=address+counter
+            realscal=float(event(pointer+counter))
+
+* Save scaler value from previous scaler event:
+            prev_scalers(index) = scalers(index)
+
+            if (realscal.lt.-0.5) then
+              realscal=realscal+4294967296.
+            endif
+            if ( (realscal+float(nroll(index))*4294967296.) .ge.
+     &           scalers(index) ) then  ! 2**32 = 4.295e+9
+              scalers(index) = realscal + nroll(index)*4294967296.
+            else                        !32 bit scaler rolled over.
+              nroll(index)=nroll(index)+1
+              scalers(index) = realscal + nroll(index)*4294967296.
+            endif
+* Calculate difference between current scaler value and previous value:
+            delta_scalers(index) = scalers(index) - prev_scalers(index)
+          enddo
+          pointer = pointer + countinmod + 1 ! Add 17 to pointer
+        enddo
       else
-         err = 'Event not big enough to contain scalers'
-         ABORT = .true.
-         call g_add_path(here,err)
-         return
+        err = 'Event not big enough to contain scalers'
+        ABORT = .true.
+        call g_add_path(here,err)
+        return
       endif
 
 
