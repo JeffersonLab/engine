@@ -22,7 +22,10 @@
 *-                                Change name of print routine
 *-               11 Apr 1994      DFG Check if E_t =0 before division
 * $Log$
-* Revision 1.1  1994/04/13 18:09:34  cdaq
+* Revision 1.2  1994/11/22 21:08:54  cdaq
+* (SPB) Recopied from hms file and modified names for SOS
+*
+* Revision 1.1  1994/04/13  18:09:34  cdaq
 * Initial revision
 *
 *-----------------------------------------------------------------------
@@ -51,7 +54,7 @@
       if(scal_num_hits.le.0) go to 100   !Return
 *
       do ihit=1,smax_cal_blocks
-         scluster_hit(ihit)=0
+        scluster_hit(ihit)=0
       enddo
 *
       nc                 = 1
@@ -68,108 +71,111 @@
 *
 *--------Loop untill there are no more hits
 *--------in the current cluster to be tagged
-         do while(tagged)
-            tagged=.false.
+        do while(tagged)
+          tagged=.false.
 *
 *-----------Loop over all the hits
-            do ihit=1,scal_num_hits
+          do ihit=1,scal_num_hits
 *
 *--------------and find a hit("seed") which belongs to the
 *--------------current cluster, but it's neighbors are not tagged
-               if(scluster_hit(ihit).lt.0) then
-                  irow  =scal_rows(ihit)
-                  icol  =scal_cols(ihit)
+            if(scluster_hit(ihit).lt.0) then
+              irow  =scal_rows(ihit)
+              icol  =scal_cols(ihit)
 *
 *-----------------Loop over all the hits
-                  do jhit=1,scal_num_hits
+              do jhit=1,scal_num_hits
 *
 *--------------------and find hits which are not tagged yet
-                     if(scluster_hit(jhit).eq.0) then
-                        jrow =scal_rows(jhit)
-                        jcol =scal_cols(jhit)
-                        d_row=iabs(jrow-irow)
-                        d_col=iabs(jcol-icol)
+                if(scluster_hit(jhit).eq.0) then
+                  jrow =scal_rows(jhit)
+                  jcol =scal_cols(jhit)
+                  d_row=iabs(jrow-irow)
+                  d_col=iabs(jcol-icol)
 *
 *-----------------------Are these hits a neighbor to "seed"?
-                        if(d_row.le.1.and.d_col.le.1) then
+                  if(d_row.le.1.and.d_col.le.1) then
 *
 *--------------------------Assign them to the same current cluster
-                           scluster_hit(jhit)=scluster_hit(ihit)
-                           scluster_size(nc) =scluster_size(nc)+1
-                           hits_tagged       =hits_tagged+1
-                           tagged            =.true.
+                    scluster_hit(jhit)=scluster_hit(ihit)
+                    scluster_size(nc) =scluster_size(nc)+1
+                    hits_tagged       =hits_tagged+1
+                    tagged            =.true.
 *
-                        endif   !End ... if neighbor of "seed"
+                  endif                 !End ... if neighbor of "seed"
 *
-                     endif   !End ... if not scanned yet
+                endif                   !End ... if not scanned yet
 *
-                  enddo   !End loop over all hits
+              enddo                     !End loop over all hits
 *
 *-----------------All the neighbors of "seed" were scanned
-                  scluster_hit(ihit)=-scluster_hit(ihit)
+              scluster_hit(ihit)=-scluster_hit(ihit)
 *
-               endif   !End ... if "seed"
+            endif                       !End ... if "seed"
 *
-            enddo   !End loop over all hits
+          enddo                         !End loop over all hits
 *
-         enddo   !All the hits of the current cluster were tagged
+        enddo                           !All the hits of the current cluster were tagged
 *
 *--------Initialize to start the search for the next cluster
-         nc            =nc+1
-         hits_tagged   =hits_tagged+1
-         tagged        =.true.
+        nc            =nc+1
+        hits_tagged   =hits_tagged+1
+        tagged        =.true.
 *
 *--------Find a hit which is not tagged
-         khit=1
-         do while(scluster_hit(khit).ne.0)
-            khit=khit+1
-         enddo
+        khit=1
+        do while(scluster_hit(khit).ne.0 .AND. KHIT.LT.SMAX_CAL_BLOCKS)
+          khit=khit+1
+        enddo
 *
 *--------This will be the new "seed"
-         scluster_hit(khit)=-nc
-         scluster_size(nc) = 1
+        IF (NC.GT.SNCLUSTERS_MAX) NC=SNCLUSTERS_MAX !AVOID OUT/BOUNDS
+        scluster_hit(khit)=-nc
+        scluster_size(nc) = 1
 *
-      enddo   !End. Now all the hits are assigned to some cluster
+      enddo                             !End. Now all the hits are assigned to some cluster
 *
 *-----Number of clusters found
       snclusters_cal=nc-1
 *
-*      For each cluster found, compute the center of gravity in X
-*      projection, the energy deposited in succesive calorimeter columns
-*      and the total energy deposition
+*     For each cluster found, compute the center of gravity in X
+*     projection, the energy deposited in succesive calorimeter columns
+*     and the total energy deposition
 *
       do nc=1,snclusters_max
-         scluster_e1(nc)=0.
-         scluster_e2(nc)=0.
-         scluster_e3(nc)=0.
-         scluster_e4(nc)=0.
-         scluster_et(nc)=0.
-         scluster_xc(nc)=0.
+        scluster_e1(nc)=0.
+        scluster_e2(nc)=0.
+        scluster_e3(nc)=0.
+        scluster_e4(nc)=0.
+        scluster_et(nc)=0.
+        scluster_xc(nc)=0.
       enddo
 *
 *
       do nh=1,scal_num_hits
-         nc =scluster_hit(nh) 
-         col=scal_cols(nh)
+        nc =MAX(1,scluster_hit(nh))     !AVOIDS OUT/BOUNDS ERRORS
+
+        col=scal_cols(nh)
 *
-         scluster_xc(nc)=scluster_xc(nc)+sblock_xc(nh)*sblock_de(nh)
+        scluster_xc(nc)=scluster_xc(nc)+sblock_xc(nh)*sblock_de(nh)
 *
-         if(col.eq.1) scluster_e1(nc)=scluster_e1(nc)+sblock_de(nh)
-         if(col.eq.2) scluster_e2(nc)=scluster_e2(nc)+sblock_de(nh)
-         if(col.eq.3) scluster_e3(nc)=scluster_e3(nc)+sblock_de(nh)
-         if(col.eq.4) scluster_e4(nc)=scluster_e4(nc)+sblock_de(nh)
-                      scluster_et(nc)=scluster_et(nc)+sblock_de(nh)
+        if(col.eq.1) scluster_e1(nc)=scluster_e1(nc)+sblock_de(nh)
+        if(col.eq.2) scluster_e2(nc)=scluster_e2(nc)+sblock_de(nh)
+        if(col.eq.3) scluster_e3(nc)=scluster_e3(nc)+sblock_de(nh)
+        if(col.eq.4) scluster_e4(nc)=scluster_e4(nc)+sblock_de(nh)
+        scluster_et(nc)=scluster_et(nc)+sblock_de(nh)
       enddo
 *
       do nc=1,snclusters_cal
-         if(scluster_et(nc) .gt. 0.) then
-           scluster_xc(nc)=scluster_xc(nc)/scluster_et(nc)
-         else
-           scluster_xc(nc) = -1.
-         endif
+*     MAKE SURE SCLUSTERS_ET .NE. ZERO SO NO DIVIDE BY ZERO
+        if(scluster_et(nc) .gt. 0.) then
+          scluster_xc(nc)=scluster_xc(nc)/scluster_et(nc)
+        else
+          scluster_xc(nc) = -1.
+        endif
       enddo
 *
-  100 continue
+ 100  continue
       if(sdbg_clusters_cal.gt.0) call s_prt_cal_clusters
 *
       return

@@ -1,4 +1,4 @@
-      subroutine s_find_best_stub(numhits,hits,plusminus,stub,chi2)
+      subroutine s_find_best_stub(numhits,hits,pl,pindex,plusminus,stub,chi2)
 *     This subroutine does a linear least squares fit of a line to the
 *     hits in an individual chamber. It assumes that the y slope is 0 
 *     The wire coordinate is calculated
@@ -7,7 +7,10 @@
 *     
 *     d. f. geesaman
 * $Log$
-* Revision 1.1  1994/02/21 16:13:42  cdaq
+* Revision 1.2  1994/11/22 21:11:50  cdaq
+* (SPB) Recopied from hms file and modified names for SOS
+*
+* Revision 1.1  1994/02/21  16:13:42  cdaq
 * Initial revision
 *
 *
@@ -16,9 +19,9 @@
 *     Called by S_LEFT_RIGHT
 *
       implicit none
-      include "gen_data_structures.cmn"
-      include "sos_tracking.cmn"
-      include "sos_geometry.cmn"
+      include 'gen_data_structures.cmn'
+      include 'sos_tracking.cmn'
+      include 'sos_geometry.cmn'
 *     input quantities
       integer*4 numhits
       integer*4 hits(*)
@@ -31,15 +34,15 @@
 *
 *     local variables
       real*4 position(smax_hits_per_point)
-      integer*4 plane(smax_hits_per_point)
-      real*8 TT(3),AA(3,3)      
+      integer*4 pl(smax_hits_per_point)
+      integer*4 pindex
+      real*8 TT(3)
       integer*4 ihit,ierr
-      integer*4 i,j
+      integer*4 i
 *
       chi2=10000.
 *     calculate trail hit position
       do ihit=1,numhits
-         plane(ihit)=SDC_PLANE_NUM(hits(ihit))
          position(ihit)=SDC_WIRE_CENTER(hits(ihit)) +
      &          plusminus(ihit)*SDC_DRIFT_DIS(hits(ihit))
       enddo
@@ -47,22 +50,14 @@
       do i=1,3
         TT(i)=0.
           do ihit=1,numhits
-           TT(i)=TT(i)+((position(ihit)-spsi0(plane(ihit)))*
-     &          sstubcoef(plane(ihit),i)) /sdc_sigma(plane(ihit))
-          enddo 
-      enddo
-      do i=1,3
-        do j=1,3
-        AA(i,j)=0.
-          do ihit=1,numhits
-             AA(i,j)=AA(i,j)
-     &             +sstubcoef(plane(ihit),i)*sstubcoef(plane(ihit),j)
-          enddo
-        enddo
+           TT(i)=TT(i)+((position(ihit)-spsi0(pl(ihit)))*
+     &          sstubcoef(pl(ihit),i)) /sdc_sigma(pl(ihit))
+
+         enddo
       enddo
 *
 *     solve four by four equations
-      call solve_three_by_three(TT,AA,dstub,ierr)
+      call s_solve_3by3(TT,pindex,dstub,ierr)
 *
       if(ierr.ne.0) then
          stub(1)=10000.
@@ -78,10 +73,10 @@
         stub(3)=dstub(3)
         stub(4)=0.
         do ihit=1,numhits
-          chi2=chi2+((position(ihit)-spsi0(plane(ihit)))/sdc_sigma(plane(ihit))
-     &         -sstubcoef(plane(ihit),1)*stub(1)
-     &         -sstubcoef(plane(ihit),2)*stub(2)
-     &         -sstubcoef(plane(ihit),3)*stub(3) )**2
+          chi2=chi2+((position(ihit)-spsi0(pl(ihit)))/sdc_sigma(pl(ihit))
+     &         -sstubcoef(pl(ihit),1)*stub(1)
+     &         -sstubcoef(pl(ihit),2)*stub(2)
+     &         -sstubcoef(pl(ihit),3)*stub(3) )**2
         enddo
       endif
       return
