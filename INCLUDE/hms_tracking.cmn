@@ -8,7 +8,11 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.12  1994/08/31 19:38:59  cdaq
+* Revision 1.13  1994/09/19 20:27:42  cdaq
+* (SAW) Add HDC_HITS_PER_PLANE (from gen_data_structures.cmn)
+* (DJM) Add HDC_SING_WCENTER and HDC_SING_WCOORD
+*
+* Revision 1.12  1994/08/31  19:38:59  cdaq
 * (DJM) Add by plane arrays of corrected drift time and distance
 *       Add by plane arrays of residuals suitable for histogramming by CTP
 *
@@ -150,6 +154,9 @@
       real*4 hdc_x_central_time   ! time (ns) for signal to reach disc. card o--Mn XUVX' planes
       real*4 hdc_y_central_time   ! time (ns) for signal to reach disc. card o--Mn YY' planes
                                   ! (both times are from center of the chamber--M)
+      INTEGER*4 HDC_HITS_PER_PLANE
+      REAL*4 HDC_SING_WCENTER
+      REAL*4 HDC_SING_WCOORD
 *
       common/HMS_TRACKING/
      &     hbeststub(hmax_space_points,hnum_fpray_param),
@@ -167,7 +174,10 @@
      &     hmax_pr_hits(hmax_num_chambers),
      &     hdc_wire_velocity,hdc_x_central_time,hdc_y_central_time,
      &     hdc_sing_drifttime(HMAX_NUM_DC_PLANES),
-     &     hdc_sing_driftdis(HMAX_NUM_DC_PLANES)
+     &     hdc_sing_driftdis(HMAX_NUM_DC_PLANES),
+     &     HDC_HITS_PER_PLANE(HMAX_NUM_DC_PLANES),
+     &     HDC_SING_WCENTER(HMAX_NUM_DC_PLANES),
+     &     HDC_SING_WCOORD(HMAX_NUM_DC_PLANES)
 
 
 *
