@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.3  1994/08/04 03:49:08  cdaq
+# Revision 1.4  1994/08/18 04:21:48  cdaq
+# (SAW) Add makereg.c
+#
+# Revision 1.3  1994/08/04  03:49:08  cdaq
 # (SAW) Add gethit facility (thGethit.c)
 #
 # Revision 1.2  1994/06/14  17:54:01  cdaq
@@ -17,11 +20,14 @@ ctp_sources = thTest.c thTestParse.c thTestExecute.c thHandlers.c thParm.c \
 derived_sources = daVarRpc_svc.c daVarRpc_xdr.c
 
 libsources = $(ctp_sources) $(derived_sources)
-sources = $(ctp_sources)
+
+sources = $(ctp_sources) makereg.c
 
 lib_targets := $(patsubst %.c, libctp.a(%.o), $(libsources))
 
-install-dirs := lib
+bin_targets = makereg
+
+install-dirs := lib bin
 
 ifeq ($(ARCH),HPUX)
   CC = gcc
