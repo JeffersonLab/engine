@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.34  2003/04/03 00:30:28  jones
+* Add call to s_cal_calib ( V. Tadevosyan)
+*
 * Revision 1.33  2003/03/24 22:49:41  jones
 * Changes for HMS calo calibration. Include hms_calorimeter.cmn and add call
 * to h_cal_calib at end of run if hdbg_tracks_cal .lt. 0
@@ -139,6 +142,7 @@ c
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
       include 'hms_calorimeter.cmn' !for HMS calorimeter calibration
+      include 'sos_calorimeter.cmn' !for SOS calorimeter calibration
 
       logical problems, finished_extracting
       integer total_event_count
@@ -684,9 +688,11 @@ c
 *
       ENDDO                             !found a problem or end of run
 
-c...  Calibrate HMS calorimeter.
+c...  Calibrate HMS and SOS calorimeters.
 
       if(hdbg_tracks_cal.lt.0) call h_cal_calib(1)
+
+      if(sdbg_tracks_cal.lt.0) call s_cal_calib(1)
 
 c...
 
