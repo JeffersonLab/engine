@@ -19,6 +19,9 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.14  1995/10/09 20:22:15  cdaq
+* (JRA) Add call to h_dump_cal, change upper to lower case
+*
 * Revision 1.13  1995/08/31 14:49:03  cdaq
 * (JRA) Add projection to cerenkov mirror pos, fill hdc_sing_res array
 *
@@ -89,28 +92,39 @@
       real*4 t1,ta,p3,t3,hminv2
       real*4 coshsthetaq
       real*4 sind,tand                  ! For f2c
+      real*4 p_nonzero
 *
 *--------------------------------------------------------
 *
-      if(HSNUM_FPTRACK.gt.0) then       ! Good track has been selected
-        HSP = HP_TAR(HSNUM_TARTRACK)
-        HSENERGY = SQRT(HSP*HSP+HPARTMASS*HPARTMASS)
+      if(hsnum_fptrack.gt.0) then       ! Good track has been selected
+        hsp = hp_tar(hsnum_tartrack)
+        hsenergy = sqrt(hsp*hsp+hpartmass*hpartmass)
 *     Copy variables for ntuple so we can test on them
-        HSDELTA  = HDELTA_TAR(HSNUM_TARTRACK)
-        HSX_TAR  = HX_TAR(HSNUM_TARTRACK)
-        HSY_TAR  = HY_TAR(HSNUM_TARTRACK)
-        HSXP_TAR  = HXP_TAR(HSNUM_TARTRACK) ! This is an angle (radians)
-        HSYP_TAR  = HYP_TAR(HSNUM_TARTRACK) ! This is an angle (radians)
-        HSBETA   = HBETA(HSNUM_FPTRACK)
-        HSBETA_CHISQ = HBETA_CHISQ(HSNUM_FPTRACK)
-        HSTRACK_ET   = HTRACK_ET(HSNUM_FPTRACK)
-        HSTRACK_PRESHOWER_E   = HTRACK_PRESHOWER_E(HSNUM_FPTRACK)
-        HSTIME_AT_FP   = HTIME_AT_FP(HSNUM_FPTRACK)
-        HSX_FP   = HX_FP(HSNUM_FPTRACK)
-        HSY_FP   = HY_FP(HSNUM_FPTRACK)
-        HSXP_FP   = HXP_FP(HSNUM_FPTRACK) ! This is a slope (dx/dz)
-        HSYP_FP   = HYP_FP(HSNUM_FPTRACK) ! This is a slope (dy/dz)
+        hsdelta  = hdelta_tar(hsnum_tartrack)
+        hsx_tar  = hx_tar(hsnum_tartrack)
+        hsy_tar  = hy_tar(hsnum_tartrack)
+        hsxp_tar  = hxp_tar(hsnum_tartrack) ! This is an angle (radians)
+        hsyp_tar  = hyp_tar(hsnum_tartrack) ! This is an angle (radians)
+        hsbeta   = hbeta(hsnum_fptrack)
+        hsbeta_chisq = hbeta_chisq(hsnum_fptrack)
+        hstime_at_fp   = htime_at_fp(hsnum_fptrack)
 
+        hstrack_et   = htrack_et(hsnum_fptrack)
+        hstrack_preshower_e   = htrack_preshower_e(hsnum_fptrack)
+        p_nonzero = max(.0001,hsp)      !momentum (used to normalize calorim.)
+        hscal_suma = hcal_e1/p_nonzero  !normalized cal. plane sums
+        hscal_sumb = hcal_e2/p_nonzero
+        hscal_sumc = hcal_e3/p_nonzero
+        hscal_sumd = hcal_e4/p_nonzero
+        hsprsum = hscal_suma
+        hsshsum = hcal_et/p_nonzero
+        hsprtrk = hstrack_preshower_e/p_nonzero
+        hsshtrk = hstrack_et/p_nonzero
+
+        hsx_fp   = hx_fp(hsnum_fptrack)
+        hsy_fp   = hy_fp(hsnum_fptrack)
+        hsxp_fp   = hxp_fp(hsnum_fptrack) ! This is a slope (dx/dz)
+        hsyp_fp   = hyp_fp(hsnum_fptrack) ! This is a slope (dy/dz)
         hsx_dc1 = hsx_fp + hsxp_fp * hdc_1_zpos
         hsy_dc1 = hsy_fp + hsyp_fp * hdc_1_zpos
         hsx_dc2 = hsx_fp + hsxp_fp * hdc_2_zpos
@@ -144,71 +158,72 @@
 
         do ip = 1, hdc_num_planes
           hdc_sing_res(ip)=hdc_single_residual(hsnum_fptrack,ip)
+          hsdc_track_coord(ip)=hdc_track_coord(hsnum_fptrack,ip)
         enddo
-        HSCHI2PERDEG  = HCHI2_FP(HSNUM_FPTRACK)
-     $       /FLOAT(HNFREE_FP(HSNUM_FPTRACK))
-        HSNFREE_FP = HNFREE_FP(HSNUM_FPTRACK)
+        hschi2perdeg  = hchi2_fp(hsnum_fptrack)
+     $       /float(hnfree_fp(hsnum_fptrack))
+        hsnfree_fp = hnfree_fp(hsnum_fptrack)
 
         cosgamma = 1.0/sqrt(1.0 + hsxp_tar**2 + hsyp_tar**2)
         coshstheta = cosgamma*(sinhthetas * hsyp_tar + coshthetas)
-        HSTHETA = ACOS(COSHSTHETA)
-        SINHSTHETA = SIN(HSTHETA)
+        hstheta = acos(coshstheta)
+        sinhstheta = sin(hstheta)
         tandelphi = hsxp_tar /
      &       ( sinhthetas - coshthetas*hsyp_tar)
-        HSPHI = HPHI_LAB + TANDELPHI    ! HPHI_LAB must be multiple of
-        SINHPHI = SIN(HSPHI)            ! pi/2, or above is crap
+        hsphi = hphi_lab + tandelphi    ! hphi_lab MUST BE MULTIPLE OF
+        sinhphi = sin(hsphi)            ! PI/2, OR ABOVE IS CRAP
 *     Calculate elastic scattering kinematics
-        t1  = 2.*HPHYSICSA*CPBEAM*COSHSTHETA      
-        ta  = 4*CPBEAM**2*COSHSTHETA**2 - HPHYSICSB**2
+        t1  = 2.*hphysicsa*cpbeam*coshstheta      
+        ta  = 4*cpbeam**2*coshstheta**2 - hphysicsb**2
 ccc   SAW 1/17/95.  Add the stuff after the or.
-        if(ta.eq.0.0 .or. ( HPHYSICAB2 + HPHYSICSM3B * ta).lt.0.0) then
+        if(ta.eq.0.0 .or. ( hphysicab2 + hphysicsm3b * ta).lt.0.0) then
           p3=0.       
         else
-          t3  = ta-HPHYSICSB**2
-          p3  = (t1 - SQRT( HPHYSICAB2 + HPHYSICSM3B * ta)) / ta
+          t3  = ta-hphysicsb**2
+          p3  = (T1 - sqrt( hphysicab2 + hphysicsm3b * ta)) / ta
         endif
 *     This is the difference in the momentum obtained by tracking
 *     and the momentum from elastic kinematics
-        HSELAS_COR = HSP - p3
-*     INVARIANT MASS OF THE REMAINING PARTICLES
-        hminv2 =   ( (CEBEAM+TMASS_TARGET-HSENERGY)**2
-     &       - (CPBEAM - HSP * COSHSTHETA)**2
-     &       - ( HSP * SINHSTHETA)**2  )       
+        hselas_cor = hsp - P3
+*     invariant mass of the remaining particles
+        hminv2 =   ( (cebeam+tmass_target-hsenergy)**2
+     &       - (cpbeam - hsp * coshstheta)**2
+     &       - ( hsp * sinhstheta)**2  )       
         if(hminv2.ge.0 ) then
-          HSMINV = SQRT(hminv2)
+          hsminv = sqrt(hminv2)
         else
-          HSMINV = 0.
+          hsminv = 0.
         endif                           ! end test on positive arg of SQRT
-*     HSZBEAM is the intersection of the beam ray with the spectrometer
+*     hszbeam is the intersection of the beam ray with the spectrometer
 *     as measured along the z axis.
-        if( SINHSTHETA .eq. 0.) then
-          HSZBEAM = 0.
+        if( sinhstheta .eq. 0.) then
+          hszbeam = 0.
         else
-          HSZBEAM = SINHPHI * ( -HSY_TAR + CYRAST * COSHSTHETA) /
-     $         SINHSTHETA 
-        endif                           ! end test on SINHSTHETA=0
+          hszbeam = sinhphi * ( -hsy_tar + cyrast * coshstheta) /
+     $         sinhstheta 
+        endif                           ! end test on sinhstheta=0
 *
 *     More kinematics
 *
         if(hsbeta.gt.0) then
           hsmass2 = (1/hsbeta*2 - 1)*hsp**2
         else
-          hsmass2 = 1.0E10
+          hsmass2 = 1.0e10
         endif
 
-        hst = (CEBEAM - HSENERGY)**2
-     $       - (CPBEAM - HSP*COSHSTHETA)**2 - (HSP*SINHSTHETA)**2
-        hsu = (TMASS_TARGET - HSENERGY)**2 - HSP**2
+        hst = (cebeam - hsenergy)**2
+     $       - (cpbeam - hsp*coshstheta)**2 - (hsp*sinhstheta)**2
+        hsu = (tmass_target - hsenergy)**2 - hsp**2
 
-        hseloss = CEBEAM - HSENERGY
-        hsq3 = sqrt(CPBEAM**2 + HSP**2 - 2*CPBEAM*HSP*COSHSTHETA)
-        coshsthetaq = (CPBEAM**2 - CPBEAM*HSP*COSHSTHETA)/CPBEAM/hsq3
+        hseloss = cebeam - hsenergy
+        hsq3 = sqrt(cpbeam**2 + hsp**2 - 2*cpbeam*hsp*coshstheta)
+        coshsthetaq = (cpbeam**2 - cpbeam*hsp*coshstheta)/cpbeam/hsq3
         hsthetaq = acos(coshsthetaq)
-        hsphiq = hsphi + TT
+        hsphiq = hsphi + tt
         hsbigq2 = -hst
         hsx = hsbigq2/(2*mass_nucleon*hseloss)
-        hsy = hseloss/CEBEAM
-        hsw2 = TMASS_TARGET**2 + 2*TMASS_TARGET*hseloss - hsbigq2
+        hsy = hseloss/cebeam
+        hsw2 = tmass_target**2 + 2*tmass_target*hseloss - hsbigq2
         if(hsw2.ge.0.0) then
           hsw = sqrt(hsw2)
         else
@@ -220,6 +235,7 @@ ccc   SAW 1/17/95.  Add the stuff after the or.
 *     
 *     Write raw timing information for fitting.
         if(hdebugdumptof.ne.0) call h_dump_tof
+        if(hdebugdumpcal.ne.0) call h_dump_cal
 *
 *     Calculate physics statistics and wire chamber efficencies.
         call h_physics_stat(ABORT,err)
