@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.32.2.6  2003/06/26 12:38:11  cdaq
+* add write statement when genable_sos_satcorr .ne. 0  (mkj)
+*
 * Revision 1.32.2.5  2003/04/21 23:45:58  cdaq
 * Modified so only one message about scaler kludge is printed. (MKJ)
 *
@@ -407,7 +410,13 @@ c    parameter genable_hms_fieldcorr is switch to determine
 c    whether fix is applied.
 c
       call s_fieldcorr(ABORT,err)
-
+c
+      if (genable_sos_satcorr.ne.0) then
+         write(*,*) '*************'
+         write(*,*) ' SOS saturation correction enabled'
+         write(*,*) ' Delta modified for each event'
+         write(*,*) '*************'
+       endif
 c
       call G_apply_offsets(ABORT,err)  
 c
