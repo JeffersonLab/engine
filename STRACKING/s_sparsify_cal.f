@@ -13,7 +13,10 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to s_raw_dump_all
 * $Log$
-* Revision 1.4  1995/05/22 19:45:56  cdaq
+* Revision 1.5  1995/07/20 19:04:20  cdaq
+* (JRA) Fix typo's, init scal_realadc array
+*
+* Revision 1.4  1995/05/22  19:45:56  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.3  1995/05/11  14:55:09  cdaq
@@ -57,6 +60,10 @@
       endif
 *
       scal_num_hits=0
+      do nb = 1 , smax_cal_blocks
+        scal_realadc(nb)=-100
+      enddo
+*
       if(scal_tot_hits.le.0) return
 *
 *      Loop over raw hits
@@ -91,12 +98,12 @@
 *------Sparsify the raw data
          nb =row+smax_cal_rows*(col-1)
 
-         scal_realadc(nh)=float(adc)-scal_ped_mean(nb)
-         if(scal_realadc(nh).gt.scal_threshold(nb)) then
+         scal_realadc(nb) = float(adc)-scal_ped_mean(nb)
+         if(scal_realadc(nb).gt.scal_threshold(nb)) then
             scal_num_hits           =scal_num_hits+1
             scal_rows(scal_num_hits)=row
             scal_cols(scal_num_hits)=col
-            scal_adcs(scal_num_hits)=scal_realadc(nh)
+            scal_adcs(scal_num_hits)=scal_realadc(nb)
          endif
       enddo                      !End loop over raw hits
 *
