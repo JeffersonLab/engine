@@ -13,7 +13,10 @@
 *- 
 *-   Created 19-JAN-1994   D. F. Geesaman
 * $Log$
-* Revision 1.1  1994/02/21 16:42:12  cdaq
+* Revision 1.2  1994/04/13 18:51:49  cdaq
+* (DFG) Add call to s_fill_dc_fp_hist
+*
+* Revision 1.1  1994/02/21  16:42:12  cdaq
 * Initial revision
 *
 *-
@@ -67,7 +70,15 @@
            err='MUNUIT ERROR IN S_TRACK_FIT' // line_err
            call G_add_path(here,err)
            call G_LOG_MESSAGE(err)
-      endif                    
+      endif
+*     histogram focal plane tracks
+*
+      call s_fill_dc_fp_hist(ABORT,err)
+      if(ABORT) then
+         call g_add_path(here,err)
+         return
+      endif
+*
       return
       end
 
