@@ -14,7 +14,11 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
-* Revision 1.2  1994/02/21 03:17:53  cdaq
+* Revision 1.3  1994/06/30 02:27:48  cdaq
+* (DFG) Place a limit on total nubmer of hits in each chamber
+*       Add filter to get minimum drift time in each plane
+*
+* Revision 1.2  1994/02/21  03:17:53  cdaq
 * (SAW) Removed reference to 3rd chamber in hnspace_points
 *
 c Revision 1.1  1994/02/19  06:15:47  cdaq
@@ -59,7 +63,7 @@ c
       hncham_hits(1)=HDC_HITS_PER_PLANE(1)+HDC_HITS_PER_PLANE(2)
      &          +HDC_HITS_PER_PLANE(3)+HDC_HITS_PER_PLANE(4)
      &          +HDC_HITS_PER_PLANE(5)+HDC_HITS_PER_PLANE(6)
-      if(hncham_hits(1).gt.2)  then
+      if(hncham_hits(1).gt.2 .and. hncham_hits(1).lt. hmax_pr_hits(1))  then
           do i=1,hncham_hits(1)
              hit_number(i)=i
           enddo
@@ -69,6 +73,9 @@ c
      &        hxsp(1),hysp(1),hmax_space_points,
      &        hnspace_points(1), space_points, space_point_hits)
 *    
+*    If two hits in same plane, choose one with minimum drift time
+         call h_choose_single_hit(ABORT,err,hnspace_points(1),
+     &        space_point_hits)
 *     select on minimum number of combinations and hits
          call select_space_points(hmax_space_points,
      &        hnspace_points(1), space_points, space_point_hits,
@@ -89,8 +96,9 @@ c
       hncham_hits(2)=HDC_HITS_PER_PLANE(7)+HDC_HITS_PER_PLANE(8)
      &          +HDC_HITS_PER_PLANE(9)+HDC_HITS_PER_PLANE(10)
      &          +HDC_HITS_PER_PLANE(11)+HDC_HITS_PER_PLANE(12)
-      if(hncham_hits(2).gt.2)  then
+      if(hncham_hits(2).gt.2  .and. hncham_hits(2).lt. hmax_pr_hits(2))  then
           do i=hncham_hits(1)+1,hncham_hits(1)+hncham_hits(2)
+*             type *,hncham_hits(1),hncham_hits(2),i
              hit_number(i)=i
           enddo
          call find_space_points(hncham_hits(2),hit_number(hncham_hits(1)+1),
@@ -99,6 +107,9 @@ c
      &        hxsp(1),hysp(1),hmax_space_points,
      &        hnspace_points(2), space_points, space_point_hits)
 *    
+*    If two hits in same plane, choose one with minimum drift time
+         call h_choose_single_hit(ABORT,err,hnspace_points(2),
+     &        space_point_hits)
 *     select on minimum number of combinations and hits
          call select_space_points(hmax_space_points,
      &        hnspace_points(2), space_points, space_point_hits,
