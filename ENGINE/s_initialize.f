@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 *-    $Log$
-*-    Revision 1.6  1994/04/12 17:31:09  cdaq
-*-    (KBB) Add ntuple call
+*-    Revision 1.7  1994/04/13 18:15:23  cdaq
+*-    (DFG) Add scin and cal init
 *-
+* Revision 1.6  1994/04/12  17:31:09  cdaq
+* (KBB) Add ntuple call
+*
 * Revision 1.5  1994/02/22  15:14:03  cdaq
 * (DFG) Add calls to s_generate_geometry and s_initialize_fitting
 *
@@ -43,7 +46,6 @@
       logical ABORT
       character*(*) err
 *
-*
 *--------------------------------------------------------
       ABORT = .FALSE.
       err= ' '
@@ -51,6 +53,14 @@
       call s_generate_geometry          ! Tracking routine
 *
       call s_initialize_fitting         ! Minuit initialization
+*
+*     calculate secondary scintillator and time of flight parameters
+      call s_init_scin(ABORT,err)
+*
+*     calculate secondary calorimeter parameters
+      call s_init_cal(ABORT,err)
+*
+      ABORT = .FALSE.
 *
       call s_ntuple_init(ABORT,err)
 *
