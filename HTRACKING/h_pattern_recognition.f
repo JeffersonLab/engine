@@ -14,9 +14,12 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
-* Revision 1.1  1994/02/19 06:15:47  cdaq
-* Initial revision
+* Revision 1.2  1994/02/21 03:17:53  cdaq
+* (SAW) Removed reference to 3rd chamber in hnspace_points
 *
+c Revision 1.1  1994/02/19  06:15:47  cdaq
+c Initial revision
+c
 *-
 
 *
@@ -112,7 +115,7 @@
           enddo
       endif      
 *     calculate total numbe of space points
-      hnspace_points_tot=hnspace_points(1)+hnspace_points(2)+hnspace_points(3)
+      hnspace_points_tot=hnspace_points(1)+hnspace_points(2)
 *     write out results if debugflagpr is set
       if(hdebugflagpr.ne.0) then
         call h_print_pr
