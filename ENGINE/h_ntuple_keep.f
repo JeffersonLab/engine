@@ -28,6 +28,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.8.4.4  2004/02/17 17:28:48  jones
+* Changes necessary to allow the possibility of segmenting rzdat files.
+*
 * Revision 1.8.4.3  2003/12/08 19:43:30  xu
 * add beam infor
 *
@@ -99,6 +102,15 @@
       ABORT = .FALSE.
 *
       IF(.NOT.h_Ntuple_exists) RETURN       !nothing to do
+c
+      if (h_Ntuple_max_segmentevents .gt. 0) then
+       if (h_Ntuple_segmentevents .gt. h_Ntuple_max_segmentevents) then
+        call h_ntuple_change(ABORT,err)
+        h_Ntuple_segmentevents = 0
+       else
+        h_Ntuple_segmentevents = h_Ntuple_segmentevents +1
+       endif
+      endif
 *
 ************************************************
       m= 0

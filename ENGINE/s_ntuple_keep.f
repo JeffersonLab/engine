@@ -28,6 +28,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.7.4.2  2004/02/17 17:28:48  jones
+* Changes necessary to allow the possibility of segmenting rzdat files.
+*
 * Revision 1.7.4.1  2003/03/05 22:53:52  xu
 * new variables
 *
@@ -90,6 +93,15 @@
       ABORT = .FALSE.
 *
       IF(.NOT.s_Ntuple_exists) RETURN       !nothing to do
+c
+      if (s_Ntuple_max_segmentevents .gt. 0) then
+       if (s_Ntuple_segmentevents .gt. s_Ntuple_max_segmentevents) then
+        call s_ntuple_change(ABORT,err)
+        s_Ntuple_segmentevents = 0
+       else
+        s_Ntuple_segmentevents = s_Ntuple_segmentevents +1
+       endif
+      endif
 *
       m= 0
       m= m+1

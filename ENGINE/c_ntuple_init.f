@@ -65,6 +65,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.9.4.3  2004/02/17 17:28:48  jones
+* Changes necessary to allow the possibility of segmenting rzdat files.
+*
 * Revision 1.9.4.2  2003/08/22 15:04:40  xu
 * add more contents in c_ntuple
 *
@@ -144,57 +147,40 @@
 *
 *-if name blank, just forget it
       IF(c_Ntuple_file.EQ.' ') RETURN   !do nothing
-*
-*- get any free IO channel
-*
-      call g_IO_control(io,'ANY',ABORT,err)
-      c_Ntuple_exists= .NOT.ABORT
-      IF(ABORT) THEN
-        call G_add_path(here,err)
-        RETURN
-      ENDIF
-      c_Ntuple_IOchannel= io
-*
       c_Ntuple_ID= default_c_Ntuple_ID
-      id= c_Ntuple_ID
-*
-      ABORT= HEXIST(id)
-      IF(ABORT) THEN
-        call g_IO_control(c_Ntuple_IOchannel,'FREE',ABORT,err)
-        call G_build_note(':HBOOK id#$ already in use',
-     &                                 '$',id,' ',rv,' ',err)
-        call G_add_path(here,err)
-        RETURN
-      ENDIF
-*
-      CALL HCDIR(directory,'R')       !CERNLIB read current directory
-*
       c_Ntuple_name= default_name
-*
-      id= c_Ntuple_ID
-      name= c_Ntuple_name
+      IF(c_Ntuple_title.EQ.' ') THEN
+        msg= name//' '//c_Ntuple_file
+        call only_one_blank(msg)
+        c_Ntuple_title= msg
+      ENDIF
 
       file= c_Ntuple_file
       call g_sub_run_number(file,gen_run_number)
 
-      recL= default_recL
-      io= c_Ntuple_IOchannel
-*
-*-open New *.rzdat file-
-      call HROPEN(io,name,file,'N',recL,status)       !CERNLIB
-*                                       !directory set to "//TUPLE"
-      io= c_Ntuple_IOchannel
-      ABORT= status.NE.0
-      IF(ABORT) THEN
-        call g_IO_control(c_Ntuple_IOchannel,'FREE',ABORT,err)
-        iv(1)= status
-        iv(2)= io
-        pat= ':HROPEN error#$ opening IO#$ "'//file//'"'
-        call G_build_note(pat,'$',iv,' ',rv,' ',err)
-        call G_add_path(here,err)
+
+*     * only needed if using more than one file      
+      if (c_Ntuple_max_segmentevents .gt. 0) then
+       c_Ntuple_filesegments = 1
+
+       ifile = char(ichar('0')+c_Ntuple_filesegments)
+ 
+       fn_len = g_important_length(file)
+       ilo=index(file,'.hbook')
+       if ((ilo.le.1).or.(ilo.gt.fn_len-5)) then
+         ilo=index(file,'.rzdat')
+       endif  
+
+       if ((ilo.gt.1).and.(ilo.lt.fn_len)) then
+         file = file(1:ilo-1) // '.' // ifile // file(ilo:fn_len)
+       else
+         ABORT = .true.
         RETURN
-      ENDIF
-      c_Ntuple_file= file
+       endif
+       write(*,*) ' Using segmented COIN rzdat files first filename: ',file
+       else
+         write(*,*) ' Not using segmented COIN rzdat files first filename: ',file  
+      endif
 *
 **********begin insert description of contents of COIN tuple ******
       m= 0
@@ -384,42 +370,14 @@ c      m= m+1
       c_Ntuple_size= m
 ***********end insert description of contents of COIN tuple********
 *
-      title= c_Ntuple_title
-      IF(title.EQ.' ') THEN
-        msg= name//' '//c_Ntuple_file
-        call only_one_blank(msg)
-        title= msg   
-        c_Ntuple_title= title
-      ENDIF
-*
-      id= c_Ntuple_ID
-      io= c_Ntuple_IOchannel
-      name= c_Ntuple_name
-      title= c_Ntuple_title
-      size= c_Ntuple_size
-      file= c_Ntuple_file
-      bank= default_bank
-      call HBOOKN(id,title,size,name,bank,c_Ntuple_tag)      !create Ntuple
-*
-      call HCDIR(c_Ntuple_directory,'R')      !record Ntuple directory
-*
-      CALL HCDIR(directory,' ')       !reset CERNLIB directory
-*
-      c_Ntuple_exists= HEXIST(c_Ntuple_ID)
-      ABORT= .NOT.c_Ntuple_exists
-*
-      iv(1)= id
-      iv(2)= io
-      pat= 'Ntuple id#$ [' // c_Ntuple_directory // '/]' // 
-     &                         name // ' IO#$ "' // file // '"'
-      call G_build_note(pat,'$',iv,' ',rv,' ',msg)
-      call sub_string(msg,' /]','/]')
-*
+
+      call c_Ntuple_open(file,ABORT,err)      
+
       IF(ABORT) THEN
-        err= ':unable to create '//msg
+        err= ':unable to create Coin Ntuple'
         call G_add_path(here,err)
       ELSE
-        pat= ':created '//msg
+        pat= ':created Coin Ntuple'
         call G_add_path(here,pat)
         call G_log_message('INFO: '//pat)
       ENDIF
