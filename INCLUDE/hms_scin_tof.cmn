@@ -1,6 +1,9 @@
 * hms_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the hms time of flight.
 * $Log$
+* Revision 1.11  1996/04/30 13:40:30  saw
+* (JRA) Add hbeta_p, hbeta_pcent
+*
 * Revision 1.10  1995/05/22 19:04:27  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
 * Add some varaibles.
@@ -115,12 +118,16 @@
       real*4 h_fptimedif(6)                !fp time differences
       real*4 hbeta_notrk
       real*4 hbeta_chisq_notrk
+      real*4 hbeta_p                       !beta from mass and momentum
+      real*4 hbeta_pcent                   !beta for central momentum
 
       common/htof_notrk/
      &  h_fptime,
      &  h_fptimedif,
      &  hbeta_notrk,
-     &  hbeta_chisq_notrk
+     &  hbeta_chisq_notrk,
+     &  hbeta_p,
+     &  hbeta_pcent
 
 c      integer*4 hscin_pos_did(hnum_scin_planes,hnum_scin_elements)
 c      integer*4 hscin_neg_did(hnum_scin_planes,hnum_scin_elements)
