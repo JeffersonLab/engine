@@ -10,7 +10,10 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, HU: added Ntuples
 * $Log$
-* Revision 1.1  1994/04/12 16:16:53  cdaq
+* Revision 1.2  1994/06/17 02:57:45  cdaq
+* (KBB) Upgrade
+*
+* Revision 1.1  1994/04/12  16:16:53  cdaq
 * Initial revision
 *
 *
@@ -27,8 +30,12 @@
       INCLUDE 's_ntuple.cmn'
       INCLUDE 'gen_routines.dec'
 *
-      character*80 directory,name
-      integer io,id,cycle
+      logical HEXIST      !CERNLIB function
+*
+      logical FAIL
+      character*80 why,directory,name
+      character*1000 pat,msg
+      integer io,id,cycle,m,iv(10)
 *
 *--------------------------------------------------------
       err= ' '
@@ -38,10 +45,45 @@
 *
       call HCDIR(directory,'R')                !keep current directory
 *
+*
+      id= s_Ntuple_ID
+      io= s_Ntuple_IOchannel
+*
+      ABORT= .NOT.HEXIST(id)
+      IF(ABORT) THEN
+         pat= ': Ntuple ID#$ does not exist'
+         call G_build_note(pat,'$',id,' ',0.,err)
+         call G_add_path(here,err)
+         If(io.GT.0) Then
+           call G_IO_control(io,'FREE',FAIL,why) !free up
+           if(.NOT.FAIL) CLOSE(io)
+         EndIf
+         s_Ntuple_exists= .FALSE.
+         s_Ntuple_ID= 0
+         s_Ntuple_name= ' '
+         s_Ntuple_IOchannel= 0
+         s_Ntuple_file= ' '
+         s_Ntuple_title= ' '
+         s_Ntuple_directory= ' '
+         s_Ntuple_size= 0
+         do m=1,SMAX_Ntuple_size
+           s_Ntuple_tag(m)= ' '
+           s_Ntuple_contents(m)= 0.
+         enddo
+         RETURN
+      ENDIF
+*
       id= s_Ntuple_ID
       io= s_Ntuple_IOchannel
       name= s_Ntuple_name
       call HCDIR(s_Ntuple_directory,' ')      !goto Ntuple directory
+*
+      iv(1)= id
+      iv(2)= io
+      pat= 'closing ID#$ IO#$ "'//s_Ntuple_file//'"'
+      call G_build_note(pat,'$',iv,' ',0.,' ',msg)
+      call G_add_path(here,msg)
+      call G_log_message('INFO: '//msg)
 *
       cycle= 0                                !dummy for HROUT
       call HROUT(id,cycle,' ')                !flush CERNLIB buffers
@@ -51,12 +93,21 @@
       CLOSE(io)                               !close IO channel
 *
       call HCDIR(directory,' ')               !return to current directory
-      s_Ntuple_exists= .FALSE.
 *
-      IF(ABORT) THEN
-        call G_add_path(here,err)
-        RETURN
-      ENDIF
+      s_Ntuple_exists= .FALSE.
+      s_Ntuple_ID= 0
+      s_Ntuple_name= ' '
+      s_Ntuple_IOchannel= 0
+      s_Ntuple_file= ' '
+      s_Ntuple_title= ' '
+      s_Ntuple_directory= ' '
+      s_Ntuple_size= 0
+      do m=1,SMAX_Ntuple_size
+        s_Ntuple_tag(m)= ' '
+        s_Ntuple_contents(m)= 0.
+      enddo
+*
+      IF(ABORT) call G_add_path(here,err)
 *
       RETURN
       END      

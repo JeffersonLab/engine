@@ -11,7 +11,10 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, HU: added Ntuples
 * $Log$
-* Revision 1.1  1994/04/12 16:15:30  cdaq
+* Revision 1.2  1994/06/17 02:54:45  cdaq
+* (KBB) Upgrade
+*
+* Revision 1.1  1994/04/12  16:15:30  cdaq
 * Initial revision
 *
 *
@@ -33,10 +36,10 @@
       err= ' '
       ABORT = .FALSE.
 *
-      ierr = regparmstring('HMS_Ntuple',h_Ntuple_filename,0)
-      ABORT = ierr.ne.0
+      call G_reg_C('HMS_Ntuple',h_Ntuple_file,ABORT,err)
+*
       IF(ABORT) THEN
-        err = ':unable to register "h_Ntuple_filename"'
+        call G_prepend(':unable to register-',err)
         call G_add_path(here,err)
       ENDIF
 *
