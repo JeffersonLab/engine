@@ -7,6 +7,12 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.10.2.2  2004/03/04 18:18:36  jones
+* Change equation for pt2 from
+* pt2 = cmissing_mom_perp*cmissing_mom_perp
+* to
+* pt2= p_h*p_h*(1-cthetapq*cthetapq)
+*
 * Revision 1.10.2.1  2004/02/26 14:33:37  jones
 * Starting code for mduality
 *
@@ -297,7 +303,7 @@ c        write(6,*)'c_phys: at 3'
       X_bj = c_bigq2/(2.0*mp*c_omega)
       qabs = sqrt(c_bigq2+c_omega*c_omega)
       z_m = hsenergy/c_omega 
-      pt2 = cmissing_mom_perp*cmissing_mom_perp
+c      pt2 = cmissing_mom_perp*cmissing_mom_perp
 
       c_w2 = targmass**2 + 2*targmass*c_omega - c_bigq2
 
@@ -335,6 +341,10 @@ c      e_pion_lab = sqrt(p_h**2 + mpi2)                    ! Pion Energy
       else
         cthetapq = -1.
       endif
+c
+      pt2= p_h*p_h*(1-cthetapq*cthetapq) 
+
+
 c      write(6,*) 'c_physics: at 5'
 
 c   CALCULATE ANGLE PHI BETWEEN SCATTERING PLANE AND REACTION PLANE
