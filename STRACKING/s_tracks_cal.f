@@ -15,6 +15,9 @@
 *-      Modified 25 Mar 1994      DFG
 *-                                Change name of print routine
 * $Log$
+* Revision 1.6  1997/02/13 14:13:29  saw
+* (JRA) Correct error in position of top edge of fiducial cut.
+*
 * Revision 1.5  1996/01/17 18:54:41  cdaq
 * (JRA) Add sdebugcalcpeds flag
 *
@@ -80,7 +83,7 @@
 *
 *--------Is the track inside the fiducial volume?
         if(xf.le.scal_fv_xmax  .and.  xf.ge.scal_fv_xmin  .and.
-     &       xb.le.scal_fv_xmax  .and.  xf.ge.scal_fv_xmin  .and.
+     &       xb.le.scal_fv_xmax  .and.  xb.ge.scal_fv_xmin  .and.
      &       yf.le.scal_fv_ymax  .and.  yf.ge.scal_fv_ymin  .and.
      &       yb.le.scal_fv_ymax  .and.  yb.ge.scal_fv_ymin) then
 *
