@@ -9,8 +9,14 @@
 *-
 *-      Created 15 Mar 1994      Tsolak A. Amatuni
 * $Log$
+* Revision 1.5.2.2  2003/04/03 01:01:42  cdaq
+* match main branch apr-02-2003
+*
 * Revision 1.5.2.1  2003/03/25 03:04:35  cdaq
 *  match main brach mar-24-2003
+*
+* Revision 1.7  2003/04/03 00:45:01  jones
+* Update to calorimeter calibration (V. Tadevosyan)
 *
 * Revision 1.6  2003/03/21 22:58:02  jones
 * Subroutines had arguments with abort,errmsg . But these arguments were not
@@ -49,7 +55,12 @@
       include 'sos_calorimeter.cmn'
 *
 *
-      s_correct_cal=1.
+
+c     Check calorimeter boundaries.
+
+      if(y.lt.scal_ymin) y=scal_ymin
+      if(y.gt.scal_ymax) y=scal_ymax
+*
       s_correct_cal=exp(-y/400.)  !400 cm atten length.
       s_correct_cal=s_correct_cal/(1. + y*y/12000)
 *

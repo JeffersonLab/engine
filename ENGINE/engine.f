@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.32.2.2  2003/04/03 01:02:44  cdaq
+* match main branch apr-02-2003
+*
 * Revision 1.32.2.1  2003/03/25 03:03:40  cdaq
 *  match main brach mar-24-2003
 *
@@ -142,6 +145,7 @@ c
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
       include 'hms_calorimeter.cmn' !for HMS calorimeter calibration
+      include 'sos_calorimeter.cmn' !for SOS calorimeter calibration
 
       logical problems, finished_extracting
       integer total_event_count
@@ -687,9 +691,11 @@ c
 *
       ENDDO                             !found a problem or end of run
 
-c...  Calibrate HMS calorimeter.
+c...  Calibrate HMS and SOS calorimeters.
 
       if(hdbg_tracks_cal.lt.0) call h_cal_calib(1)
+
+      if(sdbg_tracks_cal.lt.0) call s_cal_calib(1)
 
 c...
 
