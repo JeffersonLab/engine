@@ -11,7 +11,10 @@
 *       Modified 23 March 1994   DFG
 *           Add definition of hnum_scin_elements and set parameter value
 * $Log$
-* Revision 1.7  1995/05/22 19:11:18  cdaq
+* Revision 1.8  1995/07/28 14:37:25  cdaq
+* (JRA) Add dimension to hmisc_dec_data
+*
+* Revision 1.7  1995/05/22  19:11:18  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts.
 * Make pedestal arrays real.  Add hms_scin_positions and hms_misc_parms commons
 *
@@ -195,10 +198,14 @@
 * hms_misc_parms.cmn -  misc tdc's filled as array over signal number
 *         (tdc is sparsified, so the raw signals are array over hits)
 *
+*     CTPTYPE=parm
+*
+      integer*4 hnum_misc_planes
+      parameter(hnum_misc_planes=2)
 *
 *     CTPTYPE=event
 *
-      integer*4 hmisc_dec_data(hmax_misc_hits)
+      integer*4 hmisc_dec_data(hmax_misc_hits,hnum_misc_planes)
 
       common/hms_misc_parms/
      &   hmisc_dec_data
