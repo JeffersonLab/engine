@@ -1,6 +1,9 @@
       subroutine h_analyze_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.4  1995/10/09 20:07:35  cdaq
+* (JRA) Use hcer_raw_adc instead of hcer_adc
+*
 * Revision 1.3  1995/05/22 19:37:05  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -66,8 +69,9 @@
 *
       do ihit = 1 , hcer_tot_hits
         pmt=hcer_tube_num(ihit)      ! no sparsification yet - NEED TO FIX!!!!
-        hcer_ped_sum2(pmt) = hcer_ped_sum2(pmt) + hcer_adc(ihit)*hcer_adc(ihit)
-        hcer_ped_sum(pmt) = hcer_ped_sum(pmt) + hcer_adc(ihit)
+        hcer_ped_sum2(pmt) = hcer_ped_sum2(pmt) +
+     $       hcer_raw_adc(ihit)*hcer_raw_adc(ihit)
+        hcer_ped_sum(pmt) = hcer_ped_sum(pmt) + hcer_raw_adc(ihit)
         hcer_ped_num(pmt) = hcer_ped_num(pmt) + 1
       enddo
 
