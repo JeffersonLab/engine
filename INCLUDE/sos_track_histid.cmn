@@ -10,6 +10,9 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
+* Revision 1.7  1996/01/17 15:06:31  cdaq
+* (JRA) Add sidcuttdc and a temporary junk common block
+*
 * Revision 1.6  1995/05/22 19:12:33  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
 *
@@ -49,7 +52,8 @@
       integer*4 sidres_fp(smax_num_dc_planes)
       integer*4 sidsingres_fp(smax_num_dc_planes)
       integer*4 sidrawtdc
-      
+      integer*4 sidcuttdc
+
       common/sos_tracking_histid/
      &     siddcwiremap,
      &     siddcdrifttime,
@@ -71,7 +75,8 @@
      &     sidsp_tar,
      &     sidres_fp,
      &     sidsingres_fp,
-     &     sidrawtdc
+     &     sidrawtdc,
+     &     sidcuttdc
 
 *
 *     CTPTYPE=parm
@@ -83,3 +88,16 @@
      &     sturnon_decoded_dc_hist,
      &     sturnon_focal_plane_hist,
      &     sturnon_target_hist
+
+
+*  temporary junk common block.
+*
+*     CTPTYPE=event
+*
+      real*4 sx_sp1(sntracks_max),sy_sp1(sntracks_max),sxp_sp1(sntracks_max)
+      real*4 sx_sp2(sntracks_max),sy_sp2(sntracks_max),sxp_sp2(sntracks_max)
+      real*4 ssx_sp1,ssy_sp1,ssxp_sp1
+      real*4 ssx_sp2,ssy_sp2,ssxp_sp2
+*
+      common/stemp_junk_cb/sx_sp1,sy_sp1,sxp_sp1,sx_sp2,sy_sp2,sxp_sp2,
+     &     ssx_sp1,ssy_sp1,ssxp_sp1,ssx_sp2,ssy_sp2,ssxp_sp2
