@@ -3,7 +3,7 @@
 *-       Prototype C analysis routine
 *-
 *-
-*-   Purpose and Methods : clears all quantities before an event is processed.
+*-   Purpose and Methods : clears all quantities AT THE START OF EACH EVENT
 *-
 *- 
 *-   Output: ABORT		- success or failure
@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard, Hampton U.
 *-   Modified 19-Nov-1993   Kevin B. Beard for new error standards
 *-      $Log$
+*-      Revision 1.8  1996/01/16 18:41:36  cdaq
+*-      (JRA) Explain that routine runs at start of each event
+*-
 *-      Revision 1.7  1995/07/27 19:06:40  cdaq
 *-      (SAW) Disable monte carlo (GMC)
 *-
