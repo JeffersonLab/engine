@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.31  2003/02/15 17:11:45  jones
+* Eliminated STOP command when run info event found after starting the analyze physics events. Just wrote out comments to let the user decide what to do.
+*
 * Revision 1.30  2003/02/12 20:30:59  jones
 * Initialize variable 'problems' to false ( E. Brash)
 *
@@ -479,37 +482,21 @@ c
      &      call g_write_event(ABORT,err)
 
           if (gen_event_type.eq.130) then       !run info event (get e,p,theta)
-!            call g_extract_kinematics(ebeam,phms,thms,psos,tsos)
-!            if (gpbeam .ge. 7. .and. ebeam.le.7.) then !sometimes ebeam in MeV
-!              gpbeam=abs(ebeam)
-!              write(6,*) 'gpbeam=',abs(ebeam),' GeV'
-!            endif
-!            if (hpcentral .ge. 7.) then
-!              write(6,*) 'hpcentral=',abs(phms),' GeV/c'
-!              hpcentral=abs(phms)
-!            endif
-!            if (htheta_lab .le. 0.) then
-!              write(6,*) 'htheta_lab=',abs(thms),' deg.'
-!              htheta_lab=abs(thms)*3.14159265/180.
-!            endif
-!            if (spcentral .ge. 7.) then
-!              write(6,*) 'spcentral=',abs(psos),' GeV/c'
-!              spcentral=abs(psos)
-!            endif
-!            if (stheta_lab .le. 0.) then
-!              write(6,*) 'stheta_lab=',abs(tsos),' deg.'
-!              stheta_lab=abs(tsos)*3.14159265/180.
-!            endif
-
-            write(6,*) "Dave,"
-            write(6,*) "I just thought you should know that Ive hit the run info event."
-            write(6,*) "I was expecting a physics event."
-            write(6,*) "I dont handle disappointment very well."
- 	    stop
+            write(6,*) " ***********"
+            write(6,*) " A run info event after starting to analyze physics events"
+            write(6,*) " If you are using the kinematics file  "
+            write(6,*) " to set HMS and SOS central momentum and angles then no problem"
+            write(6,*) " number of events for event types HMS,SOS,COIN",analyzed_events(1)
+     >,analyzed_events(2),analyzed_events(3)
+            write(6,*) " If no events analyzed yet for  HMS,SOS, or COIN then no problem"
+            write(6,*) " ***********"
+            write(6,*) " If you are relying on the run info event "
+            write(6,*) " to set HMS and SOS central momentum and angles then for this run"
+            write(6,*) " it is best to do it using the kinematics file"
+            write(6,*) " ***********"
           endif
 
           if(jieor(jiand(CRAW(2),'FFFF'x),'10CC'x).eq.0) then ! Physics event
-
 	    if (gen_event_type.eq.0) then          !scaler event.
               call g_analyze_scalers_by_banks(CRAW,ABORT,err)
               analyzed_events(gen_event_type)=analyzed_events(gen_event_type)+1
