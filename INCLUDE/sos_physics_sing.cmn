@@ -1,6 +1,9 @@
 *    This include file contains all the variables required for s_physics
 * $Log$
-* Revision 1.3  1995/03/13 19:17:02  cdaq
+* Revision 1.4  1995/09/01 13:03:47  cdaq
+* (JRA) Add cerenkov position variables
+*
+* Revision 1.3  1995/03/13  19:17:02  cdaq
 * (SAW) Bring up to date with hms_physics_sing.cmn
 *
 * Revision 1.2  1994/08/05  20:44:48  cdaq
@@ -62,19 +65,21 @@
 *
 *     CTPTYPE=event
 *
-      real*4 strue_x_fp
       real*4 ssx_dc1, ssy_dc1
       real*4 ssx_dc2, ssy_dc2
       real*4 ssx_s1, ssy_s1
+      real*4 ssx_cer, ssy_cer
       real*4 ssx_s2, ssy_s2
       real*4 ssx_cal, ssy_cal
       integer*4 ssscin_elem_hit(4)
 
       COMMON/sos_tmp_stuff/
-     &     strue_x_fp,
      &     ssx_dc1, ssy_dc1,
      &     ssx_dc2, ssy_dc2,
      &     ssx_s1, ssy_s1,
+     &     ssx_cer, ssy_cer,
      &     ssx_s2, ssy_s2,
      &     ssx_cal, ssy_cal,
      &     ssscin_elem_hit
+
+
