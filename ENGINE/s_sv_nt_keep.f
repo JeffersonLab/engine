@@ -8,6 +8,9 @@
 *
 *     Created: 1-Nov-1994  
 * $Log$
+* Revision 1.2  1996/09/04 15:19:37  saw
+* (JRA) Modify ntuple contents
+*
 * Revision 1.1  1995/08/11 16:23:12  cdaq
 * Initial revision
 *
@@ -58,8 +61,9 @@
       m= m+1
       s_sieve_Ntuple_contents(m)= SSYP_TAR
       m=m+1
-      s_sieve_Ntuple_contents(m)= SCAL_ET
-
+      s_sieve_Ntuple_contents(m)= sstrack_et
+      m= m+1
+      s_sieve_Ntuple_contents(m)= float(gen_event_ID_number)
 
 *
 ************************************************

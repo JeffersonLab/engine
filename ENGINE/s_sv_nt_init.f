@@ -10,6 +10,9 @@
 *
 *     Created: 1-Nov-1994  
 * $Log$
+* Revision 1.2  1996/09/04 15:19:26  saw
+* (JRA) Modify ntuple contents
+*
 * Revision 1.1  1995/08/11 16:23:43  cdaq
 * Initial revision
 * s_sv_nt_init.f,v $
@@ -23,9 +26,8 @@
       logical ABORT
       character*(*) err
 *
-      INCLUDE 's_sieve_ntuple.cmn'
-      INCLUDE 's_sieve_ntuple.dte'
       INCLUDE 'gen_routines.dec'
+      INCLUDE 'gen_run_info.cmn'
 *
       character*80 default_name
       parameter (default_name= 'ssieventuple')
@@ -42,6 +44,8 @@
       real rv(10)
 *
       logical HEXIST           !CERNLIB function
+      INCLUDE 's_sieve_ntuple.cmn'
+      INCLUDE 's_sieve_ntuple.dte'
 *
 *--------------------------------------------------------
       err= ' '
@@ -118,25 +122,27 @@
       m= 0
 *  
       m=m+1
-      s_sieve_Ntuple_tag(m)= 'SSX_FP'		! X focal plane position 
+      s_sieve_Ntuple_tag(m)= 'SSXFP'		! X focal plane position 
       m= m+1
-      s_sieve_Ntuple_tag(m)= 'SSY_FP'
+      s_sieve_Ntuple_tag(m)= 'SSYFP'
       m= m+1
-      s_sieve_Ntuple_tag(m)= 'SSXP_FP'
+      s_sieve_Ntuple_tag(m)= 'SSXPFP'
       m= m+1
-      s_sieve_Ntuple_tag(m)= 'SSYP_FP'
+      s_sieve_Ntuple_tag(m)= 'SSYPFP'
       m= m+1
       s_sieve_Ntuple_tag(m)= 'SSDELTA'
       m= m+1
-      s_sieve_Ntuple_tag(m)= 'SSX_TAR'
+      s_sieve_Ntuple_tag(m)= 'SSXTAR'
       m= m+1
-      s_sieve_Ntuple_tag(m)= 'SSY_TAR'
+      s_sieve_Ntuple_tag(m)= 'SSYTAR'
       m= m+1
-      s_sieve_Ntuple_tag(m)= 'SSXP_TAR'
+      s_sieve_Ntuple_tag(m)= 'SSXPTAR'
       m= m+1
-      s_sieve_Ntuple_tag(m)= 'SSYP_TAR'
+      s_sieve_Ntuple_tag(m)= 'SSYPTAR'
       m=m+1
-      s_sieve_ntuple_tag(m)= 'SCAL_ET'    
+      s_sieve_ntuple_tag(m)= 'SSSHTRK'
+      m=m+1
+      s_sieve_ntuple_tag(m)= 'EventID'
 
 *
       s_sieve_Ntuple_size= m     !total size
@@ -157,6 +163,7 @@
       title= s_sieve_Ntuple_title
       size= s_sieve_Ntuple_size
       file= s_sieve_Ntuple_file
+      call g_sub_run_number(file, gen_run_number)
       bank= default_bank
  
       call HBOOKN(id,title,size,name,bank,s_sieve_Ntuple_tag)      !create Ntuple
