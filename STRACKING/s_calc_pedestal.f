@@ -1,7 +1,10 @@
       subroutine s_calc_pedestal(ABORT,err)
 *
 * $Log$
-* Revision 1.4  1995/07/20 14:46:39  cdaq
+* Revision 1.5  1995/08/31 18:04:55  cdaq
+* (JRA) Change threshold limits
+*
+* Revision 1.4  1995/07/20  14:46:39  cdaq
 * (JRA) Cleanup statistics calculations
 *
 * Revision 1.3  1995/05/22  19:45:32  cdaq
@@ -73,7 +76,7 @@
      &              scal_ped_mean(blk)**2
 !          if (sig2.le.0) write(6,*) 'cal ped(',blk,')**2 =',sig2
           scal_ped_rms(blk) = sqrt(max(0.,sig2))
-          scal_threshold(blk) = max(4.,3.*scal_ped_rms(blk))
+          scal_threshold(blk) = min(50.,max(10.,3.*scal_ped_rms(blk)))
         endif
       enddo
 *
