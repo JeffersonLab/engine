@@ -12,9 +12,12 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-      $Log$
-*-      Revision 1.8  1995/05/22 20:50:48  cdaq
-*-      (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*-      Revision 1.9  1995/07/27 19:44:17  cdaq
+*-      (JRA) Zero out pedestal arrays
 *-
+* Revision 1.8  1995/05/22  20:50:48  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
 * Revision 1.7  1995/05/11  15:08:32  cdaq
 * (SAW) Change SDEDXn vars to an array.  Add reset of Aerogel structure.
 *
@@ -54,6 +57,7 @@
 *
       INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'sos_tracking.cmn'
+      INCLUDE 'sos_pedestals.cmn'      
 *
       INTEGER track,hit,block,i,j,plane
 *
@@ -61,6 +65,38 @@
 *
 *     SOS DECODED DATA
 *
+      do i=1,snum_scin_planes
+        do j=1,snum_scin_elements
+          shodo_pos_ped_num(i,j) = 0
+          shodo_pos_ped_sum2(i,j) = 0
+          shodo_pos_ped_sum(i,j) = 0
+          shodo_neg_ped_num(i,j) = 0
+          shodo_neg_ped_sum2(i,j) = 0
+          shodo_neg_ped_sum(i,j) = 0
+        enddo
+      enddo
+
+      do i=1,smax_cal_blocks
+        scal_ped_num(i)=0
+        scal_ped_sum2(i)=0
+        scal_ped_sum(i)=0
+      enddo
+
+      do i=1,smax_cer_hits
+        scer_ped_num(i)=0
+        scer_ped_sum2(i)=0
+        scer_ped_sum(i)=0
+      enddo
+
+      do i=1,smax_aer_hits
+        saer_pos_ped_num(i)=0
+        saer_pos_ped_sum2(i)=0
+        saer_pos_ped_sum(i)=0
+        saer_neg_ped_num(i)=0
+        saer_neg_ped_sum2(i)=0
+        saer_neg_ped_sum(i)=0
+      enddo
+
       DO hit= 1,SMAX_DC_HITS
          SDC_RAW_PLANE_NUM(hit)= 0
          SDC_RAW_WIRE_NUM(hit)= 0

@@ -15,7 +15,10 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
-* Revision 1.10  1995/05/22 20:50:47  cdaq
+* Revision 1.11  1995/07/27 19:41:10  cdaq
+* (JRA) Zero out pedestal arrays
+*
+* Revision 1.10  1995/05/22  20:50:47  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.9  1995/05/11  18:58:17  cdaq
@@ -43,11 +46,35 @@
 *
       INCLUDE 'hms_data_structures.cmn'
       include 'hms_tracking.cmn'
+      include 'hms_pedestals.cmn'
 *
       INTEGER hit,track,block,i,j,plane
 *
 *--------------------------------------------------------
 *
+      do i=1,hnum_scin_planes
+        do j=1,hnum_scin_elements
+          hhodo_pos_ped_num(i,j) = 0
+          hhodo_pos_ped_sum2(i,j) = 0
+          hhodo_pos_ped_sum(i,j) = 0
+          hhodo_neg_ped_num(i,j) = 0
+           hhodo_neg_ped_sum2(i,j) = 0
+         hhodo_neg_ped_sum(i,j) = 0
+        enddo
+      enddo
+
+      do i=1,hmax_cal_blocks
+        hcal_ped_num(i)=0
+        hcal_ped_sum2(i)=0
+        hcal_ped_sum(i)=0
+      enddo
+
+      do i=1,hmax_cer_hits
+        hcer_ped_num(i)=0
+        hcer_ped_sum2(i)=0
+        hcer_ped_sum(i)=0
+      enddo
+
       DO hit= 1,HMAX_DC_HITS
          HDC_RAW_PLANE_NUM(hit)= 0
          HDC_RAW_WIRE_NUM(hit)= 0
