@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.5  1996/01/16 21:01:33  cdaq
+* (JRA) Add HSDELTA and SSDELTA
+*
 * Revision 1.4  1995/09/01 15:45:21  cdaq
 * (JRA) Add spectrometer kinematic vars to ntuple
 *
@@ -74,6 +77,8 @@ c      coin_time = (hmisc_dec_data(1,10) -2576)/10. ! ???
       m= m+1
       c_Ntuple_contents(m)= HSYP_TAR ! Corrected Coincidence time
       m= m+1
+      c_Ntuple_contents(m)= HSDELTA
+      m= m+1
       c_Ntuple_contents(m)= HS_TIME
       m=m+1
       c_Ntuple_contents(m)= SSX_FP ! Corrected Coincidence time
@@ -92,7 +97,9 @@ c      coin_time = (hmisc_dec_data(1,10) -2576)/10. ! ???
       m= m+1
       c_Ntuple_contents(m)= SSYP_TAR ! Corrected Coincidence time
       m= m+1
-      c_Ntuple_contents(m)= ss_time
+      c_Ntuple_contents(m)= SSDELTA
+      m= m+1
+      c_Ntuple_contents(m)= SS_TIME
       m=m+1
       c_Ntuple_contents(m)= COIN_TIME ! Corrected Coincidence time
       m= m+1

@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.6  1996/01/16 21:01:12  cdaq
+* (JRA) Add HSDELTA and SSDELTA
+*
 * Revision 1.5  1995/08/08 16:09:40  cdaq
 * (DD) Change ntuple list
 *
@@ -142,6 +145,8 @@
       m= m+1
       c_Ntuple_tag(m)= 'HSYP_TAR' ! Corrected Coincidence time
       m= m+1
+      c_Ntuple_tag(m)= 'HSDELTA'
+      m= m+1
       c_Ntuple_tag(m)= 'HS_TIME'
       m=m+1
       c_Ntuple_tag(m)= 'SSX_FP'
@@ -160,6 +165,8 @@
       m=m+1
       c_Ntuple_tag(m)= 'SSYP_TAR'
       m=m+1
+      c_Ntuple_tag(m)= 'SSDELTA'
+      m= m+1
       c_Ntuple_tag(m)= 'SS_TIME'
       m=m+1
       c_Ntuple_tag(m)= 'COIN_TIME'
