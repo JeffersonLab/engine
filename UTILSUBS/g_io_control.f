@@ -13,6 +13,9 @@
 *-   Modified 11-Apr-1994   KBB; added FREE, removed CLOSE, 
 *-                               more efficient parsing
 * $Log$
+* Revision 1.3  1996/09/05 21:05:48  saw
+* (SAW) Reduce max lun from 100 to 99 for linux compatibility
+*
 * Revision 1.2  1996/05/24 16:04:33  saw
 * (SAW) Relocate data statements for f2c compatibility
 *
@@ -42,7 +45,7 @@
       LOGICAL MATCH     !UTILSUBS FUNCTION
 *
       integer gMAX_IO_channels_allowed
-      parameter (gMAX_IO_channels_allowed= 100)
+      parameter (gMAX_IO_channels_allowed= 99)
       logical IDLE
       parameter (IDLE= .FALSE.)
       logical request,OK
