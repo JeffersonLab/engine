@@ -23,7 +23,11 @@
 * the correction parameters.
 *
 * $Log$
-* Revision 1.8  1995/01/18 16:26:48  cdaq
+* Revision 1.9  1995/01/27 19:26:13  cdaq
+* (JRA) Add calculation of time for each plane.  Add commented out
+*       code to dump time of flight fitting data.
+*
+* Revision 1.8  1995/01/18  16:26:48  cdaq
 * (SAW) Catch negative ADC values in argument of square root
 *
 * Revision 1.7  1994/09/13  21:25:35  cdaq
@@ -62,14 +66,17 @@
       include 'hms_scin_parms.cmn'
       include 'hms_scin_tof.cmn'
       integer*4 hit, trk
-      integer*4 plane
+      integer*4 plane,ind
       integer*4 numplanes
+      integer*4 pmt,cnt,lay,dir,ihit
+      integer*4 hntof_pairs
+      real*4 ph,tim,betap
       real*4 adc_ph                     !pulse height (channels)
       real*4 xhit_coord,yhit_coord
       real*4 time
       real*4 path
-      real*4 sum_fp_time
-      integer*4 num_fp_time
+      real*4 sum_fp_time,sum_plane_time(hnum_scin_planes)
+      integer*4 num_fp_time,num_plane_time(hnum_scin_planes)
       save
 *
 *--------------------------------------------------------
@@ -82,12 +89,15 @@
 
 ** Initialize counter,flags...
           hntof = 0
+          hntof_pairs = 0
           sum_fp_time = 0.
           num_fp_time = 0
           hnum_scin_hit(trk) = 0
 
           do plane = 1 , hnum_scin_planes
             hgood_plane_time(plane) = .false.
+            sum_plane_time(plane) = 0.
+            num_plane_time(plane) = 0
           enddo
 
           do hit = 1 , hscin_tot_hits
@@ -170,6 +180,7 @@
                   hscin_sigma(hit) = sqrt(hscin_neg_sigma(hit)**2 + 
      1                 hscin_pos_sigma(hit)**2)/2.
                   hgood_scin_time(hit) = .true.
+                  hntof_pairs = hntof_pairs + 1
                 else
                   hscin_time(hit) = hscin_pos_time(hit)
                   hscin_sigma(hit) = hscin_pos_sigma(hit)
@@ -186,11 +197,14 @@
               endif
 c     Get time at focal plane
               if (hgood_scin_time(hit)) then
+* for electrons:
                 hscin_time_fp(hit) = hscin_time(hit) -
      &               (hscin_zpos(hit)/30.) * sqrt(1. + hxp_fp(trk)
      $               *hxp_fp(trk) +hyp_fp(trk)*hyp_fp(trk))
                 sum_fp_time = sum_fp_time + hscin_time_fp(hit)
                 num_fp_time = num_fp_time + 1
+                sum_plane_time(plane)=sum_plane_time(plane)+hscin_time_fp(hit)
+                num_plane_time(plane)=num_plane_time(plane)+1
                 hnum_scin_hit(trk) = hnum_scin_hit(trk) + 1
                 hscin_hit(trk,hnum_scin_hit(trk)) = hit
                 if (hgood_tdc_pos(hit)) then
@@ -254,13 +268,56 @@ ccc in hphysics in the "goodtrack" figurer outer.
           if (num_fp_time .ne. 0) then
             htime_at_fp(trk) = sum_fp_time / float(num_fp_time)
           endif
+
+          do ind=1,4
+            if (num_plane_time(ind) .ne. 0) then
+              h_fptime(ind)=sum_plane_time(ind)/float(num_plane_time(ind))
+            else
+              h_fptime(ind)=1000.*ind
+            endif
+          enddo
+
+          h_fptimedif(1)=h_fptime(1)-h_fptime(2)
+          h_fptimedif(2)=h_fptime(1)-h_fptime(3)
+          h_fptimedif(3)=h_fptime(1)-h_fptime(4)
+          h_fptimedif(4)=h_fptime(2)-h_fptime(3)
+          h_fptimedif(5)=h_fptime(2)-h_fptime(4)
+          h_fptimedif(6)=h_fptime(3)-h_fptime(4)   
 *     
 *     Dump tof common blocks if (hdebugprinttoftracks is set
-          if(hdebugprinttoftracks.ne.0 ) then 
-            call h_prt_tof(trk)
-          endif
+
+          if(hdebugprinttoftracks.ne.0 ) call h_prt_tof(trk)
+
+*
+*  Write out TOF fitting data.
+*
+c        if (trk.eq.1 .and. numplanes.eq.4 .and. hntof_pairs.le.5) then
+* NEW TEST!
+c         if (hcer_adc(1) .ge. 565 .or. hcer_adc(2) .ge. 520) then
+c          betap=1.
+c          write(37,111) hntof_pairs*2,hx_fp(trk),hxp_fp(trk),
+c     &                        hy_fp(trk),hyp_fp(trk),betap
+c111       format(i4,5f10.5)
+c          do ihit = 1, hscin_tot_hits
+c            if (hgood_scin_time(ihit)) then   !scin. was on track
+c              cnt=hscin_counter_num(ihit)
+c              lay=int((hscin_plane_num(ihit)+1)/2)
+c              dir=mod(hscin_plane_num(ihit)+1,2)+1
+c              pmt=1
+c              tim=hscin_tdc_pos(ihit)*hscin_tdc_to_time
+c              ph=hscin_adc_pos(ihit)
+c              write(37,112) pmt,cnt,lay,dir,ph,tim
+c              pmt=2
+c              tim=hscin_tdc_neg(ihit)*hscin_tdc_to_time
+c              ph=hscin_adc_neg(ihit)
+c              write(37,112) pmt,cnt,lay,dir,ph,tim
+c112           format(4i4,2f12.6)
+c            endif
+c          enddo
+c         endif
+c        endif
+*
         enddo                           !end of loop over tracks
-*     
       endif                             ! end test on zero tracks
       RETURN
       END
