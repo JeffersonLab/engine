@@ -23,7 +23,10 @@
 * the correction parameters.
 *
 * $Log$
-* Revision 1.10  1995/01/30 22:09:24  cdaq
+* Revision 1.11  1995/01/31 21:49:32  cdaq
+* (JRA) Added count of pmt's firing and cosmetic changes.
+*
+* Revision 1.10  1995/01/30  22:09:24  cdaq
 * (JRA) Cosmetic changes.  Remove commented out code to dump time of
 *       flight fitting data.
 *
@@ -72,9 +75,7 @@
       integer*4 hit, trk
       integer*4 plane,ind
       integer*4 numplanes
-      integer*4 pmt,cnt,lay,dir,ihit
       integer*4 hntof_pairs
-      real*4 ph,tim,betap
       real*4 adc_ph                     !pulse height (channels)
       real*4 xhit_coord,yhit_coord
       real*4 time
@@ -98,6 +99,7 @@
         sum_fp_time = 0.
         num_fp_time = 0
         hnum_scin_hit(trk) = 0
+        hnum_pmt_hit(trk) = 0
 
         do plane = 1 , hnum_scin_planes
           hgood_plane_time(plane) = .false.
@@ -189,14 +191,14 @@
               else
                 hscin_time(hit) = hscin_pos_time(hit)
                 hscin_sigma(hit) = hscin_pos_sigma(hit)
-*     hgood_scin_time(hit) = .true.
+*                hgood_scin_time(hit) = .true.
                 hgood_scin_time(hit) = .false.
               endif
             else                        ! if hgood_tdc_neg = .false.
               if (hgood_tdc_neg(hit)) then
                 hscin_time(hit) = hscin_neg_time(hit)
                 hscin_sigma(hit) = hscin_neg_sigma(hit)
-*     hgood_scin_time(hit) = .true.
+*                hgood_scin_time(hit) = .true.
                 hgood_scin_time(hit) = .false.
               endif
             endif
@@ -213,24 +215,23 @@ c     Get time at focal plane
               num_plane_time(plane)=num_plane_time(plane)+1
               hnum_scin_hit(trk) = hnum_scin_hit(trk) + 1
               hscin_hit(trk,hnum_scin_hit(trk)) = hit
+              if (hgood_tdc_pos(hit) .and. hgood_tdc_neg(hit)) then
+                hnum_pmt_hit(trk) = hnum_pmt_hit(trk) + 2
+              else
+                hnum_pmt_hit(trk) = hnum_pmt_hit(trk) + 1
+              endif
               if (hgood_tdc_pos(hit)) then
                 if (hgood_tdc_neg(hit)) then
-ccc   The following sometimes results in square roots of negative numbers
-ccc   Supposedly, no one uses this right now (SAW 1/17/95), but it is used
-ccc   in hphysics in the "goodtrack" figurer outer.
-                  if(hscin_adc_pos(hit) .ge. 0.0 .and.
-     $                 hscin_adc_neg(hit) .ge. 0.0) then
-                    hdedx(trk,hnum_scin_hit(trk)) = 
-     &                   sqrt(float(hscin_adc_pos(hit)*hscin_adc_neg(hit)))
-                  else
-                    hdedx(trk,hnum_scin_hit(trk))= 0.0
-                  endif
+                  hdedx(trk,hnum_scin_hit(trk)) = sqrt(max(0.,
+     $                 float(hscin_adc_pos(hit)*hscin_adc_neg(hit))))
                 else
-                  hdedx(trk,hnum_scin_hit(trk))=float(hscin_adc_pos(hit))
+                  hdedx(trk,hnum_scin_hit(trk))=max(0.
+     $                 ,float(hscin_adc_pos(hit)))
                 endif
               else
                 if (hgood_tdc_neg(hit)) then
-                  hdedx(trk,hnum_scin_hit(trk))=float(hscin_adc_neg(hit))
+                  hdedx(trk,hnum_scin_hit(trk))=max(0.
+     $                 ,float(hscin_adc_neg(hit)))
                 else
                   hdedx(trk,hnum_scin_hit(trk)) = 0
                 endif
