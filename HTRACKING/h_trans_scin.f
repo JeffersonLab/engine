@@ -9,7 +9,11 @@
 *
 * modifications:
 * $Log$
-* Revision 1.9  1995/01/18 16:28:08  cdaq
+* Revision 1.10  1995/01/27 19:28:48  cdaq
+* (JRA) Adjust start time cut to be hardwired for December 94 run.  Need a
+*       better way to do this eventually.
+*
+* Revision 1.9  1995/01/18  16:28:08  cdaq
 * (SAW) Catch negative ADC values in argument of square root
 *
 * Revision 1.8  1994/09/13  21:40:06  cdaq
@@ -169,7 +173,7 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
         do ihit = 1 , hscin_tot_hits
           if (htwo_good_times(ihit)) then
             fptime  = hscin_cor_time(ihit) - hscin_zpos(ihit)/29.989
-            if (abs(fptime-67.).le.10) then
+            if (abs(fptime-18.).le.10) then
               time_sum = time_sum + fptime
               time_num = time_num + 1
             endif
@@ -177,7 +181,7 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
         enddo
         if (time_num.eq.0) then
           hgood_start_time = .false.
-          hstart_time = 150.		!150 ns is a rough average of time dif between trig
+          hstart_time = 18.		!150 ns is a rough average of time dif between trig
                                         ! and wire firing.
         else
           hgood_start_time = .true.
