@@ -7,6 +7,9 @@
 *
 *
 * $Log$
+* Revision 1.2  1995/09/18 13:53:01  cdaq
+* (SAW) Change some include file names
+*
 * Revision 1.1  1995/07/31 15:24:41  cdaq
 * Initial revision
 *
@@ -19,9 +22,9 @@
       include 'hms_calorimeter.cmn'
       include 'gen_event_info.cmn'
       include 'hms_one_ev.par'
-      include 'gctrak.inc'
-      include 'gckine.inc'
-      include 'gcvolu.inc'
+      include 'gen_one_ev_gctrak.cmn'
+      include 'gen_one_ev_gckine.cmn'
+      include 'gen_one_ev_gcvolu.cmn'
       character*5 scinname 
       character*5 blockname
       integer istrip
