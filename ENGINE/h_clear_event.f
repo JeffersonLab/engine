@@ -11,9 +11,12 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.5  1994/06/28 20:05:20  cdaq
-*-    (SAW) Add clear of hscin_all_tot_hits
+*-    Revision 1.6  1994/07/07 21:16:57  cdaq
+*-    (JRA) Clear additional variables
 *-
+* Revision 1.5  1994/06/28  20:05:20  cdaq
+* (SAW) Add clear of hscin_all_tot_hits
+*
 * Revision 1.4  1994/06/22  20:53:21  cdaq
 * (SAW) zero the miscleaneous hits counter
 *
@@ -82,6 +85,9 @@
 *     HMS TARGET QUANTITIES
 *
       HNTRACKS_TAR= 0
+*
+      HSNUM_FPTRACK = 0
+      HSNUM_TARTRACK = 0
 *
       ABORT= .FALSE.
       err= ' '

@@ -15,7 +15,10 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
-* Revision 1.6  1994/06/28 20:07:00  cdaq
+* Revision 1.7  1994/07/07 21:16:38  cdaq
+* (JRA) Clear additional variables
+*
+* Revision 1.6  1994/06/28  20:07:00  cdaq
 * (SAW) Add clearing of HSCIN_ALL arrays
 *
 *-
@@ -145,6 +148,55 @@
          EndDo
       ENDDO
       HNTRACKS_TAR= 0
+
+      DO track= 1,HNTRACKS_MAX
+         HNBLOCKS_CAL(track)= 0
+         HTRACK_E1(track)= 0.
+         HTRACK_E2(track)= 0.
+         HTRACK_E3(track)= 0.
+         HTRACK_E4(track)= 0.
+         HTRACK_ET(track)= 0.
+         HTRACK_PRESHOWER_E(track)= 0.
+         do hit = 1 , HMAX_SCIN_HITS
+           HSCIN_HIT(track,hit)= 0
+         enddo
+         do plane = 1 , HNUM_SCIN_PLANES
+           HDEDX(track,plane) = 0.
+         enddo
+         HNUM_SCIN_HIT(track)=0
+         HBETA(track)=0.
+         HBETA_CHISQ(track)=0.
+         HTIME_AT_FP(track)=0.
+       ENDDO
+       
+       HSP=0.
+       HSENERGY=0.
+       HSDELTA=0.
+       HSTHETA=0.
+       HSPHI=0.
+       HSMINV=0.
+       HSZBEAM=0.
+       HSDEDX1=0.
+       HSDEDX2=0.
+       HSDEDX3=0.
+       HSDEDX4=0.
+       HSBETA=0.
+       HSTRACK_ET=0.
+       HSTRACK_PRESHOWER_E=0.
+       HSTIME_AT_FP=0.
+       HSX_FP=0.
+       HSY_FP=0.
+       HSXP_FP=0.
+       HSYP_FP=0.
+       HSCHI2PERDEG=0.
+       HSX_TAR=0.
+       HSY_TAR=0.
+       HSXP_TAR=0.
+       HSYP_TAR=0.
+       HSNUM_FPTRACK=0
+       HSNUM_TARTRACK=0
+       HSID_LUND=0
+       HSNFREE_FP=0
 *     
 *     
       ABORT= .FALSE.
