@@ -1,0 +1,569 @@
+*****************begin: sos_data_structures.cmn*************************
+*
+*     include file     sos_data_structures.cmn
+*
+*     Author:	D. F. Geesaman		1 September 1993
+*
+* $Log$
+* Revision 1.1  1995/05/22 18:42:33  cdaq
+* Initial revision
+*
+*
+*     CTPTYPE=parm
+*
+*     STHETA_LAB             SOS LAB ANGLE THETA (RADIANS)
+*     SPHI_LAB               SOS LAB ANGLE PHI 
+*     SPCENTRAL              SOS CENTRAL MOMENUTM (GEV)
+*     SBFIELD                SOS B FIELD INCLUDING SIGN
+*
+      REAL*4  STHETA_LAB     ! SOS LAB ANGLE THETA (RADIANS)
+      REAL*4  SPHI_LAB       ! SOS LAB ANGLE PHI 
+      REAL*4  SPCENTRAL      ! SOS CENTRAL MOMENUTM (GEV)
+      REAL*4  SBFIELD        ! SOS B FIELD INCLUDING SIGN
+      REAL*4  SPARTMASS      ! EXPECTED MASS OF DETECTED PARTICLE IN SOS
+      COMMON/SOS_SPECTROMETER/
+     &     STHETA_LAB,
+     &     SPHI_LAB,
+     &     SPCENTRAL,
+     &     SBFIELD,
+     &     SPARTMASS
+*
+*     CTPTYPE=event
+*
+*
+*     SOS  DATA
+*
+*     RAW DC DATA FILLED BY G_decode_event_by_banks
+*     SOS DRIFT CHAMBER HITS
+*         EACH CHAMBER HIT (TDC VALUE) HAS A 
+*             PLANE NUMBER
+*             WIRE NUMBER
+*             TDC VALUE
+*     THE TOTAL NUMBER OF HITS IS GIVEN IN SDC_RAW_TOT_HITS
+*
+      INTEGER*4 SMAX_DC_HITS          ! MAXIUM NUMBER OF DRIFT CHAMBER HITS
+      INTEGER*4 SMAX_NUM_DC_PLANES    ! MAX NUMBER OF SOS DRIFT CHAMBER PLANES
+      INTEGER*4 SMAX_NUM_CHAMBERS     ! MAX NUMBER OF SOS DRIFT CHAMBERS
+      PARAMETER(SMAX_DC_HITS=3600) 
+      PARAMETER(SMAX_NUM_DC_PLANES=18)
+      PARAMETER(SMAX_NUM_CHAMBERS=3)
+      INTEGER*4 SDC_RAW_PLANE_NUM
+      INTEGER*4 SDC_RAW_WIRE_NUM
+      INTEGER*4 SDC_RAW_TDC
+      INTEGER*4 SDC_RAW_TOT_HITS
+      COMMON/SOS_RAW_DC/
+     1     SDC_RAW_PLANE_NUM(SMAX_DC_HITS),
+     2     SDC_RAW_WIRE_NUM(SMAX_DC_HITS),
+     3     SDC_RAW_TDC(SMAX_DC_HITS),
+     4     SDC_RAW_TOT_HITS
+*
+*     SOS DC DECODED DATA
+*
+*     FILLED BY S_TRANS_DC ROUTINE 
+*     SOS DRIFT CHAMBER HITS
+*         EACH CHAMBER HIT (TDC VALUE) HAS A 
+*             PLANE NUMBER
+*             WIRE NUMBER
+*             TDC VALUE
+*             DRIFT TIME
+*             DRIFT DISTANCE
+*             GENERALIZED COORDINATE OF HIT WIRE CENTER 
+*             GENERALIZED COORDINATE OF HIT PERPENDICULAR TO WIRE DIRECTION
+*
+*     THE TOTAL NUMBER OF HITS IN EACH PLANE IS GIVEN IN SDC_HITS_PER_PLANE(I)
+*     THE TOTAL NUMBER OF HITS IS GIVEN IN SDC_TOT_HITS
+*
+      INTEGER*4 SDC_PLANE_NUM            ! COPIED FROM SOS_RAW_DC
+      INTEGER*4 SDC_WIRE_NUM             ! COPIED FROM SOS_RAW_DC
+      INTEGER*4 SDC_TDC                  ! COPIED FROM SOS_RAW_DC
+*      INTEGER*4 SDC_HITS_PER_PLANE
+      INTEGER*4 SDC_TOT_HITS
+      REAL*4 SDC_DRIFT_TIME
+      REAL*4 SDC_DRIFT_DIS
+      REAL*4 SDC_WIRE_CENTER
+      REAL*4 SDC_WIRE_COORD
+      COMMON/SMS_DECODED_DC/
+     1     SDC_DRIFT_TIME(SMAX_DC_HITS),
+     2     SDC_DRIFT_DIS(SMAX_DC_HITS),
+     3     SDC_WIRE_CENTER(SMAX_DC_HITS),
+     4     SDC_WIRE_COORD(SMAX_DC_HITS),
+     5     SDC_PLANE_NUM(SMAX_DC_HITS),
+     6     SDC_WIRE_NUM(SMAX_DC_HITS),
+     7     SDC_TDC(SMAX_DC_HITS),
+*     8     SDC_HITS_PER_PLANE(SMAX_NUM_DC_PLANES),
+     9     SDC_TOT_HITS
+*
+*     SOS RAW SCINTILLATOR HITS
+*     FILLED BY G_decode_event_by_banks 
+*         EACH SCINTILLATOR HIT IS SPECIFIED BY A
+*              SCINTILLATOR PLANE NUMBER
+*              SCINTILLATOR COUNTER NUMBER
+*              SCINTILLATOR ADC AT POSITIVE GENERALIZED COORDINATE END
+*              SCINTILLATOR ADC AT NEGATIVE GENERALIZED COORDINATE END
+*              SCINTILLATOR TDC AT POSITIVE GENERALIZED COORDINATE END
+*              SCINTILLATOR TDC AT NEGATIVE GENERALIZED COORDINATE END    
+*     THE TOTAL NUMBER OF HITS IS GIVEN BY SSCIN_TOT_HITS 
+      INTEGER*4 SMAX_ALL_SCIN_HITS           ! MAXIMUM TOTAL NUMBER OF SCIN HITS
+      PARAMETER (SMAX_ALL_SCIN_HITS=53) ! Should exceed # of planes
+      INTEGER*4 SNUM_ALL_SCIN_PLANES          ! TOTAL NUMBER OF SCIN PLANES
+      PARAMETER (SNUM_ALL_SCIN_PLANES=4)
+      INTEGER*4 SSCIN_ALL_PLANE_NUM
+      INTEGER*4 SSCIN_ALL_COUNTER_NUM
+      INTEGER*4 SSCIN_ALL_ADC_POS
+      INTEGER*4 SSCIN_ALL_ADC_NEG
+      INTEGER*4 SSCIN_ALL_TDC_POS
+      INTEGER*4 SSCIN_ALL_TDC_NEG
+      INTEGER*4 SSCIN_ALL_TOT_HITS 
+*
+      COMMON/SOS_RAW_SCIN/
+     &     SSCIN_ALL_PLANE_NUM(SMAX_ALL_SCIN_HITS),
+     &     SSCIN_ALL_COUNTER_NUM(SMAX_ALL_SCIN_HITS),
+     &     SSCIN_ALL_ADC_POS(SMAX_ALL_SCIN_HITS),
+     &     SSCIN_ALL_ADC_NEG(SMAX_ALL_SCIN_HITS),
+     &     SSCIN_ALL_TDC_POS(SMAX_ALL_SCIN_HITS),
+     &     SSCIN_ALL_TDC_NEG(SMAX_ALL_SCIN_HITS),
+     &     SSCIN_ALL_TOT_HITS
+*
+*     SOS REAL SCINTILLATOR HITS (Hits with no TDC data stripped out)
+*     FILLED BY S_strip_scin (which is called by s_trans_scin) 
+*         EACH SCINTILLATOR HIT IS SPECIFIED BY A
+*              SCINTILLATOR PLANE NUMBER
+*              SCINTILLATOR COUNTER NUMBER
+*              SCINTILLATOR ADC AT POSITIVE GENERALIZED COORDINATE END
+*              SCINTILLATOR ADC AT NEGATIVE GENERALIZED COORDINATE END
+*              SCINTILLATOR TDC AT POSITIVE GENERALIZED COORDINATE END
+*              SCINTILLATOR TDC AT NEGATIVE GENERALIZED COORDINATE END    
+*     THE TOTAL NUMBER OF HITS IS GIVEN BY SSCIN_TOT_HITS 
+      INTEGER*4 SMAX_SCIN_HITS           ! MAXIMUM TOTAL NUMBER OF SCIN HITS
+      PARAMETER (SMAX_SCIN_HITS=53) ! Should exceed # of planes
+      INTEGER*4 SNUM_SCIN_PLANES          ! TOTAL NUMBER OF SCIN PLANES
+      PARAMETER (SNUM_SCIN_PLANES=4)
+      INTEGER*4 SNUM_SCIN_ELEMENTS
+      PARAMETER (SNUM_SCIN_ELEMENTS=16)
+      INTEGER*4 SSCIN_PLANE_NUM
+      INTEGER*4 SSCIN_COUNTER_NUM
+      REAL*4 SSCIN_ADC_POS
+      REAL*4 SSCIN_ADC_NEG
+      INTEGER*4 SSCIN_TDC_POS
+      INTEGER*4 SSCIN_TDC_NEG
+      INTEGER*4 SSCIN_TOT_HITS 
+      INTEGER*4 SSCIN_SING_COUNTER  !DJM'S registered hit counter
+
+*
+      COMMON/SOS_REAL_SCIN/
+     &     SSCIN_PLANE_NUM(SMAX_SCIN_HITS),
+     &     SSCIN_COUNTER_NUM(SMAX_SCIN_HITS),
+     &     SSCIN_ADC_POS(SMAX_SCIN_HITS),
+     &     SSCIN_ADC_NEG(SMAX_SCIN_HITS),
+     &     SSCIN_TDC_POS(SMAX_SCIN_HITS),
+     &     SSCIN_TDC_NEG(SMAX_SCIN_HITS),
+     &     SSCIN_TOT_HITS,
+     &     SSCIN_SING_COUNTER(SNUM_SCIN_PLANES)
+*
+*
+*    DECODED SCIN HITS
+*     FILLED BY S_TRANS_SCIN
+*       THIS USES SCINTILLATOR INFORMATION ONLY TO CALCUATE   
+*          SSCIN_APPROX_HIT_COORD    GENERALIZED COORDINATE ALONG HIT
+*                                      SCINTILLATOR DETERMINED FROM TDC INFO.
+*          SSCIN_COR_ADC       CORRECTED PULSE HEIGHT AT HIT
+*          SSCIN_COR_TIME      CORRECTED TIME AT HIT
+*     THE TOTAL NUMBER OF HITS IN EACH PLANE IS GIVEN BY SSCIN_HITS_PER_PLANE
+*     THE SSTART_TIME IS DEFINED AS THE TIME IF THE TRACK HAD GONE THROUGH
+* THE CENTER OF S1X. IT IS USED BY S_TRANS_DC FOR THE DRIFT TIME 
+* CALCULATION.
+*     STWO_GOOD_TIMES  IS A LOGICAL VARIABLE WHICH IS TRUE IF BOTH ENDS
+* OF THE SCINTILLATOR ARE HIT AND FALSE IF ONLY ONE END IS HIT. 
+*     SGOOD_START_TIME IS TRUE IF A START TIME WAS FOUND
+*
+      REAL*4    SSCIN_ZPOS(SMAX_SCIN_HITS)
+      REAL*4    SSCIN_CENTER_COORD(SMAX_SCIN_HITS)
+      REAL*4    SSCIN_DEC_HIT_COORD(SMAX_SCIN_HITS)
+      REAL*4    SSCIN_WIDTH(SMAX_SCIN_HITS)
+      REAL*4    SSCIN_SLOP(SMAX_SCIN_HITS)
+      REAL*4    SSCIN_COR_ADC(SMAX_SCIN_HITS)
+      REAL*4    SSCIN_COR_TIME(SMAX_SCIN_HITS)
+      REAL*4    SSTART_TIME
+      INTEGER*4 SSTART_HITNUM
+      INTEGER*4 SSTART_HITSIDE
+      INTEGER*4 SSCIN_HITS_PER_PLANE(SNUM_SCIN_PLANES)
+      LOGICAL*4 STWO_GOOD_TIMES(SMAX_SCIN_HITS)
+      LOGICAL*4 SGOOD_START_TIME
+*      LOGICAL*4 SGOOD_START_PLANE
+
+      COMMON/SOS_DECODED_SCIN/
+     &     SSCIN_ZPOS,
+     &     SSCIN_CENTER_COORD,
+     &     SSCIN_WIDTH,
+     &     SSCIN_SLOP,
+     &     SSCIN_DEC_HIT_COORD,
+     &     SSCIN_COR_ADC,
+     &     SSCIN_COR_TIME,
+     &     SSTART_TIME,
+     &     SSCIN_HITS_PER_PLANE,
+     &     SSTART_HITNUM,
+     &     SSTART_HITSIDE,
+     &     STWO_GOOD_TIMES,
+     &     SGOOD_START_TIME
+*     &     SGOOD_START_PLANE
+*
+*
+*     SOS CALORIMETER HITS
+*      FILLED BY G_decode_event_by_banks
+*
+*     ALLOW FOR NO SPARCIFICATION OF SHOWER COUNTER ELEMENTS
+*
+*     EACH COUNTER HAS A
+*         COLUMN NUMBER
+*         ROW NUMBER
+*         ADC VALUE
+*         
+*     THE TOTAL NUMBER OF SHOWER HITS IS SCAL_TOT_HITS
+*
+      INTEGER*4 SMAX_CAL_BLOCKS     ! TOTAL NUMBER OF SHOWER BLOCKS
+      PARAMETER (SMAX_CAL_BLOCKS=44)
+      INTEGER*4 SMAX_CAL_ROWS         !Number of calorimeter rows
+      PARAMETER (SMAX_CAL_ROWS=11)
+      INTEGER*4 SMAX_CAL_COLUMNS      !Number of calorimeter columns
+      PARAMETER (SMAX_CAL_COLUMNS=4)
+      INTEGER*4 SCAL_TOT_HITS
+      INTEGER*4 SCAL_COLUMN(SMAX_CAL_BLOCKS)
+      INTEGER*4 SCAL_ROW(SMAX_CAL_BLOCKS)
+      INTEGER*4 SCAL_ADC(SMAX_CAL_BLOCKS)
+      REAL*4 SCAL_REALADC(SMAX_CAL_BLOCKS)
+      COMMON/SOS_RAW_CAL/
+     &     SCAL_REALADC,
+     &     SCAL_COLUMN,
+     &     SCAL_ROW,
+     &     SCAL_ADC,
+     &     SCAL_TOT_HITS
+*
+*    DECODED CALORIMETER QUANTITIES
+*    FILLED BY S_TRANS_CAL USING ONLY THE CALORIMETER INFORMATION
+* 
+*         X COORDINATE OF BLOCK CENTER
+*         Z COORDINATE OF BLOCK CENTER
+*         ENERGY DEPOSITED IN THE BLOCK
+*         ENERGY DEPOSITED IN COLUMN #1
+*                                    #2
+*                                    #3
+*                                    #4
+*         TOTAL ENERGY IN THE CALORIMETER
+      INTEGER*4 SNHITS_CAL         !NUMBER OF CALORIMETER HITS ABOVE THRESHOLD
+      REAL*4 SBLOCK_XC             !X COORDINATE OF BLOCK CENTER
+      REAL*4 SBLOCK_ZC             !Z COORDINATE OF BLOCK CENTER
+      REAL*4 SBLOCK_DE             !ENERGY DEPOSITION IN THE BLOCKS
+      REAL*4 SCAL_E1               !ENERGY DEPOSITION IN COLUMN #1
+      REAL*4 SCAL_E2               !                            #2
+      REAL*4 SCAL_E3               !                            #3
+      REAL*4 SCAL_E4               !                            #4
+      REAL*4 SCAL_ET               !TOTAL ENERGY IN THE CALORIMETER
+      COMMON/SOS_DECODED_CAL/
+     &     SBLOCK_XC(SMAX_CAL_BLOCKS),
+     &     SBLOCK_ZC(SMAX_CAL_BLOCKS),
+     &     SBLOCK_DE(SMAX_CAL_BLOCKS),
+     &     SCAL_E1,
+     &     SCAL_E2,
+     &     SCAL_E3,
+     &     SCAL_E4,
+     &     SCAL_ET,
+     &     SNHITS_CAL
+*
+*
+*     SOS CERENKOV HITS
+*      FILLED BY G_decode_event_by_banks
+*
+*     THERE ARE FOUR CERENKOV PHOTOTUBES. EACH HIT HAS
+*          TUBE NUMBER
+*          ADC VALUE
+*    THE TOTAL NUMBER OF PHOTOTUBE HITS IS SCER_TOT_HITS
+*    HOWEVER TO MAKE THE DECODERS SYMMETRICAL TO A SCINT WE MUST ADD
+*    A DUMMY PLANE NUMBER.
+      INTEGER*4 SMAX_CER_HITS
+      PARAMETER(SMAX_CER_HITS=4)
+      INTEGER*4 SCER_TOT_HITS
+      INTEGER*4 SCER_TUBE_NUM
+      INTEGER*4 SCER_ADC
+      INTEGER*4 SCER_PLANE
+      COMMON/SOS_RAW_CER/
+     &     SCER_TUBE_NUM(SMAX_CER_HITS),
+     &     SCER_ADC(SMAX_CER_HITS),
+     &     SCER_PLANE(SMAX_CER_HITS),
+     &     SCER_TOT_HITS
+*
+*
+*
+*
+*     SOS AEROGEL HITS
+*      FILLED BY G_decode_event_by_banks
+*
+*     THERE ARE 14 AEROGEL PHOTOTUBES. We will pair tubes on the left and
+*     right side so that are 7 "counters"
+*          TUBE Row
+*          ADC Left VALUE
+*          ADC Right VALUE
+*    THE TOTAL NUMBER OF PHOTOTUBE HITS IS SCER_TOT_HITS
+*    HOWEVER TO MAKE THE DECODERS SYMMETRICAL TO A SCINT WE MUST ADD
+*    A DUMMY PLANE NUMBER.
+      INTEGER*4 SMAX_AER_HITS
+      PARAMETER(SMAX_AER_HITS=8)
+      INTEGER*4 SAER_TOT_HITS
+      INTEGER*4 SAER_PAIR_NUM
+      INTEGER*4 SAER_ADC_LEFT
+      INTEGER*4 SAER_ADC_RIGHT
+      INTEGER*4 SAER_DUMMY
+      INTEGER*4 SAER_PLANE
+      COMMON/SOS_RAW_AER/
+     &     SAER_PLANE(SMAX_AER_HITS),
+     &     SAER_PAIR_NUM(SMAX_AER_HITS),
+     &     SAER_ADC_LEFT(SMAX_AER_HITS),
+     &     SAER_ADC_RIGHT(SMAX_AER_HITS),
+     &     SAER_DUMMY(SMAX_AER_HITS),
+     &     SAER_TOT_HITS
+*
+*
+ 
+*     SOS DETECTOR TRACK QUANTITIES
+*     FILLED BY S_TRACK SUBROUTINE 
+*
+      INTEGER*4 SNTRACKS_MAX       ! NUMBER OF TRACKS ALLOWED IN FOCAL PLANE
+      PARAMETER (SNTRACKS_MAX=10)   ! SET MAXIMUM TO 10
+      INTEGER*4 SNTRACKHITS_MAX    ! MAXIMUM NUMBER OF HITS IN EACH TRACK
+      PARAMETER (SNTRACKHITS_MAX=24) ! SET MAXIMUM TO 24
+      INTEGER*4 SNTRACKS_FP         ! NUMBER OF FOCAL PLANE TRACKS FOUND
+*     ALL THE FOLLOWING VARIABLES ARE ARRAYS
+*
+      REAL*4  SX_FP                ! X POSITION OF TRACK IN FOCAL PLANE
+      REAL*4  SY_FP                ! Y POSITION OF TRACK IN FOCAL PLANE
+      REAL*4  SZ_FP                ! Z POSITION OF TRACK IN FOCAL PLANE
+      REAL*4  SXP_FP               ! X SLOPE OF TRACK IN FOCAL PLANE
+      REAL*4  SYP_FP               ! Y SLOPE OF TRACK IN FOCAL PLANE
+      REAL*4  SCHI2_FP             ! FIT QUALITY IN FOCAL PLANE
+      REAL*4  SCHI2PERDOF_FP       ! FP CHI2 PER DEGREE OF FREEDOM
+      INTEGER*4 SNFREE_FP          ! NUMBER OF DEGREES OF FREEDOM IN FIT
+      INTEGER*4 SNTRACK_HITS       ! LIST OF HITS ON EACH TRACK
+      REAL*4  SDEL_FP              !  FOCAL PLANE ERROR MATRIX
+      REAL*4  SX_FP_rot            ! x in rotated focal plane
+      REAL*4  SY_FP_rot            ! y in rotated f plane
+      REAL*4  SXP_FP_rot           ! x slope in rotated f plane
+      REAL*4  SYP_FP_rot           ! y slope in rot f plane
+* THE FOCAL PLANE ERROR MATRIX IS A 4 BY 4 BY SNTRACK_MAX ARRAY
+* THE FOUR INDECIES FOR EACH TRACK ARE X, XP, Y,  YP
+* THE ERROR MATRIX FOR EACH TRACK IS SYMMETRIC ABOUT THE DIAGONAL
+*      DELXX   DELXXP  DELXY   DELXYP
+*      DELXPX  DELXPXP DELXPY  DELXPYP
+*      DELYPX  DELYXP  DELYY   DELYYP
+*      DELYPX DELYPXP  DELYPY  DELYPYP
+      COMMON/SOS_FOCAL_PLANE/
+     1     SX_FP(SNTRACKS_MAX),
+     2     SY_FP(SNTRACKS_MAX),
+     3     SZ_FP(SNTRACKS_MAX),
+     4     SXP_FP(SNTRACKS_MAX),
+     5     SYP_FP(SNTRACKS_MAX),
+     6     SCHI2_FP(SNTRACKS_MAX),
+     7     SDEL_FP(4,4,SNTRACKS_MAX),
+     8     SNTRACK_HITS(SNTRACKS_MAX,SNTRACKHITS_MAX+1),
+     9     SNFREE_FP(SNTRACKS_MAX),
+     A     SNTRACKS_FP,SCHI2PERDOF_FP(SNTRACKS_MAX),
+     >     SX_FP_rot(SNTRACKS_MAX),
+     >     SY_FP_rot(SNTRACKS_MAX), 
+     >     SXP_FP_rot(SNTRACKS_MAX),
+     >     SYP_FP_rot(SNTRACKS_MAX)
+ 
+*     SOS TARGET QUANTITIES
+*     ASSUME THE SAME NUMBER OF MAXIMUM TRACKS AS IN THE FOCAL PLANE
+*     SNTRACKS_MAX
+*
+*     FILLED BY S_TARG_TRANS SUBROUTINE
+      INTEGER*4 SNTRACKS_TAR        ! NUMBER OF TARGET TRACKS FOUND 
+*     ALL THE FOLLOWING VARIABLES ARE ARRAYS
+*
+      REAL*4  SX_TAR                ! X POSITION OF TRACK AT TARGET
+      REAL*4  SY_TAR                ! Y POSITION OF TRACK AT TARGET
+      REAL*4  SZ_TAR                ! Z POSITION OF TRACK AT TARGET
+      REAL*4  SXP_TAR               ! X SLOPE OF TRACK AT TARGET
+      REAL*4  SYP_TAR               ! Y SLOPE OF TRACK AT TARGET 
+      REAL*4  SDELTA_TAR            ! FRACTION TRACK MOMENTUM
+      REAL*4  SP_TAR                ! MOMENTUM OF TRACK AT TARGET
+      REAL*4  SCHI2_TAR             ! FIT QUALITY AT TARGET
+      INTEGER*4 SNFREE_TAR          ! NUMBER OF DEGREES OF FREEDOM IN FIT
+      REAL*4  SDEL_TAR              ! TARGET  ERROR MATRIX
+* THE FOCAL PLANE ERROR MATRIX IS A 5 BY 5 BY SNTRACK_MAX ARRAY
+* THE FIVE INDECIES FOR EACH TRACK ARE X, Y , XP, YP and P
+* THE ERROR MATRIX FOR EACH TRACK IS SYMMETRIC ABOUT THE DIAGONAL
+*      DELXX  DELXXP  DELXY  DELXYP  DELXP
+*      DELXPX DELXPXP DELXPY DELXPYP DELXPP
+*      DELYX  DELYXPY DELYY  DELYYP  DELYP
+*      DELYPX DELYPXP DELYPY DELYPYP DELYPP
+*      DELPX  DELPXP  DELPY  DELPXP  DELPP
+      INTEGER*4 SLINK_TAR_FP        ! LINK POINTER TO FOCAL PLANE TRACK NUMBER
+      COMMON/SOS_TARGET/
+     1     SX_TAR(SNTRACKS_MAX),
+     2     SY_TAR(SNTRACKS_MAX),
+     3     SZ_TAR(SNTRACKS_MAX),
+     4     SXP_TAR(SNTRACKS_MAX),
+     5     SYP_TAR(SNTRACKS_MAX),
+     6     SDELTA_TAR(SNTRACKS_MAX),
+     7     SP_TAR(SNTRACKS_MAX),
+     8     SCHI2_TAR(SNTRACKS_MAX),
+     9     SDEL_TAR(5,5,SNTRACKS_MAX),
+     A     SNFREE_TAR(SNTRACKS_MAX),
+     B     SLINK_TAR_FP(SNTRACKS_MAX),
+     C     SNTRACKS_TAR
+*
+*                                          
+*     SOS_TRACK_TESTS
+*       
+*     PARTICLE ID INFORMATION FILLED BY S_TOF and S_CAL
+*     THIS STORES THE RESULTS OF SHOWER AND SCINTILLATOR CALCULATIONS
+*     FOR EACH OF THE TRACKS GENERATED BY S_TRACK
+*
+      INTEGER*4 SNBLOCKS_CAL(SNTRACKS_MAX)
+      REAL*4    STRACK_E1(SNTRACKS_MAX)
+      REAL*4    STRACK_E2(SNTRACKS_MAX)
+      REAL*4    STRACK_E3(SNTRACKS_MAX)
+      REAL*4    STRACK_E4(SNTRACKS_MAX)
+      REAL*4    STRACK_ET(SNTRACKS_MAX)
+      REAL*4    STRACK_PRESHOWER_E(SNTRACKS_MAX)
+*
+      INTEGER*4 SSCIN_HIT(SNTRACKS_MAX,SMAX_SCIN_HITS)
+      INTEGER*4 SNUM_SCIN_HIT(SNTRACKS_MAX)
+      INTEGER*4 SNUM_PMT_HIT(SNTRACKS_MAX)
+      REAL*4 SDEDX(SNTRACKS_MAX,SMAX_SCIN_HITS)        
+      REAL*4 SBETA(SNTRACKS_MAX)
+      REAL*4 SBETA_CHISQ(SNTRACKS_MAX)
+      REAL*4 STIME_AT_FP(SNTRACKS_MAX)
+*
+*
+      COMMON/SOS_TRACK_TESTS/
+     1     STRACK_E1,              ! ENERGY IN FIRST CALORIMETER COLUMN NEAR TRACK
+     2     STRACK_E2,              !           SECOND COLUMN
+     3     STRACK_E3,              !           THIRD COLUMN
+     4     STRACK_E4,              !           FOURTH COLUMN
+     5     STRACK_ET,              ! TOTAL SHOWER ENERGY ALONG TRACK
+     6     STRACK_PRESHOWER_E,     ! Preshower energy on track Note exp dependent.
+     7     SDEDX,                  ! 
+     8     SBETA,                  ! VELOCITY OF TRACK
+     9     SBETA_CHISQ,            ! CHISQ OF FIT TO BETA OF TRACK
+     A     STIME_AT_FP,            ! 
+     B     SNBLOCKS_CAL,           ! NUMBER OF SHOWER BLOCKS ON EACH TRACK
+     C     SSCIN_HIT,              ! ARRAY OF SCIN HITS ASSOCIATED WITH
+     D                             ! EACH TRACK
+     E     SNUM_SCIN_HIT,          ! NUMBER OF HITS FOR EACH TRACK
+     F     SNUM_PMT_HIT            ! NUMBER OF PMT HITS FOR EACH TRACK
+*
+*
+*     SOS SINGLES PHYSICS COMMON BLOCKS
+*     THESE ARE FILLED BY S_PHYSICS
+* 
+*  
+      REAL*4 SSP                   ! Lab momentum of chosen track in GeV/c
+      REAL*4 SSENERGY              ! Lab total energy of chosen track in GeV
+      REAL*4 SSDELTA               ! Spectrometer delta of chosen track
+      REAL*4 SSTHETA               ! Lab Scattering angle in radians
+      REAL*4 SSPHI                 ! Lab Azymuthal angle in radians
+      REAL*4 SSMINV                ! Invariant Mass of remaing hadronic system
+      REAL*4 SSZBEAM               ! Lab Z coordinate of intersection of beam
+                                   ! track with spectrometer ray
+      REAL*4 SSDEDX(4)             ! DEDX of chosen track in each plane
+      REAL*4 SSBETA                ! BETA of chosen track
+      REAL*4 SSTRACK_ET            ! Total shower energy of chosen track
+      REAL*4 SSTRACK_PRESHOWER_E   ! preshower of chosen track
+      REAL*4 SSTIME_AT_FP 
+      REAL*4 SSX_FP                ! X focal plane position 
+      REAL*4 SSY_FP 
+      REAL*4 SSXP_FP 
+      REAL*4 SSYP_FP 
+      REAL*4 SSCHI2PERDEG    ! CHI2 per degree of freedom of chosen track.
+      REAL*4 SSX_TAR 
+      REAL*4 SSY_TAR 
+      REAL*4 SSXP_TAR 
+      REAL*4 SSYP_TAR 
+      REAL*4 SSBETA_CHISQ
+*
+      real*4 ssmass2               ! Mass squared
+      real*4 sst                   ! invariant t
+      real*4 ssu                   ! invariant u
+      real*4 sseloss
+      real*4 ssq3                  ! Lab frame momentum transfer
+      real*4 ssthetaq, ssphiq      ! Direction of q3
+      real*4 ssbigq2               ! Q**2
+      real*4 ssx                   ! fraction of nucleon p carried by quark
+      real*4 ssy                   ! fraction of lepton's E lost in lab
+      real*4 ssw                   ! Invariant mass of recoil system
+      real*4 ssw2                  ! Invariant mass**2 of recoil system
+*
+      INTEGER*4 SSNUM_FPTRACK      ! Index of focal plane track chosen
+      INTEGER*4 SSNUM_TARTRACK     ! Index of target track chosen
+      INTEGER*4 SSID_LUND          ! LUND particle ID code -- not yet filled
+      INTEGER*4 SSNFREE_FP 
+      INTEGER*4 SSNUM_SCIN_HIT   ! # OF SCINTILLATORS ON TRACK
+      INTEGER*4 SSNUM_PMT_HIT    ! # OF HODOSCOPE PMTS ON TRACK
+*
+      COMMON/SOS_PHYSICS_R4/
+     & SSP,
+     & SSENERGY,
+     & SSDELTA,
+     & SSTHETA,
+     & SSPHI,
+     & SSMINV,
+     & SSZBEAM,
+     & SSDEDX,
+     & SSBETA,
+     & SSTRACK_ET,
+     & SSTRACK_PRESHOWER_E, 
+     & SSTIME_AT_FP,
+     & SSX_FP ,
+     & SSY_FP ,
+     & SSXP_FP ,
+     & SSYP_FP ,
+     & SSCHI2PERDEG ,
+     & SSX_TAR ,
+     & SSY_TAR ,
+     & SSXP_TAR ,
+     & SSYP_TAR ,
+     & SSBETA_CHISQ,
+     &     ssmass2,
+     &     sst,
+     &     ssu,
+     &     sseloss,
+     &     ssq3,
+     &     ssthetaq, ssphiq,
+     &     ssbigq2,
+     &     ssx,
+     &     ssy,
+     &     ssw,
+     &     ssw2
+*
+      COMMON/SOS_PHYSICS_I4/
+     & SSNUM_FPTRACK,
+     & SSNUM_TARTRACK,
+     & SSID_LUND,
+     & SSNFREE_FP,
+     & SSNUM_SCIN_HIT,
+     & SSNUM_PMT_HIT
+
+*     Non-Hits data with SOS gates or starts.
+*     (Energy SUMS, logic timing,...)
+*
+      INTEGER SMAX_MISC_HITS
+      PARAMETER(SMAX_MISC_HITS=50)
+      INTEGER*4 SMISC_TOT_HITS
+      INTEGER*4 SMISC_RAW_ADDR1    ! "Plane"
+      INTEGER*4 SMISC_RAW_ADDR2    ! "Counter"
+      INTEGER*4 SMISC_RAW_DATA
+      COMMON/S_RAW_MISC/
+     &     SMISC_RAW_ADDR1(SMAX_MISC_HITS),
+     &     SMISC_RAW_ADDR2(SMAX_MISC_HITS),
+     &     SMISC_RAW_DATA(SMAX_MISC_HITS),
+     &     SMISC_TOT_HITS
+*
+*
+*                                          
+*******************end: sos_data_structures.cmn*************************
+*     Local Variables:
+*     mode: fortran
+*     fortran-continuation-string: "&"
+*     comment-column: 35
+*     End:
+

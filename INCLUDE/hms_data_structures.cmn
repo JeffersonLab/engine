@@ -1,0 +1,535 @@
+*****************begin: hms_data_structures.cmn*************************
+*
+*     include file     hms_data_structures.cmn
+*
+*     Author:	D. F. Geesaman		1 September 1993
+*
+* $Log$
+* Revision 1.1  1995/05/22 18:41:15  cdaq
+* Initial revision
+*
+*
+*     CTPTYPE=parm
+*
+*     HTHETA_LAB             HMS LAB ANGLE THETA (RADIANS)
+*     HPHI_LAB               HMS LAB ANGLE PHI 
+*     HPCENTRAL              HMS CENTRAL MOMENUTM (GEV)
+*     HBFIELD                HMS B FIELD INCLUDING SIGN
+*
+      REAL*4  HTHETA_LAB     ! HMS LAB ANGLE THETA (RADIANS)
+      REAL*4  HPHI_LAB       ! HMS LAB ANGLE PHI 
+      REAL*4  HPCENTRAL      ! HMS CENTRAL MOMENUTM (GEV)
+      REAL*4  HBFIELD        ! HMS B FIELD INCLUDING SIGN
+      REAL*4  HPARTMASS      ! EXPECTED MASS OF DETECTED PARTICLE IN HMS
+      COMMON/HMS_SPECTROMETER/
+     &     HTHETA_LAB,
+     &     HPHI_LAB,
+     &     HPCENTRAL,
+     &     HBFIELD,
+     &     HPARTMASS
+*
+*     CTPTYPE=event
+*
+*     HMS  DECODED DATA
+*
+*     FILLED BY G_decode_event_by_banks 
+*     HMS DRIFT CHAMBER HITS
+*         EACH CHAMBER HIT (TDC VALUE) HAS A 
+*             PLANE NUMBER
+*             WIRE NUMBER
+*             TDC VALUE
+*
+*     THE TOTAL NUMBER OF HITS IS GIVEN IN HDC_RAW_TOT_HITS
+*
+      INTEGER*4 HMAX_DC_HITS       ! MAXIUM NUMBER OF DRIFT CHAMBER HITS
+      INTEGER*4 HMAX_NUM_DC_PLANES ! MAX NUMBER OF HMS DRIFT CHAMBER PLANES
+      INTEGER*4 HMAX_NUM_CHAMBERS   ! NUMBER OF HMS DRIFT CHAMBERS
+      PARAMETER(HMAX_DC_HITS=3600)
+      PARAMETER(HMAX_NUM_DC_PLANES=12)
+      PARAMETER(HMAX_NUM_CHAMBERS=2)
+      INTEGER*4 HDC_RAW_PLANE_NUM
+      INTEGER*4 HDC_RAW_WIRE_NUM
+      INTEGER*4 HDC_RAW_TDC
+      INTEGER*4 HDC_RAW_TOT_HITS
+      COMMON/HMS_RAW_DC/
+     1     HDC_RAW_PLANE_NUM(HMAX_DC_HITS),
+     2     HDC_RAW_WIRE_NUM(HMAX_DC_HITS),
+     3     HDC_RAW_TDC(HMAX_DC_HITS),
+     4     HDC_RAW_TOT_HITS
+*
+*     HMS  DECODED DC DATA
+*
+*     FILLED BY H_TRANS_DC TRANSLATION  ROUTINE 
+*     HMS DRIFT CHAMBER HITS
+*         EACH CHAMBER HIT (TDC VALUE) HAS A 
+*             PLANE NUMBER
+*             WIRE NUMBER
+*             TDC VALUE
+*             DRIFT TIME
+*             DRIFT DISTANCE
+*             GENERALIZED COORDINATE OF HIT WIRE CENTER
+*             GENERALIZED COORDINATE OF HIT PERPENDICULAR TO WIRE DIRECTION
+*
+*     THE TOTAL NUMBER OF HITS IN EACH PLANE IS GIVEN IN HDC_HITS_PER_PLANE(I)
+*     THE TOTAL NUMBER OF HITS IS GIVEN IN HDC_TOT_HITS
+*
+      INTEGER*4 HDC_PLANE_NUM     ! copied from HMS_RAW_DC
+      INTEGER*4 HDC_WIRE_NUM      ! copied from HMS_RAW_DC
+      INTEGER*4 HDC_TDC           ! copied from HMS_RAW_DC
+      INTEGER*4 HDC_TOT_HITS
+      REAL*4 HDC_DRIFT_TIME
+      REAL*4 HDC_DRIFT_DIS
+      REAL*4 HDC_WIRE_CENTER
+      REAL*4  HDC_WIRE_COORD
+      COMMON/HMS_DECODED_DC/
+     1     HDC_DRIFT_TIME(HMAX_DC_HITS),
+     2     HDC_DRIFT_DIS(HMAX_DC_HITS),
+     3     HDC_WIRE_CENTER(HMAX_DC_HITS),
+     4     HDC_WIRE_COORD(HMAX_DC_HITS),
+     5     HDC_PLANE_NUM(HMAX_DC_HITS),
+     6     HDC_WIRE_NUM(HMAX_DC_HITS),
+     7     HDC_TDC(HMAX_DC_HITS),
+     9     HDC_TOT_HITS
+*
+*     HMS RAW SCINTILLATOR HITS
+*     FILLED BY g_decode_evebt_by_banks
+*         EACH SCINTILLATOR HIT IS SPECIFIED BY A
+*              SCINTILLATOR PLANE NUMBER
+*              SCINTILLATOR COUNTER NUMBER
+*              SCINTILLATOR ADC AT POSITIVE GENERALIZED COORDINATE END
+*              SCINTILLATOR ADC AT NEGATIVE GENERALIZED COORDINATE END
+*              SCINTILLATOR TDC AT POSITIVE GENERALIZED COORDINATE END
+*              SCINTILLATOR TDC AT NEGATIVE GENERALIZED COORDINATE END    
+*     THE TOTAL NUMBER OF HITS IS GIVEN BY HSCIN_ALL_TOT_HITS 
+      INTEGER*4 HMAX_ALL_SCIN_HITS           ! MAXIMUM TOTAL NUMBER OF SCIN HITS
+      PARAMETER (HMAX_ALL_SCIN_HITS=53) ! Number of elements + 1
+      INTEGER*4 HNUM_ALL_SCIN_PLANES          ! TOTAL NUMBER OF SCIN PLANES
+      PARAMETER (HNUM_ALL_SCIN_PLANES=4)
+      INTEGER*4 HSCIN_ALL_PLANE_NUM
+      INTEGER*4 HSCIN_ALL_COUNTER_NUM
+      INTEGER*4 HSCIN_ALL_ADC_POS
+      INTEGER*4 HSCIN_ALL_ADC_NEG
+      INTEGER*4 HSCIN_ALL_TDC_POS
+      INTEGER*4 HSCIN_ALL_TDC_NEG
+      INTEGER*4 HSCIN_ALL_TOT_HITS 
+*
+      COMMON/HMS_RAW_SCIN/
+     &     HSCIN_ALL_PLANE_NUM(HMAX_ALL_SCIN_HITS),
+     &     HSCIN_ALL_COUNTER_NUM(HMAX_ALL_SCIN_HITS),
+     &     HSCIN_ALL_ADC_POS(HMAX_ALL_SCIN_HITS),
+     &     HSCIN_ALL_ADC_NEG(HMAX_ALL_SCIN_HITS),
+     &     HSCIN_ALL_TDC_POS(HMAX_ALL_SCIN_HITS),
+     &     HSCIN_ALL_TDC_NEG(HMAX_ALL_SCIN_HITS),
+     &     HSCIN_ALL_TOT_HITS
+*
+*     HMS REAL SCINTILLATOR HITS (Hits with no TDC data stripped out)
+*     FILLED BY H_strip_scin (which is called by h_trans_scin)
+*         EACH SCINTILLATOR HIT IS SPECIFIED BY A
+*              SCINTILLATOR PLANE NUMBER
+*              SCINTILLATOR COUNTER NUMBER
+*              SCINTILLATOR ADC AT POSITIVE GENERALIZED COORDINATE END
+*              SCINTILLATOR ADC AT NEGATIVE GENERALIZED COORDINATE END
+*              SCINTILLATOR TDC AT POSITIVE GENERALIZED COORDINATE END
+*              SCINTILLATOR TDC AT NEGATIVE GENERALIZED COORDINATE END    
+*     THE TOTAL NUMBER OF HITS IS GIVEN BY HSCIN_TOT_HITS 
+      INTEGER*4 HMAX_SCIN_HITS           ! MAXIMUM TOTAL NUMBER OF SCIN HITS
+      PARAMETER (HMAX_SCIN_HITS=53) ! Number of elements + 1
+      INTEGER*4 HNUM_SCIN_PLANES          ! TOTAL NUMBER OF SCIN PLANES
+      PARAMETER (HNUM_SCIN_PLANES=4)
+      INTEGER*4 HNUM_SCIN_ELEMENTS
+      PARAMETER (HNUM_SCIN_ELEMENTS=16)
+      INTEGER*4 HSCIN_PLANE_NUM
+      INTEGER*4 HSCIN_COUNTER_NUM
+      REAL*4 HSCIN_ADC_POS
+      REAL*4 HSCIN_ADC_NEG
+      INTEGER*4 HSCIN_TDC_POS
+      INTEGER*4 HSCIN_TDC_NEG
+      INTEGER*4 HSCIN_TOT_HITS 
+      INTEGER*4 HSCIN_SING_COUNTER ! DJM's registered hit counter
+*
+      COMMON/HMS_REAL_SCIN/
+     &     HSCIN_PLANE_NUM(HMAX_SCIN_HITS),
+     &     HSCIN_COUNTER_NUM(HMAX_SCIN_HITS),
+     &     HSCIN_ADC_POS(HMAX_SCIN_HITS),
+     &     HSCIN_ADC_NEG(HMAX_SCIN_HITS),
+     &     HSCIN_TDC_POS(HMAX_SCIN_HITS),
+     &     HSCIN_TDC_NEG(HMAX_SCIN_HITS),
+     &     HSCIN_TOT_HITS,
+     &     HSCIN_SING_COUNTER(HNUM_SCIN_PLANES)
+*
+*
+*    DECODED SCIN HITS
+*     FILLED BY H_TRANS_SCIN
+*       THIS USES SCINTILLATOR INFORMATION ONLY TO CALCUATE   
+*          HSCIN_APPROX_HIT_COORD    GENERALIZED COORDINATE ALONG HIT
+*                                      SCINTILLATOR DETERMINED FROM TDC INFO.
+*          HSCIN_COR_ADC       CORRECTED PULSE HEIGHT AT HIT
+*          HSCIN_COR_TIME      CORRECTED TIME AT HIT
+*     THE TOTAL NUMBER OF HITS IN EACH PLANE IS GIVEN BY HSCIN_HITS_PER_PLANE
+*     THE HSTART_TIME IS DEFINED AS THE TIME IF THE TRACK HAD GONE THROUGH
+* THE CENTER OF S1X. IT IS USED BY H_TRANS_DC FOR THE DRIFT TIME 
+* CALCULATION.
+*     HTWO_GOOD_TIMES  IS A LOGICAL VARIABLE WHICH IS TRUE IF BOTH ENDS
+* OF THE SCINTILLATOR ARE HIT AND FALSE IF ONLY ONE END IS HIT. 
+*     HGOOD_START_TIME IS TRUE IF A START TIME WAS FOUND
+*
+      REAL*4    HSCIN_ZPOS(HMAX_SCIN_HITS)
+      REAL*4    HSCIN_CENTER_COORD(HMAX_SCIN_HITS)
+      REAL*4    HSCIN_DEC_HIT_COORD(HMAX_SCIN_HITS)
+      REAL*4    HSCIN_WIDTH(HMAX_SCIN_HITS)
+      REAL*4    HSCIN_SLOP(HMAX_SCIN_HITS)
+      REAL*4    HSCIN_COR_ADC(HMAX_SCIN_HITS)
+      REAL*4    HSCIN_COR_TIME(HMAX_SCIN_HITS)
+      REAL*4    HSTART_TIME
+      INTEGER*4 HSTART_HITNUM
+      INTEGER*4 HSTART_HITSIDE
+      INTEGER*4 HSCIN_HITS_PER_PLANE(HNUM_SCIN_PLANES)
+      LOGICAL*4 HTWO_GOOD_TIMES(HMAX_SCIN_HITS)
+      LOGICAL*4 HGOOD_START_TIME
+
+      COMMON/HMS_DECODED_SCIN/
+     &     HSCIN_ZPOS,
+     &     HSCIN_CENTER_COORD,
+     &     HSCIN_WIDTH,
+     &     HSCIN_SLOP,
+     &     HSCIN_DEC_HIT_COORD,
+     &     HSCIN_COR_ADC,
+     &     HSCIN_COR_TIME,
+     &     HSTART_TIME,
+     &     HSCIN_HITS_PER_PLANE,
+     &     HSTART_HITNUM,
+     &     HSTART_HITSIDE,
+     &     HTWO_GOOD_TIMES,  
+     &     HGOOD_START_TIME
+*
+*
+*     HMS CALORIMETER HITS
+*
+*     ALLOW FOR NO SPARCIFICATION OF SHOWER COUNTER ELEMENTS
+*
+*     EACH COUNTER HAS A
+*         COLUMN NUMBER
+*         ROW NUMBER
+*         ADC VALUE
+*         
+*     THE TOTAL NUMBER OF SHOWER HITS IS HCAL_TOT_HITS
+*
+      INTEGER*4 HMAX_CAL_BLOCKS     ! TOTAL NUMBER OF SHOWER BLOCKS
+      PARAMETER (HMAX_CAL_BLOCKS=52)
+      INTEGER*4 HMAX_CAL_ROWS           !Number of calorimeter rows
+      PARAMETER (HMAX_CAL_ROWS=13)
+      INTEGER*4 HMAX_CAL_COLUMNS      !Number of calorimeter columns
+      PARAMETER (HMAX_CAL_COLUMNS=4)
+      INTEGER*4 HCAL_TOT_HITS
+      INTEGER*4 HCAL_COLUMN(HMAX_CAL_BLOCKS)
+      INTEGER*4 HCAL_ROW(HMAX_CAL_BLOCKS)
+      INTEGER*4 HCAL_ADC(HMAX_CAL_BLOCKS)
+      REAL*4 HCAL_REALADC(HMAX_CAL_BLOCKS)
+
+      COMMON/HMS_RAW_CAL/
+     &     HCAL_COLUMN,
+     &     HCAL_ROW,
+     &     HCAL_ADC,
+     &     HCAL_TOT_HITS,
+     &     HCAL_REALADC
+*
+*    DECODED CALORIMETER QUANTITIES
+*    FILLED BY H_TRANS_CAL USING ONLY THE CALORIMETER INFORMATION
+* 
+*         X COORDINATE OF BLOCK CENTER
+*         Z COORDINATE OF BLOCK CENTER
+*         ENERGY DEPOSITED IN THE BLOCK
+*         ENERGY DEPOSITED IN COLUMN #1
+*                                    #2
+*                                    #3
+*                                    #4
+*         TOTAL ENERGY IN THE CALORIMETER
+      INTEGER*4 HNHITS_CAL      !NUMBER OF CALORIMETER HITS ABOVE THRESHOLD
+      REAL*4 HBLOCK_XC          !X COORDINATE OF BLOCK CENTER
+      REAL*4 HBLOCK_ZC          !Z COORDINATE OF BLOCK CENTER
+      REAL*4 HBLOCK_DE          !ENERGY DEPOSITION IN THE BLOCKS
+      REAL*4 HCAL_E1            !ENERGY DEPOSITION IN COLUMN #1
+      REAL*4 HCAL_E2            !                            #2
+      REAL*4 HCAL_E3            !                            #3
+      REAL*4 HCAL_E4            !                            #4
+      REAL*4 HCAL_ET            !TOTAL ENERGY IN THE CALORIMETER
+      COMMON/HMS_DECODED_CAL/
+     &     HBLOCK_XC(HMAX_CAL_BLOCKS),
+     &     HBLOCK_ZC(HMAX_CAL_BLOCKS),
+     &     HBLOCK_DE(HMAX_CAL_BLOCKS),
+     &     HCAL_E1,
+     &     HCAL_E2,
+     &     HCAL_E3,
+     &     HCAL_E4,
+     &     HCAL_ET,
+     &     HNHITS_CAL
+*
+*     HMS CERENKOV HITS
+*      FILLED BY G_decode_event_by_banks
+*
+*     THERE ARE TWO CERENKOV PHOTOTUBES. EACH HIT HAS
+*          TUBE NUMBER
+*          ADC VALUE
+*    THE TOTAL NUMBER OF PHOTOTUBE HITS IS HCER_TOT_HITS
+*    HOWEVER TO MAKE THE DECODERS SYMMETRICAL TO A SCINT WE MUST ADD
+*    A DUMMY PLANE NUMBER.
+      INTEGER*4 HMAX_CER_HITS
+      PARAMETER(HMAX_CER_HITS=2)
+      INTEGER*4 HCER_TOT_HITS
+      INTEGER*4 HCER_TUBE_NUM
+      INTEGER*4 HCER_ADC
+      INTEGER*4 HCER_PLANE
+      COMMON/HMS_RAW_CER/
+     &     HCER_TUBE_NUM(HMAX_CER_HITS),
+     &     HCER_ADC(HMAX_CER_HITS),
+     &     HCER_PLANE(HMAX_CER_HITS),
+     &     HCER_TOT_HITS
+*
+*
+*
+ 
+*     HMS DETECTOR TRACK QUANTITIES
+*     FILLED BY H_TRACK SUBROUTINE 
+*
+      INTEGER*4 HNTRACKS_MAX       ! NUMBER OF TRACKS ALLOWED IN FOCAL PLANE
+      PARAMETER (HNTRACKS_MAX=5)   ! SET MAXIMUM TO 5
+      INTEGER*4 HNTRACKHITS_MAX    ! MAXIMUM NUMBER OF HITS IN EACH TRACK
+      PARAMETER (HNTRACKHITS_MAX=16) ! SET MAXIMUM TO 15
+      INTEGER*4 HNTRACKS_FP         ! NUMBER OF FOCAL PLANE TRACKS FOUND
+*     ALL THE FOLLOWING VARIABLES ARE ARRAYS
+*
+      REAL*4  HX_FP                ! X POSITION OF TRACK IN FOCAL PLANE
+      REAL*4  HY_FP                ! Y POSITION OF TRACK IN FOCAL PLANE
+      REAL*4  HZ_FP                ! Z POSITION OF TRACK IN FOCAL PLANE
+      REAL*4  HXP_FP               ! X SLOPE OF TRACK IN FOCAL PLANE
+      REAL*4  HYP_FP               ! Y SLOPE OF TRACK IN FOCAL PLANE
+      REAL*4  HCHI2_FP             ! FIT QUALITY IN FOCAL PLANE
+      REAL*4 HCHI2PERDOF_FP        ! fp chi2 per degree of freedom
+      INTEGER*4 HNFREE_FP          ! NUMBER OF DEGREES OF FREEDOM IN FIT
+      INTEGER*4 HNTRACK_HITS      ! LIST OF HITS ON EACH TRACK
+      REAL*4  HDEL_FP              !  FOCAL PLANE ERROR MATRIX
+      REAL*4  HX_FP_rot            ! x in rotated focal plane
+      REAL*4  HY_FP_rot            ! y in rotated f plane
+      REAL*4  HXP_FP_rot           ! x slope in rotated f plane
+      REAL*4  HYP_FP_rot           ! y slope in rot f plane
+
+* THE FOCAL PLANE ERROR MATRIX IS A 4 BY 4 BY HNTRACK_MAX ARRAY
+* THE FOUR INDECIES FOR EACH TRACK ARE X, XP, Y,  YP
+* THE ERROR MATRIX FOR EACH TRACK IS SYMMETRIC ABOUT THE DIAGONAL
+*      DELXX   DELXXP  DELXY   DELXYP
+*      DELXPX  DELXPXP DELXPY  DELXPYP
+*      DELYPX  DELYXP  DELYY   DELYYP
+*      DELYPX DELYPXP  DELYPY  DELYPYP
+      COMMON/HMS_FOCAL_PLANE/
+     1     HX_FP(HNTRACKS_MAX),
+     2     HY_FP(HNTRACKS_MAX),
+     3     HZ_FP(HNTRACKS_MAX),
+     4     HXP_FP(HNTRACKS_MAX),
+     5     HYP_FP(HNTRACKS_MAX),
+     6     HCHI2_FP(HNTRACKS_MAX),
+     7     HDEL_FP(4,4,HNTRACKS_MAX),
+     8     HNTRACK_HITS(HNTRACKS_MAX,HNTRACKHITS_MAX+1),
+     9     HNFREE_FP(HNTRACKS_MAX),
+     A     HNTRACKS_FP,HCHI2PERDOF_FP(HNTRACKS_MAX),
+     >     HX_FP_rot(HNTRACKS_MAX),
+     >     HY_FP_rot(HNTRACKS_MAX), 
+     >     HXP_FP_rot(HNTRACKS_MAX),
+     >     HYP_FP_rot(HNTRACKS_MAX)
+
+ 
+*     HMS TARGET QUANTITIES
+*     ASSUME THE SAME NUMBER OF MAXIMUM TRACKS AS IN THE FOCAL PLANE
+*     HNTRACKS_MAX
+*
+*     FILLED BY H_TARG_TRANS SUBROUTINE
+      INTEGER*4 HNTRACKS_TAR        ! NUMBER OF TARGET TRACKS FOUND 
+*     ALL THE FOLLOWING VARIABLES ARE ARRAYS
+*
+      REAL*4  HX_TAR                ! X POSITION OF TRACK AT TARGET
+      REAL*4  HY_TAR                ! Y POSITION OF TRACK AT TARGET
+      REAL*4  HZ_TAR                ! Z POSITION OF TRACK AT TARGET
+      REAL*4  HXP_TAR               ! X SLOPE OF TRACK AT TARGET
+      REAL*4  HYP_TAR               ! Y SLOPE OF TRACK AT TARGET 
+      REAL*4  HDELTA_TAR            ! FRACTION TRACK MOMENTUM
+      REAL*4  HP_TAR                ! MOMENTUM OF TRACK AT TARGET
+      REAL*4  HCHI2_TAR             ! FIT QUALITY AT TARGET
+      INTEGER*4 HNFREE_TAR          ! NUMBER OF DEGREES OF FREEDOM IN FIT
+      REAL*4  HDEL_TAR              ! TARGET  ERROR MATRIX
+* THE FOCAL PLANE ERROR MATRIX IS A 5 BY 5 BY HNTRACK_MAX ARRAY
+* THE FIVE INDECIES FOR EACH TRACK ARE X, Y , XP, YP and P
+* THE ERROR MATRIX FOR EACH TRACK IS SYMMETRIC ABOUT THE DIAGONAL
+*      DELXX  DELXXP  DELXY  DELXYP  DELXP
+*      DELXPX DELXPXP DELXPY DELXPYP DELXPP
+*      DELYX  DELYXPY DELYY  DELYYP  DELYP
+*      DELYPX DELYPXP DELYPY DELYPYP DELYPP
+*      DELPX  DELPXP  DELPY  DELPXP  DELPP
+      INTEGER*4 HLINK_TAR_FP        ! LINK POINTER TO FOCAL PLANE TRACK NUMBER
+      COMMON/HMS_TARGET/
+     1     HX_TAR(HNTRACKS_MAX),
+     2     HY_TAR(HNTRACKS_MAX),
+     3     HZ_TAR(HNTRACKS_MAX),
+     4     HXP_TAR(HNTRACKS_MAX),
+     5     HYP_TAR(HNTRACKS_MAX),
+     6     HDELTA_TAR(HNTRACKS_MAX),
+     7     HP_TAR(HNTRACKS_MAX),
+     8     HCHI2_TAR(HNTRACKS_MAX),
+     9     HDEL_TAR(5,5,HNTRACKS_MAX),
+     A     HNFREE_TAR(HNTRACKS_MAX),
+     B     HLINK_TAR_FP(HNTRACKS_MAX),
+     C     HNTRACKS_TAR
+*
+*
+*     HMS_TRACK_TESTS
+*       
+*     PARTICLE ID INFORMATION FILLED BY H_TOF and H_CAL
+*     THIS STORES THE RESULTS OF SHOWER AND SCINTILLATOR CALCULATIONS
+*     FOR EACH OF THE TRACKS GENERATED BY H_TRACK
+*
+      INTEGER*4 HNBLOCKS_CAL(HNTRACKS_MAX)
+      REAL*4    HTRACK_E1(HNTRACKS_MAX)
+      REAL*4    HTRACK_E2(HNTRACKS_MAX)
+      REAL*4    HTRACK_E3(HNTRACKS_MAX)
+      REAL*4    HTRACK_E4(HNTRACKS_MAX)
+      REAL*4    HTRACK_ET(HNTRACKS_MAX)
+      REAL*4    HTRACK_PRESHOWER_E(HNTRACKS_MAX)
+*
+      INTEGER*4 HSCIN_HIT(HNTRACKS_MAX,HMAX_SCIN_HITS)
+      INTEGER*4 HNUM_SCIN_HIT(HNTRACKS_MAX)
+      INTEGER*4 HNUM_PMT_HIT(HNTRACKS_MAX)
+      REAL*4 HDEDX(HNTRACKS_MAX,HMAX_SCIN_HITS)
+      REAL*4 HBETA(HNTRACKS_MAX)
+      REAL*4 HBETA_CHISQ(HNTRACKS_MAX)
+      REAL*4 HTIME_AT_FP(HNTRACKS_MAX)
+*
+      COMMON/HMS_TRACK_TESTS/
+     1     HTRACK_E1,                   ! ENERGY IN FIRST CALORIMETER COLUMN NEAR TRACK
+     2     HTRACK_E2,                   !           SECOND COLUMN
+     3     HTRACK_E3,                   !           THIRD COLUMN
+     4     HTRACK_E4,                   !           FOURTH COLUMN
+     5     HTRACK_ET,                   ! TOTAL SHOWER ENERGY ALONG TRACK
+     6     HTRACK_PRESHOWER_E,          ! PRESHOWER ENERGY-Note definition is exp. dep.
+     7     HDEDX,                       ! 
+     8     HBETA,                       ! VELOCITY OF TRACK
+     9     HBETA_CHISQ,                 ! CHISQ OF FIT TO BETA OF TRACK
+     A     HTIME_AT_FP,                 ! 
+     B     HNBLOCKS_CAL,                ! NUMBER OF SHOWER BLOCKS ON EACH TRACK
+     C     HSCIN_HIT,                   ! ARRAY OF SCIN HITS ASSOCIATED WITH
+     D                                  ! EACH TRACK
+     E     HNUM_SCIN_HIT,               ! NUMBER OF HITS FOR EACH TRACK
+     F     HNUM_PMT_HIT                 ! NUMBER OF PMT HITS FOR EACH TRACK
+*                                          
+*     HMS SINGLES PHYSICS COMMON BLOCKS
+*     THESE ARE FILLED BY H_PHYSICS
+* 
+*  
+      REAL*4 HSP                 ! Lab momentum of chosen track in GeV/c
+      REAL*4 HSENERGY            ! Lab total energy of chosen track in GeV
+      REAL*4 HSDELTA             ! Spectrometer delta of chosen track
+      REAL*4 HSTHETA             ! Lab Scattering angle in radians
+      REAL*4 HSPHI               ! Lab Azymuthal angle in radians
+      REAL*4 HSMINV              ! Invariant Mass of remaing hadronic system
+      REAL*4 HSZBEAM             ! Lab Z coordinate of intersection of beam
+                                 ! track with spectrometer ray
+      REAL*4 HSDEDX(4)           ! DEDX of chosen track in each scin plane
+      REAL*4 HSBETA           ! BETA of chosen track
+      REAL*4 HSTRACK_ET      ! Total shower energy of chosen track
+      REAL*4 HSTRACK_PRESHOWER_E  ! preshower of chosen track
+      REAL*4 HSTIME_AT_FP 
+      REAL*4 HSX_FP           ! X focal plane position 
+      REAL*4 HSY_FP 
+      REAL*4 HSXP_FP 
+      REAL*4 HSYP_FP 
+      REAL*4 HSCHI2PERDEG    ! CHI2 per degree of freedom of chosen track.
+      REAL*4 HSX_TAR 
+      REAL*4 HSY_TAR 
+      REAL*4 HSXP_TAR 
+      REAL*4 HSYP_TAR 
+      REAL*4 HSBETA_CHISQ
+*
+      real*4 hsmass2               ! Mass squared
+      real*4 hst                   ! invariant t 
+      real*4 hsu                   ! invariant u
+      real*4 hseloss
+      real*4 hsq3                  ! Lab frame momentum transfer
+      real*4 hsthetaq, hsphiq      ! Direction of q3
+      real*4 hsbigq2               ! Q**2
+      real*4 hsx                   ! fraction of nucleon p carried by quark
+      real*4 hsy                   ! fraction of lepton's E lost in lab
+      real*4 hsw                   ! Invariant mass of recoil system
+      real*4 hsw2                  ! Invariant mass**2 of recoil system
+*
+      INTEGER*4 HSNUM_FPTRACK    ! Index of focal plane track chosen
+      INTEGER*4 HSNUM_TARTRACK   ! Index of target track chosen
+      INTEGER*4 HSID_LUND        ! LUND particle ID code -- not yet filled
+      INTEGER*4 HSNFREE_FP 
+      INTEGER*4 HSNUM_SCIN_HIT   ! # OF SCINTILLATORS ON TRACK
+      INTEGER*4 HSNUM_PMT_HIT    ! # OF HODOSCOPE PMTS ON TRACK
+*
+      COMMON/HMS_PHYSICS_R4/
+     & HSP,
+     & HSENERGY,
+     & HSDELTA,
+     & HSTHETA,
+     & HSPHI,
+     & HSMINV,
+     & HSZBEAM,
+     & HSDEDX,
+     & HSBETA,
+     & HSTRACK_ET,
+     & HSTRACK_PRESHOWER_E, 
+     & HSTIME_AT_FP,
+     & HSX_FP ,
+     & HSY_FP ,
+     & HSXP_FP ,
+     & HSYP_FP ,
+     & HSCHI2PERDEG ,
+     & HSX_TAR ,
+     & HSY_TAR ,
+     & HSXP_TAR ,
+     & HSYP_TAR ,
+     & HSBETA_CHISQ,
+     &     hsmass2,
+     &     hst,
+     &     hsu,
+     &     hseloss,
+     &     hsq3,
+     &     hsthetaq, hsphiq,
+     &     hsbigq2,
+     &     hsx,
+     &     hsy,
+     &     hsw,
+     &     hsw2
+*
+      COMMON/HMS_PHYSICS_I4/
+     & HSNUM_FPTRACK,
+     & HSNUM_TARTRACK,
+     & HSID_LUND,
+     & HSNFREE_FP,
+     & HSNUM_SCIN_HIT,
+     & HSNUM_PMT_HIT
+*
+*
+*     Non-Hits data with HMS gates or starts.
+*     (Energy SUMS, logic timing,...)
+*
+      INTEGER HMAX_MISC_HITS
+      PARAMETER(HMAX_MISC_HITS=50)
+      INTEGER*4 HMISC_TOT_HITS
+      INTEGER*4 HMISC_RAW_ADDR1    ! "Plane"
+      INTEGER*4 HMISC_RAW_ADDR2    ! "Counter"
+      INTEGER*4 HMISC_RAW_DATA
+      COMMON/H_RAW_MISC/
+     &     HMISC_RAW_ADDR1(HMAX_MISC_HITS),
+     &     HMISC_RAW_ADDR2(HMAX_MISC_HITS),
+     &     HMISC_RAW_DATA(HMAX_MISC_HITS),
+     &     HMISC_TOT_HITS
+*
+*
+*                                          
+*******************end: hms_data_structures.cmn*************************
+*     Local Variables:
+*     mode: fortran
+*     fortran-continuation-string: "&"
+*     comment-column: 35
+*     End:
+

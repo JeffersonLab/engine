@@ -1,0 +1,54 @@
+*****************begin: coin_data_structures.cmn*************************
+*
+*     include file     coin_data_structures.cmn
+*
+*     Author:	D. F. Geesaman		1 September 1993
+*
+* $Log$
+* Revision 1.1  1995/05/22 18:42:27  cdaq
+* Initial revision
+*
+*
+*     CTPTYPE=event
+*
+
+****************************************************************************
+*  COIN_PHYSICS COMMON BLOCKS
+*
+*  These are filled by C_PHYSICS.
+* 
+      REAL*4 CMISSING_MASS         ! Missing mass of undetected hadron system
+      REAL*4 CMISSING_MOM          ! Magnitude of missing momentum 
+      REAL*4 CMISSING_MOMS         ! Missing momentum with an attitude adjustment
+      REAL*4 CMISSING_MOMX         ! X component of missing momentum
+      REAL*4 CMISSING_MOMY         ! Y component of missing momentum
+      REAL*4 CMISSING_MOMZ         ! Z component of missing momentum
+      REAL*4 CMISSING_E            ! Missing E (Binding Energy)
+      REAL*4 CTIME_COIN_COR        ! Corrected Coincidence time
+      real*4 cs                    ! s computed from spectrometers only
+      real*4 cthetapq              ! Angle between q and hadron
+      real*4 cphipq                ! Azimuthal angle of hadron about q
+*
+      COMMON/COIN_PHYSICS_R4/
+     &     CMISSING_MASS,
+     &     CMISSING_MOM,
+     &     CMISSING_MOMS,
+     &     CMISSING_MOMX,
+     &     CMISSING_MOMY,
+     &     CMISSING_MOMZ,
+     &     CMISSING_E,
+     &     CTIME_COIN_COR,
+     &     cs,
+     &     cthetapq,
+     &     cphipq
+*
+
+*
+*                                          
+*******************end: coin_data_structures.cmn*************************
+*     Local Variables:
+*     mode: fortran
+*     fortran-continuation-string: "&"
+*     comment-column: 35
+*     End:
+
