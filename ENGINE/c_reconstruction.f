@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 *-    $Log$
-*-    Revision 1.2  1994/02/04 21:09:43  cdaq
-*-    Fix indentation
+*-    Revision 1.3  1994/06/17 03:16:29  cdaq
+*-    (KBB) Remove not yet written warning
 *-
+* Revision 1.2  1994/02/04  21:09:43  cdaq
+* Fix indentation
+*
 c Revision 1.1  1994/02/04  21:08:21  cdaq
 c Initial revision
 c
@@ -38,9 +41,11 @@ c
 *--------------------------------------------------------
 *
       ABORT= .FALSE.
-      err= here//':not yet written!'            !warning
+      err = ' '
+*      err= here//':not yet written!'            !warning
 *
       IF(ABORT) call G_add_path(here,err)
 *
       RETURN
       END
+
