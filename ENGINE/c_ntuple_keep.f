@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.7  1996/04/29 18:44:04  saw
+* (JRA) Add aerogel photon count
+*
 * Revision 1.6  1996/01/22 15:06:41  saw
 * (JRA) Change ntuple contents
 *
@@ -46,6 +49,7 @@
       INCLUDE 'sos_scin_parms.cmn'
       INCLUDE 'gen_event_info.cmn'
       INCLUDE 'gen_scalers.cmn'
+      INCLUDE 'sos_aero_parms.cmn'
 *
       logical HEXIST    !CERNLIB function
 *
@@ -125,7 +129,7 @@
       m= m+1
       c_Ntuple_contents(m)= SCER_NPE_SUM   ! SOS Particle Id.
       m= m+1
-      c_Ntuple_contents(m)= 0.0            ! SAER_NPE_SUM
+      c_Ntuple_contents(m)= SAER_NPE_SUM   ! SAER_NPE_SUM
       m= m+1
       c_Ntuple_contents(m)= SSTRACK_ET     !
       m= m+1
@@ -135,7 +139,7 @@
       m= m+1
       c_Ntuple_contents(m)= SSDEDX(1)      !
       m= m+1
-      c_Ntuple_contents(m)= g_bcm1_charge  ! Charge of last scaler event
+      c_Ntuple_contents(m)= gbcm1_charge  ! Charge of last scaler event
       m= m+1
       c_Ntuple_contents(m)= FLOAT(gen_event_ID_number)
 ***********end insert description of contents of COIN tuple********
