@@ -13,6 +13,9 @@
 *  the tests there!!
 *
 * $Log$
+* Revision 1.2  1996/09/04 13:39:02  saw
+* (JRA) Treat logicals as logicals
+*
 * Revision 1.1  1996/05/01 20:24:29  saw
 * Initial revision
 *
@@ -154,10 +157,10 @@
 *we now fill in the chamber part of the track tests.
 
        hfoundtrack = (hntracks_fp.NE.0)
-       if (hfoundtrack.EQ.0) then
-          htestbeta=0.0
-       else
+       if (hfoundtrack) then
           htestbeta=hsbeta
+       else
+          htestbeta=0.0
        endif
        hcleantrack = (hsnum_fptrack.NE.0)
 *hhitslt is less than max allowed hits in both chambers
@@ -167,7 +170,7 @@
 *hspacepoints is finding at least one space point in both chambers
        hspacepoints = ((hnspace_points(1).GE.1).AND.(hnspace_points(2).GE.1))
 *hstublt is passing the stub criteria for at least one spacepoint in both chambers
-       hstublt = hstubtest
+       hstublt = (hstubtest.ne.0)
 *hhitsplanes is passing not too many hits and not too few planes
        hhitsplanes = hhitslt.AND.hplanesgt
 *hhitsplanes is that and finding a spacepoint
@@ -178,8 +181,8 @@
        f1hspacepoints = h1hitslt.AND.h1planesgt.AND.(hnspace_points(1).EQ.0)
        f2hspacepoints = h2hitslt.AND.h2planesgt.AND.(hnspace_points(2).EQ.0)
        fhspacepoints = f1hspacepoints.OR.f2hspacepoints
-       htest1 = ((hhitsplanes.EQ.1).AND.(hspacepoints.EQ.0))
-       htest2 = ((hspacepoints.EQ.1).AND.(hstublt.EQ.0))
+       htest1 = (hhitsplanes.AND.(.not.hspacepoints))
+       htest2 = (hspacepoints.AND.(.not.hstublt))
 
 ************************now look at some hodoscope tests
 *second, we move the scintillators.  here we use scintillator cuts to see
@@ -338,20 +341,20 @@
           if (hgoodscinhits.EQ.1) then
              write(12,*) 'sweet spot hit, event number           ',gen_event_ID_number
           endif
-          if (hhitslt.EQ.0) then
+          if (.not.hhitslt) then
              write(12,*) 'too many hits, event number           ',gen_event_ID_number
           endif
-          if (hplanesgt.EQ.0) then
+          if (.not.hplanesgt) then
              write(12,*)  'too few planes event number                    ',
      $            gen_event_ID_number
           endif
-          if ((hhitsplanes.EQ.1).AND.(hspacepoints.EQ.0)) then
+          if (hhitsplanes.AND.(.not.hspacepoints)) then
              write(12,*) 'p hits/planes, f sp # = ',gen_event_ID_number
           endif
-          if ((hfoundtrack.EQ.0).AND.(hhitsplanessps.EQ.1)) then
+          if ((.not.hfoundtrack).AND.hhitsplanessps) then
              write(12,*) 'p hits/planes/sps, f track # = ',gen_event_ID_number
           endif
-          if ((hspacepoints.EQ.1).AND.(hstublt.EQ.0)) then
+          if (hspacepoints.AND.(.not.hstublt)) then
              write(12,*) 'p sp, f stubs # = ',gen_event_ID_number
           endif
        endif
