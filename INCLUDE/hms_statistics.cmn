@@ -1,7 +1,10 @@
 *     hms_statistics.cmn
 *     common blocks containing event statistics for h_reconstruction
 * $Log$
-* Revision 1.7  1995/07/28 14:42:20  cdaq
+* Revision 1.8  1995/08/11 16:36:30  cdaq
+* (JRA) Add hstat_mineff as a ctp parameter
+*
+* Revision 1.7  1995/07/28  14:42:20  cdaq
 * (JRA) Add pos/neg/both good arrays
 *
 * Revision 1.6  1995/05/22  19:02:26  cdaq
@@ -59,6 +62,7 @@
 *
       real*4 hstat_maxchisq
       real*4 hstat_slop
+      real*4 hstat_mineff
 *
 *     CTPTYPE=event
 *
@@ -100,6 +104,7 @@
      &  hstat_oreff,       !efficiency over all counters on plane
      &  hstat_andeff,      !efficiency over all counters on plane
      &  hstat_slop,        !distance allowed from center of scintillator.
+     &  hstat_mineff,      !give warning if effic. < hstat_mineff
      &  hstat_maxchisq,    !maximum chisq allowed to use track for eff. calc.
      &  heff_s1,           !calculated trigger eff. for s1 =(s1x .or. s1y).
      &  heff_s2,           !calculated trigger eff. for s2 =(s2x .or. s2y).
