@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.21.2.2  2003/04/10 00:41:27  cdaq
+* Added gen_data_structures and included status messages when kinematics overridden
+*
 * Revision 1.21.2.1  2003/04/09 23:56:27  cdaq
 * Check for gpbeam=0
 *
@@ -107,6 +110,7 @@
       include 'gen_scalers.cmn'
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
+      include 'gen_data_structures.cmn'
 *
       integer ierr
       logical HMS_ABORT,SOS_ABORT, HACK_ABORT
@@ -179,11 +183,26 @@
 * that was the last call to engine_command_line, the last time to input
 * ctp variables.  Set some here to avoid divide by zero errors if they
 * were not read in.
-      if (hpcentral.le.0.001)  hpcentral = 1.
-      if (spcentral.le.0.001)  spcentral = 1.
-      if (htheta_lab.le.0.001) htheta_lab = 90.
-      if (stheta_lab.le.0.001) stheta_lab = 90.
-      if (gpbeam.le.0.001) gpbeam=1.
+      if (hpcentral.le.0.001) then
+         hpcentral = 1.
+         write(6,*) 'hpcentral value not given: setting to 1 GeV'
+      endif
+      if (spcentral.le.0.001) then
+         spcentral = 1.
+         write(6,*) 'spcentral value not given: setting to 1 GeV'
+      endif
+      if (htheta_lab.le.0.001) then
+         htheta_lab = 90.
+         write(6,*) 'htheta_lab value not given: setting to 90 degrees'
+      endif
+      if (stheta_lab.le.0.001) then
+         stheta_lab = 90.
+         write(6,*) 'stheta_lab value not given: setting to 90 degrees'
+      endif
+      if (gpbeam.le.0.001) then
+         gpbeam = 2.
+         write(6,*) 'gpbeam value not given: setting to 2 GeV'
+      endif
 
       if((first_time.or.g_hist_rebook).and.g_ctp_hist_filename.ne.' ') then
         file = g_ctp_hist_filename
