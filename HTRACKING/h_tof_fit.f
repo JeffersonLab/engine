@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.6  1994/09/13 21:26:53  cdaq
+* Revision 1.7  1995/02/10 18:49:57  cdaq
+* (JRA) Add track index to hgood_scin_time
+*
+* Revision 1.6  1994/09/13  21:26:53  cdaq
 * (JRA) fix chisq calculation
 *
 * Revision 1.5  1994/07/13  15:05:08  cdaq
@@ -54,7 +57,7 @@
       sumtz = 0.
 
       do hit = 1 , hscin_tot_hits
-         if (hgood_scin_time(hit)) then
+         if (hgood_scin_time(trk,hit)) then
             scin_weight = 1./hscin_sigma(hit)**2
             sumw = sumw + scin_weight
             sumt = sumt + scin_weight * hscin_time(hit)
@@ -79,7 +82,7 @@
          hbeta(trk) = tmp / tmpdenom        !velocity in cm/ns.
          hbeta_chisq(trk) = 0.
          do hit = 1 , hscin_tot_hits
-            if (hgood_scin_time(hit)) then
+            if (hgood_scin_time(trk,hit)) then
                hbeta_chisq(trk) = hbeta_chisq(trk) + 
      1              (hscin_zpos(hit)/hbeta(trk) -
      1              (hscin_time(hit) - t0))**2 / hscin_sigma(hit)**2
