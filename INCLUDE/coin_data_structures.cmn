@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.3  1999/02/23 19:04:41  csa
+* Add some physics vars, cleanup
+*
 * Revision 1.2  1996/04/30 13:33:33  saw
 * (JRA) Add some coincidence kinematics variables
 *
@@ -28,11 +31,12 @@
       REAL*4 CMISSING_MOMZ         ! Z component of missing momentum
       REAL*4 CMISSING_E            ! Missing E (Binding Energy)
       REAL*4 CTIME_COIN_COR        ! Corrected Coincidence time
-      real*4 cs                    ! s computed from spectrometers only
-      real*4 cthetapq              ! Angle between q and hadron
-      real*4 cphipq                ! Azimuthal angle of hadron about q
-      real*4 W2,C_INVMASS,P_SOS_CORR,P_HMS_CORR,OMEGA
-      real*4 cmissing_mom_par,cmissing_mom_perp,cmissing_mom_oop
+      REAL*4 CS                    ! s computed from spectrometers only
+      REAL*4 CTHETAPQ              ! Angle between q and hadron
+      REAL*4 CPHIPQ                ! Azimuthal angle of hadron about q
+      REAL*4 W2,C_INVMASS,P_SOS_CORR,P_HMS_CORR,OMEGA
+      REAL*4 CMISSING_MOM_PAR,CMISSING_MOM_PERP,CMISSING_MOM_OOP
+      REAL*4 C_BIGQ2
 *
       COMMON/COIN_PHYSICS_R4/
      &     CMISSING_MASS,
@@ -43,12 +47,18 @@
      &     CMISSING_MOMZ,
      &     CMISSING_E,
      &     CTIME_COIN_COR,
-     &     cs,
-     &     cthetapq,
-     &     cphipq,
-     &     W2,C_INVMASS,P_SOS_CORR,P_HMS_CORR,
+     &     CS,
+     &     CTHETAPQ,
+     &     CPHIPQ,
+     &     W2,
+     &     C_INVMASS,
+     &     P_SOS_CORR,
+     &     P_HMS_CORR,
      &     OMEGA,
-     &     cmissing_mom_par,cmissing_mom_perp,cmissing_mom_oop
+     &     CMISSING_MOM_PAR,
+     &     CMISSING_MOM_PERP,
+     &     CMISSING_MOM_OOP,
+     &     C_BIGQ2
 
 *
 *     CTPTYPE=event
