@@ -1,7 +1,10 @@
 * hms_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the hms time of flight.
 * $Log$
-* Revision 1.7  1994/09/13 19:29:50  cdaq
+* Revision 1.8  1995/01/27 21:03:16  cdaq
+* (SAW) Add htof_debugging common
+*
+* Revision 1.7  1994/09/13  19:29:50  cdaq
 * (JRA) Add focal plane time
 *
 * Revision 1.6  1994/08/16  03:56:33  cdaq
@@ -89,3 +92,13 @@
      &     hgood_beta,                  !was a value of beta found?
      &     hscin_on_track,              !list of which scins. were on each track.
      &     hscin_time_fp                !scin time (ave) projected to fp
+
+*
+*     CTPTYPE=event
+*
+      real*4 h_fptime(hnum_scin_planes)    !time at fp from all hits in 1 plane
+      real*4 h_fptimedif(6)                !fp time differences
+
+      common/htof_debugging/
+     &  h_fptime,
+     &  h_fptimedif
