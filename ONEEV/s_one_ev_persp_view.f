@@ -1,6 +1,9 @@
       subroutine s_one_ev_persp_view
 *
 * $Log$
+* Revision 1.2  1996/01/17 16:38:44  cdaq
+* (DVW) Tweak args in gdraw calls
+*
 * Revision 1.1  1995/09/18 14:44:08  cdaq
 * Initial revision
 *
@@ -24,7 +27,7 @@
       call gdopen (8)
       call gdrawt (5.,2.,'PERSPECTIVE VIEW',.5,0.,2,0)
       call gdrawt (5.,1.,'SOS',.5,0.,2,0)
-      call gdraw ('SHUT', 45., 115., 90., 3.0, 9.0, 0.06, 0.06)
+      call gdraw ('SHUT', 45., 115., 90., 1.8, 8.0, 0.06, 0.06)
       call s_one_ev_track
       call gdhits ('*   ', '*   ', 0, 850, 0.1)
       call gdclos (8)
@@ -42,7 +45,7 @@
          write(scinname,'(a,a)') 'H1Y',char(64 + iscin)
          call gsatt (scinname,'SEEN',0)
       enddo
-      call gdraw ('SHUT', 45., 115., 90., 14.0, 6.1, 0.15, 0.15)
+      call gdraw ('SHUT', 45., 115., 90., 12.8, 5.1, 0.15, 0.15)
       call s_one_ev_track
       call gdhits ('*   ', '*   ', 0, 850, 0.3)
       call gdclos (9)
