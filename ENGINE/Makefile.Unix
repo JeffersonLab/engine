@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.7  1994/08/18 04:22:46  cdaq
+# Revision 1.8  1994/11/23 15:37:39  cdaq
+# (SAW) Update link flags for ULTRIX
+#
+# Revision 1.7  1994/08/18  04:22:46  cdaq
 # (SAW) Call makereg generated routines to register variables
 #
 # Revision 1.6  1994/08/04  03:49:53  cdaq
@@ -80,7 +83,9 @@ endif
 
 ifeq ($(ARCH),ULTRIX)
   CC = gcc
-  OTHERLIBS = -L$(CODA)/ULTRIX/lib -lcoda -L$(CERN_ROOT)/lib -lpacklib
+  RPCLIBDIR = /usr/site1/rpc/usr/lib
+  OTHERLIBS = -L$(CODA)/ULTRIX/lib -lcoda -L$(CERN_ROOT)/lib -lpacklib \
+	-L$(RPCLIBDIR) -lrpclib
 ##  lib_targets := libengine.a
   bin_targets = engine
 endif
