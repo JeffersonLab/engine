@@ -16,6 +16,9 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
+* Revision 1.13  1996/01/17 18:15:53  cdaq
+* (JRA)
+*
 * Revision 1.12  1995/10/10 17:49:31  cdaq
 * (JRA) Cleanup
 *
@@ -129,12 +132,14 @@
 * Also note that the COSY track slopes HUT(2) and HUT(4) are actually
 * the SINE of the track angle in the XZ and YZ planes.
 
-         hut(1) = hx_fp(itrk)/100. + h_z_true_focus*hxp_fp(itrk)     !m
+         hut(1) = hx_fp(itrk)/100. + h_z_true_focus*hxp_fp(itrk)
+     $        + h_det_offset_x          ! include detector offset  (m)
 ! includes transformation to actual focus if not at Z=0.
  
          hut(2) = hxp_fp(itrk) + h_ang_offset_x           !radians
 
-         hut(3) = hy_fp(itrk)/100. + h_z_true_focus*hyp_fp(itrk)     !m
+         hut(3) = hy_fp(itrk)/100. + h_z_true_focus*hyp_fp(itrk)
+     $        + h_det_offset_y     !m
 ! again icludes transformation to true focus.
 
          hut(4) = hyp_fp(itrk) + h_ang_offset_y           !radians
@@ -151,9 +156,9 @@
 *         hut_rot(4)= hyp_fp_rot(itrk)
 *        h*_fp_rot never used except here, so remove the intermediate step.
 
-         hut_rot(1) = hut(1) + h_det_offset_x    ! include detector offset
+         hut_rot(1) = hut(1)
          hut_rot(2) = hut(2) + hut(1)*h_ang_slope_x
-         hut_rot(3) = hut(3) + h_det_offset_y
+         hut_rot(3) = hut(3)
          hut_rot(4) = hut(4) + hut(3)*h_ang_slope_y
 
 * Compute COSY sums.
