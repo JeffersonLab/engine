@@ -2,6 +2,9 @@
 *- 
 *-   Created   22-Apr-1994   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.7  1996/09/04 15:46:13  saw
+* (JRA) Add prescale factors and some a debugging  flag
+*
 * Revision 1.6  1996/01/17 15:57:28  cdaq
 * (JRA) Add some short equivalences for CTP convenience
 *
@@ -33,23 +36,30 @@
       CHARACTER*800 gen_run_comment
 *
       COMMON /gen_run_info/ gen_run_number,gen_run_type,
-     &         gen_run_total_events,gen_run_UTC_start,gen_run_UTC_stop,
-     &          gen_run_UTC_last,gen_run_date_start,gen_run_date_stop,
-     &           gen_run_date_last,gen_run_comment
+     &     gen_run_total_events,gen_run_UTC_start,gen_run_UTC_stop,
+     &     gen_run_UTC_last,gen_run_date_start,gen_run_date_stop,
+     &     gen_run_date_last,gen_run_comment
+*
+*
+*     CTPTYPE=parm
 *
       INTEGER gen_MAX_trigger_types
       PARAMETER (gen_MAX_trigger_types= 15)
-*-triggers to process
-      INTEGER gen_run_enable(0:gen_MAX_trigger_types)
-*-triggers found
-      INTEGER gen_run_triggered(0:gen_MAX_trigger_types)
-      INTEGER gen_run_analyzed(0:gen_MAX_trigger_types)
-      integer gen_run_hist_dump_interval
-*      
+      INTEGER gen_run_enable(0:gen_MAX_trigger_types)    !1=process, 0=ignore
+      INTEGER gen_run_triggered(0:gen_MAX_trigger_types) !triggers found
+      INTEGER gen_run_analyzed(0:gen_MAX_trigger_types)  ! NOT USED ANYWHERE
+      INTEGER gen_run_hist_dump_interval
       INTEGER gen_run_starting_event,gen_run_stopping_event
-      INTEGER grun,gstart,gstop,gdump,gtrig1,gtrig2,gtrig3,gtrig4
-
+*
+      COMMON /gen_run_cntrl/ gen_run_starting_event,
+     &     gen_run_stopping_event,
+     &     gen_run_enable,
+     &     gen_run_triggered,
+     &     gen_run_analyzed,
+     &     gen_run_hist_dump_interval
+*
 *-shorter names for command line input
+      integer grun,gstart,gstop,gdump,gtrig1,gtrig2,gtrig3,gtrig4 ! aliases
       equivalence (grun,gen_run_number)
       equivalence (gstart,gen_run_starting_event)
       equivalence (gstop,gen_run_stopping_event)
@@ -59,13 +69,18 @@
       equivalence (gtrig3,gen_run_enable(2))
       equivalence (gtrig4,gen_run_enable(3))
 
-      COMMON /gen_run_cntrl/ gen_run_starting_event,
-     &                        gen_run_stopping_event,
-     &                         gen_run_enable,gen_run_triggered
-     $     ,gen_run_analyzed,gen_run_hist_dump_interval
 *
+*     CTPTYPE=parm
+*
+      real*4 gps1,gps2,gps3  !prescale factors (1-hms,2-sos,3-coin)
+*
+      common/gen_prescales/ gps1,gps2,gps3
+
+*
+*     CTPTYPE=parm
+*
+      integer gdebugdumpepics
+*
+      common/gen_debuggingstuff/ gdebugdumpepics
+
 ****************************end: gen_run_info.cmn ***********************
-
-
-
-
