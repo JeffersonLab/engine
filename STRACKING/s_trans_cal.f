@@ -16,6 +16,9 @@
 *-
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 * $Log$
+* Revision 1.8  2004/05/12 15:38:59  jones
+* Initialize ssshsum and ssshtrk to zero.
+*
 * Revision 1.7  2003/04/03 00:45:01  jones
 * Update to calorimeter calibration (V. Tadevosyan)
 *
@@ -69,6 +72,8 @@
       scal_e3    =0.
       scal_e4    =0.
       scal_et    =0.
+      ssshsum = 0.
+      ssshtrk = 0.
 *
       scal_e1_pos    =0.
       scal_e1_neg    =0.
