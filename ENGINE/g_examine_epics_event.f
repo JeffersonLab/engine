@@ -1,5 +1,8 @@
       subroutine g_examine_epics_event
 * $Log$
+* Revision 1.4  1999/06/10 14:41:03  csa
+* (JRA) Added dump for numevent up to 10
+*
 * Revision 1.3  1998/12/01 15:55:40  saw
 * (SAW) Print out error when event has no data
 *
@@ -29,7 +32,7 @@
       numevent = numevent + 1
 
       if (g_epics_output_filename.ne.' ' .and.
-     &   (gdebugdumpepics.eq.1 .or. numevent.le.2)) then  !write out event
+     &   (gdebugdumpepics.eq.1 .or. numevent.le.10)) then  !write out event
         dump_event = .true.
       else
         dump_event = .false.
