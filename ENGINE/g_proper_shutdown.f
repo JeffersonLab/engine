@@ -10,6 +10,9 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 * $Log$
+* Revision 1.12  1999/02/23 18:24:23  csa
+* (JRA) Remove debugcalcpeds stuff, cleanup
+*
 * Revision 1.11  1996/09/04 14:40:05  saw
 * (JRA) Get filename for "bad" report from a ctp variable
 *
@@ -51,18 +54,18 @@
 *--------------------------------------------------------
       IMPLICIT NONE
       SAVE
-*
+
       character*17 here
       parameter (here= 'G_proper_shutdown')
-*
+
       logical ABORT
       character*(*) err
-*
+
       logical bad_report,bad_HMS,bad_SOS,bad_COIN,bad_HBK,bad_hack
       character*132 err_report,err_HMS,err_SOS,err_COIN,err_HBK,err_hack
       integer SPAREID
       parameter (SPAREID=67)
-*
+
       include 'gen_filenames.cmn'
       include 'gen_routines.dec'
       include 'gen_run_info.cmn'
@@ -70,7 +73,7 @@
       include 'hms_tracking.cmn'
       include 'sos_data_structures.cmn'
       include 'sos_tracking.cmn'
-*
+
       integer ierr
       character*132 file
 *--------------------------------------------------------
@@ -86,29 +89,22 @@
         open(unit=SPAREID,file='bad.tmp',status='unknown')
       endif
 
-c temporary files for pedestal calculation.
-      if (hdebugcalcpeds.ne.0 .or. sdebugcalcpeds.ne.0) then
-        open(unit=39,file='peds.calc',status='unknown')
-        write(39,*) 'pedestals as extracted from analysis',
-     &       'of the physics events'
-      endif
-
 *-chance to flush any statistics, etc.
       call H_proper_shutdown(SPAREID,bad_HMS,err_HMS)
-*     
+
       call S_proper_shutdown(SPAREID,bad_SOS,err_SOS)
-*     
+
       call C_proper_shutdown(SPAREID,bad_COIN,err_COIN)
-*
+
       close(unit=SPAREID)
-*
+
       call hack_shutdown(bad_hack,err_hack)
-*
+
       call g_dump_histograms(bad_HBK,err_HBK)
-*
+
       bad_report = .false.
       err_report = ' '
-*
+
       if(g_report_blockname.ne.' '.and.
      $     g_report_output_filename.ne.' ') then
 
@@ -121,7 +117,7 @@ c temporary files for pedestal calculation.
           err_report = 'threp failed to create report in file '//file
         endif
       endif
-*
+
       ABORT= bad_HMS .or. bad_SOS .or. bad_COIN .or. bad_HBK
      $     .or. bad_report
       err= ' '
