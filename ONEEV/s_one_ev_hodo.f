@@ -1,6 +1,9 @@
       Subroutine s_one_ev_hodo
 *
 * $Log$
+* Revision 1.3  1996/11/22 15:38:35  saw
+* (SAW) Fix some startup errors
+*
 * Revision 1.2  1996/09/04 20:09:04  saw
 * (SAW) Replace huge list of gsdet/gsdeth calls with do loops over the
 * detector geometry.
@@ -44,7 +47,7 @@
      $           ,char(ichar('A')+ipaddle-1)
             call gsdet(specname,hodoname(3),3,hodoname,hodobits,
      $           2,100,100,iset,idet)
-            call gsdeth(specname,hodoname(1),3,varinames,varibits,
+            call gsdeth(specname,hodoname(3),3,varinames,varibits,
      $           origin,factor)
           enddo
         enddo
