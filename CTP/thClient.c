@@ -16,6 +16,9 @@
  *
  * Revision History:
  *  $Log$
+ *  Revision 1.3  1999/08/20 15:28:32  saw
+ *  Commented out some comments that were not commented out
+ *
  *  Revision 1.2  1999/06/30 16:15:40  saw
  *  Fix OSF clnt_create underscore problem
  *
@@ -63,11 +66,13 @@ FCALLSCFUN5(LONG,thGetList_test,THCGETLIST,thcgetlist,LONG,LONG,STRING,INT,INT);
 FCALLSCFUN1(LONG,thPrintList,THPRTLIST,thprtlist,LONG);
 /* Don't really understand the following.  What about ultrix */
 
+/*
 linux   _
 osf
 sun
 hp    
 ultrix  _
+*/
 
 #if !defined(__ultrix__) && !defined(linux)
 FCALLSCFUN4(LONG,clnt_create,CLNT_CREATE,clnt_create,STRING,LONG,LONG,STRING);
