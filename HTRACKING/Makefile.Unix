@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.23  2002/11/11 18:48:27  jones
+# Modify Makefile.Unix to include hcal_clb_det.f and hcal_raw_thr.f
+#
 # Revision 1.22  1999/02/23 18:30:11  csa
 # Add h_satcorr
 #
@@ -99,7 +102,8 @@ newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f \
 	h_report_bad_data.f h_dc_trk_eff.f h_dc_trk_eff_shutdown.f \
 	h_find_easy_space_point.f h_track_tests.f \
 	h_correct_cal_pos.f h_correct_cal_neg.f h_correct_cal_two.f \
-	h_satcorr.f
+	h_satcorr.f \
+        hcal_clb_det.f hcal_raw_thr.f
 makeregstuff =	r_hms_filenames.f r_hms_scin_parms.f r_hms_scin_tof.f \
 	r_hms_calorimeter.f r_hms_id_histid.f r_hms_tracking.f \
 	r_hms_geometry.f r_hms_track_histid.f r_hms_recon_elements.f \
