@@ -8,7 +8,10 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
-* Revision 1.3  1995/01/27 20:10:27  cdaq
+* Revision 1.4  1995/05/11 17:37:13  cdaq
+* (SAW) Change HSDEDXn vars to an array.
+*
+* Revision 1.3  1995/01/27  20:10:27  cdaq
 * (JRA) Add Gas cerenkov to ntuple
 *
 * Revision 1.2  1994/06/17  02:44:38  cdaq
@@ -65,13 +68,13 @@
       h_Ntuple_contents(m)= HSZBEAM! Lab Z coordinate of intersection of beam
                                 ! track with spectrometer ray
       m= m+1
-      h_Ntuple_contents(m)= HSDEDX1	! DEDX of chosen track in 1st scin plane
+      h_Ntuple_contents(m)= HSDEDX(1)	! DEDX of chosen track in 1st scin plane
       m= m+1
-      h_Ntuple_contents(m)= HSDEDX2	! DEDX of chosen track in 2nd scin plane
+      h_Ntuple_contents(m)= HSDEDX(2)	! DEDX of chosen track in 2nd scin plane
       m= m+1
-      h_Ntuple_contents(m)= HSDEDX3	! DEDX of chosen track in 3rd scin plane
+      h_Ntuple_contents(m)= HSDEDX(3)	! DEDX of chosen track in 3rd scin plane
       m= m+1
-      h_Ntuple_contents(m)= HSDEDX4	! DEDX of chosen track in 4th scin plane
+      h_Ntuple_contents(m)= HSDEDX(4)	! DEDX of chosen track in 4th scin plane
       m= m+1
       h_Ntuple_contents(m)= HSBETA	! BETA of chosen track
       m= m+1
