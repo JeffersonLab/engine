@@ -5,6 +5,9 @@
 *     space point.
 *     d. f. geesaman           17 January 1994
 * $Log$
+* Revision 1.12  1999/02/10 18:23:41  csa
+* Added 4/6 tracking code (D. Meekins)
+*
 * Revision 1.11  1996/01/16 21:52:43  cdaq
 * (JRA)
 *
@@ -60,7 +63,7 @@
       integer*4 nplusminus
       integer*4 numhits
       integer*4 hits(hmax_hits_per_point),pl(hmax_hits_per_point)
-      integer*4 pindex
+      integer*4 pindex,icounter
       real*4 wc(hmax_hits_per_point)
       integer*4 plane, isa_y1, isa_y2
       integer*4 plusminusknown(hmax_hits_per_point)
@@ -69,7 +72,7 @@
       real*4 tmpbeststub(hnum_fpray_param)
       real*4 chi2
       real*4 minchi2,tmpminchi2
-      real*4 xp_fit, xp_expect
+      real*4 xp_fit, xp_expect, minxp
       real*4 stub(4)
       logical smallAngOK
 *
@@ -80,13 +83,20 @@
 *     units. Presently we are accepting 5/6 or 6/6 planes per chamber. 
 
       do isp=1,hnspace_points_tot             ! loop over all space points
+*        write(6,*) 'h_left_right: check 1: spacepoint ',isp
         gplanehdc1(isp) = 0
         gplanehdc2(isp) = 0
         minchi2=1e10
+        minxp=0.25
         smallAngOK = .FALSE.
         isa_y1 = 0
         isa_y2 = 0
         numhits=hspace_point_hits(isp,1)
+        if (numhits.lt.0) then
+           write(6,*) 'h_left_right: numhits < 0'
+        elseif (numhits.eq.0) then
+           write(6,*) 'h_left_right: numhits = 0'
+        endif
         nplusminus=2**numhits
         do ihit=1,numhits
           hits(ihit)=hspace_point_hits(isp,2+ihit)
@@ -122,6 +132,36 @@
             pindex=5
           else if(gplanehdc1(isp).eq.31)then
             pindex=6
+          else if(gplanehdc1(isp).eq.15)then !4/6 planes fire
+            pindex=15
+          else if(gplanehdc1(isp).eq.23)then !4/6 planes fire
+            pindex=16
+          else if(gplanehdc1(isp).eq.27)then !4/6 planes fire
+            pindex=17
+          else if(gplanehdc1(isp).eq.29)then !4/6 planes fire
+            pindex=18
+          else if(gplanehdc1(isp).eq.30)then !4/6 planes fire
+            pindex=19
+          else if(gplanehdc1(isp).eq.39)then !4/6 planes fire
+            pindex=20
+          else if(gplanehdc1(isp).eq.43)then !4/6 planes fire
+            pindex=21
+          else if(gplanehdc1(isp).eq.45)then !4/6 planes fire
+            pindex=22
+          else if(gplanehdc1(isp).eq.46)then !4/6 planes fire
+            pindex=23
+          else if(gplanehdc1(isp).eq.51)then !4/6 planes fire
+            pindex=24
+          else if(gplanehdc1(isp).eq.53)then !4/6 planes fire
+            pindex=25
+          else if(gplanehdc1(isp).eq.54)then !4/6 planes fire
+            pindex=26
+          else if(gplanehdc1(isp).eq.57)then !4/6 planes fire
+            pindex=27
+          else if(gplanehdc1(isp).eq.58)then !4/6 planes fire
+            pindex=28
+          else if(gplanehdc1(isp).eq.60)then !4/6 planes fire
+            pindex=29
           else
             pindex=-1                   !multiple missing planes or other problem
           end if
@@ -142,10 +182,42 @@
             pindex=11
           else if(gplanehdc2(isp).eq.31)then
             pindex=12
+          else if(gplanehdc1(isp).eq.15)then !4/6 planes fire
+            pindex=30
+          else if(gplanehdc1(isp).eq.23)then !4/6 planes fire
+            pindex=31
+          else if(gplanehdc2(isp).eq.27)then !4/6 planes fire
+            pindex=32
+          else if(gplanehdc2(isp).eq.29)then !4/6 planes fire
+            pindex=33
+          else if(gplanehdc2(isp).eq.30)then !4/6 planes fire
+            pindex=34
+          else if(gplanehdc2(isp).eq.39)then !4/6 planes fire
+            pindex=35
+          else if(gplanehdc2(isp).eq.43)then !4/6 planes fire
+            pindex=36
+          else if(gplanehdc2(isp).eq.45)then !4/6 planes fire
+            pindex=37
+          else if(gplanehdc2(isp).eq.46)then !4/6 planes fire
+            pindex=38
+          else if(gplanehdc2(isp).eq.51)then !4/6 planes fire
+            pindex=39
+          else if(gplanehdc2(isp).eq.53)then !4/6 planes fire
+            pindex=40
+          else if(gplanehdc2(isp).eq.54)then !4/6 planes fire
+            pindex=41
+          else if(gplanehdc2(isp).eq.57)then !4/6 planes fire
+            pindex=42
+          else if(gplanehdc2(isp).eq.58)then !4/6 planes fire
+            pindex=43
+          else if(gplanehdc2(isp).eq.60)then !4/6 planes fire
+            pindex=44
           else
             pindex=-2                   !multiple missing planes or other problem
           end if
         endif                           !end test whether hdc1 or hdc2
+
+*        write(6,*) 'h_left_right: check 2: pindex = ',pindex
 
 *     check if small angle L/R determination of Y and Y' planes is possible
         if(isa_y1.gt.0 .AND. isa_y2.gt.0) smallAngOK = .TRUE.
@@ -156,6 +228,11 @@
           else
             plusminusknown(isa_y1) = 1
             plusminusknown(isa_y2) = -1
+          endif
+          if ((numhits-2).lt.0) then
+             write(6,*) 'h_left_right: numhits-2 < 0'
+          elseif ((numhits-2).eq.0) then
+             write(6,*) 'h_left_right: numhits-2 = 0'
           endif
           nplusminus = 2**(numhits-2)
         endif
@@ -177,7 +254,9 @@
 
           if (pindex.ge.0 .and. pindex.le.14) then
             call h_find_best_stub(numhits,hits,pl,pindex,plusminus,stub,chi2)
-            if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
+*jv            if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
+*jv     $           ''   chi2='',e14.6)') pmloop,chi2
+            if(hdebugstubchisq.ne.0) write(6,'(''hms  pmloop='',i4,
      $           ''   chi2='',e14.6)') pmloop,chi2
 
 * Take best chi2 IF x' of the stub agrees with x' as expected from x.
@@ -187,6 +266,9 @@
 * THIS ASSUMES STANDARD HMS TUNE!!!!, for which x' is approx. x/875.
 
             if (chi2.lt.minchi2)  then
+              if ((stub(3)*htanbeta(pl(1))) .eq. -1.) then
+                 write(6,*) 'h_left_right: error 3'
+              endif
               xp_fit=stub(3)-htanbeta(pl(1))/(1.0+stub(3)*htanbeta(pl(1)))
               xp_expect = hspace_points(isp,1)/875. ! **TUNE DEPENDANT**
               if (abs(xp_fit-xp_expect).le.hstub_max_xpdiff) then
@@ -208,10 +290,29 @@
               endif
             endif                       ! end if on lower chi2
           else                          ! if pindex<0 or >14
-            write(6,*) 'pindex=',pindex,' in h_left_right'
+             if (pindex.ge.15.and.pindex.le.44) then  ! 4/6 plane tracking
+                call h_find_best_stub(numhits,hits,pl,pindex,plusminus,stub
+     $               ,chi2)
+              if ((stub(3)*htanbeta(pl(1))) .eq. -1.) then
+                 write(6,*) 'h_left_right: error 3'
+              endif
+                xp_fit=stub(3)-htanbeta(pl(1))/(1.0+stub(3)*htanbeta(pl(1)))
+                if(abs(xp_fit).le.abs(minxp)) then ! tune dependent
+                    minxp=xp_fit
+                    minchi2=chi2
+                    do icounter=1,numhits
+                       plusminusbest(icounter)=plusminus(icounter)
+                       hbeststub(isp,icounter)=stub(icounter)
+                    enddo
+                 endif
+             else
+                write(6,*) 'pindex=',pindex,' in h_left_right'
+             endif ! 4/6 plane tracking
           endif
         enddo                           ! end loop on possible left-right
 *
+*        write(6,*) 'h_left_right: ! end loop on possible left-right'
+
         if (minchi2.ge.9.9e+9) then     !no track passed angle cut.
           minchi2=tmpminchi2
           do idummy=1,numhits
@@ -234,8 +335,15 @@
 *     stubs are calculated in rotated coordinate system
 *     use first hit to determine chamber
         plane=HDC_PLANE_NUM(hits(1))
+        if (hbeststub(isp,3)-htanbeta(plane) .eq. -1.) then
+           write(6,*) 'h_left_right: stub3 error'
+        endif
         stub(3)=(hbeststub(isp,3) - htanbeta(plane))
      &       /(1.0 + hbeststub(isp,3)*htanbeta(plane))
+
+        if (hbeststub(isp,3)*hsinbeta(plane) .eq. -hcosbeta(plane)) then
+           write(6,*) 'h_left_right: stub4 error'
+        endif
         stub(4)=hbeststub(isp,4)
      &       /(hbeststub(isp,3)*hsinbeta(plane)+hcosbeta(plane))
 

@@ -8,8 +8,8 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change HPLANE_PARAM to individual arrays
 * $Log$
-* Revision 1.8  1996/08/30 19:54:33  saw
-* (JRA) Format statement changes
+* Revision 1.9  1999/02/10 18:23:48  csa
+* Added 4/6 tracking code (D. Meekins)
 *
 * Revision 1.7  1996/04/30 12:43:54  saw
 * (JRA) Set up card drift time delay structures
@@ -40,10 +40,12 @@
 *
 *     local variables
       logical missing_card_no
-      integer*4 pln,i,j,k,pindex,ich
+      integer*4 pln,i,j,k,pindex,ich,icounter
       real*4 cosalpha,sinalpha,cosbeta,sinbeta,cosgamma,singamma,z0
       real*4 stubxchi,stubxpsi,stubychi,stubypsi
       real*4 sumsqupsi,sumsquchi,sumcross,denom
+*jv      real*4 hdum4of6coeff(hdc_num_planes)
+      real*4 hdum4of6coeff(hmax_num_dc_planes)
 *
 *     read basic parameters from CTP input file
 *     hdc_zpos(pln) = Z0
@@ -167,8 +169,19 @@
 *   etc.
 * pindex = 13   hdc1 no missing planes
 * pindex = 14   hdc2 no missing planes
+*
+*     pindex for 4/6 planes is not as meaningful.  you have to know what an
+*     index represents in missing planes.  pindex now has a meaningful
+*     range of 1 to 26.  from 15 to 26 there are 4/6 planes that fire and
+*     both y and yprime must fire.  that leaves 6 possiblities for each
+*     chamber.  the only way to setup haainv is to do it manually.  pindex
+*     is used in this fashion so that the 3rd index in haainv has meaning
+*     and is contiuous running from 1 to 26 instead of jumping around which
+*     would be the case if it were to contain useful plane information.
+*     see h_left_right.f for a list of plane configurations that are
+*     attached to pindex above 14.
 
-      do pindex=1, HDC_NUM_PLANES + HDC_NUM_CHAMBERS
+      do pindex=1, HDC_NUM_PLANES + HDC_NUM_CHAMBERS + 30
 
 * generate the matrix HAA3 for an hdc missing a particular plane
         do i=1,3
@@ -185,12 +198,118 @@
                     HAA3(i,j)=HAA3(i,j) + hstubcoef(k,i)*hstubcoef(k,j)
                   endif
                 enddo
-              else
-                ich = pindex - HDC_NUM_PLANES
-                do k=(ich-1)*(HDC_PLANES_PER_CHAMBER)+1
-     $               ,ich*(HDC_PLANES_PER_CHAMBER)
-                  HAA3(i,j)=HAA3(i,j) + hstubcoef(k,i)*hstubcoef(k,j)
-                enddo
+              else 
+                 if(pindex.le.(HDC_NUM_PLANES+HDC_NUM_CHAMBERS)) then
+                   ich = pindex - HDC_NUM_PLANES
+                   do k=(ich-1)*(HDC_PLANES_PER_CHAMBER)+1
+     $                  ,ich*(HDC_PLANES_PER_CHAMBER)
+                     HAA3(i,j)=HAA3(i,j) + hstubcoef(k,i)*hstubcoef(k,j)
+                   enddo
+                 else  ! 4/6 planes are hit
+                    do icounter=1,hdc_num_planes
+                       hdum4of6coeff(icounter)=1
+                    enddo
+                    if(pindex.eq.15.or.pindex.eq.30)then
+                       hdum4of6coeff(6)=0 !plane 6 did not fire
+                       hdum4of6coeff(5)=0 !plane 5 did not fire
+                       hdum4of6coeff(12)=0 !plane 12 did not fire
+                       hdum4of6coeff(11)=0 !plane 11 did not fire
+                    endif
+                    if(pindex.eq.16.or.pindex.eq.31)then
+                       hdum4of6coeff(6)=0 !plane 6 did not fire
+                       hdum4of6coeff(4)=0 !plane 4 did not fire
+                       hdum4of6coeff(12)=0 !plane 12 did not fire
+                       hdum4of6coeff(10)=0 !plane 10 did not fire
+                     endif
+                    if(pindex.eq.17.or.pindex.eq.32)then
+                       hdum4of6coeff(6)=0 !plane 6 did not fire
+                       hdum4of6coeff(3)=0 !plane 3 did not fire
+                       hdum4of6coeff(12)=0 !plane 12 did not fire
+                       hdum4of6coeff(9)=0 !plane 9 did not fire
+                     endif
+                    if(pindex.eq.18.or.pindex.eq.33)then
+                       hdum4of6coeff(6)=0 !plane 6 did not fire
+                       hdum4of6coeff(2)=0 !plane 2 did not fire
+                       hdum4of6coeff(12)=0 !plane 12 did not fire
+                       hdum4of6coeff(8)=0 !plane 9 did not fire
+                    endif
+                    if(pindex.eq.19.or.pindex.eq.34)then
+                       hdum4of6coeff(6)=0 !plane 6 did not fire
+                       hdum4of6coeff(1)=0 !plane 1 did not fire
+                       hdum4of6coeff(12)=0 !plane 12 did not fire
+                       hdum4of6coeff(7)=0 !plane 7 did not fire
+                    endif
+                    if(pindex.eq.20.or.pindex.eq.35)then
+                       hdum4of6coeff(5)=0 !plane 5 did not fire
+                       hdum4of6coeff(4)=0 !plane 4 did not fire
+                       hdum4of6coeff(11)=0 !plane 11 did not fire
+                       hdum4of6coeff(10)=0 !plane 10 did not fire
+                    endif
+                    if(pindex.eq.21.or.pindex.eq.36)then
+                       hdum4of6coeff(5)=0 !plane 5 did not fire
+                       hdum4of6coeff(3)=0 !plane 3 did not fire
+                       hdum4of6coeff(11)=0 !plane 11 did not fire
+                       hdum4of6coeff(9)=0 !plane 9 did not fire
+                    endif
+                    if(pindex.eq.22.or.pindex.eq.37)then
+                       hdum4of6coeff(5)=0 !plane 5 did not fire
+                       hdum4of6coeff(2)=0 !plane 2 did not fire
+                       hdum4of6coeff(11)=0 !plane 11 did not fire
+                       hdum4of6coeff(8)=0 !plane 8 did not fire
+                    endif
+                    if(pindex.eq.23.or.pindex.eq.38)then
+                       hdum4of6coeff(5)=0 !plane 5 did not fire
+                       hdum4of6coeff(1)=0 !plane 1 did not fire
+                       hdum4of6coeff(11)=0 !plane 11 did not fire
+                       hdum4of6coeff(7)=0 !plane 7 did not fire
+                    endif
+                    if(pindex.eq.24.or.pindex.eq.39)then
+                       hdum4of6coeff(4)=0 !plane 4 did not fire
+                       hdum4of6coeff(3)=0 !plane 3 did not fire
+                       hdum4of6coeff(10)=0 !plane 10 did not fire
+                       hdum4of6coeff(9)=0 !plane 9 did not fire
+                    endif
+                    if(pindex.eq.25.or.pindex.eq.40)then
+                       hdum4of6coeff(4)=0 !plane 4 did not fire
+                       hdum4of6coeff(2)=0 !plane 2 did not fire
+                       hdum4of6coeff(10)=0 !plane 10 did not fire
+                       hdum4of6coeff(8)=0 !plane 8 did not fire
+                    endif
+                    if(pindex.eq.26.or.pindex.eq.41)then
+                       hdum4of6coeff(4)=0 !plane 4 did not fire
+                       hdum4of6coeff(1)=0 !plane 1 did not fire
+                       hdum4of6coeff(10)=0 !plane 10 did not fire
+                       hdum4of6coeff(7)=0 !plane 7 did not fire
+                    endif
+                    if(pindex.eq.27.or.pindex.eq.42)then
+                       hdum4of6coeff(3)=0 !plane 3 did not fire
+                       hdum4of6coeff(2)=0 !plane 2 did not fire
+                       hdum4of6coeff(9)=0 !plane 9 did not fire
+                       hdum4of6coeff(8)=0 !plane 8 did not fire
+                    endif
+                    if(pindex.eq.28.or.pindex.eq.43)then
+                       hdum4of6coeff(3)=0 !plane 3 did not fire
+                       hdum4of6coeff(1)=0 !plane 1 did not fire
+                       hdum4of6coeff(9)=0 !plane 9 did not fire
+                       hdum4of6coeff(7)=0 !plane 7 did not fire
+                    endif
+                    if(pindex.eq.29.or.pindex.eq.44)then
+                       hdum4of6coeff(2)=0 !plane 2 did not fire
+                       hdum4of6coeff(1)=0 !plane 1 did not fire
+                       hdum4of6coeff(8)=0 !plane 8 did not fire
+                       hdum4of6coeff(7)=0 !plane 7 did not fire
+                    endif
+                    if(pindex.ge.15.and.pindex.le.29)then
+                       ich=1
+                    else 
+                       ich=2
+                    endif
+                    do k=(ich-1)*(HDC_PLANES_PER_CHAMBER)+1
+     $                  ,ich*(HDC_PLANES_PER_CHAMBER)
+                       HAA3(i,j)=HAA3(i,j) + hstubcoef(k,i)*hstubcoef(k,j)
+     $                      *hdum4of6coeff(k)
+                    enddo
+                 endif
               endif
             endif                       !end test j lt i
           enddo                         !end j loop
