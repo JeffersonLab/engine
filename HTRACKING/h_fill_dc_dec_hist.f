@@ -9,6 +9,9 @@
 *                                 Put id's in hms_tracking_histid
 *                                 implement flag to turn block off
 * $Log$
+* Revision 1.5  1996/04/30 12:36:43  saw
+* (JRA) Comment out HDC_DRIFT_DIS and HDC_DRIFT_TIME histograms
+*
 * Revision 1.4  1995/08/31 15:02:26  cdaq
 * (JRA) Comment out filling of hiddcwirecent (wire center) histogram
 *
@@ -35,7 +38,8 @@
 *
       include 'hms_data_structures.cmn'
       include 'hms_tracking.cmn'
-      include 'hms_track_histid.cmn'          
+      include 'hms_track_histid.cmn'
+      include 'gen_event_info.cmn'
 *
       SAVE
 *--------------------------------------------------------
@@ -55,8 +59,8 @@
             if( (planeoff .gt. 0) .and. (planeoff.le. hdc_num_planes)) then
               call hf1(hiddcwiremap(planeoff),histval,1.)
 c              call hf1(hiddcwirecent(planeoff),HDC_WIRE_CENTER(ihit),1.)
-              call hf1(hiddcdriftdis(planeoff),HDC_DRIFT_DIS(ihit),1.)
-              call hf1(hiddcdrifttime(planeoff),HDC_DRIFT_TIME(ihit),1.)
+c              call hf1(hiddcdriftdis(planeoff),HDC_DRIFT_DIS(ihit),1.)
+c              call hf1(hiddcdrifttime(planeoff),HDC_DRIFT_TIME(ihit),1.)
             endif                       ! end test on valid plane number
           enddo                         ! end loop over hits
         endif                           ! end test on zero hits       
