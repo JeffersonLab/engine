@@ -28,6 +28,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.8.4.3  2003/12/08 19:43:30  xu
+* add beam infor
+*
 * Revision 1.8.4.2  2003/12/08 19:14:30  xu
 * add eventype in ntuple
 *
@@ -184,6 +187,24 @@ c                                ! track with spectrometer ray
         m= m+1
         h_Ntuple_contents(m)= gfry_raw_adc    ! was fry
 *       xucc added end
+
+      m= m+1
+      h_Ntuple_contents(m)= gbeam_x
+      m= m+1
+      h_Ntuple_contents(m)= gbeam_y
+      m= m+1
+      h_Ntuple_contents(m)= gbpm_x(1)
+      m= m+1
+      h_Ntuple_contents(m)= gbpm_y(1)
+      m= m+1
+      h_Ntuple_contents(m)= gbpm_x(2)
+      m= m+1
+      h_Ntuple_contents(m)= gbpm_y(2)
+      m= m+1
+      h_Ntuple_contents(m)= gbpm_x(3)
+      m= m+1
+      h_Ntuple_contents(m)= gbpm_y(3)
+
 
 
 

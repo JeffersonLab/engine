@@ -35,6 +35,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.9.4.3  2003/12/08 19:43:37  xu
+* add beam infor
+*
 * Revision 1.9.4.2  2003/12/08 19:14:22  xu
 * add eventype in ntuple
 *
@@ -238,6 +241,23 @@
         m= m+1
         h_Ntuple_tag(m)= 'fry'
 *  xucc added end
+
+      m= m+1
+      h_Ntuple_tag(m)= 'gbeam_x'
+      m= m+1
+      h_Ntuple_tag(m)= 'gbeam_y'
+      m= m+1
+      h_Ntuple_tag(m)= 'bpma_x'
+      m= m+1
+      h_Ntuple_tag(m)= 'bpma_y'
+      m= m+1
+      h_Ntuple_tag(m)= 'bpmb_x'
+      m= m+1
+      h_Ntuple_tag(m)= 'bpmb_y'
+      m= m+1
+      h_Ntuple_tag(m)= 'bpmc_x'
+      m= m+1
+      h_Ntuple_tag(m)= 'bpmc_y'
 
 
 
