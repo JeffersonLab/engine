@@ -19,6 +19,9 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.15  1996/01/16 21:55:02  cdaq
+* (JRA) Calculate q, W for electrons
+*
 * Revision 1.14  1995/10/09 20:22:15  cdaq
 * (JRA) Add call to h_dump_cal, change upper to lower case
 *
@@ -85,18 +88,26 @@
       INCLUDE 'hms_tracking.cmn'
       INCLUDE 'hms_cer_parms.cmn'
       INCLUDE 'hms_geometry.cmn'
+      INCLUDE 'hms_id_histid.cmn'
+      INCLUDE 'hms_track_histid.cmn'
+      include 'gen_event_info.cmn'
 *
 *     local variables 
-      integer*4 i,ip
+      integer*4 i,ip,ihit
+      integer*4 itrkfp
       real*4 cosgamma,tandelphi,sinhphi,coshstheta,sinhstheta
       real*4 t1,ta,p3,t3,hminv2
       real*4 coshsthetaq
       real*4 sind,tand                  ! For f2c
       real*4 p_nonzero
+      real*4 xdist,ydist,dist(12),res(12)
+      real*4 tmp,W2
 *
 *--------------------------------------------------------
 *
+      hphi_lab=0.0
       if(hsnum_fptrack.gt.0) then       ! Good track has been selected
+        itrkfp=hsnum_fptrack
         hsp = hp_tar(hsnum_tartrack)
         hsenergy = sqrt(hsp*hsp+hpartmass*hpartmass)
 *     Copy variables for ntuple so we can test on them
@@ -105,12 +116,12 @@
         hsy_tar  = hy_tar(hsnum_tartrack)
         hsxp_tar  = hxp_tar(hsnum_tartrack) ! This is an angle (radians)
         hsyp_tar  = hyp_tar(hsnum_tartrack) ! This is an angle (radians)
-        hsbeta   = hbeta(hsnum_fptrack)
-        hsbeta_chisq = hbeta_chisq(hsnum_fptrack)
-        hstime_at_fp   = htime_at_fp(hsnum_fptrack)
+        hsbeta   = hbeta(itrkfp)
+        hsbeta_chisq = hbeta_chisq(itrkfp)
+        hstime_at_fp   = htime_at_fp(itrkfp)
 
-        hstrack_et   = htrack_et(hsnum_fptrack)
-        hstrack_preshower_e   = htrack_preshower_e(hsnum_fptrack)
+        hstrack_et   = htrack_et(itrkfp)
+        hstrack_preshower_e   = htrack_preshower_e(itrkfp)
         p_nonzero = max(.0001,hsp)      !momentum (used to normalize calorim.)
         hscal_suma = hcal_e1/p_nonzero  !normalized cal. plane sums
         hscal_sumb = hcal_e2/p_nonzero
@@ -121,10 +132,26 @@
         hsprtrk = hstrack_preshower_e/p_nonzero
         hsshtrk = hstrack_et/p_nonzero
 
-        hsx_fp   = hx_fp(hsnum_fptrack)
-        hsy_fp   = hy_fp(hsnum_fptrack)
-        hsxp_fp   = hxp_fp(hsnum_fptrack) ! This is a slope (dx/dz)
-        hsyp_fp   = hyp_fp(hsnum_fptrack) ! This is a slope (dy/dz)
+        hsx_sp1 = hx_sp1(itrkfp)
+        hsy_sp1 = hy_sp1(itrkfp)
+        hsxp_sp1= hxp_sp1(itrkfp)
+        hsx_sp2 = hx_sp2(itrkfp)
+        hsy_sp2 = hy_sp2(itrkfp)
+        hsxp_sp2= hxp_sp2(itrkfp)
+
+        do ihit=1,hnum_scin_hit(itrkfp)
+          call hf1(hidscintimes,hscin_fptime(itrkfp,ihit),1.)
+        enddo
+
+        do ihit=1,hntrack_hits(itrkfp,1)
+          call hf1(hidcuttdc,
+     &       float(hdc_tdc(hntrack_hits(itrkfp,ihit+1))),1.)
+        enddo
+
+        hsx_fp   = hx_fp(itrkfp)
+        hsy_fp   = hy_fp(itrkfp)
+        hsxp_fp   = hxp_fp(itrkfp) ! This is a slope (dx/dz)
+        hsyp_fp   = hyp_fp(itrkfp) ! This is a slope (dy/dz)
         hsx_dc1 = hsx_fp + hsxp_fp * hdc_1_zpos
         hsy_dc1 = hsy_fp + hsyp_fp * hdc_1_zpos
         hsx_dc2 = hsx_fp + hsxp_fp * hdc_2_zpos
@@ -141,37 +168,81 @@
         do ip=1,4
           hsscin_elem_hit(ip)=0
         enddo
-        do i=1,hnum_scin_hit(hsnum_fptrack)
-          ip=hscin_plane_num(hscin_hit(hsnum_fptrack,i))
+        do i=1,hnum_scin_hit(itrkfp)
+          ip=hscin_plane_num(hscin_hit(itrkfp,i))
           if (hsscin_elem_hit(ip).eq.0) then
             hsscin_elem_hit(ip)=hscin_counter_num(hscin_hit(
-     $           hsnum_fptrack,i))
-            hsdedx(ip)=hdedx(hsnum_fptrack,i)
+     $           itrkfp,i))
+            hsdedx(ip)=hdedx(itrkfp,i)
           else                          ! more than 1 hit in plane
             hsscin_elem_hit(ip)=18
-            hsdedx(ip)=sqrt(hsdedx(ip)*hdedx(hsnum_fptrack,i))
+            hsdedx(ip)=sqrt(hsdedx(ip)*hdedx(itrkfp,i))
           endif
         enddo
 
-        hsnum_scin_hit = hnum_scin_hit(hsnum_fptrack)
-        hsnum_pmt_hit = hnum_pmt_hit(hsnum_fptrack)
+        hsnum_scin_hit = hnum_scin_hit(itrkfp)
+        hsnum_pmt_hit = hnum_pmt_hit(itrkfp)
+
+        hschi2perdeg  = hchi2_fp(itrkfp)
+     $       /float(hnfree_fp(itrkfp))
+        hsnfree_fp = hnfree_fp(itrkfp)
 
         do ip = 1, hdc_num_planes
-          hdc_sing_res(ip)=hdc_single_residual(hsnum_fptrack,ip)
-          hsdc_track_coord(ip)=hdc_track_coord(hsnum_fptrack,ip)
+          hdc_sing_res(ip)=hdc_single_residual(itrkfp,ip)
+          hsdc_track_coord(ip)=hdc_track_coord(itrkfp,ip)
         enddo
-        hschi2perdeg  = hchi2_fp(hsnum_fptrack)
-     $       /float(hnfree_fp(hsnum_fptrack))
-        hsnfree_fp = hnfree_fp(hsnum_fptrack)
 
-        cosgamma = 1.0/sqrt(1.0 + hsxp_tar**2 + hsyp_tar**2)
-        coshstheta = cosgamma*(sinhthetas * hsyp_tar + coshthetas)
-        hstheta = acos(coshstheta)
+        if (hntrack_hits(itrkfp,1).eq.12 .and. hschi2perdeg.le.4) then
+          xdist=hsx_dc1
+          ydist=hsy_dc1
+          do ip=1,12
+            if (hdc_readout_x(ip)) then
+              dist(ip) = ydist*hdc_readout_corr(ip)
+            else                            !readout from top/bottom
+              dist(ip) = xdist*hdc_readout_corr(ip)
+            endif
+            res(ip)=hdc_sing_res(ip)
+            tmp = hdc_plane_wirecoord(itrkfp,ip)-hdc_plane_wirecenter(itrkfp,ip)
+            if (tmp.eq.0) then   !drift dist = 0
+              res(ip)=abs(res(ip))
+            else
+              res(ip)=res(ip) * (abs(tmp)/tmp)  !convert +/- res to near/far res
+            endif
+          enddo
+c           write(37,'(12f7.2,12f8.3,12f8.5)') (hsdc_track_coord(ip),ip=1,12),
+c     &    (dist(ip),ip=1,12),(res(ip),ip=1,12)
+        endif
+
+c        cosgamma = 1.0/sqrt(1.0 + hsxp_tar**2 + hsyp_tar**2)
+c        coshstheta = cosgamma*(sinhthetas * hsyp_tar + coshthetas)
+c        hstheta = acos(coshstheta)
+c        write(*,*)hstheta
+        hstheta =htheta_lab*TT/180. - hsyp_tar
+        HSP = hpcentral*(1 + hsdelta/100.)
         sinhstheta = sin(hstheta)
         tandelphi = hsxp_tar /
      &       ( sinhthetas - coshthetas*hsyp_tar)
-        hsphi = hphi_lab + tandelphi    ! hphi_lab MUST BE MULTIPLE OF
+        hsphi = hphi_lab + atan(tandelphi)    ! hphi_lab MUST BE MULTIPLE OF
         sinhphi = sin(hsphi)            ! PI/2, OR ABOVE IS CRAP
+      if(hpartmass .lt. 2*mass_electron) then ! Less than 1 MeV, HMS is elec
+      call total_eloss(1,.true.,tz_target,ta_target,55.0,3.0,
+     >                 htheta_lab,ttheta_tar,1.0,hseloss)
+        HSENERGY=HSENERGY- hseloss
+        hqx = -HSP*cos(HSxp_tar)*sin(HSTHETA)
+        hqy = -HSP*sin(Hsxp_tar)
+        hqz = cpbeam - HSP*cos(HSxp_tar)*cos(HSTHETA)
+        hqabs= sqrt(hqx**2+hqy**2+hqz**2)
+        W2 = tmass_target**2 +2.*tmass_target*(cpbeam-hsp) - hqabs**2
+       if(W2.ge.0 ) then
+          HINVMASS = SQRT(W2)
+        else
+          HINVMASS = 0.
+        endif
+      else
+      call total_eloss(1,.false.,tz_target,ta_target,
+     >                  55.0,3.0,htheta_lab,ttheta_tar,hsbeta,hseloss)
+        HSENERGY = HSENERGY - hseloss
+      endif
 *     Calculate elastic scattering kinematics
         t1  = 2.*hphysicsa*cpbeam*coshstheta      
         ta  = 4*cpbeam**2*coshstheta**2 - hphysicsb**2
@@ -215,7 +286,7 @@ ccc   SAW 1/17/95.  Add the stuff after the or.
      $       - (cpbeam - hsp*coshstheta)**2 - (hsp*sinhstheta)**2
         hsu = (tmass_target - hsenergy)**2 - hsp**2
 
-        hseloss = cebeam - hsenergy
+c        hseloss = cebeam - hsenergy
         hsq3 = sqrt(cpbeam**2 + hsp**2 - 2*cpbeam*hsp*coshstheta)
         coshsthetaq = (cpbeam**2 - cpbeam*hsp*coshstheta)/cpbeam/hsq3
         hsthetaq = acos(coshsthetaq)
@@ -233,6 +304,11 @@ ccc   SAW 1/17/95.  Add the stuff after the or.
 *     execute physics singles tests.
 ***   ierr=thtstexeb('hms_physics_sing') ! This is going to get executed twice
 *     
+*
+c      if (hmisc_dec_data(8,1).ge.1000 .and. hmisc_dec_data(8,1).le.1100) then
+c        write(37,*) hsx_fp,hsxp_fp,hsy_fp,hsyp_fp,hmisc_dec_data(8,1)/9.69-hstart_time
+c      endif
+*
 *     Write raw timing information for fitting.
         if(hdebugdumptof.ne.0) call h_dump_tof
         if(hdebugdumpcal.ne.0) call h_dump_cal
