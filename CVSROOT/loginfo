@@ -18,3 +18,4 @@
 #
 # For example:
 #DEFAULT		(echo ""; who am i; date; cat) >> $CVSROOT/CVSROOT/commitlog
+^Analyzer      Mail -s %s jones
