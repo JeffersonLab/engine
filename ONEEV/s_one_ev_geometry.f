@@ -13,6 +13,9 @@
 * Derek van Westrum (vanwestr@cebaf.gov)
 *
 * $Log$
+* Revision 1.2  1995/10/06 18:24:18  cdaq
+* (DVW) Changed to ctp geometry variables and eliminated call to s_one_ev.par.
+*
 * Revision 1.1  1995/07/31 15:23:38  cdaq
 * Initial revision
 * h_one_ev_geometry.f,v $
@@ -23,8 +26,15 @@
       include 'sos_geometry.cmn'
       include 'sos_calorimeter.cmn'
       include 'sos_scin_parms.cmn'
-      include 'sos_one_ev.par'
 
+*One day these will be ctp variables...
+      real*4    SHOWER_X_OFFSET,SHOWER_Y_OFFSET
+      parameter (SHOWER_X_OFFSET = 11.3)       ! offset
+      parameter (SHOWER_Y_OFFSET = 0.) ! offset
+
+      real*4    SHUT_WIDTH,SHUT_HEIGHT
+      parameter (SHUT_WIDTH = 100.)     ! full width of the det. hut
+      parameter (SHUT_HEIGHT = 800.)    ! full height of the det. hut
       integer SHUTMEDIA                 ! non-sensitive tracking media
       integer DETMEDIA                  ! sensitive tracking media
       parameter (SHUTMEDIA = 1, DETMEDIA = 2)
@@ -41,8 +51,6 @@
       character*5 scinname 
       character*5 layername
       character*5 planename
-      character*5 wirename
-      character*5 chamber
       character*5 plane
       character*5 wire
       character*5 blockname
@@ -304,103 +312,92 @@
 * See the file "displaynumbering.help" for a description of the numbering of the
 * various detector elements
 
-! half width of hodoscope in x
-      par(1) = sscin_1x_size * LOWER_HODO_X_PADDLES / 2.
-! half width of hodoscope in y
-      par(2) = sscin_1y_size * LOWER_HODO_Y_PADDLES / 2.
-! half thickness of hodoscope in z, times 2 because of stagger
-      par(3) = HODO_THICKNESS * hodoscale
+      par(1) = sscin_1x_size * sscin_1x_nr / 2.
+      par(2) = sscin_1y_size * sscin_1y_nr / 2.
+      par(3) = sscin_1x_dzpos * hodoscale / 2.
       call g_ugsvolu ('HDX1', 'BOX ', DETMEDIA, par, 3, ivolu) ! X plane hodo
       call g_ugsvolu ('HDY1', 'BOX ', DETMEDIA, par, 3, ivolu) ! Y plane hodo
-
-! half width of hodoscope in x
-      par(1) = sscin_2x_size * UPPER_HODO_X_PADDLES / 2.
-! half width of hodoscope in y
-      par(2) = sscin_2y_size * UPPER_HODO_Y_PADDLES / 2.
-! half thickness of hodoscope in z, times 2 because of stagger
-      par(3) = HODO_THICKNESS * hodoscale
+      call gsatt ('HDX1', 'SEEN', 0)   ! can't see the hodo box
+      call gsatt ('HDY1', 'SEEN', 0)   ! can't see the hodo box
+      par(1) = sscin_2x_size * sscin_2x_nr / 2.
+      par(2) = sscin_2y_size * sscin_2y_nr / 2.
+      par(3) = sscin_2x_dzpos * hodoscale /2.
       call g_ugsvolu ('HDX2', 'BOX ', DETMEDIA, par, 3, ivolu) ! X plane hodo
       call g_ugsvolu ('HDY2', 'BOX ', DETMEDIA, par, 3, ivolu) ! Y plane hodo
+      call gsatt ('HDX2', 'SEEN', 0)   ! can't see the hodo box
+      call gsatt ('HDY2', 'SEEN', 0)   ! can't see the hodo box
 
 ! box for front hodos
-! half width of hodoscope in x
-      par(1) = sscin_1x_size * LOWER_HODO_X_PADDLES / 2.
-! half width of hodoscope in y
-      par(2) = sscin_1y_size * LOWER_HODO_Y_PADDLES / 2.
-      par(3) = HODO_THICKNESS*hodoscale + (sscin_1y_zpos-sscin_1x_zpos)/2.
+      par(1) = sscin_1x_size * sscin_1x_nr / 2.
+      par(2) = sscin_1y_size * sscin_1y_nr / 2.
+      par(3) = sscin_1x_dzpos*hodoscale + (sscin_1y_zpos-sscin_1x_zpos)/2.
       call g_ugsvolu ('HOD1', 'BOX ', DETMEDIA, par, 3, ivolu) ! hodoscope box
       call gsatt ('HOD1', 'SEEN', 0)	! can't see the hodo box
 
 ! box for back hodos
-! half width of hodoscope in x
-      par(1) = sscin_2x_size * UPPER_HODO_X_PADDLES / 2.
-! half width of hodoscope in y
-      par(2) = sscin_2y_size * UPPER_HODO_Y_PADDLES / 2.
-      par(3) = HODO_THICKNESS*hodoscale + (sscin_2y_zpos-sscin_2x_zpos)/2.
+      par(1) = sscin_2x_size * sscin_2x_nr / 2.
+      par(2) = sscin_2y_size * sscin_2y_nr / 2.
+      par(3) = sscin_2x_dzpos*hodoscale + (sscin_2y_zpos-sscin_2x_zpos)/2.
       call g_ugsvolu ('HOD2', 'BOX ', DETMEDIA, par, 3, ivolu) ! hodoscope box
       call gsatt ('HOD2', 'SEEN', 0)	! can't see the hodo box
 *                                         added by Derek
 *
-      x = HODO_LOWER_X_OFFSET
-      y = HODO_LOWER_Y_OFFSET
+      x = sscin_1x_offset
+      y = -sscin_1y_offset
       z = sscin_1x_zpos
       call gspos ('HOD1', 1, 'SHUT', x, y, z, 0, 'ONLY') ! lower hodo
-      x = HODO_UPPER_X_OFFSET
-      y = HODO_UPPER_Y_OFFSET
+      x = sscin_2x_offset
+      y = -sscin_2y_offset
       z = sscin_2x_zpos
       call gspos ('HOD2', 1, 'SHUT', x, y, z, 0, 'ONLY') ! upper hodo
 
-      z= -(HODO_THICKNESS*hodoscale + (sscin_1y_zpos-sscin_1x_zpos))/2.
+      z= -(sscin_1x_offset*hodoscale + (sscin_1y_zpos-sscin_1x_zpos))/2.
       call gspos ('HDX1', 1, 'HOD1', 0., 0., z, 0, 'ONLY') ! X plane
       call gspos ('HDY1', 1, 'HOD1', 0., 0., -z, 0, 'ONLY') ! Y plane
-      z= -(HODO_THICKNESS*hodoscale + (sscin_2y_zpos-sscin_2x_zpos))/2.
+      z= -(sscin_2x_offset*hodoscale + (sscin_2y_zpos-sscin_2x_zpos))/2.
       call gspos ('HDX2', 1, 'HOD2', 0., 0., z, 0, 'ONLY') ! X plane
       call gspos ('HDY2', 1, 'HOD2', 0., 0., -z, 0, 'ONLY') ! Y plane
 
 * Now define the strips for the hodoscopes
 
-      x = (LOWER_HODO_X_PADDLES + 1.) * sscin_1x_size / 2. ! starting loci
-      do i = 1, LOWER_HODO_X_PADDLES
+      x = (sscin_1x_nr + 1.) * sscin_1x_size / 2. ! starting loci
+      do i = 1, sscin_1x_nr
         x = x - sscin_1x_size
         write (scinname,'(a,a)') 'H1X',char(64 + i)
-*        call gspos ('HOX1', i, 'HDX1', x, 0., 0., 0, 'ONLY')
         par(1) = sscin_1x_size / 2. ! half width of X strips
-        par(2) = sscin_1y_size * LOWER_HODO_Y_PADDLES / 2.
-                                       ! half width of hodoscope in y
-        par(3) = HODO_THICKNESS * hodoscale / 2. !half thickness of hodoscope in z
+        par(2) = sscin_1y_size * sscin_1y_nr / 2.
+        par(3) = sscin_1x_dzpos * hodoscale / 2. !half thickness of hodoscope in z
         call g_ugsvolu (scinname, 'BOX ', DETMEDIA, par, 3, ivolu) ! X plane hodo
         call gspos (scinname, i, 'HDX1', x, 0., 0., 0, 'ONLY')
       enddo
-      y = (LOWER_HODO_Y_PADDLES + 1.) * sscin_1y_size / 2. ! starting loci
-      do i = 1, LOWER_HODO_Y_PADDLES
+      y = (sscin_1y_nr + 1.) * sscin_1y_size / 2. ! starting loci
+      do i = 1, sscin_1y_nr
         y = y - sscin_1y_size
         write (scinname,'(a,a)') 'H1Y',char(64 + i)
-        par(1) = sscin_1x_size * LOWER_HODO_X_PADDLES / 2.
+        par(1) = sscin_1x_size * sscin_1x_nr / 2.
                                         ! half width of hodoscope in x
         par(2) = sscin_1y_size / 2.	! half width of X strips
-        par(3) = HODO_THICKNESS * hodoscale / 2. !half thickness of hodoscope in z
+        par(3) = sscin_1y_dzpos * hodoscale / 2. !half thickness of hodoscope in z
         call g_ugsvolu (scinname, 'BOX ', DETMEDIA, par, 3, ivolu) ! Y plane hodo
         call gspos (scinname, i, 'HDY1', 0., y, 0., 0, 'ONLY')
       enddo
-      x = (UPPER_HODO_X_PADDLES + 1.) * sscin_2x_size / 2. ! starting loci
-      do i = 1,UPPER_HODO_X_PADDLES
+      x = (sscin_2x_nr + 1.) * sscin_2x_size / 2. ! starting loci
+      do i = 1,sscin_2x_nr
         x = x - sscin_2x_size
         write (scinname,'(a,a)') 'H2X',char(64 + i)
         par(1) = sscin_2x_size / 2. ! half width of X strips
-        par(2) = sscin_2y_size * UPPER_HODO_Y_PADDLES / 2.
-                                          ! half width of hodoscope in y
-        par(3) = HODO_THICKNESS * hodoscale / 2. !half thickness of hodoscope in z
+        par(2) = sscin_2y_size * sscin_2y_nr / 2.
+        par(3) = sscin_2x_dzpos * hodoscale / 2. !half thickness of hodoscope in z
         call g_ugsvolu (scinname, 'BOX ', DETMEDIA, par, 3, ivolu) ! X plane hodo
         call gspos (scinname, i, 'HDX2', x, 0., 0., 0, 'ONLY')
       enddo
-      y = (UPPER_HODO_Y_PADDLES + 1.) * sscin_2y_size / 2. ! starting loci
-      do i = 1, UPPER_HODO_Y_PADDLES
+      y = (sscin_2y_nr + 1.) * sscin_2y_size / 2. ! starting loci
+      do i = 1, sscin_2y_nr
         y = y - sscin_2y_size
         write (scinname,'(a,a)') 'H2Y',char(64 + i)
-        par(1) = sscin_2x_size * UPPER_HODO_X_PADDLES / 2.
-                                        ! half width of hodoscope in x
+        par(1) = sscin_2x_size * sscin_2x_nr / 2.
         par(2) = sscin_2y_size / 2.	! half width of X strips
-        par(3) = HODO_THICKNESS * hodoscale / 2. !half thickness of hodoscope in z
+        par(3) = sscin_2y_dzpos * hodoscale / 2. !half thickness of hodoscope in z
         call g_ugsvolu (scinname, 'BOX ', DETMEDIA, par, 3, ivolu) ! Y plane hodo
         call gspos (scinname, i, 'HDY2', 0., y, 0., 0, 'ONLY')
       enddo
@@ -446,16 +443,16 @@
       par(1) = scal_block_zsize / 2.	! half width of a block
       par(2) = scal_block_ysize / 2.	! half length of a block
       par(3) = scal_block_xsize / 2.	! half height of a block
-      do ilayer =1,SMAX_CAL_COLUMNS
-         do irow = 1,SMAX_CAL_ROWS
+      do ilayer =1,smax_cal_columns
+         do irow = 1,smax_cal_rows
             write (blockname,'(a,i1,a)') 'BL',ilayer,char(64 + irow)
             call g_ugsvolu (blockname, 'BOX ', DETMEDIA, par, 3, ivolu)
          enddo
       enddo
 *
-      do ilayer =1,SMAX_CAL_COLUMNS
+      do ilayer =1,smax_cal_columns
          x =  (smax_cal_rows - 1.) / 2. * scal_block_zsize
-         do irow = 1,SMAX_CAL_ROWS
+         do irow = 1,smax_cal_rows
             write (blockname,'(a,i1,a)') 'BL',ilayer,char(64 + irow)
             write (layername,'(a,i1)') 'LAY',ilayer
             call gspos(blockname, 1, layername, x, 0., 0., 0, 'ONLY')
