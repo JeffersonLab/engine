@@ -13,7 +13,10 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to h_raw_dump_all
 * $Log$
-* Revision 1.2  1994/09/13 20:31:08  cdaq
+* Revision 1.3  1995/05/11 14:54:05  cdaq
+* (JRA) Add call to h_fill_cal_hist
+*
+* Revision 1.2  1994/09/13  20:31:08  cdaq
 * (JRA) Subtract pedestals in sparsified data
 *
 * Revision 1.1  1994/04/13  16:21:31  cdaq
@@ -36,7 +39,6 @@
       integer*4 adc       !ADC value
       integer*4 adc_max   !Max. channel #
       parameter (adc_max=4095)
-      real*4    ped       !Pedestal value
 *
       include 'gen_data_structures.cmn'
       include 'hms_calorimeter.cmn'
@@ -85,8 +87,8 @@
 *
 *------Sparsify the raw data
          nb =row+hmax_cal_rows*(col-1)
-         ped=hcal_ped_mean(nb)
-         hcal_realadc(nh)=float(adc)-ped
+
+         hcal_realadc(nh)=float(adc)-hcal_ped_mean(nb)
          if(hcal_realadc(nh).gt.hcal_threshold(nb)) then
             hcal_num_hits           =hcal_num_hits+1
             hcal_rows(hcal_num_hits)=row
@@ -96,6 +98,8 @@
       enddo                      !End loop over raw hits
 *
       if(hdbg_sparsified_cal.gt.0) call h_prt_cal_sparsified
+*
+      call h_fill_cal_hist(abort,errmsg)
 *
       return
       end
