@@ -9,6 +9,9 @@
 *
 * modifications:
 * $Log$
+* Revision 1.6  1996/09/04 20:36:55  saw
+* (JRA) Don't forget the  sqrt in pathnorm
+*
 * Revision 1.5  1995/05/22 19:45:59  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -83,9 +86,9 @@
           endif
         enddo
 
-        pathnorm = 1 + sxp_fp(trk)**2 + syp_fp(trk)**2
+        pathnorm = sqrt(1 + sxp_fp(trk)**2 + syp_fp(trk)**2)
         sbeta(trk) = sbeta(trk) * pathnorm !take angle into account
-        sbeta(trk) = sbeta(trk) / 29.9979 !velocity/c
+        sbeta(trk) = sbeta(trk) / 29.979 !velocity/c
       else
         sbeta(trk) = 0.                 !set unphysical beta
         sbeta_chisq(trk) = -2
