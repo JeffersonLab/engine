@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.19  1996/11/08 20:33:53  saw
+# (SAW) Add AIX compatibility
+#
 # Revision 1.18  1996/09/04 14:25:57  saw
 # (SAW) Fixup some O. subdirectory errors
 #
@@ -94,6 +97,14 @@ makeregstuff =	r_hms_filenames.f r_hms_scin_parms.f r_hms_scin_tof.f \
 
 
 sources = $(osources) $(newstuff) $(newerstuff) $(makeregstuff)
+
+ifeq ($(ARCH),AIX)
+xsources := $(filter-out h_link_stubs.f h_track_tests.f ,$(sources))
+sources = h_link_stubs_aix.f h_track_tests_aix.f $(xsources)
+../h_%_aix.f : ../h_%.f
+	sed -e "s/access=.append./position='append'/"< $< > $@	
+endif
+
 libsources = $(sources)
 
 lib_targets := $(patsubst %.f, libhtracking.a(%.o), $(libsources))
@@ -103,6 +114,12 @@ bin_targets =
 #default:
 #	@echo "nothing to make"
 
+ifdef NFSDIRECTORY
+../%.f : $(NFSDIRECTORY)/HTRACKING/%.f
+	ln -s $< $@
+
+.PRECIOUS: ../%.f
+else
 #
 # Rule for making the register subroutines
 #
@@ -110,12 +127,6 @@ bin_targets =
 	(cd .. ; $(MAKEREG) $(<F) -o $(@F) -e /dev/null)
 
 .PRECIOUS: ../r_%.f
-
-ifdef NFSDIRECTORY
-../%.f : $(NFSDIRECTORY)/HTRACKING/%.f
-	ln -s $< $@
-
-.PRECIOUS: ../%.f
 endif
 
 #
