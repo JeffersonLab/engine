@@ -1,9 +1,12 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
-* Revision 1.1  1994/06/22 21:02:17  cdaq
-* Initial revision
+* Revision 1.2  1994/07/07 15:23:16  cdaq
+* (SAW) Correct pointers for actual bank structure
 *
+c Revision 1.1  1994/06/22  21:02:17  cdaq
+c Initial revision
+c
 *
       implicit none
       integer*4 event(*)
@@ -32,7 +35,7 @@
 *
       evlen = event(1) + 1
       if(evlen.gt.3) then           ! We have a scaler bank
-         pointer = 5
+         pointer = 3
 *
          do while(pointer.lt.evlen)
 *
