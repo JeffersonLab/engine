@@ -15,7 +15,10 @@
 * h_cal_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
-* Revision 1.2  1995/05/22 19:39:05  cdaq
+* Revision 1.3  1995/08/31 14:55:37  cdaq
+* (JRA) Fill dpos (pos. track - pos. hit) histograms
+*
+* Revision 1.2  1995/05/22  19:39:05  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.1  1995/02/23  13:31:51  cdaq
@@ -34,14 +37,15 @@
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       include 'hms_calorimeter.cmn'
-c      include 'hms_scin_parms.cmn'   !parameters needed in hms_statistics
       include 'hms_statistics.cmn'
+      include 'hms_id_histid.cmn'
 
       integer col,row,blk
       integer hit_row(hmax_cal_columns)
       integer nhit
       real    adc
       real    hit_pos(hmax_cal_columns),hit_dist(hmax_cal_columns)
+      real    histval
       save
 
 * find counters on track, and distance from center.
@@ -91,6 +95,12 @@ c      include 'hms_scin_parms.cmn'   !parameters needed in hms_statistics
         adc=hcal_adcs(nhit)
         blk=row+hmax_cal_rows*(col-1)
 
+* fill the dpos histograms.
+        if (col .eq. 1) then
+          histval=(hcal_block_xc(1)+hcal_block_xsize*(row-1))-hit_pos(1)
+          call hf1(hidcaldpos,histval,1.)
+        endif
+
 *  Record the hits if track is near center of block and the chisquared of the 
 *  track is good
         if(abs(hit_dist(col)).le.hstat_cal_slop .and. row.eq.hit_row(col)) then
@@ -99,16 +109,6 @@ c      include 'hms_scin_parms.cmn'   !parameters needed in hms_statistics
           endif     !was it a good track.
         endif     !if hit was on track.
       enddo
-
-! fill sums over counters
-c      do col=1,hmax_cal_columns
-c        hstat_cal_trksum(col)=0
-c        hstat_cal_hitsum(col)=0
-c        do row=1,hmax_cal_rows
-c          hstat_cal_trksum(col)=hstat_cal_trksum(col)+hstat_cal_trk(col,row)
-c          hstat_cal_hitsum(col)=hstat_cal_possum(col)+hstat_cal_poshit(col,row)
-c        enddo
-c      enddo
 
       return
       end
