@@ -5,9 +5,12 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.1  1994/02/04 21:50:03  cdaq
-*-    Initial revision
+*-    Revision 1.2  1994/03/24 22:00:15  cdaq
+*-    Temporarily change shift to get subaddress from 17 to 16
 *-
+* Revision 1.1  1994/02/04  21:50:03  cdaq
+* Initial revision
+*
 *----------------------------------------------------------------------
       implicit none
       SAVE
@@ -45,7 +48,8 @@
 
       do while(pointer.le.length .and. did.eq.newdid)
 *
-         subadd = iand(ISHFT(evfrag(pointer),-17*dir),'7F'X)
+***         subadd = iand(ISHFT(evfrag(pointer),-17*dir),'7F'X)
+         subadd = iand(ISHFT(evfrag(pointer),-16*dir),'7F'X)
 *
          if (subadd .lt. '7F'X) then            ! Only valid slots
             slot = iand(ISHFT(evfrag(pointer),-27*dir),'1F'X)

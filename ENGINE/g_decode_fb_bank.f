@@ -76,7 +76,8 @@
       pointer = 3                               ! First word of bank
       do while (pointer .le. banklength)
 
-         subadd = iand(ishft(bank(pointer),-17),'7F'X)
+***         subadd = iand(ishft(bank(pointer),-17),'7F'X)
+         subadd = iand(ishft(bank(pointer),-16),'7F'X)
 
          if (subadd .lt. '7F'X) then            ! Only valid slots
 
