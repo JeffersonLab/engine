@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.8.4.1  2004/02/25 18:54:38  jones
+* Starting version for spring03
+*
 * Revision 1.8  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -203,20 +206,6 @@ c
       s_Ntuple_tag(m)= 'bpmc_x'
       m= m+1
       s_Ntuple_tag(m)= 'bpmc_y'
-      m= m+1
-      s_Ntuple_tag(m)= 'MPSclock'
-      m= m+1
-      s_Ntuple_tag(m)= 'hplus'
-      m= m+1
-      s_Ntuple_tag(m)= 'hminus'
-      m= m+1
-      s_Ntuple_tag(m)= 'sceradc1'
-      m= m+1
-      s_Ntuple_tag(m)= 'sceradc2'
-      m= m+1
-      s_Ntuple_tag(m)= 'sceradc3'
-      m= m+1
-      s_Ntuple_tag(m)= 'sceradc4'
 
 
 * Open ntuple.

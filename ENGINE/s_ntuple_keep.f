@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.8.4.1  2004/02/25 18:54:38  jones
+* Starting version for spring03
+*
 * Revision 1.8  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -125,7 +128,7 @@ c
       m= m+1
       s_Ntuple_contents(m)= SSBETA	! BETA of chosen track
       m= m+1
-      s_Ntuple_contents(m)= SSSHTRK	! Total shower energy / momentum
+      s_Ntuple_contents(m)= SSTRACK_ET	! Total shower energy / momentum
       m= m+1
       s_Ntuple_contents(m)= SSTRACK_PRESHOWER_E	! preshower of chosen track
       m= m+1
@@ -171,24 +174,6 @@ c
       s_Ntuple_contents(m)= gbpm_x(3)
       m= m+1
       s_Ntuple_contents(m)= gbpm_y(3)
-      m= m+1
-      s_Ntuple_contents(m)= smisc_dec_data(2,2)
-      m= m+1
-      s_Ntuple_contents(m)= smisc_dec_data(3,2) 
-      m= m+1
-      s_Ntuple_contents(m)= smisc_dec_data(4,2) 
-      m= m+1
-c      s_Ntuple_contents(m)= smisc_dec_data(7,1) 
-       s_Ntuple_contents(m)= scer_adc(1)
-      m= m+1
-c      s_Ntuple_contents(m)= smisc_dec_data(8,1) 
-       s_Ntuple_contents(m)= scer_adc(2)
-      m= m+1
-c      s_Ntuple_contents(m)= smisc_dec_data(5,2) 
-       s_Ntuple_contents(m)= scer_adc(3)
-      m= m+1
-c      s_Ntuple_contents(m)= smisc_dec_data(6,2) 
-       s_Ntuple_contents(m)= scer_adc(4)
 
 
 * Experiment dependent entries start here.

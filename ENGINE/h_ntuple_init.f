@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.11.4.1  2004/02/25 18:54:37  jones
+* Starting version for spring03
+*
 * Revision 1.11  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -192,6 +195,11 @@ c
       h_Ntuple_tag(m)= 'bpmc_x'
       m= m+1
       h_Ntuple_tag(m)= 'bpmc_y'
+
+      m= m+1
+      h_Ntuple_tag(m)= 'hsshsum'
+      m= m+1
+      h_Ntuple_tag(m)= 'haero_npe'
 
       h_Ntuple_size= m     !total size
 * Open ntuple

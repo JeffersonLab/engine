@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.4.1  2004/02/25 18:54:38  jones
+* Starting version for spring03
+*
 * Revision 1.10  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -58,6 +61,8 @@
       INCLUDE 'hms_scin_tof.cmn'
       INCLUDE 'gen_scalers.cmn'
       include 'hms_track_histid.cmn'  !temp junk.
+      include 'hms_calorimeter.cmn'
+      include 'hms_aero_parms.cmn'
 *
       logical HEXIST	!CERNLIB function
 *
@@ -108,7 +113,7 @@ c                                ! track with spectrometer ray
       m= m+1
       h_Ntuple_contents(m)= HSBETA	! BETA of chosen track
       m= m+1
-      h_Ntuple_contents(m)= HSTRACK_ET	! Total shower energy of chosen track
+      h_Ntuple_contents(m)= HSSHTRK	! Total shower energy of chosen track
       m= m+1
       h_Ntuple_contents(m)= HSTRACK_PRESHOWER_E	! preshower of chosen track
       m= m+1
@@ -152,6 +157,10 @@ c
       h_Ntuple_contents(m)= gbpm_x(3)
       m= m+1
       h_Ntuple_contents(m)= gbpm_y(3)
+      m= m+1
+      h_Ntuple_contents(m)= hsshsum
+      m= m+1
+      h_Ntuple_contents(m)= haero_npe_sum
 
 * Experiment dependent entries start here.
 
