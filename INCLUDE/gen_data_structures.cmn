@@ -5,7 +5,10 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
-* Revision 1.9  1994/06/14 03:05:42  cdaq
+* Revision 1.10  1994/06/18 02:49:49  cdaq
+* (SAW) Add code for miscleaneous data and uninstrumented channels
+*
+* Revision 1.9  1994/06/14  03:05:42  cdaq
 * (DFG) Add hms_physics, sos_physics, and coin_physics
 *       Add particle mass to hms_spectrometer and sos_spectrometer
 *
@@ -963,11 +966,44 @@
 *
 
 *
+*     Non-Hits data with HMS gates or starts.
+*     (Energy SUMS, logic timing,...)
+*
+      INTEGER HMAX_MISC_HITS
+      PARAMETER(HMAX_MISC_HITS=50)
+      INTEGER*4 HMISC_TOT_HITS
+      INTEGER*4 HMISC_RAW_ADDR1    ! "Plane"
+      INTEGER*4 HMISC_RAW_ADDR2    ! "Counter"
+      INTEGER*4 HMISC_RAW_DATA
+      COMMON/H_RAW_MISC/
+     &     HMISC_RAW_ADDR1(HMAX_MISC_HITS),
+     &     HMISC_RAW_ADDR2(HMAX_MISC_HITS),
+     &     HMISC_RAW_DATA(HMAX_MISC_HITS)
+*
+
+*
+*     Non-Hits data with SOS gates or starts.
+*     (Energy SUMS, logic timing,...)
+*
+      INTEGER SMAX_MISC_HITS
+      PARAMETER(SMAX_MISC_HITS=50)
+      INTEGER*4 SMISC_TOT_HITS
+      INTEGER*4 SMISC_RAW_ADDR1    ! "Plane"
+      INTEGER*4 SMISC_RAW_ADDR2    ! "Counter"
+      INTEGER*4 SMISC_RAW_DATA
+      COMMON/S_RAW_MISC/
+     &     SMISC_RAW_ADDR1(SMAX_MISC_HITS),
+     &     SMISC_RAW_ADDR2(SMAX_MISC_HITS),
+     &     SMISC_RAW_DATA(SMAX_MISC_HITS)
+*
+      
+*
 *     Hits from Uninstrumented fastbus channels
 *     filled by G_decode_event_by_banks
 *
       INTEGER GMAX_UNINST_HITS
       PARAMETER(GMAX_UNINST_HITS=1000)
+      INTEGER*4 GUNINST_TOT_HITS
       INTEGER*4 GUNINST_RAW_ROCSLOT     ! ROC*2**16 + SLOT
       INTEGER*4 GUNINST_RAW_SUBADD      ! Fastbus channel
       INTEGER*4 GUNINST_RAW_DATAWORD    ! Full fastbus dataword
@@ -975,6 +1011,9 @@
      &     GUNINST_RAW_ROCSLOT(GMAX_UNINST_HITS),
      &     GUNINST_RAW_SUBADD(GMAX_UNINST_HITS),
      &     GUNINST_RAW_DATAWORD(GMAX_UNINST_HITS)
+*
+
+*
 *                                          
 *******************end: gen_data_structures.cmn*************************
 *     Local Variables:
@@ -982,4 +1021,7 @@
 *     fortran-continuation-string: "&"
 *     comment-column: 35
 *     End:
+
+
+
 

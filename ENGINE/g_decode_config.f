@@ -1,5 +1,5 @@
       subroutine g_decode_config(ABORT, error, fname)
-*----------------------------------------------------------------------------------
+*------------------------------------------------------------------------------
 *
 *     Purpose and Methods:
 *
@@ -21,16 +21,19 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton Univ.; rewrote parsing
 *-    $Log$
-*-    Revision 1.2  1994/04/06 18:22:02  cdaq
-*-    (SAW) Revert to pre-initial version that doesn't use UTILSUBS string
-*-    manipulation routines.  Added BSUB keyword for # of bits to shift to get
-*-    the channel number from a lecroy FB word.  Some validity checking should
-*-    be added back in.
+*-    Revision 1.3  1994/06/18 02:47:38  cdaq
+*-    (SAW) Add code for miscleaneous data and uninstrumented channels
 *-
+* Revision 1.2  1994/04/06  18:22:02  cdaq
+* (SAW) Revert to pre-initial version that doesn't use UTILSUBS string
+* manipulation routines.  Added BSUB keyword for # of bits to shift to get
+* the channel number from a lecroy FB word.  Some validity checking should
+* be added back in.
+*
 * Revision 1.1  1994/02/01  20:38:10  cdaq
 * Initial revision
 *
-*----------------------------------------------------------------------------------
+*------------------------------------------------------------------------------
       implicit none
       SAVE
 *
@@ -41,7 +44,7 @@
       logical ABORT
       character*(*) fname
 *
-      include 'gen_detectorids.cmn'
+      include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       integer SPAREID                           ! Need a LUN handler?
       parameter (SPAREID=67)
@@ -159,8 +162,8 @@
                else
                   read(line(1:llen),'(4i15)') subadd, plane, counter,
      $                 signal
-                  If(OK .and. roc.ne.lastroc.or.slot.ne.lastslot) Then
-                     if(g_decode_slotpointer(roc+1,slot).eq.0) then
+                  If(OK .and. (roc.ne.lastroc.or.slot.ne.lastslot)) Then
+                     if(g_decode_slotpointer(roc+1,slot).le.0) then
                         g_decode_slotpointer(roc+1,slot) =
      &                       g_decode_nextpointer
                         g_decode_subaddcnt(roc+1,slot) = nsubadd
