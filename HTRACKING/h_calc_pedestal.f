@@ -1,6 +1,9 @@
       subroutine h_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.8  1996/01/24 15:56:28  saw
+* (JRA) Cleanup
+*
 * Revision 1.7  1996/01/16 21:44:03  cdaq
 * (JRA) Improve Gas Cerenkov pedestals, add misc pedestals, write results to file.
 *
@@ -41,7 +44,7 @@
       integer*4 signalcount
       real*4 sig2
       real*4 num
-      character*132 file
+!      character*132 file
 *
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_pedestals.cmn'
@@ -200,13 +203,12 @@ c        hcer_new_adc_threshold(pmt)=hcer_new_ped(pmt)+2.*hcer_new_rms(pmt)
 *
 * WRITE THRESHOLDS TO FILE FOR HARDWARE SPARCIFICATION
 *
-c      file='peds/hms_thresholds_%d.dat'
-      if (h_threshold_output_filename.ne.' ') then
-        file=h_threshold_output_filename
-        call g_sub_run_number(file, gen_run_number)
-      
-        open(unit=SPAREID,file=file,status='unknown')
-      
+* file opened in g_calc_beam_pedestl.f
+!      if (h_threshold_output_filename.ne.' ') then
+!        file=h_threshold_output_filename
+!        call g_sub_run_number(file, gen_run_number)
+!        open(unit=SPAREID,file=file,status='unknown')
+ 
         write(SPAREID,*) '# This is the ADC threshold file generated automatically'
         write(SPAREID,*) '# from the pedestal data from run number ',gen_run_number
 
@@ -237,17 +239,8 @@ c      file='peds/hms_thresholds_%d.dat'
      &      hhodo_new_threshold_pos,hhodo_new_threshold_neg,hhodo_new_sig_pos,
      &      hhodo_new_sig_neg)
 
-        slot=15
-        signalcount=1
-        write(SPAREID,*) 'slot=',slot
-        do ind=1,16
-         write(SPAREID,*) '0'
-        enddo
-        do ind=17,64
-         write(SPAREID,*) '4000'
-        enddo
         close(unit=SPAREID)
-      endif
+!      endif
 
       return
       end
