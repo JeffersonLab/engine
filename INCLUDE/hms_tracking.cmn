@@ -8,7 +8,11 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.11  1994/08/18 02:15:35  cdaq
+* Revision 1.12  1994/08/31 19:38:59  cdaq
+* (DJM) Add by plane arrays of corrected drift time and distance
+*       Add by plane arrays of residuals suitable for histogramming by CTP
+*
+* Revision 1.11  1994/08/18  02:15:35  cdaq
 * (DM) Add 2-d arrays for residuals
 * (DJM) Add parameter for drift time to ditance calculation
 *
@@ -102,6 +106,9 @@
       integer*4 hnspace_points_tot ! total number of space points after select.
       real*4 hspace_points         ! array of x, y of space points
       real*4 hbeststub              ! array of stubs fit to each space point
+      real*4 hdc_sing_drifttime ! array of fully corrected drift times for each plane
+      real*4 hdc_sing_driftdis  ! array of final drift distances for each plane
+
 *
 *     CTPTYPE=parm
 *
@@ -158,7 +165,9 @@
      &     hdc_tdc_min_win(HMAX_NUM_DC_PLANES), 
      &     hdc_tdc_max_win(HMAX_NUM_DC_PLANES),
      &     hmax_pr_hits(hmax_num_chambers),
-     &     hdc_wire_velocity,hdc_x_central_time,hdc_y_central_time
+     &     hdc_wire_velocity,hdc_x_central_time,hdc_y_central_time,
+     &     hdc_sing_drifttime(HMAX_NUM_DC_PLANES),
+     &     hdc_sing_driftdis(HMAX_NUM_DC_PLANES)
 
 
 *
@@ -225,6 +234,19 @@
       real*4 hdc_residual(HNTRACKS_MAX,HMAX_NUM_DC_PLANES)
       real*4 hdc_sing_res(HNTRACKS_MAX,HMAX_NUM_DC_PLANES)
 
+*     djm 8/26/94 arrays containing single and double residual arrays which can be
+*     histogrammed in the normal fashion (ie, not hardwired histograms).
+
+       real*4 hdc1_sing_res(HMAX_NUM_DC_PLANES)
+       real*4 hdc2_sing_res(HMAX_NUM_DC_PLANES)
+       real*4 hdc1_dbl_res(HMAX_NUM_DC_PLANES)
+       real*4 hdc2_dbl_res(HMAX_NUM_DC_PLANES)
+
+
        common/HMS_RESIDUAL/
      &   hdc_residual,
-     &   hdc_sing_res
+     &   hdc_sing_res,
+     &   hdc1_sing_res,
+     &   hdc2_sing_res,
+     &   hdc1_dbl_res,
+     &   hdc2_dbl_res
