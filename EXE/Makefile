@@ -108,14 +108,15 @@ evdisplay.o: evdisplay.f
 %.o: %.f
 	$(F77) $(FFLAGS) -c $< -o $@
 
-engine_replay_$(MYOS): Makefile engine.o $(my_objs) $(OURLIBS)
+engine_replay_$(MYOS): Makefile  $(my_objs) $(OURLIBS)
 	echo $(MYVERSION)
+	cp ../ENGINE/O.$(MYOS)/engine.o engine.o
 	$(F77) -o $@ $(FFLAGS) engine.o $(my_objs) $(OURLIBS) $(OTHERLIBS)
 
 engine_replay: engine_replay_$(MYOS)
 	$(RM) ../../$(MYOS)/bin/engine_replay
 #	ln -s $< $@
-	cp engine_replay ../../$(MYOS)/bin/engine_replay
+	cp engine_replay_$(MYOS) ../../$(MYOS)/bin/engine_replay
 
 evdisplay: $(disp_objs) Makefile evdisplay.o $(disp_objs) $(ONEEVLIB) $(OURLIBS) 
 	$(F77) -o $@ $(DISPFLAGS) evdisplay.o $(disp_objs) $(ONEEVLIB) $(OURLIBS) $(OTHERLIBS)
