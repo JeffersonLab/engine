@@ -15,9 +15,12 @@
 *-
 *-     Created   3-Dec-1993   Kevin Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.1  1994/02/01 20:38:58  cdaq
-*-    Initial revision
+*-    Revision 1.2  1994/02/02 19:59:16  cdaq
+*-    Rewrite without using fbgen routines
 *-
+c Revision 1.1  1994/02/01  20:38:58  cdaq
+c Initial revision
+c
 c Revision 1.1  1994/02/01  18:36:51  cdaq
 c New version from Kevin Beard
 c
@@ -30,46 +33,61 @@ c
 *
       logical ABORT
       character*(*) err
+      integer*4 evlength                        ! Total length of the event
+      integer*4 bankpointer                     ! Pointer to next bank
 *
       include 'gen_data_structures.cmn'
-      include 'fbgen.cmn'
 *
-      integer mth,begin_ROCbank,N_ROCbanks_fnd
-      integer tab(FBGEN_MAX_TABLE)        !plenty large enough for MAX# ROCs
       logical WARN
 *
 *-----------------------------------------------------------------------
 *
-      call FBgen_build_table(CRAW,tab,ABORT,err)
-      IF(ABORT) THEN
-        call G_add_path(here,err)
-        RETURN
-      ENDIF
 *
-      N_ROCbanks_fnd= tab(FBGEN_NROCs)
+*     Assume that the event is bank containing banks, the first of which is
+*     an event ID bank.
 *
-      DO mth= 1,N_ROCbanks_fnd
-	begin_ROCbank= tab(FBGEN_ROCs_start+mth-1)
-        If(begin_ROCbank.LE.2 .or. begin_ROCbank.GE.CRAW(1)) Then
-          err= here//':bad start of ROC bank- corrupted table'
-          RETURN
-        EndIf
+*     Various hex constants that are used in decode routines should
+*     probably be put in an include file.
 *
-        call g_decode_fb_bank(ABORT, err, CRAW(begin_ROCbank) )
-*
-        If(ABORT) Then
-          call G_add_path(here,err)
-          RETURN
-        EndIf
-      ENDDO
-*
-      WARN= N_ROCbanks_fnd.LT.1
+
+      ABORT = iand(CRAW(2),'FFFF'x).ne.'10CC'x
+      if(ABORT) then
+         err = here//'Event header does not standard physics event'
+         return
+      endif
+
+      evlength = CRAW(1)
+      bankpointer = 3
+
+      ABORT = CRAW(bankpointer+1).ne.'C0000100'x
+      if(ABORT) then
+         err = here//'First bank is not an Event ID bank'
+         return
+      endif
+      
+      bankpointer = bankpointer + CRAW(bankpointer) + 1
+
+      WARN = (bankpointer.gt.evlength)           ! No ROC's in event
       IF(WARN) THEN
         err= ':event contained no ROC banks'
         call G_add_path(here,err)
       ENDIF
+
+      do while(bankpointer.lt.evlength)
+         
+         call g_decode_fb_bank(ABORT, err, CRAW(bankpointer) )
+         bankpointer = bankpointer + CRAW(bankpointer) + 1
+
+      enddo
+
+      WARN = bankpointer.eq.(evlength + 1)
+      if(WARN) THEN
+         err = ':inconsistent bank and event lengths'
+         call G_add_path(here,err)
+      endif
 *
       RETURN
       END
+
 
 
