@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.10.10.1  2004/06/18 15:27:36  cdaq
+* replaced with fpi2 version
+*
 * Revision 1.10  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -159,6 +162,14 @@
       m= m+1
       c_Ntuple_tag(m)= 'hsytar'        ! HMS Target
       m= m+1
+*  xucc added begin     
+      c_Ntuple_tag(m)= 'hsztar'        !  added by volmer
+      m= m+1
+*  it's not very hard to accept this 
+*  xucc added end
+
+      c_Ntuple_tag(m)= 'hsp'     ! Lab momentum of chosen track in GeV/c
+      m= m+1
       c_Ntuple_tag(m)= 'hsxptar'       !
       m= m+1
       c_Ntuple_tag(m)= 'hsyptar'       ! 
@@ -166,6 +177,14 @@
       c_Ntuple_tag(m)= 'hsdelta'       ! 
       m= m+1
       c_Ntuple_tag(m)= 'ssytar'        ! SOS Target
+      m= m+1
+*  xucc added begin 
+      c_Ntuple_tag(m)= 'ssztar'        ! SOS Target
+      m= m+1
+*   again add new infor on Z
+* xucc added end
+
+      c_Ntuple_tag(m)= 'ssp'	! Lab momentum of chosen track in GeV/c
       m= m+1
       c_Ntuple_tag(m)= 'ssxptar'       ! 
       m= m+1
@@ -181,7 +200,7 @@
       m= m+1
       c_Ntuple_tag(m)= 'hsprtrk'        ! 
       m= m+1
-      c_Ntuple_tag(m)= 'hsbeta_notrk'   ! 
+      c_Ntuple_tag(m)= 'hsbeta_p'   ! 
       m= m+1
       c_Ntuple_tag(m)= 'hsbeta'         ! 
       m= m+1
@@ -197,7 +216,7 @@ c      m= m+1
       m= m+1
       c_Ntuple_tag(m)= 'ssprtrk'        ! 
       m= m+1
-      c_Ntuple_tag(m)= 'ssbeta_notrk'   ! 
+      c_Ntuple_tag(m)= 'ssbeta_p'   ! 
       m= m+1
       c_Ntuple_tag(m)= 'ssbeta'         ! 
       m= m+1
@@ -207,10 +226,27 @@ c      m= m+1
       m=m+1
       c_Ntuple_tag(m)= 'eventID' ! CODA event ID#
       m=m+1
+      c_Ntuple_tag(m)= 'evtype' 
+      m=m+1
       c_Ntuple_tag(m)= 'Em'
       m=m+1
       c_Ntuple_tag(m)= 'missmass'
       m=m+1
+* 
+*    xucc added begin
+*      c_Ntuple_tag(m)= 'Eexc'
+*      m=m+1
+*      c_Ntuple_tag(m)= 'Eexcx'
+*      m=m+1
+*     xucc added end
+
+      c_Ntuple_tag(m)= 'Emx'
+      m=m+1
+      c_Ntuple_tag(m)= 'mmx'
+      m=m+1
+*  seems to add some new infor about excitation energy
+*     xucc added end
+
       c_Ntuple_tag(m)= 'Pm'
       m=m+1
       c_Ntuple_tag(m)= 'PmPar'
@@ -219,9 +255,76 @@ c      m= m+1
       m=m+1
       c_Ntuple_tag(m)= 'PmOop'
       m=m+1
+      c_Ntuple_tag(m)= 'omega'
+      m=m+1
+      c_Ntuple_tag(m)= 'Q2'
+      m=m+1
+*     xucc added begin
+      c_Ntuple_tag(m)= 'W'
+      m=m+1
+*    xucc added end
+      c_Ntuple_tag(m)= 'W2'
+      m=m+1
+      c_Ntuple_tag(m)= 'Xbj'
+      m=m+1
+      c_Ntuple_tag(m)= 'qabs'
+      m=m+1
+      c_Ntuple_tag(m)= 'Zm'
+      m=m+1
+      c_Ntuple_tag(m)= 'Pt2'
+      m=m+1
+      c_Ntuple_tag(m)= 't'
+      m=m+1
+*    seems to add more infor on Q2, (Q the four momentum of virtual gamma from*    electrons)etc 
+*    xucc added end
+
+
       c_Ntuple_tag(m)= 'th_pq'
       m=m+1
       c_ntuple_tag(m)= 'phi_pq'
+
+*     xucc added begin
+      m=m+1
+      c_Ntuple_tag(m)= 'epsilon'
+      m=m+1
+      c_ntuple_tag(m)= 'gamma_v'
+*     xucc added end
+
+
+* added more thing for fpi analysis
+*     xucc added end
+
+* on June 21,2003, xucc added following for online purpose
+      m=m+1
+      c_Ntuple_tag(m)= 'scal_x'
+      m=m+1
+      c_ntuple_tag(m)= 'scal_y'
+      m=m+1
+      c_ntuple_tag(m)= 'hsmass2'
+      m=m+1
+      c_ntuple_tag(m)= 'haero_pos_npe_sum'
+      m=m+1
+      c_ntuple_tag(m)= 'haero_neg_npe_sum'
+      m=m+1
+      c_ntuple_tag(m)= 'hceradc1'
+      m=m+1
+      c_ntuple_tag(m)= 'hceradc2'
+      m=m+1
+      c_ntuple_tag(m)= 'hcersx'
+      m=m+1
+      c_ntuple_tag(m)= 'coinpathcor'
+      m=m+1
+      c_ntuple_tag(m)= 'sszbeam'
+      m=m+1
+      c_ntuple_tag(m)= 'hszbeam'
+      m=m+1
+      c_ntuple_tag(m)= 'ctphix'
+      m=m+1
+      c_ntuple_tag(m)= 'ctphiy'
+      m=m+1
+      c_ntuple_tag(m)= 'hsbeta_ntrk'
+
+* end of xucc adding on June 21,2003
 
 *      m=m+1
 *      c_Ntuple_tag(m)= 'HmsCorsi'
