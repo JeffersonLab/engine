@@ -2,7 +2,10 @@
 *     ONLINE ENGINE - Hall C online Analyzer
 *
 * $Log$
-* Revision 1.1  1994/06/16 03:49:26  cdaq
+* Revision 1.2  1994/06/16 18:36:15  cdaq
+* (SAW) Move register, g_init_filenames call and map file reading to usrdownload
+*
+* Revision 1.1  1994/06/16  03:49:26  cdaq
 * Initial revision
 *
 
@@ -17,55 +20,14 @@
       common/rc_service_eb/rc_service_eb
       common/rc_service_ana/rc_service_ana
 *
-      character*7 here
-      parameter (here='usrmain')
 *
-*     This common block also used in usrprestart.f.  Should probably
-*     move these two lines to an include file.
-      character*80 g_config_environmental_var
-      common /ENVVAR/ g_config_environmental_var
-
-      logical OK, ABORT
-      character*800 err
-      character*80 nodename
-      
-      g_config_environmental_var = 'ONLINE_CONFIG_FILE'
-      err = ' '
-
-      call getenv('NODE',nodename)
-      call dalogopen(nodename,'ANA',0)
-
-      call g_register_variables(ABORT,err)
-      if(ABORT .or. err.ne.' ') then
-         call g_add_path(here,err)
-         call dalogmsg(err)
-      endif
-
-      ABORT = .FALSE.
-      err = ' '
-      call g_init_filenames(ABORT,err,g_config_environmental_var)
-      if(ABORT .or. err.ne.' ') then
-         call g_add_path(here,err)
-         call dalogmsg(err)
-      endif
-
-      ABORT = .FALSE.
-      err = ' '
-      call g_decode_init(ABORT,err)     ! May want to move to download
-      if(ABORT .or. err.ne.' ') then
-         call g_add_path(here,err)
-         call dalogmsg(err)
-      endif
-
-c
-c    Open communication with Run Control
-c
+*    Open communication with Run Control
+*
       call rcService(rc_service_eb)
       call rcService(rc_service_ana)
       call rcExecute()
 
-c     Never return from rcService
+*     Never return from rcService
 
       end
-c
 
