@@ -1,5 +1,9 @@
 *    This include file contains all the variables required for s_physics
 * $Log$
+* Revision 1.8  2002/09/24 20:29:37  jones
+*     add parameters sphicentral_offset, spcentral_offset,
+*       sthetacentral_offset
+*
 * Revision 1.7  1999/02/23 19:21:59  csa
 * Add some physics vars
 *
@@ -150,12 +154,20 @@ c D.Dutta, 24th-Apr-1996
       real*4 stheta_offset     ! hms scatteringangel offset
       real*4 sphi_offset
       real*4 smomentum_factor    ! multiplier for the hms momentum
+c    J.Volmer, 9th-Jul-1999
+      real*4 spcentral_offset  ! sos central momentum offset
+      real*4 sthetacentral_offset ! sos central angle offset
+      real*4 sphicentral_offset   ! sos central oop angle offset
 
       COMMON /sos_offsets/
      &     sdelta_offset,
      &     stheta_offset,
      &     sphi_offset,
-     &     smomentum_factor
+     &     smomentum_factor,
+     &     spcentral_offset,
+     &     sthetacentral_offset,
+     &     sphicentral_offset
+
 *
 *     CTPTYPE=event
 *
