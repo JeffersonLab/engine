@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.9  1999/02/23 19:02:59  csa
+# Add gen_epics.cmn
+#
 # Revision 1.8  1996/11/08 21:08:23  saw
 # (WH) Add Lucite counter common blocks
 #
@@ -31,6 +34,7 @@ ntuples = c_ntuple.cmn h_ntuple.cmn s_ntuple.cmn
 cmn = gen_data_structures.cmn gen_craw.cmn gen_decode_common.cmn \
 	gen_event_info.cmn gen_filenames.cmn gen_output_info.cmn \
 	gen_pawspace.cmn gen_run_info.cmn gen_run_pref.cmn gen_scalers.cmn \
+	gen_epics.cmn \
 	hms_data_structures.cmn hms_bypass_switches.cmn hms_calorimeter.cmn \
 	hms_filenames.cmn hms_geometry.cmn hms_id_histid.cmn \
 	hms_physics_sing.cmn hms_recon_elements.cmn hms_scin_parms.cmn \
