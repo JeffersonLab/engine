@@ -49,7 +49,7 @@ endif
 #	DEC Alphastation 200 4/166 with DEC Unix V4.0B (Rev 564)
 ifeq ($(OSTYPE),OSF1)
 EXTRA =
-FFLAGS=-extend_source -I.
+FFLAGS=-extend_source -align dcommons -I.
 LDFLAGS=
 GCC = gcc
 RPCGEN = rpcgen
