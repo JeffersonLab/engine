@@ -12,9 +12,12 @@
 *-   Created  29-Oct-1993   Kevin B. Beard, Hampton U.
 *-   Modified 19-Nov-1993   Kevin B. Beard for new error standards
 *-      $Log$
-*-      Revision 1.3  1994/02/22 19:47:07  cdaq
-*-      Change gmc_clear_event to gmc_mc_clear
+*-      Revision 1.4  1994/04/15 20:33:43  cdaq
+*-      (SAW) Changes for ONLINE use
 *-
+* Revision 1.3  1994/02/22  19:47:07  cdaq
+* Change gmc_clear_event to gmc_mc_clear
+*
 * Revision 1.2  1994/02/17  21:46:03  cdaq
 * Add call to gmc_clear_event
 *
@@ -47,9 +50,6 @@
       HMS_err= ' '
       SOS_err= ' '
       gmc_err= ' '
-*
-      CRAW(1)= 0                                !delete event header
-      CRAW(2)= 0
 *
       call H_clear_event(HMS_ABORT,HMS_err)
 *

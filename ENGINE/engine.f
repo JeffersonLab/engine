@@ -9,9 +9,12 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 *-    $Log$
-*-    Revision 1.3  1994/03/24 22:02:12  cdaq
-*-    Reorganize for online compatibility
+*-    Revision 1.4  1994/04/15 20:31:25  cdaq
+*-    (SAW) Changes for ONLINE use
 *-
+* Revision 1.3  1994/03/24  22:02:12  cdaq
+* Reorganize for online compatibility
+*
 * Revision 1.2  1994/02/11  18:32:06  cdaq
 * Split off CTP variables registration from initialize routines
 *
@@ -30,9 +33,11 @@
       character*800 err
 *
       include 'gen_filenames.cmn'
+      include 'gen_craw.cmn'
 *
       logical problems
       integer total_event_count
+      integer i
 * 
       character*80 g_config_environmental_var
       parameter (g_config_environmental_var= 'ENGINE_CONFIG_FILE')
@@ -101,6 +106,13 @@
          endif
       ENDIF
 *
+*-zero entire event buffer
+*
+      DO i=1,LENGTH_CRAW
+         CRAW(i)= 0
+      ENDDO
+
+*
       problems= .false.
 *
       DO WHILE(.NOT.problems .and. .NOT.ABORT)
@@ -118,7 +130,7 @@
          EndIf
 *
          If(.NOT.problems) Then                 !reconstruct event into
-            call G_reconstruction(ABORT,err)    !COMMONs
+            call G_reconstruction(CRAW,ABORT,err)    !COMMONs
             problems= problems .OR. ABORT
          EndIf
 *
