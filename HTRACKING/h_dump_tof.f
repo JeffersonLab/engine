@@ -18,6 +18,9 @@
 * for each signal.
 *
 * $Log$
+* Revision 1.6  1999/06/10 16:49:09  csa
+* (JRA) Added test on hcer_npe_sum, changed output formats
+*
 * Revision 1.5  1999/02/10 18:20:08  csa
 * Fixed format problem with ph > 10,000
 *
@@ -57,11 +60,11 @@
 
 *     In some circumstances you might also cut on
 *     hcer_npe_sum and/or hsshtrk:
-      if (hsnum_pmt_hit.ge.4 .and. hsnum_pmt_hit.le.12) then
+      if (hsnum_pmt_hit.ge.4 .and. hsnum_pmt_hit.le.12 .and. hcer_npe_sum.gt.2) then
         betap=1.
         write(37,111) hsnum_pmt_hit,hsx_fp,hsxp_fp,
      $       hsy_fp,hsyp_fp,betap
- 111    format(i3,f10.5,f8.5,f10.5,f8.5,f7.3)
+ 111    format(i3,x,f10.5,x,f9.5,x,f10.5,x,f9.5,x,f7.3)
         do ind = 1, hsnum_scin_hit
           hit = hscin_hit(hsnum_fptrack,ind)
           if (hscin_tdc_pos(hit) .ge. hscin_tdc_min .and.  
@@ -85,7 +88,7 @@
             write(37,112) pmt,cnt,lay,dir,ph,tim
           endif
         enddo
- 112    format(i2," ",i3,2(" ",i2)," ",f7.1," ",f8.3)
+ 112    format(i2,x,i3,2(x,i2),x,f7.1,x,f8.3)
       endif
       RETURN
       END
