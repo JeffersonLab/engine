@@ -1,6 +1,9 @@
 *     hms_statistics.cmn
 *     common blocks containing event statistics for h_reconstruction
 * $Log$
+* Revision 1.10  1996/01/17 16:03:53  cdaq
+* (JRA) Remove some obsolete common blocks
+*
 * Revision 1.9  1995/09/01 13:04:38  cdaq
 * (JRA) Add counter efficiency variables
 *
@@ -36,29 +39,6 @@
 *     that it generates.
 *
 *%%   include 'hms_data_structures.cmn'
-*
-*     CTPTYPE=parm
-*
-      integer*4 h_recon_num             ! Number of calls to h_reconstruction
-      integer*4 hgoodtracksctr          ! number of good tracks in h_physics
-      integer*4 hplanehitctr(HMAX_NUM_DC_PLANES) ! number of hits in each plane
-*                                       for good tracks
-*     
-      common/hms_statistics/
-     &     h_recon_num,
-     &     hgoodtracksctr,
-     &     hplanehitctr
-
-
-      real*4 hplanesigmasq(HMAX_NUM_DC_PLANES) ! sum of 
-*                                        (position - fit position)**2 /sigma**2
-      real*4 hmeasuredsigma(HMAX_NUM_DC_PLANES) ! hplanesigmasq/ hgoodtracksctr
-      real*4 hchambereff(HMAX_NUM_DC_PLANES)  ! chamber efficencies
-*
-      common/hms_statistisc_r4/
-     & hplanesigmasq,
-     & hmeasuredsigma,
-     & hchambereff
 
 *
 *     CTPTYPE=parm
