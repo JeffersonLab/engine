@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.7.2.1  2003/04/04 12:54:42  cdaq
+* add beam parameters to ntuple
+*
 * Revision 1.7  1996/09/04 15:18:02  saw
 * (JRA) Modify ntuple contents
 *
@@ -176,6 +179,26 @@
 
 
 * Experiment dependent entries start here.
+      m= m+1
+      s_Ntuple_tag(m)= 'gfrx_raw'
+      m= m+1
+      s_Ntuple_tag(m)= 'gfry_raw'
+      m= m+1
+      s_Ntuple_tag(m)= 'gbeam_x'
+      m= m+1
+      s_Ntuple_tag(m)= 'gbeam_y'
+      m= m+1
+      s_Ntuple_tag(m)= 'bpma_x'
+      m= m+1
+      s_Ntuple_tag(m)= 'bpma_y'
+      m= m+1
+      s_Ntuple_tag(m)= 'bpmb_x'
+      m= m+1
+      s_Ntuple_tag(m)= 'bpmb_y'
+      m= m+1
+      s_Ntuple_tag(m)= 'bpmc_x'
+      m= m+1
+      s_Ntuple_tag(m)= 'bpmc_y'
 
 
 * Open ntuple.

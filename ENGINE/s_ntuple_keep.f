@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.7.2.1  2003/04/04 12:54:42  cdaq
+* add beam parameters to ntuple
+*
 * Revision 1.7  1996/09/04 15:18:21  saw
 * (JRA) Modify ntuple contents
 *
@@ -42,6 +45,7 @@
 *
       INCLUDE 's_ntuple.cmn'
       INCLUDE 'sos_data_structures.cmn'
+      INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_event_info.cmn'
       INCLUDE 'sos_tracking.cmn'
       INCLUDE 'sos_physics_sing.cmn'
@@ -108,6 +112,27 @@
       s_Ntuple_contents(m)= sstart_time
       m= m+1
       s_Ntuple_contents(m)= saer_npe_sum
+c
+      m= m+1
+      s_Ntuple_contents(m)= gfrx_raw_adc
+      m= m+1
+      s_Ntuple_contents(m)= gfry_raw_adc
+      m= m+1
+      s_Ntuple_contents(m)= gbeam_x
+      m= m+1
+      s_Ntuple_contents(m)= gbeam_y
+      m= m+1
+      s_Ntuple_contents(m)= gbpm_x(1)
+      m= m+1
+      s_Ntuple_contents(m)= gbpm_y(1)
+      m= m+1
+      s_Ntuple_contents(m)= gbpm_x(2)
+      m= m+1
+      s_Ntuple_contents(m)= gbpm_y(2)
+      m= m+1
+      s_Ntuple_contents(m)= gbpm_x(3)
+      m= m+1
+      s_Ntuple_contents(m)= gbpm_y(3)
 
 
 * Experiment dependent entries start here.
