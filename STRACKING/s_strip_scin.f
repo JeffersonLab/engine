@@ -7,6 +7,9 @@
 * s_strip_scin converts the raw hits to arrays over hits
 * with good TDC values.
 * $Log$
+* Revision 1.6  1996/01/17 18:57:36  cdaq
+* (JRA) Add sdebugcalcpeds flag
+*
 * Revision 1.5  1995/08/31 20:44:25  cdaq
 * (JRA) Accumulate pedestals from pedestal events.
 *
@@ -29,6 +32,7 @@
       include 'sos_data_structures.cmn'
       include 'sos_scin_parms.cmn'
       include 'sos_scin_tof.cmn'
+      include 'sos_tracking.cmn'
 
       logical abort
       character*(*) err
@@ -79,12 +83,13 @@
 
         else            !not a real event, calc. pedestals
 
-          ip = sscin_all_plane_num(ihit)
-          ic = sscin_all_counter_num(ihit)
-          sscin_zero_pos(ip,ic)=sscin_zero_pos(ip,ic)+sscin_all_adc_pos(ihit)
-          sscin_zero_neg(ip,ic)=sscin_zero_neg(ip,ic)+sscin_all_adc_neg(ihit)
-          sscin_zero_num(ip,ic)=sscin_zero_num(ip,ic)+1
-
+          if (sdebugcalcpeds.ne.0) then
+            ip = sscin_all_plane_num(ihit)
+            ic = sscin_all_counter_num(ihit)
+            sscin_zero_pos(ip,ic)=sscin_zero_pos(ip,ic)+sscin_all_adc_pos(ihit)
+            sscin_zero_neg(ip,ic)=sscin_zero_neg(ip,ic)+sscin_all_adc_neg(ihit)
+            sscin_zero_num(ip,ic)=sscin_zero_num(ip,ic)+1
+          endif
         endif
       enddo
 

@@ -15,6 +15,9 @@
 *-      Modified 25 Mar 1994      DFG
 *-                                Change name of print routine
 * $Log$
+* Revision 1.5  1996/01/17 18:54:41  cdaq
+* (JRA) Add sdebugcalcpeds flag
+*
 * Revision 1.4  1995/08/31 20:45:28  cdaq
 * (JRA) Use off-track blocks to accumulate pedestal data
 *
@@ -53,6 +56,7 @@
 *
       include 'sos_data_structures.cmn'
       include 'sos_calorimeter.cmn'
+      include 'sos_tracking.cmn'
 *
 *
       sntracks_cal=0
@@ -95,19 +99,21 @@
         endif                           !End ... if number of clusters > 0
       enddo                             !End loop over detector tracks
 *
-
-      if(sntracks_fp.eq.1) then   !use blocks not on track to find pedestal
-        do hit=1,scal_tot_hits
-          blk=scal_row(hit)+smax_cal_rows*(scal_column(hit)-1)
-          xblk=scal_block_xc(blk)
-          if (abs(xf-xblk).ge.20. .and. abs(xb-xblk).ge.20.) then !blk not hit
-           if (scal_zero_num(blk).le.2000) then !avoid overflow in sum**2
-              scal_zero_sum(blk)=scal_zero_sum(blk)+scal_adc(hit)
-              scal_zero_sum2(blk)=scal_zero_sum2(blk)+scal_adc(hit)*scal_adc(hit)
-              scal_zero_num(blk)=scal_zero_num(blk)+1
+      if (sdebugcalcpeds.ne.0) then
+        if(sntracks_fp.eq.1) then   !use blocks not on track to find pedestal
+          do hit=1,scal_tot_hits
+            blk=scal_row(hit)+smax_cal_rows*(scal_column(hit)-1)
+            xblk=scal_block_xc(blk)
+            if (abs(xf-xblk).ge.20. .and. abs(xb-xblk).ge.20.) then !blk not hit
+             if (scal_zero_num(blk).le.2000) then !avoid overflow in sum**2
+                scal_zero_sum(blk)=scal_zero_sum(blk)+scal_adc(hit)
+                scal_zero_sum2(blk)=scal_zero_sum2(blk)
+     &                             +scal_adc(hit)*scal_adc(hit)
+                scal_zero_num(blk)=scal_zero_num(blk)+1
+              endif
             endif
-          endif
-        enddo
+          enddo
+        endif
       endif
 
   100 continue
