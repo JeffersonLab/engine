@@ -2,7 +2,10 @@
 *                      of pedestal events at the beginning of each run.
 *
 * $Log$
-* Revision 1.1  1995/05/26 16:14:28  cdaq
+* Revision 1.2  1995/06/27 15:58:12  cdaq
+* (JRA) Add hhodo_all_sig_pos
+*
+* Revision 1.1  1995/05/26  16:14:28  cdaq
 * Initial revision
 *
 * Revision 1.2  1995/05/22  19:08:49  cdaq
@@ -33,6 +36,11 @@
       integer*4 hhodo_neg_ped_sum(hnum_scin_planes,hnum_scin_elements)
       integer*4 hhodo_pos_ped_num(hnum_scin_planes,hnum_scin_elements)
       integer*4 hhodo_neg_ped_num(hnum_scin_planes,hnum_scin_elements)
+      real*4 hhodo_all_sig_pos(hnum_scin_planes,hnum_scin_elements)
+      real*4 hhodo_all_sig_neg(hnum_scin_planes,hnum_scin_elements)
+*
+*     CTPTYPE=parm
+*
       integer*4 hhodo_min_peds
 *
       common/hms_scin_pedestals/
@@ -42,7 +50,9 @@
      &   hhodo_neg_ped_sum,   !sum of peds
      &   hhodo_pos_ped_num,   !number of peds
      &   hhodo_neg_ped_num,   !number of peds
-     &   hhodo_min_peds       !# of peds required to override default pedestals
+     &   hhodo_min_peds,      !# of peds required to override default pedestals
+     &   hhodo_all_sig_pos,
+     &   hhodo_all_sig_neg
 *
 *
 * CALORIMETER PEDESTALS
@@ -51,9 +61,15 @@
 *    and  hcal_threshold with (something like) min(10.,3.*hcal_ped_rms)
 * if hcal_num > hcal_min_peds.
 *
+*
+*     CTPTYPE=event
+*
       integer*4 hcal_ped_sum2(hmax_cal_blocks)
       integer*4 hcal_ped_sum(hmax_cal_blocks)
       integer*4 hcal_ped_num(hmax_cal_blocks)
+*
+*     CTPTYPE=parm
+*
       integer*4 hcal_min_peds
 *
       common/hms_cal_ped_stats/
@@ -68,13 +84,19 @@
 *    and  hcer_threshold with (something like) min(10.,3.*hcer_ped_rms)
 * if hcer_num > hcer_min_peds.
 *
+*
+*     CTPTYPE=event
+*
       integer*4 hcer_ped_sum2(hmax_cer_hits)
       integer*4 hcer_ped_sum(hmax_cer_hits)
       integer*4 hcer_ped_num(hmax_cer_hits)
-      integer*4 hcer_min_peds
       real*4 hcer_ped_mean(hmax_cer_hits)
       real*4 hcer_ped_rms(hmax_cer_hits)
       real*4 hcer_threshold(hmax_cer_hits)
+*
+*     CTPTYPE=parm
+*
+      integer*4 hcer_min_peds
 *
       common/hms_cer_pedestals/
      &   hcer_ped_sum2,       !sum of squares
