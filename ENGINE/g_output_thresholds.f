@@ -1,6 +1,9 @@
       subroutine g_output_thresholds(lunout,roc,slot,signalcount,
      &               elements_per_plane,signal0,signal1,sigma0,sigma1)
 * $Log$
+* Revision 1.4  1996/01/22 15:22:57  saw
+* (JRA) Add/Modify some commented out diagnostics
+*
 * Revision 1.3  1996/01/17 20:25:27  saw
 * (SAW) Add back missing sigma0 and sigma1 arguments that got lost
 *
@@ -39,19 +42,29 @@ c      integer*4 thresholds(*)
         return
       endif
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!
       if (signalcount.eq.1) then           !cerenkov, calorimeter.
         do ich=1,g_decode_subaddcnt(roc,slot)
           ind=istart+ich-1
+c      write(6,*) '---------------------------------------'
+c      write(6,*) 'ich,ind=',ich,ind
           pln=g_decode_planemap(ind)
           cnt=g_decode_countermap(ind)
+c      write(6,*) 'pln,cnt=',pln,cnt
+c      write(6,*) 'g_decode_didmap(ind)=',g_decode_didmap(ind)
           if (g_decode_didmap(ind).eq.UNINST_ID) then
             write(lunout,*) '4000'  ! set threshold very high if there is no signal
           else
             element=(pln-1)*elements_per_plane+cnt
+c      write(6,*) 'element=',element
             write(lunout,*) nint(signal0(element))
-c      write(6,*) signal0(element),signal1(element),sigma0(element),sigma1(element)
+c      write(6,*) 'signal0(element))=',signal0(element)
+c      write(6,*) signal0(element)
+c      write(6,*) sigma0(element)
 c      write(6,*) 'g_threshold_readback(',ich,roc,slot,')=',g_threshold_readback(ich,roc,slot)
             delta_ped=signal0(element)-float(g_threshold_readback(ich,roc,slot))
+c      write(6,*) 'dped=',delta_ped
+c      write(6,*) 'sigma0(element)=',sigma0(element)
             if ( (abs(delta_ped) .gt. min(20.,2.*sigma0(element)))  .and.
      &             g_threshold_readback(ich,roc,slot).ne.0) then
               if (annoying_message) then
@@ -64,7 +77,7 @@ c      write(6,*) 'g_threshold_readback(',ich,roc,slot,')=',g_threshold_readback
             endif
           endif
         enddo
-
+!!!!!!!!!!!!!!!!!!!!!!!!!!
       else if (signalcount.eq.2) then      !hodoscopes.
         do ich=1,g_decode_subaddcnt(roc,slot)
           ind=istart+ich-1
