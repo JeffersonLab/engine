@@ -9,6 +9,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.13  1996/11/07 19:53:12  saw
+* (WH) Add lucite information
+*
 * Revision 1.12  1996/09/05 20:13:45  saw
 * (JRA) Add sbypass_track_eff
 *
@@ -209,6 +212,19 @@ c         err=":no tracks found!"
 *            return
          endif                                  ! end test of S_AERO ABORT
        endif                                    ! end test on sbypass_aero
+*
+*     Next Lucite Cerenkov information
+*     SOS_DECODED_LUC ====> SOS_TRACK_TESTS
+*
+       if(sbypass_lucite.eq.0) then
+         call S_LUCITe(ABORT,err)
+         if(ABORT) then
+            call G_add_path(here,err)
+*            return
+         endif                                  ! end test of S_LUCITE ABORT
+       endif                                    ! end test on sbypass_lucite
+
+
 *
 *     Dump SOS_TRACK_TESTS if sdebugprinttracktests is set
           if( sdebugprinttracktests .ne. 0 ) then
