@@ -11,6 +11,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.9.4.2  2003/08/22 14:55:42  xu
+* add more contents in c_ntuple
+*
 * Revision 1.9.4.1  2003/03/05 22:51:44  xu
 * new variables
 *
@@ -71,6 +74,9 @@
       INCLUDE 'sos_calorimeter.cmn'
       INCLUDE 'hms_scin_tof.cmn'
       INCLUDE 'sos_scin_tof.cmn'
+      INCLUDE 'sos_physics_sing.cmn'  ! for online purpose xucc june 20,2003
+      INCLUDE 'hms_aero_parms.cmn'    ! for online purpose xucc june 21,2003
+
 *
       logical HEXIST    !CERNLIB function
 *
@@ -240,6 +246,39 @@
       m= m+1
       c_Ntuple_contents(m)= c_gamma_v
 *    xucc added end
+
+
+* on June 21,2003, xucc added following for online purpose
+      m=m+1
+      c_Ntuple_contents(m)=  ssx_cal
+      m=m+1
+      c_ntuple_contents(m)=  ssy_cal
+      m=m+1
+      c_ntuple_contents(m)=  hsmass2
+      m=m+1
+      c_ntuple_contents(m)=  haero_pos_npe_sum
+      m=m+1
+      c_ntuple_contents(m)=  haero_neg_npe_sum
+      m=m+1
+      c_ntuple_contents(m)=  hcer_adc(1)
+      m=m+1
+      c_ntuple_contents(m)=  hcer_adc(2)
+      m=m+1
+      c_ntuple_contents(m)=  hsx_cer
+      m=m+1
+      c_ntuple_contents(m)=  (sspath_cor - hspath_cor)
+      m=m+1
+      c_ntuple_contents(m)=   sszbeam
+      m=m+1
+      c_ntuple_contents(m)=   hszbeam      
+      m=m+1
+      c_ntuple_contents(m)=   ctphix
+      m=m+1
+      c_ntuple_contents(m)=   ctphiy
+
+c       write(6,*)'ssz_beam =',sszbeam
+c       write(6,*)'hsmass2 =',hsmass2
+* end of xucc adding on June 21,2003
 
 
 
