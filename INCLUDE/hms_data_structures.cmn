@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.8  1999/02/23 19:09:29  csa
+* Change some physics vars
+*
 * Revision 1.7  1999/01/21 21:40:31  saw
 * Extra shower counter tube modifications
 *
@@ -489,6 +492,8 @@
 *  
       REAL*4 HSP                 ! Lab momentum of chosen track in GeV/c
       REAL*4 HSENERGY            ! Lab total energy of chosen track in GeV
+      REAL*4 HSCORRP             ! electron momentum corrected for eloss
+      REAL*4 HSCORRE             ! electron energy corrected for eloss
       REAL*4 HSDELTA             ! Spectrometer delta of chosen track
       REAL*4 HSTHETA             ! Lab Scattering angle in radians
       REAL*4 HSPHI               ! Lab Azymuthal angle in radians
@@ -520,7 +525,7 @@
       real*4 hsu                   ! invariant u
       real*4 hseloss
       real*4 hsq3                  ! Lab frame momentum transfer
-      real*4 hsthetaq, hsphiq      ! Direction of q3
+*      real*4 hsthetaq, hsphiq      ! Direction of q3
       real*4 hsbigq2               ! Q**2
       real*4 hsx                   ! fraction of nucleon p carried by quark
       real*4 hsy                   ! fraction of lepton''s E lost in lab
@@ -561,17 +566,19 @@
      & HSXP_TAR ,
      & HSYP_TAR ,
      & HSBETA_CHISQ,
-     &     hsmass2,
-     &     hst,
-     &     hsu,
-     &     hseloss,
-     &     hsq3,
-     &     hsthetaq, hsphiq,
-     &     hsbigq2,
-     &     hsx,
-     &     hsy,
-     &     hsw,
-     &     hsw2
+     & hsmass2,
+     & hst,
+     & hsu,
+     & hseloss,
+     & hsq3,
+     & hsbigq2,
+     & hsx,
+     & hsy,
+     & hsw,
+     & hsw2,
+     & hscorrp,
+     & hscorre
+*     & hsthetaq,hsphiq
 *
       COMMON/HMS_PHYSICS_I4/
      & HSNUM_FPTRACK,
