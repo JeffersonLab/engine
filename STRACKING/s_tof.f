@@ -1,4 +1,4 @@
-       SUBROUTINE S_TOF(ABORT,err)
+       SUBROUTINE S_TOF(ABORT,errmsg)
 *--------------------------------------------------------
 *-
 *-   Purpose and Methods : Analyze SOS scintillator information for each track 
@@ -15,7 +15,10 @@
 *-   Created 22-FEB-1994   John Arrington
 *
 * $Log$
-* Revision 1.2  1994/04/13 05:30:02  cdaq
+* Revision 1.3  1994/04/13 05:34:55  cdaq
+* (SAW) Fix typo
+*
+* Revision 1.2  1994/04/13  05:30:02  cdaq
 * Put in arrington code
 * (DFG) Add check for zero track
 *       Add calls to print routines
