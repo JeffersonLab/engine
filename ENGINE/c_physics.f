@@ -7,6 +7,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.10.2.3  2004/03/05 18:46:24  jones
+* Modify pt2 equation to pt2= p_h*p_h*(1-(dot/(cqabs*p_h))**2)
+*
 * Revision 1.10.2.2  2004/03/04 18:18:36  jones
 * Change equation for pt2 from
 * pt2 = cmissing_mom_perp*cmissing_mom_perp
@@ -342,7 +345,7 @@ c      e_pion_lab = sqrt(p_h**2 + mpi2)                    ! Pion Energy
         cthetapq = -1.
       endif
 c
-      pt2= p_h*p_h*(1-cthetapq*cthetapq) 
+      pt2= p_h*p_h*(1-(dot/(cqabs*p_h))**2) 
 
 
 c      write(6,*) 'c_physics: at 5'
