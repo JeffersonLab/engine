@@ -19,15 +19,17 @@
 *     Modified: 24-May-1994 K.B.Beard
 *
 *     $Log$
-*     Revision 1.3  1994/06/07 18:14:57  cdaq
-*     (KBB) Add regististration for enable_EvtypeN and triggered_EvTypeN
+*     Revision 1.4  1994/06/16 03:24:28  cdaq
+*     (SAW) Register reconstruction filenames and report generator filenames etc.
+*
+* Revision 1.3  1994/06/07  18:14:57  cdaq
+* (KBB) Add regististration for enable_EvtypeN and triggered_EvTypeN
 *
 * Revision 1.2  1994/03/24  15:29:53  cdaq
 * (SAW) Add registration of rebook flags for parm,test,hist
 *
 * Revision 1.1  1994/02/11  18:35:11  cdaq
 * Initial revision
-*
 *
 *----------------------------------------------------------------------
       implicit none
@@ -102,6 +104,21 @@
      $     ,g_decode_map_filename,0)
       if(ierr.ne.0) call G_append(err,',"decode_map_filename"')
       ABORT= ierr.ne.0 .or. ABORT
+*
+      ierr = regparmstring('g_report_template_filename'
+     $     ,g_report_template_filename,0)
+      if(ierr.ne.0) call g_append(err,',"g_report_template_filename"')
+      ABORT = ierr.ne.0.or.ABORT
+*
+      ierr = regparmstring('g_report_output_filename'
+     $     ,g_report_output_filename,0)
+      if(ierr.ne.0) call g_append(err,',"g_report_output_filename"')
+      ABORT = ierr.ne.0.or.ABORT
+*
+      ierr = regparmstring('g_report_blockname'
+     $     ,g_report_blockname,0)
+      if(ierr.ne.0) call g_append(err,',"g_report_blockname"')
+      ABORT = ierr.ne.0.or.ABORT
 *
       ierr = regparmint('max_events',g_max_events,0)
       if(ierr.ne.0) call G_append(err,',"max_events"')
