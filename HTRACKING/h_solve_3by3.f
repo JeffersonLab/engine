@@ -4,6 +4,9 @@
 *     Used in find_best_stub.f
 
 * $Log$
+* Revision 1.4  1995/10/10 17:36:37  cdaq
+* (JRA) Cleanup
+*
 * Revision 1.3  1995/05/22 19:39:27  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -33,10 +36,8 @@
       real*8 stub(3)
       integer*4 ierr                       ! ierr = 0 means valid solution
 *
-*     local quantities
-      ierr=1
 *
-      if(pindex.ge.1 .and. pindex.le.14)then     !accept 5/6 or 6/6 good planes
+      if(pindex.le.14)then     !accept 5/6 or 6/6 good planes
         ierr=0
         stub(1)=HAAINV3(1,1,pindex)*TT(1) + HAAINV3(1,2,pindex)*TT(2) + 
      & HAAINV3(1,3,pindex)*TT(3)
@@ -44,6 +45,8 @@
      & HAAINV3(2,3,pindex)*TT(3)
         stub(3)=HAAINV3(1,3,pindex)*TT(1) + HAAINV3(2,3,pindex)*TT(2) + 
      & HAAINV3(3,3,pindex)*TT(3)
+      else
+        ierr=1
       endif          !end test on plane index
  
 *      write(6,*)'TT i=1,2,3',TT(1),TT(2),TT(3)
