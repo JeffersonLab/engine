@@ -9,9 +9,12 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 *-    $Log$
-*-    Revision 1.5  1994/06/07 18:22:58  cdaq
-*-    (SAW) Add calls to g_examine_physics_event and g_examine_control_event
+*-    Revision 1.6  1994/06/15 14:27:30  cdaq
+*-    (SAW) Actually add call to g_examine_physics_event
 *-
+* Revision 1.5  1994/06/07  18:22:58  cdaq
+* (SAW) Add calls to g_examine_physics_event and g_examine_control_event
+*
 * Revision 1.4  1994/04/15  20:31:25  cdaq
 * (SAW) Changes for ONLINE use
 *
@@ -128,7 +131,7 @@
             problems= problems .OR. ABORT 
             if(.NOT.ABORT) total_event_count= total_event_count+1
 *
-            type *,' event#',total_event_count,'  ',ABORT
+*            type *,' event#',total_event_count,'  ',ABORT
 *
          EndIf
 *
@@ -139,8 +142,13 @@
 *
 *     Need to add in KB's code for selecting which event types to analyze.
 *
-               call G_reconstruction(CRAW,ABORT,err) !COMMONs
-               problems= problems .OR. ABORT
+               call g_examine_physics_event(CRAW,ABORT,err)
+               problems = problems .or.ABORT
+               
+               if(.NOT.problems) Then
+                  call G_reconstruction(CRAW,ABORT,err) !COMMONs
+                  problems= problems .OR. ABORT
+               endif
 
                If(.NOT.problems) Then
                   call G_keep_results(ABORT,err) !file away results as
