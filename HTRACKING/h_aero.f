@@ -1,6 +1,9 @@
        SUBROUTINE H_AERO(ABORT,err)
 *-
 * $Log$
+* Revision 1.1.2.2  2003/04/09 02:46:11  cdaq
+* Update variable names for the thresholds to match the modified common block
+*
 * Revision 1.1.2.1  2003/04/06 06:20:40  cdaq
 * updated variables for haero, cleaned up a few of the tests
 *
@@ -68,8 +71,8 @@
 
         npmt=haero_pair_num(ind)
 
-        if (haero_adc_pos(int).gt.haero_pos_adc_threshold(npmt)) then
-           if (haero_adc_pos(int).lt.8000.) then
+        if (haero_adc_pos(ind).gt.haero_new_threshold_pos(npmt)) then
+           if (haero_adc_pos(ind).lt.8000.) then
               haero_pos_npe(npmt) = haero_pos_gain(npmt) *
      &             (haero_adc_pos(ind)-haero_pos_ped_mean(npmt))
            else
@@ -77,7 +80,7 @@
            endif
         endif
         
-        if (haero_adc_neg(ind).gt.haero_neg_adc_threshold(npmt)) then
+        if (haero_adc_neg(ind).gt.haero_new_threshold_pos(npmt)) then
            if (haero_adc_neg(ind).lt.8000.) then
               haero_neg_npe(npmt) = haero_neg_gain(npmt) * 
      &             (haero_adc_neg(ind)-haero_neg_ped_mean(npmt))
