@@ -1,7 +1,10 @@
       subroutine s_analyze_pedestal(ABORT,err)
 *
 * $Log$
-* Revision 1.1  1995/04/01 19:35:31  cdaq
+* Revision 1.2  1995/05/17 16:41:08  cdaq
+* (JRA) Add Cernekov pedestals, cosmetic changes
+*
+* Revision 1.1  1995/04/01  19:35:31  cdaq
 * Initial revision
 *
 *
@@ -16,7 +19,9 @@
 *
       integer*4 ihit
       integer*4 pln,cnt
+      integer*4 row,col
       integer*4 blk
+      integer*4 pmt
 *
       INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'sos_pedestals.cmn'
@@ -29,9 +34,9 @@
         pln = sscin_all_plane_num(ihit)
         cnt = sscin_all_counter_num(ihit)
         shodo_pos_ped_sum2(pln,cnt) = shodo_pos_ped_sum2(pln,cnt) +
-     &          sscin_all_adc_pos(ihit) * sscin_all_adc_pos(ihit)
+     &          sscin_all_adc_pos(ihit)*sscin_all_adc_pos(ihit)
         shodo_neg_ped_sum2(pln,cnt) = shodo_neg_ped_sum2(pln,cnt) +
-     &          sscin_all_adc_neg(ihit) * sscin_all_adc_neg(ihit)
+     &          sscin_all_adc_neg(ihit)*sscin_all_adc_neg(ihit)
         shodo_pos_ped_sum(pln,cnt) = shodo_pos_ped_sum(pln,cnt) +
      &          sscin_all_adc_pos(ihit)
         shodo_neg_ped_sum(pln,cnt) = shodo_neg_ped_sum(pln,cnt) +
@@ -42,12 +47,36 @@
 *
 * CALORIMETER PEDESTALS
 *
-
-      do blk = 1 , scal_tot_hits
-        scal_ped_sum2(blk) = scal_ped_sum2(blk) +
-     &          sscin_all_adc_pos(blk) * sscin_all_adc_pos(blk)
-        scal_ped_sum(blk) = scal_ped_sum(blk) + sscin_all_adc_pos(blk)
+      do ihit = 1 , scal_tot_hits
+        row = scal_row(ihit)
+        col = scal_column(ihit)
+        blk = row + (col-1)*smax_cal_rows
+        scal_ped_sum2(blk) = scal_ped_sum2(blk) + scal_adc(ihit)*scal_adc(ihit)
+        scal_ped_sum(blk) = scal_ped_sum(blk) + scal_adc(ihit)
         scal_ped_num(blk) = scal_ped_num(blk) + 1
+      enddo
+*
+*
+* GAS CERENKOV PEDESTALS
+*
+      do ihit = 1 , scer_tot_hits
+        pmt=scer_tube_num(pmt)       ! no sparsification yet - NEED TO FIX!!!!
+        scer_ped_sum2(pmt) = scer_ped_sum2(pmt) + scer_adc(ihit)*scer_adc(ihit)
+        scer_ped_sum(pmt) = scer_ped_sum(pmt) + scer_adc(ihit)
+        scer_ped_num(pmt) = scer_ped_num(pmt) + 1
+      enddo
+*
+*
+* AEROGEL CERENKOV PEDESTALS
+*
+      do ihit = 1 , saer_tot_hits
+        blk = saer_pair_num(ihit)
+        saer_pos_ped_sum2(blk) = saer_pos_ped_sum2(blk) + saer_adc_left(ihit)*saer_adc_left(ihit)
+        saer_neg_ped_sum2(blk) = saer_neg_ped_sum2(blk) + saer_adc_right(ihit)*saer_adc_right(ihit)
+        saer_pos_ped_sum(blk) = saer_pos_ped_sum(blk) + saer_adc_left(ihit)
+        saer_neg_ped_sum(blk) = saer_neg_ped_sum(blk) + saer_adc_right(ihit)
+        saer_pos_ped_num(blk) = saer_pos_ped_num(blk) + 1
+        saer_neg_ped_num(blk) = saer_neg_ped_num(blk) + 1
       enddo
 
       return
