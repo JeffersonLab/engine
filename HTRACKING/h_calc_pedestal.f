@@ -1,7 +1,10 @@
       subroutine h_calc_pedestal(ABORT,err)
 *
 * $Log$
-* Revision 1.4  1995/07/19 18:09:51  cdaq
+* Revision 1.5  1995/08/31 14:58:48  cdaq
+* (JRA) Change threshold limits
+*
+* Revision 1.4  1995/07/19  18:09:51  cdaq
 * (JRA) Cleanup statistics calculations
 *
 * Revision 1.3  1995/05/22  19:39:06  cdaq
@@ -72,7 +75,7 @@
      $         hcal_ped_mean(blk)**2
 !          if (sig2.le.0) write(6,*) 'cal ped(',blk,')**2 =',sig2
           hcal_ped_rms(blk) = sqrt(max(0.,sig2))
-          hcal_threshold(blk) = max(4.,3.*hcal_ped_rms(blk))
+          hcal_threshold(blk) = min(50.,max(10.,3.*hcal_ped_rms(blk)))
         endif
       enddo
 
