@@ -7,6 +7,9 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.5  1999/02/23 16:55:43  csa
+* Correct gbeam calc, add a bunch of comments
+*
 * Revision 1.4  1999/02/10 17:43:38  csa
 * Updated code for SEE bpms (P. Gueye?), added raster calculations
 * (J. Reinhold), and added code for third target bpm
@@ -52,8 +55,18 @@
       abort = .false.
       errmsg = ' '
 
-*     This should not be done each event; move to an initialization
-*     routine somewhere...
+*     csa 2/99 -- Note that the SEE BPMs have a large delay in their
+*     electronics. For a 20 kHz raster, it amounts to about 90 degrees.
+*     There is a phase ambiguity which arises from this delay, and as a
+*     result, the target position derived directly from the BPM *cannot*
+*     be used on an event-by-event basis to correct for position. The
+*     fast raster signal should be used for this (alternatively, the
+*     phase ambiguity can be resolved using both the fast raster and
+*     fast raster synch signals). We *can* use the BPM signals to
+*     calculate a running centroid average (phase ambiguity is not
+*     harmful here).
+
+*     In principle, the following needs to be done only once per run...
 
       n_use_bpm = 3
       if (guse_bpmc .ne. 1) n_use_bpm = 2
@@ -69,7 +82,7 @@
       endif
 
       if(gusefr .ne. 0) then
-         write(6,*)' g_analyze_misc: forcing gusefr to 0'
+         write(6,*)' g_analyze_misc: forcing gusefr to 0 (NO Fast Raster corrections)'
          gusefr = 0
       endif
 
@@ -100,15 +113,10 @@
       yp(2) = gmisc_dec_data(11,2) - gbpm_yp_ped(2)
       ym(2) = gmisc_dec_data(12,2) - gbpm_ym_ped(2)
 
-* Need to find out where the new bpm is mapped:
-*      xp(3) = gmisc_dec_data(,2)  - gbpm_xp_ped(3)
-*      xm(3) = gmisc_dec_data(,2)  - gbpm_xm_ped(3)
-*      yp(3) = gmisc_dec_data(,2)  - gbpm_yp_ped(3)
-*      ym(3) = gmisc_dec_data(,2)  - gbpm_ym_ped(3)
-      xp(3)  = 0.
-      xm(3)  = 0.
-      yp(3)  = 0.
-      ym(3)  = 0.
+      xp(3) = gmisc_dec_data(1,2) - gbpm_xp_ped(3)
+      xm(3) = gmisc_dec_data(2,2) - gbpm_xm_ped(3)
+      yp(3) = gmisc_dec_data(3,2) - gbpm_yp_ped(3)
+      ym(3) = gmisc_dec_data(4,2) - gbpm_ym_ped(3)
 
 *     calibration constants are set in replay/PARAM/gbeam.param.* 
 
@@ -139,14 +147,18 @@
       enddo   
 
 *     csa 2/2/99 -- For the time being I am assuming that all three BPMs
-*     are operational. Eventually it would be nice to make the code
-*     robustly handle the case that one of the devices is broken. I do
-*     allow the third bpm to be disabled (for initial running, just in 
-*     case).
+*     are operational (with the exception that you can ignore H003 by
+*     setting guse_bpmc to zero). Eventually it would be nice to make
+*     the code automatically handle the case that one of the devices is
+*     broken. I'm not sure how to robustly identify a failed bpm,
+*     though.
 
 *     We'll assume that the sigmas for the three BPMs are the 
 *     same (i.e., we give them equal weight), which simplifies 
 *     the math of the linear fit quite a bit. 
+
+*     Note that only mean bpm information is used here (not event-
+*     to-event).
 
       sum_x  = 0.
       sum_y  = 0.
@@ -176,15 +188,15 @@
 *      write(6,*)' g_anal_misc: gbpm_beam_x/y =',gbpm_beam_x,gbpm_beam_y
 
       if(guse_bpm_in_recon.ne.0)then
-         gbeam_x  = gbeam_x  + gbpm_beam_x
-         gbeam_xp = gbeam_xp + gbpm_beam_xp
-         gbeam_y  = gbeam_y  + gbpm_beam_y
-         gbeam_yp = gbeam_yp + gbpm_beam_yp
+         gbeam_x  = gbpm_beam_x
+         gbeam_xp = gbpm_beam_xp
+         gbeam_y  = gbpm_beam_y
+         gbeam_yp = gbpm_beam_yp
       else
-         gbeam_x  = gbeam_x  + gbeam_xoff
-         gbeam_xp = gbeam_xp + gbeam_xpoff
-         gbeam_y  = gbeam_y  + gbeam_yoff
-         gbeam_yp = gbeam_yp + gbeam_ypoff
+         gbeam_x  = gbeam_xoff
+         gbeam_xp = gbeam_xpoff
+         gbeam_y  = gbeam_yoff
+         gbeam_yp = gbeam_ypoff
       endif
       gbeam_x  = gbeam_x  - gspec_xoff
       gbeam_xp = gbeam_xp - gspec_xpoff
