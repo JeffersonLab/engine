@@ -1,13 +1,17 @@
       INTEGER*4 FUNCTION g_decode_fb_detector(roc,evfrag,length,did,
-     $     maxhits,hitcount,planelist,counterlist,signalcount,signal1,
-     $     signal2,signal3,signal4)
+     $     maxhits,hitcount,planelist,counterlist,signalcount,signal0,
+     $     signal1,signal2,signal3)
 *----------------------------------------------------------------------
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.2  1994/03/24 22:00:15  cdaq
-*-    Temporarily change shift to get subaddress from 17 to 16
+*-    Revision 1.3  1994/04/06 18:03:38  cdaq
+*-    (SAW) # of bits to get channel number is now configurable (g_decode_subaddbit).
+*-    Changed range of signal types from 1:4 to 0:3 to agree with documentation.
 *-
+* Revision 1.2  1994/03/24  22:00:15  cdaq
+* Temporarily change shift to get subaddress from 17 to 16
+*
 * Revision 1.1  1994/02/04  21:50:03  cdaq
 * Initial revision
 *
@@ -20,27 +24,28 @@
 
 *     The following arguments get modified.
       integer*4 hitcount,planelist(*),counterlist(*)
-      integer*4 signal1(*),signal2(*),signal3(*),signal4(*)
+      integer*4 signal0(*),signal1(*),signal2(*),signal3(*)
       integer pointer,newdid,subadd,slot,mappointer,plane
       integer counter,signal,sigtyp
 *
       include 'gen_decode_common.cmn'
 *
       integer dir,oslot,h
+      integer subaddbit
       data dir/1/
-      logical undetermined_shift
-      data undetermined_shift/.TRUE./
+*      logical undetermined_shift
+*      data undetermined_shift/.TRUE./
 *
 *------------------------------------------------------------------------
 *
-      IF(undetermined_shift) THEN         !determine proper shift direction
-        If(ISHFT(dir,+1).eq.2) Then       ![machine dependent]
-          dir= +1                         !positive shift ~ multiplication
-        Else
-          dir= -1                         !negative shift ~ multiplication
-        EndIf
-        undetermined_shift= .FALSE.
-      ENDIF
+*      IF(undetermined_shift) THEN         !determine proper shift direction
+*        If(ISHFT(dir,+1).eq.2) Then       ![machine dependent]
+*          dir= +1                         !positive shift ~ multiplication
+*        Else
+*          dir= -1                         !negative shift ~ multiplication
+*        EndIf
+*        undetermined_shift= .FALSE.
+*      ENDIF
 *
       oslot = -1                     !illegal old slot
       pointer = 1
@@ -48,15 +53,17 @@
 
       do while(pointer.le.length .and. did.eq.newdid)
 *
-***         subadd = iand(ISHFT(evfrag(pointer),-17*dir),'7F'X)
-         subadd = iand(ISHFT(evfrag(pointer),-16*dir),'7F'X)
+         slot = iand(ISHFT(evfrag(pointer),-27*dir),'1F'X)
+         if(slot.ne.oslot) then
+            mappointer = g_decode_slotpointer(roc+1,slot)
+            oslot = slot
+            subaddbit = g_decode_subaddbit(roc+1,slot) ! Usually 16 or 17
+         endif
 *
-         if (subadd .lt. '7F'X) then            ! Only valid slots
-            slot = iand(ISHFT(evfrag(pointer),-27*dir),'1F'X)
-            if(slot.ne.oslot) then
-               mappointer = g_decode_slotpointer(roc+1,slot)
-               oslot = slot
-            endif
+         subadd = iand(ISHFT(evfrag(pointer),-subaddbit*dir),'7F'X)
+*
+         if (subadd .lt. '7F'X) then    ! Only valid subaddresses
+                                        ! Skips headers for 1881 and 1876/7
             newdid = g_decode_didmap(mappointer+subadd)
             if(newdid.eq.did) then
                if(hitcount .lt. maxhits) then ! Don't overwrite arrays
@@ -66,7 +73,6 @@
      &              iand(evfrag(pointer),g_decode_slotmask(roc+1,slot))
                   h = hitcount
                   if(signalcount .eq. 1) then ! single signal counter
-
 *     
 *     Starting at end of hit list, search back until a hit earlier in
 *     the sort order is found.
@@ -79,13 +85,13 @@
 *     
                         planelist(h+1) = planelist(h)
                         counterlist(h+1) = counterlist(h)
-                        signal1(h+1) = signal1(h)
+                        signal0(h+1) = signal0(h)
                         h = h - 1
                      enddo
                      h = h + 1  ! Put hit pointer to blank
                      planelist(h) = plane
                      counterlist(h) = counter
-                     signal1(h) = signal
+                     signal0(h) = signal
                      hitcount = hitcount + 1
                   else if(signalcount.eq.4) then ! Multiple signal counter
 *     
@@ -97,10 +103,10 @@
      $                    counterlist(h))))
                         planelist(h+1) = planelist(h)
                         counterlist(h+1) = counterlist(h)
+                        signal0(h+1) = signal0(h)
                         signal1(h+1) = signal1(h)
                         signal2(h+1) = signal2(h)
                         signal3(h+1) = signal3(h)
-                        signal4(h+1) = signal4(h)
                         h = h - 1
                      enddo
                      sigtyp = g_decode_sigtypmap(mappointer+subadd)
@@ -111,14 +117,14 @@
                         counterlist(h) = counter
                         hitcount = hitcount + 1
                      endif
-                     if(sigtyp.eq.1) then
+                     if(sigtyp.eq.0) then
+                        signal0(h) = signal
+                     else if (sigtyp.eq.1) then
                         signal1(h) = signal
                      else if (sigtyp.eq.2) then
                         signal2(h) = signal
                      else if (sigtyp.eq.3) then
                         signal3(h) = signal
-                     else if (sigtyp.eq.4) then
-                        signal4(h) = signal
                      endif
                   endif
                else
