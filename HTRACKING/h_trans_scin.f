@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.7  1994/08/19 03:41:21  cdaq
+* Revision 1.8  1994/09/13 21:40:06  cdaq
+* (JRA) remove obsolete code, fix check for 2 hits, fix hit position
+*
+* Revision 1.7  1994/08/19  03:41:21  cdaq
 * (SAW) Remove a debugging statement that was left in (type *,fptime)
 *
 * Revision 1.6  1994/08/03  14:42:39  cdaq
@@ -49,8 +52,7 @@
       character*20 here
       parameter (here = 'h_trans_scin')
 
-      integer*4 ihit, iset
-      integer*4 setside
+      integer*4 ihit
       integer*4 time_num
       real*4 time_sum
       real*4 fptime
@@ -62,7 +64,6 @@
       real*4 neg_ph(hmax_scin_hits)
       real*4 postime(hmax_scin_hits)
       real*4 negtime(hmax_scin_hits)
-      real*4 mintime
 
       save
       
@@ -70,77 +71,44 @@
 
 **    Find scintillators with real hits (good TDC values)
       call h_strip_scin(abort,errmsg)
-      
-**    Initialize track-independant quantaties.
-      call h_tof_init(abort,errmsg)
-*     
-*     
       if (abort) then
         call g_prepend(here,errmsg)
         return
       endif
+      
+**    Initialize track-independant quantaties.
+      call h_tof_init(abort,errmsg)
+      if (abort) then
+        call g_prepend(here,errmsg)
+        return
+      endif
+
       hgood_start_time = .false.
-      hgood_start_plane = .false.
       if( hscin_tot_hits .gt. 0)  then
-*     histogram raw scin
+** Histogram raw scin
         call h_fill_scin_raw_hist(abort,errmsg)
         if (abort) then
           call g_prepend(here,errmsg)
           return
         endif
       endif        
-*     
-*     test for at least one valid hit
-      if( hscin_tot_hits .gt. 0)  then
+     
+** Return if no valid hits.
+      if( hscin_tot_hits .le. 0) return
+
         do ihit = 1 , hscin_tot_hits
           htwo_good_times(ihit) = .false.
         enddo
-*     
-**    Find tube that gave the trigger.
-*     For now, just take lowest TDC value (good enough for GEANT
-*     simulation).  Probably want to convert to time and correct
-*     for tube offset to find tube that defined timing.  Don't
-*     want to do pulse height correction or position correction,
-*     so don't need to do these corrections first.
 
-        mintime = 1.0e+20               !initialize to large value.
+** Check for two good TDC values.
         do ihit = 1 , hscin_tot_hits
-
-*     make sure have good TDC value before checking time.
-          if ((hscin_tdc_pos(ihit) .ge. hscin_tdc_min) .and.
-     1         (hscin_tdc_pos(ihit) .le. hscin_tdc_max)) then !good tdc
-
-            postime(ihit) = hscin_tdc_pos(ihit) * hscin_tdc_to_time
-            postime(ihit) = postime(ihit) - hscin_pos_time_offset(ihit)
-            if (postime(ihit).lt.mintime) then
-              mintime = postime(ihit)
-              iset = ihit
-              setside = 1               !1 is pos side. Bad notation. Sorry.
-            endif
-          endif
-
-*     make sure have good TDC value before checking negative time.
-          if ((hscin_tdc_neg(ihit) .ge. hscin_tdc_min) .and.
-     1         (hscin_tdc_neg(ihit) .le. hscin_tdc_max)) then !good tdc
-
-            negtime(ihit) = hscin_tdc_neg(ihit) * hscin_tdc_to_time
-            negtime(ihit) = negtime(ihit) - hscin_neg_time_offset(ihit)
-
-*     see if both sides had good tdc.
             if ((hscin_tdc_pos(ihit) .ge. hscin_tdc_min) .and.
-     1           (hscin_tdc_pos(ihit) .le. hscin_tdc_max)) then
+     1      (hscin_tdc_pos(ihit) .le. hscin_tdc_max) .and.
+     2      (hscin_tdc_neg(ihit) .ge. hscin_tdc_min) .and.
+     3      (hscin_tdc_neg(ihit) .le. hscin_tdc_max)) then
               htwo_good_times(ihit) = .true.
             endif
-
-            if (negtime(ihit).lt.mintime) then
-              mintime = negtime(ihit)
-              iset = ihit
-              setside = 2               !2 is neg side. Bad notation. Sorry.
-            endif
-          endif
-
         enddo                           !end of loop that finds tube setting time.
-
 
 **    Get corrected time/adc for each scintillator hit
         do ihit = 1 , hscin_tot_hits
@@ -160,15 +128,15 @@
      1           sqrt(max(0.,(neg_ph(ihit)/hscin_minph-1.)))
             negtime(ihit) = negtime(ihit) - hscin_neg_time_offset(ihit)
 
-*     Find hit position.  If postime larger, then hit was nearer negative
-*     side.
+* Find hit position.  If postime larger, then hit was nearer negative side.
             dist_from_center = 0.5*(negtime(ihit) - postime(ihit))
-     1           / hscin_vel_light(ihit)
+     1           * hscin_vel_light(ihit)
             scint_center = (hscin_pos_coord(ihit)+hscin_neg_coord(ihit))
      $           /2.
             hit_position = scint_center + dist_from_center
+            hscin_dec_hit_coord(ihit) = hit_position
             
-*     get corrected time.
+*     Get corrected time.
             pos_path = abs(hscin_pos_coord(ihit) - hit_position)
             neg_path = abs(hscin_neg_coord(ihit) - hit_position)
             postime(ihit) = postime(ihit) - pos_path
@@ -186,15 +154,13 @@
           endif
         enddo                           !loop over hits to find ave time,adc.
 
-*     TEMPORARY START TIME CALCULATION.  ASSUME XP=YP=0 RADIANS.  PROJECT
-*     ALL CORRECTED
+* TEMPORARY START TIME CALCULATION.  ASSUME XP=YP=0 RADIANS.  PROJECT ALL
 *     TIME VALUES TO FOCAL PLANE.  USE AVERAGE FOR START TIME.
         time_num = 0
         time_sum = 0.
         do ihit = 1 , hscin_tot_hits
           if (htwo_good_times(ihit)) then
             fptime  = hscin_cor_time(ihit) - hscin_zpos(ihit)/29.989
-***            type *,fptime
             if (abs(fptime-67.).le.10) then
               time_sum = time_sum + fptime
               time_num = time_num + 1
@@ -210,11 +176,8 @@
           hstart_time = time_sum / float(time_num)
         endif
 
-*     
+
 *     Dump decoded bank if hdebugprintscindec is set
-        if( hdebugprintscindec .ne. 0) then
-          call h_prt_dec_scin(ABORT,errmsg)
-        endif
-      endif                             ! end major test on  hscin_tot_hits > 0     
+      if( hdebugprintscindec .ne. 0) call h_prt_dec_scin(ABORT,errmsg)
       return
       end
