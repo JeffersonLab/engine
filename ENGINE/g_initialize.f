@@ -10,10 +10,13 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.14  1995/07/27 19:36:41  cdaq
-*-    (SAW) Relocate data statements for f2c compatibility, check error returns
-*-          on thload calls and quit if important files are missing.
+*-    Revision 1.15  1995/09/01 14:29:41  cdaq
+*-    (JRA) Zero run time variable, read kinematics database after last book
 *-
+* Revision 1.14  1995/07/27  19:36:41  cdaq
+* (SAW) Relocate data statements for f2c compatibility, check error returns
+*       on thload calls and quit if important files are missing.
+*
 * Revision 1.13  1995/05/22  20:41:40  cdaq
 * (SAW) Split g_init_histid into h_init_histid and s_init_histid
 *
@@ -75,6 +78,7 @@
       INCLUDE 'gen_routines.dec'
       INCLUDE 'gen_pawspace.cmn'        !includes sizes of special CERNLIB space
       INCLUDE 'gen_run_info.cmn'
+      include 'gen_scalers.cmn'
 *HDISPLAY      include 'one_ev_io.cmn'
 *HDISPLAY      include 'gen_gcbank.cmn'
 *
@@ -94,6 +98,9 @@
       HMS_err= ' '
       SOS_err= ' '
 *
+* set the runtime variable to avoid divide by zero during report
+*
+      g_time = 0.001
 *
 *     Book the histograms, tests and parameters
 *
@@ -194,6 +201,18 @@
 *
       call thtstclr                     ! Clear test flags
       call thtstcls                     ! Clear test scalers
+*
+*     Now if there is a g_ctp_kinematics_filename set, pass the run number
+*     to it to set CTP variables.  Parameters placed in this file will
+*     override values defined in the CTP input files.
+*
+      if(.not.ABORT.and.g_ctp_kinematics_filename.ne.' ') then
+        call g_ctp_database(ABORT, err
+     $       ,gen_run_number, g_ctp_kinematics_filename)
+        IF(ABORT) THEN
+          call G_add_path(here,err)
+        endif
+      ENDIF
 *
 *-HMS initialize
       call H_initialize(HMS_ABORT,HMS_err)
