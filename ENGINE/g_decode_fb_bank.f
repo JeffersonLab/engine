@@ -27,7 +27,10 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
-* Revision 1.7  1994/04/13 18:49:10  cdaq
+* Revision 1.8  1994/06/09 04:48:28  cdaq
+* (SAW) Fix length argument on gmc_mc_decode call again
+*
+* Revision 1.7  1994/04/13  18:49:10  cdaq
 * (KBB Fix length argument on gmc_mc_deocde call
 *
 *
@@ -70,7 +73,7 @@
 *     First look for special Monte Carlo Banks
 *
       if(stat_roc.eq.mc_status_and_ROC) then
-         call gmc_mc_decode(banklength-1,bank(3),ABORT,error)
+         call gmc_mc_decode(banklength-2,bank(3),ABORT,error)
          if(ABORT) then
             call g_add_path(here,error)
          endif
