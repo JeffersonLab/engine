@@ -1,4 +1,4 @@
-       SUBROUTINE C_initialize(ABORT,err)
+      SUBROUTINE C_initialize(ABORT,err)
 *--------------------------------------------------------
 *-       Prototype C analysis routine
 *-
@@ -10,9 +10,12 @@
 *- 
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.2  1994/04/12 17:08:54  cdaq
-*-    (KBB) Add ntuple call
+*-    Revision 1.3  1994/06/14 03:16:09  cdaq
+*-    (DFG) Add CEBEAM calculation
 *-
+* Revision 1.3  1994/06/14  03:16:09  cdaq
+* (DFG) Add CEBEAM calculation
+*
 * Revision 1.2  1994/04/12  17:08:54  cdaq
 * (KBB) Add ntuple call
 *
@@ -23,31 +26,34 @@
 *-
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
-       IMPLICIT NONE
-       SAVE
+*-
+*-
 *--------------------------------------------------------
-       character*12 here
-       parameter (here= 'C_initialize')
+      IMPLICIT NONE
+      SAVE
 *
-       logical ABORT
-       character*(*) err
+      character*12 here
+      parameter (here= 'C_initialize')
 *
-       INCLUDE 'gen_data_structures.cmn'
+      logical ABORT
+      character*(*) err
 *
       INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_constants.par'
-       ABORT= .FALSE.
+*
+*--------------------------------------------------------
+*
       ABORT= .FALSE.
-       call c_ntuple_init(ABORT,err)
+*
       CEBEAM=SQRT(CPBEAM**2 + mass_electron**2)
-       IF(ABORT) THEN
+      g_beam_target_s = (TMASS_TARGET + CEBEAM)**2 - CPBEAM**2
 *
-       ELSE
+      call c_ntuple_init(ABORT,err)
 *
-       ENDIF
+      IF(ABORT) THEN
          call G_add_path(here,err)
-       RETURN
-       END
+      ELSE
+         err= ' '
       ENDIF
 *
       RETURN
