@@ -10,9 +10,12 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.3  1994/03/24 22:02:31  cdaq
-*-    Reorganize for online compatibility
+*-    Revision 1.4  1994/04/12 20:59:21  cdaq
+*-    (SAW) Add call to calculation of histid's for hfilled histograms
 *-
+* Revision 1.3  1994/03/24  22:02:31  cdaq
+* Reorganize for online compatibility
+*
 * Revision 1.2  1994/02/11  18:34:49  cdaq
 * Split off CTP variables registration from initialize routines
 *
@@ -67,6 +70,11 @@
       if(first_time.or.g_parm_rebook
      $     .or.g_test_rebook.or.g_hist_rebook) then
          call thbook
+*
+*     Recalculate all histogram id's of user (hard wired) histograms
+*
+         call g_init_histid(ABORT,err)
+*
          if(g_alias_filename.ne.' ') then
             ierr = thwhalias(g_alias_filename)
             type *,'called haliaswrite',ierr
