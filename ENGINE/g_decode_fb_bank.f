@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.25  1998/12/01 15:54:26  saw
+* (SAW) Slight change in debugging output
+*
 * Revision 1.24  1996/11/08 15:48:01  saw
 * (WH) Add decoding for lucite counter
 *
@@ -181,13 +184,15 @@
       if (bank(pointer).eq.'DCFF0000'X) then
 	if (roc.eq.1 .or. roc.eq.2) then    !missing hms data
           if (gen_event_type.ne.2) then     !event type 2 is sos only event.
-            write(6,'(a,i3,a,i8,a,z8)') 'roc',roc,' has no data for event'
-     &        ,gen_event_id_number,' scanmask=',bank(pointer+1)
+            write(6,'(a,i3,a,i8,a,z8,a,i2)') 'roc',roc,' has no data for event'
+     &           ,gen_event_id_number,' scanmask=',bank(pointer+1)
+     $           ,', evtype=',gen_event_type
           endif
         else                                !missing sos data
           if (gen_event_type.ne.1) then     !event type 1 is hms only data.
-            write(6,'(a,i3,a,i8,a,z8)') 'roc',roc,' has no data for event'
-     &        ,gen_event_id_number,' scanmask=',bank(pointer+1)
+            write(6,'(a,i3,a,i8,a,z8,a,i2)') 'roc',roc,' has no data for event'
+     &           ,gen_event_id_number,' scanmask=',bank(pointer+1)
+     $           ,', evtype=',gen_event_type
           endif
         endif
       endif

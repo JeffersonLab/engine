@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.19  1998/12/01 15:54:57  saw
+* (SAW) Slight change in debugging output
+*
 * Revision 1.18  1997/04/03 10:56:05  saw
 * (SAW) Better report of DCFE code words.  Prints out roc, slot, event
 * number and how many extra events are in the module.
@@ -146,8 +149,10 @@
         slot = jiand(JISHFT(evfrag(pointer),-27),'1F'X)
         if(slot.ne.oslot.or.firsttime) then
           if (slot.le.0 .or. slot.ge.26 .or. roc.le.0 .or. roc.ge.9) then
-            write (6,'(a,i2,i3,z10,a,i8)') '       roc,slot,evfrag=',roc,
-     &           slot,evfrag(pointer),'  for event #',gen_event_id_number
+            write (6,'(a,i2,i3,z10,a,i5,a,i8)') 'roc,slot,evfrag=',roc,
+     &           slot,evfrag(pointer),
+     $           '(p=',pointer,') for event #',gen_event_id_number
+            write (6,'(a,i3)') '  Probably after slot',jiand(JISHFT(evfrag(pointer-1),-27),'1F'X)
             pointer = pointer + 1
             goto 987
           else
