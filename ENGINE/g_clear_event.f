@@ -12,9 +12,12 @@
 *-   Created  29-Oct-1993   Kevin B. Beard, Hampton U.
 *-   Modified 19-Nov-1993   Kevin B. Beard for new error standards
 *-      $Log$
-*-      Revision 1.2  1994/02/17 21:46:03  cdaq
-*-      Add call to gmc_clear_event
+*-      Revision 1.3  1994/02/22 19:47:07  cdaq
+*-      Change gmc_clear_event to gmc_mc_clear
 *-
+* Revision 1.2  1994/02/17  21:46:03  cdaq
+* Add call to gmc_clear_event
+*
 * Revision 1.1  1994/02/04  21:48:38  cdaq
 * Initial revision
 *
@@ -54,7 +57,7 @@
 *
       call C_clear_event(COIN_ABORT,COIN_err)
 *
-      call gmc_clear_event(gmc_abort,gmc_err)
+      call gmc_mc_clear(gmc_abort,gmc_err)
 *
       ABORT= HMS_ABORT .or. SOS_ABORT .or. COIN_ABORT .or. gmc_abort
 *
