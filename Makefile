@@ -18,10 +18,10 @@ else
 endif
 
 .PHONY: utilsubs ctp coda engine tracking stracking htracking hack \
-	oneev coda port t20
+	oneev coda port t20 exe
 
 all: include utilsubs ctp coda tracking htracking stracking hack port \
-	engine t20 oneev
+	engine t20 oneev exe
 
 include:
 	$(MAKE) -C INCLUDE
@@ -58,7 +58,8 @@ coda:
 
 port:
 	$(MAKE) -C PORT
-
+exe:
+	$(MAKE) -C EXE
 #broken
 clean:
 	-@rm UTILSUBS/O.$(OSTYPE)/*.[do]
