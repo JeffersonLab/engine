@@ -9,7 +9,10 @@
 *     space point.
 *     d. f. geesaman           31 August 1993
 * $Log$
-* Revision 1.7  1995/07/20 18:57:39  cdaq
+* Revision 1.8  1995/08/31 18:44:23  cdaq
+* (JRA) Fix some logic in small angle L/R determination loop
+*
+* Revision 1.7  1995/07/20  18:57:39  cdaq
 * (SAW) Declare jibset for f2c compatibility
 *
 * Revision 1.6  1995/05/22  19:45:42  cdaq
@@ -185,7 +188,7 @@ c          endif
             if(plusminusknown(ihit).ne.0) then
               plusminus(ihit) = float(plusminusknown(ihit))
             else
-              if(jbit(pmloop,ihit).eq.1) then
+              if(jbit(pmloop,iswhit).eq.1) then
                 plusminus(ihit)=1.0
               else
                 plusminus(ihit)=-1.0
