@@ -23,6 +23,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.4  2002/07/31 20:24:29  saw
+ *   Make local copy of filename passed in evOpen
+ *
  *   Revision 1.3  1999/11/04 20:30:48  saw
  *   Add code to write coda output to stdout or pipes
  *
@@ -183,7 +186,7 @@ static char *kill_trailing(char *s, char t)
   }
   return s;
 }
-int evOpen(char *filename,char *flags,int *handle)
+int evOpen(char *fname,char *flags,int *handle)
 {
 #ifdef BIT64
   int ihandle;
@@ -193,8 +196,15 @@ int evOpen(char *filename,char *flags,int *handle)
   int header[EV_HDSIZ];
   int i;
   int temp,blk_size;
+  char *filename;
+
+  filename = malloc(strlen(fname)+1);
+  strcpy(filename,fname);
   a = evGetStructure();		/* allocate control structure or quit */
-  if (!a) return(S_EVFILE_ALLOCFAIL);
+  if (!a) {
+    free(filename);
+    return(S_EVFILE_ALLOCFAIL);
+  }
   while (*filename==' ') filename++; /* remove leading spaces */
  /* But don't fuck with any other spaces except for the trailing ones */
 #if 0
@@ -242,6 +252,7 @@ int evOpen(char *filename,char *flags,int *handle)
 	else{ /* close file and free memory */
 	  fclose(a->file);
 	  free (a);
+	  free(filename);
 	  return(S_EVFILE_BADFILE); 
 	}
       }
@@ -256,6 +267,7 @@ int evOpen(char *filename,char *flags,int *handle)
 	a->buf = (int *) malloc(header[EV_HD_BLKSIZ]*4);
       if (!(a->buf)) {
 	free(a);		/* if can't allocate buffer, give up */
+	free(filename);
 	return(S_EVFILE_ALLOCFAIL);
       }
       if(a->byte_swapped){
@@ -286,6 +298,7 @@ int evOpen(char *filename,char *flags,int *handle)
       a->buf = (int *) malloc(EVBLOCKSIZE*4);
       if (!(a->buf)) {
 	free(a);
+	free(filename);
 	return(S_EVFILE_ALLOCFAIL);
       }
       a->buf[EV_HD_BLKSIZ] = EVBLOCKSIZE;
@@ -303,6 +316,7 @@ int evOpen(char *filename,char *flags,int *handle)
     break;
   default:
     free(a);
+    free(filename);
     return(S_EVFILE_UNKOPTION);
   }
   if (a->file) {
@@ -314,14 +328,17 @@ int evOpen(char *filename,char *flags,int *handle)
       if(handle_list[ihandle]==0) {
        handle_list[ihandle] = a;
        *handle = ihandle+1;
+       free(filename);
        return(S_SUCCESS);
       }
     }
     *handle = 0;               /* No slots left */
     free(a);
+    free(filename);
     return(S_EVFILE_BADHANDLE);        /* A better error code would help */
 #else
     *handle = (int) a;
+    free(filename);
     return(S_SUCCESS);
 #endif BIT64
   } else {
@@ -332,8 +349,11 @@ int evOpen(char *filename,char *flags,int *handle)
     perror(NULL);
 #endif
     *handle = 0;
+    free(filename);
     return(errno);
   }
+  free(filename);
+
 }
 
 #ifdef AbsoftUNIXFortran
