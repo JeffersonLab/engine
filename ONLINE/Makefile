@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.5  1996/01/17 16:48:24  cdaq
+# (SAW) Add libengine.a to library list
+#
 # Revision 1.4  1995/05/24 14:04:15  cdaq
 # (SAW) Add -lm library for CTP
 #
@@ -41,6 +44,7 @@ bin_targets = engine_online
 
 DEPLIBS = $(LIBROOT)/libengine.a \
 	$(LIBROOT)/libhtracking.a $(LIBROOT)/libstracking.a \
+	$(LIBROOT)/libengine.a \
 	$(LIBROOT)/libtracking.a $(LIBROOT)/libhack.a \
 	$(LIBROOT)/libgmc.a $(LIBROOT)/libutils.a $(LIBROOT)/libctp.a
 
