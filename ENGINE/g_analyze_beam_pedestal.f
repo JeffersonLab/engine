@@ -1,6 +1,9 @@
       subroutine g_analyze_beam_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.3  1999/02/23 16:49:21  csa
+* (JRA) Add gmisc_dec_data
+*
 * Revision 1.2  1999/02/10 17:38:09  csa
 * Added call to g_analyze_misc
 *
@@ -32,6 +35,7 @@
       do ihit = 1 , gmisc_tot_hits
         if (gmisc_raw_addr1(ihit).eq.2) then   !ADCs
           ind=gmisc_raw_addr2(ihit)      ! no sparsification yet - NEED TO FIX!!!!
+          gmisc_dec_data(ind,2) = gmisc_raw_data(ihit)
           gmisc_ped_sum2(ind,2) = gmisc_ped_sum2(ind,2) +
      $         gmisc_raw_data(ihit)*gmisc_raw_data(ihit)    !2 is for ADCs
           gmisc_ped_sum(ind,2) = gmisc_ped_sum(ind,2) + gmisc_raw_data(ihit)
