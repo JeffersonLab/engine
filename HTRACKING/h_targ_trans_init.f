@@ -7,6 +7,11 @@
 *
 * Version:  0.1 (In development)
 * $Log$
+* Revision 1.6  2004/02/19 16:41:45  jones
+* Can set filename for the HMS matrix elements using the parameter
+* h_recon_coeff_filename . If parameter is not set then uses
+* hms_recon_coeff.dat
+*
 * Revision 1.5  1996/09/04 13:34:30  saw
 * (JRA) Add target x to track definition
 *
@@ -51,6 +56,7 @@
 
       include 'hms_recon_elements.cmn'  !Recon coefficients.
       include 'gen_filenames.cmn'
+      include 'hms_filenames.cmn'
  
 * Misc. variables.
 
@@ -87,7 +93,14 @@ c      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
 
 * Open and read in coefficients.
 
-      open (unit=chan,status='old',name='hms_recon_coeff.dat',err=92)
+      if ( h_recon_coeff_filename .eq. ' ' ) then
+         h_recon_coeff_filename = 'hms_recon_coeff.dat'
+      endif
+         write(*,*) ' ********'
+         write(*,*) ' Opening HMS matrix element file ',h_recon_coeff_filename
+         write(*,*) ' ********'
+      open (unit=chan,status='old',name=h_recon_coeff_filename,err=92)
+
 
 * Read header comments.
 
@@ -128,18 +141,18 @@ c      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
 
  92   istat = 2                         !Error opening file.
 * If file does not exist, report err and then continue for development
-      err = 'error opening file hms_recon_coeff.dat'
+      err = 'error opening file '//h_recon_coeff_filename
       call g_rep_err(ABORT,err)
       goto 100
 
  94   istat = 4                         !Error reading or processing data.
       ABORT=.true.
-      err = 'error processing file hms_recon_coeff.dat'
+      err = 'error processing file '//h_recon_coeff_filename
       goto 100
 
  96   istat = 6                         !Too much data in file for arrays.
       ABORT=.true.
-      err = 'too much data in file hms_recon_coeff.dat'
+      err = 'too much data in file '//h_recon_coeff_filename
       goto 100
 
 * Done with open file.
