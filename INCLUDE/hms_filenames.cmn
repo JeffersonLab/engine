@@ -2,7 +2,10 @@
 *
 *-Common block with filenames
 * $Log$
-* Revision 1.2  1994/08/03 20:33:34  cdaq
+* Revision 1.3  1995/04/06 20:17:07  cdaq
+* (SAW) Add report output filename
+*
+* Revision 1.2  1994/08/03  20:33:34  cdaq
 * (SAW) Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
 *
 * Revision 1.1  1994/06/15  18:12:33  cdaq
@@ -13,9 +16,11 @@
       character*80 h_recon_coeff_filename
       character*80 h_report_template_filename    ! CTP file with hms report
       character*80 h_report_blockname
+      character*80 h_report_output_filename
 *
       common /hms_filenames/
      $     h_recon_coeff_filename,
      $     h_report_template_filename,
-     $     h_report_blockname
+     $     h_report_blockname,
+     $     h_report_output_filename
 *
