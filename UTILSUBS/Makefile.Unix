@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.6  1995/03/14 21:04:40  cdaq
+# Revision 1.7  1995/04/06 20:37:18  cdaq
+# (SAW) Add g_sub_run_number
+#
+# Revision 1.6  1995/03/14  21:04:40  cdaq
 # # (SAW) Add -f switch on include file copy commands
 #
 # Revision 1.5  1995/01/27  21:11:04  cdaq
@@ -24,7 +27,7 @@ gsources = g_add_path.f g_build_note.f g_important_length.f g_int_sort.f \
 	g_log_message.f g_normalize.f g_prepend.f g_rep_err.f \
 	g_sort.f g_sph_xyz.f g_wrap_note.f g_xyz_sph.f g_shift_len.f \
 	g_io_control.f g_append.f g_utc_date.f g_reg_c.f g_rep_where.f \
-	regparmstringarray.f
+	regparmstringarray.f g_sub_run_number.f
 
 kbutils = get_values.f only_one_blank.f shiftall.f match.f no_tabs.f \
 	no_blanks.f no_comments.f no_leading_blanks.f squeeze.f sub_string.f \
