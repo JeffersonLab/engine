@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.8  1995/07/27 19:03:36  cdaq
-*-    (SAW) Error return fix up
+*-    Revision 1.9  1995/09/01 15:46:41  cdaq
+*-    (JRA) Open temp file for pedestal outputs
 *-
+* Revision 1.8  1995/07/27  19:03:36  cdaq
+* (SAW) Error return fix up
+*
 * Revision 1.7  1995/05/22  13:29:24  cdaq
 * (JRA) Make a listing of potential detector problems
 *
@@ -67,6 +70,9 @@
       file = "scalers/bad%d.txt"
       call g_sub_run_number(file,gen_run_number)
       open(unit=SPAREID,file=file,status='unknown')
+
+c temporary files for pedestal calculation.
+      open(unit=39,file='peds.all',status='unknown')
 
 *-chance to flush any statistics, etc.
       call H_proper_shutdown(SPAREID,bad_HMS,err_HMS)
