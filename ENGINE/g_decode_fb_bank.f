@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.19  1995/11/28 18:50:03  cdaq
+* (SAW) Quick hack to accept banks with 2 rocs (from parallel link)
+*
 * Revision 1.18  1995/10/09 18:20:51  cdaq
 * (JRA) Change HCER_ADC to HCER_RAW_ADC
 *       Replace g_decode_getdid call with explicit calculation (for speed)
@@ -87,6 +90,7 @@
 *     processed.
 *
       include 'gen_detectorids.par'
+
       include 'gen_data_structures.cmn'
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
@@ -101,10 +105,12 @@
       integer*4 did                     ! Detector ID
 *      integer*4 g_decode_getdid         ! Get detector ID routine
       integer*4 g_decode_fb_detector    ! Detector unpacking routine
+      integer*4 last_first
 *
       integer*4 jiand, jishft           ! Declare to help f2c
 
       banklength = bank(1) + 1          ! Bank length including count
+      last_first = banklength
 
 c      stat_roc = ishft(bank(2),-16)
       stat_roc = jishft(bank(2),-16)
@@ -123,9 +129,10 @@ c      roc = iand(stat_roc,'1F'X)                ! Get ROC from header
         return
       endif
 *
-      if(roc.ge.G_DECODE_MAXROCS.and.roc.ne.9) then
+*      if(roc.gt.G_DECODE_MAXROCS) then
+      if(roc.gt.9) then
         ABORT = .false.                 ! Just warn
-        error = ':ROC out of range'
+        write(error,*) ':ROC out of range, ROC#=',roc
         call g_add_path(here,error)
         return
       endif
@@ -144,10 +151,11 @@ c      roc = iand(stat_roc,'1F'X)                ! Get ROC from header
 *     fbch1 and fbch2.  But it should work for runs up through
 *     at least 5/31/95.
 *
-        pointer=pointer+2               !using parallel link, so next
-c        stat_roc = ishft(bank(pointer-1),-16)!2 words are fb roc header.
-        stat_roc = jishft(bank(pointer-1),-16)!2 words are fb roc header.
+        last_first = bank(pointer)+2+1  ! New Bank length including parallel header
+c        stat_roc = ishft(bank(pointer+1),-16)!2 words are fb roc header.
+        stat_roc = jishft(bank(pointer+1),-16)!2 words are fb roc header.
         roc = jiand(stat_roc,'1F'X)
+        pointer=pointer+2               ! First data after real header
 *        print *,iand(ishft(bank(2),-16),'1F'X),'->',roc
       endif
 c      if (roc.eq.7) then                ! Change || link ROC #'s into ROC #'s
@@ -160,12 +168,18 @@ c      endif
       lastslot = -1
       do while (pointer .le. banklength)
 
+        if(pointer.eq.(last_first+1)) then  ! Second bank in a two bank bank
+          last_first = banklength       ! Reset to end of bank
+          stat_roc = jishft(bank(pointer+1),-16) !2 words are fb roc header.
+          roc = jiand(stat_roc,'1F'X)   ! New roc
+        endif
+          
 c        slot = iand(ishft(bank(pointer),-27),'1F'X)
         slot = jiand(jishft(bank(pointer),-27),'1F'X)
         if(slot.gt.0.and.slot.le.G_DECODE_MAXSLOTS) then
 c          subadd = iand(ishft(bank(pointer),
           subadd = jiand(jishft(bank(pointer),
-     $         -g_decode_subaddbit(roc+1,slot)),'7F'X)
+     $         -g_decode_subaddbit(roc,slot)),'7F'X)
 ***         subadd = iand(ishft(bank(pointer),-17),'7F'X)
 ***         subadd = iand(ishft(bank(pointer),-16),'7F'X)
 
@@ -174,14 +188,15 @@ c          subadd = iand(ishft(bank(pointer),
 
 ***   replace call with explicit calculation.
 ***            did = g_decode_getdid(roc,slot,subadd) ! Map into detector ID
-            slotp = g_decode_slotpointer(roc+1,slot)
+            slotp = g_decode_slotpointer(roc,slot)
             if (slotp.gt.0) then
               did = g_decode_didmap(slotp+subadd)
             else
               did = UNINST_ID
             endif
 
-            maxwords = banklength - pointer + 1
+c            maxwords = banklength - pointer + 1
+            maxwords = last_first - pointer + 1
 *
 *        1         2         3         4         5         6         7
 *23456789012345678901234567890123456789012345678901234567890123456789012
