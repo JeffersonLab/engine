@@ -16,7 +16,10 @@
 * s_scin_eff_shutdown does some final manipulation of the numbers.
 *
 * $Log$
-* Revision 1.5  1995/07/20 19:00:54  cdaq
+* Revision 1.6  1995/08/31 15:08:52  cdaq
+* (JRA) Dump bad counter infomation
+*
+* Revision 1.5  1995/07/20  19:00:54  cdaq
 * (SAW) Move data statement for f2c compatibility
 *
 * Revision 1.4  1995/05/22  19:45:54  cdaq
@@ -34,8 +37,8 @@
 *--------------------------------------------------------
       IMPLICIT NONE
 *
-      character*50 here
-      parameter (here= 'S_SCIN_EFF')
+      character*19 here
+      parameter (here= 'S_SCIN_EFF_SHUTDOWN')
 *
       logical ABORT
       character*(*) errmsg
@@ -47,22 +50,19 @@
       include 'sos_scin_tof.cmn'
       include 'sos_statistics.cmn'
 
+      logical written_header
       integer pln,cnt
-      real ave,ave2,num        !intermediate variables for sigma(position)
-      real p1,p2,p3,p4         !prob. of having both tubes fire for planes1-4
-      real p1234,p123,p124,p134,p234 !prob. of having combos fire
       integer lunout
-      real*4 peff,neff
-      real*4 mineff
-      parameter (mineff=.95)
+      real*4 num_real,nhits_real
+      real*4 p1,p2,p3,p4         !prob. of having both tubes fire for planes1-4
+      real*4 p1234,p123,p124,p134,p234 !prob. of having combos fire
 
       character*4 planename(SNUM_SCIN_PLANES)
       data planename/'sS1X','sS1Y','sS2X','sS2Y'/
 
       save
 
-      write(lunout,*)
-      write(lunout,*) ' scintilators with effic. < ',mineff
+      written_header = .false.
 
 ! fill sums over counters
       do pln=1,snum_scin_planes
@@ -71,35 +71,41 @@
         sstat_negsum(pln)=0
         sstat_andsum(pln)=0
         sstat_orsum(pln)=0
-        sscin_tot_dpos_sum(pln)=0.
-        sscin_tot_num_dpos(pln)=0
         do cnt=1,snum_scin_counters(pln)
+          num_real=float(max(1,sscin_zero_num(pln,cnt)))
+          sscin_zero_pave(pln,cnt)=float(sscin_zero_pos(pln,cnt))/num_real
+          sscin_zero_nave(pln,cnt)=float(sscin_zero_neg(pln,cnt))/num_real
           sstat_trksum(pln)=sstat_trksum(pln)+sstat_trk(pln,cnt)
           sstat_possum(pln)=sstat_possum(pln)+sstat_poshit(pln,cnt)
           sstat_negsum(pln)=sstat_negsum(pln)+sstat_neghit(pln,cnt)
           sstat_andsum(pln)=sstat_andsum(pln)+sstat_andhit(pln,cnt)
           sstat_orsum(pln)=sstat_orsum(pln)+sstat_orhit(pln,cnt)
-
-          num=float(max(1,sscin_num_dpos(pln,cnt)))
-          ave=sscin_dpos_sum(pln,cnt)/num
-          sscin_dpos_ave(pln,cnt)=ave
-          ave2=sscin_dpos_sum2(pln,cnt)/num
-          sscin_dpos_sig(pln,cnt)=sqrt(max(0.,(ave2/num)-ave*ave))
-          sscin_tot_dpos_sum(pln)=
-     &            sscin_tot_dpos_sum(pln)+sscin_dpos_sum(pln,cnt)
-          sscin_tot_num_dpos(pln)=
-     &            sscin_tot_num_dpos(pln)+sscin_num_dpos(pln,cnt)
 *
 * write out list of possible problms
 *
-          if (sstat_trk(pln,cnt).ge.50) then
-            peff=float(sstat_poshit(pln,cnt))/float(sstat_trk(pln,cnt))
-           if (peff.le.mineff) then
-              write(lunout,'(5x,a4,i2,a,f7.4)') planename(pln),cnt,'+',peff
+          nhits_real = max(1.,float(sstat_trk(pln,cnt)))
+          sstat_neff(pln,cnt)=float(sstat_neghit(pln,cnt))/nhits_real
+          sstat_peff(pln,cnt)=float(sstat_poshit(pln,cnt))/nhits_real
+          sstat_oeff(pln,cnt)=float(sstat_orhit(pln,cnt))/nhits_real
+          sstat_aeff(pln,cnt)=float(sstat_andhit(pln,cnt))/nhits_real
+          if (nhits_real .gt. 100.) then   !dump bad counter information
+            if (sstat_peff(pln,cnt).le.sstat_mineff) then
+              if (.not.written_header) then
+                write(lunout,*)
+                write(lunout,'(a,f6.3)') ' SOS scintilators with effic. < '
+     $               ,sstat_mineff
+                written_header = .true.
+              endif
+              write(lunout,'(5x,a4,i2,a,f7.4)') planename(pln),cnt,'+',sstat_peff(pln,cnt)
             endif
-            neff=float(sstat_neghit(pln,cnt))/float(sstat_trk(pln,cnt))
-           if (neff.le.mineff) then
-              write(lunout,'(5x,a4,i2,a,f7.4)') planename(pln),cnt,'-',neff
+            if (sstat_neff(pln,cnt).le.sstat_mineff) then
+              if (.not.written_header) then
+                write(lunout,*)
+                write(lunout,'(a,f6.3)') ' SOS scintilators with effic. < '
+     $               ,sstat_mineff
+                written_header = .true.
+              endif
+              write(lunout,'(5x,a4,i2,a,f7.4)') planename(pln),cnt,'-',sstat_neff(pln,cnt)
             endif
           endif
         enddo
@@ -107,8 +113,6 @@
         sstat_negeff(pln)=sstat_negsum(pln)/max(1.,float(sstat_trksum(pln)))
         sstat_andeff(pln)=sstat_andsum(pln)/max(1.,float(sstat_trksum(pln)))
         sstat_oreff(pln)=sstat_orsum(pln)/max(1.,float(sstat_trksum(pln)))
-        sscin_tot_dpos_ave(pln)=
-     &        sscin_tot_dpos_sum(pln)/max(1.,float(sscin_tot_num_dpos(pln)))
       enddo
 
       write(lunout,*) ' '
@@ -129,6 +133,17 @@
       seff_stof=seff_s1 * seff_s2
       seff_3_of_4=p1234+p123+p124+p134+p234
       seff_4_of_4=p1234
+
+      write(39,*) 'sscin_all_ped_pos ='
+      do cnt=1,snum_scin_elements
+        write(39,111) (sscin_zero_pave(pln,cnt),pln=1,snum_scin_planes)
+      enddo
+
+      write(39,*) 'sscin_all_ped_neg ='
+      do cnt=1,snum_scin_elements
+        write(39,111) (sscin_zero_nave(pln,cnt),pln=1,snum_scin_planes)
+      enddo
+111   format (10x,3(f6.1,','),f6.1)
 
       return
       end
