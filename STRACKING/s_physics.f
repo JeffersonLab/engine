@@ -19,6 +19,9 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.16  1996/11/07 19:51:38  saw
+* (JRA) Correct error in mass calculation
+*
 * Revision 1.15  1996/09/05 20:13:14  saw
 * (JRA) Improved track length calculation.  Photon E calc. for (gamma,p)
 *
@@ -316,7 +319,7 @@ c        sstheta = acos(cossstheta)
 *     More kinematics
 *
         if(ssbeta.gt.0) then
-          ssmass2 = (1/ssbeta*2 - 1)*ssp**2
+          ssmass2 = (1/ssbeta**2 - 1)*ssp**2
         else
           ssmass2 = 1.0E10
         endif
