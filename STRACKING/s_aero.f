@@ -14,6 +14,9 @@
 *-                           SOS Aerogel detector calibration routine
 *-
 * $Log$
+* Revision 1.2  1996/09/05 13:13:14  saw
+* (JRA) ??
+*
 * Revision 1.1  1996/04/30 17:12:40  saw
 * Initial revision
 *
@@ -27,7 +30,7 @@
       logical ABORT
       character*(*) err
 *
-      integer*4 ind
+      integer*4 ind,npmt
 *
       INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'sos_pedestals.cmn'
@@ -42,23 +45,28 @@
       saer_pos_npe_sum = 0.0
       saer_tot_good_hits = 0
 
+      do ind = 1,smax_aer_hits
+        saer_pos_npe(ind)=0
+        saer_neg_npe(ind)=0
+      enddo
+
       do ind = 1,saer_tot_hits
 * pedestal subtraction and gain adjustment
-        saer_pos_npe(ind) =
+        npmt=saer_pair_num(ind)
+        saer_pos_npe(npmt) =
      &     (saer_adc_pos(ind)-saer_pos_ped_mean(ind))*saer_pos_gain(ind)
-        saer_neg_npe(ind) =
+        saer_neg_npe(npmt) =
      &     (saer_adc_neg(ind)-saer_neg_ped_mean(ind))*saer_neg_gain(ind)
 
 * sum positive and negative hits if above threshold
-        if (saer_neg_npe(ind).ge.saer_neg_threshold(ind)) then
-          saer_neg_npe_sum = saer_neg_npe_sum + saer_neg_npe(ind)
+        if (saer_neg_npe(npmt).ge.saer_neg_threshold(npmt)) then
+          saer_neg_npe_sum = saer_neg_npe_sum + saer_neg_npe(npmt)
           saer_tot_good_hits = saer_tot_good_hits + 1
         endif
-        if (saer_pos_npe(ind).ge.saer_pos_threshold(ind)) then
-          saer_pos_npe_sum = saer_pos_npe_sum + saer_pos_npe(ind)
+        if (saer_pos_npe(npmt).ge.saer_pos_threshold(npmt)) then
+          saer_pos_npe_sum = saer_pos_npe_sum + saer_pos_npe(npmt)
           saer_tot_good_hits = saer_tot_good_hits + 1
         endif
-
       enddo
 
       saer_npe_sum = saer_neg_npe_sum + saer_pos_npe_sum
