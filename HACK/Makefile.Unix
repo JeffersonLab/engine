@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.5  1996/01/16 21:29:41  cdaq
+# (SAW) Use $(CP) instead of cp
+#
 # Revision 1.4  1995/07/28 14:19:08  cdaq
 # (SAW) Add NFSDIRECTORY stuff
 #
@@ -15,7 +18,7 @@
 include $(Csoft)/etc/Makefile
 
 hack_source = hack_register_variables.f hack_initialize.f hack_anal.f \
-	 hack_shutdown.f hack_copyevt.f
+	 hack_shutdown.f hack_copyevt.f r_hack_.f
 
 libsources =  $(hack_source)
 
@@ -28,6 +31,13 @@ install-dirs := lib
 #default:
 #	@echo "nothing to make"
 
+#
+# Rule for making the register subroutines
+#
+r_%.f : %.cmn $(MAKEREG)
+	$(MAKEREG) $< -o $@ -e /dev/null
+
+.PRECIOUS: r_%.f
 ifdef NFSDIRECTORY
 %.f : $(NFSDIRECTORY)/HACK/%.f
 	ln -s $< $@
@@ -36,6 +46,6 @@ ifdef NFSDIRECTORY
 endif
 
 %.cmn :: ../INCLUDE/%.cmn
-	cp -f $< $@
+	$(CP) $< $@
 
 include $(sources:.f=.d)
