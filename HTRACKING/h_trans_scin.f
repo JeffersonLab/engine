@@ -9,6 +9,12 @@
 *
 * modifications:
 * $Log$
+* Revision 1.20.16.1  2005/03/15 21:19:06  jones
+* Add code to filter the scintillator tdc hits and group them by time. ( P. Bosted)
+*
+* Revision 1.21  2005/03/15 21:08:08  jones
+* Add code to filter the scintillator tdc hits and group them by time. ( P. Bosted)
+*
 * Revision 1.20  2002/10/02 13:42:43  saw
 * Check that user hists are defined before filling
 *
@@ -105,7 +111,9 @@
       real*4 postime(hmax_scin_hits)
       real*4 negtime(hmax_scin_hits)
       logical goodtime(hnum_scin_planes)
-
+      integer timehist(200),i,j,jmax,maxhit,nfound
+      real*4 time_pos(1000),time_neg(1000),tmin,time_tolerance
+      logical keep_pos(1000),keep_neg(1000),first/.true./
       save
       
       abort = .false.
@@ -137,12 +145,120 @@
 ** Return if no valid hits.
       if( hscin_tot_hits .le. 0) return
 
+! Calculate all corrected hit times and histogram
+! This uses a copy of code below. Results are save in time_pos,neg
+! including the z-pos. correction assuming nominal value of betap
+! Code is currently hard-wired to look for a peak in the
+! range of 0 to 100 nsec, with a group of times that all
+! agree withing a time_tolerance of time_tolerance nsec. The normal
+! peak position appears to be around 35 nsec (SOS0 or 31 nsec (HMS)
+! NOTE: if want to find farticles with beta different than
+!       reference particle, need to make sure this is big enough
+!       to accomodate difference in TOF for other particles
+! Default value in case user hasnt definedd something reasonable
+      time_tolerance=3.0
+      if(htof_tolerance.gt.0.5.and.htof_tolerance.lt.10000.) then
+         time_tolerance=htof_tolerance
+      endif
+      if(first) then
+         first=.false.
+         write(*,'(//1x,''USING '',f8.2,'' NSEC WINDOW FOR'',
+     >        ''  HMS FP NO_TRACK  CALCULATIONS'')') time_tolerance
+         write(*,'(//)')
+      endif
+      nfound = 0
+      do j=1,200
+         timehist(j)=0
+      enddo
+      do ihit = 1 , hscin_tot_hits
+        i=min(1000,ihit)
+        time_pos(i)=-99.
+        time_neg(i)=-99.
+        keep_pos(i)=.false.
+        keep_neg(i)=.false.
+        if ((hscin_tdc_pos(ihit) .ge. hscin_tdc_min) .and.
+     1      (hscin_tdc_pos(ihit) .le. hscin_tdc_max) .and.
+     2      (hscin_tdc_neg(ihit) .ge. hscin_tdc_min) .and.
+     3      (hscin_tdc_neg(ihit) .le. hscin_tdc_max)) then
+
+          pos_ph(ihit) = hscin_adc_pos(ihit)
+          postime(ihit) = hscin_tdc_pos(ihit) * hscin_tdc_to_time
+          postime(ihit) = postime(ihit) - hscin_pos_phc_coeff(ihit) * 
+     1         sqrt(max(0.,(pos_ph(ihit)/hscin_pos_minph(ihit)-1.)))
+          postime(ihit) = postime(ihit) - hscin_pos_time_offset(ihit)
+
+          neg_ph(ihit) = hscin_adc_neg(ihit)
+          negtime(ihit) = hscin_tdc_neg(ihit) * hscin_tdc_to_time
+          negtime(ihit) = negtime(ihit) - hscin_neg_phc_coeff(ihit) * 
+     1         sqrt(max(0.,(neg_ph(ihit)/hscin_neg_minph(ihit)-1.)))
+          negtime(ihit) = negtime(ihit) - hscin_neg_time_offset(ihit)
+          
+* Find hit position.  If postime larger, then hit was nearer negative side.
+          dist_from_center = 0.5*(negtime(ihit) - postime(ihit))
+     1         * hscin_vel_light(ihit)
+          scint_center = (hscin_pos_coord(ihit)+hscin_neg_coord(ihit))/2.
+          hit_position = scint_center + dist_from_center
+          hit_position = min(hscin_pos_coord(ihit),hit_position)
+          hit_position = max(hscin_neg_coord(ihit),hit_position)
+          hscin_dec_hit_coord(ihit) = hit_position
+
+*     Get corrected time.
+          pos_path = hscin_pos_coord(ihit) - hit_position
+          neg_path = hit_position - hscin_neg_coord(ihit)
+          postime(ihit) = postime(ihit) - pos_path/hscin_vel_light(ihit)
+          negtime(ihit) = negtime(ihit) - neg_path/hscin_vel_light(ihit)
+          time_pos(i)  = postime(ihit) - 
+     >        hscin_zpos(ihit) / (29.979*hbeta_pcent)
+          time_neg(i)  = negtime(ihit) - 
+     >        hscin_zpos(ihit) / (29.979*hbeta_pcent)
+          nfound = nfound + 1
+          do j=1,200
+            tmin = 0.5*float(j)                
+            if(time_pos(i) .gt. tmin .and.
+     >         time_pos(i) .lt. tmin + time_tolerance) 
+     >         timehist(j) = timehist(j) + 1
+          enddo
+          nfound = nfound + 1
+          do j=1,200
+            tmin = 0.5*float(j)                
+            if(time_neg(i) .gt. tmin .and.
+     >         time_neg(i) .lt. tmin + time_tolerance) 
+     >         timehist(j) = timehist(j) + 1
+          enddo
+        endif
+      enddo
+! Find bin with most hits
+        jmax=0
+        maxhit=0
+        do j=1,200
+          if(timehist(j) .gt. maxhit) then
+            jmax = j
+            maxhit = timehist(j)
+          endif
+        enddo
+        if(jmax.gt.0) then
+          tmin = 0.5*float(jmax) 
+          do ihit = 1 , hscin_tot_hits
+            i=min(1000,ihit)
+            if(time_pos(i) .gt. tmin .and.
+     >         time_pos(i) .lt. tmin + time_tolerance) then
+               keep_pos(i) = .true.
+            endif
+            if(time_neg(i) .gt. tmin .and.
+     >         time_neg(i) .lt. tmin + time_tolerance) then
+               keep_neg(i) = .true.
+            endif
+          enddo
+        endif
+
+! Resume regular tof code, now using time filer from above
 ** Check for two good TDC values.
       do ihit = 1 , hscin_tot_hits
         if ((hscin_tdc_pos(ihit) .ge. hscin_tdc_min) .and.
      1       (hscin_tdc_pos(ihit) .le. hscin_tdc_max) .and.
      2       (hscin_tdc_neg(ihit) .ge. hscin_tdc_min) .and.
-     3       (hscin_tdc_neg(ihit) .le. hscin_tdc_max)) then
+     3       (hscin_tdc_neg(ihit) .le. hscin_tdc_max).and.
+     4       keep_pos(ihit).and.keep_neg(ihit)) then
           htwo_good_times(ihit) = .true.
         else
           htwo_good_times(ihit) = .false.
