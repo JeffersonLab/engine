@@ -10,10 +10,13 @@
 *- 
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
-*-    $Log$
-*-    Revision 1.13  1995/09/01 13:37:27  cdaq
-*-    (JRA) Initialize Cerenkov parameters
-*-
+* $Log$
+* Revision 1.14  1995/10/09 18:46:28  cdaq
+* (SAW) Move ntuple initialization into g_ntuple_init
+*
+* Revision 1.13  1995/09/01 13:37:27  cdaq
+* (JRA) Initialize Cerenkov parameters
+*
 * Revision 1.12  1995/01/27  20:09:07  cdaq
 * (SAW) Add call to sieve slit ntuple initialization
 *
@@ -115,24 +118,6 @@
 *-calculate physics singles constants
       call h_init_physics(FAIL,why)
       if(err.NE.' ' .and. why.NE.' ') then  !keep warnings
-        call G_append(err,' & '//why)
-      elseif(why.NE.' ') then
-        err= why
-      endif
-      ABORT= ABORT .or. FAIL
-*
-      call h_ntuple_init(FAIL,why)
-      if(err.NE.' ' .and. why.NE.' ') then
-        call G_append(err,' & '//why)
-      elseif(why.NE.' ') then
-        err= why
-      endif
-      ABORT= ABORT .or. FAIL
-*
-      if(ABORT .or. err.NE.' ') call g_add_path(here,err)
-*
-      call h_sv_nt_init(FAIL,why)
-      if(err.NE.' ' .and. why.NE.' ') then
         call G_append(err,' & '//why)
       elseif(why.NE.' ') then
         err= why

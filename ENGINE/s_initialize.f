@@ -10,10 +10,13 @@
 *- 
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
-*-    $Log$
-*-    Revision 1.13  1995/08/11 15:37:05  cdaq
-*-    (DD) Add sos sieve slit ntuple
-*-
+* $Log$
+* Revision 1.14  1995/10/09 18:47:01  cdaq
+* (SAW) Move ntuple initialization into g_ntuple_init
+*
+* Revision 1.13  1995/08/11 15:37:05  cdaq
+* (DD) Add sos sieve slit ntuple
+*
 * Revision 1.12  1994/11/22  20:15:10  cdaq
 * (SAW) Cosmetic change
 *
@@ -130,22 +133,6 @@
       endif
       ABORT= ABORT .or. FAIL
 *
-      call s_ntuple_init(FAIL,why)
-      if(err.NE.' ' .and. why.NE.' ') then
-        call G_append(err,' & '//why)
-      elseif(why.NE.' ') then
-        err= why
-      endif
-      ABORT= ABORT .or. FAIL
-*
-      call s_sv_nt_init(FAIL,why)
-      if(err.NE.' ' .and. why.NE.' ') then
-        call G_append(err,' & '//why)
-      elseif(why.NE.' ') then
-        err= why
-      endif
-      ABORT= ABORT .or. FAIL
-
       if(ABORT .or. err.NE.' ') call g_add_path(here,err)
 *
       return
