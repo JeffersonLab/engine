@@ -12,9 +12,13 @@
 *           : err        - reason for failure, if any
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
-*     $Log$
-*     Revision 1.11  1995/05/22 13:31:38  cdaq
-*     * (SAW) Add call to register hms_data_structures.cmn variables
+*
+* $Log$
+* Revision 1.12  1996/01/16 16:57:03  cdaq
+* no change
+*
+* Revision 1.11  1995/05/22 13:31:38  cdaq
+* (SAW) Add call to register hms_data_structures.cmn variables
 *
 * Revision 1.10  1995/05/11  18:57:25  cdaq
 * (SAW) Add calls to register h_ntuple.cmn and h_sieve_ntuple.cmn
