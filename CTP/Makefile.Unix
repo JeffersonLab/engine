@@ -1,13 +1,16 @@
 #
 # $Log$
-# Revision 1.1  1994/04/15 20:28:27  cdaq
+# Revision 1.2  1994/06/14 17:54:01  cdaq
+# (SAW) Add report generator (thReport.c)
+#
+# Revision 1.1  1994/04/15  20:28:27  cdaq
 # Initial revision
 #
 include $(Csoft)/etc/Makefile
 
 ctp_sources = thTest.c thTestParse.c thTestExecute.c thHandlers.c thParm.c \
 	thUtils.c thLoad.c thHist.c daVarRegister.c daVarRpcProc.c \
-	daVarServ.c
+	daVarServ.c thReport.c
 derived_sources = daVarRpc_svc.c daVarRpc_xdr.c
 
 libsources = $(ctp_sources) $(derived_sources)
