@@ -1,4 +1,4 @@
-        subroutine h_init_scin
+        subroutine h_init_scin(ABORT,err)
 
 *-------------------------------------------------------------------
 * author: John Arrington
@@ -14,7 +14,10 @@
 *       23 March 1993   DFG
 *            Remove /nolist from include statement. UNIX doesn't like it.
 * $Log$
-* Revision 1.1  1994/04/13 15:39:39  cdaq
+* Revision 1.2  1994/06/01 15:36:20  cdaq
+* (SAW) Add Abort and err arguments
+*
+* Revision 1.1  1994/04/13  15:39:39  cdaq
 * Initial revision
 *
 *-------------------------------------------------------------------
@@ -25,7 +28,7 @@
         include 'hms_scin_parms.cmn'
 
         logical abort
-        character*1024 errmsg
+        character*(*) err
         character*20 here
         parameter (here='h_init_scin')
 
@@ -97,8 +100,8 @@
      1        (hscin_2y_left(counter) - hscin_2y_size/2.)
             else                          ! Error in plane number
               abort = .true.
-              write(errmsg,*) 'Trying to init. hms hodoscope plane',plane
-              call g_prepend(here,errmsg)
+              write(err,*) 'Trying to init. hms hodoscope plane',plane
+              call g_prepend(here,err)
               return
             endif
 
