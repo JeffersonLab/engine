@@ -10,10 +10,13 @@
 *- 
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
-*-    $Log$
-*-    Revision 1.10  1995/08/31 14:46:06  cdaq
-*-    (JRA) Add call to h_trans_cer
-*-
+* $Log$
+* Revision 1.11  1995/10/10 17:33:45  cdaq
+* (JRA) Don't make an error just because no track is found
+*
+* Revision 1.10  1995/08/31 14:46:06  cdaq
+* (JRA) Add call to h_trans_cer
+*
 * Revision 1.9  1995/05/22  19:39:25  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -68,11 +71,11 @@
       integer*4 istat
 *--------------------------------------------------------
 *
-      ABORT= .TRUE.
-      err= ':no events analyzed!'
+ccc      ABORT= .TRUE.
+ccc      err= ':no events analyzed!'
 *
 * increment reconstructed number
-      h_recon_num= h_recon_num + 1
+c      h_recon_num= h_recon_num + 1
 *
 *     dump
       call h_raw_dump_all(ABORT,err)
@@ -144,8 +147,9 @@
 *     only proceed if the number of tracks is greater than one
 *     
       if(HNTRACKS_FP .lt. 1) then
-         ABORT=.FALSE.
-         err=":no tracks found!"
+c         don't want error message every time a track is not found.
+c         ABORT=.FALSE.
+c         err=":no tracks found!"
          return
       else
 *     Proceed if one or more track has been found

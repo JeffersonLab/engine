@@ -9,6 +9,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.10  1995/10/10 17:33:31  cdaq
+* (JRA) Don't make an error just because no track is found
+*
 * Revision 1.9  1995/08/31 20:43:03  cdaq
 * (JRA) Add call to s_trans_cer
 *
@@ -62,10 +65,10 @@
       integer*4 istat
 *--------------------------------------------------------
 *
-      ABORT= .TRUE.
-      err= ':no events analyzed!'
+ccc      ABORT= .TRUE.
+ccc      err= ':no events analyzed!'
 * increment reconstructed number
-      s_recon_num= s_recon_num + 1
+c      s_recon_num= s_recon_num + 1
 *
 *     dump all raw data
       call s_raw_dump_all(ABORT,err)
@@ -138,8 +141,9 @@
 *     only proceed if the number of tracks is greater than one
 *
       if(SNTRACKS_FP .lt. 1) then
-         ABORT=.FALSE.
-         err=":no tracks found!"
+c         don't want error message every time a track is not found.
+c         ABORT=.FALSE.
+c         err=":no tracks found!"
          return
       else
 *     Proceed if one or more track has been found
