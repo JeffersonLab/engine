@@ -17,6 +17,9 @@
 *-    Created   1-Dec-1995  Rolf Ent
 *
 * $Log$
+* Revision 1.6  1999/09/03 13:22:51  saw
+* Explicitely type 0.1 constand in max as double
+*
 * Revision 1.5  1999/06/10 16:59:37  csa
 * (CSA) Removed debugging statement
 *
@@ -231,7 +234,7 @@
             write(6,*) 'total_eloss: no arm specified for electron velocity'
          endif
 
-         p_temp=max(p_temp,.1)
+         p_temp=max(p_temp,.1D0)
          frac_temp=mass_electron/p_temp
 
          if(gelossdebug.ne.0) write(6,*) 'total_eloss: p_temp=',p_temp
