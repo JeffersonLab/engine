@@ -5,6 +5,10 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.26  1996/01/24 16:18:29  saw
+* (JRA) Change raster to use misc arrays.  Change some variable names
+*       for beam position and target information.
+*
 * Revision 1.25  1995/05/22 18:40:21  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
 *
@@ -97,65 +101,56 @@
 *
 *
 *    BASIC BEAM PARAMETERS
+*    None of these are really coincidence things, and some are constant
+*    while some are event by event. 
 *
-*     CEBEAM                 BEAM ENERGY (GEV)
-*     CPBEAM                 BEAM MOMENTUM (GEV/C)
-*
-*     BEAM RASTER POSITION
-*         CXRAST            X POSITION OF RASTERED BEAM
-*         CYRAST            Y POSITION OF RASTERED BEAM
 *
 *     CTPTYPE=parm
 *
-      REAL*4  CEBEAM         ! BEAM ENERGY (GEV)
-      REAL*4  CPBEAM         ! BEAM MOMENTUM (GEV/C)
-      REAL*4  g_beam_target_s      ! s computed from beam and target info
-
+      REAL*4  GEBEAM         ! BEAM ENERGY (GEV)
+      REAL*4  GPBEAM         ! BEAM MOMENTUM (GEV/C)
+      REAL*4  G_BEAM_TARGET_S      ! s computed from beam and target info
 *
 *     CTPTYPE=event
 *
-      REAL*4 CXRAST
-      REAL*4 CYRAST
-*
-*     None of these are really coincidence things, and some are constant
-*     while some are event by event.
-*
-      COMMON/COIN_BEAM/
-     &     CEBEAM,
-     &     CPBEAM,
-     &     CXRAST,
-     &     CYRAST,
-     &     g_beam_target_s
+      REAL*4 GBEAM_X,GBEAM_Y    !final beam position from bpm & raster info
+      REAL*4 GBEAM_XP,GBEAM_YP  !final beam angles from bpm & raster info
+
+      COMMON/GEN_BEAM/
+     &     GEBEAM,
+     &     GPBEAM,
+     &     G_BEAM_TARGET_S,
+     &     GBEAM_X,GBEAM_Y,
+     &     GBEAM_XP,GBEAM_YP
 *
 *     CTPTYPE=parm
 *
 *    BASIC TARGET PARAMETERS
 *
-*     TMASS_TARGET           TARGET MASS IN GEV
-*     TZ_TARGET              TARGET CHARGE 
-*     TA_TARGET              TARGET ATOMIC MASS NUMBER
-*     TTHETA_TAR             TARGET LAB ANGLE THETA
-*     TPHI_TAR               TARGET LAB ANGLE PHI
-*     TRAD_LENGTH            TARGET RADIATION LENGTH
-      REAL*4    TMASS_TARGET
-      REAL*4    TZ_TARGET
-      REAL*4    TA_TARGET
-      REAL*4    TTHETA_TAR             
-      REAL*4    TPHI_TAR
-      REAL*4    TRAD_LENGTH
-      REAL*4    TMASS_RECOIL       ! Mass of expected unobserved recoil g.s.
-      COMMON/TARGET/
-     &     TMASS_TARGET,
-     &     TZ_TARGET,
-     &     TA_TARGET,
-     &     TTHETA_TAR,             
-     &     TPHI_TAR,
-     &     TRAD_LENGTH,
-     &     TMASS_RECOIL
+      integer   gmax_targets
+      parameter(gmax_targets=9)
+      integer   gtarg_num       !position in target ladder
+      REAL*4    gtarg_mass      !target mass
+      REAL*4    gtarg_z         !target Z
+      REAL*4    gtarg_a         !target A
+      REAL*4    gtarg_lrad      !radiation length in %
+      REAL*4    gtarg_thick     !thickness in g/cm^2
+      REAL*4    gtarg_dens      !density in g/cm^3
+      REAL*4    gtarg_theta     !angle of target to beam. Note that
+                                 !90 degrees is target normal to beam!
+
+      COMMON/GEN_TARGET/
+     &     gtarg_num,
+     &     gtarg_theta,
+     &     gtarg_mass(gmax_targets),
+     &     gtarg_z(gmax_targets),
+     &     gtarg_a(gmax_targets),
+     &     gtarg_lrad(gmax_targets),
+     &     gtarg_thick(gmax_targets),
+     &     gtarg_dens(gmax_targets)
 *
 *     CTPTYPE=event
 *
-      
 *
 *     Hits from Uninstrumented fastbus channels
 *     filled by G_decode_event_by_banks
@@ -173,22 +168,133 @@
      &     GUNINST_TOT_HITS
 *
 *
-*     Raw data from ADC's encoding beam position and raster position.
-*     Each distinct beam line device (BPM, Raster magnet) will get a
-*     different DEVICE (plane) value in the MAP file.
+*     Decoded data from ADC's encoding beam position.
+*     The raw data comes from the 'hmisc' detector.
 *
-      INTEGER CMAX_BPM_HITS
-      PARAMETER(CMAX_BPM_HITS=10)
-      INTEGER*4 CBPM_TOT_HITS
-      INTEGER*4 CBPM_ADCNUM
-      INTEGER*4 CBPM_ADCVAL
-      INTEGER*4 CBPM_DEVICE        ! eg 1 for BPM, 2 for 
-      COMMON/COIN_RAW_BPM/
-     &     CBPM_ADCNUM(CMAX_BPM_HITS),
-     &     CBPM_ADCVAL(CMAX_BPM_HITS),
-     &     CBPM_DEVICE(CMAX_BPM_HITS),
-     &     CBPM_TOT_HITS
+*
+*     CTPTYPE=event
+*
+      INTEGER*4 GMAX_NUM_BPMS
+      PARAMETER(GMAX_NUM_BPMS=4)      !enough for 2 bpms, 2 readouts each.
+      INTEGER*4 GNUM_BPM_SIGNALS
+      PARAMETER(GNUM_BPM_SIGNALS=4)   !1=X+,2=X-,3=Y+,4=Y-
 
+      REAL*4 GBPM_ADC_PED(GMAX_NUM_BPMS,GNUM_BPM_SIGNALS)
+      REAL*4 GBPM_RAW_ADC(GMAX_NUM_BPMS,GNUM_BPM_SIGNALS)
+      REAL*4 GBPM_ADC(GMAX_NUM_BPMS,GNUM_BPM_SIGNALS)
+      REAL*4 GBPM_XPRIME(GMAX_NUM_BPMS)
+      REAL*4 GBPM_YPRIME(GMAX_NUM_BPMS)
+      REAL*4 GBPM_X(GMAX_NUM_BPMS)
+      REAL*4 GBPM_Y(GMAX_NUM_BPMS)
+
+      COMMON/COIN_DEC_BPM/
+     &     GBPM_ADC_PED,
+     &     GBPM_RAW_ADC,
+     &     GBPM_ADC,
+     &     GBPM_XPRIME,
+     &     GBPM_YPRIME,
+     &     GBPM_X,
+     &     GBPM_Y
+*
+*
+*     Decoded data from ADC's encoding fast/slow raster position (FR/SR).
+*     The raw data comes from the 'hmisc' detector.
+*     The CBEAM variables are final beam positions from raster and bpm signals.
+*
+*
+*     CTPTYPE=event
+*
+      REAL*4 GFRX_ADC_PED,GFRY_ADC_PED
+      REAL*4 GFRX_RAW_ADC,GFRY_RAW_ADC
+      REAL*4 GFRX_ADC,GFRY_ADC
+      REAL*4 GFRX_SYNC,GFRY_SYNC
+      REAL*4 GFRX_SYNC_MEAN,GFRY_SYNC_MEAN
+      REAL*4 GFRX,GFRY
+      REAL*4 GSRX_ADC_PED,GSRY_ADC_PED
+      REAL*4 GSRX_RAW_ADC,GSRY_RAW_ADC
+      REAL*4 GSRX_ADC,GSRY_ADC
+      REAL*4 GSRX_SYNC,GSRY_SYNC
+      REAL*4 GSRX_SYNC_MEAN,GSRY_SYNC_MEAN
+      REAL*4 GSRX,GSRY
+
+      COMMON/COIN_DEC_RASTER/
+     &     GFRX_ADC_PED,GFRY_ADC_PED,
+     &     GFRX_RAW_ADC,GFRY_RAW_ADC,
+     &     GFRX_ADC,GFRY_ADC,
+     &     GFRX,GFRY,
+     &     GFRX_SYNC,GFRY_SYNC,
+     &     GFRX_SYNC_MEAN,GFRY_SYNC_MEAN,
+     &     GSRX_ADC_PED,GSRY_ADC_PED,
+     &     GSRX_RAW_ADC,GSRY_RAW_ADC,
+     &     GSRX_ADC,GSRY_ADC,
+     &     GSRX,GSRY,
+     &     GSRX_SYNC,GSRY_SYNC,
+     &     GSRX_SYNC_MEAN,GSRY_SYNC_MEAN
+
+*
+*     Misc. signals read out for hms AND sos events. Mostly
+*     beamline information: BPMs, BLMs, Fast Raster, slow raster, ...
+*
+*
+*     CTPTYPE=parm
+*
+      INTEGER GMAX_MISC_HITS
+      PARAMETER(GMAX_MISC_HITS=100)
+      INTEGER*4 GNUM_MISC_PLANES
+      PARAMETER(GNUM_MISC_PLANES=2)
+*
+*     CTPTYPE=event
+*
+      INTEGER*4 GMISC_TOT_HITS
+      INTEGER*4 GMISC_RAW_ADDR1    ! "Plane"   (1=TDC,2=ADC)
+      INTEGER*4 GMISC_RAW_ADDR2    ! "Counter"
+      INTEGER*4 GMISC_RAW_DATA
+      INTEGER*4 GMISC_DEC_DATA
+
+      COMMON/G_RAW_MISC/
+     &     GMISC_TOT_HITS,
+     &     GMISC_RAW_ADDR1(GMAX_MISC_HITS),
+     &     GMISC_RAW_ADDR2(GMAX_MISC_HITS),
+     &     GMISC_RAW_DATA(GMAX_MISC_HITS),
+     &     GMISC_DEC_DATA(GMAX_MISC_HITS,GNUM_MISC_PLANES)
+*
+*
+* MISC. PEDESTALS
+*
+*
+*     CTPTYPE=event
+*
+      integer*4 gmisc_ped_sum2(gmax_misc_hits,gnum_misc_planes)
+      integer*4 gmisc_ped_sum(gmax_misc_hits,gnum_misc_planes)
+      integer*4 gmisc_ped_num(gmax_misc_hits,gnum_misc_planes)
+      integer*4 gmisc_num_ped_changes
+      integer*4 gmisc_changed_tube(gmax_misc_hits)
+      real*4 gmisc_ped_change(gmax_misc_hits)
+      real*4 gmisc_ped(gmax_misc_hits,gnum_misc_planes)
+      real*4 gmisc_ped_rms(gmax_misc_hits,gnum_misc_planes)
+      real*4 gmisc_new_ped(gmax_misc_hits,gnum_misc_planes)
+      real*4 gmisc_new_rms(gmax_misc_hits,gnum_misc_planes)
+      real*4 gmisc_new_adc_threshold(gmax_misc_hits,gnum_misc_planes)
+      real*4 gmisc_dum_adc_threshold(gmax_misc_hits,gnum_misc_planes)
+*
+*     CTPTYPE=parm
+*
+      integer*4 gmisc_min_peds
+*
+      common/gen_misc_pedestals/
+     &   gmisc_ped,
+     &   gmisc_ped_sum2,       !sum of squares
+     &   gmisc_ped_sum,        !sum of peds
+     &   gmisc_ped_num,        !number of peds
+     &   gmisc_min_peds,       !# of peds required to override default pedestal
+     &   gmisc_ped_rms,
+     &   gmisc_new_ped,
+     &   gmisc_new_rms,
+     &   gmisc_num_ped_changes,!# of peds with 2 sigma changes from param file
+     &   gmisc_changed_tube,   !list of changed tubes
+     &   gmisc_ped_change,     !change in pedestal
+     &   gmisc_new_adc_threshold,
+     &   gmisc_dum_adc_threshold
 *
 *                                          
 *******************end: gen_data_structures.cmn*************************
