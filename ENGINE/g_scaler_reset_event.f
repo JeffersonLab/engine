@@ -15,6 +15,9 @@
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 *
 * $Log$
+* Revision 1.2  1996/01/16 17:06:35  cdaq
+* (CB) Clear out current monitor variables
+*
 * Revision 1.1  1995/09/19 14:58:35  cdaq
 * Initial revision
 *
@@ -43,6 +46,12 @@
       enddo
 *     
 *     
+      g_bcm1_charge = 0.
+      g_bcm2_charge = 0.
+      g_bcm3_charge = 0.
+      g_unser_charge = 0.
+*
+*
       ABORT= .FALSE.
       err= ' '
       RETURN
