@@ -14,7 +14,11 @@
 *       23 March 1993   DFG
 *            Remove /nolist from include statement. UNIX doesn't like it.
 * $Log$
-* Revision 1.4  1994/09/13 19:40:10  cdaq
+* Revision 1.5  1995/02/23 13:35:34  cdaq
+* (JRA) Remove _coord fro hhodo_center array.  Edge coordinates by
+* center locations.
+*
+* Revision 1.4  1994/09/13  19:40:10  cdaq
 * (JRA) Remove some unused variables
 *
 * Revision 1.3  1994/06/14  03:58:10  cdaq
@@ -32,6 +36,8 @@
 
       include 'gen_data_structures.cmn'
       include 'hms_scin_parms.cmn'
+      include 'hms_scin_tof.cmn'
+      include 'hms_statistics.cmn'
 
       logical abort
       character*(*) err
@@ -48,36 +54,44 @@
       hnum_scin_counters(3) = hscin_2x_nr
       hnum_scin_counters(4) = hscin_2y_nr
 
+      hstat_numevents=0
+
       do plane = 1 , hnum_scin_planes
-         do counter = 1 , hnum_scin_counters(plane)
+        do counter = 1 , hnum_scin_counters(plane)
 
 * initialize tof parameters.
 
-            if (plane .eq. 1) then
-               hhodo_width(plane,counter) = hscin_1x_size
-               hhodo_center_coord(plane,counter) =
-     1              (hscin_1x_top(counter) + hscin_1x_size/2.)
-            else if (plane .eq. 2) then
-               hhodo_width(plane,counter) = hscin_1y_size
-               hhodo_center_coord(plane,counter) =
-     1              (hscin_1y_left(counter) - hscin_1y_size/2.)
-            else if (plane .eq. 3) then
-               hhodo_width(plane,counter) = hscin_2x_size
-               hhodo_center_coord(plane,counter) =
-     1              (hscin_2x_top(counter) + hscin_2x_size/2.)
-            else if (plane .eq. 4) then
-               hhodo_width(plane,counter) = hscin_2y_size
-               hhodo_center_coord(plane,counter) =
-     1              (hscin_2y_left(counter) - hscin_2y_size/2.)
-            else                        ! Error in plane number
-               abort = .true.
-               write(err,*) 'Trying to init. hms hodoscope plane',plane
-               call g_prepend(here,err)
-               return
-            endif
-
-         enddo                          !loop over counters
+          if (plane .eq. 1) then
+            hhodo_width(plane,counter) = hscin_1x_size
+            hhodo_center(plane,counter) =
+     1           hscin_1x_center(counter) + hscin_1x_offset
+          else if (plane .eq. 2) then
+            hhodo_width(plane,counter) = hscin_1y_size
+            hhodo_center(plane,counter) =
+     1           hscin_1y_center(counter) + hscin_1y_offset
+          else if (plane .eq. 3) then
+            hhodo_width(plane,counter) = hscin_2x_size
+            hhodo_center(plane,counter) =
+     1           hscin_2x_center(counter) + hscin_2x_offset
+          else if (plane .eq. 4) then
+            hhodo_width(plane,counter) = hscin_2y_size
+            hhodo_center(plane,counter) =
+     1           hscin_2y_center(counter) + hscin_2y_offset
+          else                          ! Error in plane number
+            abort = .true.
+            write(err,*) 'Trying to init. hms hodoscope plane',plane
+            call g_prepend(here,err)
+            return
+          endif
+            
+          hstat_trk(plane,counter)=0
+          hstat_poshit(plane,counter)=0
+          hstat_neghit(plane,counter)=0
+          hstat_andhit(plane,counter)=0
+          hstat_orhit(plane,counter)=0
+          
+        enddo                           !loop over counters
       enddo                             !loop over planes
-
+      
       return
       end
