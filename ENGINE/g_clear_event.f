@@ -12,9 +12,12 @@
 *-   Created  29-Oct-1993   Kevin B. Beard, Hampton U.
 *-   Modified 19-Nov-1993   Kevin B. Beard for new error standards
 *-      $Log$
-*-      Revision 1.5  1994/06/22 20:23:47  cdaq
-*-      (SAW) Clear the uninstrumented channel hit counter
+*-      Revision 1.6  1995/04/01 19:44:31  cdaq
+*-      (SAW) Add clear of BPM hit counter
 *-
+* Revision 1.5  1994/06/22  20:23:47  cdaq
+* (SAW) Clear the uninstrumented channel hit counter
+*
 * Revision 1.4  1994/04/15  20:33:43  cdaq
 * (SAW) Changes for ONLINE use
 *
@@ -55,6 +58,7 @@
       gmc_err= ' '
 *
       GUNINST_TOT_HITS = 0              ! Unistrumented hit counter
+      CBPM_TOT_HITS = 0
 *
       call H_clear_event(HMS_ABORT,HMS_err)
 *
