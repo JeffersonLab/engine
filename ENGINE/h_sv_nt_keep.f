@@ -8,6 +8,9 @@
 *
 *     Created: 1-Nov-1994  
 * $Log$
+* Revision 1.4  1996/09/04 15:15:38  saw
+* (JRA) Change ntuple contents
+*
 * Revision 1.3  1996/04/29 19:49:35  saw
 * (JRA) Add HCAL_ET
 *
@@ -64,9 +67,9 @@
       m= m+1
       h_sieve_Ntuple_contents(m)= HSYP_TAR
       m= m+1
-      h_sieve_Ntuple_contents(m)= HCAL_ET
-
-
+      h_sieve_Ntuple_contents(m)= HSTRACK_ET
+      m= m+1
+      h_sieve_Ntuple_contents(m)= float(gen_event_ID_number)
 *
 ************************************************
 *

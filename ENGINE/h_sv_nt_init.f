@@ -10,6 +10,9 @@
 *
 *     Created: 1-Nov-1994  
 * $Log$
+* Revision 1.5  1996/09/04 15:15:21  saw
+* (JRA) Change ntuple contents
+*
 * Revision 1.4  1996/04/29 19:49:21  saw
 * (JRA) Add HCAL_ET
 *
@@ -133,27 +136,27 @@
       m= 0
 *  
       m=m+1
-      h_sieve_Ntuple_tag(m)= 'HSX_FP'		! X focal plane position 
+      h_sieve_Ntuple_tag(m)= 'HSXFP'		! X focal plane position 
       m= m+1
-      h_sieve_Ntuple_tag(m)= 'HSY_FP'
+      h_sieve_Ntuple_tag(m)= 'HSYFP'
       m= m+1
-      h_sieve_Ntuple_tag(m)= 'HSXP_FP'
+      h_sieve_Ntuple_tag(m)= 'HSXPFP'
       m= m+1
-      h_sieve_Ntuple_tag(m)= 'HSYP_FP'
+      h_sieve_Ntuple_tag(m)= 'HSYPFP'
       m= m+1
       h_sieve_Ntuple_tag(m)= 'HSDELTA'
       m= m+1
-      h_sieve_Ntuple_tag(m)= 'HSX_TAR'
+      h_sieve_Ntuple_tag(m)= 'HSXTAR'
       m= m+1
-      h_sieve_Ntuple_tag(m)= 'HSY_TAR'
+      h_sieve_Ntuple_tag(m)= 'HSYTAR'
       m= m+1
-      h_sieve_Ntuple_tag(m)= 'HSXP_TAR'
+      h_sieve_Ntuple_tag(m)= 'HSXPTAR'
       m= m+1
-      h_sieve_Ntuple_tag(m)= 'HSYP_TAR'
+      h_sieve_Ntuple_tag(m)= 'HSYPTAR'
       m= m+1
-      h_sieve_Ntuple_tag(m)= 'HCAL_ET'
-    
-
+      h_sieve_Ntuple_tag(m)= 'HSSHTRK'
+      m= m+1
+      h_sieve_Ntuple_tag(m)= 'EventID'
 *
       h_sieve_Ntuple_size= m     !total size
 ***********end insert description of contents of HMS tuple********
