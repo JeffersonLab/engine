@@ -27,7 +27,10 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
-* Revision 1.10  1994/06/28 20:01:23  cdaq
+* Revision 1.11  1994/11/22 20:13:02  cdaq
+* (SPB) Update array names for raw SOS Scintillator bank
+*
+* Revision 1.10  1994/06/28  20:01:23  cdaq
 * (SAW) Change arrays that HMS scintillators go into
 *
 * Revision 1.9  1994/06/18  02:45:49  cdaq
@@ -175,9 +178,10 @@
               pointer = pointer +
      $             g_decode_fb_detector(roc, bank(pointer), 
      &             maxwords, did,
-     $             SMAX_SCIN_HITS, SSCIN_TOT_HITS, SSCIN_PLANE_NUM,
-     $             SSCIN_COUNTER_NUM, 4, SSCIN_ADC_POS, SSCIN_ADC_NEG
-     $             ,SSCIN_TDC_POS, SSCIN_TDC_NEG)
+     $             SMAX_ALL_SCIN_HITS, SSCIN_ALL_TOT_HITS,
+     $             SSCIN_ALL_PLANE_NUM, SSCIN_ALL_COUNTER_NUM, 4,
+     $             SSCIN_ALL_ADC_POS, SSCIN_ALL_ADC_NEG,
+     $             SSCIN_ALL_TDC_POS, SSCIN_ALL_TDC_NEG)
 
             else if (did.eq.SCAL_ID) then
               pointer = pointer +
