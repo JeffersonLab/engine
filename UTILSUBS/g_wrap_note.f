@@ -1,4 +1,3 @@
-
       SUBROUTINE G_wrap_note(IOchannel,note)
 *----------------------------------------------------------------------
 *- 
@@ -11,8 +10,11 @@
 *-   Created  2-Dec-1992   Kevin B. Beard 
 *-   Modified for hall C 9/1/93: KBB
 *     $Log$
-*     Revision 1.2  1994/06/06 02:57:10  cdaq
-*     (KBB) Improve line wrapping by looking for good breakpoints
+*     Revision 1.3  1994/06/17 03:05:37  cdaq
+*     (SAW) Get correct copy of improved line wrapping from KBB
+*
+* Revision 1.2  1994/06/06  02:57:10  cdaq
+* (KBB) Improve line wrapping by looking for good breakpoints
 *
 * Revision 1.1  1994/02/09  14:18:43  cdaq
 * Initial revision
@@ -24,7 +26,7 @@
       integer IOchannel
       character*(*) note 
 *
-      integer m,max_len,last_m,pref
+      integer m,max_len,pref
       character*1024 msg
       logical break,indent
       character*1 blank
@@ -43,23 +45,24 @@
       call NO_leading_blanks(msg)	!remove leading blanks (if any)
       call only_one_blank(msg)		!leave only 1 consecutive blank 
       m= G_important_length(msg)	!return usefull length
-      max_len= 78			!one less than max char./line
+      max_len= 78			!less than max char./line
       indent= .FALSE.			!don't indent 1st line
 *
       DO WHILE(msg.NE.blank)            !keep cycling until message gone
 *     
-         last_m= m
-         break= m.LT.max_len            !look for a break (ok if short enough)
+         break= m.LE.max_len            !look for a break (ok if short enough)
 *     
-         Do pref=1,3                    !three tries
-            do while(.not.break .and. m.GT.2) !look for good break
-               m= m-1                   !but quit if too short
-               break= INDEX(breakpt(pref),msg(m:m)).NE.0 !seek in order
-            enddo
-         EndDo
-*     
-         If(.NOT.break) m= max_len      !break in the middle of a word
-*     
+         If(.not.break) Then
+           m= max_len                             !start at end-of-line down
+           do pref=1,3                            !three tries
+             DO while(.not.break .and. m.GT.2)    !look for good break
+               m= m-1                             !but quit if too short
+               break= INDEX(breakpt(pref),msg(m:m)).NE.0   !seek in order
+             ENDDO
+           enddo
+           if(.NOT.break) m= max_len      !break in the middle of a word
+         EndIf
+*
          If(indent) then
             write(IOchannel,'(6x,a)',err=1) msg(1:m) !indent 5 extra spaces
          Else
@@ -68,7 +71,7 @@
             indent= .TRUE.		!indent from now on
          EndIf
 *     
-         msg(1:m)= ' '			!erase what's been just output
+         msg(1:m)= blank                !erase what's been just output
          call NO_leading_blanks(msg)	!shift
          m= G_important_length(msg)	!get new length
 *     
