@@ -40,6 +40,9 @@
        write(6,*)'  Used to offset hsxp_tar in h_physics.f  '
       endif
 c
+c ---- keep the value of hpcentral stored in hpcentral_set before offsetting it. js
+      hpcentral_set = hpcentral
+
       if (hpcentral_offset .ne. 0 ) then
         write(*,*) ' ******'
        write(6,*)' h_apply_offs: apply hpcentral_offset(%)  =',hpcentral_offset

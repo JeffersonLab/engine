@@ -40,6 +40,9 @@
         write(*,*) ' Enabled SOS central momentum correction'
         write(*,*) ' Using J. Volmer parametrization'
         write(*,*) ' Before correction: central  mom = ',spcentral
+
+        spcentral_set = spcentral
+
         sosp0corr=0.45
         if (spcentral .gt. 0.51) sosp0corr=0.496-0.08845*spcentral
      >       -5.743e-4*exp(2.341*(spcentral**2.156))
