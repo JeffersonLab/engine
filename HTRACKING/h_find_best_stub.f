@@ -7,6 +7,9 @@
 *     
 *     d. f. geesaman
 * $Log$
+* Revision 1.6  1996/01/16 21:51:00  cdaq
+* (JRA)
+*
 * Revision 1.5  1995/10/10 13:37:10  cdaq
 * (JRA) Cleanup
 *
@@ -38,30 +41,29 @@
       real*4 plusminus(*)
 *
 *     output quantitites
-      real*8 dstub(3)               !, x, xp , y of local line fit
+      real*8 dstub(3)               !x,y,xp of local line fit
       real*4 stub(4)
       real*4 chi2                  ! chi2 of fit      
 *
 *     local variables
-      real*4 position(hmax_hits_per_point)
+      real*4 dpos(hmax_hits_per_point)
       integer*4 pl(hmax_hits_per_point) !keep name same as in h_left_right.f
       integer*4 pindex                  ! passed from h_left_right to h_solve_3by3
       real*8 TT(3)
-      integer*4 ihit,ierr
+      integer*4 hit
       integer*4 i
 *
-*     calculate trial hit position
-      do ihit=1,numhits
-        position(ihit)=HDC_WIRE_CENTER(hits(ihit)) +
-     &       plusminus(ihit)*HDC_DRIFT_DIS(hits(ihit))
-      enddo
+      TT(1)=0.
+      TT(2)=0.
+      TT(3)=0.
 
-*     calculate least squares matrix coefficients
-      do i=1,3
-        TT(i)=0.
-        do ihit=1,numhits
-          TT(i)=TT(i)+((position(ihit)-hpsi0(pl(ihit)))*
-     &         hstubcoef(pl(ihit),i)) /hdc_sigma(pl(ihit))
+* calculate trial hit position and least squares matrix coefficients.
+      do hit=1,numhits
+        dpos(hit)=HDC_WIRE_CENTER(hits(hit)) +
+     &       plusminus(hit)*HDC_DRIFT_DIS(hits(hit)) -
+     &       hpsi0(pl(hit))
+        do i=1,3
+          TT(i)=TT(i)+((dpos(hit))*hstubcoef(pl(hit),i))/hdc_sigma(pl(hit))
         enddo
       enddo
 *
@@ -70,28 +72,26 @@
 * at initialization. (See h_generate_geometry.f)
  
 * solve three by three equations using stored inverse matrix 
-      call h_solve_3by3(TT,pindex,dstub,ierr)
-*
-      if(ierr.ne.0) then
-        chi2=10000.
-        stub(1)=10000.
-        stub(2)=10000.
-        stub(3)=2.
-        stub(4)=2.
-      else
-*      calculate chi2
-*     remember one power of sigma is in hstubcoef
-        chi2=0.
-        stub(1)=dstub(1)
-        stub(2)=dstub(2)
-        stub(3)=dstub(3)
-        stub(4)=0.
-        do ihit=1,numhits
-          chi2=chi2+((position(ihit)-hpsi0(pl(ihit)))/hdc_sigma(pl(ihit))
-     &         -hstubcoef(pl(ihit),1)*stub(1)
-     &         -hstubcoef(pl(ihit),2)*stub(2)
-     &         -hstubcoef(pl(ihit),3)*stub(3) )**2
-        enddo
-      endif
+ccc      call h_solve_3by3(TT,pindex,dstub)
+
+      dstub(1)=HAAINV3(1,1,pindex)*TT(1) + HAAINV3(1,2,pindex)*TT(2) +
+     &     HAAINV3(1,3,pindex)*TT(3)
+      dstub(2)=HAAINV3(1,2,pindex)*TT(1) + HAAINV3(2,2,pindex)*TT(2) +
+     &     HAAINV3(2,3,pindex)*TT(3)
+      dstub(3)=HAAINV3(1,3,pindex)*TT(1) + HAAINV3(2,3,pindex)*TT(2) +
+     &     HAAINV3(3,3,pindex)*TT(3)
+
+* calculate chi2.  Remember one power of sigma is in hstubcoef
+      chi2=0.
+      stub(1)=dstub(1)
+      stub(2)=dstub(2)
+      stub(3)=dstub(3)
+      stub(4)=0.
+      do hit=1,numhits
+        chi2=chi2+((dpos(hit))/hdc_sigma(pl(hit))
+     &       -hstubcoef(pl(hit),1)*stub(1)
+     &       -hstubcoef(pl(hit),2)*stub(2)
+     &       -hstubcoef(pl(hit),3)*stub(3) )**2
+      enddo
       return
       end

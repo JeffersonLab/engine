@@ -5,6 +5,9 @@
 *     space point.
 *     d. f. geesaman           17 January 1994
 * $Log$
+* Revision 1.11  1996/01/16 21:52:43  cdaq
+* (JRA)
+*
 * Revision 1.10  1995/10/10 15:56:36  cdaq
 * (JRA) Cleanup massive nested if's.  Remove hdc_sing_wcoord stuff.
 *
@@ -62,9 +65,11 @@
       integer*4 plane, isa_y1, isa_y2
       integer*4 plusminusknown(hmax_hits_per_point)
       real*4 plusminus(hmax_hits_per_point)
-      real*4 plusminusbest(hmax_hits_per_point)
+      real*4 plusminusbest(hmax_hits_per_point),tmppmbest(hmax_hits_per_point)
+      real*4 tmpbeststub(hnum_fpray_param)
       real*4 chi2
-      real*4 minchi2
+      real*4 minchi2,tmpminchi2
+      real*4 xp_fit, xp_expect
       real*4 stub(4)
       logical smallAngOK
 *
@@ -73,37 +78,38 @@
 
 *     djm 10/2/94 added initialization/setting of gplanehdc1(isp)/2 pattern
 *     units. Presently we are accepting 5/6 or 6/6 planes per chamber. 
+
       do isp=1,hnspace_points_tot             ! loop over all space points
-          gplanehdc1(isp) = 0
-          gplanehdc2(isp) = 0
-          minchi2=1e10
-          smallAngOK = .FALSE.
-          isa_y1 = 0
-          isa_y2 = 0
-          numhits=hspace_point_hits(isp,1)
-          nplusminus=2**numhits
-          do ihit=1,numhits
-             hits(ihit)=hspace_point_hits(isp,2+ihit)
-             pl(ihit)=HDC_PLANE_NUM(hits(ihit))
-
-             if(pl(ihit).ge.1 .and. pl(ihit).le.6)then
-               gplanehdc1(isp)=jibset(gplanehdc1(isp),pl(ihit)-1)
-             else
-               gplanehdc2(isp)=jibset(gplanehdc2(isp),pl(ihit)-7)
-             endif
-
-             wc(ihit)=HDC_WIRE_CENTER(hits(ihit))
-             plusminusknown(ihit) = 0
-             if(pl(ihit).eq.2 .OR. pl(ihit).eq.8)  isa_y1 = ihit
-             if(pl(ihit).eq.5 .OR. pl(ihit).eq.11) isa_y2 = ihit
-          enddo
+        gplanehdc1(isp) = 0
+        gplanehdc2(isp) = 0
+        minchi2=1e10
+        smallAngOK = .FALSE.
+        isa_y1 = 0
+        isa_y2 = 0
+        numhits=hspace_point_hits(isp,1)
+        nplusminus=2**numhits
+        do ihit=1,numhits
+          hits(ihit)=hspace_point_hits(isp,2+ihit)
+          pl(ihit)=HDC_PLANE_NUM(hits(ihit))
+          
+          if(pl(ihit).ge.1 .and. pl(ihit).le.6)then
+            gplanehdc1(isp)=jibset(gplanehdc1(isp),pl(ihit)-1)
+          else
+            gplanehdc2(isp)=jibset(gplanehdc2(isp),pl(ihit)-7)
+          endif
+          
+          wc(ihit)=HDC_WIRE_CENTER(hits(ihit))
+          plusminusknown(ihit) = 0
+          if(pl(ihit).eq.2 .OR. pl(ihit).eq.8)  isa_y1 = ihit
+          if(pl(ihit).eq.5 .OR. pl(ihit).eq.11) isa_y2 = ihit
+        enddo
 
 * djm 10/2/94 check bad hdc pattern units to set the index for the inverse
 * matrix AAINV(i,j,pindex).  
-         if(pl(1).ge.1 .and. pl(1).le.6)then   !use first hit to test if hdc1
+        if(pl(1).ge.1 .and. pl(1).le.6)then !use first hit to test if hdc1
          
           if(gplanehdc1(isp).eq.63)then
-          pindex=13                      !first 6 bits set, so 6 planes hit
+            pindex=13                   !first 6 bits set, so 6 planes hit
           else if(gplanehdc1(isp).eq.62)then
             pindex=1                    !missing lowest order bit, missing x1
           else if(gplanehdc1(isp).eq.61)then
@@ -119,7 +125,7 @@
           else
             pindex=-1                   !multiple missing planes or other problem
           end if
-
+          
         else                            !must be hdc2
 
           if(gplanehdc2(isp).eq.63)then
@@ -143,78 +149,110 @@
 
 *     check if small angle L/R determination of Y and Y' planes is possible
         if(isa_y1.gt.0 .AND. isa_y2.gt.0) smallAngOK = .TRUE.
-          if((hSmallAngleApprox.ne.0) .AND. (smallAngOK)) then
-             if(wc(isa_y2).le.wc(isa_y1)) then
-                plusminusknown(isa_y1) = -1
-                plusminusknown(isa_y2) = 1
-             else
-                plusminusknown(isa_y1) = 1
-                plusminusknown(isa_y2) = -1
-             endif
-             nplusminus = 2**(numhits-2)
+        if((hSmallAngleApprox.ne.0) .AND. (smallAngOK)) then
+          if(wc(isa_y2).le.wc(isa_y1)) then
+            plusminusknown(isa_y1) = -1
+            plusminusknown(isa_y2) = 1
+          else
+            plusminusknown(isa_y1) = 1
+            plusminusknown(isa_y2) = -1
           endif
+          nplusminus = 2**(numhits-2)
+        endif
 *     use bit value of integer word to set + or -
-          do pmloop=0,nplusminus-1
-              iswhit = 1
-              do ihit=1,numhits
-                 if(plusminusknown(ihit).ne.0) then
-                    plusminus(ihit) = float(plusminusknown(ihit))
-                 else
-                    if(jbit(pmloop,iswhit).eq.1) then
-                       plusminus(ihit)=1.0
-                    else
-                       plusminus(ihit)=-1.0
-                    endif
-                    iswhit = iswhit + 1
-                 endif
-              enddo
-* now passign pl(ihit) so it doesn't have to be recalculated every iteration
-              call h_find_best_stub(numhits,hits,pl,pindex,plusminus,stub,chi2)
-              if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
-     $             ''   chi2='',e14.6)') pmloop,chi2
-              if (chi2.lt.minchi2)  then
-                  minchi2=chi2
-                  do idummy=1,numhits
-                    plusminusbest(idummy)=plusminus(idummy)
-                  enddo
-                  do idummy=1,4
-                    hbeststub(isp,idummy)=stub(idummy)
-                  enddo
-              endif                         ! end if on lower chi2
-          enddo                             ! end loop on possible left-right
+        do pmloop=0,nplusminus-1
+          iswhit = 1
+          do ihit=1,numhits
+            if(plusminusknown(ihit).ne.0) then
+              plusminus(ihit) = float(plusminusknown(ihit))
+            else
+              if(jbit(pmloop,iswhit).eq.1) then
+                plusminus(ihit)=1.0
+              else
+                plusminus(ihit)=-1.0
+              endif
+              iswhit = iswhit + 1
+            endif
+          enddo
+
+          if (pindex.ge.0 .and. pindex.le.14) then
+            call h_find_best_stub(numhits,hits,pl,pindex,plusminus,stub,chi2)
+            if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
+     $           ''   chi2='',e14.6)') pmloop,chi2
+
+* Take best chi2 IF x' of the stub agrees with x' as expected from x.
+* Sometimes an incorrect x' gives a good chi2 for the stub, even though it is
+* not the correct left/right combination for the real track.
+* Rotate x'(=stub(3)) to hut coordinates and compare to x' expected from x.
+* THIS ASSUMES STANDARD HMS TUNE!!!!, for which x' is approx. x/875.
+
+            if (chi2.lt.minchi2)  then
+              xp_fit=stub(3)-htanbeta(pl(1))/(1.0+stub(3)*htanbeta(pl(1)))
+              xp_expect = hspace_points(isp,1)/875. ! **TUNE DEPENDANT**
+              if (abs(xp_fit-xp_expect).le.hstub_max_xpdiff) then
+                minchi2=chi2
+                do idummy=1,numhits
+                  plusminusbest(idummy)=plusminus(idummy)
+                enddo
+                do idummy=1,4
+                  hbeststub(isp,idummy)=stub(idummy)
+                enddo
+              else                      !record best stub failing angle cut, in case none pass.
+                tmpminchi2=chi2
+                do idummy=1,numhits
+                  tmppmbest(idummy)=plusminus(idummy)
+                enddo
+                do idummy=1,4
+                  tmpbeststub(idummy)=stub(idummy)
+                enddo
+              endif
+            endif                       ! end if on lower chi2
+          else                          ! if pindex<0 or >14
+            write(6,*) 'pindex=',pindex,' in h_left_right'
+          endif
+        enddo                           ! end loop on possible left-right
+*
+        if (minchi2.ge.9.9e+9) then     !no track passed angle cut.
+          minchi2=tmpminchi2
+          do idummy=1,numhits
+            plusminusbest(idummy)=tmppmbest(idummy)
+          enddo
+          do idummy=1,4
+            hbeststub(isp,idummy)=tmpbeststub(idummy)
+          enddo
+        endif
 *
 *     calculate final coordinate based on plusminusbest
 *           
-          do ihit=1,numhits
-            HDC_WIRE_COORD(hspace_point_hits(isp,ihit+2))=
-     &      HDC_WIRE_CENTER(hspace_point_hits(isp,ihit+2)) +
-     &      plusminusbest(ihit)*HDC_DRIFT_DIS(hspace_point_hits(isp,ihit+2))
-          enddo
+        do ihit=1,numhits
+          HDC_WIRE_COORD(hspace_point_hits(isp,ihit+2))=
+     &         HDC_WIRE_CENTER(hspace_point_hits(isp,ihit+2)) +
+     &         plusminusbest(ihit)*HDC_DRIFT_DIS(hspace_point_hits(isp,ihit
+     $         +2))
+        enddo
 *
 *     stubs are calculated in rotated coordinate system
 *     use first hit to determine chamber
-          plane=HDC_PLANE_NUM(hits(1))
-          stub(3)=(hbeststub(isp,3) - htanbeta(plane))
-     &                /(1.0 + hbeststub(isp,3)*htanbeta(plane))
-          stub(4)=hbeststub(isp,4)
-     &                /(hbeststub(isp,3)*hsinbeta(plane)+hcosbeta(plane))
+        plane=HDC_PLANE_NUM(hits(1))
+        stub(3)=(hbeststub(isp,3) - htanbeta(plane))
+     &       /(1.0 + hbeststub(isp,3)*htanbeta(plane))
+        stub(4)=hbeststub(isp,4)
+     &       /(hbeststub(isp,3)*hsinbeta(plane)+hcosbeta(plane))
 
-          stub(1)=hbeststub(isp,1)*hcosbeta(plane) 
-     &             - hbeststub(isp,1)*stub(3)*hsinbeta(plane)
-          stub(2)=hbeststub(isp,2) 
-     &             - hbeststub(isp,1)*stub(4)*hsinbeta(plane)
-          hbeststub(isp,1)=stub(1)
-          hbeststub(isp,2)=stub(2)
-          hbeststub(isp,3)=stub(3)
-          hbeststub(isp,4)=stub(4)
-
+        stub(1)=hbeststub(isp,1)*hcosbeta(plane) 
+     &       - hbeststub(isp,1)*stub(3)*hsinbeta(plane)
+        stub(2)=hbeststub(isp,2) 
+     &       - hbeststub(isp,1)*stub(4)*hsinbeta(plane)
+        hbeststub(isp,1)=stub(1)
+        hbeststub(isp,2)=stub(2)
+        hbeststub(isp,3)=stub(3)
+        hbeststub(isp,4)=stub(4)
 *
-      enddo                                   ! end loop over space points
+      enddo                             ! end loop over space points
 *
 *     write out results if debugflagstubs is set
       if(hdebugflagstubs.ne.0) then
-         call h_print_stubs
+        call h_print_stubs
       endif
       return
       end
-        

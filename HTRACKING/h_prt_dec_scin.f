@@ -10,6 +10,9 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
+* Revision 1.8  1996/01/16 21:55:27  cdaq
+* (JRA)
+*
 * Revision 1.7  1995/05/22 19:39:23  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -56,7 +59,7 @@
       if(HSCIN_TOT_HITS.GT.0) then
         write(hluno,'('' Num  Plane    Counter        ADC_POS'',
      &       '' ADC_NEG  TDC_POS  TDC_NEG'')')
-        write(hluno,'(1x,i2,2x,i3,7x,i4,8x,2f8.2,2i8)')
+        write(hluno,'(1x,i2,2x,i3,5x,i4,8x,2f8.2,2i8)')
      &       (j,HSCIN_PLANE_NUM(j),HSCIN_COUNTER_NUM(j),
      &       HSCIN_ADC_POS(j),HSCIN_ADC_NEG(j),
      &       HSCIN_TDC_POS(j),HSCIN_TDC_NEG(j),
@@ -70,11 +73,11 @@
         write(hluno,'('' Number '',10i4)') 
      &       (HSCIN_HITS_PER_PLANE(j),j=1,HNUM_SCIN_PLANES)
         write(hluno,'('' Num    ZPOS    CENTER  HIT_COORD SLOP'',
-     &       ''  COR_ADC  COR_TDC  TWO_GOOD'')')
-        write(hluno,'(1x,i2,2x,4f8.3,2f10.3,4x,l2)')
+     &       ''   COR_TDC  TWO_GOOD'')')
+        write(hluno,'(1x,i2,2x,4f9.3,f10.3,4x,l2)')
      &       (j,HSCIN_ZPOS(j),HSCIN_CENTER_COORD(j),
      &       HSCIN_DEC_HIT_COORD(j),
-     &       HSCIN_SLOP(j),HSCIN_COR_ADC(j),HSCIN_COR_TIME(j),
+     &       HSCIN_SLOP(j),HSCIN_COR_TIME(j),
      &       HTWO_GOOD_TIMES(j), 
      &       j=1,HSCIN_TOT_HITS)    
         write(hluno,'('' HGOOD_START_TIME='', l2)')

@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.15  1996/01/16 22:00:15  cdaq
+* (JRA)
+*
 * Revision 1.14  1995/05/22 19:39:29  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -105,7 +108,7 @@
           hnum_scin_hit(trk) = 0
           hnum_pmt_hit(trk) = 0
           hbeta(trk) = 0
-          hbeta_chisq(trk) = -2
+          hbeta_chisq(trk) = -3
           htime_at_fp(trk) = 0
         enddo
         goto 666
@@ -179,8 +182,7 @@
      1             hscin_pos_phc_coeff(hit) *
      $             sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
               time = time - path/hscin_vel_light(hit)
-              hscin_pos_time(hit) = time
-     $             - hscin_pos_time_offset(hit)
+              hscin_pos_time(hit) = time - hscin_pos_time_offset(hit)
             endif
 
 **    Repeat for pmts on 'negative' side
@@ -192,12 +194,11 @@
               adc_ph = hscin_adc_neg(hit)
               path = hscin_long_coord(hit) - hscin_neg_coord(hit)
               time = hscin_tdc_neg(hit) * hscin_tdc_to_time
-              time = time - 
-     1             hscin_neg_phc_coeff(hit) *
+              time = time -
+     $             hscin_neg_phc_coeff(hit) *
      $             sqrt(max(0.,(adc_ph/hscin_neg_minph(hit)-1.)))
               time = time - path/hscin_vel_light(hit)
-              hscin_neg_time(hit) = time
-     $             - hscin_neg_time_offset(hit)
+              hscin_neg_time(hit) = time - hscin_neg_time_offset(hit)
             endif
 
 **    Calculate ave time for scintillator and error.
@@ -226,9 +227,8 @@
 c     Get time at focal plane
             if (hgood_scin_time(trk,hit)) then
 * for electrons:
-              hscin_time_fp(hit) = hscin_time(hit) -
-     &             (hscin_zpos(hit)/30.) * sqrt(1. + hxp_fp(trk)
-     $             *hxp_fp(trk) +hyp_fp(trk)*hyp_fp(trk))
+              hscin_time_fp(hit) = hscin_time(hit) - hscin_zpos(hit)/30. *
+     $             sqrt(1.+hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk))
               sum_fp_time = sum_fp_time + hscin_time_fp(hit)
               num_fp_time = num_fp_time + 1
               sum_plane_time(plane)=sum_plane_time(plane)
@@ -236,6 +236,8 @@ c     Get time at focal plane
               num_plane_time(plane)=num_plane_time(plane)+1
               hnum_scin_hit(trk) = hnum_scin_hit(trk) + 1
               hscin_hit(trk,hnum_scin_hit(trk)) = hit
+              hscin_fptime(trk,hnum_scin_hit(trk)) = hscin_time_fp(hit)
+
               if (hgood_tdc_pos(trk,hit) .and. hgood_tdc_neg(trk,hit)) then
                 hnum_pmt_hit(trk) = hnum_pmt_hit(trk) + 2
               else
