@@ -6,7 +6,10 @@
 *     number of combinations > min_combos
 *     dfg              30 august 1993
 * $Log$
-* Revision 1.1  1994/02/21 16:44:23  cdaq
+* Revision 1.2  1994/02/23 13:52:40  cdaq
+* (SAW) Change 2nd arg of space_points_hits declaration from 1 to *
+*
+* Revision 1.1  1994/02/21  16:44:23  cdaq
 * Initial revision
 *
       implicit none
@@ -16,7 +19,7 @@
 					! on return it is the number of valid
                                         ! space points
       integer*4 space_points(nspace_point_len,2)
-      integer*4 space_point_hits(nspace_point_len,1)
+      integer*4 space_point_hits(nspace_point_len,*)
       integer*4 min_hits                ! minimum number of hits in valid point
       integer*4 min_combos              ! minimum number of combos
 *
