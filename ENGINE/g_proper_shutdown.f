@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.7  1995/05/22 13:29:24  cdaq
-*-    (JRA) Make a listing of potential detector problems
+*-    Revision 1.8  1995/07/27 19:03:36  cdaq
+*-    (SAW) Error return fix up
 *-
+* Revision 1.7  1995/05/22  13:29:24  cdaq
+* (JRA) Make a listing of potential detector problems
+*
 * Revision 1.6  1995/04/01  19:42:36  cdaq
 * (SAW) One report file for each of g, h, s, c instead of a single report file
 *
@@ -121,5 +124,9 @@
          EndIf
          call G_add_path(here,err)
       ENDIF
+
+      bad_HBK = .false.
+      err_HBK = ' '
+
       RETURN
       END
