@@ -10,7 +10,10 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
-* Revision 1.1  1994/04/13 15:42:58  cdaq
+* Revision 1.2  1994/05/12 21:01:39  cdaq
+* (DFG) Fix typo
+*
+* Revision 1.1  1994/04/13  15:42:58  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -46,8 +49,8 @@
      &        HSCIN_SLOP(j),HSCIN_COR_ADC(j),HSCIN_COR_TIME(j),
      &         HTWO_GOOD_TIMES(j), 
      &         j=1,HSCIN_TOT_HITS)    
-         write(hluno,'('' HGOOD_START_TIME='', i3,
-     &               ''  HGOOD_START_PLANE'',i3)')
+         write(hluno,'('' HGOOD_START_TIME='', l2,
+     &               ''  HGOOD_START_PLANE'',l2)')
      &         HGOOD_START_TIME,  HGOOD_START_PLANE
          write(hluno,'('' HSTART_TIME='',e10.4, 
      &   '' HSTART_HITNUM='',i3,''   HSTART_HITSIDE='',i3)')
