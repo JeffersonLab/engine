@@ -10,7 +10,10 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
-* Revision 1.2  1994/08/03 14:19:31  cdaq
+* Revision 1.3  1994/09/13 21:40:43  cdaq
+* (JRA) Remove include tmp_pedestals.dte
+*
+* Revision 1.2  1994/08/03  14:19:31  cdaq
 * (JRA) Fix variable names
 *
 * Revision 1.1  1994/04/13  15:43:19  cdaq
@@ -31,7 +34,6 @@
       include 'gen_constants.par'
       include 'gen_units.par'
       include 'hms_tracking.cmn'
-      include 'tmp_pedestals.dte'
 *
 *--------------------------------------------------------
       ABORT = .FALSE.
