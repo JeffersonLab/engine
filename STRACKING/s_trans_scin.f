@@ -8,6 +8,9 @@
 * needed for the drift chamber and tof analysis.
 *
 * $Log$
+* Revision 1.11  1996/01/17 18:21:56  cdaq
+* (JRA) Misc. fixes.
+*
 * Revision 1.10  1995/05/22 19:46:03  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -105,10 +108,6 @@
 ** Return if no valid hits.
       if( sscin_tot_hits .le. 0) return
 
-        do ihit = 1 , sscin_tot_hits
-          stwo_good_times(ihit) = .false.
-        enddo
-
 ** Check for two good TDC values.
         do ihit = 1 , sscin_tot_hits
           if ((sscin_tdc_pos(ihit) .ge. sscin_tdc_min) .and.
@@ -116,6 +115,8 @@
      2         (sscin_tdc_neg(ihit) .ge. sscin_tdc_min) .and.
      3         (sscin_tdc_neg(ihit) .le. sscin_tdc_max)) then
             stwo_good_times(ihit) = .true.
+          else
+            stwo_good_times(ihit) = .false.
           endif
         enddo                           !end of loop that finds tube setting time.
 
@@ -143,27 +144,22 @@
             scint_center = (sscin_pos_coord(ihit)+sscin_neg_coord(ihit))
      $           /2.
             hit_position = scint_center + dist_from_center
+            hit_position = min(sscin_pos_coord(ihit),hit_position)
+            hit_position = max(sscin_neg_coord(ihit),hit_position)
             sscin_dec_hit_coord(ihit) = hit_position
  
 *     Get corrected time.
-            pos_path = abs(sscin_pos_coord(ihit) - hit_position)
-            neg_path = abs(sscin_neg_coord(ihit) - hit_position)
+            pos_path = sscin_pos_coord(ihit) - hit_position
+            neg_path = hit_position - sscin_neg_coord(ihit)
             postime(ihit) = postime(ihit) - pos_path
      $           /sscin_vel_light(ihit)
             negtime(ihit) = negtime(ihit) - neg_path
      $           /sscin_vel_light(ihit)
 
             sscin_cor_time(ihit) = ( postime(ihit) + negtime(ihit) )/2.
-ccc The following sometimes results in square roots of negative numbers
-ccc Supposedly, no one uses this right now (SAW 1/17/95)
-            if(neg_ph(ihit) .ge. 0.0 .and. pos_ph(ihit) .ge. 0.0) then
-              sscin_cor_adc(ihit) = sqrt( neg_ph(ihit) * pos_ph(ihit))
-            else
-              sscin_cor_adc(ihit) = 0.0
-            endif
+*
           else                          !only 1 tube fired
             sscin_dec_hit_coord(ihit) = 0.
-            sscin_cor_adc(ihit) = 0.
             sscin_cor_time(ihit) = 0.   !not a very good 'flag', but there is
                                         ! the logical stwo_good_hits.
           endif
@@ -171,6 +167,7 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
 
 * TEMPORARY START TIME CALCULATION.  ASSUME XP=YP=0 RADIANS.  PROJECT ALL
 *     TIME VALUES TO FOCAL PLANE.  USE AVERAGE FOR START TIME.
+*   WORKS FOR ELECTRONS ONLY NOW
         time_num = 0
         time_sum = 0.
         do ihit = 1 , sscin_tot_hits
@@ -194,7 +191,6 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
 
 *     Dump decoded bank if sdebugprintscindec is set
         if( sdebugprintscindec .ne. 0) call s_prt_dec_scin(ABORT,errmsg)
-
 
 *    Calculate beta without finding track (to reject cosmics for efficiencies)
 *    using tube only if both pmts fired since the velocity correction is
