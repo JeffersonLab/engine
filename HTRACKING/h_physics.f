@@ -19,6 +19,9 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.16  1996/01/24 15:58:38  saw
+* (JRA) Change cpbeam/cebeam to gpbeam/gebeam
+*
 * Revision 1.15  1996/01/16 21:55:02  cdaq
 * (JRA) Calculate q, W for electrons
 *
@@ -198,15 +201,16 @@
           do ip=1,12
             if (hdc_readout_x(ip)) then
               dist(ip) = ydist*hdc_readout_corr(ip)
-            else                            !readout from top/bottom
+            else                        !readout from top/bottom
               dist(ip) = xdist*hdc_readout_corr(ip)
             endif
             res(ip)=hdc_sing_res(ip)
-            tmp = hdc_plane_wirecoord(itrkfp,ip)-hdc_plane_wirecenter(itrkfp,ip)
-            if (tmp.eq.0) then   !drift dist = 0
+            tmp = hdc_plane_wirecoord(itrkfp,ip)
+     $           -hdc_plane_wirecenter(itrkfp,ip)
+            if (tmp.eq.0) then          !drift dist = 0
               res(ip)=abs(res(ip))
             else
-              res(ip)=res(ip) * (abs(tmp)/tmp)  !convert +/- res to near/far res
+              res(ip)=res(ip) * (abs(tmp)/tmp) !convert +/- res to near/far res
             endif
           enddo
 c           write(37,'(12f7.2,12f8.3,12f8.5)') (hsdc_track_coord(ip),ip=1,12),
@@ -222,30 +226,44 @@ c        write(*,*)hstheta
         sinhstheta = sin(hstheta)
         tandelphi = hsxp_tar /
      &       ( sinhthetas - coshthetas*hsyp_tar)
-        hsphi = hphi_lab + atan(tandelphi)    ! hphi_lab MUST BE MULTIPLE OF
+        hsphi = hphi_lab + atan(tandelphi) ! hphi_lab MUST BE MULTIPLE OF
         sinhphi = sin(hsphi)            ! PI/2, OR ABOVE IS CRAP
-      if(hpartmass .lt. 2*mass_electron) then ! Less than 1 MeV, HMS is elec
-      call total_eloss(1,.true.,tz_target,ta_target,55.0,3.0,
-     >                 htheta_lab,ttheta_tar,1.0,hseloss)
-        HSENERGY=HSENERGY- hseloss
-        hqx = -HSP*cos(HSxp_tar)*sin(HSTHETA)
-        hqy = -HSP*sin(Hsxp_tar)
-        hqz = cpbeam - HSP*cos(HSxp_tar)*cos(HSTHETA)
-        hqabs= sqrt(hqx**2+hqy**2+hqz**2)
-        W2 = tmass_target**2 +2.*tmass_target*(cpbeam-hsp) - hqabs**2
-       if(W2.ge.0 ) then
-          HINVMASS = SQRT(W2)
+        if(hpartmass .lt. 2*mass_electron) then ! Less than 1 MeV, HMS is elec
+          if(gtarg_z(gtarg_num).gt.0.)then
+            call total_eloss(1,.true.,gtarg_z(gtarg_num),
+     $           gtarg_a(gtarg_num),gtarg_thick(gtarg_num),
+     $           gtarg_dens(gtarg_num),
+     $           hstheta,gtarg_theta,1.0,hseloss)
+            HSENERGY=HSENERGY- hseloss
+          else
+            hseloss=0.
+          endif
+          hqx = -HSP*cos(HSxp_tar)*sin(HSTHETA)
+          hqy = -HSP*sin(Hsxp_tar)
+          hqz = gpbeam - HSP*cos(HSxp_tar)*cos(HSTHETA)
+          hqabs= sqrt(hqx**2+hqy**2+hqz**2)
+          W2 = gtarg_mass(gtarg_num)**2 +
+     $         2.*gtarg_mass(gtarg_num)*(gpbeam-hsp) - hqabs**2 +
+     $         (gpbeam-hsp)**2
+          if(W2.ge.0 ) then
+            HINVMASS = SQRT(W2)
+          else
+            HINVMASS = 0.
+          endif
         else
-          HINVMASS = 0.
+          if(gtarg_z(gtarg_num).gt.0.)then
+            call total_eloss(1,.false.,gtarg_z(gtarg_num),
+     $           gtarg_a(gtarg_num),
+     $           gtarg_thick(gtarg_num),gtarg_dens(gtarg_num),
+     $           hstheta,gtarg_theta,hsbeta,hseloss)
+            HSENERGY = HSENERGY - hseloss
+          else
+            hseloss=0.
+          endif
         endif
-      else
-      call total_eloss(1,.false.,tz_target,ta_target,
-     >                  55.0,3.0,htheta_lab,ttheta_tar,hsbeta,hseloss)
-        HSENERGY = HSENERGY - hseloss
-      endif
 *     Calculate elastic scattering kinematics
-        t1  = 2.*hphysicsa*cpbeam*coshstheta      
-        ta  = 4*cpbeam**2*coshstheta**2 - hphysicsb**2
+        t1  = 2.*hphysicsa*gpbeam*coshstheta      
+        ta  = 4*gpbeam**2*coshstheta**2 - hphysicsb**2
 ccc   SAW 1/17/95.  Add the stuff after the or.
         if(ta.eq.0.0 .or. ( hphysicab2 + hphysicsm3b * ta).lt.0.0) then
           p3=0.       
@@ -257,8 +275,8 @@ ccc   SAW 1/17/95.  Add the stuff after the or.
 *     and the momentum from elastic kinematics
         hselas_cor = hsp - P3
 *     invariant mass of the remaining particles
-        hminv2 =   ( (cebeam+tmass_target-hsenergy)**2
-     &       - (cpbeam - hsp * coshstheta)**2
+        hminv2 =   ( (gebeam+gtarg_mass(gtarg_num)-hsenergy)**2
+     &       - (gpbeam - hsp * coshstheta)**2
      &       - ( hsp * sinhstheta)**2  )       
         if(hminv2.ge.0 ) then
           hsminv = sqrt(hminv2)
@@ -270,7 +288,7 @@ ccc   SAW 1/17/95.  Add the stuff after the or.
         if( sinhstheta .eq. 0.) then
           hszbeam = 0.
         else
-          hszbeam = sinhphi * ( -hsy_tar + cyrast * coshstheta) /
+          hszbeam = sinhphi * ( -hsy_tar + gbeam_y * coshstheta) /
      $         sinhstheta 
         endif                           ! end test on sinhstheta=0
 *
@@ -282,19 +300,25 @@ ccc   SAW 1/17/95.  Add the stuff after the or.
           hsmass2 = 1.0e10
         endif
 
-        hst = (cebeam - hsenergy)**2
-     $       - (cpbeam - hsp*coshstheta)**2 - (hsp*sinhstheta)**2
-        hsu = (tmass_target - hsenergy)**2 - hsp**2
-
-c        hseloss = cebeam - hsenergy
-        hsq3 = sqrt(cpbeam**2 + hsp**2 - 2*cpbeam*hsp*coshstheta)
-        coshsthetaq = (cpbeam**2 - cpbeam*hsp*coshstheta)/cpbeam/hsq3
-        hsthetaq = acos(coshsthetaq)
+        hst = (gebeam - hsenergy)**2
+     $       - (gpbeam - hsp*coshstheta)**2 - (hsp*sinhstheta)**2
+        hsu = (gtarg_mass(gtarg_num) - hsenergy)**2 - hsp**2
+        if(hseloss.eq.0.)then
+          hseloss = gebeam - hsenergy
+        endif
+        hsq3 = sqrt(gpbeam**2 + hsp**2 - 2*gpbeam*hsp*coshstheta)
+        if(gpbeam.ne.0.and.hsq3.ne.0.)then
+          coshsthetaq = (gpbeam**2 - gpbeam*hsp*coshstheta)/gpbeam/hsq3
+        endif
+        if(coshsthetaq.le.1.and.coshsthetaq.ge.-1.)then
+          hsthetaq = acos(coshsthetaq)
+        endif
         hsphiq = hsphi + tt
         hsbigq2 = -hst
         hsx = hsbigq2/(2*mass_nucleon*hseloss)
-        hsy = hseloss/cebeam
-        hsw2 = tmass_target**2 + 2*tmass_target*hseloss - hsbigq2
+        hsy = hseloss/gebeam
+        hsw2 = gtarg_mass(gtarg_num)**2 +
+     $       2*gtarg_mass(gtarg_num)*hseloss - hsbigq2
         if(hsw2.ge.0.0) then
           hsw = sqrt(hsw2)
         else
@@ -305,8 +329,9 @@ c        hseloss = cebeam - hsenergy
 ***   ierr=thtstexeb('hms_physics_sing') ! This is going to get executed twice
 *     
 *
-c      if (hmisc_dec_data(8,1).ge.1000 .and. hmisc_dec_data(8,1).le.1100) then
-c        write(37,*) hsx_fp,hsxp_fp,hsy_fp,hsyp_fp,hmisc_dec_data(8,1)/9.69-hstart_time
+c     if (hmisc_dec_data(8,1).ge.1000 .and. hmisc_dec_data(8,1).le.1100) then
+c        write(37,*) hsx_fp,hsxp_fp,hsy_fp,hsyp_fp,
+c     $       hmisc_dec_data(8,1)/9.69-hstart_time
 c      endif
 *
 *     Write raw timing information for fitting.
@@ -320,5 +345,5 @@ c      endif
           call G_add_path(here,err)
         ENDIF
       endif                             ! end test on zero tracks
-      RETURN
-      END
+      return
+      end
