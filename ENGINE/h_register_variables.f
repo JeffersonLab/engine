@@ -13,8 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.8  1994/08/18 04:11:26  cdaq
-*     (SAW) Call makereg generated routines to register variables
+*     Revision 1.9  1995/01/27 20:15:54  cdaq
+*     (SAW) Add call to sieve slit register routine
+*
+* Revision 1.8  1994/08/18  04:11:26  cdaq
+* (SAW) Call makereg generated routines to register variables
 *
 * Revision 1.7  1994/06/17  03:25:29  cdaq
 * (KBB) Execute all code despite registration errors
@@ -65,6 +68,16 @@
       ABORT= ABORT .or. FAIL
 *
       call h_ntuple_register(FAIL,why)
+      IF(err.NE.' ' .and. why.NE.' ') THEN  !keep warnings
+        call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+        err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL
+*
+      if(ABORT .or. err.NE.' ') call G_add_path(here,err)
+*
+      call h_sv_nt_register(FAIL,why)
       IF(err.NE.' ' .and. why.NE.' ') THEN  !keep warnings
         call G_append(err,' & '//why)
       ELSEIF(why.NE.' ') THEN
