@@ -15,7 +15,10 @@
 * s_scin_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
-* Revision 1.2  1995/04/06 19:43:37  cdaq
+* Revision 1.3  1995/05/11 21:17:23  cdaq
+* (JRA) Add position calibration variables
+*
+* Revision 1.2  1995/04/06  19:43:37  cdaq
 * (JRA) Fix some latent HMS variable names
 *
 * Revision 1.1  1995/02/23  15:42:08  cdaq
@@ -37,7 +40,7 @@
       include 'sos_scin_tof.cmn'
       include 'sos_statistics.cmn'
 
-      integer pln,cnt
+      integer pln,cnt,dist
       integer bothgood(snum_scin_planes,snum_scin_elements)
       integer posgood(snum_scin_planes,snum_scin_elements)
       integer neggood(snum_scin_planes,snum_scin_elements)
@@ -70,16 +73,29 @@
       hit_cnt(4)=max(min(hit_cnt(4),snum_scin_counters(1)),1)
       hit_dist(4)=hit_pos(4)-(shodo_center(4,1)-sscin_2y_spacing*(hit_cnt(4)-1))
 
+*   Record position differences between track and center of scin. and
 *   increment 'should have hit' counters
       do pln=1,snum_scin_planes
+        cnt=hit_cnt(pln)
+        dist=hit_dist(pln)
+        if(abs(hit_dist(pln)).le.sscin_dpos_slop .and.  !track near scin.
+     &           sschi2perdeg.le.sscin_dpos_maxchisq) then
+          do nhit=1,sscin_tot_hits
+            if(sscin_plane_num(nhit).eq.pln .and.       !was the scin hit?
+     &         sscin_counter_num(nhit).eq.cnt) then
+              sscin_dpos(pln,cnt)=dist
+              sscin_dpos_sum(pln,cnt)=sscin_dpos_sum(pln,cnt)+dist
+              sscin_dpos_sum2(pln,cnt)=sscin_dpos_sum2(pln,cnt)+dist*dist
+              sscin_num_dpos(pln,cnt)=sscin_num_dpos(pln,cnt)+1
+            endif
+          enddo
+        endif
         if(abs(hit_dist(pln)).le.sstat_slop .and.    !hit in middle of scin.
      &           sschi2perdeg.le.sstat_maxchisq) then
           sstat_trk(pln,hit_cnt(pln))=sstat_trk(pln,hit_cnt(pln))+1
         endif
       enddo
 
-c      do ind=1,ssnum_scin_hit
-c        nhit=sscin_hit(ssnum_fptrack,ind)
        do nhit=1,sscin_tot_hits
         cnt=sscin_counter_num(nhit)
         pln=sscin_plane_num(nhit)

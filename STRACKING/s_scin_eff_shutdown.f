@@ -16,7 +16,10 @@
 * s_scin_eff_shutdown does some final manipulation of the numbers.
 *
 * $Log$
-* Revision 1.1  1995/03/13 18:18:07  cdaq
+* Revision 1.2  1995/05/11 21:17:34  cdaq
+* (JRA) Add position calibration variables
+*
+* Revision 1.1  1995/03/13  18:18:07  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -36,6 +39,7 @@
       include 'sos_statistics.cmn'
 
       integer pln,cnt
+      real ave,ave2,num        !intermediate variables for sigma(position)
       real p1,p2,p3,p4         !prob. of having both tubes fire for planes1-4
       real p1234,p123,p124,p134,p234 !prob. of having combos fire
       save
@@ -47,17 +51,31 @@
         sstat_negsum(pln)=0
         sstat_andsum(pln)=0
         sstat_orsum(pln)=0
+        sscin_tot_dpos_sum(pln)=0.
+        sscin_tot_num_dpos(pln)=0
         do cnt=1,snum_scin_counters(pln)
           sstat_trksum(pln)=sstat_trksum(pln)+sstat_trk(pln,cnt)
           sstat_possum(pln)=sstat_possum(pln)+sstat_poshit(pln,cnt)
           sstat_negsum(pln)=sstat_negsum(pln)+sstat_neghit(pln,cnt)
           sstat_andsum(pln)=sstat_andsum(pln)+sstat_andhit(pln,cnt)
           sstat_orsum(pln)=sstat_orsum(pln)+sstat_orhit(pln,cnt)
+
+          num=float(max(1,sscin_num_dpos(pln,cnt)))
+          ave=sscin_dpos_sum(pln,cnt)/num
+          sscin_dpos_ave(pln,cnt)=ave
+          ave2=sscin_dpos_sum2(pln,cnt)/num
+          sscin_dpos_sig(pln,cnt)=sqrt(max(0.,(ave2/num)-ave*ave))
+          sscin_tot_dpos_sum(pln)=
+     &            sscin_tot_dpos_sum(pln)+sscin_dpos_sum(pln,cnt)
+          sscin_tot_num_dpos(pln)=
+     &            sscin_tot_num_dpos(pln)+sscin_num_dpos(pln,cnt)
         enddo
-        sstat_poseff(pln)=sstat_possum(pln)/max(.01,float(sstat_trksum(pln)))
-        sstat_negeff(pln)=sstat_negsum(pln)/max(.01,float(sstat_trksum(pln)))
-        sstat_andeff(pln)=sstat_andsum(pln)/max(.01,float(sstat_trksum(pln)))
-        sstat_oreff(pln)=sstat_orsum(pln)/max(.01,float(sstat_trksum(pln)))
+        sstat_poseff(pln)=sstat_possum(pln)/max(1.,float(sstat_trksum(pln)))
+        sstat_negeff(pln)=sstat_negsum(pln)/max(1.,float(sstat_trksum(pln)))
+        sstat_andeff(pln)=sstat_andsum(pln)/max(1.,float(sstat_trksum(pln)))
+        sstat_oreff(pln)=sstat_orsum(pln)/max(1.,float(sstat_trksum(pln)))
+        sscin_tot_dpos_ave(pln)=
+     &        sscin_tot_dpos_sum(pln)/max(1.,float(sscin_tot_num_dpos(pln)))
       enddo
 
       p1=sstat_andeff(1)
