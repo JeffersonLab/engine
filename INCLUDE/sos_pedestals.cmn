@@ -2,6 +2,9 @@
 *                      of pedestal events at the beginning of each run.
 *
 * $Log$
+* Revision 1.4  1996/01/17 15:09:10  cdaq
+* (JRA) Add "_new_" pedestal variables
+*
 * Revision 1.3  1995/07/28 14:38:58  cdaq
 * (JRA) Add shodo_all_sig_pos/neg, pedestall stuff
 *
@@ -33,8 +36,15 @@
       integer*4 shodo_neg_ped_sum(snum_scin_planes,snum_scin_elements)
       integer*4 shodo_pos_ped_num(snum_scin_planes,snum_scin_elements)
       integer*4 shodo_neg_ped_num(snum_scin_planes,snum_scin_elements)
-      real*4 shodo_all_sig_pos(snum_scin_planes,snum_scin_elements)
-      real*4 shodo_all_sig_neg(snum_scin_planes,snum_scin_elements)
+      integer*4 shodo_num_ped_changes
+      integer*4 shodo_changed_plane(2*smax_all_scin_hits)
+      integer*4 shodo_changed_element(2*smax_all_scin_hits)
+      integer*4 shodo_changed_sign(2*smax_all_scin_hits)
+      real*4 shodo_ped_change(2*smax_all_scin_hits)
+      real*4 shodo_new_sig_pos(snum_scin_planes,snum_scin_elements)
+      real*4 shodo_new_sig_neg(snum_scin_planes,snum_scin_elements)
+      real*4 shodo_new_ped_pos(snum_scin_planes,snum_scin_elements)
+      real*4 shodo_new_ped_neg(snum_scin_planes,snum_scin_elements)
 *
 *     CTPTYPE=parm
 *
@@ -48,8 +58,15 @@
      &   shodo_pos_ped_num,   !number of peds
      &   shodo_neg_ped_num,   !number of peds
      &   shodo_min_peds,      !# of peds required to override default pedestals
-     &   shodo_all_sig_pos,
-     &   shodo_all_sig_neg
+     &   shodo_new_sig_pos,
+     &   shodo_new_sig_neg,
+     &   shodo_new_ped_pos,
+     &   shodo_new_ped_neg,
+     &   shodo_num_ped_changes,!# of peds with 2 sigma change from param file.
+     &   shodo_changed_plane,
+     &   shodo_changed_element,
+     &   shodo_changed_sign,   !1=pos,2=neg
+     &   shodo_ped_change
 *
 *
 * CALORIMETER PEDESTALS
@@ -64,6 +81,11 @@
       integer*4 scal_ped_sum2(smax_cal_blocks)
       integer*4 scal_ped_sum(smax_cal_blocks)
       integer*4 scal_ped_num(smax_cal_blocks)
+      integer*4 scal_num_ped_changes
+      integer*4 scal_changed_block(smax_cal_blocks)
+      real*4 scal_ped_change(smax_cal_blocks)
+      real*4 scal_new_ped(smax_cal_blocks)
+      real*4 scal_new_rms(smax_cal_blocks)
 *
 *     CTPTYPE=parm
 *
@@ -73,12 +95,17 @@
      &   scal_ped_sum2,       !sum of squares
      &   scal_ped_sum,        !sum of peds
      &   scal_ped_num,        !number of peds
-     &   scal_min_peds        !# of peds required to override default pedestals
+     &   scal_min_peds,       !# of peds required to override default pedestals
+     &   scal_new_ped,        !(new) calculated pedestals.
+     &   scal_new_rms,        !(new) calculated rms.
+     &   scal_num_ped_changes,!# of peds with 2 sigma changes from param file
+     &   scal_changed_block,
+     &   scal_ped_change
 *
 * GAS CERENKOV PEDESTALS
-* replace scer_ped_mean with float(scer_ped_sum/scer_ped_num),
+* replace scer_ped with float(scer_ped_sum/scer_ped_num),
 *         scer_ped_rms  with (appropriate formula),
-*    and  scer_threshold with (something like) min(10.,3.*scer_ped_rms)
+*    and  scer_width with (something like) min(10.,3.*scer_ped_rms)
 *         scer_ped_rms  with (appropriate formula),if scer_num > scer_min_peds.
 *
 *     CTPTYPE=event
@@ -86,9 +113,11 @@
       integer*4 scer_ped_sum2(smax_cer_hits)
       integer*4 scer_ped_sum(smax_cer_hits)
       integer*4 scer_ped_num(smax_cer_hits)
-      real*4 scer_ped_mean(smax_cer_hits)
-      real*4 scer_ped_rms(smax_cer_hits)
-      real*4 scer_threshold(smax_cer_hits)
+      integer*4 scer_num_ped_changes
+      integer*4 scer_changed_tube(smax_cer_hits)
+      real*4 scer_ped_change(smax_cer_hits)
+      real*4 scer_new_ped(smax_cer_hits)
+      real*4 scer_new_rms(smax_cer_hits)
 *
 *     CTPTYPE=parm
 *
@@ -99,9 +128,12 @@
      &   scer_ped_sum,        !sum of peds
      &   scer_ped_num,        !number of peds
      &   scer_min_peds,       !# of peds required to override default pedestals
-     &   scer_ped_mean,
-     &   scer_ped_rms,                  ! calculated pedestal value
-     &   scer_threshold                 ! calculated pedestal width
+     &   scer_new_ped,
+     &   scer_new_rms,
+     &   scer_num_ped_changes,!# of peds with 2 sigma changes from param file
+     &   scer_changed_tube,   !list of changed tubes
+     &   scer_ped_change      !change in pedestal
+
 *
 *
 * AEROGEL CERENKOV PEDESTALS
@@ -145,4 +177,16 @@
      &   saer_pos_threshold,
      &   saer_neg_threshold
 
-
+*
+*     CTPTYPE=event
+*
+      real*4 shodo_new_threshold_pos(snum_scin_planes,snum_scin_elements)
+      real*4 shodo_new_threshold_neg(snum_scin_planes,snum_scin_elements)
+      real*4 scal_new_adc_threshold(smax_cal_blocks)
+      real*4 scer_new_adc_threshold(smax_cer_hits)
+*
+      common/sos_adc_thresholds/
+     &   shodo_new_threshold_pos,
+     &   shodo_new_threshold_neg,
+     &   scal_new_adc_threshold,
+     &   scer_new_adc_threshold
