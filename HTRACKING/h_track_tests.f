@@ -13,6 +13,12 @@
 *  the tests there!!
 *
 * $Log$
+* Revision 1.3  2002/09/26 14:50:10  jones
+*    Add variables sweet1xscin,sweet1yscin,sweet2xscin,sweet2yscin
+*    which record which scint got hit inside the defined scint region
+*    Then hgoodscinhits is set to zero if front and back hodoscopes
+*    are abs(sweet1xscin-sweet2xscin).gt.3 or bs(sweet1yscin-sweet2yscin).gt.2
+*
 * Revision 1.2  1996/09/04 13:39:02  saw
 * (JRA) Treat logicals as logicals
 *
@@ -21,10 +27,10 @@
 *
        IMPLICIT NONE
        SAVE
-*
+
        character*50 here
        parameter (here= 'H_TRACK_TESTS')
-*
+
 *       logical ABORT
 *       character*(*) err
 *       integer*4 ierr
@@ -48,6 +54,7 @@
        integer i,j,count
        integer testsum
        integer hhitsweet1x,hhitsweet1y,hhitsweet2x,hhitsweet2y
+       integer sweet1xscin,sweet1yscin,sweet2xscin,sweet2yscin
 
        real*4 lastcointime
        real*4 thiscointime
@@ -76,7 +83,7 @@
           open(unit=12,file='scalers/htrackeff.txt',status='unknown',
      $         access='append')
        endif
-*
+
 *this next file outputs a huge ascii file with many tracking parameters.  It
 *is intended for use with physica.  The order of the ouput is given in the write
 *statement at the end of this file.  I fyou uncomment this line, be sure to
@@ -280,7 +287,10 @@
        hgoodscinhits=0
 *first x plane.  first see if there are hits inside the scin region
        do i=hxloscin(1),hxhiscin(1)
-          if (hscinhit(1,i).EQ.1) hhitsweet1x=1
+          if (hscinhit(1,i).EQ.1) then
+             hhitsweet1x=1
+             sweet1xscin=i
+          endif
        enddo
 *  next make sure nothing fired outside the good region
        do i=1,hxloscin(1)-1
@@ -291,7 +301,10 @@
        enddo
 *second x plane.  first see if there are hits inside the scin region
        do i=hxloscin(2),hxhiscin(2)
-          if (hscinhit(3,i).EQ.1) hhitsweet2x=1
+          if (hscinhit(3,i).EQ.1) then
+             hhitsweet2x=1
+             sweet2xscin=i
+          endif
        enddo
 *  next make sure nothing fired outside the good region
        do i=1,hxloscin(2)-1
@@ -303,7 +316,10 @@
 
 *first y plane.  first see if there are hits inside the scin region
        do i=hyloscin(1),hyhiscin(1)
-          if (hscinhit(2,i).EQ.1) hhitsweet1y=1
+          if (hscinhit(2,i).EQ.1) then
+             hhitsweet1y=1
+             sweet1yscin=i
+          endif
        enddo
 *  next make sure nothing fired outside the good region
        do i=1,hyloscin(1)-1
@@ -314,7 +330,10 @@
        enddo
 *second y plane.  first see if there are hits inside the scin region
        do i=hyloscin(2),hyhiscin(2)
-          if (hscinhit(4,i).EQ.1) hhitsweet2y=1
+          if (hscinhit(4,i).EQ.1) then
+             hhitsweet2y=1
+             sweet2yscin=i
+          endif
        enddo
 *  next make sure nothing fired outside the good region
        do i=1,hyloscin(2)-1
@@ -327,8 +346,13 @@
        testsum=hhitsweet1x+hhitsweet1y+hhitsweet2x+hhitsweet2y
 * now define a 3/4 or 4/4 trigger of only good scintillators the value
 * is specified in htracking.param...
-       if (testsum.GE.htrack_eff_test_num_scin_planes)
-     $      hgoodscinhits=1
+       if (testsum.GE.htrack_eff_test_num_scin_planes) hgoodscinhits=1
+
+* require front/back hodoscopes be close to each other
+       if (hgoodscinhits.eq.1 .and. htrack_eff_test_num_scin_planes.eq.4) then
+          if (abs(sweet1xscin-sweet2xscin).gt.3) hgoodscinhits=0
+          if (abs(sweet1yscin-sweet2yscin).gt.2) hgoodscinhits=0
+       endif
 
 *******************************************************************************
 *     Here's where we start writing to the files.  Uncomment these lines and

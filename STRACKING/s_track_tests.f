@@ -13,6 +13,12 @@
 *  the tests there!!
 *
 * $Log$
+* Revision 1.3  2002/09/26 14:54:03  jones
+*    Add variables sweet1xscin,sweet1yscin,sweet2xscin,sweet2yscin
+*    which record which scint got hit inside the defined scint region
+*    Then hgoodscinhits is set to zero if front and back hodoscopes
+*    are abs(sweet1xscin-sweet2xscin).gt.3 or bs(sweet1yscin-sweet2yscin).gt.2
+*
 * Revision 1.2  1996/09/04 20:19:12  saw
 * (JRA) Treat logicals as logicals
 *
@@ -24,12 +30,7 @@
 *
        character*50 here
        parameter (here= 'S_TRACK_TESTS')
-*
-*       logical ABORT
-*       character*(*) err
-*       integer*4 ierr
-*       character*5  line_err
-*
+
        INCLUDE 'sos_data_structures.cmn'
        INCLUDE 'coin_data_structures.cmn'
        INCLUDE 'gen_constants.par'
@@ -48,7 +49,8 @@
        integer i,j,count
        integer testsum
        integer shitsweet1x,shitsweet1y,shitsweet2x,shitsweet2y
-
+       integer sweet1xscin,sweet1yscin,sweet2xscin,sweet2yscin
+      
        real*4 lastcointime
        real*4 thiscointime
 
@@ -57,7 +59,7 @@
 *update the cointime.  We set cointime=100.0 if the code hasn't updated it (ie,
 *it's the same as the previous event...).  First, if it's not a coincidence
 *event, we just set the cointime to zero.
-       
+      
        thiscointime=0.0
        if (gen_event_type.eq.3) then
           thiscointime=ccointime_sos
@@ -73,7 +75,7 @@
           open(unit=15,file='scalers/strackeff.txt',status='unknown',
      $         access='append')
        endif
-*
+
 *this next file outputs a huge ascii file with many tracking parameters.  It
 *is intended for use with physica.  The order of the ouput is given in the write
 *statement at the end of this file.
@@ -287,7 +289,10 @@
        sgoodscinhits=0
 *first x plane.  first see if there are hits inside the scin region
        do i=sxloscin(1),sxhiscin(1)
-          if (sscinhit(1,i).EQ.1) shitsweet1x=1
+          if (sscinhit(1,i).EQ.1) then
+             shitsweet1x=1
+             sweet1xscin=i
+          endif
        enddo
 *  next make sure nothing fired outside the good region
        do i=1,sxloscin(1)-1
@@ -298,7 +303,10 @@
        enddo
 *second x plane.  first see if there are hits inside the scin region
        do i=sxloscin(2),sxhiscin(2)
-          if (sscinhit(3,i).EQ.1) shitsweet2x=1
+          if (sscinhit(3,i).EQ.1) then
+             shitsweet2x=1
+             sweet2xscin=i
+          endif
        enddo
 *  next make sure nothing fired outside the good region
        do i=1,sxloscin(2)-1
@@ -310,7 +318,10 @@
 
 *first y plane.  first see if there are hits inside the scin region
        do i=syloscin(1),syhiscin(1)
-          if (sscinhit(2,i).EQ.1) shitsweet1y=1
+          if (sscinhit(2,i).EQ.1) then
+             shitsweet1y=1
+             sweet1yscin=i
+          endif
        enddo
 *  next make sure nothing fired outside the good region
        do i=1,syloscin(1)-1
@@ -321,7 +332,10 @@
        enddo
 *second y plane.  first see if there are hits inside the scin region
        do i=syloscin(2),syhiscin(2)
-          if (sscinhit(4,i).EQ.1) shitsweet2y=1
+          if (sscinhit(4,i).EQ.1) then
+             shitsweet2y=1
+             sweet2yscin=i
+          endif
        enddo
 *  next make sure nothing fired outside the good region
        do i=1,syloscin(2)-1
@@ -334,8 +348,13 @@
        testsum=shitsweet1x+shitsweet1y+shitsweet2x+shitsweet2y
 * now define a 3/4 or 4/4 trigger of only good scintillators the value
 * is specified in stracking.param...
-       if (testsum.GE.strack_eff_test_num_scin_planes)
-     $      sgoodscinhits=1
+       if (testsum.GE.strack_eff_test_num_scin_planes) sgoodscinhits=1
+
+* require front/back hodoscopes be within close to each other.,
+       if (sgoodscinhits.eq.1 .and. strack_eff_test_num_scin_planes.eq.4) then
+          if (abs(sweet1xscin-sweet2xscin).gt.3) sgoodscinhits=0
+          if (abs(sweet1yscin-sweet2yscin).gt.2) sgoodscinhits=0
+       endif
 
 *******************************************************************************
 *     here's where we start writing to the files.  Uncomment these lines and
@@ -395,7 +414,7 @@
      $             scer_npe_sum,sschi2perdeg,ssdelta,thiscointime
  902          format(1x,i6,i4,i4,12(i4),2(i2),4(i3),8(i2),2(i4),i2,i2,i2,i2,f10.3,f9.3,
      $             f9.3,f9.3,f9.3,f10.3,f10.3,f10.3)
-*     
+
               close(15)         !closes "strackeff.txt"
               close(17)         !closes "strack.out"
            endif
