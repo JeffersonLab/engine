@@ -1,4 +1,4 @@
-      SUBROUTINE S_SCIN_EFF_SHUTDOWN(ABORT,errmsg)
+      SUBROUTINE S_SCIN_EFF_SHUTDOWN(lunout,ABORT,errmsg)
 *--------------------------------------------------------
 *-
 *-   Purpose and Methods : Analyze scintillator information for each track 
@@ -16,7 +16,10 @@
 * s_scin_eff_shutdown does some final manipulation of the numbers.
 *
 * $Log$
-* Revision 1.2  1995/05/11 21:17:34  cdaq
+* Revision 1.3  1995/05/17 16:44:17  cdaq
+* (JRA) Write out list of potential PMT problems
+*
+* Revision 1.2  1995/05/11  21:17:34  cdaq
 * (JRA) Add position calibration variables
 *
 * Revision 1.1  1995/03/13  18:18:07  cdaq
@@ -42,7 +45,15 @@
       real ave,ave2,num        !intermediate variables for sigma(position)
       real p1,p2,p3,p4         !prob. of having both tubes fire for planes1-4
       real p1234,p123,p124,p134,p234 !prob. of having combos fire
+      integer lunout
+      character*4 planename(SNUM_SCIN_PLANES)
+      data planename/'sS1X','sS1Y','sS2X','sS2Y'/
+      real*4 peff,neff
+      real*4 mineff
+      parameter (mineff=.95)
       save
+      write(lunout,*)
+      write(lunout,*) ' scintilators with effic. < ',mineff
 
 ! fill sums over counters
       do pln=1,snum_scin_planes
@@ -69,6 +80,19 @@
      &            sscin_tot_dpos_sum(pln)+sscin_dpos_sum(pln,cnt)
           sscin_tot_num_dpos(pln)=
      &            sscin_tot_num_dpos(pln)+sscin_num_dpos(pln,cnt)
+*
+* write out list of possible problms
+*
+          if (sstat_trk(pln,cnt).ge.50) then
+            peff=float(sstat_poshit(pln,cnt))/float(sstat_trk(pln,cnt))
+           if (peff.le.mineff) then
+              write(lunout,'(5x,a4,i2,a,f7.4)') planename(pln),cnt,'+',peff
+            endif
+            neff=float(sstat_neghit(pln,cnt))/float(sstat_trk(pln,cnt))
+           if (neff.le.mineff) then
+              write(lunout,'(5x,a4,i2,a,f7.4)') planename(pln),cnt,'-',neff
+            endif
+          endif
         enddo
         sstat_poseff(pln)=sstat_possum(pln)/max(1.,float(sstat_trksum(pln)))
         sstat_negeff(pln)=sstat_negsum(pln)/max(1.,float(sstat_trksum(pln)))
@@ -78,6 +102,7 @@
      &        sscin_tot_dpos_sum(pln)/max(1.,float(sscin_tot_num_dpos(pln)))
       enddo
 
+      write(lunout,*) ' '
       p1=sstat_andeff(1)
       p2=sstat_andeff(2)
       p3=sstat_andeff(3)
