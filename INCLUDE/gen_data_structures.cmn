@@ -5,7 +5,10 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
-* Revision 1.20  1994/11/22 18:37:46  cdaq
+* Revision 1.21  1995/01/03 13:59:37  cdaq
+* (HGM) Increase # of HMS shower counter blocks to 52
+*
+* Revision 1.20  1994/11/22  18:37:46  cdaq
 * (SPB) Brought SOS commons up to date
 * (SAW) Cleaned up ?DC_NUM_CHAMBERS and ?MAX_NUM_CHAMBERS stuff
 *
@@ -346,7 +349,7 @@
 *     THE TOTAL NUMBER OF SHOWER HITS IS HCAL_TOT_HITS
 *
       INTEGER*4 HMAX_CAL_BLOCKS     ! TOTAL NUMBER OF SHOWER BLOCKS
-      PARAMETER (HMAX_CAL_BLOCKS=48)
+      PARAMETER (HMAX_CAL_BLOCKS=52)
       INTEGER*4 HCAL_TOT_HITS
       INTEGER*4 HCAL_COLUMN(HMAX_CAL_BLOCKS)
       INTEGER*4 HCAL_ROW(HMAX_CAL_BLOCKS)
