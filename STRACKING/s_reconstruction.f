@@ -9,6 +9,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.12  1996/09/05 20:13:45  saw
+* (JRA) Add sbypass_track_eff
+*
 * Revision 1.11  1996/04/30 17:14:36  saw
 * (JRA) Add call to aerogel routine
 *
@@ -140,6 +143,9 @@ c      s_recon_num= s_recon_num + 1
            call G_add_path(here,err)
            return
         endif                                     ! end test on S_TRACK ABORT
+        if(sbypass_track_eff.eq.0) then
+          call s_track_tests
+        endif                           ! end test on sbypass_trackeff
       endif                               ! end test on sbypass_track
 *     only proceed if the number of tracks is greater than one
 *
