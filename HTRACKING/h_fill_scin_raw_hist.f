@@ -10,6 +10,9 @@
 *                                Add CTP flag to turn on histogramming
 *                                id's in hms_id_histid
 * $Log$
+* Revision 1.9  2002/07/31 20:17:52  saw
+* Check that user hists are defined before filling
+*
 * Revision 1.8  1996/01/16 21:49:45  cdaq
 * (JRA)
 *
@@ -69,39 +72,48 @@ c          histval = float(pln)
 c          call hf1(hidscinplane,histval,1.)
 * Fill counter map
           histval = rcnt
-          call hf1(hidscincounters(pln),histval,1.)
+          if (hidscincounters(pln).gt.0)
+     $         call hf1(hidscincounters(pln),histval,1.)
 * Fill ADC and TDC histograms for positive tubes.
           if (hscin_all_tdc_pos(ihit).ne.-1) then !tube was hit
             histval = rcnt
-            call hf1(hidscinallpostdc(pln),histval,1.)
+            if (hidscinallpostdc(pln).gt.0)
+     $           call hf1(hidscinallpostdc(pln),histval,1.)
             histval = FLOAT(hscin_all_tdc_pos(ihit))
-            call hf1(hidsumpostdc(pln),histval,1.)
+            if (hidsumpostdc(pln).gt.0)
+     $           call hf1(hidsumpostdc(pln),histval,1.)
           else                                        !tube was NOT hit
             histval = hscin_all_adc_pos(ihit)-hscin_all_ped_pos(pln,cnt)
-            call hf1(hidsumposadc(pln),histval,1.)
+            if (hidsumposadc(pln).gt.0)
+     $           call hf1(hidsumposadc(pln),histval,1.)
           endif
 
           if ((hscin_all_adc_pos(ihit)-hscin_all_ped_pos(pln,cnt))
      $         .ge. 50) then
             histval = rcnt
-            call hf1(hidscinallposadc(pln),histval,1.)
+            if (hidscinallposadc(pln).gt.0)
+     $           call hf1(hidscinallposadc(pln),histval,1.)
           endif
 
 * Fill ADC and TDC histograms for negative tubes.
           if (hscin_all_tdc_neg(ihit).ne.-1) then     !tube was hit
             histval = rcnt
-            call hf1(hidscinallnegtdc(pln),histval,1.)
+            if (hidscinallnegtdc(pln).gt.0)
+     $           call hf1(hidscinallnegtdc(pln),histval,1.)
             histval = FLOAT(hscin_all_tdc_neg(ihit))
-            call hf1(hidsumnegtdc(pln),histval,1.)
+            if (hidsumnegtdc(pln).gt.0)
+     $           call hf1(hidsumnegtdc(pln),histval,1.)
           else                          !tube was NOT hit
             histval = hscin_all_adc_neg(ihit)-hscin_all_ped_neg(pln,cnt)
-            call hf1(hidsumnegadc(pln),histval,1.)
+            if (hidsumnegadc(pln).gt.0)
+     $           call hf1(hidsumnegadc(pln),histval,1.)
           endif
 
           if ((hscin_all_adc_neg(ihit)-hscin_all_ped_neg(pln,cnt))
      $         .ge. 50) then
             histval = rcnt
-            call hf1(hidscinallnegadc(pln),histval,1.)
+            if (hidscinallnegadc(pln).gt.0)
+     $           call hf1(hidscinallnegadc(pln),histval,1.)
           endif
 
 
@@ -109,13 +121,17 @@ c          call hf1(hidscinplane,histval,1.)
 
           if(hturnon_scin_raw_hist .ne. 0 ) then
             histval = hscin_all_adc_pos(ihit)-hscin_all_ped_pos(pln,cnt)
-            call hf1(hidscinposadc(pln,cnt),histval,1.)
+            if (hidscinposadc(pln,cnt).gt.0)
+     $           call hf1(hidscinposadc(pln,cnt),histval,1.)
             histval = hscin_all_adc_neg(ihit)-hscin_all_ped_neg(pln,cnt)
-            call hf1(hidscinnegadc(pln,cnt),histval,1.)
+            if (hidscinnegadc(pln,cnt).gt.0)
+     $           call hf1(hidscinnegadc(pln,cnt),histval,1.)
             histval = FLOAT(hscin_all_tdc_pos(ihit))
-            call hf1(hidscinpostdc(pln,cnt),histval,1.)
+            if (hidscinpostdc(pln,cnt).gt.0)
+     $           call hf1(hidscinpostdc(pln,cnt),histval,1.)
             histval = FLOAT(hscin_all_tdc_neg(ihit))
-            call hf1(hidscinnegtdc(pln,cnt),histval,1.)
+            if (hidscinnegtdc(pln,cnt).gt.0)
+     $           call hf1(hidscinnegtdc(pln,cnt),histval,1.)
           endif                         ! end test on histogramming flag
         enddo                           ! end loop over hits
       endif                             ! end test on zero hits       
