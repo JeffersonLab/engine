@@ -8,7 +8,10 @@
 * needed for the drift chamber and tof analysis.
 *
 * $Log$
-* Revision 1.6  1995/02/23 13:25:28  cdaq
+* Revision 1.7  1995/04/06 19:52:59  cdaq
+* (JRA) Change hardwired TDC offset to 100
+*
+* Revision 1.6  1995/02/23  13:25:28  cdaq
 * (JRA) Add a calculation of beta without finding a track
 *
 * Revision 1.5  1995/01/18  21:00:24  cdaq
@@ -163,7 +166,7 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
         do ihit = 1 , sscin_tot_hits
           if (stwo_good_times(ihit)) then
             fptime  = sscin_cor_time(ihit) - sscin_zpos(ihit)/29.989
-            if (abs(fptime-17.).le.15) then
+            if (abs(fptime-100.).le.100) then
               time_sum = time_sum + fptime
               time_num = time_num + 1
             endif
