@@ -1,6 +1,27 @@
        SUBROUTINE H_AERO(ABORT,err)
 *-
 * $Log$
+* Revision 1.2  2003/09/05 16:48:01  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.1.2.5  2003/07/28 18:01:38  cdaq
+* Use haero_new_ped_pos and haero_new_ped_neg instead of aero_new_threshold_neg
+* and haero_new_threshold_pos in IF statement (mkj)
+*
+* Revision 1.1.2.4  2003/07/18 18:22:49  cdaq
+* Fix bug that haero_adc_neg was compared to  instead
+* of haero_new_threshold_neg (Vardan)
+*
+* Revision 1.1.2.3  2003/04/15 21:47:35  cdaq
+* Changed ind to ihit for better readability
+* add checks on haero_npe_sum  (MKJ)
+*
+* Revision 1.1.2.2  2003/04/09 02:46:11  cdaq
+* Update variable names for the thresholds to match the modified common block
+*
+* Revision 1.1.2.1  2003/04/06 06:20:40  cdaq
+* updated variables for haero, cleaned up a few of the tests
+*
 * Revision 1.1  2002/12/20 21:54:29  jones
 * New files by Hamlet for new HMS aerogel
 *
@@ -19,7 +40,7 @@
       character*(*) err
 *
      
-      integer*4 ind,npmt
+      integer*4 ihit,npmt
 *
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_pedestals.cmn'
@@ -28,6 +49,11 @@
 *
 *--------------------------------------------------------
 *
+
+D      print*,'h_aero: haero_pos_gain =',haero_pos_gain
+D      print*,'h_aero: haero_neg_gain =',haero_neg_gain
+D      pause
+
       ABORT= .FALSE.
       err= ' '
 
@@ -35,9 +61,9 @@
       haero_pos_npe_sum = 0.0
       haero_npe_sum = 0.0
 
-      aero_pos = 0.0
-      aero_neg = 0.0
-      aero_tot = 0.0
+***      aero_pos = 0.0            !not in use any more
+***      aero_neg = 0.0            !not in use any more
+***      aero_tot = 0.0            !not in use any more
 
       haero_tot_good_hits = 0
       haero_adc_pos_hits = 0
@@ -45,14 +71,14 @@
       haero_tdc_pos_hits = 0
       haero_tdc_neg_hits = 0
 
-      do ind = 1,hmax_aero_hits
+      do ihit = 1,hmax_aero_hits
 
-        haero_pos_npe(ind)=0.
-        haero_neg_npe(ind)=0.
+        haero_pos_npe(ihit)=0.
+        haero_neg_npe(ihit)=0.
 
       enddo
 
-      do ind = 1,haero_tot_hits
+      do ihit = 1,haero_tot_hits
 
 * pedestal subtraction and gain adjustment
 
@@ -63,63 +89,54 @@
 * an input that is too large. Tubes with this characteristic will
 * be assigned NPE = 100.0.
 
-         npmt=haero_pair_num(ind)
+        npmt=haero_pair_num(ihit)
 
-         if (haero_adc_pos(ind).lt.8000.and.(haero_adc_pos(ind)-
-     &    haero_pos_adc_threshold(npmt)).ge.0) then
-
-            haero_pos_npe(npmt) =
-     &          (haero_adc_pos(ind)-haero_pos_ped_mean(npmt))
-     $          *haero_pos_gain(npmt)
-            endif
-
-         if (haero_adc_pos(ind).gt.8000.and.(haero_adc_pos(ind)-
-     &    haero_pos_adc_threshold(npmt)).ge.0) then
-
-           haero_pos_npe(npmt) = 100.0 
+        if (haero_adc_pos(ihit).gt.haero_new_ped_pos(npmt)) then
+           if (haero_adc_pos(ihit).lt.8000.) then
+              haero_pos_npe(npmt) = haero_pos_gain(npmt) *
+     &             (haero_adc_pos(ihit)-haero_pos_ped_mean(npmt))
+           else
+              haero_pos_npe(npmt) = 100.
            endif
-
-         if (haero_adc_neg(ind).lt.8000.and.(haero_adc_neg(ind)-
-     &    haero_neg_adc_threshold(npmt)).ge.0) then
-
-            haero_neg_npe(npmt) = 
-     &          (haero_adc_neg(ind)-haero_neg_ped_mean(npmt))
-     $          *haero_neg_gain(npmt)
-          endif
-
-         if (haero_adc_neg(ind).gt.8000.and.(haero_adc_neg(ind)-
-     &    haero_neg_adc_threshold(npmt)).ge.0) then
-
-           haero_neg_npe(npmt) = 100.0
+        endif
+        
+***BUG        if (haero_adc_neg(ihit).gt.haero_new_threshold_pos(npmt)) then
+        if (haero_adc_neg(ihit).gt.haero_new_ped_neg(npmt)) then
+           if (haero_adc_neg(ihit).lt.8000.) then
+              haero_neg_npe(npmt) = haero_neg_gain(npmt) * 
+     &             (haero_adc_neg(ihit)-haero_neg_ped_mean(npmt))
+           else
+              haero_neg_npe(npmt) = 100.
            endif
-* 
-         haero_pos_npe_sum = haero_pos_npe_sum + haero_pos_npe(npmt)
-         haero_neg_npe_sum = haero_neg_npe_sum + haero_neg_npe(npmt)
+        endif
+        haero_pos_npe_sum = haero_pos_npe_sum + haero_pos_npe(npmt)
+        haero_neg_npe_sum = haero_neg_npe_sum + haero_neg_npe(npmt)
+
 *
 * sum positive and negative hits 
 * To fill haero_tot_good_hits
 
-         if (haero_pos_npe(npmt).ge.0.1) 
-     &        haero_adc_pos_hits = haero_adc_pos_hits + 1
-             haero_tot_good_hits = haero_tot_good_hits + 1
+        if (haero_pos_npe(npmt).ge.0.1) then
+            haero_adc_pos_hits = haero_adc_pos_hits + 1
+            haero_tot_good_hits = haero_tot_good_hits + 1
+        endif
 
-         if (haero_neg_npe(npmt).ge.0.1) 
-     &        haero_adc_neg_hits = haero_adc_neg_hits + 1
-             haero_tot_good_hits = haero_tot_good_hits + 1
+        if (haero_neg_npe(npmt).ge.0.1) then
+            haero_adc_neg_hits = haero_adc_neg_hits + 1
+            haero_tot_good_hits = haero_tot_good_hits + 1
+        endif
+
+        if (haero_tdc_pos(npmt).ge.0.and.haero_tdc_pos(npmt).le.8000.)
+     &       haero_tdc_pos_hits = haero_tdc_pos_hits + 1 
         
-         if (haero_tdc_pos(npmt).ge.0.and.haero_tdc_pos(npmt).le.8000.) 
-     &        haero_tdc_pos_hits = haero_tdc_pos_hits + 1 
-                
-         if (haero_tdc_neg(npmt).ge.0.and.haero_tdc_neg(npmt).le.8000.) 
-     &        haero_tdc_neg_hits = haero_tdc_neg_hits + 1
-        
-*
+        if (haero_tdc_neg(npmt).ge.0.and.haero_tdc_neg(npmt).le.8000.)
+     &       haero_tdc_neg_hits = haero_tdc_neg_hits + 1
+
       enddo
 
       if (haero_neg_npe_sum.ge.0.1.or.haero_pos_npe_sum.ge.0.1) then
-
          haero_npe_sum = haero_neg_npe_sum + haero_pos_npe_sum
-           else
+      else
          haero_npe_sum = 0.0
       endif
 
@@ -130,32 +147,27 @@
          haero_npe_sum=0.0
       endif
 
+
 * Next, fill the rawadc variables with the actual tube values
 *	mainly for diagnostic purposes.
 
-      do ind=1,haero_tot_hits
+      do ihit=1,haero_tot_hits
 
-         npmt=haero_pair_num(ind)
+         npmt=haero_pair_num(ihit)
 
-         haero_rawadc_pos(npmt)=haero_adc_pos(ind)
-         aero_ep(npmt)=haero_rawadc_pos(ind)        
+         haero_rawadc_pos(npmt)=haero_adc_pos(ihit)
+         aero_ep(npmt)=haero_rawadc_pos(ihit)        
 
-         haero_rawadc_neg(npmt)=haero_adc_neg(ind)
-         aero_en(npmt)=haero_rawadc_neg(ind)
+         haero_rawadc_neg(npmt)=haero_adc_neg(ihit)
+         aero_en(npmt)=haero_rawadc_neg(ihit)
 
-         haero_rawtdc_neg(npmt)=haero_tdc_neg(ind)
-         aero_tn(npmt)= haero_tdc_neg(ind)
+         haero_rawtdc_neg(npmt)=haero_tdc_neg(ihit)
+         aero_tn(npmt)= haero_tdc_neg(ihit)
 
-         haero_rawtdc_pos(npmt)=haero_tdc_pos(ind)
-         aero_tp(npmt)= haero_tdc_pos(ind)
+         haero_rawtdc_pos(npmt)=haero_tdc_pos(ihit)
+         aero_tp(npmt)= haero_tdc_pos(ihit)
 
       enddo
 
       return
-
-*        print *,' '
-
       end
-
-
-
