@@ -10,6 +10,9 @@
 *
 *     Created: 1-Nov-1994   added Ntuples
 * $Log$
+* Revision 1.2  2003/02/12 16:03:21  jones
+* Modified Call G_build_note to have the needed 7 variables instead of 6
+*
 * Revision 1.1  1995/08/11 16:23:18  cdaq
 * Initial revision
 *
@@ -47,7 +50,7 @@
       ABORT= .NOT.HEXIST(id)
       IF(ABORT) THEN
         pat= ': Ntuple ID#$ does not exist'
-        call G_build_note(pat,'$',id,' ',0.,err)
+        call G_build_note(pat,'$',id,' ',0.,' ',err)
         call G_add_path(here,err)
         If(io.GT.0) Then
           call G_IO_control(io,'FREE',FAIL,why) !free up
