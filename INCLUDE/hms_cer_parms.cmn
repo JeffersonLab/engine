@@ -1,0 +1,61 @@
+* hms_cer_parms.cmn
+*
+* $Log$
+* Revision 1.1  1995/08/08 19:15:12  cdaq
+* Initial revision
+*
+*
+*     CTPTYPE=parm
+*
+      real*4 hcer_chi2max
+      real*4 hcer_beta_min
+      real*4 hcer_beta_max
+      real*4 hcer_et_min
+      real*4 hcer_et_max
+      real*4 hcer_mirror_zpos
+      real*4 hcer_region
+      real*4 hcer_min_eff
+      real*4 hcer_threshold
+
+      integer*4 hcer_num_mirrors
+      parameter(hcer_num_mirrors=2)
+      integer*4 hcer_num_regions
+      parameter(hcer_num_regions=hcer_num_mirrors+1)
+
+      common/hms_cer_parms/
+     &   hcer_chi2max,
+     &   hcer_beta_min,
+     &   hcer_beta_max,
+     &   hcer_et_min,
+     &   hcer_et_max,
+     &   hcer_mirror_zpos,
+     &   hcer_region(hcer_num_regions,8),
+     &   hcer_min_eff,
+     &   hcer_threshold
+*
+*     CTPTYPE=parm
+*
+      real*4 hcer_adc_to_npe(hcer_num_mirrors)
+
+      integer*4 hcer_ped(hcer_num_mirrors)
+      integer*4 hcer_width(hcer_num_mirrors)
+
+      common/hms_cer_trans/
+     &   hcer_ped,
+     &   hcer_width,
+     &   hcer_adc_to_npe
+*
+*     CTPTYPE=event
+*
+      real*4 hcer_region_eff(hcer_num_regions)
+
+      integer*4 hcer_track_counter(hcer_num_regions)
+      integer*4 hcer_fired_counter(hcer_num_regions)
+
+      integer*4 hcer_min_counts
+      parameter(hcer_min_counts=1)
+
+      common/hms_cer_effs/
+     &   hcer_track_counter,
+     &   hcer_fired_counter,
+     &   hcer_region_eff

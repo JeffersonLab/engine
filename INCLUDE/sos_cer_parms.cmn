@@ -1,0 +1,61 @@
+* sos_cer_parms.cmn
+*
+* $Log$
+* Revision 1.1  1995/08/08 19:15:10  cdaq
+* Initial revision
+*
+
+*     CTPTYPE=parm
+*
+      real*4 scer_chi2max
+      real*4 scer_beta_min
+      real*4 scer_beta_max
+      real*4 scer_et_min
+      real*4 scer_et_max
+      real*4 scer_mirror_zpos
+      real*4 scer_region
+      real*4 scer_min_eff
+      real*4 scer_threshold
+
+      integer*4 scer_num_mirrors
+      parameter(scer_num_mirrors=4)
+      integer*4 scer_num_regions
+      parameter(scer_num_regions=scer_num_mirrors+1)
+
+      common/sos_cer_parms/
+     &   scer_chi2max,
+     &   scer_beta_min,
+     &   scer_beta_max,
+     &   scer_et_min,
+     &   scer_et_max,
+     &   scer_mirror_zpos,
+     &   scer_region(scer_num_regions,8),
+     &   scer_min_eff,
+     &   scer_threshold
+*
+*     CTPTYPE=parm
+*
+      real*4 scer_adc_to_npe(scer_num_mirrors)
+
+      integer*4 scer_ped(scer_num_mirrors)
+      integer*4 scer_width(scer_num_mirrors)
+
+      common/sos_cer_trans/
+     &   scer_ped,
+     &   scer_width,
+     &   scer_adc_to_npe
+*
+*     CTPTYPE=event
+*
+      real*4 scer_region_eff(scer_num_regions)
+
+      integer*4 scer_track_counter(scer_num_regions)
+      integer*4 scer_fired_counter(scer_num_regions)
+
+      integer*4 scer_min_counts
+      parameter(scer_min_counts=1)
+
+      common/sos_cer_effs/
+     &   scer_track_counter,
+     &   scer_fired_counter,
+     &   scer_region_eff
