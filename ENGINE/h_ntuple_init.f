@@ -10,7 +10,10 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
-* Revision 1.3  1995/01/27 20:09:59  cdaq
+* Revision 1.4  1995/05/11 17:17:38  cdaq
+* (SAW) Allow %d for run number in filenames
+*
+* Revision 1.3  1995/01/27  20:09:59  cdaq
 * (JRA) Add Gas cerenkov to ntuple
 *
 * Revision 1.2  1994/06/17  02:34:12  cdaq
@@ -34,6 +37,7 @@
       INCLUDE 'h_ntuple.dte'
       INCLUDE 'gen_routines.dec'
       include 'gen_data_structures.cmn'
+      include 'gen_run_info.cmn'
 *
       character*80 default_name
       parameter (default_name= 'HMSntuple')
@@ -93,7 +97,10 @@
 *
       id= h_Ntuple_ID
       name= h_Ntuple_name
+
       file= h_Ntuple_file
+      call g_sub_run_number(file,gen_run_number)
+
       recL= default_recL
       io= h_Ntuple_IOchannel
 *
