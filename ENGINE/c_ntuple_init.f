@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.8  1996/09/04 15:29:57  saw
+* (JRA) Modify ntuple contents
+*
 * Revision 1.7  1996/01/22 15:06:25  saw
 * (JRA) Change ntuple contents
 *
@@ -197,8 +200,22 @@
       c_Ntuple_tag(m)= 'ssdedx1'        ! 
       m= m+1
       c_Ntuple_tag(m)= 'charge'         ! Charge of last Scaler Event
-      m= m+1
+      m=m+1
+      c_Ntuple_tag(m)= 'Em'
+      m=m+1
+      c_Ntuple_tag(m)= 'Pm'
+      m=m+1
       c_Ntuple_tag(m)= 'eventID' ! CODA event ID#
+      m=m+1
+      c_Ntuple_tag(m)= 'PmPar'
+      m=m+1
+      c_Ntuple_tag(m)= 'PmPer'
+      m=m+1
+      c_Ntuple_tag(m)= 'PmOop'
+      m=m+1
+      c_Ntuple_tag(m)= 'HmsCorsi'
+      m=m+1
+      c_Ntuple_tag(m)= 'SosCorsi'
       c_Ntuple_size= m
 ***********end insert description of contents of COIN tuple********
 *

@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.8  1996/09/04 15:30:17  saw
+* (JRA) Modify ntuple contents
+*
 * Revision 1.7  1996/04/29 18:44:04  saw
 * (JRA) Add aerogel photon count
 *
@@ -47,15 +50,16 @@
       INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'hms_scin_parms.cmn'
       INCLUDE 'sos_scin_parms.cmn'
+      INCLUDE 'sos_track_histid.cmn'
+      INCLUDE 'sos_aero_parms.cmn'
+      INCLUDE 's_ntuple.cmn'
+      INCLUDE 'sos_tracking.cmn'
       INCLUDE 'gen_event_info.cmn'
       INCLUDE 'gen_scalers.cmn'
-      INCLUDE 'sos_aero_parms.cmn'
 *
       logical HEXIST    !CERNLIB function
 *
       integer m
-      real*4 hpath,spath
-      real*4 sbeta_from_p,sbeta_from_pcent,sdelta_tof
 *
 *--------------------------------------------------------
       err= ' '
@@ -64,84 +68,90 @@
       IF(.NOT.c_Ntuple_exists) RETURN       !nothing to do
 *
 **********begin insert description of contents of COIN tuple ******
-      ctime_coin_cor = smisc_dec_data(9,1)/9.69 - sstime_at_fp + hstime_at_fp
-      hpath = -.0148*hsx_fp+11.6*hsxp_fp-31.8*hsxp_fp*hsxp_fp
-      spath = 2.78*ssxp_fp-4.0*ssxp_fp*ssxp_fp+.00293*ssy_fp
-      sbeta_from_p = ssp/(ssenergy+.00000001)
-      sbeta_from_pcent = spcentral/
-     &     sqrt(spcentral*spcentral+spartmass*spartmass+.0001)
-      sdelta_tof = 7.5/.3/(sbeta_from_p+.000001) - 7.5/.3/sbeta_from_pcent
-      ctime_coin_cor = ctime_coin_cor - hpath + spath/sbeta_from_p - sdelta_tof
 
       m= 0
       m= m+1
-      c_Ntuple_contents(m)= CTIME_COIN_COR ! Corrected Coincidence time
+      c_Ntuple_contents(m)= ccointime_hms ! Corrected Coincidence time
       m= m+1
-      c_Ntuple_contents(m)= GBEAM_X          ! Beam X Position
+      c_Ntuple_contents(m)= gbpm_x(3)   ! Beam X Position
       m= m+1
-      c_Ntuple_contents(m)= GBEAM_Y          ! Beam Y Position
+      c_Ntuple_contents(m)= gbpm_y(3)   ! Beam Y Position
       m= m+1
-      c_Ntuple_contents(m)= GBEAM_XP          ! Beam X Position
+      c_Ntuple_contents(m)= gbpm_xprime(3) ! Beam X Position
       m= m+1
-      c_Ntuple_contents(m)= GBEAM_YP          ! Beam Y Position
+      c_Ntuple_contents(m)= gbpm_yprime(3) ! Beam Y Position
       m= m+1
-      c_Ntuple_contents(m)= HSX_FP         ! HMS Focal Plane
+      c_Ntuple_contents(m)= HSX_FP      ! HMS Focal Plane
       m= m+1
-      c_Ntuple_contents(m)= HSY_FP         ! 
+      c_Ntuple_contents(m)= HSY_FP      ! 
       m= m+1
-      c_Ntuple_contents(m)= HSXP_FP        ! 
+      c_Ntuple_contents(m)= HSXP_FP     ! 
       m= m+1
-      c_Ntuple_contents(m)= HSYP_FP        ! 
+      c_Ntuple_contents(m)= HSYP_FP     ! 
       m= m+1
-      c_Ntuple_contents(m)= SSX_FP         ! SOS Focal Plane
+      c_Ntuple_contents(m)= SSX_FP      ! SOS Focal Plane
       m= m+1
-      c_Ntuple_contents(m)= SSY_FP         ! 
+      c_Ntuple_contents(m)= SSY_FP      ! 
       m= m+1
-      c_Ntuple_contents(m)= SSXP_FP        ! 
+      c_Ntuple_contents(m)= SSXP_FP     ! 
       m= m+1
-      c_Ntuple_contents(m)= SSYP_FP        ! 
+      c_Ntuple_contents(m)= SSYP_FP     ! 
       m= m+1
-      c_Ntuple_contents(m)= HSY_TAR        ! HMS Target
+      c_Ntuple_contents(m)= HSY_TAR     ! HMS Target
       m= m+1
-      c_Ntuple_contents(m)= HSXP_TAR       ! 
+      c_Ntuple_contents(m)= HSXP_TAR    ! 
       m= m+1
-      c_Ntuple_contents(m)= HSYP_TAR       ! 
+      c_Ntuple_contents(m)= HSYP_TAR    ! 
       m= m+1
-      c_Ntuple_contents(m)= HSDELTA        !
+      c_Ntuple_contents(m)= HSDELTA     !
       m= m+1
-      c_Ntuple_contents(m)= SSY_TAR        ! SOS Target
+      c_Ntuple_contents(m)= SSY_TAR     ! SOS Target
       m= m+1
-      c_Ntuple_contents(m)= SSXP_TAR       ! 
+      c_Ntuple_contents(m)= SSXP_TAR    ! 
       m= m+1
-      c_Ntuple_contents(m)= SSYP_TAR       ! 
+      c_Ntuple_contents(m)= SSYP_TAR    ! 
       m= m+1
-      c_Ntuple_contents(m)= SSDELTA        !
+      c_Ntuple_contents(m)= SSDELTA     !
       m= m+1
-      c_Ntuple_contents(m)= HCER_NPE_SUM   ! HMS Particle Id.
+      c_Ntuple_contents(m)= HCER_NPE_SUM ! HMS Particle Id.
       m= m+1
-      c_Ntuple_contents(m)= HSTRACK_ET     !
+      c_Ntuple_contents(m)= HSTRACK_ET  !
       m= m+1
-      c_Ntuple_contents(m)= HSTRACK_PRESHOWER_E     !
+      c_Ntuple_contents(m)= HSTRACK_PRESHOWER_E !
       m= m+1
-      c_Ntuple_contents(m)= HSBETA         !
+      c_Ntuple_contents(m)= HSBETA      !
       m= m+1
-      c_Ntuple_contents(m)= HSDEDX(1)      !
+      c_Ntuple_contents(m)= HSDEDX(1)   !
       m= m+1
-      c_Ntuple_contents(m)= SCER_NPE_SUM   ! SOS Particle Id.
+      c_Ntuple_contents(m)= SCER_NPE_SUM ! SOS Particle Id.
       m= m+1
-      c_Ntuple_contents(m)= SAER_NPE_SUM   ! SAER_NPE_SUM
+      c_Ntuple_contents(m)= SAER_NPE_SUM ! SAER_NPE_SUM
       m= m+1
-      c_Ntuple_contents(m)= SSTRACK_ET     !
+      c_Ntuple_contents(m)= SSTRACK_ET  !
       m= m+1
-      c_Ntuple_contents(m)= SSTRACK_PRESHOWER_E     !
+      c_Ntuple_contents(m)= SSTRACK_PRESHOWER_E !
       m= m+1
-      c_Ntuple_contents(m)= SSBETA         !
+      c_Ntuple_contents(m)= SSBETA      !
       m= m+1
-      c_Ntuple_contents(m)= SSDEDX(1)      !
+      c_Ntuple_contents(m)= SSDEDX(1)   !
       m= m+1
-      c_Ntuple_contents(m)= gbcm1_charge  ! Charge of last scaler event
+      c_Ntuple_contents(m)= gbcm1_charge ! Charge of last scaler event
+      m= m+1
+      c_Ntuple_contents(m)= cmissing_e  ! missing energy
+      m= m+1
+      c_Ntuple_contents(m)= cmissing_mom ! Missing Momentum
       m= m+1
       c_Ntuple_contents(m)= FLOAT(gen_event_ID_number)
+      m= m+1
+      c_Ntuple_contents(m)= cmissing_mom_par ! pm parallel to q
+      m= m+1
+      c_Ntuple_contents(m)= cmissing_mom_perp ! pm perp tp q
+      m= m+1
+      c_Ntuple_contents(m)= cmissing_mom_oop ! pm out of plane
+      m= m+1
+      c_Ntuple_contents(m)= P_HMS_CORR  ! Corrected hms singles
+      m= m+1
+      c_Ntuple_contents(m)= P_SOS_CORR  ! Corrected sos singles
 ***********end insert description of contents of COIN tuple********
 *
       ABORT= .NOT.HEXIST(c_Ntuple_ID)
