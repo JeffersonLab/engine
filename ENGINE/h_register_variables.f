@@ -13,8 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.6  1994/06/16 03:43:47  cdaq
-*     (SAW) Register filenames for reports
+*     Revision 1.7  1994/06/17 03:25:29  cdaq
+*     (KBB) Execute all code despite registration errors
+*
+* Revision 1.6  1994/06/16  03:43:47  cdaq
+* (SAW) Register filenames for reports
 *
 * Revision 1.5  1994/04/12  17:25:03  cdaq
 * (KBB) Add ntuple call
@@ -46,33 +49,42 @@
       INCLUDE 'hms_filenames.cmn'
       INCLUDE 'gen_routines.dec'
 *
-      integer ierr
+      logical FAIL
+      character*1000 why
 *--------------------------------------------------------
       err= ' '
       ABORT = .FALSE.
 *
-      ierr = regparmstring('h_recon_coeff_filename'
-     $     ,h_recon_coeff_filename,0)
-      if(ierr.ne.0) call g_append(err,',"h_recon_coeff_filename"')
-      ABORT = ierr.ne.0.or.ABORT
+      call G_reg_C('h_recon_coeff_filename'
+     $     ,h_recon_coeff_filename,ABORT,err)
 *
-      ierr = regparmstring('h_report_template_filename'
-     $     ,h_report_template_filename,0)
-      if(ierr.ne.0) call g_append(err,',"h_report_template_filename"')
-      ABORT = ierr.ne.0.or.ABORT
+      call G_reg_C('h_report_template_filename'
+     $     ,h_report_template_filename,ABORT,err)
 *
-      ierr = regparmstring('h_report_blockname'
-     $     ,h_report_blockname,0)
-      if(ierr.ne.0) call g_append(err,',"h_report_blockname"')
-      ABORT = ierr.ne.0.or.ABORT
-*
-      if(.not.ABORT) call h_register_param(ABORT,err) ! TRACKING ROUTINE
-*
-      if(.not.ABORT) call h_ntuple_register(ABORT,err)
+      call G_reg_C('h_report_blockname'
+     $     ,h_report_blockname,ABORT,err)
 *
       if(ABORT) then
-         call g_add_path(here,err)
+         call G_prepend(':unable to register',err)
       endif
+*
+      call h_register_param(FAIL,why) ! TRACKING ROUTINE
+      IF(err.NE.' ' .and. why.NE.' ') THEN   !keep warnings
+        call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+        err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL
+*
+      call h_ntuple_register(FAIL,why)
+      IF(err.NE.' ' .and. why.NE.' ') THEN  !keep warnings
+        call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+        err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL
+*
+      if(ABORT .or. err.NE.' ') call G_add_path(here,err)
 *
       return
       end

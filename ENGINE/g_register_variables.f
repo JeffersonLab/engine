@@ -19,8 +19,11 @@
 *     Modified: 24-May-1994 K.B.Beard
 *
 *     $Log$
-*     Revision 1.4  1994/06/16 03:24:28  cdaq
-*     (SAW) Register reconstruction filenames and report generator filenames etc.
+*     Revision 1.5  1994/06/17 03:30:35  cdaq
+*     (KBB) Execute all code despite registration errors
+*
+* Revision 1.4  1994/06/16  03:24:28  cdaq
+* (SAW) Register reconstruction filenames and report generator filenames etc.
 *
 * Revision 1.3  1994/06/07  18:14:57  cdaq
 * (KBB) Add regististration for enable_EvtypeN and triggered_EvTypeN
@@ -45,8 +48,8 @@
       include 'gen_routines.dec'
 *
       integer ierr,m,i
-      logical HMS_ABORT,SOS_ABORT
-      character*132 HMS_err,SOS_err
+      logical FAIL
+      character*1000 why
       character*30 msg
       real rv(10)
 *
@@ -61,7 +64,8 @@
 *     Register the variables that contain the filenames and other
 *     configuration variables.
 *
-      err = ':unable to register'
+      ABORT= .FALSE.
+      err = ' '
 *
       ierr = regparmstring('hist_filename',g_ctp_hist_filename,0)
       if(ierr.ne.0) call G_append(err,',"hist_filename"')
@@ -162,15 +166,15 @@
       ABORT= ierr.ne.0 .or. ABORT
 *
       Do m=0,gen_MAX_trigger_types
-         write(msg,'("enable_EvType",i5)') m
-         call squeeze(msg,i)
-         ierr= regparmint(msg(1:i),gen_run_enable(m),0)
-         if(ierr.ne.0) call G_append(err,',"'//msg(1:i)//'"')
-         ABORT= ierr.ne.0 .or. ABORT
+        call G_build_note('enable_EvType$','$',m,' ',rv,' ',msg)
+        call squeeze(msg,i)
+        ierr= regparmint(msg(1:i),gen_run_enable(m),0)
+        if(ierr.ne.0) call G_append(err,',"'//msg(1:i)//'"')
+        ABORT= ierr.ne.0 .or. ABORT
       EndDo
 *
       Do m=0,gen_MAX_trigger_types
-         write(msg,'("triggered_EvType",i5)') m
+         call G_build_note('triggered_EvType$','$',m,' ',rv,' ',msg)
          call squeeze(msg,i)
          ierr= regparmint(msg(1:i),gen_run_triggered(m),0)
          if(ierr.ne.0) call G_append(err,',"'//msg(1:i)//'"')
@@ -206,32 +210,33 @@
       if(ierr.ne.0) call G_append(err,',"PREF_muddleON"')
       ABORT= ierr.ne.0 .or. ABORT
 *
-      if(abort) then
-         call g_add_path(here,err)
-         return
-      else
-         err= ' '
-      endif
+      IF(ABORT) call G_prepend(':unable to register',err)
 *
-      call h_register_variables(HMS_ABORT, HMS_err) ! HMS
-
-      call s_register_variables(SOS_ABORT, SOS_err) ! SOS
-
-      ABORT= HMS_ABORT .or. SOS_ABORT
-      If(HMS_ABORT .and. .NOT.SOS_ABORT) Then
-         err= HMS_err
-      ElseIf(SOS_ABORT .and. .NOT.HMS_ABORT) Then
-         err= SOS_err
-      ElseIf(HMS_ABORT .and. SOS_ABORT) Then
-         err= '&'//SOS_err
-         call G_prepend(HMS_err,err)
-      EndIf
+      call h_register_variables(FAIL,why) ! HMS
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+        call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+        err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL 
+*     
+      call s_register_variables(FAIL,why) ! SOS
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+        call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+        err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL 
 *
-      if(.not.ABORT) then
-         call c_register_variables(ABORT,err)
-      endif
-
-      if(ABORT .or. err.ne. ' ') call g_add_path(here,err)
-
+      call c_register_variables(FAIL,why)
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+        call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+        err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL 
+*
+      if(ABORT .or. err.NE.' ') call g_add_path(here,err)
+*
       return
       end
