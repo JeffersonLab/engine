@@ -8,7 +8,10 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change HPLANE_PARAM to individual arrays
 * $Log$
-* Revision 1.2  1994/10/12 18:23:47  cdaq
+* Revision 1.3  1994/11/22 20:05:58  cdaq
+* (SAW) Add h's in front of fract, aa3, det3, aainv3.
+*
+* Revision 1.2  1994/10/12  18:23:47  cdaq
 * (DJM) Calculate 3x3 matrices and inverses
 *
 * Revision 1.1  1994/02/19  06:14:45  cdaq
@@ -125,7 +128,7 @@
 *
       enddo                  !  end hdc_num_planes
 
-* djm 10/2/94 generate/store the inverse matrices AAINV3(i,j,pindex) used in solve_3by3_hdc
+* djm 10/2/94 generate/store the inverse matrices HAAINV3(i,j,pindex) used in solve_3by3_hdc
 * pindex = 1    plane 1 missing from hdc1
 * pindex = 2    plane 2 missing from hdc1
 *   etc.
@@ -135,14 +138,14 @@
 * pindex = 13   hdc1 no missing planes
 * pindex = 14   hdc2 no missing planes
 
-      do pindex=1,14
+      do pindex=1, HDC_NUM_PLANES + HDC_NUM_CHAMBERS
 
-* generate the matrix AA3 for an hdc missing a particular plane
+* generate the matrix HAA3 for an hdc missing a particular plane
       do i=1,3
         do j=1,3
-        AA3(i,j)=0.
-         if(j.lt.i)then      ! AA3 is symmetric so only calculate 6 terms
-          AA3(i,j)=AA3(j,i)
+        HAA3(i,j)=0.
+         if(j.lt.i)then      ! HAA3 is symmetric so only calculate 6 terms
+          HAA3(i,j)=HAA3(j,i)
           else
 
 * AA for hdc1          
@@ -153,7 +156,7 @@
            else
            hitormiss=0
            endif
-           AA3(i,j)=AA3(i,j) + hitormiss*hstubcoef(k,i)*hstubcoef(k,j)
+           HAA3(i,j)=HAA3(i,j) + hitormiss*hstubcoef(k,i)*hstubcoef(k,j)
           enddo
          endif
 * AA for hdc2         
@@ -164,7 +167,7 @@
            else
            hitormiss=0
            endif
-           AA3(i,j)=AA3(i,j) + hitormiss*hstubcoef(k,i)*hstubcoef(k,j)
+           HAA3(i,j)=HAA3(i,j) + hitormiss*hstubcoef(k,i)*hstubcoef(k,j)
           enddo
          endif
 
@@ -172,26 +175,26 @@
         enddo  !end j loop
       enddo    !end i loop
 
-* form the inverse matrix AAINV3 for each configuration
-      AAINV3(1,1,pindex)=(AA3(2,2)*AA3(3,3)-AA3(2,3)**2)
-      AAINV3(1,2,pindex)=-(AA3(1,2)*AA3(3,3)-AA3(1,3)*AA3(2,3))
-      AAINV3(1,3,pindex)=(AA3(1,2)*AA3(2,3)-AA3(1,3)*AA3(2,2))
-      DET3(pindex)=AA3(1,1)*AAINV3(1,1,pindex)+AA3(1,2)*AAINV3(1,2,pindex)
-     &            +AA3(1,3)*AAINV3(1,3,pindex)
-       if(abs(det3(pindex)).le.1e-20)then
+* form the inverse matrix HAAINV3 for each configuration
+      HAAINV3(1,1,pindex)=(HAA3(2,2)*HAA3(3,3)-HAA3(2,3)**2)
+      HAAINV3(1,2,pindex)=-(HAA3(1,2)*HAA3(3,3)-HAA3(1,3)*HAA3(2,3))
+      HAAINV3(1,3,pindex)=(HAA3(1,2)*HAA3(2,3)-HAA3(1,3)*HAA3(2,2))
+      HDET3(pindex)=HAA3(1,1)*HAAINV3(1,1,pindex)+HAA3(1,2)*HAAINV3(1,2,pindex)
+     &            +HAA3(1,3)*HAAINV3(1,3,pindex)
+       if(abs(hdet3(pindex)).le.1e-20)then
         write(6,*)'******************************************************'
-        write(6,*)'Warning! Determinate of matrix AA3(i,j) is nearly zero.'
+        write(6,*)'Warning! Determinate of matrix HAA3(i,j) is nearly zero.'
         write(6,*)'All tracks using pindex=',pindex,' will be zerfucked.'
         write(6,*)'Fix problem in h_generate_geometry.f or else!'
         write(6,*)'******************************************************'
-        det3(pindex)=1.
+        hdet3(pindex)=1.
        endif
-      AAINV3(1,1,pindex)=AAINV3(1,1,pindex)/DET3(pindex)
-      AAINV3(1,2,pindex)=AAINV3(1,2,pindex)/DET3(pindex)
-      AAINV3(1,3,pindex)=AAINV3(1,3,pindex)/DET3(pindex)
-      AAINV3(2,2,pindex)=(AA3(1,1)*AA3(3,3)-AA3(1,3)**2)/DET3(pindex)
-      AAINV3(2,3,pindex)= -(AA3(1,1)*AA3(2,3)-AA3(1,2)*AA3(3,1))/DET3(pindex)
-      AAINV3(3,3,pindex)=(AA3(1,1)*AA3(2,2)-AA3(1,2)**2)/DET3(pindex)
+      HAAINV3(1,1,pindex)=HAAINV3(1,1,pindex)/HDET3(pindex)
+      HAAINV3(1,2,pindex)=HAAINV3(1,2,pindex)/HDET3(pindex)
+      HAAINV3(1,3,pindex)=HAAINV3(1,3,pindex)/HDET3(pindex)
+      HAAINV3(2,2,pindex)=(HAA3(1,1)*HAA3(3,3)-HAA3(1,3)**2)/HDET3(pindex)
+      HAAINV3(2,3,pindex)= -(HAA3(1,1)*HAA3(2,3)-HAA3(1,2)*HAA3(3,1))/HDET3(pindex)
+      HAAINV3(3,3,pindex)=(HAA3(1,1)*HAA3(2,2)-HAA3(1,2)**2)/HDET3(pindex)
 
       enddo  !end pindex loop
 
