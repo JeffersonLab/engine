@@ -27,7 +27,11 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
-* Revision 1.11  1994/11/22 20:13:02  cdaq
+* Revision 1.12  1995/01/27 20:12:48  cdaq
+* (SAW) Add hacks to deal with parallel link data.  Pass lastslot variable to
+*       g_decode_fb_detector so it can find 1881M/1877 headers.
+*
+* Revision 1.11  1994/11/22  20:13:02  cdaq
 * (SPB) Update array names for raw SOS Scintillator bank
 *
 * Revision 1.10  1994/06/28  20:01:23  cdaq
@@ -68,7 +72,7 @@
 
       integer*4 pointer                         ! Pointer FB data word
       integer*4 banklength,maxwords
-      integer*4 roc,subadd,slot
+      integer*4 roc,subadd,slot,lastslot
       integer*4 stat_roc
       integer*4 did                             ! Detector ID
       integer*4 g_decode_getdid                 ! Get detector ID routine
@@ -97,6 +101,14 @@
       endif
 *
       pointer = 3                               ! First word of bank
+      if (roc.eq.7 .or. roc.eq.8) pointer=5  !using parallel link, so next
+                                             !2 words are fb roc header.
+      if (roc.eq.7) then                ! Change || link ROC #'s into ROC #'s
+        roc = 2                         ! used by the FB crates
+      else if(roc.eq.8) then            ! so that only one map file is
+        roc = 1                         ! needed.  (SAW 12/11/94)
+      endif
+      lastslot = -1
       do while (pointer .le. banklength)
 
         slot = iand(ishft(bank(pointer),-27),'1F'X)
@@ -117,14 +129,14 @@
 *
             if(did.eq.HDC_ID) then
               pointer = pointer +
-     $             g_decode_fb_detector(roc, bank(pointer), 
+     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &             maxwords, did, 
      $             HMAX_DC_HITS, HDC_RAW_TOT_HITS, HDC_RAW_PLANE_NUM,
      $             HDC_RAW_WIRE_NUM,1 ,HDC_RAW_TDC,0, 0, 0)
 
             else if (did.eq.HSCIN_ID) then
               pointer = pointer +
-     $             g_decode_fb_detector(roc, bank(pointer), 
+     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &             maxwords, did, 
      $             HMAX_ALL_SCIN_HITS, HSCIN_ALL_TOT_HITS, 
      $             HSCIN_ALL_PLANE_NUM, HSCIN_ALL_COUNTER_NUM, 4,
@@ -133,7 +145,7 @@
 
             else if (did.eq.HCAL_ID) then
               pointer = pointer +
-     $             g_decode_fb_detector(roc, bank(pointer), 
+     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &             maxwords, did,
      $             HMAX_CAL_BLOCKS, HCAL_TOT_HITS, HCAL_COLUMN,
      $             HCAL_ROW, 1, HCAL_ADC, 0, 0, 0)
@@ -145,7 +157,7 @@
 *     plane number is.)
 *     
               pointer = pointer +
-     $             g_decode_fb_detector(roc, bank(pointer), 
+     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &             maxwords, did, 
      $             HMAX_CER_HITS, HCER_TOT_HITS, HCER_PLANE,
      $             HCER_TUBE_NUM, 1, HCER_ADC, 0, 0, 0)
@@ -158,7 +170,7 @@
 *     always to 1, and ADDR2 will start at 1.
 *     
               pointer = pointer +
-     $             g_decode_fb_detector(roc, bank(pointer), 
+     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &             maxwords, did, 
      $             HMAX_MISC_HITS, HMISC_TOT_HITS, HMISC_RAW_ADDR1,
      $             HMISC_RAW_ADDR2, 1, HMISC_RAW_DATA, 0, 0, 0)
@@ -169,14 +181,14 @@
 *
             else if(did.eq.SDC_ID) then
               pointer = pointer +
-     $             g_decode_fb_detector(roc, bank(pointer), 
+     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &             maxwords, did,
      $             SMAX_DC_HITS, SDC_RAW_TOT_HITS, SDC_RAW_PLANE_NUM,
      $             SDC_RAW_WIRE_NUM,1 ,SDC_RAW_TDC,0, 0, 0)
 
             else if (did.eq.SSCIN_ID) then
               pointer = pointer +
-     $             g_decode_fb_detector(roc, bank(pointer), 
+     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &             maxwords, did,
      $             SMAX_ALL_SCIN_HITS, SSCIN_ALL_TOT_HITS,
      $             SSCIN_ALL_PLANE_NUM, SSCIN_ALL_COUNTER_NUM, 4,
@@ -185,7 +197,7 @@
 
             else if (did.eq.SCAL_ID) then
               pointer = pointer +
-     $             g_decode_fb_detector(roc, bank(pointer), 
+     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &             maxwords, did, 
      $             SMAX_CAL_BLOCKS, SCAL_TOT_HITS, SCAL_COLUMN, 
      $             SCAL_ROW, 1, SCAL_ADC, 0, 0, 0)
@@ -197,7 +209,7 @@
 *     plane number is.)
 *     
               pointer = pointer +
-     $             g_decode_fb_detector(roc, bank(pointer), 
+     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &             maxwords, did,
      $             SMAX_CER_HITS, SCER_TOT_HITS, SCER_PLANE,
      $             SCER_TUBE_NUM, 1, SCER_ADC, 0, 0, 0)
@@ -210,7 +222,7 @@
 *     always to 1, and ADDR2 will start at 1.
 *     
               pointer = pointer +
-     $             g_decode_fb_detector(roc, bank(pointer), 
+     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &             maxwords, did, 
      $             SMAX_MISC_HITS, SMISC_TOT_HITS, SMISC_RAW_ADDR1,
      $             SMISC_RAW_ADDR2, 1, SMISC_RAW_DATA, 0, 0, 0)
@@ -220,7 +232,7 @@
 *
             else if (did.eq.UNINST_ID) then
               pointer = pointer +
-     $             g_decode_fb_detector(roc, bank(pointer), 
+     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &             maxwords, did, 
      $             GMAX_UNINST_HITS, GUNINST_TOT_HITS, GUNINST_RAW_ROCSLOT,
      $             GUNINST_RAW_SUBADD, 1, GUNINST_RAW_DATAWORD, 0, 0, 0)
@@ -229,10 +241,12 @@
 *     Should never get here.  Unknown detector ID's or did=-1 for bad ROC#
 *     or SLOT# will come here.
 *
-              pointer = pointer + 1     ! Skip Module header words
+              print *,"BAD DID, unknown ROC,SLOT",roc,slot
+              pointer = pointer + 1     ! Skip unknown detector id's
             endif
           else
-            pointer = pointer + 1       ! Skip Bad subaddresses
+            lastslot = slot
+            pointer = pointer + 1       ! Skip Bad subaddresses (module header)
           endif
 *
         else
