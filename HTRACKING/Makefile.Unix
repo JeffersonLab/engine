@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.4  1994/06/14 05:02:00  cdaq
+# Revision 1.5  1994/07/07 15:17:45  cdaq
+# (SAW) Fix a bug so that all sources not get compiled
+#
+# Revision 1.4  1994/06/14  05:02:00  cdaq
 # (SAW) Add h_init_physics and h_physics_stat
 #
 # Revision 1.3  1994/06/07  18:49:33  cdaq
@@ -14,7 +17,7 @@
 #
 include $(Csoft)/etc/Makefile
 
-sources = h_cal.f h_cer.f h_chamnum.f h_dpsifun.f \
+osources = h_cal.f h_cer.f h_chamnum.f h_dpsifun.f \
 	h_drift_dist_calc.f h_drift_time_calc.f h_fcnchisq.f \
 	h_find_best_stub.f h_generate_geometry.f h_left_right.f \
 	h_link_stubs.f h_pattern_recognition.f h_physics.f h_print_links.f \
@@ -32,9 +35,11 @@ newstuff = h_clusters_cal.f h_correct_cal.f \
 	h_prt_track_tests.f h_raw_dump_all.f h_sparsify_cal.f h_tof_fit.f \
 	h_tof_init.f h_tracks_cal.f h_fill_scin_raw_hist.f
 newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f h_register_bypass.f \
-	h_register_statistics.f h_init_physics.f h_physics_stat.f
+	h_register_statistics.f h_init_physics.f h_physics_stat.f \
+	h_strip_scin.f h_choose_single_hit.f
 
-libsources = $(sources) $(newstuff) $(newerstuff)
+sources = $(osources) $(newstuff) $(newerstuff)
+libsources = $(sources)
 
 lib_targets := $(patsubst %.f, libhtracking.a(%.o), $(libsources))
 

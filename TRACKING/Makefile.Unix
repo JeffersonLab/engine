@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.1  1994/04/15 20:27:51  cdaq
+# Revision 1.2  1994/07/07 15:18:09  cdaq
+# (SAW) Fix a bug so that all sources not get compiled
+#
+# Revision 1.1  1994/04/15  20:27:51  cdaq
 # Initial revision
 #
 include $(Csoft)/etc/Makefile
@@ -8,7 +11,7 @@ include $(Csoft)/etc/Makefile
 sources = find_space_points.f select_space_points.f solve_four_by_four.f \
 	solve_three_by_three.f g_init_histid.f
 
-libsources = $(sources) $(newstuff)
+libsources = $(sources)
 
 lib_targets := $(patsubst %.f, libtracking.a(%.o), $(libsources))
 

@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.4  1994/06/22 21:04:29  cdaq
+# Revision 1.5  1994/07/07 15:18:22  cdaq
+# (SAW) Fix a bug so that all sources not get compiled
+#
+# Revision 1.4  1994/06/22  21:04:29  cdaq
 # (SAW) Add g_analyze_scalers.f
 #
 # Revision 1.3  1994/06/14  19:30:33  cdaq
@@ -41,7 +44,9 @@ ntuple_source = c_ntuple_init.f c_ntuple_keep.f \
 	s_ntuple_init.f s_ntuple_keep.f s_ntuple_register.f \
 	s_ntuple_shutdown.f 
 replay_source = engine.f
-libsources = $(coin_source) $(sos_source) $(hms_source) $(general_source) $(ntuple_source)
+
+libsources =  $(coin_source) $(sos_source) $(hms_source) $(general_source) $(ntuple_source)
+
 #short_names = g_xyz_sph.f g_shift_len.f g_sort.f g_rep_err.f g_prepend.f \
 #	g_normalize.f g_add_path.f g_decode_clear.f
 sources = $(libsources) $(replay_source)
