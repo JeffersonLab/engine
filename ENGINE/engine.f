@@ -9,10 +9,13 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 *-    $Log$
-*-    Revision 1.8  1994/06/26 02:07:03  cdaq
-*-    (KBB) Add ability to analyze selected subset of events.  Add evcount stats.
-*-    (SAW) Add call to scaler analysis
+*-    Revision 1.9  1994/07/07 15:28:29  cdaq
+*-    (SAW) Move check for scaler event to proper place
 *-
+* Revision 1.8  1994/06/26  02:07:03  cdaq
+* (KBB) Add ability to analyze selected subset of events.  Add evcount stats.
+* (SAW) Add call to scaler analysis
+*
 * Revision 1.7  1994/06/17  03:35:00  cdaq
 * (KBB) Upgrade error reporting
 *
@@ -199,14 +202,13 @@
                         mss= err
                      endif
                   ENDIF
-               else                     ! Analyze scalers
-*
-* Assume for now that all other event types are scaler events
-*
-                  call g_analyze_scalers(CRAW,ABORT,err)
                endif
             Else
-               call g_examine_control_event(CRAW,ABORT,err)
+               if(evtype.eq.129) then
+                  call g_analyze_scalers(CRAW,ABORT,err)
+               else
+                  call g_examine_control_event(CRAW,ABORT,err)
+               endif
             EndIf
          endif
 *
