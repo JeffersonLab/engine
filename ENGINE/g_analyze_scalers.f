@@ -1,6 +1,15 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
+* Revision 1.15  2003/09/05 20:54:41  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.14.2.2  2003/08/14 00:40:09  cdaq
+* Modify so "beam on" scalers for both bcm1 and bcm2 (mkj)
+*
+* Revision 1.14.2.1  2003/04/11 13:25:11  cdaq
+* Remove old hardwire check on run number
+*
 * Revision 1.14  1999/11/04 20:35:14  saw
 * Linux/G77 compatibility fixes
 *
@@ -198,13 +207,18 @@ c
         ave_current_unser = gunser_gain*((gscaler_change(gunser_index)
      &       /delta_time) - gunser_offset)
 
-        if (gen_run_number.le.6268) then
-          ave_current_bcm2 = gbcm2_gain*sqrt(max(0.0D00,
-     &         (gscaler_change(gbcm2_index)/delta_time)-gbcm2_offset))
-        else
           ave_current_bcm2 = gbcm2_gain*((gscaler_change(gbcm2_index)
      &         /delta_time) - gbcm2_offset)
-        endif
+*
+* Remove old, hardwired check on run number.
+*
+*        if (gen_run_number.le.6268) then
+*          ave_current_bcm2 = gbcm2_gain*sqrt(max(0.0D00,
+*     &         (gscaler_change(gbcm2_index)/delta_time)-gbcm2_offset))
+*        else
+*          ave_current_bcm2 = gbcm2_gain*((gscaler_change(gbcm2_index)
+*     &         /delta_time) - gbcm2_offset)
+*        endif
 
         if (delta_time.gt.0.0001) then
           gbcm1_charge = gbcm1_charge + ave_current_bcm1*delta_time
@@ -216,9 +230,13 @@ c
 *     if needed. I'm only using bcm2 (the current "best" bcm) right
 *     now. This could be changed or added to.
 
-          if (ave_current_bcm2 .ge. g_beam_on_thresh_cur) then
-             g_beam_on_run_time = g_beam_on_run_time + delta_time
-             g_beam_on_bcm_charge = g_beam_on_bcm_charge + ave_current_bcm2*delta_time
+          if (ave_current_bcm2 .ge. g_beam_on_thresh_cur(2)) then
+             g_beam_on_run_time(2) = g_beam_on_run_time(2) + delta_time
+             g_beam_on_bcm_charge(2) = g_beam_on_bcm_charge(2) + ave_current_bcm2*delta_time
+          endif
+          if (ave_current_bcm1 .ge. g_beam_on_thresh_cur(1)) then
+             g_beam_on_run_time(1) = g_beam_on_run_time(1) + delta_time
+             g_beam_on_bcm_charge(1) = g_beam_on_bcm_charge(1) + ave_current_bcm1*delta_time
           endif
 
           gscaler_event_num = gscaler_event_num + 1

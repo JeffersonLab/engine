@@ -1,6 +1,18 @@
       subroutine g_analyze_scaler_bank(event,ABORT,err)
 *     
 *     $Log$
+*     Revision 1.3  2003/09/05 20:54:28  jones
+*     Merge in online03 changes (mkj)
+*
+*     Revision 1.2.2.3  2003/09/04 20:42:17  jones
+*     Changes to run with syncfilter (mkj)
+*
+*     Revision 1.2.2.2  2003/08/14 00:40:09  cdaq
+*     Modify so "beam on" scalers for both bcm1 and bcm2 (mkj)
+*
+*     Revision 1.2.2.1  2003/04/14 18:05:37  jones
+*     Modified to skip first scaler event. gscaler is sum from first scaler event.
+*
 *     Revision 1.2  1999/11/04 20:35:14  saw
 *     Linux/G77 compatibility fixes
 *
@@ -27,6 +39,8 @@
       real*8 realscal
       logical update_bcms
       logical update_helicity_bcms
+      integer analyzed_events(0:15)
+      common /aevents/ analyzed_events
 *     
       integer*4 jiand, jishft, jieor   ! Declare to help f2c
 *     
@@ -43,11 +57,10 @@
 *     
 
       integer evtype, evnum, evlen, pointer
-      integer scalid, countinmod, address, counter
+      integer scalid, countinmod, address, counter,ii
 *     
 *     Temporary variables for beam current and charge calculations
 *     
-      real*8 ave_current_bcm1, ave_current_bcm2, ave_current_bcm3
       real*8 ave_current_unser
       real*8 delta_time
 *     
@@ -80,7 +93,6 @@ c     endif
       evlen = event(1) + 1
       update_bcms = .false.
       update_helicity_bcms = .false.
-
       if(evlen.gt.3) then       ! We have a scaler bank
          pointer = 3
 *     
@@ -162,8 +174,13 @@ c
 *     Save scaler value from previous scaler event:
 
 *     write(101,*) 'scaler index=',ind
-               gscaler_old(ind) = gscaler(ind)
-
+c               gscaler_old(ind) = gscaler(ind)
+c
+               if ( analyzed_events(0) .eq. 1) then
+                  gscaler_old(ind) = 0
+                  gscaler(ind) = 0
+               endif
+c
                if (realscal.lt.-0.5) then
                   realscal=realscal+4294967296.
                endif
@@ -173,10 +190,17 @@ c
                                 !32 bit scaler rolled over.
                   gscaler_nroll(ind)=gscaler_nroll(ind)+1
                endif
-               gscaler(ind) = realscal + gscaler_nroll(ind)*4294967296.
-     $              + gscalweird_lostcounts(ind)
+c               gscaler(ind) = realscal + gscaler_nroll(ind)*4294967296.
+c     $              + gscalweird_lostcounts(ind)
 *     Calculate difference between current scaler value and previous value:
-               gscaler_change(ind) = gscaler(ind) - gscaler_old(ind)
+c               gscaler_change(ind) = gscaler(ind) - gscaler_old(ind)
+               if ( analyzed_events(0) .gt. 1) then
+                   gscaler_change(ind) =  realscal + gscaler_nroll(ind)*4294967296.
+     $              + gscalweird_lostcounts(ind) - gscaler_old(ind)
+                   gscaler(ind) = gscaler_change(ind) + gscaler(ind)
+               endif
+               gscaler_old(ind) = realscal + gscaler_nroll(ind)*4294967296.
+     $              + gscalweird_lostcounts(ind)
             enddo
             pointer = pointer + countinmod + 1 ! Add 17 to pointer
          enddo
@@ -191,30 +215,27 @@ c
          return
       endif
 *     
-*     calculate time of run (must not be zero to avoid div. by zero).
-      g_run_time = max(0.001D00,gscaler(gclock_index)/gclock_rate)
-
 *     Calculate beam current and charge between scaler events
 
-      if (update_bcms) then     ! can't assume in hms crate, moved for some runs
+      if (update_bcms .and. analyzed_events(0) .gt. 1) then   
+c
+       g_run_time = g_run_time + max(0.001D00,gscaler_change(gclock_index)/gclock_rate)
+      delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001D00)
 
-         delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001D00)
-
-c     djm        ave_current_bcm1 = gbcm1_gain*sqrt(max(0.0D00,
-c     &       (gscaler_change(gbcm1_index)/delta_time)-gbcm1_offset))
-         ave_current_bcm1 = gbcm1_gain*((gscaler_change(gbcm1_index)
+         ave_current_bcm(1) = gbcm1_gain*((gscaler_change(gbcm1_index)
      &        /delta_time) - gbcm1_offset)
-         ave_current_bcm3 = gbcm3_gain*((gscaler_change(gbcm3_index)
+         ave_current_bcm(2) = gbcm2_gain*((gscaler_change(gbcm2_index)
+     &        /delta_time) - gbcm2_offset)
+         ave_current_bcm(3) = gbcm3_gain*((gscaler_change(gbcm3_index)
      &        /delta_time) - gbcm3_offset)
          ave_current_unser = gunser_gain*((gscaler_change(gunser_index)
      &        /delta_time) - gunser_offset)
-         ave_current_bcm2 = gbcm2_gain*((gscaler_change(gbcm2_index)
-     &        /delta_time) - gbcm2_offset)
+
 
          if (delta_time.gt.0.0001) then
-            gbcm1_charge = gbcm1_charge + ave_current_bcm1*delta_time
-            gbcm2_charge = gbcm2_charge + ave_current_bcm2*delta_time
-            gbcm3_charge = gbcm3_charge + ave_current_bcm3*delta_time
+            gbcm1_charge = gbcm1_charge + ave_current_bcm(1)*delta_time
+            gbcm2_charge = gbcm2_charge + ave_current_bcm(2)*delta_time
+            gbcm3_charge = gbcm3_charge + ave_current_bcm(3)*delta_time
             gunser_charge = gunser_charge + ave_current_unser*delta_time
 
 *     
@@ -223,11 +244,16 @@ c     &       (gscaler_change(gbcm1_index)/delta_time)-gbcm1_offset))
 *     We'll use bcm1 for now as it's zero seems more stable.  This could change.
 *     
 *     write(6,*) "Checking threshold..."
-            if (ave_current_bcm1 .ge. g_beam_on_thresh_cur) then
-               g_beam_on_run_time = g_beam_on_run_time + delta_time
-               g_beam_on_bcm_charge = g_beam_on_bcm_charge
-     $              + ave_current_bcm1*delta_time
+            if (ave_current_bcm(1) .ge. g_beam_on_thresh_cur(1) .and. insync .eq. 0 ) then
+               g_beam_on_run_time(1) = g_beam_on_run_time(1) + delta_time
+               g_beam_on_bcm_charge(1) = g_beam_on_bcm_charge(1)
+     $              + ave_current_bcm(1)*delta_time
 *     write(6,*) "above threshold (",ave_current_bcm1,")"
+            endif
+            if (ave_current_bcm(2) .ge. g_beam_on_thresh_cur(2) .and. insync .eq. 0) then
+               g_beam_on_run_time(2) = g_beam_on_run_time(2) + delta_time
+               g_beam_on_bcm_charge(2) = g_beam_on_bcm_charge(2)
+     $              + ave_current_bcm(2)*delta_time
             endif
 *     
             gscaler_event_num = gscaler_event_num + 1
@@ -242,10 +268,10 @@ c     &       (gscaler_change(gbcm1_index)/delta_time)-gbcm1_offset))
      &              gscaler_change(gbcm3_index)/delta_time, !scaler rate(Hz)
      &              delta_time  !time since last scaler event (sec)
             endif
-            
          endif
 
       endif
+
 
 
 *     
@@ -253,3 +279,5 @@ c     &       (gscaler_change(gbcm1_index)/delta_time)-gbcm1_offset))
 
       return
       end
+
+
