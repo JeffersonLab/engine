@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.23  2004/05/11 18:24:12  jones
+* Initialize skip_events to false
+*
 * Revision 1.22  2003/09/05 15:48:36  jones
 * Merge in online03 changes (mkj)
 *
@@ -303,6 +306,8 @@
      &               '     BCM3(Hz)     Time(s)'
       endif
 
+c
+      skip_events = .false.
 * Open output file to writeout scalers.
       if (g_writeout_scaler_filename.ne.' ') then
         if ( NUM_WRITEOUT_SCALERS .le. MAX_WRITEOUT_SCALERS) then
