@@ -2,7 +2,10 @@
 *- 
 *-   Created   24-May-1994   Kevin B. Beard, Hampton Univ.
 * $Log$
-* Revision 1.1  1994/06/04 04:49:24  cdaq
+* Revision 1.2  1995/01/31 15:52:22  cdaq
+* (SAW) Add gen_run_hist_dump_interval for in run hist dumping
+*
+* Revision 1.1  1994/06/04  04:49:24  cdaq
 * Initial revision
 *
 *-
@@ -20,5 +23,6 @@
       data gen_run_triggered/0,gen_MAX_trigger_types*0/
 *
       data gen_run_starting_event,gen_run_stopping_event/2*0/
+      data gen_run_hist_dump_interval/0/ ! No in-run dumping by default
 *
 ****************************end: gen_run_info.dte ***********************
