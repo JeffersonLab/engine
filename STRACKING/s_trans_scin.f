@@ -8,7 +8,10 @@
 * needed for the drift chamber and tof analysis.
 *
 * $Log$
-* Revision 1.8  1995/05/11 15:10:59  cdaq
+* Revision 1.9  1995/05/17 16:48:22  cdaq
+* (JRA) Add hscintimes user histogram
+*
+* Revision 1.8  1995/05/11  15:10:59  cdaq
 * (JRA) Replace hardwired TDC offsets with ctp variables.  Fix latent hmsism.
 *
 * Revision 1.7  1995/04/06  19:52:59  cdaq
@@ -45,6 +48,7 @@
       include 'gen_data_structures.cmn'
       include 'sos_scin_parms.cmn'
       include 'sos_scin_tof.cmn'
+      include 'sos_id_histid.cmn'
 
       logical abort
       character*1024 errmsg
@@ -169,6 +173,7 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
         do ihit = 1 , sscin_tot_hits
           if (stwo_good_times(ihit)) then
             fptime  = sscin_cor_time(ihit) - sscin_zpos(ihit)/29.989
+            call hf1(sidscinalltimes,fptime,1.)
             if (abs(fptime-sstart_time_center).le.sstart_time_slop) then
               time_sum = time_sum + fptime
               time_num = time_num + 1
