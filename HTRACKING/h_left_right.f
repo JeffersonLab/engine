@@ -5,7 +5,10 @@
 *     space point.
 *     d. f. geesaman           17 January 1994
 * $Log$
-* Revision 1.1  1994/02/19 06:15:15  cdaq
+* Revision 1.2  1994/08/04 15:03:46  cdaq
+* (DA) Incorporate small angle approximageion of L/R for YY' planes
+*
+* Revision 1.1  1994/02/19  06:15:15  cdaq
 * Initial revision
 *
 *
@@ -20,40 +23,69 @@
 *
 *     local variables
 *
-       character*50 here
-       parameter (here= 'H_LEFT_RIGHT')
+      character*50 here
+      parameter (here= 'H_LEFT_RIGHT')
 *
-       logical ABORT
-       character*(*) err
-      integer*4 isp, ihit,idummy,pmloop
+      logical ABORT
+      character*(*) err
+      integer*4 isp, ihit, iswhit, idummy,pmloop
       integer*4 nplusminus
       integer*4 numhits
-      integer*4 hits(hmax_hits_per_point)
-      integer*4 ichamber,plane
+      integer*4 hits(hmax_hits_per_point),pl(hmax_hits_per_point)
+      integer*4 wc(hmax_hits_per_point)
+      integer*4 plane, isa_y1, isa_y2
+      integer*4 plusminusknown(hmax_hits_per_point)
       real*4 plusminus(hmax_hits_per_point)
       real*4 plusminusbest(hmax_hits_per_point)
       real*4 chi2
       real*4 minchi2
       real*4 stub(4)
+      logical smallAngOK
 *
       ABORT= .FALSE.
       err=':'
 
       do isp=1,hnspace_points_tot             ! loop over all space points
           minchi2=1e10
+          smallAngOK = .FALSE.
+          isa_y1 = 0
+          isa_y2 = 0
           numhits=hspace_point_hits(isp,1)
           nplusminus=2**numhits
           do ihit=1,numhits
-              hits(ihit)=hspace_point_hits(isp,2+ihit)
+             hits(ihit)=hspace_point_hits(isp,2+ihit)
+             pl(ihit)=HDC_PLANE_NUM(hits(ihit))
+             wc(ihit)=HDC_WIRE_CENTER(hits(ihit))
+             plusminusknown(ihit) = 0
+             if(pl(ihit).eq.2 .OR. pl(ihit).eq.8)  isa_y1 = ihit
+             if(pl(ihit).eq.4 .OR. pl(ihit).eq.11) isa_y2 = ihit
           enddo
+*     check if small angle L/R determination of Y and Y' planes is possible
+          if(isa_y1.gt.0 .AND. isa_y2.gt.0) smallAngOK = .TRUE.
+          if((hSmallAngleApprox.ne.0) .AND. (smallAngOK)) then
+             if(wc(isa_y2).le.wc(isa_y1)) then
+                plusminusknown(isa_y1) = -1
+                plusminusknown(isa_y2) = 1
+             else
+                plusminusknown(isa_y1) = 1
+                plusminusknown(isa_y2) = -1
+             endif
+             nplusminus = 2**(numhits-2)
+          endif
 *     use bit value of integer word to set + or -
           do pmloop=0,nplusminus-1
+              iswhit = 1
               do ihit=1,numhits
-                if(jbit(pmloop,ihit).eq.1) then
-                   plusminus(ihit)=1.0
-                else
-                   plusminus(ihit)=-1.0
-                endif
+                 if(plusminusknown(ihit).ne.0) then
+                    plusminus(ihit) = float(plusminusknown(ihit))
+                 else
+                    if(jbit(pmloop,iswhit).eq.1) then
+                       plusminus(ihit)=1.0
+                    else
+                       plusminus(ihit)=-1.0
+                    endif
+                    iswhit = iswhit + 1
+                 endif
               enddo
               call h_find_best_stub(numhits,hits,plusminus,stub,chi2)
               if(hdebugstubchisq.ne.0) then
