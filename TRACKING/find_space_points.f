@@ -4,7 +4,10 @@
      &  nspace_points,space_points,space_point_hits)
 *       Created D.F. Geesaman     Sept 1993       
 * $Log$
-* Revision 1.1  1994/02/19 06:12:06  cdaq
+* Revision 1.2  1994/02/23 13:34:09  cdaq
+* (SAW) Change 2nd arg of space_points_hits declaration from 1 to *
+*
+* Revision 1.1  1994/02/19  06:12:06  cdaq
 * Initial revision
 *
 *
@@ -26,7 +29,7 @@
 *     outputs
       integer*4 nspace_points      ! number of space points in chamber
       real*4 space_points(nspace_point_len,2)     ! xt, yt of each space point
-      integer*4 space_point_hits(nspace_point_len,1)
+      integer*4 space_point_hits(nspace_point_len,*)
 *                                  ! hit numbers for each space point
                                    ! (,1) number of hits
                                    ! (,2) number of combanations attached
