@@ -19,6 +19,9 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.14  1996/04/30 17:13:48  saw
+* (JRA) Add pathlength and rf calculations
+*
 * Revision 1.13  1996/01/24 16:08:14  saw
 * (JRA) Change cpbeam/cebeam to gpbeam/gebeam
 *
@@ -87,6 +90,7 @@
       INCLUDE 'sos_id_histid.cmn'
       INCLUDE 'sos_track_histid.cmn'
       INCLUDE 'gen_event_info.cmn'
+      INCLUDE 'sos_scin_tof.cmn'
 *     
 *     local variables 
       integer*4 i,ip,ihit
@@ -98,6 +102,7 @@
       real*4 cosssthetaq
       real*4 sind,tand
       real*4 p_nonzero,W2
+      real*4 denom
 *     
 *--------------------------------------------------------
 *
@@ -160,6 +165,14 @@
         ssy_s2 = ssy_fp + ssyp_fp * sscin_2x_zpos
         ssx_cal = ssx_fp + ssxp_fp * scal_1pr_zpos
         ssy_cal = ssy_fp + ssyp_fp * scal_1pr_zpos
+
+        ssbeta_p = ssp/max(ssenergy,.00001)
+        sspathlength = 2.78*ssxp_fp - 3.5*ssxp_fp**2 + 2.9e-3*ssy_fp
+        sspath_cor = sspathlength/ssbeta_p -
+     &      spathlength_central/speed_of_light*(1/max(.01,ssbeta_p) - 1)
+
+        ssrftime = smisc_dec_data(8,1)/9.68
+     &           - (sstime_at_fp-sstart_time_center) - sspath_cor
 
         do ip=1,4
           ssscin_elem_hit(ip)=0
@@ -318,8 +331,15 @@ c        sstheta = acos(cossstheta)
           ssw = 0.0
         endif
 
-*     execute physics singles tests
-***   ierr=thtstexeb('sos_physics_sing') ! This is going to get executed twice
+*     Calculate photon energy in GeV(E89-012):
+        denom = sphoto_mtarget - ssenergy + ssp*cos(sstheta)
+        if (abs(denom).le.1.e-10) then
+           ssegamma = -1000.0
+        else
+           ssegamma = ( ssenergy * sphoto_mtarget
+     &       - 0.5*(sphoto_mtarget**2 + sphoto_mparticle**2
+     &       - sphoto_mrecoil**2) ) / denom
+        end if
 *     
 *     Turn on to write raw timing information for fitting
         if(sdebugdumptof.ne.0) call s_dump_tof
