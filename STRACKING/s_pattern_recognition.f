@@ -14,7 +14,10 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
-* Revision 1.5  1995/05/22 19:45:43  cdaq
+* Revision 1.6  1995/07/20 18:58:50  cdaq
+* (SAW) Declare sind and cosd for f2c compatibility
+*
+* Revision 1.5  1995/05/22  19:45:43  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.4  1995/04/06  19:36:53  cdaq
@@ -65,6 +68,7 @@
       real*4 up_pos, u_drifttime_corr, vp_pos, v_drifttime_corr
       real*4 s_drift_dist_calc
       external s_drift_dist_calc
+      real*4 sind,cosd
 
 *
 *     temporary initialization
