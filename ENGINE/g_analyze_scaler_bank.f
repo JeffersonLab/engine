@@ -1,6 +1,11 @@
       subroutine g_analyze_scaler_bank(event,ABORT,err)
 *     
 *     $Log$
+*     Revision 1.4  2004/05/11 18:31:22  jones
+*     If using syncfilter and time between scaler reads is larger than 2.5 seconds
+*     then set "skip_event" to true so that g_beam_on_run_time and g_beam_on_bcm_charge are not updated and events are skipped
+*     in engine.
+*
 *     Revision 1.3  2003/09/05 20:54:28  jones
 *     Merge in online03 changes (mkj)
 *
@@ -221,7 +226,13 @@ c
 c
        g_run_time = g_run_time + max(0.001D00,gscaler_change(gclock_index)/gclock_rate)
       delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001D00)
-
+c
+               skip_events = .false.
+               if (syncfilter_on .and. delta_time .gt. 2.5 ) then
+                 write(*,*) ' Skip events for this scaler read since delta_time = ',delta_time
+                 skip_events = .true.
+               endif
+c
          ave_current_bcm(1) = gbcm1_gain*((gscaler_change(gbcm1_index)
      &        /delta_time) - gbcm1_offset)
          ave_current_bcm(2) = gbcm2_gain*((gscaler_change(gbcm2_index)
@@ -244,13 +255,13 @@ c
 *     We'll use bcm1 for now as it's zero seems more stable.  This could change.
 *     
 *     write(6,*) "Checking threshold..."
-            if (ave_current_bcm(1) .ge. g_beam_on_thresh_cur(1) .and. insync .eq. 0 ) then
+            if (ave_current_bcm(1) .ge. g_beam_on_thresh_cur(1) .and. insync .eq. 0 .and. .not. skip_events) then
                g_beam_on_run_time(1) = g_beam_on_run_time(1) + delta_time
                g_beam_on_bcm_charge(1) = g_beam_on_bcm_charge(1)
      $              + ave_current_bcm(1)*delta_time
 *     write(6,*) "above threshold (",ave_current_bcm1,")"
             endif
-            if (ave_current_bcm(2) .ge. g_beam_on_thresh_cur(2) .and. insync .eq. 0) then
+            if (ave_current_bcm(2) .ge. g_beam_on_thresh_cur(2) .and. insync .eq. 0 .and. .not. skip_events) then
                g_beam_on_run_time(2) = g_beam_on_run_time(2) + delta_time
                g_beam_on_bcm_charge(2) = g_beam_on_bcm_charge(2)
      $              + ave_current_bcm(2)*delta_time
