@@ -1,6 +1,10 @@
       subroutine h_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.13.2.4  2003/04/16 12:10:27  cdaq
+* Modified max(1.,haero_pos_ped_num(pmt)) to max(1.,float(haero_pos_ped_num(pmt)))
+* and same for haero_neg_ped_num to compile on the Alpha machine (EB)
+*
 * Revision 1.13.2.3  2003/04/09 16:56:40  cdaq
 * Modified to force haero_new_threshold_neg = 400 and pos = 400 (MKJ)
 *
@@ -226,7 +230,7 @@
       do pmt = 1 , hmax_aero_hits
 
 *calculate new pedestal values, positive tubes first
-        num=max(1.,haero_pos_ped_num(pmt))
+        num=max(1.,float(haero_pos_ped_num(pmt)))
         haero_new_ped_pos(pmt) = float(haero_pos_ped_sum(pmt)) / num
         sig2 = float(haero_pos_ped_sum2(pmt))/num - 
      &            haero_new_ped_pos(pmt)**2
@@ -247,7 +251,7 @@ c
         endif
 
 *do it all again for negative tubes.
-        num=max(1.,haero_neg_ped_num(pmt))
+        num=max(1.,float(haero_neg_ped_num(pmt)))
         haero_new_ped_neg(pmt) = float(haero_neg_ped_sum(pmt)) / num
         sig2 = float(haero_neg_ped_sum2(pmt))/num - 
      &            haero_new_ped_neg(pmt)**2
