@@ -12,9 +12,12 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified 1-Dec-1993    KBB: borrowed L.Dennis's hall B routines
 *-   $Log$
-*-   Revision 1.2  1994/02/11 15:43:08  cdaq
-*-   Replace fbgen library call with plain evread call
+*-   Revision 1.3  1994/04/12 18:45:53  cdaq
+*-   (SAW) Add include for the CRAW event buffer common
 *-
+* Revision 1.2  1994/02/11  15:43:08  cdaq
+* Replace fbgen library call with plain evread call
+*
 * Revision 1.1  1994/02/01  20:40:55  cdaq
 * Initial revision
 *
@@ -34,6 +37,7 @@
       character*(*) err
 *
       INCLUDE 'gen_data_structures.cmn'
+      include 'gen_craw.cmn'
       INCLUDE 'gen_filenames.cmn'
 *
       integer maxsize
