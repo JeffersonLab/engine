@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.28.10.1  2004/09/21 15:28:22  jones
+# Version for the baryon cvs branch
+#
 # Revision 1.28  2004/02/18 14:06:53  jones
 # Updated compile subroutines needed to allow the possibility of segmenting rzdat files.
 #
@@ -122,7 +125,7 @@ sos_source = s_clear_event.f s_initialize.f s_keep_results.f \
 	s_ntuple_close.f s_ntuple_open.f s_ntuple_change.f       
 coin_source = c_register_variables.f c_clear_event.f c_initialize.f \
 	c_keep_results.f c_proper_shutdown.f c_reconstruction.f \
-	c_reset_event.f c_physics.f \
+	c_reset_event.f c_physics.f delta_physics.f \
 	c_ntuple_close.f c_ntuple_open.f c_ntuple_change.f       
 ntuple_source = g_ntuple_init.f g_ntuple_shutdown.f \
 	c_ntuple_clear.f c_ntuple_init.f c_ntuple_keep.f \

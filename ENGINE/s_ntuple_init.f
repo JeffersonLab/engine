@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.8.12.1  2004/09/21 15:28:22  jones
+* Version for the baryon cvs branch
+*
 * Revision 1.8  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -119,20 +122,11 @@ c
          write(*,*) ' Not using segmented SOS rzdat files first filename: ',file  
       endif
 *
-      m= 0
-      m= m+1
-      s_Ntuple_tag(m)= 'omega' ! 
-      m= m+1
-      s_Ntuple_tag(m)= 'q2' ! 
-      m= m+1
-      s_Ntuple_tag(m)= 'xbj' ! 
-      m= m+1
-      s_Ntuple_tag(m)= 'qabs' ! 
-      m= m+1
-      s_Ntuple_tag(m)= 'W2' ! 
-      m= m+1
-      s_Ntuple_tag(m)= 'ssthet_g' ! 
 
+
+* Open ntuple.
+*
+      m= 0
       m= m+1
       s_Ntuple_tag(m)= 'scer_npe' ! cerenkov photoelectron spectrum
       m= m+1
@@ -175,34 +169,13 @@ c
       m= m+1
       s_Ntuple_tag(m)= 'eventID'
       m= m+1
-      s_Ntuple_tag(m)= 'evtype'
-      m= m+1
       s_Ntuple_tag(m)= 'sstart'
       m= m+1
       s_Ntuple_tag(m)= 'SAER_NPE' 
-
-
-* Experiment dependent entries start here.
-      m= m+1
-      s_Ntuple_tag(m)= 'gfrx_raw'
-      m= m+1
-      s_Ntuple_tag(m)= 'gfry_raw'
       m= m+1
       s_Ntuple_tag(m)= 'gbeam_x'
       m= m+1
       s_Ntuple_tag(m)= 'gbeam_y'
-      m= m+1
-      s_Ntuple_tag(m)= 'bpma_x'
-      m= m+1
-      s_Ntuple_tag(m)= 'bpma_y'
-      m= m+1
-      s_Ntuple_tag(m)= 'bpmb_x'
-      m= m+1
-      s_Ntuple_tag(m)= 'bpmb_y'
-      m= m+1
-      s_Ntuple_tag(m)= 'bpmc_x'
-      m= m+1
-      s_Ntuple_tag(m)= 'bpmc_y'
       m= m+1
       s_Ntuple_tag(m)= 'MPSclock'
       m= m+1
@@ -217,10 +190,10 @@ c
       s_Ntuple_tag(m)= 'sceradc3'
       m= m+1
       s_Ntuple_tag(m)= 'sceradc4'
-
-
-* Open ntuple.
-*
+      m= m+1
+      s_Ntuple_tag(m)= 'ssc1xpd'
+      m= m+1
+      s_Ntuple_tag(m)= 'ssc2xpd'
       s_Ntuple_size= m     !total size
 *
 * Open ntuple

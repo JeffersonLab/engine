@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.8.12.1  2004/09/21 15:28:22  jones
+* Version for the baryon cvs branch
+*
 * Revision 1.8  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -54,7 +57,6 @@
 *
       INCLUDE 's_ntuple.cmn'
       INCLUDE 'sos_data_structures.cmn'
-      INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_event_info.cmn'
       INCLUDE 'sos_tracking.cmn'
       INCLUDE 'sos_physics_sing.cmn'
@@ -62,7 +64,7 @@
       include 'sos_track_histid.cmn'
       include 'sos_aero_parms.cmn'
       include 'sos_scin_parms.cmn'
-      INCLUDE 'sos_calorimeter.cmn'
+      include 'gen_data_structures.cmn'
 *
       logical HEXIST    !CERNLIB function
 *
@@ -90,20 +92,6 @@ c
 *
       m= 0
       m= m+1
-      s_Ntuple_contents(m)= SSOMEGA !
-      m= m+1
-      s_Ntuple_contents(m)= SSBIGQ2 !
-      m= m+1
-      s_Ntuple_contents(m)= SSX_bj !
-      m= m+1
-      s_Ntuple_contents(m)= SSQ3 !
-      Wsq=SINVMASS*SINVMASS
-      m= m+1
-      s_Ntuple_contents(m)= Wsq !
-      m= m+1
-      s_Ntuple_contents(m)= SSTHET_GAMMA !
-
-      m= m+1
       s_Ntuple_contents(m)= SCER_NPE_SUM ! cerenkov photoelectron spectrum
       m= m+1
       s_Ntuple_contents(m)= SSP	! Lab momentum of chosen track in GeV/c
@@ -125,7 +113,7 @@ c
       m= m+1
       s_Ntuple_contents(m)= SSBETA	! BETA of chosen track
       m= m+1
-      s_Ntuple_contents(m)= SSSHTRK	! Total shower energy / momentum
+      s_Ntuple_contents(m)= SSTRACK_ET	! Total shower energy of chosen track
       m= m+1
       s_Ntuple_contents(m)= SSTRACK_PRESHOWER_E	! preshower of chosen track
       m= m+1
@@ -145,32 +133,13 @@ c
       m= m+1
       s_Ntuple_contents(m)= float(gen_event_ID_number)
       m= m+1
-      s_Ntuple_contents(m)= float(gen_event_type)
-      m= m+1
       s_Ntuple_contents(m)= sstart_time
       m= m+1
       s_Ntuple_contents(m)= saer_npe_sum
-c
-      m= m+1
-      s_Ntuple_contents(m)= gfrx_raw_adc
-      m= m+1
-      s_Ntuple_contents(m)= gfry_raw_adc
       m= m+1
       s_Ntuple_contents(m)= gbeam_x
       m= m+1
       s_Ntuple_contents(m)= gbeam_y
-      m= m+1
-      s_Ntuple_contents(m)= gbpm_x(1)
-      m= m+1
-      s_Ntuple_contents(m)= gbpm_y(1)
-      m= m+1
-      s_Ntuple_contents(m)= gbpm_x(2)
-      m= m+1
-      s_Ntuple_contents(m)= gbpm_y(2)
-      m= m+1
-      s_Ntuple_contents(m)= gbpm_x(3)
-      m= m+1
-      s_Ntuple_contents(m)= gbpm_y(3)
       m= m+1
       s_Ntuple_contents(m)= smisc_dec_data(2,2)
       m= m+1
@@ -189,6 +158,17 @@ c      s_Ntuple_contents(m)= smisc_dec_data(5,2)
       m= m+1
 c      s_Ntuple_contents(m)= smisc_dec_data(6,2) 
        s_Ntuple_contents(m)= scer_adc(4)
+        do ihit=1,sscin_all_tot_hits
+          if ( sscin_all_plane_num(ihit) .eq. 1 ) then
+             s_Ntuple_contents(m)=sscin_all_counter_num(ihit)  
+          endif
+        enddo
+      m=m+1
+        do ihit=1,sscin_all_tot_hits
+          if ( sscin_all_plane_num(ihit) .eq. 3 ) then
+             s_Ntuple_contents(m)=sscin_all_counter_num(ihit)  
+          endif
+        enddo
 
 
 * Experiment dependent entries start here.
