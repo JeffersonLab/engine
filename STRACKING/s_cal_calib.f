@@ -39,6 +39,7 @@ c
 
       if (ncall .eq. 1) then
 	call g_IO_control(spare_id,'ANY',ABORT,err)  !get IO channel
+	 call SYSTEM ('rm s_cal_calib_raw_data')
          open(spare_id,file='s_cal_calib.raw_data')
          do ipmt=1,66
             nct_hit_blk(ipmt)=0
@@ -53,7 +54,8 @@ c        Choose clean single electron tracks within SOS momentum acceptance.
      &        (sntracks_cal.eq.1).and.
      &        (scer_npe_sum.gt.4).and.
      &        (abs(sdelta_tar(1)).lt.20.).and.
-     &        (abs(sbeta(1)-1.).lt.0.1).and.
+     &        (scal_et/spcentral.gt.0.85).and.
+!     &        (abs(sbeta(1)-1.).lt.0.1).and.
      &        spare_id .ne. 0 ) then
 ***   &     (sbeta_chisq(1).ge.0.).and.(sbeta_chisq(1).lt.1.)  ) then
 
