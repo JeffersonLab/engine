@@ -11,10 +11,13 @@
 *- 
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
-*-    $Log$
-*-    Revision 1.8  1995/05/22 20:50:48  cdaq
-*-    (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
-*-
+* $Log$
+* Revision 1.9  1995/09/01 13:40:55  cdaq
+* (JRA) Clear some cerenkov variables
+*
+* Revision 1.8  1995/05/22  20:50:48  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
 * Revision 1.7  1995/05/11  15:08:57  cdaq
 * (SAW) Add clear of Aerogel hit counter
 *
@@ -55,9 +58,10 @@
       INCLUDE 'sos_statistics.cmn'
       INCLUDE 'sos_scin_tof.cmn'
       INCLUDE 'sos_scin_parms.cmn'
+      INCLUDE 'sos_cer_parms.cmn'
       INCLUDE 'sos_calorimeter.cmn'
 *     
-      INTEGER plane
+      INTEGER plane,tube
 *     
 *--------------------------------------------------------
 *     
@@ -85,6 +89,11 @@
 *     SOS CERENKOV HITS
 *     
       SCER_TOT_HITS= 0
+      do tube = 1, SMAX_CER_HITS
+        SCER_ADC(tube) = 0
+        SCER_NPE(tube) = 0.
+      enddo
+
 *
 *     SOS AEROGEL HITS
 *

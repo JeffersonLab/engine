@@ -11,9 +11,12 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.10  1995/05/22 20:50:46  cdaq
-*-    (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*-    Revision 1.11  1995/09/01 13:36:45  cdaq
+*-    (JRA) Clear some cerenkov variables
 *-
+* Revision 1.10  1995/05/22  20:50:46  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
 * Revision 1.9  1995/03/13  18:12:46  cdaq
 * (SAW) Include file ordering
 *
@@ -62,10 +65,11 @@
       INCLUDE 'hms_statistics.cmn'
       INCLUDE 'hms_scin_parms.cmn'
       INCLUDE 'hms_scin_tof.cmn'
+      INCLUDE 'hms_cer_parms.cmn'
       INCLUDE 'hms_calorimeter.cmn'
 
 *
-      INTEGER plane
+      INTEGER plane,tube
 *
 *--------------------------------------------------------
 *
@@ -93,6 +97,10 @@
 *     HMS CERENKOV HITS
 *
       HCER_TOT_HITS= 0
+      do tube = 1, HMAX_CER_HITS
+        HCER_ADC(tube) = 0
+        HCER_NPE(tube) = 0.
+      enddo
 *
 *     HMS Miscleaneous hits
 *
