@@ -10,6 +10,9 @@
 *-   Created  30-Nov-1993   Kevin B. Beard
 *
 * $Log$
+* Revision 1.5  2002/09/25 13:51:30  jones
+*     add code for analyzing segmented data files.
+*
 * Revision 1.4  1996/01/16 18:16:01  cdaq
 * no change
 *
@@ -39,9 +42,12 @@
       INCLUDE 'gen_filenames.cmn'
       INCLUDE 'gen_run_info.cmn'
 *
+      integer g_important_length
+*
       integer*4 status
       integer*4 evopen                          ! CODA routine
       character*132 file
+      integer fname_len
 *
 *--------------------------------------------------------
       err= ' '
@@ -53,9 +59,25 @@
       status = evopen(file,'r',g_data_source_in_hndl)
       if(status.ne.0) then
 *         call cemsg(status,0,err)
-         g_data_source_opened = .false.
+*     If filename doesn't end in a digit, try adding ".0" to the end and
+*     opening that.
+         fname_len = g_important_length(file)
+         if(ichar(file(fname_len:fname_len)).le.ichar('0')
+     $        .or.ichar(file(fname_len:fname_len)).ge.ichar('9')) then
+            g_segment = 0       ! First segment
+            file(fname_len+1:fname_len+2) = '.0'
+            status = evopen(file,'r',g_data_source_in_hndl)
+            if(status.ne.0) then
+               g_data_source_opened = .false.
+            else
+               g_data_source_opened = .true.
+            endif
+         else
+            g_data_source_opened = .false.   
+         endif
       else
          g_data_source_opened = .true.
+         g_segment = -1         ! Not segmented
       endif
 *
       IF(.not.g_data_source_opened) THEN
