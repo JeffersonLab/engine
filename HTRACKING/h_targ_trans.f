@@ -16,7 +16,11 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
-* Revision 1.6  1994/10/11 19:11:33  cdaq
+* Revision 1.7  1995/02/10 18:46:01  cdaq
+* (SAW) Convert focal plane slopes to angles before COSY transport.
+* Target track data is now angles.
+*
+* Revision 1.6  1994/10/11  19:11:33  cdaq
 * (SAW) Are the target traceback calculations right now???
 *
 * Revision 1.5  1994/08/18  04:29:59  cdaq
@@ -105,15 +109,16 @@
          enddo
 
 * Load track data into local array, Converting to COSY units.
+* Note:  At this point, the focal plane variables hxp_fp and hyp_fp are
+* still slopes.  We convert them to angles before running them through the
+* COSY transport matrices.
 * It is assumed that the track coordinates are reported at
 * the same focal plane as the COSY matrix elements were calculated.
-* Also note that the COSY track slopes HUT(2) and HUT(4) are actually
-* the SINE of the track angle in the XZ and YZ planes.
 
          hut(1) = hx_fp(itrk)/100.      !Meters.
-         hut(2) = sin(atan(hxp_fp(itrk))) !SINE.
+         hut(2) = atan(hxp_fp(itrk))    !Convert slope to angle
          hut(3) = hy_fp(itrk)/100.      !Meters.
-         hut(4) = sin(atan(hyp_fp(itrk))) !SINE.
+         hut(4) = atan(hyp_fp(itrk))    !Convert slope to angle
 
 
 * Compute COSY sums.
@@ -142,11 +147,11 @@
 
 **ROLF         hxp_tar(itrk) = atan(sum(1))	!Slope (dX/dZ)
 **ROLF         hyp_tar(itrk) = atan(sum(3))   !Slope (dY/dZ)
-         hx_tar(itrk) = sum(2)*100.     !cm.
-         hxp_tar(itrk) = tan(asin(sum(1))) !Slope (dX/dZ)
-         hy_tar(itrk) = 0.              ! ** No beam raster **
-         hyp_tar(itrk) = tan(asin(sum(3))) !Slope (dY/dZ)
-         hz_tar(itrk) = 0.              !Track is at origin.
+         hx_tar(itrk) = 0.              ! ** No beam raster **
+         hy_tar(itrk) = sum(2)*100.     !cm.
+         hxp_tar(itrk) =sum(1)          !Angle xp
+         hyp_tar(itrk) = sum(3)         !Angle yp
+
          hdelta_tar(itrk) = sum(4)*100. !percent.
          HP_TAR(itrk)  = HPCENTRAL*(1.0 + sum(4)) !Momentum in GeV
 
