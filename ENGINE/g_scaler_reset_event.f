@@ -15,6 +15,9 @@
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 *
 * $Log$
+* Revision 1.4.2.2  2003/09/04 21:02:03  jones
+* changes to run with syncfilter (mkj)
+*
 * Revision 1.4.2.1  2003/08/14 00:40:09  cdaq
 * Modify so "beam on" scalers for both bcm1 and bcm2 (mkj)
 *
@@ -52,6 +55,8 @@
 *     
       do ind = 1 , max_num_scalers
         gscaler(ind) = 0.
+        gscaler_skipped(ind) = 0.
+        gscaler_saved(ind) = 0.
         gscaler_old(ind) = 0.
         gscaler_nroll(ind) = 0
         gscaler_change(ind) = 0.
@@ -67,10 +72,8 @@
 *
       g_run_time = 0.
       g_beam_on_run_time(1) = 0.    ! Have to do this, because I have to accumlate
-                                 ! this value (unlike g_run_time)
       g_beam_on_bcm_charge(1) = 0.
       g_beam_on_run_time(2) = 0.    ! Have to do this, because I have to accumlate
-                                 ! this value (unlike g_run_time)
       g_beam_on_bcm_charge(2) = 0.
 *
       ABORT= .FALSE.
