@@ -53,7 +53,7 @@ c        Choose clean single electron tracks within SOS momentum acceptance.
      &        (sntracks_cal.eq.1).and.
      &        (scer_npe_sum.gt.4).and.
      &        (abs(sdelta_tar(1)).lt.20.).and.
-***   &        (abs(sbeta(1)-1.).lt.0.05)  .and.!seems doesn't work in SOS.
+     &        (abs(sbeta(1)-1.).lt.0.1).and.
      &        spare_id .ne. 0 ) then
 ***   &     (sbeta_chisq(1).ge.0.).and.(sbeta_chisq(1).lt.1.)  ) then
 
