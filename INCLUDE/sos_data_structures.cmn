@@ -5,7 +5,10 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
-* Revision 1.1  1995/05/22 18:42:33  cdaq
+* Revision 1.2  1995/08/11 16:29:08  cdaq
+* (CC) Add structure for # of photoelectrons in Cerenkov
+*
+* Revision 1.1  1995/05/22  18:42:33  cdaq
 * Initial revision
 *
 *
@@ -291,6 +294,17 @@
      &     SCER_PLANE(SMAX_CER_HITS),
      &     SCER_TOT_HITS
 *
+*
+*     DECODED CERENKOV QUANTITIES
+*     FILLED BY S_TRANS_CER
+*
+      INTEGER*4 SCER_NUM_HITS      ! NUMBER OF CERENKOV HITS ABOVE THRESHOLD
+      REAL*4 SCER_NPE              ! ADC CONVERTED TO NUMBER OF PHOTOELECTRONS
+      REAL*4 SCER_NPE_SUM          ! SUM OVER TUBES OF NPE'S
+      COMMON/SCER_DECODED_CER/
+     &     SCER_NUM_HITS,
+     &     SCER_NPE(SMAX_CER_HITS),
+     &     SCER_NPE_SUM
 *
 *
 *
