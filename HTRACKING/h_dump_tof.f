@@ -18,7 +18,10 @@
 * for each signal.
 *
 * $Log$
-* Revision 1.1  1995/01/31 21:34:03  cdaq
+* Revision 1.2  1995/05/11 19:03:50  cdaq
+* (JRA) Formatting changes
+*
+* Revision 1.1  1995/01/31  21:34:03  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -46,7 +49,8 @@
         betap=1.
         write(37,111) hsnum_pmt_hit,hsx_fp,hsxp_fp,
      $       hsy_fp,hsyp_fp,betap
- 111    format(i4,5f10.5)
+ 111    format(i3,f10.5,f8.5,f10.5,f8.5,f7.3)
+* 111    format(i4,5f10.5)
         do ind = 1, hsnum_scin_hit
           hit = hscin_hit(hsnum_fptrack,ind)
           if (hscin_tdc_pos(hit) .ge. hscin_tdc_min .and.  
@@ -70,7 +74,8 @@
             write(37,112) pmt,cnt,lay,dir,ph,tim
           endif
         enddo
- 112    format(4i4,2f12.6)
+ 112    format(i2,i3,i2,i2,f7.1,f8.3)
+* 112    format(4i4,2f12.6)
       endif
       RETURN
       END
