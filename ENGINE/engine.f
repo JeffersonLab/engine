@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.32.2.3  2003/04/09 02:47:00  cdaq
+* Update readout code to ignore HV and EPICS events when searching for run_info event
+*
 * Revision 1.32.2.2  2003/04/03 01:02:44  cdaq
 * match main branch apr-02-2003
 *
@@ -181,7 +184,7 @@ c
 *--------------------------------------------------------
 *
       print *
-      print *,'  test Hall C Proudly Presents: PHYSICS Analysis Engine'
+      print *,'  Hall C Proudly Presents: PHYSICS Analysis Engine'
 
       print *
 
@@ -340,16 +343,16 @@ c
             stheta_lab=abs(tsos)
             write(6,*) '   gtarg_num  =',abs(ntarg)
             gtarg_num=ntarg
+          else if (gen_event_type.eq.131 .or. gen_event_type.eq.132) then! EPICS event
+            call g_examine_epics_event
           else if (gen_event_type.eq.133) then  !SAW's new go_info events
              call g_examine_go_info(CRAW,ABORT,err)
+          else if (gen_event_type.eq.141 .or. gen_event_type.eq.142 .or.
+     &             gen_event_type.eq.144) then
+*             write(6,*) 'HV information event, event type=',gen_event_type
           else
             call g_examine_control_event(CRAW,ABORT,err)
           endif
-
-!          if (gen_event_type.eq.131.or.gen_event_type.eq.132.or.gen_event_type.eq.133) then !past run info event. must be missing
-!            write(6,*) "no run information event found"
-!            finished_extracting=.true.
-!          endif
 
 ! Go event is last 'nice tag' for point where we should have already seen
 ! run-info event.
