@@ -6,6 +6,9 @@
 * s_trans_misc fills the sos_decoded_misc common block
 *
 * $Log$
+* Revision 1.4  1996/01/24 16:08:38  saw
+* (JRA) Replace 48 with smax_misc_hits
+*
 * Revision 1.3  1996/01/17 18:12:35  cdaq
 * (JRA) Misc. fixes.
 *
@@ -32,18 +35,14 @@
 
       save
       
-      do ihit = 1 , 48
-        smisc_dec_data(ihit)=-1         ! clear ADC's.
+      do ihit = 1 , smax_misc_hits
+        smisc_dec_data(ihit,1) = 0     ! Clear TDC's
+        smisc_dec_data(ihit,2) = -1     ! Clear ADC's
       enddo
 
       do ihit = 1 , smisc_tot_hits
-c        write(60,*) ihit, smisc_raw_addr1(ihit), smisc_raw_addr2(ihit), smisc_raw_data(ihit)
-c        write(61,*) ihit, smisc_raw_addr2(ihit), smisc_raw_data(ihit)
-        smisc_dec_data(smisc_raw_addr2(ihit)) = smisc_raw_data(ihit)
-      enddo
-
-      do ihit = 1 , 48
-c        write(62,*) ihit, smisc_dec_data(ihit)
+        smisc_dec_data(smisc_raw_addr2(ihit),smisc_raw_addr1(ihit)) =
+     $       smisc_raw_data(ihit)
       enddo
 
       return
