@@ -2,6 +2,9 @@
 *
 *-Common block with filenames
 *     $Log$
+*     Revision 1.12  1996/11/19 18:13:44  saw
+*     (SAW) Add some filenames and variables for LUN's
+*
 *     Revision 1.11  1996/09/04 15:48:00  saw
 *     (JRA) Add flags for writting out preproccesd (filtered) events
 *
@@ -43,6 +46,12 @@
       integer G_LUN_TEMP
       parameter (G_LUN_TEMP= G_LUN_CONFIG+1)
 *
+      integer G_LUN_CHARGE_SCALER
+      parameter (G_LUN_CHARGE_SCALER=G_LUN_TEMP+1)
+*
+      integer G_LUN_EPICS_OUTPUT
+      parameter (G_LUN_EPICS_OUTPUT=G_LUN_CHARGE_SCALER+1)
+*
       character*80 g_config_filename
       character*80 g_ctp_hist_filename
       character*80 g_ctp_test_filename
@@ -64,6 +73,7 @@
       character*80 g_bad_output_filename
       character*80 g_preproc_filename
       character*80 g_charge_scaler_filename
+      character*80 g_epics_output_filename
 *
       common /gen_filenames/
      $     g_config_filename,
@@ -86,7 +96,8 @@
      $     g_pedestal_output_filename,
      $     g_bad_output_filename,
      $     g_preproc_filename,
-     $     g_charge_scaler_filename
+     $     g_charge_scaler_filename,
+     $     g_epics_output_filename
 
 *
       logical*4 g_hist_rebook
