@@ -5,7 +5,10 @@
 *                              change name to sos_tracking.cmn
 *                              put sluno and debugflags from parameters to CTP
 * $Log$
-* Revision 1.9  1994/12/01 17:22:08  cdaq
+* Revision 1.10  1995/01/27 20:22:58  cdaq
+* (SAW) Let sdc_planes_per_chamber be a ctp parameter
+*
+* Revision 1.9  1994/12/01  17:22:08  cdaq
 * (SAW) Add s_hms_style_chambers flag to treat SOS chambers like HMS
 *       Add sdc_planes_per_chamber (calculated in s_generate_geometry)
 *       Make gplanesdc equivalenced with gplanesdc1, ...
@@ -78,9 +81,7 @@
 
       integer*4 sdc_num_planes   ! actual number of dc chambers - set in CTP
       integer*4 sdc_num_chambers    ! actual number of chambers - set in CTP
-*     CTPTYPE=off
       integer*4 sdc_planes_per_chamber
-*     CTPTYPE=parm
       integer*4 smax_chamber_hits
       parameter (smax_chamber_hits=544)
       integer*4 smax_space_points   ! maximum number of space points
