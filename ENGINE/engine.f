@@ -8,6 +8,10 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.40  2004/05/27 22:01:55  jones
+* Comment call to  g_analyze_scalers when there is an event 129
+* ( a CODA 1.4 scaler event).
+*
 * Revision 1.39  2004/05/19 21:33:52  jones
 * Initialize physics_events=0
 *
@@ -590,7 +594,7 @@ c
           if(jieor(jiand(CRAW(2),'FFFF'x),'10CC'x).eq.0) then ! Physics event
 	    if (gen_event_type.eq.0) then          !scaler event.
               analyzed_events(gen_event_type)=analyzed_events(gen_event_type)+1
-               call g_analyze_scalers_by_banks(CRAW,ABORT,err)
+                call g_analyze_scalers_by_banks(CRAW,ABORT,err)
              if (g_writeout_scaler_filename.ne.' ' .and. analyzed_events(0) .gt. 1) then
                delta_time = max(gscaler_change(gclock_index)/gclock_rate,.000D00)
                write(G_LUN_WRITEOUT_SCALER,'(i10,10g12.5)') gen_event_ID_number,delta_time,
@@ -687,7 +691,9 @@ c
                     if (gen_event_type.ne.0) then	!physics events (not scalers)
                       call G_reconstruction(CRAW,ABORT,err) !COMMONs
                       physics_events = physics_events + 1
-                      analyzed_events(gen_event_type)=analyzed_events(gen_event_type)+1
+                      if (gen_event_type .le. gen_max_trigger_types) then
+                          analyzed_events(gen_event_type)=analyzed_events(gen_event_type)+1
+                      endif
                       if (gen_event_type.ne.0) sum_analyzed=sum_analyzed+1
                       problems= problems .OR. ABORT
                     else		!gen_event_type=0, scaler event
@@ -764,9 +770,9 @@ c
 
           Else
               if(gen_event_type.eq.129) then
-!              write(6,*) 'CODA 1.4 SCALER EVENT - event type 129!!!!!'
-!              write(6,*) 'I DONT THINK THAT THIS SHOULD BE HAPPENING, AND I AM AFRAID'
-              call g_analyze_scalers(CRAW,ABORT,err)
+              write(6,*) 'CODA 1.4 SCALER EVENT - event type 129!!!!!'
+              write(6,*) ' Will not Analyze this event'
+!              call g_analyze_scalers(CRAW,ABORT,err)
 !* Dump report at first scaler event AFTER hist_dump_interval to keep hardware
 !* and software scalers in sync.
 !              if((physics_events-lastdump).ge.gen_run_hist_dump_interval.and.
@@ -841,7 +847,7 @@ c...
         err= ' '
       ENDIF
 
-      if(rpc_on.ne.0) call thservunset(0,0)
+       if(rpc_on.ne.0) call thservunset(0,0)
 
       print *,'    -------------------------------------'
 *
