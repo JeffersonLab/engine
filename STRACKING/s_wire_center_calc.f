@@ -5,6 +5,9 @@
 *
 *     d.f. geesaman              17 feb 1994
 * $Log$
+* Revision 1.5  1996/09/04 20:17:35  saw
+* (??) Cosmetic
+*
 * Revision 1.4  1995/05/22 19:46:04  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -38,7 +41,7 @@
      &        * sdc_pitch(plane) - sdc_center(plane)
       else        
            s_wire_center_calc = 
-     &        ((sdc_nrwire(plane) + FLOAT(1 - wire))-
+     &        ((sdc_nrwire(plane) + (1 - wire))-
      &        sdc_central_wire(plane))* sdc_pitch(plane)-sdc_center(plane)
       endif
       return

@@ -13,6 +13,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.12  1996/09/04 20:18:35  saw
+* (??) Cosmetic
+*
 * Revision 1.11  1996/01/17 18:44:30  cdaq
 * (JRA) Change sign on sstart_time
 *
@@ -124,7 +127,7 @@
      &                  - sdc_center(pln)
                     else
                       sdc_wire_center(goodhit) = sdc_pitch(pln)
-     &                  * ( (sdc_nrwire(pln) + float(1 - wire))
+     &                  * ( (sdc_nrwire(pln) + (1 - wire))
      &                  - sdc_central_wire(pln) ) - sdc_center(pln)
                     endif
 
