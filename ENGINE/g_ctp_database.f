@@ -31,6 +31,9 @@
 *                        don't print out stuff following the ';').
 *
 * $Log$
+* Revision 1.6  1996/11/05 20:47:06  saw
+* (SAW) Change in open statement for porting compatibility
+*
 * Revision 1.5  1996/09/04 14:33:40  saw
 * (SAW) Use G_LUN_TEMP instead of 133 for linux compatibility
 *
@@ -90,7 +93,7 @@ c      endif
 
       chan = G_LUN_TEMP
 
-      open (unit=chan, status='old', name=filename)
+      open (unit=chan, status='old', file=filename)
 
       read (chan, 1001, end=9999) line
       index = 1
