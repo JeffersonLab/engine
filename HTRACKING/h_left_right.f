@@ -5,7 +5,10 @@
 *     space point.
 *     d. f. geesaman           17 January 1994
 * $Log$
-* Revision 1.6  1994/10/12 18:30:52  cdaq
+* Revision 1.7  1995/04/06 19:29:23  cdaq
+* (JRA) HMAX_NUM_DC_PLANES -> HDC_NUM_PLANES
+*
+* Revision 1.6  1994/10/12  18:30:52  cdaq
 * (DJM) Fill hit pattern arrays
 *
 * Revision 1.5  1994/10/11  18:59:15  cdaq
@@ -58,7 +61,7 @@
       ABORT= .FALSE.
       err=':'
 * initialize hdc_sing_wcoord (or else!)
-      do plane=1,HMAX_NUM_DC_PLANES
+      do plane=1,HDC_NUM_PLANES
         hdc_sing_wcoord(plane) = -100.
       enddo
 
