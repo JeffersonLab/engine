@@ -1,6 +1,9 @@
       subroutine s_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.8  1996/01/24 16:06:55  saw
+* (JRA) Adjust which channels are disabled on Areogel
+*
 * Revision 1.7  1996/01/17 19:03:49  cdaq
 * (JRA) Fixes, write results to file.
 *
@@ -227,13 +230,16 @@ c
         slot=3
         write(SPAREID,*) 'slot=',slot
         do ind=1,4
-         write(SPAREID,*) '0'
+          write(SPAREID,*) '0'
         enddo
-        do ind=17,34
-         write(SPAREID,*) '4000'
+        do ind=5,34
+          write(SPAREID,*) '4000'
         enddo
-        do ind=35,64
-         write(SPAREID,*) '0'
+        do ind=35,48
+          write(SPAREID,*) '0'
+        enddo
+        do ind=49,64
+          write(SPAREID,*) '4000'
         enddo
 
         slot=7
