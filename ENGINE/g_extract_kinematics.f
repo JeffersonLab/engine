@@ -1,5 +1,8 @@
       subroutine g_extract_kinematics(ebeam,phms,thms,psos,tsos,ntarg)
 * $Log$
+* Revision 1.4  1998/12/01 15:59:47  saw
+* (SAW) Make "string" argument of skip_item variable length
+*
 * Revision 1.3  1996/09/04 14:36:19  saw
 * (JRA) Fixes
 *
@@ -123,7 +126,7 @@ c
 c     Find the offset of character "char_num" in text string "string"
 c
       integer function find_char (string, i, char_num)
-      character*132 string
+      character*(*) string
       integer i, j, char_num
       j = i
       do while ((ichar(string(j:j)).ne.char_num).and.(ichar(string(j:j)).ne.0))
