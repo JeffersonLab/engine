@@ -19,7 +19,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.9  1995/03/22 16:23:27  cdaq
+* Revision 1.10  1995/05/11 17:15:07  cdaq
+* (SAW) Add additional kinematics variables
+*
+* Revision 1.9  1995/03/22  16:23:27  cdaq
 * (SAW) Target track data is now slopes.
 *
 * Revision 1.8  1995/02/23  13:37:31  cdaq
@@ -52,7 +55,7 @@
       IMPLICIT NONE
       SAVE
 *
-      character*50 here
+      character*9 here
       parameter (here= 'H_PHYSICS')
 *
       logical ABORT
@@ -66,12 +69,14 @@
       INCLUDE 'hms_physics_sing.cmn'
       INCLUDE 'hms_calorimeter.cmn'
       INCLUDE 'hms_scin_parms.cmn'
-      INCLUDE 'hms_scin_tof.cmn'
+*      INCLUDE 'hms_scin_tof.cmn'
+      INCLUDE 'hms_tracking.cmn'
 *
 *     local variables 
       integer*4 i,ip
       real*4 cosgamma,tandelphi,sinhphi,coshstheta,sinhstheta
       real*4 t1,ta,p3,t3,hminv2
+      real*4 coshsthetaq
 *
 *--------------------------------------------------------
 *
@@ -84,10 +89,6 @@
         HSY_TAR  = HY_TAR(HSNUM_TARTRACK)
         HSXP_TAR  = HXP_TAR(HSNUM_TARTRACK) ! This is an angle (radians)
         HSYP_TAR  = HYP_TAR(HSNUM_TARTRACK) ! This is an angle (radians)
-        HSDEDX1   = HDEDX(HSNUM_FPTRACK,1)
-        HSDEDX2   = HDEDX(HSNUM_FPTRACK,2)
-        HSDEDX3   = HDEDX(HSNUM_FPTRACK,3)
-        HSDEDX4   = HDEDX(HSNUM_FPTRACK,4)
         HSBETA   = HBETA(HSNUM_FPTRACK)
         HSBETA_CHISQ = HBETA_CHISQ(HSNUM_FPTRACK)
         HSTRACK_ET   = HTRACK_ET(HSNUM_FPTRACK)
@@ -117,10 +118,12 @@ c     ?????
         do i=1,hnum_scin_hit(hsnum_fptrack)
           ip=hscin_plane_num(hscin_hit(hsnum_fptrack,i))
           if (hsscin_elem_hit(ip).eq.0) then
-            hsscin_elem_hit(ip)=hscin_counter_num(hscin_hit(hsnum_fptrack,i
-     $           ))
+            hsscin_elem_hit(ip)=hscin_counter_num(hscin_hit(
+     $           hsnum_fptrack,i))
+            hsdedx(ip)=hdedx(hsnum_fptrack,i)
           else                          ! more than 1 hit in plane
             hsscin_elem_hit(ip)=18
+            hsdedx(ip)=sqrt(hsdedx(ip)*hdedx(hsnum_fptrack,i))
           endif
         enddo
 
@@ -168,13 +171,41 @@ ccc   SAW 1/17/95.  Add the stuff after the or.
           HSZBEAM = SINHPHI * ( -HSY_TAR + CYRAST * COSHSTHETA) /
      $         SINHSTHETA 
         endif                           ! end test on SINHSTHETA=0
-*     
-        
+*
+*     More kinematics
+*
+        if(hsbeta.gt.0) then
+          hsmass2 = (1/hsbeta*2 - 1)*hsp**2
+        else
+          hsmass2 = 1.0E10
+        endif
+
+        hst = (CEBEAM - HSENERGY)**2
+     $       - (CPBEAM - HSP*COSHSTHETA)**2 - (HSP*SINHSTHETA)**2
+        hsu = (TMASS_TARGET - HSENERGY)**2 - HSP**2
+
+        hseloss = CEBEAM - HSENERGY
+        hsq3 = sqrt(CPBEAM**2 + HSP**2 - 2*CPBEAM*HSP*COSHSTHETA)
+        coshsthetaq = (CPBEAM**2 - CPBEAM*HSP*COSHSTHETA)/CPBEAM/hsq3
+        hsthetaq = acos(coshsthetaq)
+        hsphiq = hsphi + TT
+        hsbigq2 = -hst
+        hsx = hsbigq2/(2*mass_nucleon*hseloss)
+        hsy = hseloss/CEBEAM
+        hsw2 = TMASS_TARGET**2 + 2*TMASS_TARGET*hseloss - hsbigq2
+        if(hsw2.ge.0.0) then
+          hsw = sqrt(hsw2)
+        else
+          hsw = 0.0
+        endif
+
 *     execute physics singles tests.
 ***   ierr=thtstexeb('hms_physics_sing') ! This is going to get executed twice
 *     
-*     calculate physics statistics and wire chamber efficencies
-*     call h_dump_tof   ! Turn on to write raw timing information for fitting
+*     Write raw timing information for fitting.
+        if(hdebugdumptof.ne.0) call h_dump_tof
+*
+*     Calculate physics statistics and wire chamber efficencies.
         call h_physics_stat(ABORT,err)
         ABORT= ierr.ne.0 .or. ABORT
         IF(ABORT) THEN

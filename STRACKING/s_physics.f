@@ -19,7 +19,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.6  1995/04/06 19:37:30  cdaq
+* Revision 1.7  1995/05/11 17:15:15  cdaq
+* (SAW) Add additional kinematics variables
+*
+* Revision 1.6  1995/04/06  19:37:30  cdaq
 * (SAW) Fix typo
 *
 * Revision 1.5  1995/02/23  13:39:13  cdaq
@@ -44,7 +47,7 @@
       IMPLICIT NONE
       SAVE
 *
-      character*50 here
+      character*9 here
       parameter (here= 'S_PHYSICS')
 *
       logical ABORT
@@ -59,12 +62,14 @@
       INCLUDE 'mc_structures.cmn'
       INCLUDE 'sos_calorimeter.cmn'
       INCLUDE 'sos_scin_parms.cmn'
-      INCLUDE 'sos_scin_tof.cmn'
+*      INCLUDE 'sos_scin_tof.cmn'
+      INCLUDE 'sos_tracking.cmn'
 *     
 *     local variables 
       integer*4 i,ip
       real*4 cosgamma,tandelphi,sinsphi,cossstheta,sinsstheta
       real*4 t1,ta,p3,t3,sminv2
+      real*4 cosssthetaq
 *
 *--------------------------------------------------------
 *
@@ -77,10 +82,6 @@
         SSY_TAR  = SY_TAR(SSNUM_TARTRACK)
         SSXP_TAR  = SXP_TAR(SSNUM_TARTRACK) ! This is an angle (radians)
         SSYP_TAR  = SYP_TAR(SSNUM_TARTRACK) ! This is an angle (radians)
-        SSDEDX1   = SDEDX(SSNUM_FPTRACK,1)
-        SSDEDX2   = SDEDX(SSNUM_FPTRACK,2)
-        SSDEDX3   = SDEDX(SSNUM_FPTRACK,3)
-        SSDEDX4   = SDEDX(SSNUM_FPTRACK,4)
         SSBETA   = SBETA(SSNUM_FPTRACK)
         SSBETA_CHISQ = SBETA_CHISQ(SSNUM_FPTRACK)
         SSTRACK_ET   = STRACK_ET(SSNUM_FPTRACK)
@@ -110,10 +111,12 @@ c     ?????
         do i=1,snum_scin_hit(ssnum_fptrack)
           ip=sscin_plane_num(sscin_hit(ssnum_fptrack,i))
           if (ssscin_elem_hit(ip).eq.0) then
-            ssscin_elem_hit(ip)=sscin_counter_num(sscin_hit(ssnum_fptrack,i
-     $           ))
+            ssscin_elem_hit(ip)=sscin_counter_num(sscin_hit(
+     $           ssnum_fptrack,i))
+            ssdedx(ip) = sdedx(ssnum_fptrack,i)
           else                          ! more than 1 hit in plane
             ssscin_elem_hit(ip)=18
+            ssdedx(ip) = sqrt(ssdedx(ip)*sdedx(ssnum_fptrack,i))  !assume <3 hits. 
           endif
         enddo                             
 
@@ -161,12 +164,40 @@ c     ?????
      $         SINSSTHETA 
         endif                           ! end test on SINSSTHETA=0
 *
+*     More kinematics
+*
+        if(ssbeta.gt.0) then
+          ssmass2 = (1/ssbeta*2 - 1)*ssp**2
+        else
+          ssmass2 = 1.0E10
+        endif
+
+        sst = (CEBEAM - SSENERGY)**2
+     $       - (CPBEAM - SSP*COSSSTHETA)**2 - (SSP*SINSSTHETA)**2
+        ssu = (TMASS_TARGET - SSENERGY)**2 - SSP**2
+
+        sseloss = CEBEAM - SSENERGY
+        ssq3 = sqrt(CPBEAM**2 + SSP**2 - 2*CPBEAM*SSP*COSSSTHETA)
+        cosssthetaq = (CPBEAM**2 - CPBEAM*SSP*COSSSTHETA)/CPBEAM/ssq3
+        ssthetaq = acos(cosssthetaq)
+        ssphiq = ssphi + TT
+        ssbigq2 = -sst
+        ssx = ssbigq2/(2*mass_nucleon*sseloss)
+        ssy = sseloss/CEBEAM
+        ssw2 = TMASS_TARGET**2 + 2*TMASS_TARGET*sseloss - ssbigq2
+        if(ssw2.ge.0.0) then
+          ssw = sqrt(ssw2)
+        else
+          ssw = 0.0
+        endif
 
 *     execute physics singles tests
 ***   ierr=thtstexeb('sos_physics_sing') ! This is going to get executed twice
 *     
+*     Turn on to write raw timing information for fitting
+        if(sdebugdumptof.ne.0) call s_dump_tof
+*
 *     calculate physics statistics and wire chamber efficencies
-*     call s_dump_tof   ! Turn on to write raw timing information for fitting
         call s_physics_stat(ABORT,err)
         ABORT= ierr.ne.0 .or. ABORT
         IF(ABORT) THEN
