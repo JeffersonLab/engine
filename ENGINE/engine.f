@@ -9,9 +9,13 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 *-    $Log$
-*-    Revision 1.11  1994/11/22 20:12:01  cdaq
-*-    (SAW) Change "" to " " so this would compile under ultrix.
+*-    Revision 1.12  1995/01/31 21:12:17  cdaq
+*-    (SAW) Add gen_run_hist_dump_interval for in run hist dumping.  Add commented
+*-              out code to query user for # of event and hist dump interval.
 *-
+* Revision 1.11  1994/11/22  20:12:01  cdaq
+* (SAW) Change "" to " " so this would compile under ultrix.
+*
 * Revision 1.10  1994/10/19  20:40:29  cdaq
 * (SAW) Add handling of RPC requests
 *
@@ -63,7 +67,7 @@
 *
       logical problems
       integer total_event_count
-      integer i,since_cnt
+      integer i,since_cnt,itmp
       integer evtype
       integer rpc_pend                  ! # Pending asynchronous RPC requests
 * 
@@ -133,7 +137,18 @@
       DO i=1,LENGTH_CRAW
          CRAW(i)= 0
       ENDDO
-
+*
+* input number of events to analyze and hist dumping interval
+*
+c      write(6,'(/,"Starting Event #: [",i7,"] "$)') gen_run_starting_event
+c      read(5,'(i30)') itmp
+c      if (itmp.ne.0) gen_run_starting_event=itmp
+c      write(6,'("Stopping Event #: [",i7,"] "$)') gen_run_stopping_event
+c      read(5,'(i30)') itmp
+c      if (itmp.ne.0) gen_run_stopping_event=itmp
+c      write(6,'("Hist dump intrvl: [",i7,"] "$)') gen_run_hist_dump_interval
+c      read(5,'(i30)') itmp
+c      if (itmp.ne.0) gen_run_hist_dump_interval=itmp
 *
       since_cnt= 0
       problems= .false.
@@ -266,6 +281,14 @@
               call g_examine_control_event(CRAW,ABORT,err)
             endif
           EndIf
+          if(gen_run_hist_dump_interval.gt.0) then
+            if((total_event_count/gen_run_hist_dump_interval)
+     $           *gen_run_hist_dump_interval.eq.total_event_count)
+     $           then
+              print *,"Dumping histograms at event ",total_event_count
+              call g_dump_histograms(ABORT,err)
+            endif
+          endif
         endif
 *
 *
@@ -317,6 +340,8 @@
       ENDDO
 *
       END
+
+
 
 
 
