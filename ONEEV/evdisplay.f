@@ -3,6 +3,9 @@
 *- standalone DISPLAY for hall C
 *
 * $Log$
+* Revision 1.7  1998/12/01 21:47:10  saw
+* (SAW) Put correct number of arguments in g_rep_err call
+*
 * Revision 1.6  1996/11/22 15:53:10  saw
 * (SAW) Fix typo
 *
@@ -100,7 +103,7 @@ c        gen_display_server_RPCprgmID = '2c0da005'x   !default online
       IF(line.EQ.' '.and.gen_display_server_machine.eq.' ') THEN
         why= ':machine name must be specified!'
         call G_add_path(here,why)
-        call G_rep_err(why)
+        call G_rep_err(.TRUE.,why)
         STOP
       ELSE if(line.ne.' ') then
         call NO_comments(line)
@@ -127,7 +130,7 @@ c        gen_display_server_RPCprgmID = '2c0da005'x   !default online
       call G_register_variables(FAIL,why)
       IF(FAIL) THEN
         call G_add_path(here,why)
-        call G_rep_err(why)
+        call G_rep_err(FAIL,why)
         STOP
       ENDIF
       PRINT *,' G_register_variables OK'
