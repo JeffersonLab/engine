@@ -8,7 +8,10 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.9  1994/08/16 03:56:54  cdaq
+* Revision 1.10  1994/08/16 13:25:30  cdaq
+* (DJA) Add wire velocity correction parameters
+*
+* Revision 1.9  1994/08/16  03:56:54  cdaq
 * (SAW) Change some variables to parm CTPTYPE
 *
 * Revision 1.8  1994/08/05  15:47:37  cdaq
@@ -99,6 +102,11 @@
       integer*4 hdc_tdc_max_win   ! drfit chamber tdc max value for good hit
       integer*4 hmax_pr_hits      ! max number of hits in each plane for
                                   ! pattern recognition to be done in that pla
+      real*4 hdc_wire_velocity    ! propogation velocity of signal on wire (cm--M/ns)
+      real*4 hdc_x_central_time   ! time (ns) for signal to reach disc. card o--Mn XUVX' planes
+      real*4 hdc_y_central_time   ! time (ns) for signal to reach disc. card o--Mn YY' planes
+                                  ! (both times are from center of the chamber--M)
+*
       common/HMS_TRACKING/
      &     hbeststub(hmax_space_points,hnum_fpray_param),
      &     hspace_point_criterion(hmax_num_chambers),
@@ -112,7 +120,9 @@
      &     hdc_num_planes,hdc_num_chambers,
      &     hdc_tdc_min_win(HMAX_NUM_DC_PLANES), 
      &     hdc_tdc_max_win(HMAX_NUM_DC_PLANES),
-     &     hmax_pr_hits(hmax_num_chambers)
+     &     hmax_pr_hits(hmax_num_chambers),
+     &     hdc_wire_velocity,hdc_x_central_time,hdc_y_central_time
+
 
 *
 *
@@ -131,10 +141,11 @@
       integer*4 hdebuglinkstubs
       integer*4 hdebugtrackprint
       integer*4 hdebugstubchisq
-      integer*4 hdebugtartrackprint       ! call h_print_tar_track
-      integer*4 hdebug_mc_start_time      ! kludge for monte carlo drift calc
-      integer*4 hsingle_stub              ! switch to make tracks of all stubs
-      integer*4 hSmallAngleApprox         ! switch for alternate L/R determ. of Y,Yprime planes
+      integer*4 hdebugtartrackprint     ! call h_print_tar_track
+      integer*4 hdebug_mc_start_time    ! kludge for monte carlo drift calc
+      integer*4 hsingle_stub            ! switch to make tracks of all stubs
+      integer*4 hSmallAngleApprox       ! switch for alternate L/R determ. of Y,Yprime planes
+      integer*4 h_wire_vel_correction   ! switch to correct drift times for wi--Mre propogation
       common/HMS_TRACKFLAGS/
      &     hluno,
      &     hdebugflagpsi,
@@ -149,7 +160,8 @@
      &     hdebugprintdecodeddc,
      &     hdebug_mc_start_time,
      &     hsingle_stub,
-     &     hSmallAngleApprox
+     &     hSmallAngleApprox,
+     &     h_wire_vel_correction
 
 *
 *     CTPTYPE=parm
