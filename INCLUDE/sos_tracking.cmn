@@ -5,6 +5,9 @@
 *                              change name to sos_tracking.cmn
 *                              put sluno and debugflags from parameters to CTP
 * $Log$
+* Revision 1.18  1999/02/23 19:22:52  csa
+* (JRA) Remove sdebugcalcpeds
+*
 * Revision 1.17  1998/12/01 20:30:16  saw
 * * (SAW) Put SOS_DRIFT common block before equivalences
 *
@@ -241,7 +244,6 @@
       integer*4 sdebugtartrackprint   ! call h_print_tar_track
       integer*4 sdebugdumptof         ! dumps tof fitting data
       integer*4 sdebugdumpcal         ! dumps cal fitting data
-      integer*4 sdebugcalcpeds        ! calc peds from physics events.
       integer*4 ssingle_stub          ! switch to make tracks of all stubs
       integer*4 ssmallAngleApprox     ! switch for alternate L/R determ. of Y,Yprime planes
       integer*4 s_hms_style_chambers  ! Using HMS style drift chambers.
@@ -260,7 +262,6 @@
      &     sdebugprintdecodeddc,
      &     sdebugdumptof,
      &     sdebugdumpcal,
-     &     sdebugcalcpeds,
      &     ssingle_stub,
      &     ssmallAngleApprox,
      &     s_hms_style_chambers
