@@ -23,9 +23,12 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 *-    $Log$
-*-    Revision 1.6  1994/06/22 20:57:14  cdaq
-*-    (SAW) Add more variables for reports
+*-    Revision 1.7  1994/10/19 19:51:55  cdaq
+*-    (SAW) Add g_label variable for labels on reports
 *-
+* Revision 1.6  1994/06/22  20:57:14  cdaq
+* (SAW) Add more variables for reports
+*
 * Revision 1.5  1994/06/16  03:47:57  cdaq
 * (SAW) Blank out filenames for reports
 *
@@ -89,6 +92,7 @@
       g_report_blockname = ' '
       c_report_blockname = ' '
 *
+      g_label = ' '                     ! Label for reports etc.
 *
       call getenv(env_var,g_config_filename)
 *
