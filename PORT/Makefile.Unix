@@ -4,6 +4,9 @@
 # definitions of some fortran functions that are missing under F2C/Linux.
 #
 # $Log$
+# Revision 1.3  1998/12/01 20:37:29  saw
+# (SAW) Linux fixes
+#
 # Revision 1.2  1996/11/22 17:05:53  saw
 # (SAW) Add routines for porting to Linux and AIX
 #
@@ -18,7 +21,11 @@ ifeq ($(ARCH),AIX)
   install-dirs := lib
 else
   ifeq ($(ARCH),Linux)
-    libsources =  bit_wrappers.f misc_wrappers.f trig_wrappers.f
+    ifeq ($(F77COMPILER),Absoft)
+      libsources =  absoft_wrappers.f
+    else
+      libsources =  bit_wrappers.f trig_wrappers.f ran_wrappers.f
+    endif
     install-dirs := lib
   else
     libsources =  
@@ -28,7 +35,8 @@ endif
 
 sources = $(libsources)
 
-lib_targets := $(patsubst %.f, libport.a(%.o), $(sources))
+lib_targets := $(patsubst %.f, libport.a(%.o), $(libsources)) \
+			libport.a(cwrappers.o)
 
 #default:
 #	@echo "nothing to make"
@@ -37,7 +45,12 @@ ifdef NFSDIRECTORY
 ../%.f : $(NFSDIRECTORY)/PORT/%.f
 	ln -s $< $@
 
-.PRECIOUS: ../%.f
+../%.c : $(NFSDIRECTORY)/PORT/%.c
+	ln -s $< $@
+
+.PRECIOUS: ../%.f ../%.c
 endif
 
-include $(sources:.f=.d)
+cwrappers.o: ../cwrappers.c
+
+include $(libsources:.f=.d) cwrappers.d
