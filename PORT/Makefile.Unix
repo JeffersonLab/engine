@@ -1,0 +1,35 @@
+#
+# This directory contains code that is needed to in some ports of the
+# Hall C analyzer to platforms other than HPUX.  For example, it contains
+# definitions of some fortran functions that are missing under F2C/Linux.
+#
+# $Log$
+# Revision 1.1  1996/09/09 13:34:01  saw
+# Initial revision
+#
+NEWSTYLE=1
+include $(Csoft)/etc/Makefile
+
+libsources =  f2c_wrappers.f
+
+sources = $(libsources)
+
+lib_targets := $(patsubst %.f, libport.a(%.o), $(sources))
+
+
+ifeq ($(ARCH),Linux)
+  install-dirs := lib
+else
+  install-dirs :=
+endif
+
+#default:
+#	@echo "nothing to make"
+
+#ifdef NFSDIRECTORY
+#%.f : $(NFSDIRECTORY)/ENGINE/%.f
+#	ln -s $< $@
+#.PRECIOUS: %.f
+#endif
+
+include $(sources:.f=.d)
