@@ -19,7 +19,11 @@
 *-Modified 21-JAN-94  D.F.Geesaman
 *-            Add ABORT and err
 * $Log$
-* Revision 1.7  1995/02/23 16:03:05  cdaq
+* Revision 1.8  1995/03/23 16:51:57  cdaq
+* (SAW) Previous change wrong.  COSY wants slopes.
+* Target track data is now slopes.
+*
+* Revision 1.7  1995/02/23  16:03:05  cdaq
 * (SAW) Convert focal plane slopes to angles before COSY transport.
 * Target track data is now angles.
 *
@@ -112,9 +116,9 @@
 * the same focal plane as the COSY matrix elements were calculated.
 
          hut(1) = sx_fp(itrk)/100.      !Meters.
-         hut(2) = atan(sxp_fp(itrk))   !Convert slope to angle
+         hut(2) = sxp_fp(itrk)          !COSY wants slopes
          hut(3) = sy_fp(itrk)/100.      !Meters.
-         hut(4) = atan(syp_fp(itrk)) !Convert slope to angle
+         hut(4) = syp_fp(itrk)          !COSY wants slopes
          
 
 * Compute COSY sums.
@@ -143,8 +147,8 @@
 **ROLF         syp_tar(itrk) = atan(sum(3))   !Slope (dY/dZ)
          sx_tar(itrk) = 0               ! ** No beam raster **
          sy_tar(itrk) = sum(2)*100.     !cm.
-         sxp_tar(itrk) = sum(1)         !Angle xp
-         syp_tar(itrk) = sum(3)         !Angle yp
+         sxp_tar(itrk) = sum(1)         !Slope xp
+         syp_tar(itrk) = sum(3)         !Slope yp
 
          sdelta_tar(itrk) = sum(4)*100. !percent.
          SP_TAR(itrk)  = SPCENTRAL*(1.0 + sum(4)) !Momentum in GeV
