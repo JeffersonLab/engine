@@ -1,6 +1,9 @@
       subroutine g_output_thresholds(lunout,roc,slot,signalcount,
-     &               elements_per_plane,signal0,signal1)
+     &               elements_per_plane,signal0,signal1,sigma0,sigma1)
 * $Log$
+* Revision 1.3  1996/01/17 20:25:27  saw
+* (SAW) Add back missing sigma0 and sigma1 arguments that got lost
+*
 * Revision 1.2  1996/01/16 18:13:50  cdaq
 * (JRA) Warn if thresholds change by too much
 *
