@@ -1,7 +1,10 @@
 *      sos_statistics.cmn
 *      common blocks containing event statistics for s_reconstruction
 * $Log$
-* Revision 1.8  1995/07/28 14:42:37  cdaq
+* Revision 1.9  1995/08/11 16:36:47  cdaq
+* (JRA) Add sstat_mineff as a ctp parameter
+*
+* Revision 1.8  1995/07/28  14:42:37  cdaq
 * (JRA) Add pos/neg/both good arrays
 *
 * Revision 1.7  1995/05/22  19:02:13  cdaq
@@ -62,6 +65,7 @@
 *
       real*4 sstat_maxchisq
       real*4 sstat_slop
+      real*4 sstat_mineff
 *
 *     CTPTYPE=event
 *
@@ -103,6 +107,7 @@
      &  sstat_oreff,       !efficiency over all counters on plane
      &  sstat_andeff,      !efficiency over all counters on plane
      &  sstat_slop,        !distance allowed from center of scintillator.
+     &  sstat_mineff,      !give warning if effic. < sstat_mineff
      &  sstat_maxchisq,    !maximum chisq allowed to use track for eff. calc.
      &  seff_s1,           !calculated trigger eff. for s1 =(s1x .or. s1y).
      &  seff_s2,           !calculated trigger eff. for s2 =(s2x .or. s2y).
