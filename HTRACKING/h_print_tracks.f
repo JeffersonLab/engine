@@ -2,7 +2,10 @@
 *     prints the output of hms track fittinh
 *     d.f. geesaman           17 January 1994
 * $Log$
-* Revision 1.1  1994/02/19 06:17:36  cdaq
+* Revision 1.2  1994/06/06 16:42:03  cdaq
+* (DFG) print warning if hsingle_stub is set.
+*
+* Revision 1.1  1994/02/19  06:17:36  cdaq
 * Initial revision
 *
       implicit none
@@ -16,7 +19,10 @@
       integer*4 hitnum,planenum
       real*8 ray(hnum_fpray_param),calculated_position,residual
       if(HNTRACKS_FP.gt.0) then
-        write(hluno,'(''point      x_t             y_t     '',
+       if(hsingle_stub.ne.0) then
+         write(hluno,'(''  Warning - hsingle_stub is set'')')
+       endif
+        write(hluno,'('' point     x_t             y_t     '',
      &           ''        xp_t        yp_t   chi**2 degrees of'')')
         write(hluno,'(''           [cm]            [cm]    '',
      &           ''        [rad]       [rad]          freedom'')')
