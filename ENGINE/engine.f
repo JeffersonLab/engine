@@ -9,9 +9,13 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 *-    $Log$
-*-    Revision 1.7  1994/06/17 03:35:00  cdaq
-*-    (KBB) Upgrade error reporting
+*-    Revision 1.8  1994/06/26 02:07:03  cdaq
+*-    (KBB) Add ability to analyze selected subset of events.  Add evcount stats.
+*-    (SAW) Add call to scaler analysis
 *-
+* Revision 1.7  1994/06/17  03:35:00  cdaq
+* (KBB) Upgrade error reporting
+*
 * Revision 1.6  1994/06/15  14:27:30  cdaq
 * (SAW) Actually add call to g_examine_physics_event
 *
@@ -38,15 +42,18 @@
       character*6 here
       parameter (here= 'Engine')
 *
-      logical OK,ABORT,FAIL
-      character*800 err,why,mss
+      logical ABORT,EoF
+      character*800 err,mss
 *
       include 'gen_filenames.cmn'
       include 'gen_craw.cmn'
+      include 'gen_run_info.cmn'
+      include 'gen_event_info.cmn'
 *
       logical problems
       integer total_event_count
       integer i,since_cnt
+      integer evtype
 * 
       character*80 g_config_environmental_var
       parameter (g_config_environmental_var= 'ENGINE_CONFIG_FILE')
@@ -117,8 +124,9 @@
 *
       since_cnt= 0
       problems= .false.
+      EoF = .false.
 *
-      DO WHILE(.NOT.problems .and. .NOT.ABORT)
+      DO WHILE(.NOT.problems .and. .NOT.ABORT .and. .NOT.EoF)
          mss= ' '
 *
          call G_clear_event(ABORT,err)          !clear out old data
@@ -153,56 +161,72 @@
 *     Check if this is a physics event or a CODA control event.
 *
          if(.not.problems) then
+            evtype = ishft(craw(2),-16)
+            gen_event_type= evtype      ! reassigned later? 
             if(iand(CRAW(2),'FFFF'x).eq.'10CC'x) then ! Physics event
+*     
+               if(evtype.le.gen_MAX_trigger_types) then
+                  
+                  call g_examine_physics_event(CRAW,ABORT,err)
+                  problems = problems .or.ABORT
+*     
+                  if(mss.NE.' ' .and. err.NE.' ') then
+                     call G_append(mss,' & '//err)
+                  elseif(err.NE.' ') then
+                     mss= err
+                  endif
+*     
+                  IF(gen_run_starting_event.LE.gen_event_ID_number) THEN
+                     if(.NOT.problems) then
+                        call G_reconstruction(CRAW,ABORT,err) !COMMONs
+                        problems= problems .OR. ABORT
+                     endif
+*     
+                     if(mss.NE.' ' .and. err.NE.' ') then
+                        call G_append(mss,' & '//err)
+                     elseif(err.NE.' ') then
+                        mss= err
+                     endif
+*     
+                     If(.NOT.problems) Then
+                        call G_keep_results(ABORT,err) !file away results as
+                        problems= problems .OR. ABORT !specified by interface
+                     EndIf
+*     
+                     if(mss.NE.' ' .and. err.NE.' ') then
+                        call G_append(mss,' & '//err)
+                     elseif(err.NE.' ') then
+                        mss= err
+                     endif
+                  ENDIF
+               else                     ! Analyze scalers
 *
-*     Need to add in KB's code for selecting which event types to analyze.
+* Assume for now that all other event types are scaler events
 *
-               call g_examine_physics_event(CRAW,ABORT,err)
-               problems = problems .or.ABORT
-*               
-               if(mss.NE.' ' .and. err.NE.' ') then
-                 call G_append(mss,' & '//err)
-               elseif(err.NE.' ') then
-                  mss= err
+                  call g_analyze_scalers(CRAW,ABORT,err)
                endif
-*
-               if(.NOT.problems) Then
-                  call G_reconstruction(CRAW,ABORT,err) !COMMONs
-                  problems= problems .OR. ABORT
-               endif
-*
-               if(mss.NE.' ' .and. err.NE.' ') then
-                 call G_append(mss,' & '//err)
-               elseif(err.NE.' ') then
-                  mss= err
-               endif
-*
-               If(.NOT.problems) Then
-                  call G_keep_results(ABORT,err) !file away results as
-                  problems= problems .OR. ABORT !specified by interface
-               EndIf
-*
-               if(mss.NE.' ' .and. err.NE.' ') then
-                 call G_append(mss,' & '//err)
-               elseif(err.NE.' ') then
-                  mss= err
-               endif
-*
-            else
+            Else
                call g_examine_control_event(CRAW,ABORT,err)
             EndIf
          endif
 *
 *
          If(ABORT .or. mss.NE.' ') Then
-            call G_add_path(here,mss)           !only if problems
+            call G_add_path(here,mss)   !only if problems
             call G_rep_err(ABORT,mss)
+         EndIf
+*
+         EoF= gen_event_type.EQ.20
+*
+         If(gen_run_stopping_event.GT.0 .and. 
+     &        gen_event_ID_number.GT.0) Then
+            EoF= EoF .or. gen_run_stopping_event.LE.gen_event_ID_number
          EndIf
 *
 *- Here is where we insert a check for an Remote Proceedure Call (RPC) 
 *- from another process for CTP to interpret
 *
-      ENDDO                                   !found a problem
+      ENDDO                             !found a problem
 *
       type *,'    -------------------------------------'
 *
@@ -224,5 +248,12 @@
       type *,'      total number of events=',total_event_count
       type *
 *
-      STOP
+      type *,' Processed:'
+      DO i=0,gen_MAX_trigger_types
+         If(gen_run_triggered(i).GT.0) Then
+            write(mss,'(i10," events of type",i3)') gen_run_triggered(i),i
+            call G_log_message(mss)
+         EndIf
+      ENDDO
+*
       END
