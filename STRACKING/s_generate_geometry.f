@@ -1,4 +1,4 @@
-      subroutine S_GENERATE_GEOMETRY
+      subroutine s_generate_geometry
 *
 *     This subroutine reads in the wire plane parameters and fills all the
 *     geometrical constants used in Track Fitting for the SOS spectrometer
@@ -8,6 +8,9 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change SPLANE_PARAM to individual arrays
 * $Log$
+* Revision 1.7  1996/09/05 13:30:18  saw
+* (JRA) Format statement changes
+*
 * Revision 1.6  1996/04/30 17:13:09  saw
 * (JRA) Set up card drift time delay structures
 *
@@ -242,7 +245,7 @@
      &                     sdc_nrwire(j),
      &                     sdc_central_wire(j),
      &                     sdc_sigma(j),j=1,sdc_num_planes)
-1000  format(1x,i4,f9.4,3f10.6,f8.4,f6.0,f10.4,f10.6)
+1000  format(1x,i4,f9.4,3f10.6,f8.4,i6,f10.4,f10.6)
         write(sluno,'(''  plane'',
      &        ''  szchi     szpsi     sxchi     sxpsi     sychi     sypsi'')')
         write(sluno,1001) (i, szchi(i),szpsi(i),sxchi(i),sxpsi(i),sychi(i),
