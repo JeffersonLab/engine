@@ -11,12 +11,15 @@
 *- 
 *-   Created  17-May-1994   Kevin B. Beard, Hampton U.
 * $Log$
+* Revision 1.3  1996/01/16 20:57:18  cdaq
+* no change
+*
 * Revision 1.2  1995/07/27 19:11:15  cdaq
 * (SAW) Use specific bit manipulation routines for f2c compatibility
 *       Remove event number limit checking
 *
-*Revision 1.1  1994/06/07  18:19:03  cdaq
-*Initial revision
+* Revision 1.1  1994/06/07  18:19:03  cdaq
+* Initial revision
 *
 *-
 *- All standards are from "Proposal for Hall C Analysis Software

@@ -8,10 +8,14 @@
 *-         : err        - reason for failure, if any
 *- 
 *-   Created   3-Dec-1993   Kevin B. Beard
-*-    $Log$
-*-    Revision 1.2  1994/03/24 18:15:59  cdaq
-*-    (SAW) Move g_decode_clear into this routine.
-*-
+*
+* $Log$
+* Revision 1.3  1996/01/16 20:54:59  cdaq
+* no change
+*
+* Revision 1.2  1994/03/24 18:15:59  cdaq
+* (SAW) Move g_decode_clear into this routine.
+*
 * Revision 1.1  1994/02/04  21:51:53  cdaq
 * Initial revision
 *

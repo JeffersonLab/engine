@@ -12,10 +12,13 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  6-Dec-1993   K.B.Beard: adopt new errors
-*-    $Log$
-*-    Revision 1.2  1995/05/22 20:50:42  cdaq
-*-    (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
-*-
+* $Log$
+* Revision 1.3  1996/01/16 20:59:10  cdaq
+* no change
+*
+* Revision 1.2  1995/05/22 20:50:42  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
 * Revision 1.1  1994/02/04  21:05:40  cdaq
 * Initial revision
 *

@@ -9,10 +9,13 @@
 *-         : err	- reason for failure, if any
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
-*-    $Log$
-*-    Revision 1.2  1994/04/12 17:10:33  cdaq
-*-    (KBB) Add ntuple call
-*-
+* $Log$
+* Revision 1.3  1996/01/16 21:00:40  cdaq
+* no change
+*
+* Revision 1.2  1994/04/12 17:10:33  cdaq
+* (KBB) Add ntuple call
+*
 * Revision 1.1  1994/02/04  21:07:07  cdaq
 * Initial revision
 *

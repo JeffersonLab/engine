@@ -9,10 +9,13 @@
 *-         : err             - reason for failure, if any
 *- 
 *-   Created  8-Nov-1993   Kevin B. Beard
-*-    $Log$
-*-    Revision 1.5  1995/05/22 20:50:43  cdaq
-*-    (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
-*-
+* $Log$
+* Revision 1.6  1996/01/16 20:59:39  cdaq
+* no change
+*
+* Revision 1.5  1995/05/22 20:50:43  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
 * Revision 1.4  1995/05/11  13:44:50  cdaq
 * (SAW) Add calculation of s from beam and target info
 *
@@ -45,14 +48,19 @@
 **      INCLUDE 'coin_data_structures.cmn'
       INCLUDE 'gen_constants.par'
 *
+
+*
+      REAL*4 celoss
+*
 *--------------------------------------------------------
 *
       ABORT= .FALSE.
 *
       CEBEAM=SQRT(CPBEAM**2 + mass_electron**2)
+      call total_eloss(0,.true.,tz_target,ta_target,55.0,3.0,0.0,
+     >                             ttheta_tar,1.0,celoss)
+      CEBEAM = CEBEAM - celoss
       g_beam_target_s = (TMASS_TARGET + CEBEAM)**2 - CPBEAM**2
-*
-      call c_ntuple_init(ABORT,err)
 *
       IF(ABORT) THEN
          call G_add_path(here,err)
