@@ -1,6 +1,9 @@
 * sos_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the sos time of flight.
 * $Log$
+* Revision 1.8  1996/04/30 14:04:07  saw
+* (JRA) Add sbeta_p, and sbeta_pcent
+*
 * Revision 1.7  1995/05/22 19:03:32  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
 * Add some varaibles and fix typos
@@ -107,12 +110,16 @@
       real*4 s_fptimedif(6)                !fp time differences
       real*4 sbeta_notrk
       real*4 sbeta_chisq_notrk
+      real*4 sbeta_p
+      real*4 sbeta_pcent
 
        common/stof_notrk/
      &  s_fptime,
      &  s_fptimedif,
      &  sbeta_notrk,
-     &  sbeta_chisq_notrk
+     &  sbeta_chisq_notrk,
+     &  sbeta_p,
+     &  sbeta_pcent
 
 c      integer*4 sscin_pos_did(snum_scin_planes,16)
 c      integer*4 sscin_neg_did(snum_scin_planes,16)
