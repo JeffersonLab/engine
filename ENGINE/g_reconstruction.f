@@ -1,25 +1,31 @@
-      SUBROUTINE G_reconstruction(ABORT,err)
+      SUBROUTINE G_reconstruction(event,ABORT,err)
 *----------------------------------------------------------------------
 *-       Prototype hall C reconstruction routine
 *- 
 *-   Purpose and Methods : Given previously filled data structures,
 *-                         reconstruction is performed and status returned
 *- 
+*-   Inputs:
+*-       event      Pointer to the first word (length) of an event data bank.
+*-
 *-   Output: ABORT	- success or failure
 *-         : err	- reason for failure, if any
 *- 
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 *-    $Log$
-*-    Revision 1.4  1994/02/02 19:58:47  cdaq
-*-    Remove some damn nulls at the end of the file
+*-    Revision 1.5  1994/04/15 20:37:41  cdaq
+*-    (SAW) for ONLINE compatibility get event from argument instead of commmon.
 *-
-c Revision 1.3  1994/02/02  18:53:43  cdaq
-c Actually add call to g_decode_event_by_banks
-c
-c Revision 1.2  1994/02/01  21:28:48  cdaq
-c Add call to G_decode_event_by_banks
-c
+* Revision 1.4  1994/02/02  19:58:47  cdaq
+* Remove some damn nulls at the end of the file
+*
+* Revision 1.3  1994/02/02  18:53:43  cdaq
+* Actually add call to g_decode_event_by_banks
+*
+* Revision 1.2  1994/02/01  21:28:48  cdaq
+* Add call to G_decode_event_by_banks
+*
 *-
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
@@ -27,6 +33,8 @@ c
 *--------------------------------------------------------
       IMPLICIT NONE
       SAVE
+*
+      integer*4 event(*)
 *
       character*16 here
       parameter (here= 'G_reconstruction')
@@ -42,7 +50,7 @@ c
 *
       err= ' '                                  !erase any old errors
 *
-      call G_decode_event_by_banks(ABORT,err)
+      call G_decode_event_by_banks(event,ABORT,err)
       IF(ABORT) THEN
          call G_add_path(here,err)
          RETURN
