@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.41.6.3  2004/07/09 14:12:46  saw
+* Add function calls to fill CTP ROOT Trees
+*
 * Revision 1.41.6.2  2004/06/30 19:31:49  cdaq
 * Add call to g_examine_picture_event (DJG)
 *
@@ -930,6 +933,8 @@ c...
         ENDIF
       ENDDO
       endif
+
+      ierr=thtreecloseg('all')
 
 * Comment out the following two lines if they cause trouble
       call system
