@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard, HU
 *-    $Log$
-*-    Revision 1.4  1994/07/21 19:51:14  cdaq
-*-    (SAW) Add call to thgethit
+*-    Revision 1.5  1994/08/30 14:48:50  cdaq
+*-    (SAW) Add call to increment scalers
 *-
+* Revision 1.4  1994/07/21  19:51:14  cdaq
+* (SAW) Add call to thgethit
+*
 * Revision 1.3  1994/06/17  03:50:36  cdaq
 * (KBB) Upgrade error reporting
 *
@@ -54,6 +57,8 @@
          call G_build_note(':failure#$ in thgethit',
      &                                 '$',ierr,' ',0.,' ',err)
          ierr= thtstexe()
+         call thtstins                  ! Increment scalers
+*
          ABORT= ierr.NE.0
          IF(ABORT) THEN
             call G_build_note(':failure#$ in thtstexe',
