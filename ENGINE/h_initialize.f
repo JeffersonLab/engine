@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-    $Log$
-*-    Revision 1.10  1994/06/17 04:01:35  cdaq
-*-    (KBB) Upgrade error reporting
+*-    Revision 1.11  1994/10/11 18:44:11  cdaq
+*-    (SAW) Add hacks for event display
 *-
+* Revision 1.10  1994/06/17  04:01:35  cdaq
+* (KBB) Upgrade error reporting
+*
 * Revision 1.9  1994/06/14  04:02:13  cdaq
 * (DFG) Add call to h_init_physics
 *
@@ -53,6 +56,8 @@
 *
       logical FAIL
       character*1000 why
+*HDISPLAY*
+*HDISPLAY      include 'one_ev_io.cmn'
 *
 *--------------------------------------------------------
       err= ' '
@@ -75,6 +80,9 @@
         err= why
       endif
       ABORT= ABORT .or. FAIL
+*
+*HDISPLAY*     If one_ev flag on, initialize the event display package
+*HDISPLAY      if(one_ev.ne.0) call one_ev_init  ! One event display init
 *
 *-read in Optical matrix elements
       call h_targ_trans_init(FAIL,why,istat)
