@@ -1,5 +1,11 @@
       subroutine g_extract_kinematics(ebeam,phms,thms,psos,tsos,ntarg)
 * $Log$
+* Revision 1.5  2002/09/25 14:38:47  jones
+*    a. IN subroutine parse_line
+*       i.  character*132 line changed to character*(*) line
+*       ii. character*20 name changed to character*(*) name
+*    b. in function skip_blanks character*132 string changed to  character*(*) string
+*
 * Revision 1.4  1998/12/01 15:59:47  saw
 * (SAW) Make "string" argument of skip_item variable length
 *
@@ -74,12 +80,14 @@ c     Parse a character string
 c
       subroutine parse_line (line, line_len, name, value1, value2)
       implicit none
-      character*132 line, tmpline
+      character*(*) line
+      character*132 tmpline
       integer line_len,new_len
       integer name_start,name_stop
       integer value1_start,value1_stop
       integer value2_start,value2_stop
-      character*20 name,value_string
+      character*(*) name
+      character*20 value_string
       real*4 value1,value2
 
 ! sample line:   sangle {SOS Angle} sangle {29.4} {29.4}
@@ -140,7 +148,7 @@ c
 c     Return the offset of the first nonblank character in "string"
 c
       integer function skip_blanks (string, i)
-      character*132 string
+      character*(*) string
       integer i, j
       j = i
       do while ((string(j:j).eq.' ').and.(ichar(string(j:j)).ne.0))
