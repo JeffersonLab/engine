@@ -1,42 +1,87 @@
-       SUBROUTINE H_CAL(ABORT,err)
-*--------------------------------------------------------
+*=======================================================================
+      subroutine h_cal(abort,errmsg)
+*=======================================================================
 *-
-*-   Purpose and Methods : Analyze Calorimeter information for each track 
+*-      Purpose: Computes the calorimeter particle ID quantities.
+*-               Corrects the energy depositions for impact point 
+*-               coordinate dependence.
 *-
-*-      Required Input BANKS     HMS_RAW_CAL
-*-                               HMS_DECODED_CAL
-*-                               HMS_FOCAL_PLANE
+*-      Input Bank: HMS_TRACKS_CAL
 *-
-*-      Output BANKS             HMS_TRACK_TESTS
+*-      Output Bank: HMS_TRACK_TESTS
 *-
 *-   Output: ABORT           - success or failure
 *-         : err             - reason for failure, if any
 *- 
-*-   Created 19-JAN-1994   D. F. Geesaman
-*-                           Dummy Shell routine
+*-      Created: 15 Mar 1994      Tsolak A. Amatuni
+*
 * $Log$
-* Revision 1.1  1994/02/19 06:12:35  cdaq
+* Revision 1.2  1994/04/12 21:24:55  cdaq
+* (DFG) Put in real code and change name of print routine.
+*
+* Revision 1.1  1994/02/19  06:12:35  cdaq
 * Initial revision
 *
-*-
-*-
 *--------------------------------------------------------
-       IMPLICIT NONE
-       SAVE
+      implicit none
+      save
+*     
+      logical abort
+      character*(*) errmsg
+      character*5 here
+      parameter (here='H_CAL')
 *
-       character*50 here
-       parameter (here= 'H_CAL')
+      integer*4 nt           !Detector track number
+      integer*4 nc           !Calorimeter cluster number
+      real*4    cor          !Correction factor for X,Y dependence
+      real*4 h_correct_cal   !External function to compute "cor" 
 *
-       logical ABORT
-       character*(*) err
+      include 'gen_data_structures.cmn'
+      include 'hms_calorimeter.cmn'
 *
-       INCLUDE 'gen_data_structures.cmn'
-       INCLUDE 'gen_constants.par'
-       INCLUDE 'gen_units.par'
+      do nt=1,hntracks_max
+         htrack_e1(nt)=0.
+         htrack_e2(nt)=0.
+         htrack_e3(nt)=0.
+         htrack_e4(nt)=0.
+         htrack_et(nt)=0.
+      enddo
 *
-*--------------------------------------------------------
+      call h_clusters_cal(abort,errmsg)
+      if(abort) then
+         call g_add_path(here,errmsg)
+         return
+      endif
 *
-       ABORT= .FALSE.
-       err= ':dummy routine!'
-       RETURN
-       END
+      call h_tracks_cal(abort,errmsg)
+      if(abort) then
+         call g_add_path(here,errmsg)
+         return
+      endif
+*
+*      Return if there are no tracks found or none of the found
+*      tracks matches a cluster in the calorimeter.
+*
+      if(hntracks_fp .le.0) go to 100   !Return
+      if(hntracks_cal.le.0) go to 100   !Return
+*
+      do nt =1,hntracks_fp
+         nc=hcluster_track(nt)
+         if(nc.gt.0) then
+            cor=h_correct_cal(htrack_xc(nt),htrack_yc(nt))
+*
+            hnblocks_cal(nt)=hcluster_size(nc)
+*
+            htrack_e1(nt)=cor*hcluster_e1(nc)
+            htrack_e2(nt)=cor*hcluster_e2(nc)
+            htrack_e3(nt)=cor*hcluster_e3(nc)
+            htrack_e4(nt)=cor*hcluster_e4(nc)
+            htrack_et(nt)=cor*hcluster_et(nc)
+         endif                          !End ... if nc > 0
+      enddo                             !End loop over detector tracks
+*
+  100 continue
+      if(hdbg_tests_cal.gt.0) call h_prt_cal_tests
+*
+      return
+      end
