@@ -9,7 +9,10 @@
 *                                   Transfer ID in common block
 *                                   Implement flag to turn block on
 * $Log$
-* Revision 1.2  1994/08/18 02:35:36  cdaq
+* Revision 1.3  1994/08/18 03:13:08  cdaq
+* (SAW) Use arrays of histids for residuals
+*
+* Revision 1.2  1994/08/18  02:35:36  cdaq
 * (DA) Add histograms for residuals
 *
 * Revision 1.1  1994/04/13  15:38:48  cdaq
@@ -22,15 +25,15 @@
       character*50 here
       parameter (here= 'h_fill_dc_fp_hist')
 *
+      include 'gen_data_structures.cmn'
+      include 'hms_track_histid.cmn'
+      include 'hms_tracking.cmn'
+*
       logical ABORT
       character*(*) err
       real*4  histval
       integer*4 itrk
-
-*
-      include 'gen_data_structures.cmn'
-      include 'hms_track_histid.cmn'
-      include 'hms_tracking.cmn'
+      integer*4 plane
 *
       SAVE
 *--------------------------------------------------------
@@ -63,34 +66,11 @@
             endif
             call hf1(hidhchi2perdeg_fp,histval,1.)
 *     
-*     The following is bad form (Ask Steve Wood why.)
-*     
-            call hf1(hidres_fp,hdc_residual(itrk,1),1.)
-            call hf1(hidres_fp+1,hdc_residual(itrk,2),1.)
-            call hf1(hidres_fp+2,hdc_residual(itrk,3),1.)
-            call hf1(hidres_fp+3,hdc_residual(itrk,4),1.)
-            call hf1(hidres_fp+4,hdc_residual(itrk,5),1.)
-            call hf1(hidres_fp+5,hdc_residual(itrk,6),1.)
-            call hf1(hidres_fp+6,hdc_residual(itrk,7),1.)
-            call hf1(hidres_fp+7,hdc_residual(itrk,8),1.)
-            call hf1(hidres_fp+8,hdc_residual(itrk,9),1.)
-            call hf1(hidres_fp+9,hdc_residual(itrk,10),1.)
-            call hf1(hidres_fp+10,hdc_residual(itrk,11),1.)
-            call hf1(hidres_fp+11,hdc_residual(itrk,12),1.)
-            
-            call hf1(hidsingres_fp,hdc_sing_res(itrk,1),1.)
-            call hf1(hidsingres_fp+1,hdc_sing_res(itrk,2),1.)
-            call hf1(hidsingres_fp+2,hdc_sing_res(itrk,3),1.)
-            call hf1(hidsingres_fp+3,hdc_sing_res(itrk,4),1.)
-            call hf1(hidsingres_fp+4,hdc_sing_res(itrk,5),1.)
-            call hf1(hidsingres_fp+5,hdc_sing_res(itrk,6),1.)
-            call hf1(hidsingres_fp+6,hdc_sing_res(itrk,7),1.)
-            call hf1(hidsingres_fp+7,hdc_sing_res(itrk,8),1.)
-            call hf1(hidsingres_fp+8,hdc_sing_res(itrk,9),1.)
-            call hf1(hidsingres_fp+9,hdc_sing_res(itrk,10),1.)
-            call hf1(hidsingres_fp+10,hdc_sing_res(itrk,11),1.)
-            call hf1(hidsingres_fp+11,hdc_sing_res(itrk,12),1.)
-* 
+            do plane = 1,hdc_num_planes
+              call hf1(hidres_fp(plane),hdc_residual(itrk,plane),1.)
+              call hf1(hidsingres_fp(plane),hdc_sing_res(itrk,plane),1.)
+            enddo
+
           enddo                         ! end loop over hits
         endif                           ! end test on zero hits       
       endif                             ! end test on histogramming flag
