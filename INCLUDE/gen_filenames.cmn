@@ -2,6 +2,9 @@
 *
 *-Common block with filenames
 *     $Log$
+*     Revision 1.11  1996/09/04 15:48:00  saw
+*     (JRA) Add flags for writting out preproccesd (filtered) events
+*
 *     Revision 1.10  1996/04/30 13:37:06  saw
 *     (JRA) Add filename for pedestal output
 *
@@ -58,6 +61,9 @@
       character*80 g_stats_output_filename
       character*80 g_stats_blockname
       character*80 g_pedestal_output_filename
+      character*80 g_bad_output_filename
+      character*80 g_preproc_filename
+      character*80 g_charge_scaler_filename
 *
       common /gen_filenames/
      $     g_config_filename,
@@ -77,7 +83,11 @@
      $     g_stats_template_filename,
      $     g_stats_output_filename,
      $     g_stats_blockname,
-     $     g_pedestal_output_filename
+     $     g_pedestal_output_filename,
+     $     g_bad_output_filename,
+     $     g_preproc_filename,
+     $     g_charge_scaler_filename
+
 *
       logical*4 g_hist_rebook
       logical*4 g_test_rebook
@@ -88,13 +98,20 @@
       logical*4 g_data_source_opened            !whether FASTBUS CODA file opened OK
       integer g_data_source_in_hndl             !IO channel assigned by CODA library
       integer g_max_events                      !quit after this number events
+      logical*4 g_preproc_opened                !status of preprocessor output file opening
+      integer*4 g_preproc_in_hndl               !IO channel assigned by CODA for above file
+      integer*4 g_preproc_on                    !flag to turn on event preprocessing
 *
       common /gen_config_flags/
      $     g_hist_rebook, g_test_rebook, g_parm_rebook,
      $     g_report_rebook,
      $     g_config_loaded,
      $     g_data_source_opened, g_data_source_in_hndl,
-     $     g_max_events
+     $     g_max_events,
+     $     g_preproc_opened,
+     $     g_preproc_in_hndl,
+     $     g_preproc_on
+
 *
 *     Local Variables:
 *     mode: fortran
