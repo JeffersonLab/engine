@@ -21,6 +21,9 @@
 *
 *
 * $Log$
+* Revision 1.19.4.2  2004/07/01 14:46:35  jones
+* Add calls to s_ytarcalib, s_yptarcalib, s_xptarcalib which are new subroutines added by C. Xu for the fpi2 branch of analyzer
+*
 * Revision 1.19.4.1  2004/07/01 14:43:10  jones
 * New version for fpi2 branch
 *
@@ -177,6 +180,10 @@
 *     focal plane quantites).
 
       call s_satcorr(ABORT,err)
+      call s_ytarcalib(ABORT,err)
+      call s_yptarcalib(ABORT,err)
+      call s_xptarcalib(ABORT,err)
+c
       ssp = spcentral*(1.0 + ssdelta/100.) !Momentum in GeV
       ssenergy = sqrt(ssp*ssp+spartmass*spartmass)        
 
