@@ -2,6 +2,9 @@
 *      HMS calorimeter. Parameters from hms_positions.parm
 *
 * $Log$
+* Revision 1.12  1999/02/23 19:08:04  csa
+* Add hcal_fv_test
+*
 * Revision 1.11  1999/01/21 21:40:30  saw
 * Extra shower counter tube modifications
 *
@@ -70,6 +73,8 @@
       real*4 hcal_4ta_right     !
       real*4 hcal_4ta_top       ! X positions, column #4
       REAL*4 HCAL_SLOP          !SLOP IN DISTANCE BETWEEN TRACK AND BLOCK
+      integer*4 hcal_fv_test    !Turn on fiducial volume cut
+
       common/hms_cal_parms/
      &       hcal_1pr_zpos,
      &       hcal_2ta_zpos,
@@ -95,7 +100,8 @@
      &       hcal_4ta_left,
      &       hcal_4ta_right,
      &       hcal_4ta_top(HMAX_CAL_ROWS),
-     &       hcal_slop
+     &       hcal_slop,
+     &       hcal_fv_test
 *
 *      HMS calorimeter. Geometrical constants filled by h_init_cal
 *
