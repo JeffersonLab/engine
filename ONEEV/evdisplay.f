@@ -3,6 +3,9 @@
 *- standalone DISPLAY for hall C
 *
 * $Log$
+* Revision 1.5  1996/09/04 16:40:13  saw
+* (SAW) Reorder data statements for f2c compatibility
+*
 * Revision 1.4  1996/01/24 16:28:28  saw
 * (DVW) Add code for automatic redisplay mode
 *
@@ -30,7 +33,6 @@
       INCLUDE 'gen_event_info.cmn'
 *
       INCLUDE 'gen_one_ev_info.cmn'
-      INCLUDE 'gen_one_ev_info.dte'
 *
       logical FAIL,QUIT
       character*800 why
@@ -44,6 +46,7 @@
       integer*4 view, newview
       integer*4 revdis_ask
       logical isdata
+      INCLUDE 'gen_one_ev_info.dte'
 *******************************************************************
 *
       PRINT *
