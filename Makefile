@@ -71,8 +71,11 @@ clean:
 	-@rm ONEEV/O.$(OSTYPE)/*.[do]
 	-@rm PORT/O.$(OSTYPE)/*.[do]
 	-@rm CODA/O.$(OSTYPE)/*.[do]
-	-@rm ONLINE/O.$(OSTYPE)/*.[do]
-	-@rm CTP/daVarRpc_svc.c CTP/daVarRpc_xdr.c CTP/daVarRpc_clnt.c CTP/daVarRpc.h
+#	-@rm ONLINE/O.$(OSTYPE)/*.[do]
+	-@rm ../$(OSTYPE)/lib/*.a
+	-@rm ../$(OSTYPE)/bin/*
+	-@rm CTP/daVarRpc_svc.c 
+	-@rm CTP/daVarRpc_xdr.c CTP/daVarRpc_clnt.c CTP/daVarRpc.h
 #	$(MAKE) -C UTILSUBS clean
 #	$(MAKE) -C ENGINE clean
 #	$(MAKE) -C CTP clean
