@@ -1,6 +1,9 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
+* Revision 1.12  1996/11/05 20:45:02  saw
+* (SAW) Use parameter for G_LUN_CHARGE_SCALER instead of hard coded #
+*
 * Revision 1.11  1996/09/04 14:31:53  saw
 * (JRA) Update BCM calculations
 *
@@ -208,7 +211,7 @@ c
 *         Write out pertinent charge scaler rates for each scaler event.
 
           if (g_charge_scaler_filename.ne.' ') then
-            write(217,1001) gscaler_event_num, !scaler event num
+            write(G_LUN_CHARGE_SCALER,1001) gscaler_event_num, !scaler event num
      &           gscaler_change(gunser_index)/delta_time, !scaler rate(Hz)
      &           gscaler_change(gbcm1_index)/delta_time, !scaler rate(Hz)
      &           gscaler_change(gbcm2_index)/delta_time, !scaler rate(Hz)
