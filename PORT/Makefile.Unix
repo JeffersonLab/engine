@@ -4,32 +4,40 @@
 # definitions of some fortran functions that are missing under F2C/Linux.
 #
 # $Log$
+# Revision 1.2  1996/11/22 17:05:53  saw
+# (SAW) Add routines for porting to Linux and AIX
+#
 # Revision 1.1  1996/09/09 13:34:01  saw
 # Initial revision
 #
 NEWSTYLE=1
 include $(Csoft)/etc/Makefile
 
-libsources =  f2c_wrappers.f
+ifeq ($(ARCH),AIX)
+  libsources =  bit_wrappers.f
+  install-dirs := lib
+else
+  ifeq ($(ARCH),Linux)
+    libsources =  bit_wrappers.f misc_wrappers.f trig_wrappers.f
+    install-dirs := lib
+  else
+    libsources =  
+    install-dirs :=
+  endif
+endif
 
 sources = $(libsources)
 
 lib_targets := $(patsubst %.f, libport.a(%.o), $(sources))
 
-
-ifeq ($(ARCH),Linux)
-  install-dirs := lib
-else
-  install-dirs :=
-endif
-
 #default:
 #	@echo "nothing to make"
 
-#ifdef NFSDIRECTORY
-#%.f : $(NFSDIRECTORY)/ENGINE/%.f
-#	ln -s $< $@
-#.PRECIOUS: %.f
-#endif
+ifdef NFSDIRECTORY
+../%.f : $(NFSDIRECTORY)/PORT/%.f
+	ln -s $< $@
+
+.PRECIOUS: ../%.f
+endif
 
 include $(sources:.f=.d)
