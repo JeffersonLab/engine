@@ -2,6 +2,9 @@
 *      HMS calorimeter. Parameters from hms_positions.parm
 *
 * $Log$
+* Revision 1.9  1998/12/01 20:28:57  saw
+* (SAW) Cosmetics
+*
 * Revision 1.8  1996/01/17 15:59:26  cdaq
 * (JRA) Add normalized event quantities
 *
@@ -76,16 +79,16 @@
      &       hcal_4ta_nr,
      &       hcal_1pr_left,
      &       hcal_1pr_right,
-     &       hcal_1pr_top(hmax_cal_rows),
+     &       hcal_1pr_top(HMAX_CAL_ROWS),
      &       hcal_2ta_left,
      &       hcal_2ta_right,
-     &       hcal_2ta_top(hmax_cal_rows),
+     &       hcal_2ta_top(HMAX_CAL_ROWS),
      &       hcal_3ta_left,
      &       hcal_3ta_right,
-     &       hcal_3ta_top(hmax_cal_rows),
+     &       hcal_3ta_top(HMAX_CAL_ROWS),
      &       hcal_4ta_left,
      &       hcal_4ta_right,
-     &       hcal_4ta_top(hmax_cal_rows),
+     &       hcal_4ta_top(HMAX_CAL_ROWS),
      &       hcal_slop
 *
 *      HMS calorimeter. Geometrical constants filled by h_init_cal
@@ -112,9 +115,9 @@
      &       hcal_block_xsize,
      &       hcal_block_ysize,
      &       hcal_block_zsize,
-     &       hcal_block_xc(hmax_cal_blocks),
-     &       hcal_block_yc(hmax_cal_blocks),
-     &       hcal_block_zc(hmax_cal_blocks),
+     &       hcal_block_xc(HMAX_CAL_BLOCKS),
+     &       hcal_block_yc(HMAX_CAL_BLOCKS),
+     &       hcal_block_zc(HMAX_CAL_BLOCKS),
      &       hcal_xmin,hcal_xmax,
      &       hcal_ymin,hcal_ymax,
      &       hcal_zmin,hcal_zmax,
@@ -131,9 +134,9 @@
       real*4    hcal_adcs          !Pulse height in channels(ADC-PED).
       integer*4 hcal_num_hits      !Total number of hits above threshold
       common/hms_sparsified_cal/ 
-     &       hcal_rows(hmax_cal_blocks),
-     &       hcal_cols(hmax_cal_blocks),
-     &       hcal_adcs(hmax_cal_blocks),
+     &       hcal_rows(HMAX_CAL_BLOCKS),
+     &       hcal_cols(HMAX_CAL_BLOCKS),
+     &       hcal_adcs(HMAX_CAL_BLOCKS),
      &       hcal_num_hits
 *
 *      HMS calorimeter. Cluster data, filled by h_clusters_cal
@@ -150,7 +153,7 @@
       real*4 hcluster_e4      !                            #4
       real*4 hcluster_et      !Total energy deposition
       common/hms_clusters_cal/
-     &       hcluster_hit(hmax_cal_blocks),
+     &       hcluster_hit(HMAX_CAL_BLOCKS),
      &       hcluster_size(hnclusters_max),
      &       hcluster_xc(hnclusters_max),
      &       hcluster_e1(hnclusters_max),
@@ -167,9 +170,9 @@
       integer*4 hcluster_track   !Link pointer to calorimeter cluster number
       integer*4 hntracks_cal  !Number of tracks for which a cluster was found
       common/hms_tracks_cal/
-     &       htrack_xc(hntracks_max),
-     &       htrack_yc(hntracks_max),
-     &       hcluster_track(hntracks_max),
+     &       htrack_xc(HNTRACKS_MAX),
+     &       htrack_yc(HNTRACKS_MAX),
+     &       hcluster_track(HNTRACKS_MAX),
      &       hntracks_cal
 *
 *     CTPTYPE=parm
@@ -181,15 +184,15 @@
       real*4 hcal_ped_rms       !Pedestal rms deviation
       real*4 hcal_threshold     !Threshold=3.*hcal_ped_rms
       common/hms_cal_pedestals/
-     &       hcal_ped_mean(hmax_cal_blocks),
-     &       hcal_ped_rms(hmax_cal_blocks),
-     &       hcal_threshold(hmax_cal_blocks)
+     &       hcal_ped_mean(HMAX_CAL_BLOCKS),
+     &       hcal_ped_rms(HMAX_CAL_BLOCKS),
+     &       hcal_threshold(HMAX_CAL_BLOCKS)
 *
 *      HMS calorimeter. Calibration constants
 *
       real*4 hcal_cal_const      !Calibration constants
       common/hms_cal_const/
-     &       hcal_cal_const(hmax_cal_blocks)
+     &       hcal_cal_const(HMAX_CAL_BLOCKS)
 *
 *      HMS calorimeter. Relative gains & correction factors
 *
@@ -197,9 +200,9 @@
       real*4 hcal_gain_cur   !Current relative gains
       real*4 hcal_gain_cor   !Correction factor: cor=ini/cur
       common/hms_cal_monitor/
-     &       hcal_gain_ini(hmax_cal_blocks),
-     &       hcal_gain_cur(hmax_cal_blocks),
-     &       hcal_gain_cor(hmax_cal_blocks)
+     &       hcal_gain_ini(HMAX_CAL_BLOCKS),
+     &       hcal_gain_cur(HMAX_CAL_BLOCKS),
+     &       hcal_gain_cor(HMAX_CAL_BLOCKS)
 *
 *      HMS calorimeter. Debuging LUN and flags
 *
@@ -222,12 +225,12 @@
 *
 *     CTPTYPE=event
 *
-      integer*4 hcal_zero_sum(hmax_cal_blocks)
-      integer*4 hcal_zero_sum2(hmax_cal_blocks)
-      integer*4 hcal_zero_num(hmax_cal_blocks)
-      real*4 hcal_zero_ave(hmax_cal_blocks)
-      real*4 hcal_zero_sig(hmax_cal_blocks)
-      real*4 hcal_zero_thresh(hmax_cal_blocks)
+      integer*4 hcal_zero_sum(HMAX_CAL_BLOCKS)
+      integer*4 hcal_zero_sum2(HMAX_CAL_BLOCKS)
+      integer*4 hcal_zero_num(HMAX_CAL_BLOCKS)
+      real*4 hcal_zero_ave(HMAX_CAL_BLOCKS)
+      real*4 hcal_zero_sig(HMAX_CAL_BLOCKS)
+      real*4 hcal_zero_thresh(HMAX_CAL_BLOCKS)
 
       common /hms_cal_zero/
      &    hcal_zero_ave,
