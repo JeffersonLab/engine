@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.7  1995/05/24 13:24:13  cdaq
+# Revision 1.8  1995/07/28 15:17:32  cdaq
+# (SAW) Add NFSDIRECTORY stuff
+#
+# Revision 1.7  1995/05/24  13:24:13  cdaq
 # (SAW) Remove g_init_histid
 #
 # Revision 1.6  1995/03/13  20:01:57  cdaq
@@ -43,10 +46,17 @@ endif
 #default:
 #	@echo "nothing to make"
 
+ifdef NFSDIRECTORY
+%.f : $(NFSDIRECTORY)/TRACKING/%.f
+	ln -s $< $@
+
+.PRECIOUS: %.f
+endif
+
 #
 # Get include files from ENGINE directory
 #
-	
+
 %.cmn :: ../INCLUDE/%.cmn
 	cp -f $< $@
 
