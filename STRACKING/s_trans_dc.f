@@ -15,14 +15,16 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.2  1994/02/22 14:22:58  cdaq
+* Revision 1.3  1994/03/24 19:59:03  cdaq
+* (DFG) add print routines and flags
+*       check plane number and wire number for validity
+*
+* Revision 1.2  1994/02/22  14:22:58  cdaq
 * (SAW) replace err='' with ' '
 *
 * Revision 1.1  1994/02/21  16:42:58  cdaq
 * Initial revision
 *
-*-
-*-
 *--------------------------------------------------------
        IMPLICIT NONE
        SAVE
@@ -48,6 +50,10 @@
 *
        ABORT= .FALSE.
        err= ' '
+*      Dump raw bank if debug flag set
+       if(sdebugprintrawdc.ne.0) then
+          call s_print_raw_dc(ABORT,err)
+       endif
        old_wire = -1
        old_plane = -1
        goodhit = 0
@@ -57,10 +63,15 @@
          do ihit=1,SDC_RAW_TOT_HITS
            plane = SDC_RAW_PLANE_NUM(ihit)
            wire  = SDC_RAW_WIRE_NUM(ihit)
+*      check valid plane and wire number
+          if(plane.gt.0 .and. plane.le. sdc_num_planes) then
+*      test for valid wire number
+            if(wire .gt. 0 .and. wire .le. sdc_nrwire(plane) ) then
 *      test for multiple hit on the same wire
-           if(plane .eq. old_plane .and. wire .eq. old_wire ) then
+             if(plane .eq. old_plane .and. wire .eq. old_wire ) then
                 swire_mult(wire,plane) = swire_mult(wire,plane)+1
-           else
+             else
+
 *          valid hit proceed with decoding
                 goodhit = goodhit + 1
                 SDC_PLANE_NUM(goodhit) = SDC_RAW_PLANE_NUM(ihit)
@@ -73,11 +84,12 @@
                 SDC_DRIFT_DIS(goodhit) =
      &               s_drift_dist_calc(plane,wire,SDC_DRIFT_TIME(goodhit))
                 SDC_HITS_PER_PLANE(plane) = SDC_HITS_PER_PLANE(plane) + 1
-*
-            endif                       ! end test on duplicate wire
-            old_plane = plane
-            old_wire  = wire
-         enddo                          ! end loop over raw hits
+             endif                       ! end test on duplicate wire
+             old_plane = plane
+             old_wire  = wire
+            endif                     ! end test on valid wire number
+          endif                       ! end test on valid plane number
+         enddo                        ! end loop over raw hits
 *
 *      set total number of good hits
 *
@@ -85,5 +97,10 @@
 
                 
        endif                !  end test on SDC_RAW_TOT_HITS.gt.0
+*      Dump decoded banks if flag is set
+       if(sdebugprintdecodeddc.ne.0) then
+          call s_print_decoded_dc(ABORT,err)
+       endif
+*
        RETURN
        END
