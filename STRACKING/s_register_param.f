@@ -13,6 +13,9 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
+* Revision 1.10  1996/04/30 17:15:12  saw
+* (JRA) Register Aerogel variables
+*
 * Revision 1.9  1995/08/31 20:43:41  cdaq
 * (JRA) Register Cerenkov variables
 *
@@ -70,6 +73,7 @@
       call r_sos_scin_parms
       call r_sos_scin_tof
       call r_sos_cer_parms
+      call r_sos_aero_parms
       call r_sos_calorimeter
       call r_sos_id_histid
 *
