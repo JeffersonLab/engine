@@ -10,6 +10,9 @@
 *
 *     Created: 1-Nov-1994  
 * $Log$
+* Revision 1.6  1996/11/05 21:42:08  saw
+* (DD) Add gas cerenkov to ntuple
+*
 * Revision 1.5  1996/09/04 15:15:21  saw
 * (JRA) Change ntuple contents
 *
@@ -155,6 +158,8 @@
       h_sieve_Ntuple_tag(m)= 'HSYPTAR'
       m= m+1
       h_sieve_Ntuple_tag(m)= 'HSSHTRK'
+      m= m+1
+      h_sieve_Ntuple_tag(m)= 'HCER'
       m= m+1
       h_sieve_Ntuple_tag(m)= 'EventID'
 *

@@ -8,6 +8,9 @@
 *
 *     Created: 1-Nov-1994  
 * $Log$
+* Revision 1.5  1996/11/05 21:42:28  saw
+* (DD) Add gas cerenkov to ntuple
+*
 * Revision 1.4  1996/09/04 15:15:38  saw
 * (JRA) Change ntuple contents
 *
@@ -68,6 +71,8 @@
       h_sieve_Ntuple_contents(m)= HSYP_TAR
       m= m+1
       h_sieve_Ntuple_contents(m)= HSTRACK_ET
+      m= m+1
+      h_sieve_Ntuple_contents(m)= HCER_NPE_SUM
       m= m+1
       h_sieve_Ntuple_contents(m)= float(gen_event_ID_number)
 *

@@ -8,6 +8,9 @@
 *
 *     Created: 1-Nov-1994  
 * $Log$
+* Revision 1.3  1996/11/05 21:44:04  saw
+* (DD) Add gas cerenkov to ntuple
+*
 * Revision 1.2  1996/09/04 15:19:37  saw
 * (JRA) Modify ntuple contents
 *
@@ -62,6 +65,8 @@
       s_sieve_Ntuple_contents(m)= SSYP_TAR
       m=m+1
       s_sieve_Ntuple_contents(m)= sstrack_et
+      m= m+1
+      s_sieve_Ntuple_contents(m)= scer_npe_sum
       m= m+1
       s_sieve_Ntuple_contents(m)= float(gen_event_ID_number)
 
