@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 *-    $Log$
-*-    Revision 1.7  1995/02/02 13:06:13  cdaq
-*-    (SAW) Add call to h_select_best_track
+*-    Revision 1.8  1995/05/11 19:05:48  cdaq
+*-    (JRA) Add call to h_trans_misc
 *-
+* Revision 1.7  1995/02/02  13:06:13  cdaq
+* (SAW) Add call to h_select_best_track
+*
 * Revision 1.6  1994/06/06  16:49:49  cdaq
 * (DFG) add h_recon_num and bypass switches
 *
@@ -77,6 +80,17 @@
 *
       If(hbypass_trans_scin.eq.0) then
          call H_TRANS_SCIN(ABORT,err)
+         if(ABORT)  then
+            call G_add_path(here,err)
+*     return
+         endif                          ! end test on SCIN ABORT
+      endif                             ! end test on hbypass_trans_scin
+*
+*     TRANSLATE HMISC TDC HITS.
+*     H_RAW_MISC ====> HMS_DECODED_MISC
+*
+      If(hbypass_trans_scin.eq.0) then
+         call H_TRANS_MISC(ABORT,err)
          if(ABORT)  then
             call G_add_path(here,err)
 *     return
