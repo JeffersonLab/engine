@@ -15,7 +15,10 @@
 *-   Created 22-FEB-1994   John Arrington
 *
 * $Log$
-* Revision 1.7  1995/02/23 15:47:24  cdaq
+* Revision 1.8  1995/05/17 16:46:14  cdaq
+* (JRA) Add sum_plane_time and num_plane_time
+*
+* Revision 1.7  1995/02/23  15:47:24  cdaq
 * (JRA) Catch up to HMS.  Add track index to hgood_plane_time,
 * hgood_scin_time, hgood_tdc_pos, and hgood_tdc_neg.  Zero out some
 * variables at start, minph variables now per pmt, hscin_adc_pos/neg
@@ -107,6 +110,8 @@
 
         do plane = 1 , snum_scin_planes
           sgood_plane_time(trk,plane) = .false.
+          sum_plane_time(plane) = 0.
+          num_plane_time(plane) = 0
         enddo
 
         do hit = 1 , sscin_tot_hits
@@ -116,7 +121,6 @@
           sscin_time(hit) = 0
           sscin_sigma(hit) = 0
         enddo
-        
         
         do hit = 1 , sscin_tot_hits
           plane = sscin_plane_num(hit)
@@ -205,11 +209,15 @@
             endif
 c     Get time at focal plane
             if (sgood_scin_time(trk,hit)) then
+* for electrons:
               sscin_time_fp(hit) = sscin_time(hit) -
      &             (sscin_zpos(hit)/30.) * sqrt(1. + sxp_fp(trk)
      $             *sxp_fp(trk) +syp_fp(trk)*syp_fp(trk))
               sum_fp_time = sum_fp_time + sscin_time_fp(hit)
               num_fp_time = num_fp_time + 1
+              sum_plane_time(plane)=sum_plane_time(plane)
+     $             +sscin_time_fp(hit)
+              num_plane_time(plane)=num_plane_time(plane)+1
               snum_scin_hit(trk) = snum_scin_hit(trk) + 1
               sscin_hit(trk,snum_scin_hit(trk)) = hit
               if (sgood_tdc_pos(trk,hit) .and. sgood_tdc_neg(trk,hit)) then
@@ -242,18 +250,17 @@ c     Get time at focal plane
 
         enddo                           !end of loop over hit scintillators
 
+c**    For now, require at least 3 planes, to avoid bad fits.
+c        numplanes=0
+c        if (sgood_plane_time(trk,1)) numplanes=numplanes+1
+c        if (sgood_plane_time(trk,2)) numplanes=numplanes+1
+c        if (sgood_plane_time(trk,3)) numplanes=numplanes+1
+c        if (sgood_plane_time(trk,4)) numplanes=numplanes+1
+c        if (numplanes.ge.3) then
 
 **    Fit beta if there are enough time measurements (one upper, one lower)
-***   if ((sgood_plane_time(trk,1) .or. sgood_plane_time(trk,2)) .and.
-***   1           (sgood_plane_time(trk,3) .or. sgood_plane_time(trk,4))) then
-        
-**    For now, require at least 3 planes, to avoid bad fits.
-        numplanes=0
-        if (sgood_plane_time(trk,1)) numplanes=numplanes+1
-        if (sgood_plane_time(trk,2)) numplanes=numplanes+1
-        if (sgood_plane_time(trk,3)) numplanes=numplanes+1
-        if (sgood_plane_time(trk,4)) numplanes=numplanes+1
-        if (numplanes.ge.3) then
+        if ((sgood_plane_time(trk,1) .or. sgood_plane_time(trk,2)) .and.
+     1       (sgood_plane_time(trk,3) .or. sgood_plane_time(trk,4))) then
           call s_tof_fit(abort,errmsg,trk) !fit velocity of particle
           if (abort) then
             call g_prepend(here,errmsg)
@@ -285,11 +292,7 @@ c     Get time at focal plane
 *
 *     Dump tof common blocks if (sdebugprinttoftracks is set
 
-        if(sdebugprinttoftracks.ne.0 ) then 
-          call s_prt_tof(trk)
-        endif
-*     
-*     
+        if(sdebugprinttoftracks.ne.0 ) call s_prt_tof(trk)
       enddo                             !end of loop over tracks
 *     
  666  continue
