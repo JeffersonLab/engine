@@ -1,5 +1,8 @@
-      subroutine g_extract_kinematics(ebeam,phms,thms,psos,tsos)
+      subroutine g_extract_kinematics(ebeam,phms,thms,psos,tsos,ntarg)
 * $Log$
+* Revision 1.3  1996/09/04 14:36:19  saw
+* (JRA) Fixes
+*
 * Revision 1.2  1996/01/16 18:35:02  cdaq
 * (JRA) Minor bug fix
 *
@@ -14,11 +17,12 @@
       equivalence (craw(5), buffer)
       integer find_char
       integer i
-      integer j
+      integer j,evlen
       integer mode
       character*20 name
-      real*4 value
-      real*4 ebeam,phms,thms,psos,tsos
+      real*4 epics_value,typed_value
+      real*4 ebeam,phms,thms,psos,tsos,ntarg
+      integer g_important_length
 
       include 'gen_craw.cmn'
 *--------------------------------------------------------
@@ -27,39 +31,36 @@ c
 c     Break up the text stored in the event array into individual lines.  If
 c     the line is a comment, print it out, otherwise parse it.
 c
+
+      evlen=g_important_length(buffer(1:4*(craw(3)-1)))
       i = 1
       mode = 0            ! Mode 0 => Parse each line
-      do while (.true.)
+      do while (i.le.evlen)
         j = find_char (buffer, i, 10)   ! 10 = NewLine character
-        if (i.eq.j) goto 10
+        if (i.eq.j) goto 20
         if (buffer(i:i+7).eq.'comment') then
           mode = 1                      ! Mode 1 => Print out each line
-          i = i + 8
+          i = i + 24                    ! comment has 24 character of 'header'
         endif
         if (mode.eq.0) then
-          call parse_line (buffer(i:j), j-i, name, value)
+          call parse_line (buffer(i:j), j-i, name, epics_value, typed_value)
           if (name(1:11).eq.'Beam Energy') then
-c     write(6,*) name(1:11),'=',value
-            ebeam=value
+            ebeam=typed_value
           else if (name(1:12).eq.'HMS Momentum') then
-c     write(6,*) name(1:11),'=',value
-            phms=value
+            phms=typed_value
           else if (name(1:9).eq.'HMS Angle') then
-c     write(6,*) name(1:11),'=',value
-            thms=value
+            thms=epics_value
           else if (name(1:12).eq.'SOS Momentum') then
-c     write(6,*) name(1:11),'=',value
-            psos=value
+            psos=typed_value
           else if (name(1:9).eq.'SOS Angle') then
-c     write(6,*) name(1:11),'=',value
-            tsos=value
-          else if (name(1:14).eq.'B2 Current Set') then !last field with standard {} format
-            goto 10
+            tsos=epics_value
+          else if (name(1:13).eq.'Target NUMBER') then
+            ntarg=typed_value
           endif
         else
-          type *, buffer(i:j-1)
+          if(i.lt.j-1) write(6,'(4x,a)') buffer(i:j-1)
         endif
-        i = j + 1
+ 20     i = j + 1
       enddo
  10   continue
       return
@@ -68,26 +69,34 @@ c     write(6,*) name(1:11),'=',value
 c
 c     Parse a character string
 c
-      subroutine parse_line (line, line_len, name, value)
+      subroutine parse_line (line, line_len, name, value1, value2)
       implicit none
       character*132 line, tmpline
-      integer line_len
-      integer name_start,name_stop,value_start,value_stop
+      integer line_len,new_len
+      integer name_start,name_stop
+      integer value1_start,value1_stop
+      integer value2_start,value2_stop
       character*20 name,value_string
-      real*4 value
+      real*4 value1,value2
 
 ! sample line:   sangle {SOS Angle} sangle {29.4} {29.4}
 
-c      write(6,*) line(1:line_len)
       name_start = index(line,'{')+1
       name_stop = index(line,'}')-1
       if (name_start.le.name_stop) name = line(name_start:name_stop)
       if (name_stop+2.gt.line_len) goto 999
       tmpline = line(name_stop+2:line_len)
-      value_start = index(tmpline,'{')+1
-      value_stop = index(tmpline,'}')-1
-      if (value_start.le.value_stop) value_string = tmpline(value_start:value_stop)
-      read (value_string,*,err=999) value
+      new_len = line_len - name_stop - 1
+      value1_start = index(tmpline,'{')+1
+      value1_stop = index(tmpline,'}')-1
+      if (value1_start.le.value1_stop) value_string = tmpline(value1_start:value1_stop)
+      read (value_string,*,err=999) value1
+      if (value1_stop+2.gt.new_len) goto 999
+      tmpline = tmpline(value1_stop+2:new_len)
+      value2_start = index(tmpline,'{')+1
+      value2_stop = index(tmpline,'}')-1
+      if (value2_start.le.value2_stop) value_string = tmpline(value2_start:value2_stop)
+      read (value_string,*,err=999) value2
 
 999   continue        !if non-numerical vaule, skip reading
       return
@@ -142,7 +151,7 @@ c
 c     Return the offset of the first blank character in "string"
 c
       integer function skip_nonblanks (string, i)
-      character*132 string
+      character*(*) string
       integer i, j
       j = i
       do while ((string(j:j).ne.' ').and.(ichar(string(j:j)).ne.0))
@@ -169,7 +178,7 @@ c
 c     Convert a text string to a real number
 c
       real function string_to_number (string)
-      character*80 string
+      character*(*) string
       real offset, digit, sign, number
       integer starting_offset
       starting_offset = 1
