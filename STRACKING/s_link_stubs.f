@@ -1,4 +1,3 @@
-
       subroutine S_LINK_STUBS(ABORT,err)
 *     This subroutine compares all the space-point-stubs found in
 *     S_LEFT_RIGHT.f and links together stubs to form tracks.
@@ -11,7 +10,10 @@
 *
 *     d.f. geesaman           7-September 1993
 * $Log$
-* Revision 1.1  1994/02/21 16:14:56  cdaq
+* Revision 1.2  1994/06/07 04:41:19  cdaq
+* (DFG) Add switch to include single stub tracks
+*
+* Revision 1.1  1994/02/21  16:14:56  cdaq
 * Initial revision
 *
 *
@@ -23,6 +25,8 @@
 *                       or if there is another point in same chamber
 *                          make a copy containing isp2 rather than 
 *                            other point in same chamber
+*                  5) If ssingle_stub is set, make a track of all single
+*                     stubs.
 *
       implicit none
       include "gen_data_structures.cmn"
@@ -48,24 +52,25 @@
       integer*4  tryflag             ! flag to loop over rest of points
       integer*4  newtrack            ! make a new track
 *
-*     loop over all pairs of space points
       ABORT= .FALSE.
       err=':'
       SNTRACKS_FP=0
-      if(snspace_points_tot.ge.2) then     ! return if less than 2 space points
-        do isp1=1,snspace_points_tot-1     ! loop over all points
+      if(ssingle_stub.eq.0 ) then
+*     loop over all pairs of space points
+       if(snspace_points_tot.ge.2) then ! return if less than 2 space points
+        do isp1=1,snspace_points_tot-1  ! loop over all points
 *     is this point all ready associated with a track
          tryflag=1
          if(SNTRACKS_FP.gt.0) then
           do itrack=1,SNTRACKS_FP           
            if(track_space_points(itrack,1).gt.0) then
-             do isp2=1,track_space_points(itrack,1)
-              if(track_space_points(itrack,isp2+1).eq.isp1) then
-               tryflag=0                   ! space point all ready in a track
-              endif                        ! end test on found point
-             enddo
-           endif                           ! end test of >0  point
-          enddo                            ! end loop over tracks
+            do isp2=1,track_space_points(itrack,1)
+             if(track_space_points(itrack,isp2+1).eq.isp1) then
+              tryflag=0                 ! space point all ready in a track
+             endif                      ! end test on found point
+            enddo
+           endif                        ! end test of >0  point
+          enddo                         ! end loop over tracks
          endif
 *     if space point not all ready part of a track then look for matches
          if( tryflag .eq.1) then
@@ -74,92 +79,115 @@
 *     are these stubs in the same chamber. If so then skip
            if(s_chamnum(isp1).ne.s_chamnum(isp2)) then
 *     does this stub match
-            if(abs(sbeststub(isp1,1)-sbeststub(isp2,1)).lt.sxt_track_criterion
-     &    .and. abs(sbeststub(isp1,2)-sbeststub(isp2,2)).lt.syt_track_criterion
-     &    .and. abs(sbeststub(isp1,3)-sbeststub(isp2,3)).lt.sxpt_track_criterion
-     &    .and. abs(sbeststub(isp1,4)-sbeststub(isp2,4)).lt.sxpt_track_criterion
-     &      ) then
+            if(abs(sbeststub(isp1,1)-sbeststub(isp2,1))
+     $           .lt.sxt_track_criterion
+     $           .and. abs(sbeststub(isp1,2)-sbeststub(isp2,2))
+     $           .lt.syt_track_criterion
+     $           .and. abs(sbeststub(isp1,3)-sbeststub(isp2,3))
+     $           .lt.sxpt_track_criterion
+     $           .and. abs(sbeststub(isp1,4)-sbeststub(isp2,4))
+     $           .lt.sxpt_track_criterion) then
              if(newtrack.eq.1) then         
 *     make a new track
-              if(SNTRACKS_FP.lt.SNTRACKS_MAX) then    ! are there too many 
-                SNTRACKS_FP=SNTRACKS_FP+1      ! increment the number of tracks
-                sptracks=1                     ! one track with this seed
-                stub_tracks(1)=SNTRACKS_FP
-                track_space_points(SNTRACKS_FP,1)=2
-                track_space_points(SNTRACKS_FP,2)=isp1
-                track_space_points(SNTRACKS_FP,3)=isp2
-                newtrack=0                     ! make no more track in this loop
-              endif                            ! end test on too many tracks
+              if(SNTRACKS_FP.lt.SNTRACKS_MAX) then ! are there too many 
+               SNTRACKS_FP=SNTRACKS_FP+1 ! increment the number of tracks
+               sptracks=1               ! one track with this seed
+               stub_tracks(1)=SNTRACKS_FP
+               track_space_points(SNTRACKS_FP,1)=2
+               track_space_points(SNTRACKS_FP,2)=isp1
+               track_space_points(SNTRACKS_FP,3)=isp2
+               newtrack=0               ! make no more track in this loop
+              endif                     ! end test on too many tracks
              else
 *     check if there is another space point in same chamber
               itrack=0
               do while (itrack.lt.sptracks)
-                itrack=itrack+1
-                track=stub_tracks(itrack)
-                spoint=0
-                duppoint=0
-                do isp=1,track_space_points(track,1)
-                 if(s_chamnum(isp2).eq.
-     &             s_chamnum(track_space_points(track,isp+1))) then
-                    spoint=isp
-                 endif
-                 if(isp2.eq.track_space_points(track,isp+1)) then
-                    duppoint=1
-                 endif                   
-                enddo                       ! end loop over sp in tracks with isp1
+               itrack=itrack+1
+               track=stub_tracks(itrack)
+               spoint=0
+               duppoint=0
+               do isp=1,track_space_points(track,1)
+                if(s_chamnum(isp2).eq.
+     &               s_chamnum(track_space_points(track,isp+1))) then
+                 spoint=isp
+                endif
+                if(isp2.eq.track_space_points(track,isp+1)) then
+                 duppoint=1
+                endif                   
+               enddo                    ! end loop over sp in tracks with isp1
 *     if there is no other space point in this chamber
 *     add this space point to current track(2)
-                 if(duppoint.eq.0) then
-                  if(spoint.eq.0) then
-                    spindex=track_space_points(track,1)+1
-                    track_space_points(track,1)= spindex
-                    track_space_points(track,spindex+1)=isp2
+               if(duppoint.eq.0) then
+                if(spoint.eq.0) then
+                 spindex=track_space_points(track,1)+1
+                 track_space_points(track,1)= spindex
+                 track_space_points(track,spindex+1)=isp2
 *     if there is another point in the same chamber in this track
 *     create a new track with all the same space points except spoint
-                  else
-                   if(SNTRACKS_FP.lt.SNTRACKS_MAX) then    ! are there too many 
-                    SNTRACKS_FP=SNTRACKS_FP+1   ! increment the number of tracks
-                    sptracks= sptracks+1        ! one track with this seed
-                    stub_tracks(sptracks) = SNTRACKS_FP
-                    track_space_points(SNTRACKS_FP,1)=track_space_points(track,1)
-                     do isp=1,track_space_points(track,1)
-                      if(isp.ne.spoint) then
-                       track_space_points(SNTRACKS_FP,isp+1)=
-     &                  track_space_points(track,isp+1)
-                      elseif(isp.eq.spoint) then
-                        track_space_points(SNTRACKS_FP,isp+1)= isp2
-                      endif                 ! end check for dup on copy
-                     enddo                  ! end copy of track
-                   endif                    ! end if on too many tracks
-                  endif                     ! end if on same chamber
-                 endif                      ! end if on  duplicate point
-              enddo                         ! end do while over tracks with isp1
+                else
+                 if(SNTRACKS_FP.lt.SNTRACKS_MAX) then ! are there too many 
+                  SNTRACKS_FP=SNTRACKS_FP+1 ! increment the number of tracks
+                  sptracks= sptracks+1  ! one track with this seed
+                  stub_tracks(sptracks) = SNTRACKS_FP
+                  track_space_points(SNTRACKS_FP,1)
+     $                 =track_space_points(track,1)
+                  do isp=1,track_space_points(track,1)
+                   if(isp.ne.spoint) then
+                    track_space_points(SNTRACKS_FP,isp+1)=
+     &                   track_space_points(track,isp+1)
+                   elseif(isp.eq.spoint) then
+                    track_space_points(SNTRACKS_FP,isp+1)= isp2
+                   endif                ! end check for dup on copy
+                  enddo                 ! end copy of track
+                 endif                  ! end if on too many tracks
+                endif                   ! end if on same chamber
+               endif                    ! end if on  duplicate point
+              enddo                     ! end do while over tracks with isp1
              endif
             endif
-           endif                            ! end test on same chamber
-          enddo                             ! end loop over new space points
-         endif                              ! end test on tryflag
-        enddo                               ! end outer loop over space points
-      endif                                 ! end if on <2 space points
+           endif                        ! end test on same chamber
+          enddo                         ! end loop over new space points
+         endif                          ! end test on tryflag
+        enddo                           ! end outer loop over space points
+       endif                            ! end if on <2 space points
+      else                              ! if ssingle_stub .ne. 0
+*     when ssingle_stub is set, make each space point a track
+*     This will have poor resolution but may be appropriate for debugging
+*     
+       do isp1=1,snspace_points_tot     ! loop over all points
+        if(SNTRACKS_FP.lt.SNTRACKS_MAX) then ! are there too many
+         SNTRACKS_FP=SNTRACKS_FP+1      ! increment the number of tracks
+         track_space_points(SNTRACKS_FP,1)= 1
+         track_space_points(SNTRACKS_FP,2)= isp1
+        endif                           ! end if on too many tracks
+       enddo                            ! end loop over all space points
+      endif                             ! end test on ssingle_stub
+*     
 *     now list all hits on a track
       if(SNTRACKS_FP.gt.0)   then
-        do itrack=1,SNTRACKS_FP             ! loop over all tracks
-          SNTRACK_HITS(itrack,1)=0
-          do isp1=1,track_space_points(itrack,1)
-             spindex=track_space_points(itrack,isp1+1)
-             numhits=sspace_point_hits(spindex,1)
-              do ihit=1,numhits
-               if(SNTRACK_HITS(itrack,1).lt.SNTRACKHITS_MAX) then 
-                 SNTRACK_HITS(itrack,1)=SNTRACK_HITS(itrack,1)+1
-                 SNTRACK_HITS(itrack,SNTRACK_HITS(itrack,1)+1)=
-     &             sspace_point_hits(spindex,ihit+2)                
-               endif                       ! end test on too many hits
-              enddo                        ! end loop over space point hits
-          enddo                            ! end loop over space points
-        enddo                              ! end loop over all tracks
+       do itrack=1,SNTRACKS_FP          ! loop over all tracks
+        SNTRACK_HITS(itrack,1)=0
+        do isp1=1,track_space_points(itrack,1)
+         spindex=track_space_points(itrack,isp1+1)
+         numhits=sspace_point_hits(spindex,1)
+         do ihit=1,numhits
+          if(SNTRACK_HITS(itrack,1).lt.SNTRACKHITS_MAX) then 
+           SNTRACK_HITS(itrack,1)=SNTRACK_HITS(itrack,1)+1
+           SNTRACK_HITS(itrack,SNTRACK_HITS(itrack,1)+1)=
+     &          sspace_point_hits(spindex,ihit+2)                
+          endif                         ! end test on too many hits
+         enddo                          ! end loop over space point hits
+        enddo                           ! end loop over space points
+       enddo                            ! end loop over all tracks
       endif
       if(sdebuglinkstubs.ne.0) then
-        call s_print_links
+       call s_print_links
       endif
       return
       end
+*********
+*     Local Variables:
+*     mode: fortran
+*     fortran-if-indent: 1
+*     fortran-do-indent: 1
+*     End:
