@@ -14,7 +14,10 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
-* Revision 1.9  1995/05/22 19:39:15  cdaq
+* Revision 1.10  1995/08/31 14:49:32  cdaq
+* (JRA) Fix typo
+*
+* Revision 1.9  1995/05/22  19:39:15  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.8  1994/10/11  19:01:38  cdaq
@@ -149,7 +152,7 @@
         enddo
       endif      
 
-      do plane=1,HMAX_NUM_DC_PLANES
+      do plane=1,hdc_num_planes
         hdc_sing_wcenter(plane)=-100.
       enddo
 
