@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.14  1995/05/24 13:22:33  cdaq
+# Revision 1.15  1995/07/20 14:27:40  cdaq
+# (SAW) Add option to get source via softlink to read only source tree
+#
+# Revision 1.14  1995/05/24  13:22:33  cdaq
 # Add h_trans_misc, h_fill_cal_hist, h_init_histid, r_hms_pedestals
 #
 # Revision 1.13  1995/04/06  20:07:31  cdaq
@@ -101,10 +104,13 @@ r_%.f : %.cmn $(MAKEREG)
 
 .PRECIOUS: r_%.f
 
-#r_%.d : %.cmn
-#	(echo r_$*.o: r_$*.f ; 	cat $< | sed -n -e \
-#	"s/^\*%%[\t ]*[Ii][Nn][Cc][Ll][Uu][Dd][Ee][ \t]*'/r_$*.o: /p" | \
-#	sed -e "s/'.*$$//" | ; echo r_$*.o: .os$(OSTYPE) ) > $@
+ifdef NFSDIRECTORY
+%.f : $(NFSDIRECTORY)/HTRACKING/%.f
+	ln -s $< $@
+
+.PRECIOUS: %.f
+endif
+
 #
 # Get include files from INCLUDE directory
 #
