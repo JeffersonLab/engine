@@ -2,7 +2,10 @@
 *                      of pedestal events at the beginning of each run.
 *
 * $Log$
-* Revision 1.2  1995/05/22 19:09:30  cdaq
+* Revision 1.3  1995/07/28 14:38:58  cdaq
+* (JRA) Add shodo_all_sig_pos/neg, pedestall stuff
+*
+* Revision 1.2  1995/05/22  19:09:30  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
 * Fix conflicting common block names.  Add Cerenkov and Aerogel pedestals
 *
@@ -30,6 +33,11 @@
       integer*4 shodo_neg_ped_sum(snum_scin_planes,snum_scin_elements)
       integer*4 shodo_pos_ped_num(snum_scin_planes,snum_scin_elements)
       integer*4 shodo_neg_ped_num(snum_scin_planes,snum_scin_elements)
+      real*4 shodo_all_sig_pos(snum_scin_planes,snum_scin_elements)
+      real*4 shodo_all_sig_neg(snum_scin_planes,snum_scin_elements)
+*
+*     CTPTYPE=parm
+*
       integer*4 shodo_min_peds
 *
       common/sos_scin_pedestals/
@@ -39,7 +47,9 @@
      &   shodo_neg_ped_sum,   !sum of peds
      &   shodo_pos_ped_num,   !number of peds
      &   shodo_neg_ped_num,   !number of peds
-     &   shodo_min_peds       !# of peds required to override default pedestals
+     &   shodo_min_peds,      !# of peds required to override default pedestals
+     &   shodo_all_sig_pos,
+     &   shodo_all_sig_neg
 *
 *
 * CALORIMETER PEDESTALS
@@ -48,9 +58,15 @@
 *    and  scal_threshold with (something like) min(10.,3.*scal_ped_rms)
 * if scal_num > scal_min_peds.
 *
+*
+*     CTPTYPE=event
+*
       integer*4 scal_ped_sum2(smax_cal_blocks)
       integer*4 scal_ped_sum(smax_cal_blocks)
       integer*4 scal_ped_num(smax_cal_blocks)
+*
+*     CTPTYPE=parm
+*
       integer*4 scal_min_peds
 *
       common/sos_cal_ped_stats/
@@ -64,13 +80,19 @@
 *         scer_ped_rms  with (appropriate formula),
 *    and  scer_threshold with (something like) min(10.,3.*scer_ped_rms)
 *         scer_ped_rms  with (appropriate formula),if scer_num > scer_min_peds.
+*
+*     CTPTYPE=event
+*
       integer*4 scer_ped_sum2(smax_cer_hits)
       integer*4 scer_ped_sum(smax_cer_hits)
       integer*4 scer_ped_num(smax_cer_hits)
-      integer*4 scer_min_peds
       real*4 scer_ped_mean(smax_cer_hits)
       real*4 scer_ped_rms(smax_cer_hits)
       real*4 scer_threshold(smax_cer_hits)
+*
+*     CTPTYPE=parm
+*
+      integer*4 scer_min_peds
 *
       common/sos_cer_pedestals/
      &   scer_ped_sum2,       !sum of squares
@@ -88,19 +110,25 @@
 *    and  saer_threshold with (something like) min(10.,3.*saer_ped_rms)
 *         saer_ped_rms  with (appropriate formula),if saer_num > saer_min_peds.
 *
+*
+*     CTPTYPE=event
+*
       integer*4 saer_pos_ped_sum2(smax_aer_hits)
       integer*4 saer_neg_ped_sum2(smax_aer_hits)
       integer*4 saer_pos_ped_sum(smax_aer_hits)
       integer*4 saer_neg_ped_sum(smax_aer_hits)
       integer*4 saer_pos_ped_num(smax_aer_hits)
       integer*4 saer_neg_ped_num(smax_aer_hits)
-      integer*4 saer_min_peds
       real*4 saer_pos_ped_mean(smax_aer_hits)
       real*4 saer_neg_ped_mean(smax_aer_hits)
       real*4 saer_pos_ped_rms(smax_aer_hits)
       real*4 saer_neg_ped_rms(smax_aer_hits)
       real*4 saer_pos_threshold(smax_aer_hits)
       real*4 saer_neg_threshold(smax_aer_hits)
+*
+*     CTPTYPE=parm
+*
+      integer*4 saer_min_peds
 *
       common/sos_aero_pedestals/
      &   saer_pos_ped_sum2,       !sum of squares
