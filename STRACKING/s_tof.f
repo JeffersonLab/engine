@@ -15,6 +15,9 @@
 *-   Created 22-FEB-1994   John Arrington
 *
 * $Log$
+* Revision 1.12  1997/03/19 18:18:58  saw
+* (JRA) Don't neglect negative side of hodoscopes
+*
 * Revision 1.11  1996/09/05 20:16:28  saw
 * (JRA) Include actual beta in calculation of focal plane time.
 *
@@ -207,15 +210,15 @@
               else
                 sscin_time(hit) = sscin_pos_time(hit)
                 sscin_sigma(hit) = sscin_pos_sigma(hit)
-*                sgood_scin_time(trk,hit) = .false.
                 sgood_scin_time(trk,hit) = .true.
+*                sgood_scin_time(trk,hit) = .false.
               endif
             else                        ! if sgood_tdc_neg = .false.
               if (sgood_tdc_neg(trk,hit)) then
                 sscin_time(hit) = sscin_neg_time(hit)
                 sscin_sigma(hit) = sscin_neg_sigma(hit)
-*                sgood_scin_time(trk,hit) = .true.
-                sgood_scin_time(trk,hit) = .false.
+                sgood_scin_time(trk,hit) = .true.
+*                sgood_scin_time(trk,hit) = .false.
               endif
             endif
 c     Get time at focal plane
