@@ -5,6 +5,9 @@
 *                   David Potterveld, Argonne National Lab.                    *
 *   Modified:    21-JAN-94   DFG    change max_ to smax_
 * $Log$
+* Revision 1.5  1996/09/04 16:31:01  saw
+* (JRA) Add 5th element to s_recon_expon
+*
 * Revision 1.4  1995/08/08 15:42:30  cdaq
 * (DD) Add detector and angular offsets
 *
@@ -28,7 +31,7 @@
       real*4           s_ang_offset_x,s_ang_offset_y
       real*4           s_det_offset_x,s_det_offset_y
       real*4           s_z_true_focus ! Z position of SOS focus
-      integer*4        s_recon_expon(4,smax_recon_elements)
+      integer*4        s_recon_expon(5,smax_recon_elements)
       integer*4        s_num_recon_terms
       integer*4        s_recon_initted
 
