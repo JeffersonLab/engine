@@ -5,6 +5,9 @@
 *                              change name to sos_tracking.cmn
 *                              put sluno and debugflags from parameters to CTP
 * $Log$
+* Revision 1.17  1998/12/01 20:30:16  saw
+* * (SAW) Put SOS_DRIFT common block before equivalences
+*
 * Revision 1.16  1996/09/04 16:32:10  saw
 * (DVW) Add slew of variables for derek's hms track tests
 *
@@ -85,6 +88,12 @@
      &       swc2x1fract(sdriftbins_max),swc2x2fract(sdriftbins_max),
      &       swc2v1fract(sdriftbins_max),swc2v2fract(sdriftbins_max)
 
+      common/SOS_DRIFT/
+     &        sfract(sdriftbins_max,smax_num_dc_planes),
+     &        sdriftbinsz,
+     &        sdrift1stbin,
+     &        sdriftbins
+
       equivalence (swc1u1fract(1),sfract(1,1))
       equivalence (swc1u2fract(1),sfract(1,2))
       equivalence (swc1x1fract(1),sfract(1,3))
@@ -97,13 +106,6 @@
       equivalence (swc2x2fract(1),sfract(1,10))
       equivalence (swc2v1fract(1),sfract(1,11))
       equivalence (swc2v2fract(1),sfract(1,12))
-
-      common/SOS_DRIFT/
-     &        sfract(sdriftbins_max,smax_num_dc_planes),
-     &        sdriftbinsz,
-     &        sdrift1stbin,
-     &        sdriftbins
-
 
 *----------------------------------------------------------------------
 * INFORMATION ABOUT PLANE GEOMETRY AND TRACKING PARAMETERS
