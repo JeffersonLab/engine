@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.19  1996/11/05 21:45:30  saw
+# (SAW) Add AIX and SunOS support and fixes for Linux
+#
 # Revision 1.18  1996/09/04 14:29:35  saw
 # (SAW) Add new routines, OSD switches, and Linux compatibility fixes
 #
@@ -109,6 +112,21 @@ libsources =  $(coin_source) $(sos_source) $(hms_source) $(general_source) \
 	$(ntuple_source) $(gmakeregstuff) $(cmakeregstuff) \
 	$(hmakeregstuff) $(smakeregstuff)
 
+ifeq ($(ARCH),AIX)
+xlibsources := $(filter-out g_decode_config.f,$(libsources))
+libsources = g_decode_config_aix.f $(xlibsources)
+../g_%_aix.f : ../g_%.f
+	sed -e "s/READONLY/action='read'/"< $< > $@	
+endif
+
+ifeq ($(ARCH),Linux)
+xlibsources := $(filter-out g_decode_config.f,$(libsources))
+libsources = g_decode_config_linux.f $(xlibsources)
+# F2C doesn't know about READONLY
+../g_%_linux.f : ../g_%.f
+	sed -e "s/,READONLY//" $< > $@
+endif
+
 #short_names = g_xyz_sph.f g_shift_len.f g_sort.f g_rep_err.f g_prepend.f \
 #	g_normalize.f g_add_path.f g_decode_clear.f
 sources = $(libsources) $(replay_source)
@@ -150,12 +168,26 @@ endif
 ifeq ($(ARCH),Linux)
   CERN_ROOT = /usr/local/cernlib/95b
   OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -lc -lm
-  DEPLIBS := $(DEPLIBS) $(LIBROOT)/libf2c.a
+  DEPLIBS := $(DEPLIBS) $(LIBROOT)/libport.a
 
-$(LIBROOT)/libf2c.a:
-	@make -C $(Csoft)/SRC/F2C csoft
-
+$(LIBROOT)/libport.a:
+	@make -C $(Csoft)/SRC/PORT 
 endif
+
+ifeq ($(ARCH),SunOS)
+  OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -lnsl
+endif
+
+ifeq ($(ARCH),AIX)
+  OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib
+  DEPLIBS := $(DEPLIBS) $(LIBROOT)/libport.a
+endif
+
+#ifeq ($(ARCH),Linux)
+## F2C doesn't know about READONLY
+#../g_decode_config.f : $(NFSDIRECTORY)/ENGINE/g_decode_config.f
+#	sed -e "s/,READONLY//" $< > $@
+#endif
 
 #default:
 #	@echo "nothing to make"
@@ -187,6 +219,13 @@ engine: $(DEPLIBS)
 	$(F77) $(FFLAGS) -o engine engine.o $(DEPLIBS) $(OTHERLIBS)
 	$(RM) engine.o
 endif
+
+ifdef NFSDIRECTORY
+../%.f : $(NFSDIRECTORY)/ENGINE/%.f
+	ln -s $< $@
+
+.PRECIOUS: ../%.f
+else
 #
 # Rule for making the register subroutines
 #
@@ -194,16 +233,6 @@ endif
 	(cd .. ; $(MAKEREG) $(<F) -o $(@F) -e /dev/null)
 
 .PRECIOUS: ../r_%.f
-
-ifdef NFSDIRECTORY
-../%.f : $(NFSDIRECTORY)/ENGINE/%.f
-	ln -s $< $@
-
-# F2C doesn't know about READONLY
-../g_decode_config.f : $(NFSDIRECTORY)/ENGINE/g_decode_config.f
-	sed -e "s/,READONLY//" $< > $@
-
-.PRECIOUS: ../%.f
 endif
 
 %.cmn :: ../../INCLUDE/%.cmn
