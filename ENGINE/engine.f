@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.32.2.4  2003/04/14 18:02:06  jones
+* Modified so that engine will not analyze events until after first scaler read.
+*
 * Revision 1.32.2.3  2003/04/09 02:47:00  cdaq
 * Update readout code to ignore HV and EPICS events when searching for run_info event
 *
@@ -159,8 +162,11 @@ c
       integer sum_recorded
       integer num_events_skipped
       integer i,since_cnt,lastdump
+      integer mkj
       integer rpc_pend                  ! # Pending asynchronous RPC requests
-
+c
+      common /aevents/ analyzed_events
+c
       character*80 g_config_environmental_var
       parameter (g_config_environmental_var= 'ENGINE_CONFIG_FILE')
 
@@ -517,8 +523,13 @@ c
 
           if(jieor(jiand(CRAW(2),'FFFF'x),'10CC'x).eq.0) then ! Physics event
 	    if (gen_event_type.eq.0) then          !scaler event.
-              call g_analyze_scalers_by_banks(CRAW,ABORT,err)
               analyzed_events(gen_event_type)=analyzed_events(gen_event_type)+1
+               call g_analyze_scalers_by_banks(CRAW,ABORT,err)
+               if (analyzed_events(0) .le. 1 ) then
+                  write(*,*) '************'
+                  write(*,*) ' Will not analyze events until after first scaler read'
+                  write(*,*) '************'
+               endif
 *
 * if preprocessor is on write trig type 0 (scaler events)
 *
@@ -536,9 +547,16 @@ c
      &             physics_events," events"
  112            format (a,i8,a)
               endif
-
             else				!REAL physics event.
-
+c
+               if (analyzed_events(0) .le. 1 .and. gen_event_type .le. 3) then
+                  write(*,*) '************'
+                  write(*,*) ' Kludge, will not analyze SOS,HMS or coin events until after first scaler read'
+                  write(*,*) ' Analyzed events :',(analyzed_events(mkj),mkj=1,4)
+                  write(*,*) '************'
+                  goto 868      ! kludge mkj
+               endif
+c
               if(gen_event_type.le.gen_MAX_trigger_types .and.
      $           gen_run_enable(gen_event_type-1).ne.0) then
 
@@ -659,6 +677,11 @@ c
             mss = err
           EndIf
         endif
+c
+c kludge mkj to not analyze data until after first scaler read
+ 868    continue
+c
+c
 *
 *Now write the statistics report every 2 sec...
 *
