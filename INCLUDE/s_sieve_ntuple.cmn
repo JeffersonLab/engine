@@ -1,0 +1,37 @@
+**************************begin: s_sieve_ntuple.cmn ***********************
+*- 
+*........................................................................
+*- Misc. info. required for SOS sieve slit Ntuple
+* $Log$
+* Revision 1.1  1995/08/11 16:24:58  cdaq
+* Initial revision
+*
+*
+      integer SMAX_sv_Ntuple_size
+      parameter (SMAX_sv_Ntuple_size= 100)
+      integer default_s_sieve_Ntuple_ID
+      parameter (default_s_sieve_Ntuple_ID= 1412)
+*
+*     CTPTYPE=parm
+*
+      logical s_sieve_Ntuple_exists
+      integer s_sieve_Ntuple_ID
+      integer s_sieve_Ntuple_size
+      integer s_sieve_Ntuple_IOchannel
+      character*80 s_sieve_Ntuple_name
+      character*80 s_sieve_Ntuple_title
+      character*132 s_sieve_Ntuple_directory   
+      character*256 s_sieve_Ntuple_file
+      character*8 s_sieve_Ntuple_tag(SMAX_sv_Ntuple_size)
+*
+*     CTPTYPE=event
+*
+      real s_sieve_Ntuple_contents(SMAX_sv_Ntuple_size)
+*
+      COMMON /SOS_sieve_Ntuple/ s_sieve_Ntuple_exists,s_sieve_Ntuple_ID,
+     &     s_sieve_Ntuple_size,s_sieve_Ntuple_IOchannel,
+     &     s_sieve_Ntuple_name,s_sieve_Ntuple_title,
+     &     s_sieve_Ntuple_directory,s_sieve_Ntuple_file,
+     &     s_sieve_Ntuple_tag,s_sieve_Ntuple_contents
+
+*****************************end: s_sieve_ntuple.cmn ***********************
