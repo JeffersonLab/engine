@@ -10,6 +10,10 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.18  1996/01/22 15:18:12  saw
+* (JRA) Add call to g_target_initialize.  Remove call to
+* g_kludge_up_kinematics
+*
 * Revision 1.17  1996/01/16 18:24:47  cdaq
 * (JRA) Get kinematics for runinfo event, create a tcl stats screen.  Groupify
 *       CTP calls
@@ -143,10 +147,6 @@
         endif
       ENDIF
 *
-      call g_klugeup_kinematics(ABORT,err)
-*
-      call engine_command_line
-*
       if((first_time.or.g_test_rebook).and.g_ctp_test_filename.ne.' ') then
         file = g_ctp_test_filename
         call g_sub_run_number(file,gen_run_number)
@@ -237,6 +237,8 @@
       call thtstclrg("default")                     ! Clear test flags
       call thtstclsg("default")                     ! Clear test scalers
 *
+      call g_target_initialize(ABORT,err)
+
 *-HMS initialize
       call H_initialize(HMS_ABORT,HMS_err)
 *
