@@ -1,19 +1,70 @@
 **************** begin: GEN_routines.DEC ***************************
 * $Log$
-* Revision 1.1  1994/02/22 18:18:24  cdaq
+* Revision 1.2  1994/02/22 18:27:44  cdaq
+* (SAW) Add more CTP routines, declare each function external
+*
+* Revision 1.1  1994/02/22  18:18:24  cdaq
 * Initial revision
 *
 *-
 *-commonly used functions....
 *-
-	INTEGER G_important_length	!FUNCTION 
-	INTEGER G_shift_len		!FUNCTION 
+      INTEGER G_important_length
+      EXTERNAL G_important_length
+      INTEGER G_shift_len
+      EXTERNAL G_shift_len
 *-
 *-CTP package
-        INTEGER regparmint              !function
-        INTEGER regparmstring           !function
-	INTEGER thload                  !function
-        INTEGER thbook                  !function
-	INTEGER thwhalias		!function
+      INTEGER regparmin
+      EXTERNAL regparmin
+      INTEGER regparmreal
+      EXTERNAL regparmreal
+      INTEGER regparmdouble
+      EXTERNAL regparmdouble
+      INTEGER regparmintarray
+      EXTERNAL regparmintarray
+      INTEGER regparmrealarray
+      EXTERNAL regparmrealarray
+      INTEGER regparmdoublearray
+      EXTERNAL regparmdoublearray
+*
+      INTEGER regtestin
+      EXTERNAL regtestin
+      INTEGER regtestreal
+      EXTERNAL regtestreal
+      INTEGER regtestdouble
+      EXTERNAL regtestdouble
+      INTEGER regtestintarray
+      EXTERNAL regtestintarray
+      INTEGER regtestrealarray
+      EXTERNAL regtestrealarray
+      INTEGER regtestdoublearray
+      EXTERNAL regtestdoublearray
+*
+      INTEGER regeventin
+      EXTERNAL regeventin
+      INTEGER regeventreal
+      EXTERNAL regeventreal
+      INTEGER regeventdouble
+      EXTERNAL regeventdouble
+      INTEGER regeventintarray
+      EXTERNAL regeventintarray
+      INTEGER regeventrealarray
+      EXTERNAL regeventrealarray
+      INTEGER regeventdoublearray
+      EXTERNAL regeventdoublearray
+*
+      INTEGER regparmstring
+      EXTERNAL regparmstring
+      INTEGER thload
+      EXTERNAL thload
+      INTEGER thbook
+      EXTERNAL thbook
+      INTEGER thwhalias
+      EXTERNAL thwhalias
 *-
 ****************** end: GEN_routines.DEC ***************************
+*     Local Variables:
+*     mode: fortran
+*     fortran-continuation-string: "&"
+*     End:
