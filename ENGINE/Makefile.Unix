@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.24  1999/08/20 14:52:17  saw
+# Put in warning if Xscin_tdc_max is bigger than 4094
+#
 # Revision 1.23  1999/02/23 16:27:42  csa
 # Add new routines
 #
@@ -179,7 +182,7 @@ ifeq ($(ARCH),IRIX)
 endif
 
 ifeq ($(ARCH),Linux)
-  CERN_ROOT = /usr/local/cernlib/95b
+  CERN_ROOT = /usr/local/cernlib/98
   OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -lc -lm
   DEPLIBS := $(DEPLIBS) $(LIBROOT)/libport.a
 

@@ -12,6 +12,9 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-      $Log$
+*-      Revision 1.15  1999/08/20 14:52:18  saw
+*-      Put in warning if Xscin_tdc_max is bigger than 4094
+*-
 *-      Revision 1.14  1999/02/03 21:13:04  saw
 *-      Code for new Shower counter tubes
 *-
@@ -74,6 +77,7 @@
       INCLUDE 'sos_tracking.cmn'
       INCLUDE 'sos_pedestals.cmn'
       include 'sos_scin_parms.cmn'
+      include 'sos_scin_tof.cmn'
 *
       INTEGER track,hit,block,i,j,plane
 *
@@ -315,6 +319,17 @@
       SSID_LUND=0
       SSNFREE_FP=0
 *     
+       if(sscin_tdc_max.gt.4094) then
+         print *,' '
+         print *,'WARNING!!: sscin_tdc_max is ',sscin_tdc_max
+         print *,'We usually run our high resolution TDC''s with 12 bit'
+         print *,'ranges.  If sscin_tdc_max is set to a value higher than'
+         print *,'the TDC''s overflow channel, then overflowed TDC channels'
+         print *,'will not be rejected.  Under high rate conditions, this'
+         print *,'can result in bad beta and timing calculations'
+         print *,' '
+       endif
+*
       ABORT= .FALSE.
       err= ' '
       RETURN
