@@ -10,6 +10,9 @@
 *- 
 *-   Created  8-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.7  1996/01/22 15:04:19  saw
+* (JRA) Change cebeam and cpbeam to gebeam and gpbeam
+*
 * Revision 1.6  1996/01/16 20:59:39  cdaq
 * no change
 *
@@ -56,11 +59,17 @@
 *
       ABORT= .FALSE.
 *
-      CEBEAM=SQRT(CPBEAM**2 + mass_electron**2)
-      call total_eloss(0,.true.,tz_target,ta_target,55.0,3.0,0.0,
-     >                             ttheta_tar,1.0,celoss)
-      CEBEAM = CEBEAM - celoss
-      g_beam_target_s = (TMASS_TARGET + CEBEAM)**2 - CPBEAM**2
+      gebeam=sqrt(gpbeam**2 + mass_electron**2)
+      if(gtarg_z(gtarg_num).gt.0.)then
+        call total_eloss(0,.true.,gtarg_z(gtarg_num),
+     $       gtarg_a(gtarg_num),gtarg_thick(gtarg_num),
+     $       gtarg_dens(gtarg_num),
+     $       0.0,gtarg_theta,1.0,celoss)
+      else
+        celoss=0.
+      endif
+      gebeam = gebeam - celoss
+      g_beam_target_s = (gtarg_mass(gtarg_num) + gebeam)**2 - gpbeam**2
 *
       IF(ABORT) THEN
          call G_add_path(here,err)
