@@ -4,7 +4,10 @@
      &  nspace_points,space_points,space_point_hits)
 *       Created D.F. Geesaman     Sept 1993       
 * $Log$
-* Revision 1.2  1994/02/23 13:34:09  cdaq
+* Revision 1.3  1994/04/12 20:23:53  cdaq
+* (DFG) Change dim of combos from max_number_pairs to max_number_comb
+*
+* Revision 1.2  1994/02/23  13:34:09  cdaq
 * (SAW) Change 2nd arg of space_points_hits declaration from 1 to *
 *
 * Revision 1.1  1994/02/19  06:12:06  cdaq
@@ -51,7 +54,7 @@
       integer*4 max_number_comb
       parameter (max_number_comb=10*max_number_pairs)
       integer*4 ncombo
-      integer*4 combos(max_number_pairs,2)   ! pair1 and pair2 of each combo
+      integer*4 combos(max_number_comb,2)   ! pair1 and pair2 of each combo
       real*4 sqdistance_test
 *                           
       nspace_points=0
