@@ -5,7 +5,10 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
-* Revision 1.15  1994/08/15 04:39:29  cdaq
+* Revision 1.16  1994/08/15 13:20:47  cdaq
+* (SAW) CEBEAM and CPBEAM are parm not event
+*
+* Revision 1.15  1994/08/15  04:39:29  cdaq
 * (SAW) Change CTPTYPE to parm for some variables
 *
 * Revision 1.14  1994/08/03  19:57:07  cdaq
@@ -62,8 +65,6 @@
 * Revision 1.1  1994/02/07  17:05:43  cdaq
 * Initial revision
 *
-*     CTPTYPE=event
-*
 *    BASIC BEAM PARAMETERS
 *
 *     CEBEAM                 BEAM ENERGY (GEV)
@@ -73,9 +74,14 @@
 *         CXRAST            X POSITION OF RASTERED BEAM
 *         CYRAST            Y POSITION OF RASTERED BEAM
 *
+*     CTPTYPE=parm
+*
       REAL*4  CEBEAM         ! BEAM ENERGY (GEV)
       REAL*4  CPBEAM         ! BEAM MOMENTUM (GEV/C)
 
+*
+*     CTPTYPE=event
+*
       REAL*4 CXRAST
       REAL*4 CYRAST
       COMMON/COIN_BEAM/
