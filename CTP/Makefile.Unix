@@ -1,5 +1,9 @@
 #
 # $Log$
+# Revision 1.12  1996/09/04 14:27:44  saw
+# (SAW) Add switches for OSF (Alpha) and some stuff for
+#       Linux (NFSDIRECTORY fixes)
+#
 # Revision 1.11  1996/04/29 18:28:53  saw
 # (SAW) New makefile style
 #
@@ -58,9 +62,16 @@ ifeq ($(ARCH),IRIX)
   OSTYPE=IRIX
 endif
 
+ifeq ($(ARCH),OSF1)
+  CC = cc -verbose
+  CFLAGS = -DNOFNMATCH
+  RPCCOM=rpcgen
+  OSTYPE=OSF1
+endif
+
 ifeq ($(ARCH),HPUX)
   CC = gcc
-  CFLAGS = -D_HPUX_SOURCE -Dextname -g
+  CFLAGS = -Dhpux -D_HPUX_SOURCE -Dextname -g
 #  CFLAGS = -D_HPUX_SOURCE -Dextname -g -pg # for gprof
   ARFLAGS = frv
   RPCCOM=rpcgen
@@ -86,28 +97,51 @@ endif
 
 ##$(LIBROOT)/libctp.a: $(libctp_members)
 
-#makereg: makereg.o
+ifdef NFSDIRECTORY
 
-daVarRpc_xdr.c: ../daVarRpc.x
+../%.c : $(NFSDIRECTORY)/CTP/%.c
+	ln -s $< $@
+
+../%.h : $(NFSDIRECTORY)/CTP/%.h
+	ln -s $< $@
+
+../%.x : $(NFSDIRECTORY)/CTP/%.x
+	ln -s $< $@
+
+.PRECIOUS: ../%.c ../%.h ../%.x
+endif
+
+makereg: makereg.o
+
+RPCDEPENDS_RULE = echo "$(subst .d,.o,$@): \
+	../$(subst .d,.c,$@) ../daVarRpc.h" >$@
+
+daVarRpc_xdr.d:
+	echo remaking $@
+	$(RPCDEPENDS_RULE)
+
+daVarRpc_clnt.d:
+	echo remaking $@
+	$(RPCDEPENDS_RULE)
+
+daVarRpc_svc.d:
+	echo remaking $@
+	$(RPCDEPENDS_RULE)
+
+../daVarRpc_xdr.c: ../daVarRpc.x
 	rm -f $@
-	$(RPCCOM) -o $@ -c ../daVarRpc.x
+	(cd .. ; $(RPCCOM) -o $(@F) -c daVarRpc.x)
 
-daVarRpc_svc.c: ../daVarRpc.x
+../daVarRpc_svc.c: ../daVarRpc.x
 	rm -f $@
-	$(RPCCOM) -o $@ -m ../daVarRpc.x
+	(cd .. ; $(RPCCOM) -o $(@F) -m daVarRpc.x)
 
-daVarRpc_clnt.c: ../daVarRpc.x
+../daVarRpc_clnt.c: ../daVarRpc.x
 	rm -f $@
-	$(RPCCOM) -o $@ -l ../daVarRpc.x
+	(cd .. ; $(RPCCOM) -o $(@F) -l daVarRpc.x)
 
-daVarRpc.h: ../daVarRpc.x
+../daVarRpc.h: ../daVarRpc.x
 	rm -f $
-	$(RPCCOM) -o $@ -h ../daVarRpc.x
-
-daVarRpc_xdr.d: daVarRpc_xdr.c
-
-daVarRpc_svc.d: daVarRpc_svc.c
-
-daVarRpc_clnt.d: daVarRpc_clnt.c
+	(cd .. ; $(RPCCOM) -o $(@F) -h daVarRpc.x)
 
 include $(sources:.c=.d)
