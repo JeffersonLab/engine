@@ -1,6 +1,10 @@
        SUBROUTINE H_AERO(ABORT,err)
 *-
 * $Log$
+* Revision 1.1.2.5  2003/07/28 18:01:38  cdaq
+* Use haero_new_ped_pos and haero_new_ped_neg instead of aero_new_threshold_neg
+* and haero_new_threshold_pos in IF statement (mkj)
+*
 * Revision 1.1.2.4  2003/07/18 18:22:49  cdaq
 * Fix bug that haero_adc_neg was compared to  instead
 * of haero_new_threshold_neg (Vardan)
@@ -84,7 +88,7 @@ D      pause
 
         npmt=haero_pair_num(ihit)
 
-        if (haero_adc_pos(ihit).gt.haero_new_threshold_pos(npmt)) then
+        if (haero_adc_pos(ihit).gt.haero_new_ped_pos(npmt)) then
            if (haero_adc_pos(ihit).lt.8000.) then
               haero_pos_npe(npmt) = haero_pos_gain(npmt) *
      &             (haero_adc_pos(ihit)-haero_pos_ped_mean(npmt))
@@ -94,7 +98,7 @@ D      pause
         endif
         
 ***BUG        if (haero_adc_neg(ihit).gt.haero_new_threshold_pos(npmt)) then
-        if (haero_adc_neg(ihit).gt.haero_new_threshold_neg(npmt)) then
+        if (haero_adc_neg(ihit).gt.haero_new_ped_neg(npmt)) then
            if (haero_adc_neg(ihit).lt.8000.) then
               haero_neg_npe(npmt) = haero_neg_gain(npmt) * 
      &             (haero_adc_neg(ihit)-haero_neg_ped_mean(npmt))
