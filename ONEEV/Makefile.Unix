@@ -1,0 +1,105 @@
+#
+# $Log$
+# Revision 1.1  1995/01/27 20:49:35  cdaq
+# Initial revision
+#
+
+include $(Csoft)/etc/Makefile
+
+revdis_sources = revdis.f revdis_define.f revdis_getev.f revdis_init.f
+
+common_sources = h_one_ev_init.f h_one_ev_display.f h_one_ev_detectors.f \
+	h_one_ev_geometry.f h_uginit.f g_ugsvolu.f g_uglast.f
+
+engine_sources = 
+
+sources = $(revdis_sources) $(common_sources)
+
+#sources = one_ev_init.f one_ev_display.f one_ev_detectors.f one_ev_geometry.f \
+###	ugsvolu.f uginit.f uglast.f r_one_ev_io.f \
+#	g_display.f h_display.f \
+#	revdis.f g_edisp_define.f \
+#	g_edisp_getev.f g_edisp_init.f
+###	g_register_variables.f g_initialize.f h_initialize.f
+
+libsources = $(sources)
+
+lib_targets := $(patsubst %.f, liboneev.a(%.o), $(libsources))
+
+#install-dirs := lib bin
+install-dirs := lib bin
+
+bin_targets = revdis
+
+ONEEVLIB = $(LIBROOT)/liboneev.a
+
+DEPLIBS = $(LIBROOT)/libengine.a \
+	$(LIBROOT)/libhtracking.a $(LIBROOT)/libstracking.a \
+	$(LIBROOT)/libtracking.a $(LIBROOT)/libhack.a \
+	$(LIBROOT)/libgmc.a $(LIBROOT)/libutils.a
+
+CTPCLIENT = $(LIBROOT)/libctpclient.a
+CTP =  $(LIBROOT)/libctp.a
+
+GEANTVER = 321
+CERNLIBS = -lgeant$(GEANTVER) -lpawlib -lgraflib -lgrafX11 -lpacklib -lmathlib
+ifeq ($(ARCH),HPUX)
+  OTHERLIBS = -Wl,-L$(LIBROOT) -lctpclient -lctp -Wl,-L$(CODA)/HP_UX/lib \
+	-lana -lmsg -lcoda -Wl,-L$(CERN_ROOT)/lib $(CERNLIBS) \
+	-Wl,-L/usr/lib/X11R5 -lX11 -lm
+	
+endif
+
+ifeq ($(ARCH),ULTRIX)
+  OTHERLIBS = -L$(CODA)/ULTRIX/lib \
+	-lana -lmsg -lcoda -L$(CERN_ROOT)/lib $(CERNLIBS) -L/usr/lib -lX11 -lm
+endif
+
+# Rules to make ENGINE source files that must be tweaked
+#
+engine_display: engine.o $(ONEEVLIB) $(DEPLIBS)
+	$(F77) $(FFLAGS) -o engine_display engine.o -u g_register_variables.o \
+	-u g_initialize.o -u h_initialize.o $(ONEEVLIB) $(DEPLIBS) \
+	$(OTHERLIBS)
+
+revdis: revdis.o $(ONEEVLIB) $(DEPLIBS) $(CTPCLIENT) $(CTP)
+	$(F77) $(FFLAGS) -o revdis revdis.o \
+	$(ONEEVLIB) $(DEPLIBS) \
+	$(OTHERLIBS)
+
+g_register_variables.f: ../ENGINE/g_register_variables.f
+	@sed -e 's/*ONEEV//' $< >$@
+
+g_initialize.f: ../ENGINE/g_initialize.f
+	@sed -e 's/*ONEEV//' $< >$@
+
+h_initialize.f: ../ENGINE/h_initialize.f
+	@sed -e 's/*ONEEV//' $< >$@
+
+#
+# Rule for making the register subroutines
+#
+r_%.f : %.cmn $(MAKEREG)
+	$(MAKEREG) $< -o $@ -e /dev/null
+
+%.f : %.F
+	$(F77) -F -DHDISPAY $<
+
+.PRECIOUS: r_%.f
+
+#
+# Get include files from INCLUDE directory
+#
+%.cmn :: ../INCLUDE/%.cmn
+	cp $< $@
+
+%.dec :: ../INCLUDE/%.dec
+	cp $< $@
+
+%.dte :: ../INCLUDE/%.dte
+	cp $< $@
+
+include $(sources:.f=.d)
+
+
+
