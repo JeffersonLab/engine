@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.2  1994/04/15 20:36:49  cdaq
-*-    (KBB) Add ntuple handling
+*-    Revision 1.3  1994/06/14 19:13:20  cdaq
+*-    (SAW) Move histogram saving to new routine g_dump_histograms
 *-
+* Revision 1.2  1994/04/15  20:36:49  cdaq
+* (KBB) Add ntuple handling
+*
 * Revision 1.1  1994/02/04  22:12:15  cdaq
 * Initial revision
 *
@@ -31,16 +34,8 @@
       logical ABORT
       character*(*) err
 *
-      INCLUDE 'gen_filenames.cmn'
-*
       logical bad_HMS,bad_SOS,bad_COIN,bad_HBK
       character*132 err_HMS,err_SOS,err_COIN,err_HBK
-      integer cycle,IO
-      character*132 file
-      character*8 nametag
-      parameter (nametag= here)
-      character*80 default_histfile
-      parameter (default_histfile= 'engine_output.hbk')
 *
 *--------------------------------------------------------
 *-chance to flush any statistics, etc.
@@ -50,18 +45,7 @@
 *     
       call C_proper_shutdown(bad_COIN,err_COIN)
 *
-      IO= G_LUN_TEMP                    ! temporary IO channel
-      file= g_histout_filename		! File to write histograms into
-      if(file.EQ.' ') file= default_histfile
-*
-      call G_open_HBOOK_file(IO,file,'NEW',bad_HBK,err_HBK) !FORTRAN file open
-      IF(.NOT.bad_HBK) THEN
-        call HRFILE(IO,nametag,'N')   !tell HBOOK to use channel IO (New)
-        cycle= 0                      !dummy for internal counting
-        call HROUT(0,cycle,' ')	      !CERNLIB flush buffers, all histograms
-        call HREND(nametag)           !done with this channel
-        CLOSE(IO)                     !FORTRAN file close
-      ENDIF
+      call g_dump_histograms(bad_HBK,err_HBK)
 *
       ABORT= bad_HMS .or. bad_SOS .or. bad_COIN .or. bad_HBK
       err= ' '
