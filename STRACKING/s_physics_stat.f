@@ -16,7 +16,10 @@
 *- 
 *-   Created 10-JUN-1994     D. F. Geesaman
 * $Log$
-* Revision 1.1  1994/06/14 04:10:43  cdaq
+* Revision 1.2  1995/02/23 15:38:41  cdaq
+* (JRA) Move scint eff's to s_scin_eff, add call to s_cal_eff
+*
+* Revision 1.1  1994/06/14  04:10:43  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -55,30 +58,34 @@
       tothits=SNTRACK_HITS(goodtrack,1)
       if(tothits.gt.0) then
 *     get ray parameters
-         ray(1) = DBLE(SX_FP(goodtrack))
-         ray(2) = DBLE(SY_FP(goodtrack))
-         ray(3) = DBLE(SXP_FP(goodtrack))
-         ray(4) = DBLE(SYP_FP(goodtrack))
+        ray(1) = DBLE(SX_FP(goodtrack))
+        ray(2) = DBLE(SY_FP(goodtrack))
+        ray(3) = DBLE(SXP_FP(goodtrack))
+        ray(4) = DBLE(SYP_FP(goodtrack))
 
 *     loop over all hits in track
          
 
-         do ihit = 1, tothits
-            hitnum=SNTRACK_HITS(goodtrack,1+ihit)
-            plane = SDC_PLANE_NUM(hitnum)
-            splanehitctr(plane) = splanehitctr(plane) + 1
-
-            normsigma = (SDC_WIRE_COORD(hitnum)
-     $           - REAL(S_DPSIFUN(ray,plane)))
-     &           /sdc_sigma(plane)
-            splanesigmasq(plane) = splanesigmasq(plane) + normsigma
-     $           *normsigma
-            smeasuredsigma(plane) = SQRT(splanesigmasq(plane) 
-     &           / FLOAT(splanehitctr(plane)))
-            schambereff(plane) =FLOAT(splanehitctr(plane))
-     $           /FLOAT(sgoodtracksctr)
-         enddo                          ! endloop over hits in track
+        do ihit = 1, tothits
+          hitnum=SNTRACK_HITS(goodtrack,1+ihit)
+          plane = SDC_PLANE_NUM(hitnum)
+          normsigma = (SDC_WIRE_COORD(hitnum)
+     $         - REAL(S_DPSIFUN(ray,plane)))/sdc_sigma(plane)
+          splanehitctr(plane) = splanehitctr(plane) + 1
+          splanesigmasq(plane) = splanesigmasq(plane) + normsigma
+     $         *normsigma
+          smeasuredsigma(plane) = SQRT(splanesigmasq(plane) 
+     &         / FLOAT(splanehitctr(plane)))
+          schambereff(plane) =FLOAT(splanehitctr(plane))
+     $         /FLOAT(sgoodtracksctr)
+        enddo                           ! endloop over hits in track
       endif                             ! end test on zero hits
+*
+*     Scintillator efficiencies
+      call s_scin_eff
+*
+*     Calorimeter efficiencies
+      call s_cal_eff
 *
       RETURN
       END
