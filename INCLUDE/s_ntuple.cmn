@@ -4,7 +4,10 @@
 *........................................................................
 *- Misc. info. required for SOS Ntuple
 * $Log$
-* Revision 1.2  1994/06/17 03:14:40  cdaq
+* Revision 1.3  1995/05/22 19:05:27  cdaq
+* (SAW) Correct some CTP class types
+*
+* Revision 1.2  1994/06/17  03:14:40  cdaq
 * (KBB) Fix typos, change variable names, reorder common
 *
 * Revision 1.1  1994/04/14  16:05:24  cdaq
@@ -16,6 +19,8 @@
       integer default_s_Ntuple_ID
       parameter (default_s_Ntuple_ID= 9020)
 *
+*     CTPTYPE=parm
+*
       logical s_Ntuple_exists
       integer s_Ntuple_ID
       integer s_Ntuple_size
@@ -25,6 +30,9 @@
       character*132 s_Ntuple_directory
       character*256 s_Ntuple_file
       character*8 s_Ntuple_tag(SMAX_Ntuple_size)
+*
+*     CTPTYPE=event
+*
       real s_Ntuple_contents(SMAX_Ntuple_size)
 *
       COMMON /SOS_Ntuple/ s_Ntuple_exists,s_Ntuple_ID,

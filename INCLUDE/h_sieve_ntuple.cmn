@@ -4,7 +4,10 @@
 *........................................................................
 *- Misc. info. required for HMS sieve slit Ntuple
 * $Log$
-* Revision 1.1  1994/12/17 22:14:28  cdaq
+* Revision 1.2  1995/05/22 19:05:58  cdaq
+* (SAW) Correct some CTP class types
+*
+* Revision 1.1  1994/12/17  22:14:28  cdaq
 * Initial revision
 *
 *
@@ -13,6 +16,8 @@
       parameter (HMAX_Ntuple_size= 100)
       integer default_h_sieve_Ntuple_ID
       parameter (default_h_sieve_Ntuple_ID= 1411)
+*
+*     CTPTYPE=parm
 *
       logical h_sieve_Ntuple_exists
       integer h_sieve_Ntuple_ID
@@ -23,6 +28,9 @@
       character*132 h_sieve_Ntuple_directory   
       character*256 h_sieve_Ntuple_file
       character*8 h_sieve_Ntuple_tag(HMAX_Ntuple_size)
+*
+*     CTPTYPE=event
+*
       real h_sieve_Ntuple_contents(HMAX_Ntuple_size)
 *
       COMMON /HMS_sieve_Ntuple/ h_sieve_Ntuple_exists,h_sieve_Ntuple_ID,
