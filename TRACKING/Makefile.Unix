@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.11  1996/09/05 20:19:23  saw
+# (SAW) Linux compatibility fixes
+#
 # Revision 1.10  1996/04/29 18:29:50  saw
 # (SAW) New makefile style
 #
@@ -47,10 +50,10 @@ bin_targets =
 #	@echo "nothing to make"
 
 ifdef NFSDIRECTORY
-%.f : $(NFSDIRECTORY)/TRACKING/%.f
+../%.f : $(NFSDIRECTORY)/TRACKING/%.f
 	ln -s $< $@
 
-.PRECIOUS: %.f
+.PRECIOUS: ../%.f
 endif
 
 #
