@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-    $Log$
-*-    Revision 1.11  1994/10/11 18:44:11  cdaq
-*-    (SAW) Add hacks for event display
+*-    Revision 1.12  1995/01/27 20:09:07  cdaq
+*-    (SAW) Add call to sieve slit ntuple initialization
 *-
+* Revision 1.11  1994/10/11  18:44:11  cdaq
+* (SAW) Add hacks for event display
+*
 * Revision 1.10  1994/06/17  04:01:35  cdaq
 * (KBB) Upgrade error reporting
 *
@@ -107,6 +110,16 @@
       ABORT= ABORT .or. FAIL
 *
       call h_ntuple_init(FAIL,why)
+      if(err.NE.' ' .and. why.NE.' ') then
+        call G_append(err,' & '//why)
+      elseif(why.NE.' ') then
+        err= why
+      endif
+      ABORT= ABORT .or. FAIL
+*
+      if(ABORT .or. err.NE.' ') call g_add_path(here,err)
+*
+      call h_sv_nt_init(FAIL,why)
       if(err.NE.' ' .and. why.NE.' ') then
         call G_append(err,' & '//why)
       elseif(why.NE.' ') then
