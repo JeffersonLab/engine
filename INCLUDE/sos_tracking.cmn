@@ -5,7 +5,10 @@
 *                              change name to sos_tracking.cmn
 *                              put sluno and debugflags from parameters to CTP
 * $Log$
-* Revision 1.11  1995/03/13 19:18:06  cdaq
+* Revision 1.12  1995/04/06 20:30:04  cdaq
+* (SAW) Fix wc plane names.  Change residuals variable names
+*
+* Revision 1.11  1995/03/13  19:18:06  cdaq
 * (SAW) Names of fract equivalence arrays reflect SOS chamber plane names
 *
 * Revision 1.10  1995/01/27  20:22:58  cdaq
@@ -59,23 +62,23 @@
       real*4    sdriftbinsz             ! drift bin size in nsec of lookup
       real*4    sdrift1stbin            ! drift time of 1st bin in nsec of lookup table
       real*4     sfract             !fraction of integrated time spectrum
-      real*4 swc1x1fract(sdriftbins_max),swc1x2fract(sdriftbins_max),
-     &       swc1u1fract(sdriftbins_max),swc1u2fract(sdriftbins_max),
+      real*4 swc1u1fract(sdriftbins_max),swc1u2fract(sdriftbins_max),
+     &       swc1x1fract(sdriftbins_max),swc1x2fract(sdriftbins_max),
      &       swc1v1fract(sdriftbins_max),swc1v2fract(sdriftbins_max),
-     &       swc2x1fract(sdriftbins_max),swc2x2fract(sdriftbins_max),
      &       swc2u1fract(sdriftbins_max),swc2u2fract(sdriftbins_max),
+     &       swc2x1fract(sdriftbins_max),swc2x2fract(sdriftbins_max),
      &       swc2v1fract(sdriftbins_max),swc2v2fract(sdriftbins_max)
 
-      equivalence (swc1x1fract(1),sfract(1,1))
-      equivalence (swc1x2fract(1),sfract(1,2))
-      equivalence (swc1u1fract(1),sfract(1,3))
-      equivalence (swc1u2fract(1),sfract(1,4))
+      equivalence (swc1u1fract(1),sfract(1,1))
+      equivalence (swc1u2fract(1),sfract(1,2))
+      equivalence (swc1x1fract(1),sfract(1,3))
+      equivalence (swc1x2fract(1),sfract(1,4))
       equivalence (swc1v1fract(1),sfract(1,5))
       equivalence (swc1v2fract(1),sfract(1,6))
-      equivalence (swc2x1fract(1),sfract(1,7))
-      equivalence (swc2x2fract(1),sfract(1,8))
-      equivalence (swc2u1fract(1),sfract(1,9))
-      equivalence (swc2u2fract(1),sfract(1,10))
+      equivalence (swc2u1fract(1),sfract(1,7))
+      equivalence (swc2u2fract(1),sfract(1,8))
+      equivalence (swc2x1fract(1),sfract(1,9))
+      equivalence (swc2x2fract(1),sfract(1,10))
       equivalence (swc2v1fract(1),sfract(1,11))
       equivalence (swc2v2fract(1),sfract(1,12))
 
@@ -253,22 +256,18 @@
 *     CTPTYPE=event
 *
 *  complete 2-D array for residuals in all planes over all tracks
-      real*4 sdc_residual(SNTRACKS_MAX,SMAX_NUM_DC_PLANES)
-      real*4 sdc_sing_res(SNTRACKS_MAX,SMAX_NUM_DC_PLANES)
+      real*4 sdc_single_residual(SNTRACKS_MAX,SMAX_NUM_DC_PLANES)
+      real*4 sdc_double_residual(SNTRACKS_MAX,SMAX_NUM_DC_PLANES)
 
 *     djm 8/26/94 arrays containing single and double residual arrays which can be
 *     histogrammed in the normal fashion (ie, not hardwired histograms).
 
-       real*4 sdc1_sing_res(SMAX_NUM_DC_PLANES)
-       real*4 sdc2_sing_res(SMAX_NUM_DC_PLANES)
-       real*4 sdc1_dbl_res(SMAX_NUM_DC_PLANES)
-       real*4 sdc2_dbl_res(SMAX_NUM_DC_PLANES)
+       real*4 sdc_sing_res(SMAX_NUM_DC_PLANES)
+       real*4 sdc_dbl_res(SMAX_NUM_DC_PLANES)
 
 
        common/SOS_RESIDUAL/
-     &   sdc_residual,
+     &   sdc_single_residual,
+     &   sdc_double_residual,
      &   sdc_sing_res,
-     &   sdc1_sing_res,
-     &   sdc2_sing_res,
-     &   sdc1_dbl_res,
-     &   sdc2_dbl_res
+     &   sdc_dbl_res
