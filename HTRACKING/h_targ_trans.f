@@ -16,7 +16,10 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
-* Revision 1.2  1994/05/13 02:28:59  cdaq
+* Revision 1.3  1994/06/06 17:03:17  cdaq
+* (DFG) Protect against asin argument > 1.0
+*
+* Revision 1.2  1994/05/13  02:28:59  cdaq
 * (DFG)   Add call to h_fill_dc_target_hist
 *         Add calculation of HP_TAR
 * (SAW)   Cosmetic changes to source
@@ -117,6 +120,12 @@
             sum(3) = sum(3) + term*h_recon_coeff(3,i)
             sum(4) = sum(4) + term*h_recon_coeff(4,i)
          enddo
+* Protext against asin argument > 1.
+         if(sum(1).gt. 1.0) sum(1)=  0.99
+         if(sum(1).lt. -1.0) sum(1)= -.99
+         if(sum(3).gt. 1.0) sum(3)=  0.99
+         if(sum(3).lt. -1.0) sum(3)= -.99
+
      
 * Load output values.
 
