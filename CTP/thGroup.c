@@ -16,6 +16,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.4  2004/07/07 18:15:27  saw
+ *   Consistenly use thtreeexeg
+ *
  *   Revision 1.3  2004/07/02 20:11:07  saw
  *   Make fortran tree group function names sane
  *
@@ -319,7 +322,7 @@ MAKEFSUB(thtstinsg_,TESTSTR,thIncrementScalersGroup)
 MAKEFSUB(thhstexeg_,HISTSTR,thExecuteGroup)
 MAKEFSUB(thgethitg_,GETHITSTR,thExecuteGroup)
 #ifdef ROOTTREE
-MAKEFSUB(thtreexeg_,TREESTR,thExecuteGroup)
+MAKEFSUB(thtreeexeg_,TREESTR,thExecuteGroup)
 MAKEFSUB(thtreecloseg_,TREESTR,thCloseGroup)
 MAKEFSUB(thtreewriteg_,TREESTR,thWriteGroup)
 #endif
