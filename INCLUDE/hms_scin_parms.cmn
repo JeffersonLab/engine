@@ -11,7 +11,13 @@
 *       Modified 23 March 1994   DFG
 *           Add definition of hnum_scin_elements and set parameter value
 * $Log$
-* Revision 1.5  1994/09/13 21:01:55  cdaq
+* Revision 1.6  1995/03/13 19:08:45  cdaq
+* (JRA) Move hnum_scin_elements to gen_data_structures, remove
+*       hscin_num_counters.  Change hscin_??_top and _left to center and offset.
+*       Add hscin_??_spacing parms.  Change hhodo_center_coord to hhodo_center.
+*       Add hhodo_???_minph tables.
+*
+* Revision 1.5  1994/09/13  21:01:55  cdaq
 * (JRA) Include arrays for scintillator pedestals
 *
 * Revision 1.4  1994/09/13  19:24:18  cdaq
@@ -35,15 +41,11 @@
 *
 *     CTPTYPE=parm
 *
-      integer*4 hnum_scin_elements
-      parameter (hnum_scin_elements=16)
-*
 * from parameter file
       integer*4 hscin_1x_nr
       integer*4 hscin_1y_nr
       integer*4 hscin_2x_nr
       integer*4 hscin_2y_nr
-      integer*4 hscin_num_counters(HNUM_SCIN_PLANES)
       integer*4 hdebugprintscinraw
       integer*4 hdebugprintscindec
       integer*4 hdebugprinttoftracks
@@ -64,14 +66,22 @@
       real*4 hscin_1y_bot
       real*4 hscin_2x_right
       real*4 hscin_2y_bot
-      real*4 hscin_1x_top(hnum_scin_elements)
-      real*4 hscin_1y_left(hnum_scin_elements)
-      real*4 hscin_2x_top(hnum_scin_elements)
-      real*4 hscin_2y_left(hnum_scin_elements)
+      real*4 hscin_1x_center(hnum_scin_elements)
+      real*4 hscin_1y_center(hnum_scin_elements)
+      real*4 hscin_2x_center(hnum_scin_elements)
+      real*4 hscin_2y_center(hnum_scin_elements)
+      real*4 hscin_1x_offset
+      real*4 hscin_1y_offset
+      real*4 hscin_2x_offset
+      real*4 hscin_2y_offset
       real*4 hscin_1x_size
       real*4 hscin_1y_size
       real*4 hscin_2x_size
       real*4 hscin_2y_size
+      real*4 hscin_1x_spacing
+      real*4 hscin_1y_spacing
+      real*4 hscin_2x_spacing
+      real*4 hscin_2y_spacing
       integer*4 hscin_all_ped_pos(hnum_scin_planes,hnum_scin_elements)
       integer*4 hscin_all_ped_neg(hnum_scin_planes,hnum_scin_elements)
 
@@ -86,22 +96,25 @@
      &     hscin_2x_left, hscin_2y_top,
      &     hscin_1x_right, hscin_1y_bot, !position of 'positive'(??) end.
      &     hscin_2x_right, hscin_2y_bot,
-     &     hscin_1x_top, hscin_1y_left, !position of edges of elements.
-     &     hscin_2x_top, hscin_2y_left,
+     &     hscin_1x_center, hscin_1y_center, !center (transverse) of element.
+     &     hscin_2x_center, hscin_2y_center,
      &     hscin_1x_size, hscin_1y_size, !width of elements.
      &     hscin_2x_size, hscin_2y_size,
-     &     hscin_num_counters,
+     &     hscin_1x_spacing, hscin_1y_spacing, !separation of centers.
+     &     hscin_2x_spacing, hscin_2y_spacing,
      &     hdebugprintscinraw,
      &     hdebugprintscindec,
      &     hdebugprinttoftracks,
      &     hdebugprinttracktests,
      &     hscin_all_ped_pos,
-     &     hscin_all_ped_neg
-
+     &     hscin_all_ped_neg,
+     &     hscin_1x_offset, hscin_1y_offset, !offset from nominal trans pos.
+     &     hscin_2x_offset, hscin_2y_offset
+ 
 *     Physical paramteres of counters.  Use hhodo_* for arrays that include
 *     the entire hodoscope,  hscin_* for arrays that loop over hits.
       real*4 hnum_scin_counters(hnum_scin_planes)
-      real*4 hhodo_center_coord(hnum_scin_planes,hnum_scin_elements)
+      real*4 hhodo_center(hnum_scin_planes,hnum_scin_elements)
       real*4 hhodo_width(hnum_scin_planes,hnum_scin_elements)
       real*4 hhodo_pos_coord(hnum_scin_planes,hnum_scin_elements)
       real*4 hhodo_neg_coord(hnum_scin_planes,hnum_scin_elements)
@@ -115,14 +128,15 @@
       real*4 hhodo_neg_phc_coeff(hnum_scin_planes,hnum_scin_elements)
       real*4 hhodo_pos_time_offset(hnum_scin_planes,hnum_scin_elements)
       real*4 hhodo_neg_time_offset(hnum_scin_planes,hnum_scin_elements)
-
+      real*4 hhodo_pos_minph(hnum_scin_planes,hnum_scin_elements) ! ADC offset for PH correction
+      real*4 hhodo_neg_minph(hnum_scin_planes,hnum_scin_elements) ! ADC offset for PH correction
 
 *     correction parameters and position information converted to arryas
 *     over plane and counter
 
       common/hms_tof_parms/
      &     hnum_scin_counters,
-     &     hhodo_center_coord,
+     &     hhodo_center,
      &     hhodo_width,
      &     hhodo_pos_coord,
      &     hhodo_neg_coord,
@@ -133,4 +147,6 @@
      &     hhodo_pos_phc_coeff,
      &     hhodo_neg_phc_coeff,
      &     hhodo_pos_time_offset,
-     &     hhodo_neg_time_offset
+     &     hhodo_neg_time_offset,
+     $     hhodo_pos_minph,
+     $     hhodo_neg_minph
