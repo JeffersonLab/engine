@@ -8,6 +8,9 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
+* Revision 1.26  1999/02/23 19:18:42  csa
+* (JRA) Correct HMS_TFIT_MATRIX indices, remove hdebugcalcpeds
+*
 * Revision 1.25  1998/12/01 20:29:47  saw
 * (SAW) Put HMS_DRIFT common block before equivalences
 *
@@ -240,7 +243,7 @@
       real*8 haa3,haainv3         ! matrix AA and its inverse AAINV 
       real*8 hdet3               ! array of determinants of AA
       common/HMS_TFIT_MATRIX/
-     &     haa3(3,3),haainv3(3,3,14),hdet3(14)
+     &     haa3(3,3),haainv3(3,3,44),hdet3(44)
 
 
 
@@ -262,7 +265,6 @@
       integer*4 hdebugtartrackprint     ! call h_print_tar_track
       integer*4 hdebugdumptof           ! dumps tof fitting data
       integer*4 hdebugdumpcal           ! dumps cal fitting data
-      integer*4 hdebugcalcpeds          ! calc peds from physics events.
       integer*4 hsingle_stub            ! switch to make tracks of all stubs
       integer*4 hSmallAngleApprox       ! switch for alternate L/R determ. of Y,Yprime planes
       integer*4 hluno                 ! logical unit number for debugging output
@@ -280,7 +282,6 @@
      &     hdebugprintdecodeddc,
      &     hdebugdumptof,
      &     hdebugdumpcal,
-     &     hdebugcalcpeds,
      &     hsingle_stub,
      &     hSmallAngleApprox
 
