@@ -1,0 +1,11 @@
+*      sos_statistics.cmn
+*      common blocks containing event statistics for s_reconstruction
+* $Log$
+* Revision 1.1  1994/06/07 02:00:48  cdaq
+* Initial revision
+*
+*
+       integer*4 s_recon_num    ! Number of calls to s_reconstruction
+*
+       common/sos_statistics/
+     &     s_recon_num
