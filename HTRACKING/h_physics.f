@@ -19,7 +19,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.12  1995/07/19 20:53:26  cdaq
+* Revision 1.13  1995/08/31 14:49:03  cdaq
+* (JRA) Add projection to cerenkov mirror pos, fill hdc_sing_res array
+*
+* Revision 1.12  1995/07/19  20:53:26  cdaq
 * (SAW) Declare sind and tand for f2c compatibility
 *
 * Revision 1.11  1995/05/22  19:39:15  cdaq
@@ -76,8 +79,9 @@
       INCLUDE 'hms_physics_sing.cmn'
       INCLUDE 'hms_calorimeter.cmn'
       INCLUDE 'hms_scin_parms.cmn'
-*      INCLUDE 'hms_scin_tof.cmn'
       INCLUDE 'hms_tracking.cmn'
+      INCLUDE 'hms_cer_parms.cmn'
+      INCLUDE 'hms_geometry.cmn'
 *
 *     local variables 
       integer*4 i,ip
@@ -107,18 +111,18 @@
         HSXP_FP   = HXP_FP(HSNUM_FPTRACK) ! This is a slope (dx/dz)
         HSYP_FP   = HYP_FP(HSNUM_FPTRACK) ! This is a slope (dy/dz)
 
-c     hsx_dc1 = hsx_fp + hsxp_fp * hdc_zpos(1)
-c     hsy_dc1 = hsy_fp + hsyp_fp * hdc_zpos(1)
-c     hsx_dc2 = hsx_fp + hsxp_fp * hdc_zpos(2)
-c     hsy_dc2 = hsy_fp + hsyp_fp * hdc_zpos(2)
+        hsx_dc1 = hsx_fp + hsxp_fp * hdc_1_zpos
+        hsy_dc1 = hsy_fp + hsyp_fp * hdc_1_zpos
+        hsx_dc2 = hsx_fp + hsxp_fp * hdc_2_zpos
+        hsy_dc2 = hsy_fp + hsyp_fp * hdc_2_zpos
         hsx_s1 = hsx_fp + hsxp_fp * hscin_1x_zpos
         hsy_s1 = hsy_fp + hsyp_fp * hscin_1x_zpos
+        hsx_cer = hsx_fp + hsxp_fp * hcer_mirror_zpos
+        hsy_cer = hsy_fp + hsyp_fp * hcer_mirror_zpos
         hsx_s2 = hsx_fp + hsxp_fp * hscin_2x_zpos
         hsy_s2 = hsy_fp + hsyp_fp * hscin_2x_zpos
         hsx_cal = hsx_fp + hsxp_fp * hcal_1pr_zpos
         hsy_cal = hsy_fp + hsyp_fp * hcal_1pr_zpos
-c     ?????
-        htrue_x_fp = hsx_fp / sind(85.0) / (1/tand(85.0) - hsxp_fp)
 
         do ip=1,4
           hsscin_elem_hit(ip)=0
@@ -138,9 +142,13 @@ c     ?????
         hsnum_scin_hit = hnum_scin_hit(hsnum_fptrack)
         hsnum_pmt_hit = hnum_pmt_hit(hsnum_fptrack)
 
+        do ip = 1, hdc_num_planes
+          hdc_sing_res(ip)=hdc_single_residual(hsnum_fptrack,ip)
+        enddo
         HSCHI2PERDEG  = HCHI2_FP(HSNUM_FPTRACK)
      $       /FLOAT(HNFREE_FP(HSNUM_FPTRACK))
         HSNFREE_FP = HNFREE_FP(HSNUM_FPTRACK)
+
         cosgamma = 1.0/sqrt(1.0 + hsxp_tar**2 + hsyp_tar**2)
         coshstheta = cosgamma*(sinhthetas * hsyp_tar + coshthetas)
         HSTHETA = ACOS(COSHSTHETA)
