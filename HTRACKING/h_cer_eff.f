@@ -14,6 +14,9 @@
 * author: Chris Cothran
 * created: 5/25/95
 * $Log$
+* Revision 1.4  1999/02/10 18:19:06  csa
+* Changed hscer_et test to use momentum-normalized variable
+*
 * Revision 1.3  1999/02/03 21:13:23  saw
 * Code for new Shower counter tubes
 *
@@ -36,21 +39,24 @@
       include 'hms_data_structures.cmn'
       include 'hms_cer_parms.cmn'
       include 'hms_physics_sing.cmn'
+      include 'hms_calorimeter.cmn'
 
       integer*4 nr
 *
-* test for a good electron
+*     test for a good electron. Use normalized, tracked shower counter
+*     variable (hsshtrk).
 *
       if (hntracks_fp .eq. 1
      &  .and. hschi2perdeg .gt. 0. 
      &  .and. hschi2perdeg .lt. hcer_chi2max
      &  .and. hsbeta .gt. hcer_beta_min
      &  .and. hsbeta .lt. hcer_beta_max
-     &  .and. hstrack_et .gt. hcer_et_min
-     &  .and. hstrack_et .lt. hcer_et_max) then ! Some use hsshtrk instead
+     &  .and. hsshtrk .gt. hcer_et_min
+     &  .and. hsshtrk .lt. hcer_et_max) then
+
         do nr = 1, hcer_num_regions
 *
-* hit must be inside the region in order to continue
+*     hit must be inside the region in order to continue.
 *
           if (abs(hcer_region(nr,1)-hsx_cer).lt.hcer_region(nr,5)
      >         .and. abs(hcer_region(nr,2)-hsy_cer).lt.hcer_region(nr,6)
