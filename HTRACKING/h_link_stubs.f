@@ -1,4 +1,3 @@
-
       subroutine H_LINK_STUBS(ABORT,err)
 *     This subroutine compares all the space-point-stubs found in
 *     H_LEFT_RIGHT.f and links together stubs to form tracks.
@@ -11,7 +10,10 @@
 *
 *     d.f. geesaman           17 January 1994
 * $Log$
-* Revision 1.2  1994/06/06 16:37:57  cdaq
+* Revision 1.3  1995/04/06 19:30:18  cdaq
+* (JRA) Fix typo
+*
+* Revision 1.2  1994/06/06  16:37:57  cdaq
 * Add switch to include single stub tracks
 *
 * Revision 1.1  1994/02/19  06:15:28  cdaq
@@ -83,7 +85,7 @@
             if(abs(hbeststub(isp1,1)-hbeststub(isp2,1)).lt.hxt_track_criterion
      &   .and. abs(hbeststub(isp1,2)-hbeststub(isp2,2)).lt.hyt_track_criterion
      &   .and. abs(hbeststub(isp1,3)-hbeststub(isp2,3)).lt.hxpt_track_criterion
-     &   .and. abs(hbeststub(isp1,4)-hbeststub(isp2,4)).lt.hxpt_track_criterion
+     &   .and. abs(hbeststub(isp1,4)-hbeststub(isp2,4)).lt.hypt_track_criterion
      &      ) then
              if(newtrack.eq.1) then         
 *     make a new track
