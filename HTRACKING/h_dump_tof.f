@@ -18,6 +18,9 @@
 * for each signal.
 *
 * $Log$
+* Revision 1.4  1995/10/09 20:20:00  cdaq
+* (JRA) Subtract hstart_time from tdc output
+*
 * Revision 1.3  1995/05/22 19:39:09  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -62,7 +65,7 @@
             lay=int((hscin_plane_num(hit)+1)/2)
             dir=mod(hscin_plane_num(hit)+1,2)+1
             pmt=1
-            tim=hscin_tdc_pos(hit)*hscin_tdc_to_time
+            tim=hscin_tdc_pos(hit)*hscin_tdc_to_time-hstart_time
             ph=hscin_adc_pos(hit)
             write(37,112) pmt,cnt,lay,dir,ph,tim
           endif
@@ -72,13 +75,12 @@
             lay=int((hscin_plane_num(hit)+1)/2)
             dir=mod(hscin_plane_num(hit)+1,2)+1
             pmt=2
-            tim=hscin_tdc_neg(hit)*hscin_tdc_to_time
+            tim=hscin_tdc_neg(hit)*hscin_tdc_to_time-hstart_time
             ph=hscin_adc_neg(hit)
             write(37,112) pmt,cnt,lay,dir,ph,tim
           endif
         enddo
  112    format(i2,i3,i2,i2,f7.1,f8.3)
-* 112    format(4i4,2f12.6)
       endif
       RETURN
       END
