@@ -10,9 +10,13 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.11  1994/10/11 18:39:40  cdaq
-*-    (SAW) Add some hacks for event display
+*-    Revision 1.12  1995/04/01 19:47:22  cdaq
+*-    (SAW) One report file for each of g, h, s, c instead of a single report file
+*-          Allow %d for run number in filenames
 *-
+* Revision 1.11  1994/10/11  18:39:40  cdaq
+* (SAW) Add some hacks for event display
+*
 * Revision 1.10  1994/09/21  19:52:57  cdaq
 * (SAW) Cosmetic change
 *
@@ -62,7 +66,8 @@
       INCLUDE 'sos_filenames.cmn'
       INCLUDE 'coin_filenames.cmn'
       INCLUDE 'gen_routines.dec'
-      INCLUDE 'gen_pawspace.cmn'                !includes sizes of special CERNLIB space
+      INCLUDE 'gen_pawspace.cmn'        !includes sizes of special CERNLIB space
+      INCLUDE 'gen_run_info.cmn'
 *HDISPLAY      include 'one_ev_io.cmn'
 *HDISPLAY      include 'gen_gcbank.cmn'
 *
@@ -73,6 +78,7 @@
       logical*4 first_time                      ! Allows routine to be called 
       data first_time /.true./                  ! by online code
       save first_time
+      character*132 file
 *
 *--------------------------------------------------------
 *
@@ -91,45 +97,68 @@
 *     Load and book all the CTP files
 *
 *
-      if((first_time.or.g_parm_rebook).and.g_ctp_parm_filename.ne.' ')
-     $     call thload(g_ctp_parm_filename)
-      if((first_time.or.g_test_rebook).and.g_ctp_test_filename.ne.' ')
-     $     call thload(g_ctp_test_filename)
-      if((first_time.or.g_hist_rebook).and.g_ctp_hist_filename.ne.' ')
-     $     call thload(g_ctp_hist_filename)
-*
+      if((first_time.or.g_parm_rebook).and.g_ctp_parm_filename.ne.' ') then
+        file = g_ctp_parm_filename
+        call g_sub_run_number(file,gen_run_number)
+        call thload(file)
+      endif
+      if((first_time.or.g_test_rebook).and.g_ctp_test_filename.ne.' ') then
+        file = g_ctp_test_filename
+        call g_sub_run_number(file,gen_run_number)
+        call thload(file)
+      endif
+      if((first_time.or.g_hist_rebook).and.g_ctp_hist_filename.ne.' ') then
+        file = g_ctp_hist_filename
+        call g_sub_run_number(file,gen_run_number)
+        call thload(file)
+      endif
+*     
 *     Load the report definitions
 *
       if((first_time.or.g_report_rebook)
-     $     .and.g_report_template_filename.ne.' ')
-     $     call thload(g_report_template_filename)
+     $     .and.g_report_template_filename.ne.' ') then
+        file = g_report_template_filename
+        call g_sub_run_number(file,gen_run_number)
+        call thload(file)
+      endif
 *
       if((first_time.or.g_report_rebook)
-     $     .and.s_report_template_filename.ne.' ')
-     $     call thload(s_report_template_filename)
+     $     .and.s_report_template_filename.ne.' ') then
+        file = s_report_template_filename
+        call g_sub_run_number(file,gen_run_number)
+        call thload(file)
+      endif
 *
       if((first_time.or.g_report_rebook)
-     $     .and.h_report_template_filename.ne.' ')
-     $     call thload(h_report_template_filename)
+     $     .and.h_report_template_filename.ne.' ') then
+        file = h_report_template_filename
+        call g_sub_run_number(file,gen_run_number)
+        call thload(file)
+      endif
 *
       if((first_time.or.g_report_rebook)
-     $     .and.c_report_template_filename.ne.' ')
-     $     call thload(c_report_template_filename)
+     $     .and.c_report_template_filename.ne.' ') then
+        file = c_report_template_filename
+        call g_sub_run_number(file,gen_run_number)
+        call thload(file)
+      endif
 *
 *     Call thbook if any new files have been loaded
 *
       if(first_time.or.g_parm_rebook.or.g_test_rebook
      $     .or.g_hist_rebook.or.g_report_rebook) then
-         call thbook
+        call thbook
 *
 *     Recalculate all histogram id's of user (hard wired) histograms
 *
-         call g_init_histid(ABORT,err)
+        call g_init_histid(ABORT,err)
 *
-         if(g_alias_filename.ne.' ') then
-            ierr = thwhalias(g_alias_filename)
-            type *,'called haliaswrite',ierr
-         endif
+        if(g_alias_filename.ne.' ') then
+          file = g_alias_filename
+          call g_sub_run_number(file,gen_run_number)
+          ierr = thwhalias(file)
+          type *,'called haliaswrite',ierr
+        endif
       endif
 *
       call thtstclr                     ! Clear test flags

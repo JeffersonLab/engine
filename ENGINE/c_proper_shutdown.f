@@ -10,9 +10,13 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.4  1994/10/11 18:39:02  cdaq
-*-    (SAW) Protect agains blank blocknames
+*-    Revision 1.5  1995/04/01 19:43:57  cdaq
+*-    (SAW) One report file for each of g, h, s, c instead of a single report file
+*-          Allow %d for run number in filenames
 *-
+* Revision 1.4  1994/10/11  18:39:02  cdaq
+* (SAW) Protect agains blank blocknames
+*
 * Revision 1.3  1994/08/30  14:45:44  cdaq
 * (SAW) Add call to report generator
 *
@@ -31,16 +35,17 @@
 *
       include 'gen_routines.dec'
       include 'gen_filenames.cmn'
+      include 'gen_run_info.cmn'
       include 'coin_filenames.cmn'
 *
-      character*50 here
+      character*17 here
       parameter (here= 'C_proper_shutdown')
 *
       logical ABORT, report_abort
       character*(*) err
 *
       integer ierr
-*
+      character*132 file
 *--------------------------------------------------------
 *-chance to flush any statistics, etc.
 *
@@ -50,10 +55,15 @@
 *
       call c_ntuple_shutdown(ABORT,err)
 *
-      if(c_report_blockname .ne. ' ') then
-        ierr = threpa(c_report_blockname, g_report_output_filename)
+      if(c_report_blockname.ne.' '.and.
+     $     c_report_output_filename.ne.' ') then
+
+        file = c_report_output_filename
+        call g_sub_run_number(file, gen_run_number)
+
+        ierr = threp(c_report_blockname, file)
         if(ierr.ne.0) then
-          call g_append(err,'& threpa failed to append report')
+          call g_append(err,'& threp failed to create report in file'//file)
           report_abort = .true.
         endif
       endif
