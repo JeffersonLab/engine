@@ -11,6 +11,9 @@
 *-      Created 15 Mar 1994      Tsolak A. Amatuni
 *
 * $Log$
+* Revision 1.7  2003/04/03 00:43:13  jones
+* Update to calibration (V. Tadevosyan0
+*
 * Revision 1.6  2003/03/21 22:33:22  jones
 * Subroutines had arguments with abort,errmsg . But these arguments were not
 * used when the subroutine was called. Also abort ,errmsg were not used in the
@@ -51,25 +54,23 @@
 *      character*(*) errmsg
       character*17 here
       parameter (here='H_CORRECT_CAL_POS')
-      real*4 a,b,c	! Fit parameters.
-      parameter (a=1.8904,b=-0.2289,c=-0.2724)
 *
-      real*4 x,y         !Impact point coordinates
+      real*4 x,y                !Impact point coordinates
       real*4 h_correct_cal_pos
-      real*4 d,al	! Auxiliary variables.
 *
       include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
 *
+
+c     Check calorimeter boundaries.
+
+      if(y.lt.hcal_ymin) y=hcal_ymin
+      if(y.gt.hcal_ymax) y=hcal_ymax
+
+*
 *      Fit to stright through pion data of run # 23121.
 *
-
-      if(y.lt.hcal_fv_ymin) y=hcal_fv_ymin
-      if(y.gt.hcal_fv_ymax) y=hcal_fv_ymax
-
-       d=y-hcal_ymin
-       al=alog(d)
-       h_correct_cal_pos=1./(a+b*al+c/al)
+      h_correct_cal_pos=(64.36+y)/(64.36+y/1.66)
 
 ccc      h_correct_cal_pos=exp(y/200.) !200 cm atten length.
 ccc      h_correct_cal_pos=h_correct_cal_pos/(1. + y*y/8000.)

@@ -11,6 +11,9 @@
 *-      Created 15 Mar 1994      Tsolak A. Amatuni
 *
 * $Log$
+* Revision 1.7  2003/04/03 00:43:13  jones
+* Update to calibration (V. Tadevosyan0
+*
 * Revision 1.6  2003/03/21 22:33:22  jones
 * Subroutines had arguments with abort,errmsg . But these arguments were not
 * used when the subroutine was called. Also abort ,errmsg were not used in the
@@ -47,6 +50,11 @@
       include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
 *
+*
+c     Check calorimeter boundaries.
+
+      if(y.lt.hcal_ymin) y=hcal_ymin
+      if(y.gt.hcal_ymax) y=hcal_ymax
 *
       h_correct_cal=exp(y/200.) !200 cm atten length.
       h_correct_cal=h_correct_cal/(1. + y*y/8000.)
