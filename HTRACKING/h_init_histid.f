@@ -7,7 +7,11 @@
 *     Date:      9 April 1994
 *
 * $Log$
-* Revision 1.1  1995/05/22 18:33:05  cdaq
+* Revision 1.2  1995/07/19 18:20:41  cdaq
+* (JRA) Add per hit adc/tdc sums for hodo and calormeter
+* (SAW) Relocate data statements for f2c compatibility
+*
+* Revision 1.1  1995/05/22  18:33:05  cdaq
 * Initial revision
 *
 * Revision 1.6  1995/05/12  12:23:22  cdaq
@@ -51,34 +55,35 @@ c
       include 'hms_id_histid.cmn'   
   
       character*32 histname
+
       character*8 wiremap
-      data wiremap/'_wiremap'/       
       character*10 drifttime
-      data drifttime/'_drifttime'/
       character*9 driftdis
-      data driftdis /'_driftdis'/
       character*9 wirecent
-      data wirecent/'_wirecent'/
       character*9 residual
-      data residual/'_residual'/
       character*9 singres
-      data singres/'_sing_res'/
       character*6 hdcplanename(hmax_num_dc_planes)
+      character*1 hscinplanenum(HNUM_SCIN_PLANES)
+      character*10 hscinplane
+      character*7 hscinplanename(HNUM_SCIN_PLANES)
+      character*6 posadc,negadc,postdc,negtdc
+      character*7 hposadc,hnegadc,hpostdc,hnegtdc
+
+      data wiremap/'_wiremap'/       
+      data drifttime/'_drifttime'/
+      data driftdis /'_driftdis'/
+      data wirecent/'_wirecent'/
+      data residual/'_residual'/
+      data singres/'_sing_res'/
       data hdcplanename/'hdc1x1','hdc1y1','hdc1u1','hdc1v1','hdc1y2'
      $     ,'hdc1x2','hdc2x1','hdc2y1','hdc2u1','hdc2v1','hdc2y2','hdc2x2'/
-
-      character*1 hscinplanenum(HNUM_SCIN_PLANES)
       data hscinplanenum/'1','2','3','4'/
-      character*10 hscinplane
       data hscinplane /'hscinplane'/
-      character*7 hscinplanename(HNUM_SCIN_PLANES)
       data hscinplanename/'hscin1x','hscin1y','hscin2x','hscin2y'/
-      character*6 posadc,negadc,postdc,negtdc
       data posadc /'posadc'/
       data negadc /'negadc'/
       data postdc /'postdc'/
       data negtdc /'negtdc'/       
-      character*7 hposadc,hnegadc,hpostdc,hnegtdc
       data hposadc /'hposadc'/
       data hnegadc /'hnegadc'/
       data hpostdc /'hpostdc'/
@@ -148,6 +153,15 @@ c
         hidscinallposadc(plane) = thgetid(histname)
         histname = hnegadc//hscinplanenum(plane)
         hidscinallnegadc(plane) = thgetid(histname)
+
+        histname = "hsumpostdc"//hscinplanenum(plane)
+        hidsumpostdc(plane) = thgetid(histname)
+        histname = "hsumnegtdc"//hscinplanenum(plane)
+        hidsumnegtdc(plane) = thgetid(histname)
+        histname = "hsumposadc"//hscinplanenum(plane)
+        hidsumposadc(plane) = thgetid(histname)
+        histname = "hsumnegadc"//hscinplanenum(plane)
+        hidsumnegadc(plane) = thgetid(histname)
         do counter = 1,hnum_scin_counters(plane)
 *     this is probably very awkward character manipulation
 *     
@@ -183,6 +197,7 @@ c
       hidcalhits(2) = thgetid('hcalbhits')
       hidcalhits(3) = thgetid('hcalchits')
       hidcalhits(4) = thgetid('hcaldhits')
+      hidcalsumadc = thgetid('hcalsumadc')
 
       RETURN
       END
