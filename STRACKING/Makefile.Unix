@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.12  1995/05/24 13:23:13  cdaq
+# Revision 1.13  1995/07/20 19:09:05  cdaq
+# (SAW) Add option to get source via softlink to read only source tree
+#
+# Revision 1.12  1995/05/24  13:23:13  cdaq
 # Add s_init_histid, r_sos_pedestals
 #
 # Revision 1.11  1995/05/11  21:18:16  cdaq
@@ -80,8 +83,8 @@ ifeq ($(ARCH),ULTRIX)
   bin_targets =
 endif
 
-default:
-	@echo "nothing to make"
+#default:
+#	@echo "nothing to make"
 
 #
 # Rule for making the register subroutines
@@ -90,6 +93,13 @@ r_%.f : %.cmn $(MAKEREG)
 	$(MAKEREG) $< -o $@ -e /dev/null
 
 .PRECIOUS: r_%.f
+
+ifdef NFSDIRECTORY
+%.f : $(NFSDIRECTORY)/STRACKING/%.f
+	ln -s $< $@
+
+.PRECIOUS: %.f
+endif
 
 #
 # Get include files from INCLUDE directory
