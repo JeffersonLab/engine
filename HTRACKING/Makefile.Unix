@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.7  1994/08/18 04:23:22  cdaq
+# Revision 1.8  1994/10/11 18:32:09  cdaq
+# *** empty log message ***
+#
+# Revision 1.7  1994/08/18  04:23:22  cdaq
 # (SAW) Call makereg generated routines to register variables
 #
 # Revision 1.6  1994/08/04  03:50:37  cdaq
@@ -32,8 +35,9 @@ osources = h_cal.f h_cer.f h_chamnum.f h_dpsifun.f \
 	h_psifun.f h_register_param.f h_reconstruction.f h_targ_trans.f \
 	h_tdc_time_per_channel.f h_tdc_zero.f h_tof.f h_track.f h_track_fit.f \
 	h_trans_cal.f h_trans_dc.f h_trans_scin.f h_wire_center_calc.f \
-	h_print_decoded_dc.f h_print_raw_dc.f h_register_id_param.f \
+	h_print_decoded_dc.f h_print_raw_dc.f \
 	h_register_track_param.f
+# h_register_id_param.f
 newstuff = h_clusters_cal.f h_correct_cal.f \
 	h_fill_dc_dec_hist.f h_fill_dc_fp_hist.f h_init_cal.f \
 	h_init_scin.f h_prt_cal_clusters.f h_prt_cal_decoded.f \
