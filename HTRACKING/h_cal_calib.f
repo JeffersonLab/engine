@@ -40,6 +40,7 @@ c
       if (ncall .eq. 1) then
 	call g_IO_control(spare_id,'ANY',ABORT,err)  !get IO channel
          open(spare_id,file='h_cal_calib.raw_data')
+*         open(spare_id,file='h_cal_calib.raw_data',access='append')
          do ipmt=1,78
             nct_hit_blk(ipmt)=0
          enddo
@@ -51,10 +52,11 @@ c        Choose clean single electron tracks within HMS momentum acceptance.
          if(  (hntracks_fp.eq.1).and.
      &        (hnclusters_cal.eq.1).and.
      &        (hntracks_cal.eq.1).and.
-     &        (abs(hdelta_tar(1)).lt.10.).and.
      &        (hcer_npe_sum.gt.4).and.
-     &        (abs(hbeta(1)-1.).lt.0.1).and.
+     &        (abs(hdelta_tar(1)).lt.10.).and.
      &        spare_id .ne. 0 ) then
+
+*     &        (abs(hbeta(1)-1.).lt.0.1).and.
 ***   &     (hbeta_chisq(1).ge.0.).and.(hbeta_chisq(1).lt.1.)  ) then
 
 c
@@ -133,6 +135,9 @@ c
       real*4 sig,avr,t
       real*4 qdc
       integer nev
+      real*4 old_thr_lo,old_thr_hi
+      logical conv
+      integer it
 
       real h_correct_cal_neg, h_correct_cal_pos, h_correct_cal
 
@@ -140,45 +145,72 @@ c
 *     Get thresholds on total_signal/p_tar.
 *
       open(lun,file='h_cal_calib.raw_data',err=989)
-      avr=0.
-      sig=0.
-      nev=0
-      do while(.true.)
-         read(lun,*,end=3) nhit,eb,x,xp,y,yp
-         qdc=0.
-         do nh=1,nhit
-            read(lun,*,end=3) adc_pos,adc_neg,nb
-            nc=(nb-1)/nrow+1
-            xh=x+xp*(nc-0.5)*zbl
-            yh=y+yp*(nc-0.5)*zbl
-            if(nb.le.num_negs) then
-               qdc=qdc+adc_pos*h_correct_cal_pos(xh,yh)*0.5
-               qdc=qdc+adc_neg*h_correct_cal_neg(xh,yh)*0.5
-            else
-               qdc=qdc+adc_pos*h_correct_cal(xh,yh)
+
+      thr_lo=0.
+      thr_hi=1.E+8
+      it=0
+      conv=.false.
+
+      do while(.not.conv)
+
+         old_thr_lo=thr_lo
+         old_thr_hi=thr_hi
+
+         avr=0.
+         sig=0.
+         nev=0
+         do while(.true.)
+
+            read(lun,*,end=3) nhit,eb,x,xp,y,yp
+            qdc=0.
+            do nh=1,nhit
+               read(lun,*,end=3) adc_pos,adc_neg,nb
+               nc=(nb-1)/nrow+1
+               xh=x+xp*(nc-0.5)*zbl
+               yh=y+yp*(nc-0.5)*zbl
+               if(nb.le.num_negs) then
+                  qdc=qdc+adc_pos*h_correct_cal_pos(xh,yh)*0.5
+                  qdc=qdc+adc_neg*h_correct_cal_neg(xh,yh)*0.5
+               else
+                  qdc=qdc+adc_pos*h_correct_cal(xh,yh)
+               end if
+            enddo
+            eb=eb*1000.
+            t=qdc/eb
+D            write(11,*) t
+D            write(lun,*) t,nhit,eb,x,xp,y,yp,nev
+
+            if(t.gt.thr_lo.and.t.lt.thr_hi) then
+               avr=avr+t
+               sig=sig+t*t
+               nev=nev+1
             end if
-         enddo
-         eb=eb*1000.
-         t=qdc/eb
-D          write(lun,*) t
-D         write(lun,*) t,nhit,eb,x,xp,y,yp,nev
-         avr=avr+t
-         sig=sig+t*t
-         nev=nev+1
-c         print*,eb,qdc,nev
-      end do
+c            print*,eb,qdc,nev
 
- 3    close(lun)
-D      print*,avr,sig,nev
-      avr=avr/nev
-      sig=sqrt(sig/nev-avr*avr)
-      thr_lo=avr-3.*sig
-      thr_hi=avr+3.*sig
-D      write(*,*) 'thr_lo=',thr_lo,'   thr_hi=',thr_hi
+         end do                 !while.true.
 
+ 3       rewind(lun)
+D         print*,avr,sig,nev
+         avr=avr/nev
+         sig=sqrt(sig/nev-avr*avr)
+         thr_lo=amin1(avr-3.*sig,avr/2.) !electomagnetic shower never deposit
+         thr_hi=avr+3.*sig               !less than half of the primary energy.
+
+         it=it+1
+         
+D         write(*,*) 'thresholds:',thr_lo,thr_hi,'  it=',it
+D         pause
+
+         conv=it.gt.1
+         conv=conv.and.abs(thr_lo-old_thr_lo).lt.0.10*thr_lo
+         conv=conv.and.abs(thr_hi-old_thr_hi).lt.0.10*thr_hi
+
+      end do                    !while .not.conv.
+
+      close(lun)
       return
 
- 989  write(*,*) ' error opening file h_cal_calib.raw_data, channel ',lun,
+ 989  write(*,*) ' error opening file h_cal_calib.raw_data, channel',lun,
      *           ' in hcal_raw_thr.f'
 c
       end
@@ -213,7 +245,8 @@ c
 	integer i,j
 	integer nf(npmts)
 	integer minf
-	parameter (minf=200) ! minimum number to hit pmt before including pmt in  calib
+*	parameter (minf=200) ! minimum number to hit pmt before including pmt in  calib
+	parameter (minf=100)
 	integer nums(npmts)
 	integer numsel
 	real*8 q0s(npmts)
