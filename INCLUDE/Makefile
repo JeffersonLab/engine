@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.8  1996/11/08 21:08:23  saw
+# (WH) Add Lucite counter common blocks
+#
 # Revision 1.7  1996/04/30 13:26:59  saw
 # (SAW) Add aerogel include file
 #
@@ -45,7 +48,7 @@ cmn = gen_data_structures.cmn gen_craw.cmn gen_decode_common.cmn \
 	coin_data_structures.cmn coin_bypass_switches.cmn c_ntuple.cmn \
 	coin_filenames.cmn \
 	hack_.cmn \
-	mc_structures.cmn
+	mc_structures.cmn sos_lucite_parms.cmn
 
 dte = c_ntuple.dte gen_run_pref.dte h_sieve_ntuple.dte \
 	gen_run_info.dte h_ntuple.dte s_ntuple.dte s_sieve_ntuple.dte
