@@ -1,7 +1,7 @@
       subroutine g_examine_epics_event
 * $Log$
-* Revision 1.5.12.1  2004/09/07 18:02:13  cdaq
-* updated to check magnets and beam positions
+* Revision 1.5.12.2  2004/09/08 16:51:44  cdaq
+* added counters for error messages so they will only print a couple times each
 *
 *
 *DJG -add escape for bad epics file
@@ -39,6 +39,7 @@
       integer g_important_length,find_char
       integer numevent
       integer epics_targ_num,epics_cryotarg_num
+      integer max_mess
       logical dump_event,hallc_event
 
       include 'gen_craw.cmn'
@@ -50,6 +51,7 @@
 
 *--------------------------------------------------------
 
+      max_mess = 3
 * set the nominal beam positions for use later:
 * these are the nominal positions used during the 
 * xem run 6/4 - 7/4   js
@@ -124,39 +126,45 @@ c *********** now read the raw values: ***************
             else if (buffer(i:i+11).eq.'IPM3H00A.XRA') then
                read(buffer(i+13:j-1),*,ERR=30) gepics_xraw_a
                if (numevent.le.2) write(6,*) ' ++  X(IPM3H00A.XRAW) = ',gepics_xraw_a,' mm'
-               if(abs(gepics_xraw_a - haxraw).gt.0.1) then
+               if(abs(gepics_xraw_a - haxraw).gt.0.1.and.beampos(1).lt.max_mess) then
                   write(6,*) ' !!! H00AXRAW is off! delta = ', gepics_xraw_a-haxraw, ' mm'
-               end if
+                  beampos(1) = beampos(1) + 1
+               endif
             else if (buffer(i:i+11).eq.'IPM3H00A.YRA') then
                read(buffer(i+13:j-1),*,ERR=30) gepics_yraw_a
                if (numevent.le.2) write(6,*) ' ++  Y(IPM3H00A.YRAW) = ',gepics_yraw_a,' mm'
-               if(abs(gepics_yraw_a - hayraw).gt.0.1) then
+               if(abs(gepics_yraw_a - hayraw).gt.0.1.and.beampos(2).lt.max_mess) then
                   write(6,*) ' !!! H00AYRAW is off! delta = ', gepics_yraw_a-hayraw, ' mm'
-               end if
+                  beampos(2) = beampos(2) + 1
+               endif
             else if (buffer(i:i+11).eq.'IPM3H00B.XRA') then
                read(buffer(i+13:j-1),*,ERR=30) gepics_xraw_b
                if (numevent.le.2) write(6,*) ' ++  X(IPM3H00B.XRAW) = ',gepics_xraw_b,' mm'
-               if(abs(gepics_xraw_b - hbxraw).gt.0.1) then
+               if(abs(gepics_xraw_b - hbxraw).gt.0.1.and.beampos(3).lt.max_mess) then
                   write(6,*) ' !!! H00BXRAW is off! delta = ', gepics_xraw_b-hbxraw, ' mm'
-               end if
+                  beampos(3) = beampos(3) + 1
+               endif
             else if (buffer(i:i+11).eq.'IPM3H00B.YRA') then
                read(buffer(i+13:j-1),*,ERR=30) gepics_yraw_b
                if (numevent.le.2) write(6,*) ' ++  Y(IPM3H00B.YRAW) = ',gepics_yraw_b,' mm'
-               if(abs(gepics_yraw_b - hbyraw).gt.0.1) then
+               if(abs(gepics_yraw_b - hbyraw).gt.0.1.and.beampos(4).lt.max_mess) then
                   write(6,*) ' !!! H00BYRAW is off! delta = ', gepics_yraw_b-hbyraw, ' mm'
-               end if
+                  beampos(4) = beampos(4) + 1
+               endif
             else if (buffer(i:i+11).eq.'IPM3H00C.XRA') then
                read(buffer(i+13:j-1),*,ERR=30) gepics_xraw_c
                if (numevent.le.2) write(6,*) ' ++  X(IPM3H00C.XRAW) = ',gepics_xraw_c,' mm'
-               if(abs(gepics_xraw_c - hcxraw).gt.0.1) then
+               if(abs(gepics_xraw_c - hcxraw).gt.0.1.and.beampos(5).lt.max_mess) then
                   write(6,*) ' !!! H00CXRAW is off! delta = ', gepics_xraw_c-hcxraw, ' mm'
-               end if
+                  beampos(5) = beampos(5) + 1
+               endif
             else if (buffer(i:i+11).eq.'IPM3H00C.YRA') then
                read(buffer(i+13:j-1),*,ERR=30) gepics_yraw_c
                if (numevent.le.2) write(6,*)' ++  Y(IPM3H00C.YRAW) = ',gepics_yraw_c,' mm'
-               if(abs(gepics_yraw_c - hcyraw).gt.0.1) then
+               if(abs(gepics_yraw_c - hcyraw).gt.0.1.and.beampos(6).lt.max_mess) then
                   write(6,*) ' !!! H00CYRAW is off! delta = ', gepics_yraw_c-hcyraw, ' mm'
-               end if
+                  beampos(6) = beampos(6) + 1
+               endif
                write(6,*) '-------------------'
 c ********** read out the energy **********
             else if (buffer(i:i+11).eq.'MBSY3C_energ') then
@@ -224,38 +232,52 @@ c ********** read out the energy **********
                d_q1=(abs(hepics_iq1)-iq1)/iq1
                if (numevent.le.2) write(6,*)
      &              '++  I_Q1(set) = ',hepics_iq1
-               if (abs(d_q1).gt.0.001 .and. iq1.ne.0.0.and.hpcentral_set>0.1) 
-     &              write(6,*)'!!!BADQ1: I_Q1(set) = ',abs(hepics_iq1),', I_Q1(field) = ',
-     &              iq1,', delta = ',
-     &              100.0*d_q1,' %, hpcentral_set = ',hpcentral_set
+               if (abs(d_q1).gt.0.001 .and. iq1.ne.0.0.and.hpcentral_set>0.1
+     &              .and.hms_off(1)<max_mess) then 
+                  write(6,*)'!!!BADQ1: I_Q1(set) = ',abs(hepics_iq1),', I_Q1(field) = ',
+     &                 iq1,', delta = ',
+     &                 100.0*d_q1,' %, hpcentral_set = ',hpcentral_set
+                  hms_off(1) = hms_off(1) + 1
+               endif
+               
             else if (buffer(i:i+11).eq.'echmsq2i_set') then
                read(buffer(i+14:j-1),*,ERR=30) hepics_iq2
                d_q2=(abs(hepics_iq2)-iq2)/iq2
                if (numevent.le.2) write(6,*)
      &              '++  I_Q2(set) = ',hepics_iq2
-               if (abs(d_q2).gt.0.001 .and. iq2.ne.0.0 .and.hpcentral_set>0.1) 
-     &              write(6,*)'!!!BADQ2: I_Q2(set) = ',abs(hepics_iq2),', I_Q2(field) = ',
-     &              iq2,', delta = ',
-     &              100.0*d_q2,' %, hpcentral_set = ',hpcentral_set
+               if (abs(d_q2).gt.0.001 .and. iq2.ne.0.0 .and.hpcentral_set>0.1
+     &              .and.hms_off(2)<max_mess) then 
+                  write(6,*)'!!!BADQ2: I_Q2(set) = ',abs(hepics_iq2),', I_Q2(field) = ',
+     &                 iq2,', delta = ',
+     &                 100.0*d_q2,' %, hpcentral_set = ',hpcentral_set
+                  hms_off(2) = hms_off(2) + 1
+               endif
+               
             else if (buffer(i:i+11).eq.'echmsq3i_set') then
                read(buffer(i+14:j-1),*,ERR=30) hepics_iq3
                d_q3=(abs(hepics_iq3)-iq3)/iq3
                if (numevent.le.2) write(6,*)
      &              '++  I_Q3(set) = ',hepics_iq3
-               if (abs(d_q3).gt.0.001 .and.iq3.ne.0.0 .and. hpcentral_set>0.1)
-     &              write(6,*)'!!!BADQ3: I_Q3(set) = ',abs(hepics_iq3),', I_Q3(field) = ',
-     &              iq3,', delta = ',
-     &              100.0*d_q3,' %, hpcentral_set = ',hpcentral_set
+               if (abs(d_q3).gt.0.001 .and.iq3.ne.0.0 .and. hpcentral_set>0.1
+     &              .and.hms_off(3)<max_mess) then
+                  write(6,*)'!!!BADQ3: I_Q3(set) = ',abs(hepics_iq3),', I_Q3(field) = ',
+     &                 iq3,', delta = ',
+     &                 100.0*d_q3,' %, hpcentral_set = ',hpcentral_set
+                  hms_off(3) = hms_off(3) + 1
+               endif
                
             else if (buffer(i:i+13).eq.'echmsdb_true_s') then
                read(buffer(i+14:j-1),*,ERR=30) hepics_bd
                d_d=(abs(hepics_bd)-bd)/bd
                if (numevent.le.2) write(6,*)
      &              '++  B_D(true) = ',hepics_bd
-               if (abs(d_d).gt.0.001 .and. hepics_bd.ne.0.0.and.hpcentral_set>0.1) 
-     &              write(6,*)'!!!BADD: B_D(set) = ',abs(hepics_bd),', B_D(field) = ',
-     &              bd,', delta = ',
-     &              100.0*bd,' %, hpcentral_set = ',hpcentral_set
+               if (abs(d_d).gt.0.001.and.hepics_bd.ne.0.0.and.hpcentral_set>0.1
+     &              .and.hms_off(4)<max_mess) then
+                  write(6,*)'!!!BADD: B_D(set) = ',abs(hepics_bd),', B_D(field) = ',
+     &                 bd,', delta = ',
+     &                 100.0*bd,' %, hpcentral_set = ',hpcentral_set
+                  hms_off(4) = hms_off(4) + 1
+               endif
                
 c************************************************************************************
 c now do the SOS magnets...
@@ -269,15 +291,21 @@ C------------- SOS Q
                sd = (sepics_hp - sepics_sp)/sepics_hp
                if (numevent.le.2) write(6,*)
      &              '++  SOS q hall momentum = ',sepics_hp
-               if (abs(sd).gt.0.001 .and. sepics_hp.ne.0.0.and.spcentral_set>0.1)
-     &              write(6,*)'!!! SOS quad is off! set momentum: ',sepics_sp,
-     &              ' GeV, hall probe momentum: ',sepics_hp, 
-     &              ' GeV, delta: ',100.0*sd,'%'               
+               if (abs(sd).gt.0.001 .and. sepics_hp.ne.0.0.and.spcentral_set>0.1
+     &              .and.sos_set_off(1)<max_mess) then
+                  write(6,*)'!!! SOS quad is off! set momentum: ',sepics_sp,
+     &                 ' GeV, hall probe momentum: ',sepics_hp, 
+     &                 ' GeV, delta: ',100.0*sd,'%'            
+                  sos_set_off(1) = sos_set_off(1) + 1
+               endif
                sd = (spcentral_set - abs(sepics_sp))/spcentral_set
-               if (abs(sd).gt.0.001 .and. sepics_sp.ne.0.0.and.spcentral_set>0.1)
-     &              write(6,*)'!!! SOS quad setpoint is off! set momentum: ',sepics_sp,
-     &              'GeV, spcentral_set: ',spcentral_set, 
-     &              ' GeV, delta: ',100.0*sd,'%'               
+               if (abs(sd).gt.0.001 .and. sepics_sp.ne.0.0.and.spcentral_set>0.1
+     &              .and.sos_off(1)<max_mess) then
+                  write(6,*)'!!! SOS quad setpoint is off! set momentum: ',sepics_sp,
+     &                 'GeV, spcentral_set: ',spcentral_set, 
+     &                 ' GeV, delta: ',100.0*sd,'%'        
+                  sos_off(1) = sos_off(1) + 1
+               endif
 C------------- SOS D1
             else if (buffer(i:i+11).eq.'ecsosd1p_set') then
                read(buffer(i+12:j-1),*,ERR=30) sepics_sp
@@ -286,15 +314,21 @@ C------------- SOS D1
                sd = (sepics_hp - sepics_sp)/sepics_hp
                if (numevent.le.2) write(6,*)
      &              '++  SOS d1 hall momentum = ',sepics_hp
-               if (abs(sd).gt.0.001 .and. sepics_hp.ne.0.0.and.spcentral_set>0.1)
-     &              write(6,*)'!!! SOS d1 is off! set momentum: ',sepics_sp,
-     &              ' GeV, hall probe momentum: ',sepics_hp, 
-     &              ' GeV, delta: ',100.0*sd,'%'               
+               if (abs(sd).gt.0.001 .and. sepics_hp.ne.0.0.and.spcentral_set>0.1
+     &              .and.sos_set_off(2)<max_mess) then
+                  write(6,*)'!!! SOS d1 is off! set momentum: ',sepics_sp,
+     &                 ' GeV, hall probe momentum: ',sepics_hp, 
+     &                 ' GeV, delta: ',100.0*sd,'%'            
+                  sos_set_off(2) = sos_set_off(2) + 1
+               endif
                sd = (spcentral_set - abs(sepics_sp))/spcentral_set
-               if (abs(sd).gt.0.001 .and. sepics_sp.ne.0.0.and.spcentral_set>0.1)
-     &              write(6,*)'!!! SOS d1 setpoint is off! set momentum: ',sepics_sp,
-     &              'GeV, spcentral_set: ',spcentral_set, 
-     &              ' GeV, delta: ',100.0*sd,'%'               
+               if (abs(sd).gt.0.001 .and. sepics_sp.ne.0.0.and.spcentral_set>0.1
+     &              .and.sos_off(2)<max_mess) then
+                  write(6,*)'!!! SOS d1 setpoint is off! set momentum: ',sepics_sp,
+     &                 'GeV, spcentral_set: ',spcentral_set, 
+     &                 ' GeV, delta: ',100.0*sd,'%'               
+                  sos_off(2) = sos_off(2) + 1
+               endif
 C------------- SOS D2
             else if (buffer(i:i+11).eq.'ecsosd2p_set') then
                read(buffer(i+12:j-1),*,ERR=30) sepics_sp
@@ -303,16 +337,22 @@ C------------- SOS D2
                sd = (sepics_hp - sepics_sp)/sepics_hp
                if (numevent.le.2) write(6,*)
      &              '++  SOS d2 hall momentum = ',sepics_hp
-               if (abs(sd).gt.0.001 .and. sepics_hp.ne.0.0.and.spcentral_set>0.1)
-     &              write(6,*)'!!! SOS d2 is off! set momentum: ',sepics_sp,
-     &              'GeV, hall probe momentum: ',sepics_hp, 
-     &              ' GeV, delta: ',100.0*sd,'%'               
+               if (abs(sd).gt.0.001 .and. sepics_hp.ne.0.0.and.spcentral_set>0.1
+     &              .and.sos_set_off(3)<max_mess) then
+                  write(6,*)'!!! SOS d2 is off! set momentum: ',sepics_sp,
+     &                 'GeV, hall probe momentum: ',sepics_hp, 
+     &                 ' GeV, delta: ',100.0*sd,'%' 
+                  sos_set_off(3) = sos_set_off(3) + 1
+               endif
                sd = (spcentral_set - abs(sepics_sp))/spcentral_set
-               if (abs(sd).gt.0.001 .and. sepics_sp.ne.0.0 .and.spcentral_set>0.1) 
-     &              write(6,*)'!!! SOS d2 setpoint is off! set momentum: ',sepics_sp,
-     &              'GeV, spcentral_set: ',spcentral_set, 
-     &              ' GeV, delta: ',100.0*sd,'%'               
-C------------- done
+               if (abs(sd).gt.0.001 .and. sepics_sp.ne.0.0 .and.spcentral_set>0.1 
+     &              .and.sos_off(3)<max_mess) then
+                  write(6,*)'!!! SOS d2 setpoint is off! set momentum: ',sepics_sp,
+     &                 'GeV, spcentral_set: ',spcentral_set, 
+     &                 ' GeV, delta: ',100.0*sd,'%'               
+                  sos_off(3) = sos_off(3) + 1
+               endif
+C-------------done
             endif               !picking out the variables
          endif                  !IF [this is a line of text]
 
