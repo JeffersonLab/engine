@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.6  1995/03/13 20:01:57  cdaq
+# Revision 1.7  1995/05/24 13:24:13  cdaq
+# (SAW) Remove g_init_histid
+#
+# Revision 1.6  1995/03/13  20:01:57  cdaq
 # (SAW) Add -f switch on include file copy commands
 #
 # Revision 1.5  1995/01/27  21:10:12  cdaq
@@ -20,8 +23,7 @@
 #
 include $(Csoft)/etc/Makefile
 
-sources = find_space_points.f select_space_points.f solve_four_by_four.f \
-	g_init_histid.f
+sources = find_space_points.f select_space_points.f solve_four_by_four.f
 
 libsources = $(sources)
 
@@ -44,6 +46,7 @@ endif
 #
 # Get include files from ENGINE directory
 #
+	
 %.cmn :: ../INCLUDE/%.cmn
 	cp -f $< $@
 
