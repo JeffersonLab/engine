@@ -34,34 +34,38 @@
 *--------------------------------------------------------
 *
  
-* csa 8/31/99 -- We really should be filling *new* variables
-* here!
-      if (hphicentral_offset .ne. 0 )
-     > write(6,*)' h_apply_offs: before:   hphi_lab =',hphi_lab
-      hphi_lab = hphi_lab + hphicentral_offset/degree
-      if (hphicentral_offset .ne. 0 )
-     > write(6,*)' h_apply_offs:  after:   hphi_lab =',hphi_lab
-
-      if (hpcentral_offset .ne. 0 )
-     > write(6,*)' h_apply_offs: before:  hpcentral =',hpcentral
-      hpcentral = hpcentral * ( 1. + hpcentral_offset / 100. )
-      if (hpcentral_offset .ne. 0 )
-     > write(6,*)' h_apply_offs:  after:  hpcentral =',hpcentral
-      if (hmomentum_factor .gt. 0.1) then   !avoid setting p=0
-        hpcentral = hpcentral * hmomentum_factor
+      if (hphicentral_offset .ne. 0 ) then
+        write(*,*) ' ******'
+       write(6,*)' h_apply_offs: before:   hphi_lab =',hphi_lab
+       hphi_lab = hphi_lab + hphicentral_offset/degree
+       write(6,*)' h_apply_offs:  after:   hphi_lab =',hphi_lab
       endif
-      if (hmomentum_factor .gt. 0.1 )
-     > write(6,*)' h_apply_offs: after2:  hpcentral =',hpcentral
-
-      if (hthetacentral_offset .ne. 0 )
-     > write(6,*)' h_apply_offs: before: htheta_lab =',htheta_lab
-      htheta_lab=htheta_lab + hthetacentral_offset/degree
-      if (hthetacentral_offset .ne. 0 )
-     > write(6,*)' h_apply_offs:  after: htheta_lab =',htheta_lab
-
-* csa 8/31/99 -- moved to h_physics  no says beni
-      coshthetas = cos(htheta_lab*degree)
-      sinhthetas = sin(htheta_lab*degree)
+c
+      if (hpcentral_offset .ne. 0 ) then
+        write(*,*) ' ******'
+       write(6,*)' h_apply_offs: apply hpcentral_offset(%)  =',hpcentral_offset
+       write(6,*)' h_apply_offs: before:  hpcentral =',hpcentral
+       hpcentral = hpcentral * ( 1. + hpcentral_offset / 100. )
+       write(6,*)' h_apply_offs:  after:  hpcentral =',hpcentral
+      endif
+c
+      if ( hmomentum_factor .gt. 0.1 ) then   
+        write(*,*) ' ******'
+        write(6,*)' h_apply_offs: apply hmomentum_factor  =',hmomentum_factor
+        write(6,*)' h_apply_offs: before :  hpcentral =',hpcentral
+        hpcentral = hpcentral * hmomentum_factor
+        write(6,*)' h_apply_offs: after :  hpcentral =',hpcentral
+      endif
+c
+      if (hthetacentral_offset .ne. 0 ) then
+        write(*,*) ' ******'
+       write(6,*)' h_apply_offs: before: htheta_lab =',htheta_lab
+       htheta_lab=htheta_lab + hthetacentral_offset/degree
+       write(6,*)' h_apply_offs:  after: htheta_lab =',htheta_lab
+       coshthetas = cos(htheta_lab*degree)
+       sinhthetas = sin(htheta_lab*degree)
+      endif
+c
 
       ABORT= .FALSE.
       err= ' '

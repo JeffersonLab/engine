@@ -22,6 +22,9 @@
 *-
 *-
 * $Log$
+* Revision 1.2  2003/02/21 14:55:26  jones
+* Added write statements
+*
 * Revision 1.1  2002/09/24 20:11:24  jones
 * h_fieldcorr.f corrects hpcentral when genable_hms_fieldcorr.eq.0
 *     and hpcentral > 3.5573 GeV/c . Correction needs to be applied
@@ -59,7 +62,9 @@
       p0corr=0.
 
       if(genable_hms_fieldcorr.eq.0) then
-
+         write(*,*) ' ******'
+         write(*,*) ' HMS field correction applied when hpcentral > 3.5573 '
+         write(*,*) ' Should be enabled for data taken before Jan 1 2002'
         if (hpcentral.gt.3.5573) then
           p0corr= 1.0 + 1.0755e-3*
      >         ((hpcentral-3.5573)**2)
@@ -67,6 +72,10 @@
           hpcentral = hpcentral*p0corr
           
         endif                        
+      else
+         write(*,*) ' ******'
+         write(*,*) ' HMS field correction not applied '
+         write(*,*) ' Should be enabled for data taken before Jan 1 2002'
       endif
 
       ABORT= ierr.ne.0 .or. ABORT
