@@ -16,7 +16,10 @@
 *- 
 *-   Created 10-JUN-1994     D. F. Geesaman
 * $Log$
-* Revision 1.4  1995/05/22 19:39:16  cdaq
+* Revision 1.5  1995/08/31 14:47:09  cdaq
+* (JRA) Add calls to h_dc_eff and h_cer_eff
+*
+* Revision 1.4  1995/05/22  19:39:16  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.3  1995/02/23  15:37:57  cdaq
@@ -25,14 +28,14 @@
 * Revision 1.2  1994/06/15  20:22:49  cdaq
 * (DFG) Add scin plane efficiency
 *
-c Revision 1.1  1994/06/15  19:09:37  cdaq
-c Initial revision
-c-                           
+* Revision 1.1  1994/06/15  19:09:37  cdaq
+* Initial revision
+*-                           
 *--------------------------------------------------------
       IMPLICIT NONE
       SAVE
 *
-      character*50 here
+      character*14 here
       parameter (here= 'h_physics_stat')
 *
       logical ABORT
@@ -86,9 +89,16 @@ c-
         enddo                           ! endloop over hits in track
       endif                             ! end test on zero hits
 *     
+*     Drift chamber efficiencies
+*      call h_dc_eff  !efficiencies need to be calculated for ALL triggers.
+                      !call from h_trans_dc.f
+*
 *     Scintillator efficiencies
       call h_scin_eff
-*     
+*
+*     Cerenkov efficiencies
+      call h_cer_eff
+*
 *     Calorimeter efficiencies
       call h_cal_eff
 *
