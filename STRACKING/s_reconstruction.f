@@ -8,10 +8,13 @@
 *-   Output: ABORT              - success or failure
 *-         : err             - reason for failure, if any
 *- 
-*-    $Log$
-*-    Revision 1.8  1995/05/22 19:45:54  cdaq
-*-    (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
-*-
+* $Log$
+* Revision 1.9  1995/08/31 20:43:03  cdaq
+* (JRA) Add call to s_trans_cer
+*
+* Revision 1.8  1995/05/22  19:45:54  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
 * Revision 1.7  1995/05/11  21:07:26  cdaq
 * (JRA) Add call to s_trans_misc
 *
@@ -93,6 +96,16 @@
          endif                          ! end test on SCIN ABORT
       endif                             ! end test on hbypass_trans_scin
 *
+*     TRANSLATE CERENKOV
+*     HMS_RAW_CER ====> HMS_DECODED_CER
+*
+      If(sbypass_trans_cer.eq.0) then
+         call S_TRANS_CER(ABORT,err)
+         if(ABORT)  then
+            call G_add_path(here,err)
+*            return
+         endif                          ! end test on CER ABORT
+      endif                             ! end test on sbypass_trans_cer
 *
 *      TRANSLATE CALORIMETER 
 *      SOS_RAW_CAL ====> SOS_DECODED_CAL
