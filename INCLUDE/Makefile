@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.3  1995/04/06 20:12:33  cdaq
+# Revision 1.4  1995/05/24 13:50:06  cdaq
+# (SAW) Update and make cosmetic changes
+#
+# Revision 1.3  1995/04/06  20:12:33  cdaq
 # (SAW) Remove tmp_pedestals.dte
 #
 # Revision 1.2  1995/01/27  21:08:31  cdaq
@@ -13,19 +16,25 @@
 
 ntuples = c_ntuple.cmn h_ntuple.cmn s_ntuple.cmn
 
-cmn = c_ntuple.cmn hack_.cmn s_ntuple.cmn coin_filenames.cmn \
-	hms_bypass_switches.cmn sos_bypass_switches.cmn gen_craw.cmn \
-	hms_calorimeter.cmn sos_calorimeter.cmn gen_data_structures.cmn \
-	hms_filenames.cmn sos_filenames.cmn gen_decode_common.cmn \
-	hms_geometry.cmn sos_geometry.cmn gen_event_info.cmn \
-	hms_id_histid.cmn sos_id_histid.cmn gen_filenames.cmn \
-	hms_physics_sing.cmn sos_physics_sing.cmn gen_output_info.cmn \
-	hms_recon_elements.cmn sos_recon_elements.cmn gen_pawspace.cmn \
-	hms_scin_parms.cmn sos_scin_parms.cmn gen_run_info.cmn \
-	hms_scin_tof.cmn sos_scin_tof.cmn gen_run_pref.cmn hms_statistics.cmn \
-	sos_statistics.cmn gen_scalers.cmn hms_track_histid.cmn \
-	sos_track_histid.cmn h_ntuple.cmn hms_tracking.cmn sos_tracking.cmn \
-	h_sieve_ntuple.cmn mc_structures.cmn
+cmn = gen_data_structures.cmn gen_craw.cmn gen_decode_common.cmn \
+	gen_event_info.cmn gen_filenames.cmn gen_output_info.cmn \
+	gen_pawspace.cmn gen_run_info.cmn gen_run_pref.cmn gen_scalers.cmn \
+	hms_data_structures.cmn hms_bypass_switches.cmn hms_calorimeter.cmn \
+	hms_filenames.cmn hms_geometry.cmn hms_id_histid.cmn \
+	hms_physics_sing.cmn hms_recon_elements.cmn hms_scin_parms.cmn \
+	hms_scin_tof.cmn hms_statistics.cmn hms_track_histid.cmn \
+	hms_tracking.cmn \
+	h_ntuple.cmn h_sieve_ntuple.cmn \
+	sos_data_structures.cmn sos_bypass_switches.cmn sos_calorimeter.cmn \
+	sos_filenames.cmn sos_geometry.cmn sos_id_histid.cmn \
+	sos_physics_sing.cmn sos_recon_elements.cmn sos_scin_parms.cmn \
+	sos_scin_tof.cmn sos_statistics.cmn sos_track_histid.cmn \
+	sos_tracking.cmn \
+	s_ntuple.cmn \
+	coin_data_structures.cmn c_ntuple.cmn hack_.cmn s_ntuple.cmn \
+	coin_filenames.cmn \
+	hack_.cmn \
+	mc_structures.cmn
 
 dte = c_ntuple.dte gen_run_pref.dte h_sieve_ntuple.dte \
 	gen_run_info.dte h_ntuple.dte s_ntuple.dte
