@@ -19,6 +19,9 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.12  1996/01/17 19:00:50  cdaq
+* (JRA) Calculate q, W for electrons
+*
 * Revision 1.11  1995/10/10 12:54:30  cdaq
 * (JRA) Add call to s_dump_cal, change upper to lower case
 *
@@ -78,18 +81,26 @@
       INCLUDE 'sos_tracking.cmn'
       INCLUDE 'sos_cer_parms.cmn'
       INCLUDE 'sos_geometry.cmn'
+      INCLUDE 'sos_id_histid.cmn'
+      INCLUDE 'sos_track_histid.cmn'
+      INCLUDE 'gen_event_info.cmn'
 *     
 *     local variables 
-      integer*4 i,ip
+      integer*4 i,ip,ihit
+      integer*4 itrkfp
+      real*4 xdist,ydist,dist(12),res(12)
+      real*4 tmp
       real*4 cosgamma,tandelphi,sinsphi,cossstheta,sinsstheta
       real*4 t1,ta,p3,t3,sminv2
       real*4 cosssthetaq
       real*4 sind,tand
-      real*4 p_nonzero
+      real*4 p_nonzero,W2
 *     
 *--------------------------------------------------------
 *
+      sphi_lab=0.0
       if(ssnum_fptrack.gt.0) then       ! Good track has been selected
+        itrkfp=ssnum_fptrack
         ssp = sp_tar(ssnum_tartrack)
         ssenergy = sqrt(ssp*ssp+spartmass*spartmass)
 *     Copy variables for ntuple so we can test on them
@@ -98,12 +109,12 @@
         ssy_tar  = sy_tar(ssnum_tartrack)
         ssxp_tar  = sxp_tar(ssnum_tartrack) ! This is an angle (radians)
         ssyp_tar  = syp_tar(ssnum_tartrack) ! This is an angle (radians)
-        ssbeta   = sbeta(ssnum_fptrack)
-        ssbeta_chisq = sbeta_chisq(ssnum_fptrack)
-        sstime_at_fp   = stime_at_fp(ssnum_fptrack)
+        ssbeta   = sbeta(itrkfp)
+        ssbeta_chisq = sbeta_chisq(itrkfp)
+        sstime_at_fp   = stime_at_fp(itrkfp)
 
-        sstrack_et   = strack_et(ssnum_fptrack)
-        sstrack_preshower_e   = strack_preshower_e(ssnum_fptrack)
+        sstrack_et   = strack_et(itrkfp)
+        sstrack_preshower_e   = strack_preshower_e(itrkfp)
         p_nonzero = max(.0001,ssp)      !momentum (used to normalize calorim.)
         sscal_suma = scal_e1/p_nonzero  !normalized cal. plane sums
         sscal_sumb = scal_e2/p_nonzero
@@ -114,10 +125,26 @@
         ssprtrk = sstrack_preshower_e/p_nonzero
         ssshtrk = sstrack_et/p_nonzero
 
-        ssx_fp   = sx_fp(ssnum_fptrack)
-        ssy_fp   = sy_fp(ssnum_fptrack)
-        ssxp_fp   = sxp_fp(ssnum_fptrack) ! This is a slope (dx/dz)
-        ssyp_fp   = syp_fp(ssnum_fptrack) ! This is a slope (dy/dz)
+        ssx_sp1=sx_sp1(itrkfp)
+        ssy_sp1=sy_sp1(itrkfp)
+        ssxp_sp1=sxp_sp1(itrkfp)
+        ssx_sp2=sx_sp2(itrkfp)
+        ssy_sp2=sy_sp2(itrkfp)
+        ssxp_sp2=sxp_sp2(itrkfp)
+
+        do ihit=1,snum_scin_hit(itrkfp)
+          call hf1(sidscintimes,sscin_fptime(itrkfp,ihit),1.)
+        enddo
+
+        do ihit=1,sntrack_hits(itrkfp,1)
+          call hf1(sidcuttdc,
+     &       float(sdc_tdc(sntrack_hits(itrkfp,ihit+1))),1.)
+        enddo
+
+        ssx_fp   = sx_fp(itrkfp)
+        ssy_fp   = sy_fp(itrkfp)
+        ssxp_fp   = sxp_fp(itrkfp) ! This is a slope (dx/dz)
+        ssyp_fp   = syp_fp(itrkfp) ! This is a slope (dy/dz)
         ssx_dc1 = ssx_fp + ssxp_fp * sdc_1_zpos
         ssy_dc1 = ssy_fp + ssyp_fp * sdc_1_zpos
         ssx_dc2 = ssx_fp + ssxp_fp * sdc_2_zpos
@@ -134,37 +161,84 @@
         do ip=1,4
           ssscin_elem_hit(ip)=0
         enddo
-        do i=1,snum_scin_hit(ssnum_fptrack)
-          ip=sscin_plane_num(sscin_hit(ssnum_fptrack,i))
+        do i=1,snum_scin_hit(itrkfp)
+          ip=sscin_plane_num(sscin_hit(itrkfp,i))
           if (ssscin_elem_hit(ip).eq.0) then
             ssscin_elem_hit(ip)=sscin_counter_num(sscin_hit(
-     $           ssnum_fptrack,i))
-            ssdedx(ip) = sdedx(ssnum_fptrack,i)
+     $           itrkfp,i))
+            ssdedx(ip) = sdedx(itrkfp,i)
           else                          ! more than 1 hit in plane
             ssscin_elem_hit(ip)=18
-            ssdedx(ip) = sqrt(ssdedx(ip)*sdedx(ssnum_fptrack,i))  !assume <3 hits. 
+            ssdedx(ip) = sqrt(ssdedx(ip)*sdedx(itrkfp,i))  !assume <3 hits. 
           endif
         enddo                             
 
-        ssnum_scin_hit = snum_scin_hit(ssnum_fptrack)
-        ssnum_pmt_hit = snum_pmt_hit(ssnum_fptrack)
+        ssnum_scin_hit = snum_scin_hit(itrkfp)
+        ssnum_pmt_hit = snum_pmt_hit(itrkfp)
+
+        sschi2perdeg  = schi2_fp(itrkfp)
+     $       /float(snfree_fp(itrkfp))
+        ssnfree_fp = snfree_fp(itrkfp)
 
         do ip = 1 , sdc_num_planes
-          sdc_sing_res(ip)=sdc_single_residual(ssnum_fptrack,ip)
-          ssdc_track_coord(ip)=sdc_track_coord(ssnum_fptrack,ip)
+          sdc_sing_res(ip)=sdc_single_residual(itrkfp,ip)
+          ssdc_track_coord(ip)=sdc_track_coord(itrkfp,ip)
         enddo
 
-        sschi2perdeg  = schi2_fp(ssnum_fptrack)
-     $       /float(snfree_fp(ssnum_fptrack))
-        ssnfree_fp = snfree_fp(ssnum_fptrack)
-        cosgamma = 1.0/sqrt(1.0 + ssxp_tar**2 + ssyp_tar**2)
-        cossstheta = cosgamma*(sinsthetas * ssyp_tar + cossthetas)
-        sstheta = acos(cossstheta)
+c        write(38,*) ssx_fp,ssxp_fp,ssy_fp,ssyp_fp,smisc_dec_data(8)*.1-sstart_time
+
+        if (sntrack_hits(itrkfp,1).eq.12 .and. sschi2perdeg.le.2) then
+          xdist=ssx_dc1
+          ydist=ssy_dc1
+          do ip=1,12
+            if (sdc_readout_x(ip)) then
+              dist(ip) = ydist*sdc_readout_corr(ip)
+            else                            !readout from top/bottom
+              dist(ip) = xdist*sdc_readout_corr(ip)
+            endif
+            res(ip)=sdc_sing_res(ip)
+            tmp = sdc_plane_wirecoord(itrkfp,ip)-sdc_plane_wirecenter(itrkfp,ip)
+            if (tmp.eq.0) then   !drift dist = 0
+              res(ip)=abs(res(ip))
+            else
+              res(ip)=res(ip) * (abs(tmp)/tmp)  !convert +/- res to near/far res
+            endif
+        enddo
+c          write(38,'(12f7.2,12f8.3,12f8.5)') (ssdc_track_coord(ip),ip=1,12),
+c     &    (dist(ip),ip=1,12),(res(ip),ip=1,12)
+        endif
+        SSP = spcentral*(1 + ssdelta/100.)
+c        cosgamma = 1.0/sqrt(1.0 + ssxp_tar**2 + ssyp_tar**2)
+c        cossstheta = cosgamma*(sinsthetas * ssyp_tar + cossthetas)
+c        sstheta = acos(cossstheta)
+        sstheta = stheta_lab*TT/180. + ssyp_tar
         sinsstheta = sin(sstheta)
         tandelphi = ssxp_tar /
      &       ( sinsthetas - cossthetas*ssyp_tar )
-        ssphi = sphi_lab + tandelphi    ! phi_lab MUST BE MULTPIPLE OF
+        ssphi = sphi_lab + atan(tandelphi)    ! phi_lab MUST BE MULTPIPLE OF
         sinsphi = sin(ssphi)            ! PI/2, OR ABOVE IS CRAP
+
+
+      if(spartmass .lt. 2*mass_electron) then ! Less than
+      call total_eloss(2,.true.,tz_target,ta_target,55.0,3.0,
+     >                  stheta_lab,ttheta_tar,1.0,sseloss)
+        SSENERGY = SSENERGY - sseloss
+         sqx = -SSP*cos(SSxp_tar)*sin(SSTHETA)
+         sqy = -SSP*sin(Ssxp_tar)
+         sqz = cpbeam - SSP*cos(SSxp_tar)*cos(SSTHETA)
+         sqabs= sqrt(sqx**2+sqy**2+sqz**2)
+         W2 = tmass_target**2 +2.*tmass_target*(cpbeam-ssp) - sqabs**2
+       if(W2.ge.0 ) then
+          SINVMASS = SQRT(W2)
+        else
+          SINVMASS = 0.
+        endif
+      else
+      call total_eloss(2,.false.,tz_target,ta_target,
+     >                 55.0,3.0,stheta_lab,ttheta_tar,ssbeta,sseloss)
+        SSENERGY = SSENERGY - sseloss
+      endif
+
 *     Calculate elastic scattering kinematics
         t1  = 2.*sphysicsa*cpbeam*cossstheta      
         ta  = 4*cpbeam**2*cossstheta**2 - sphysicsb**2
@@ -207,7 +281,7 @@
      $       - (cpbeam - ssp*cossstheta)**2 - (ssp*sinsstheta)**2
         ssu = (tmass_target - ssenergy)**2 - ssp**2
 
-        sseloss = cebeam - ssenergy
+c        sseloss = cebeam - ssenergy
         ssq3 = sqrt(cpbeam**2 + ssp**2 - 2*cpbeam*ssp*cossstheta)
         cosssthetaq = (cpbeam**2 - cpbeam*ssp*cossstheta)/cpbeam/SSQ3
         ssthetaq = acos(cosssthetaq)
