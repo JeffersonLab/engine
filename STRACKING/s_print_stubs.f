@@ -3,7 +3,10 @@
 *     All the results are contained in sos_tracking.inc
 *     d.f. geesaman          5 September 1993
 * $Log$
-* Revision 1.1  1994/02/21 16:38:06  cdaq
+* Revision 1.2  1995/05/11 21:06:54  cdaq
+* (JRA) ???
+*
+* Revision 1.1  1994/02/21  16:38:06  cdaq
 * Initial revision
 *
       implicit none
@@ -11,7 +14,7 @@
       include "sos_tracking.cmn"
       include "sos_geometry.cmn"
 *     local variables
-      integer*4 i,j
+      integer*4 i,j,k
       write(sluno,'('' SOS STUB FIT RESULTS'')')
       if(snspace_points_tot.ge.1) then
         write(sluno,'(''point        x_t              y_t     '',
@@ -22,12 +25,16 @@
         do i=1,snspace_points_tot
           write(sluno,1001) i,(sbeststub(i,j),j=1,4)
         enddo
-        write(sluno,'('' hit         SDC_WIRE_CENTER  SDC_DRIFT_DIS     '',
+        write(sluno,'('' hit   plane    SDC_WIRE_CENTER  SDC_DRIFT_DIS     '',
      &         '' SDC_WIRE_COORD'')')
-        do i=1,SDC_TOT_HITS
-          write(sluno,1002) i,SDC_WIRE_CENTER(i),SDC_DRIFT_DIS(i),
-     &       SDC_WIRE_COORD(i)
-1002  format(3x,i3,4x,e16.8,2x,e16.8,2x,e16.8)
+        do i=1,snspace_points_tot
+          do j=1,sspace_point_hits(i,1)
+            k=sspace_point_hits(i,2+j)
+            write(sluno,1002) k,sdc_plane_num(k),SDC_WIRE_CENTER(k),
+     &       SDC_DRIFT_DIS(k),SDC_WIRE_COORD(k)
+ 1002       format(2x,i3,i4,4x,e16.8,2x,e16.8,2x,e16.8)
+          enddo
+          write(sluno,*) ' '
         enddo
       endif
       return
