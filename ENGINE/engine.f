@@ -9,9 +9,12 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 *-    $Log$
-*-    Revision 1.14  1995/04/01 20:12:58  cdaq
-*-    (SAW) Call g_proper_shutdown instead of dump_hists for periodic hist dumps
+*-    Revision 1.15  1995/05/11 19:02:23  cdaq
+*-    (SAW) Add ability to set CTP variables from the command line
 *-
+* Revision 1.14  1995/04/01  20:12:58  cdaq
+* (SAW) Call g_proper_shutdown instead of dump_hists for periodic hist dumps
+*
 * Revision 1.13  1995/03/13  18:11:05  cdaq
 * (JRA) Write scaler report when histograms are dumped at intervals
 *
@@ -61,7 +64,7 @@
       character*6 here
       parameter (here= 'Engine')
 *
-      logical ABORT,EoF
+      logical ABORT,EoF,break
       character*800 err,mss
 *
       include 'gen_filenames.cmn'
@@ -78,6 +81,8 @@
       integer evtype
       integer rpc_pend                  ! # Pending asynchronous RPC requests
       integer ierr
+      integer nargs,nextarg
+      character*132 arg
 *      integer SPAREID
 *      parameter (SPAREID=67)
 *
@@ -93,6 +98,9 @@
       err= ' '
       type *
 *
+      nargs = iargc()
+      nextarg = 1
+*
       total_event_count= 0                      ! Need to register this
 *
       rpc_on=0                          ! RPC servicing off by default
@@ -106,6 +114,21 @@
          err= ' '
       ENDIF
 *
+      g_config_filename = ' '
+*
+*     Process command line args that set CTP variables
+*
+      break = .false.
+      do while(nextarg .le. nargs.and..not.break)
+        call getarg(nextarg,arg)
+        nextarg = nextarg + 1
+        if(index(arg,'=').gt.0) then
+          call thpset(arg)
+        else
+          break = .true.
+        endif
+      enddo
+*       
       call G_init_filenames(ABORT,err,g_config_environmental_var)
       if(ABORT.or.err.ne.' ') then
          call G_add_path(here,err)
@@ -114,6 +137,19 @@
          err= ' '
       ENDIF
 *
+*     Process command line args that set CTP variables
+*
+      break = .false.
+      do while(nextarg .le. nargs.and..not.break)
+        call getarg(nextarg,arg)
+        nextarg = nextarg + 1
+        if(index(arg,'=').gt.0) then
+          call thpset(arg)
+        else
+          break = .true.
+        endif
+      enddo
+*       
       call G_decode_init(ABORT,err)
       if(ABORT.or.err.ne.' ') then
          call G_add_path(here,err)
@@ -141,6 +177,19 @@
          If(ABORT) STOP
          err= ' '
       ENDIF
+*
+*     Process command line args that set CTP variables
+*
+      break = .false.
+      do while(nextarg .le. nargs.and..not.break)
+        call getarg(nextarg,arg)
+        nextarg = nextarg + 1
+        if(index(arg,'=').gt.0) then
+          call thpset(arg)
+        else
+          break = .true.
+        endif
+      enddo
 *
 *-zero entire event buffer
 *
