@@ -14,7 +14,11 @@
 *       23 March 1993   DFG
 *            Remove /nolist from include statement. UNIX doesn't like it.
 * $Log$
-* Revision 1.3  1994/11/22 21:12:11  cdaq
+* Revision 1.4  1995/02/23 13:36:31  cdaq
+* * (JRA) Remove _coord fro shodo_center array.  Edge coordinates replaced by
+* * center locations.
+*
+* Revision 1.3  1994/11/22  21:12:11  cdaq
 * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.2  1994/06/01  15:37:05  cdaq
@@ -29,6 +33,8 @@
 
       include 'gen_data_structures.cmn'
       include 'sos_scin_parms.cmn'
+      include 'sos_scin_tof.cmn'
+      include 'sos_statistics.cmn'
 
       logical abort
       character*(*) err
@@ -44,29 +50,30 @@
       snum_scin_counters(2) = sscin_1y_nr
       snum_scin_counters(3) = sscin_2x_nr
       snum_scin_counters(4) = sscin_2y_nr
-*
-*
-* Clear arrays since some some entries left blank (array up to 16, only 10
-* elements in some planes
+
+      sstat_numevents=0
+
       do plane = 1 , snum_scin_planes
         do counter = 1 , snum_scin_counters(plane)
 
+* initialize tof parameters.
+
           if (plane .eq. 1) then
             shodo_width(plane,counter) = sscin_1x_size
-            shodo_center_coord(plane,counter) =
-     1           (sscin_1x_top(counter) + sscin_1x_size/2.)
+            shodo_center(plane,counter) =
+     1           sscin_1x_center(counter) + sscin_1x_offset
           else if (plane .eq. 2) then
             shodo_width(plane,counter) = sscin_1y_size
-            shodo_center_coord(plane,counter) =
-     1           (sscin_1y_left(counter) - sscin_1y_size/2.)
+            shodo_center(plane,counter) =
+     1           sscin_1y_center(counter) + sscin_1y_offset
           else if (plane .eq. 3) then
             shodo_width(plane,counter) = sscin_2x_size
-            shodo_center_coord(plane,counter) =
-     1           (sscin_2x_top(counter) + sscin_2x_size/2.)
+            shodo_center(plane,counter) =
+     1           sscin_2x_center(counter) + sscin_2x_offset
           else if (plane .eq. 4) then
             shodo_width(plane,counter) = sscin_2y_size
-            shodo_center_coord(plane,counter) =
-     1           (sscin_2y_left(counter) - sscin_2y_size/2.)
+            shodo_center(plane,counter) =
+     1           sscin_2y_center(counter) + sscin_2y_offset
           else                          ! Error in plane number
             abort = .true.
             write(err,*) 'Trying to init. sos hodoscope plane',plane
@@ -74,8 +81,18 @@
             return
           endif
 
+          sstat_trk(plane,counter)=0
+          sstat_poshit(plane,counter)=0
+          sstat_neghit(plane,counter)=0
+          sstat_andhit(plane,counter)=0
+          sstat_orhit(plane,counter)=0
+
         enddo                           !loop over counters
       enddo                             !loop over planes
 
       return
       end
+
+
+
+
