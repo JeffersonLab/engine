@@ -1,9 +1,12 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
-* Revision 1.2  1994/07/07 15:23:16  cdaq
-* (SAW) Correct pointers for actual bank structure
+* Revision 1.3  1994/07/07 15:24:24  cdaq
+* (SAW) Fix bugs
 *
+c Revision 1.2  1994/07/07  15:23:16  cdaq
+c (SAW) Correct pointers for actual bank structure
+c
 c Revision 1.1  1994/06/22  21:02:17  cdaq
 c Initial revision
 c
@@ -53,9 +56,9 @@ c
 *
             address = scalid*16
             do counter = 1,countinmod
-               scalers(address+counter) = event(pointer) + counter
+               scalers(address+counter) = event(pointer + counter)
             enddo
-            pointer = pointer + countinmod
+            pointer = pointer + countinmod + 1 ! Add 17 to pointer
          enddo
       else
          err = 'Event not big enough to contain scalers'
