@@ -16,6 +16,10 @@
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 *
 * $Log$
+* Revision 1.10  2002/09/26 14:31:56  jones
+*     the energy determination for planes A and B can use
+*     both pos and neg PMT depending on setting of hcal_num_neg_columns.
+*
 * Revision 1.9  1999/06/10 16:46:58  csa
 * (JRA) Cosmetic changes
 *
@@ -139,10 +143,12 @@ c           cor_two=h_correct_cal_two(htrack_xc(nt),htrack_yc(nt))  ! For "pos_p
              print *,"Extra tubes on more than two layers not supported"
            endif
 
-           htrack_e1(nt)=cor_pos*hcluster_e1(nc)    !Just use old PMTs until code/fitting stuff is OK.
-           htrack_e2(nt)=cor_pos*hcluster_e2(nc)    !Just use old PMTs until code/fitting stuff is OK.
-           htrack_e3(nt)=cor_pos*hcluster_e3(nc)  
-           htrack_e4(nt)=cor_pos*hcluster_e4(nc)
+***           htrack_e1(nt)=cor_pos*hcluster_e1(nc)    !Just use old PMTs until code/fitting stuff is OK.
+***           htrack_e2(nt)=cor_pos*hcluster_e2(nc)    !Just use old PMTs until code/fitting stuff is OK.
+***           htrack_e3(nt)=cor_pos*hcluster_e3(nc)  
+***           htrack_e4(nt)=cor_pos*hcluster_e4(nc)
+           htrack_e3(nt)=cor*hcluster_e3(nc)  
+           htrack_e4(nt)=cor*hcluster_e4(nc)
 
  
            htrack_et(nt)=htrack_e1(nt)+htrack_e2(nt)+ htrack_e3(nt)
