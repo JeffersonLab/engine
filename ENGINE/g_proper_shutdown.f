@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.4  1994/06/22 19:49:31  cdaq
-*-    (SAW) Create report file and append g_report_template to it
+*-    Revision 1.5  1994/08/04 03:45:46  cdaq
+*-    (SAW) Add call to Breuer's hack_shutdown
 *-
+* Revision 1.4  1994/06/22  19:49:31  cdaq
+* (SAW) Create report file and append g_report_template to it
+*
 * Revision 1.3  1994/06/14  19:13:20  cdaq
 * (SAW) Move histogram saving to new routine g_dump_histograms
 *
@@ -37,8 +40,8 @@
       logical ABORT
       character*(*) err
 *
-      logical bad_report,bad_HMS,bad_SOS,bad_COIN,bad_HBK
-      character*132 err_report,err_HMS,err_SOS,err_COIN,err_HBK
+      logical bad_report,bad_HMS,bad_SOS,bad_COIN,bad_HBK,bad_hack
+      character*132 err_report,err_HMS,err_SOS,err_COIN,err_HBK,err_hack
 *
       include 'gen_filenames.cmn'
       include 'gen_routines.dec'
@@ -73,6 +76,8 @@
       call S_proper_shutdown(bad_SOS,err_SOS)
 *     
       call C_proper_shutdown(bad_COIN,err_COIN)
+*
+      call hack_shutdown(bad_hack,err_hack)
 *
       call g_dump_histograms(bad_HBK,err_HBK)
 *
