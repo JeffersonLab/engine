@@ -1,5 +1,8 @@
 *    This include file contains all the variables required for s_physics
 * $Log$
+* Revision 1.9  2003/09/08 21:03:18  jones
+* Change s_phicentral_offset to s_oopcentral_offset (mkj)
+*
 * Revision 1.8  2002/09/24 20:29:37  jones
 *     add parameters sphicentral_offset, spcentral_offset,
 *       sthetacentral_offset
@@ -157,7 +160,7 @@ c D.Dutta, 24th-Apr-1996
 c    J.Volmer, 9th-Jul-1999
       real*4 spcentral_offset  ! sos central momentum offset
       real*4 sthetacentral_offset ! sos central angle offset
-      real*4 sphicentral_offset   ! sos central oop angle offset
+      real*4 s_oopcentral_offset   ! sos central oop angle offset
 
       COMMON /sos_offsets/
      &     sdelta_offset,
@@ -166,7 +169,7 @@ c    J.Volmer, 9th-Jul-1999
      &     smomentum_factor,
      &     spcentral_offset,
      &     sthetacentral_offset,
-     &     sphicentral_offset
+     &     s_oopcentral_offset
 
 *
 *     CTPTYPE=event
