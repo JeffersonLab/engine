@@ -10,9 +10,13 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.13  1995/05/22 20:41:40  cdaq
-*-    (SAW) Split g_init_histid into h_init_histid and s_init_histid
+*-    Revision 1.14  1995/07/27 19:36:41  cdaq
+*-    (SAW) Relocate data statements for f2c compatibility, check error returns
+*-          on thload calls and quit if important files are missing.
 *-
+* Revision 1.13  1995/05/22  20:41:40  cdaq
+* (SAW) Split g_init_histid into h_init_histid and s_init_histid
+*
 * Revision 1.12  1995/04/01  19:47:22  cdaq
 * (SAW) One report file for each of g, h, s, c instead of a single report file
 *       Allow %d for run number in filenames
@@ -78,10 +82,10 @@
       logical HMS_ABORT,SOS_ABORT, HACK_ABORT
       character*132 HMS_err,SOS_err, HACK_err
 *
-      logical*4 first_time                      ! Allows routine to be called 
-      data first_time /.true./                  ! by online code
-      save first_time
       character*132 file
+      logical*4 first_time                      ! Allows routine to be called 
+      save first_time
+      data first_time /.true./                  ! by online code
 *
 *--------------------------------------------------------
 *
@@ -103,18 +107,41 @@
       if((first_time.or.g_parm_rebook).and.g_ctp_parm_filename.ne.' ') then
         file = g_ctp_parm_filename
         call g_sub_run_number(file,gen_run_number)
-        call thload(file)
+        if(thload(file).ne.0) then
+          ABORT = .true.
+          err = file
+        endif
       endif
       if((first_time.or.g_test_rebook).and.g_ctp_test_filename.ne.' ') then
         file = g_ctp_test_filename
         call g_sub_run_number(file,gen_run_number)
-        call thload(file)
+        if(thload(file).ne.0) then
+          ABORT = .true.
+          if(err.ne.' ') then
+            call g_append(err,' & '//file)
+          else
+            err = file
+          endif
+        endif
       endif
       if((first_time.or.g_hist_rebook).and.g_ctp_hist_filename.ne.' ') then
         file = g_ctp_hist_filename
         call g_sub_run_number(file,gen_run_number)
-        call thload(file)
+        if(thload(file).ne.0) then
+          ABORT = .true.
+          if(err.ne.' ') then
+            call g_append(err,' & '//file)
+          else
+            err = file
+          endif
+        endif
       endif
+*
+      if(ABORT) then
+        call g_add_path(here,err)
+        return                          ! Don't try to proceed
+      endif
+      
 *     
 *     Load the report definitions
 *
@@ -161,7 +188,7 @@
           file = g_alias_filename
           call g_sub_run_number(file,gen_run_number)
           ierr = thwhalias(file)
-          type *,'called haliaswrite',ierr
+          print *,'called haliaswrite',ierr
         endif
       endif
 *
