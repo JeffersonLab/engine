@@ -8,12 +8,39 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.35  2003/09/05 21:49:12  jones
+* Merge in online03 changes  (mkj)
+*
 * Revision 1.34  2003/04/03 00:30:28  jones
 * Add call to s_cal_calib ( V. Tadevosyan)
 *
 * Revision 1.33  2003/03/24 22:49:41  jones
 * Changes for HMS calo calibration. Include hms_calorimeter.cmn and add call
 * to h_cal_calib at end of run if hdbg_tracks_cal .lt. 0
+*
+* Revision 1.32.2.8  2003/09/04 20:30:48  jones
+* Changes for running with syncfilter (mkj)
+*
+* Revision 1.32.2.7  2003/08/14 00:42:23  cdaq
+* Modify to be able to write scaler rates for each read to a file (mkj)
+*
+* Revision 1.32.2.6  2003/06/26 12:38:11  cdaq
+* add write statement when genable_sos_satcorr .ne. 0  (mkj)
+*
+* Revision 1.32.2.5  2003/04/21 23:45:58  cdaq
+* Modified so only one message about scaler kludge is printed. (MKJ)
+*
+* Revision 1.32.2.4  2003/04/14 18:02:06  jones
+* Modified so that engine will not analyze events until after first scaler read.
+*
+* Revision 1.32.2.3  2003/04/09 02:47:00  cdaq
+* Update readout code to ignore HV and EPICS events when searching for run_info event
+*
+* Revision 1.32.2.2  2003/04/03 01:02:44  cdaq
+* match main branch apr-02-2003
+*
+* Revision 1.32.2.1  2003/03/25 03:03:40  cdaq
+*  match main brach mar-24-2003
 *
 * Revision 1.32  2003/02/21 14:51:13  jones
 * Added line to call s_fieldcorr subroutine
@@ -148,13 +175,18 @@ c
       integer total_event_count
       integer physics_events
       integer analyzed_events(0:gen_max_trigger_types)
-      integer sum_analyzed
+      integer sum_analyzed,sum_analyzed_skipped
       integer recorded_events(0:gen_max_trigger_types)
+      integer skipped_badsync_events(0:gen_max_trigger_types)
+      integer skipped_lowbcm_events(0:gen_max_trigger_types)
       integer sum_recorded
       integer num_events_skipped
       integer i,since_cnt,lastdump
+      integer mkj,ii
       integer rpc_pend                  ! # Pending asynchronous RPC requests
-
+c
+      common /aevents/ analyzed_events
+c
       character*80 g_config_environmental_var
       parameter (g_config_environmental_var= 'ENGINE_CONFIG_FILE')
 
@@ -173,6 +205,9 @@ c
       integer time
       integer*4 preprocessor_keep_event
       external time
+c
+      integer*4 skipped_events_scal,tindex
+      real*8 delta_time
 *
 *
 *--------------------------------------------------------
@@ -184,11 +219,15 @@ c
 
       total_event_count= 0                      ! Need to register this
       lastdump=0
+      skipped_events_scal = 0      
       do i=0,gen_max_trigger_types
         analyzed_events(i)=0
         recorded_events(i)=0
+        skipped_badsync_events(i)=0
+        skipped_lowbcm_events(i)=0
       enddo
       sum_analyzed=0
+      sum_analyzed_skipped=0
       sum_recorded=0
       num_events_skipped=0
 
@@ -266,6 +305,8 @@ c
 
       finished_extracting = .false.
       problems = .false.
+      syncfilter_on = .false.
+      insync = 0
       DO WHILE(.NOT.problems .and. .NOT.ABORT .and. .NOT.EoF .and.
      &         .NOT.finished_extracting)
         mss= ' '
@@ -337,16 +378,18 @@ c
             stheta_lab=abs(tsos)
             write(6,*) '   gtarg_num  =',abs(ntarg)
             gtarg_num=ntarg
+          else if (gen_event_type.eq.131 .or. gen_event_type.eq.132) then! EPICS event
+            call g_examine_epics_event
           else if (gen_event_type.eq.133) then  !SAW's new go_info events
              call g_examine_go_info(CRAW,ABORT,err)
+          else if (gen_event_type.eq.141 .or. gen_event_type.eq.142 .or.
+     &             gen_event_type.eq.144) then
+*             write(6,*) 'HV information event, event type=',gen_event_type
+          else if (gen_event_type.eq.251) then
+             syncfilter_on = .true.
           else
             call g_examine_control_event(CRAW,ABORT,err)
           endif
-
-!          if (gen_event_type.eq.131.or.gen_event_type.eq.132.or.gen_event_type.eq.133) then !past run info event. must be missing
-!            write(6,*) "no run information event found"
-!            finished_extracting=.true.
-!          endif
 
 ! Go event is last 'nice tag' for point where we should have already seen
 ! run-info event.
@@ -389,7 +432,13 @@ c    parameter genable_hms_fieldcorr is switch to determine
 c    whether fix is applied.
 c
       call s_fieldcorr(ABORT,err)
-
+c
+      if (genable_sos_satcorr.ne.0) then
+         write(*,*) '*************'
+         write(*,*) ' SOS saturation correction enabled'
+         write(*,*) ' Delta modified for each event'
+         write(*,*) '*************'
+       endif
 c
       call G_apply_offsets(ABORT,err)  
 c
@@ -448,7 +497,14 @@ c
 
       start_time=time()
       lasttime=0.
-
+c
+c Start data analysis
+      if ( syncfilter_on) then
+         write(6,*) ' ******'
+         write(6,*) ' Analyzing using Syncfilter'
+         write(6,*) ' ******'
+      endif
+c
       DO WHILE(.NOT.problems .and. .NOT.ABORT .and. .NOT.EoF)
         mss= ' '
         g_replay_time=time()-start_time
@@ -493,7 +549,12 @@ c
 *
           if(gen_event_type.eq.0 .and. g_preproc_on.ne.0)
      &      call g_write_event(ABORT,err)
-
+c
+          if (gen_event_type .eq. 251) then
+             write(6,*) ' Syncfilter event, SYNC type = ',craw(5)
+             insync = craw(5)
+             endif
+c
           if (gen_event_type.eq.130) then       !run info event (get e,p,theta)
             write(6,*) " ***********"
             write(6,*) " A run info event after starting to analyze physics events"
@@ -511,8 +572,39 @@ c
 
           if(jieor(jiand(CRAW(2),'FFFF'x),'10CC'x).eq.0) then ! Physics event
 	    if (gen_event_type.eq.0) then          !scaler event.
-              call g_analyze_scalers_by_banks(CRAW,ABORT,err)
               analyzed_events(gen_event_type)=analyzed_events(gen_event_type)+1
+               call g_analyze_scalers_by_banks(CRAW,ABORT,err)
+            if (g_writeout_scaler_filename.ne.' ' ) then
+               delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001D00)
+               write(G_LUN_WRITEOUT_SCALER,'(i10,10g12.5)') analyzed_events(0),delta_time,
+     >       (gscaler_change(INDEX_WRITEOUT_SCALERS(tindex))/delta_time
+     >          ,tindex=1,NUM_WRITEOUT_SCALERS)
+            endif            
+c
+               if (insync .eq. 1) write(*,*) ' Skipping out-of-sync events'
+               if ( ave_current_bcm(bcm_for_threshold_cut)  .le. g_beam_on_thresh_cur(bcm_for_threshold_cut)
+     >  .or. insync .eq. 1) then
+               do ii=1,MAX_NUM_SCALERS
+                  gscaler_skipped(ii) = gscaler_skipped(ii) +  gscaler_change(ii)
+               enddo
+               else
+               do ii=1,MAX_NUM_SCALERS
+                  gscaler_saved(ii) = gscaler_saved(ii) +  gscaler_change(ii)
+               enddo
+               endif
+c
+               if ( insync .eq. 1) then
+                  skipped_badsync_events(gen_event_type)=skipped_badsync_events(gen_event_type) + 1
+              endif
+               if ( ave_current_bcm(bcm_for_threshold_cut)  .le. g_beam_on_thresh_cur(bcm_for_threshold_cut)) then
+                  skipped_lowbcm_events(gen_event_type)=skipped_lowbcm_events(gen_event_type) + 1
+               endif
+c
+               if (analyzed_events(0) .le. 1 ) then
+                  write(*,*) '************'
+                  write(*,*) ' Will not analyze events until after first scaler read'
+                  write(*,*) '************'
+               endif
 *
 * if preprocessor is on write trig type 0 (scaler events)
 *
@@ -530,12 +622,35 @@ c
      &             physics_events," events"
  112            format (a,i8,a)
               endif
-
             else				!REAL physics event.
-
+c
+               if (analyzed_events(0) .le. 1 .and. gen_event_type .le. 3) then
+                  if (skipped_events_scal .eq. 0 ) then
+                  write(*,*) '************'
+                  write(*,*) ' Kludge, will not analyze SOS,HMS or coin events until after first scaler read'
+                  write(*,*) ' Analyzed events :',(analyzed_events(mkj),mkj=1,4)
+                  write(*,*) '************'
+                  endif
+                  skipped_events_scal = skipped_events_scal + 1
+                  goto 868      ! kludge mkj
+               endif
+c
+c
               if(gen_event_type.le.gen_MAX_trigger_types .and.
      $           gen_run_enable(gen_event_type-1).ne.0) then
-
+c
+               if ( insync .eq. 1) then
+                  skipped_badsync_events(gen_event_type)=skipped_badsync_events(gen_event_type) + 1
+                  sum_analyzed_skipped = sum_analyzed_skipped + 1
+                  goto 868
+               endif
+               if ( ave_current_bcm(bcm_for_threshold_cut)  .le. g_beam_on_thresh_cur(bcm_for_threshold_cut)
+     >               .and. gen_event_type .le. 3 ) then
+                  skipped_lowbcm_events(gen_event_type)=skipped_lowbcm_events(gen_event_type) + 1
+                  sum_analyzed_skipped = sum_analyzed_skipped + 1
+                  goto 868
+               endif
+c
                 call g_examine_physics_event(CRAW,ABORT,err)
                 problems = problems .or.ABORT
 
@@ -653,6 +768,12 @@ c
             mss = err
           EndIf
         endif
+c
+c  skip analyzing data until after first scaler read
+c    also can skip if using syncfilter and beam current is low
+ 868    continue
+c
+c
 *
 *Now write the statistics report every 2 sec...
 *
@@ -680,7 +801,7 @@ c
         EoF= gen_event_type.EQ.20
 
         if(gen_run_stopping_event.gt.0 .and. gen_event_ID_number.gt.0) then
-          EoF=EoF .or. gen_run_stopping_event.le.sum_analyzed-analyzed_events(4)
+          EoF=EoF .or. gen_run_stopping_event.le.sum_analyzed+sum_analyzed_skipped-analyzed_events(4)
         EndIf
 *
 *- Here is where we insert a check for an Remote Proceedure Call (RPC)
@@ -756,6 +877,19 @@ c...
       write(mss,'(i12," / ",i8," total (neglecting scalers)")') sum_analyzed,sum_recorded
       call G_log_message(mss)
       print *,'  for run#',gen_run_number
+      if ( syncfilter_on) then
+      write(mss,'(i12," number of analyzed skipped ")') sum_analyzed_skipped
+      call G_log_message(mss)
+      write(mss,'(a)') " Skipped events bad sync / low ave beam current"
+      call G_log_message(mss)
+      DO i=0,gen_MAX_trigger_types
+        If(recorded_events(i).GT.0) Then
+          write(mss,'(4x,i12," / ",i8," events of type",i3)')
+     &             skipped_badsync_events(i),skipped_lowbcm_events(i),i
+          call G_log_message(mss)
+        ENDIF
+      ENDDO
+      endif
 
 * Comment out the following two lines if they cause trouble
       call system
