@@ -8,7 +8,11 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change SPLANE_PARAM to individual arrays
 * $Log$
-* Revision 1.1  1994/02/21 16:14:17  cdaq
+* Revision 1.2  1994/11/22 20:19:22  cdaq
+* (SPB) Recopied from hms file and modified names for SOS
+* (SAW) Remove hardwired plane and chamber counts.
+*
+* Revision 1.1  1994/02/21  16:14:17  cdaq
 * Initial revision
 *
 *
@@ -18,9 +22,9 @@
       include "sos_geometry.cmn"
 *
 *     local variables
-      integer*4 iplane,i,j
+      integer*4 iplane,i,j,k,pindex,ich
       real*4 cosalpha,sinalpha,cosbeta,sinbeta,cosgamma,singamma,z0
-      real*4 stubzchi,stubzpsi,stubxchi,stubxpsi,stubychi,stubypsi
+      real*4 stubxchi,stubxpsi,stubychi,stubypsi
       real*4 sumsqupsi,sumsquchi,sumcross,denom
 *
 *     read basic parameters from CTP input file
@@ -51,7 +55,7 @@
         scosbeta(iplane) = cosbeta
 *     make sure cosbeta is not zero
         if(abs(cosbeta).lt.1e-10) then
-          write(sluno,'('' unphysical beta rotation in plane'',i4,
+          write(sluno,'('' unphysical beta rotation in sos plane'',i4,
      &      ''    beta='',f10.5)') iplane,sdc_beta_angle(iplane)
         endif
         stanbeta(iplane) = sinbeta / cosbeta
@@ -121,6 +125,73 @@
      &                          - sxchi(iplane)*sypsi(iplane)
 *
       enddo                  !  end loop over all planes
+      
+* djm 10/2/94 generate/store the inverse matrices SAAINV3(i,j,pindex) used in solve_3by3_hdc
+* pindex = 1    plane 1 missing from sdc1
+* pindex = 2    plane 2 missing from sdc1
+*   etc.
+* pindex = 7    plane 1 missing from sdc2
+* pindex = 8    plane 2 missing from sdc2
+*   etc.
+* pindex = 13   sdc1 no missing planes
+* pindex = 14   sdc2 no missing planes
+
+*
+*     The following is pretty gross, but might actually work for an
+*     arbitrary number of chambers if each chamber has the same number of
+*     planes and SDC_NUM_PLANES is SDC_NUM_CHAMBERS * # of planes/chamber
+*
+      do pindex=1,SDC_NUM_PLANES+SDC_NUM_CHAMBERS
+
+* generate the matrix SAA3 for an sdc missing a particular plane
+      do i=1,3
+        do j=1,3
+        SAA3(i,j)=0.
+         if(j.lt.i)then      ! SAA3 is symmetric so only calculate 6 terms
+          SAA3(i,j)=SAA3(j,i)
+          else
+            if(pindex.le.SDC_NUM_PLANES) then
+              ich = (pindex-1)/(SDC_NUM_PLANES/SDC_NUM_CHAMBERS)+1
+              do k=(ich-1)*(SDC_NUM_PLANES/SDC_NUM_CHAMBERS)+1
+     $             ,ich*(SDC_NUM_PLANES/SDC_NUM_CHAMBERS)
+                if(pindex.eq.k) then
+                  SAA3(i,j)=SAA3(i,j) + sstubcoef(k,i)*sstubcoef(k,j)
+                endif
+              enddo
+            else
+              ich = pindex - SDC_NUM_PLANES
+              do k=(ich-1)*(SDC_NUM_PLANES/SDC_NUM_CHAMBERS)+1
+     $             ,ich*(SDC_NUM_PLANES/SDC_NUM_CHAMBERS)
+                SAA3(i,j)=SAA3(i,j) + sstubcoef(k,i)*sstubcoef(k,j)
+              enddo
+            endif
+          endif                         !end test j lt i
+        enddo                           !end j loop
+      enddo                             !end i loop
+
+* form the inverse matrix SAAINV3 for each configuration
+      SAAINV3(1,1,pindex)=(SAA3(2,2)*SAA3(3,3)-SAA3(2,3)**2)
+      SAAINV3(1,2,pindex)=-(SAA3(1,2)*SAA3(3,3)-SAA3(1,3)*SAA3(2,3))
+      SAAINV3(1,3,pindex)=(SAA3(1,2)*SAA3(2,3)-SAA3(1,3)*SAA3(2,2))
+      SDET3(pindex)=SAA3(1,1)*SAAINV3(1,1,pindex)+SAA3(1,2)*SAAINV3(1,2,pindex)
+     &            +SAA3(1,3)*SAAINV3(1,3,pindex)
+       if(abs(sdet3(pindex)).le.1e-20)then
+        write(6,*)'******************************************************'
+        write(6,*)'Warning! Determinate of matrix SAA3(i,j) is nearly zero.'
+        write(6,*)'All tracks using pindex=',pindex,' will be zerfucked.'
+        write(6,*)'Fix problem in h_generate_geometry.f or else!'
+        write(6,*)'******************************************************'
+        sdet3(pindex)=1.
+       endif
+      SAAINV3(1,1,pindex)=SAAINV3(1,1,pindex)/SDET3(pindex)
+      SAAINV3(1,2,pindex)=SAAINV3(1,2,pindex)/SDET3(pindex)
+      SAAINV3(1,3,pindex)=SAAINV3(1,3,pindex)/SDET3(pindex)
+      SAAINV3(2,2,pindex)=(SAA3(1,1)*SAA3(3,3)-SAA3(1,3)**2)/SDET3(pindex)
+      SAAINV3(2,3,pindex)= -(SAA3(1,1)*SAA3(2,3)-SAA3(1,2)*SAA3(3,1))/SDET3(pindex)
+      SAAINV3(3,3,pindex)=(SAA3(1,1)*SAA3(2,2)-SAA3(1,2)**2)/SDET3(pindex)
+
+      enddo  !end pindex loop
+     
 *     for debug write out all parameters
       if(sdebugflaggeometry.ne.0) then
         write(sluno,'(''    SOS PLANE PARAMETERS: '')')
@@ -163,6 +234,3 @@
       endif                               !   end if on debug print out
       return
       end
-
-
-      
