@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.5  1996/04/30 13:54:42  saw
+* (JRA) Change array sizes to two chambers instead of 3
+*
 * Revision 1.4  1996/01/24 16:19:27  saw
 * (JRA) Double size of misc hits data structures
 *
@@ -54,8 +57,8 @@
       INTEGER*4 SMAX_NUM_DC_PLANES    ! MAX NUMBER OF SOS DRIFT CHAMBER PLANES
       INTEGER*4 SMAX_NUM_CHAMBERS     ! MAX NUMBER OF SOS DRIFT CHAMBERS
       PARAMETER(SMAX_DC_HITS=3600) 
-      PARAMETER(SMAX_NUM_DC_PLANES=18)
-      PARAMETER(SMAX_NUM_CHAMBERS=3)
+      PARAMETER(SMAX_NUM_DC_PLANES=12)
+      PARAMETER(SMAX_NUM_CHAMBERS=2)
       INTEGER*4 SDC_RAW_PLANE_NUM
       INTEGER*4 SDC_RAW_WIRE_NUM
       INTEGER*4 SDC_RAW_TDC
@@ -321,9 +324,9 @@
 *
 *     THERE ARE 14 AEROGEL PHOTOTUBES. We will pair tubes on the left and
 *     right side so that are 7 "counters"
-*** for evalutation of the amplifier/adder prototype there follow 8 left +
-*** 8 right adc values, 7 each are ampliefied signals, the 8th is sum of 7
-*** each
+* for evalutation of the amplifier/adder prototype there follow 8 left +
+* 8 right adc values, 7 each are ampliefied signals, the 8th is sum of 7
+* each
 *          TUBE Row
 *          ADC Left VALUE
 *          ADC Right VALUE
@@ -331,19 +334,20 @@
 *    HOWEVER TO MAKE THE DECODERS SYMMETRICAL TO A SCINT WE MUST ADD
 *    A DUMMY PLANE NUMBER.
       INTEGER*4 SMAX_AER_HITS
-***      PARAMETER(SMAX_AER_HITS=8)
-      PARAMETER(SMAX_AER_HITS=16)
+      PARAMETER(SMAX_AER_HITS=8)
+      INTEGER*4 SNUM_AER_BLOCKS
+      PARAMETER(SNUM_AER_BLOCKS=7)
       INTEGER*4 SAER_TOT_HITS
       INTEGER*4 SAER_PAIR_NUM
-      INTEGER*4 SAER_ADC_LEFT
-      INTEGER*4 SAER_ADC_RIGHT
+      INTEGER*4 SAER_ADC_POS
+      INTEGER*4 SAER_ADC_NEG
       INTEGER*4 SAER_DUMMY
       INTEGER*4 SAER_PLANE
       COMMON/SOS_RAW_AER/
      &     SAER_PLANE(SMAX_AER_HITS),
      &     SAER_PAIR_NUM(SMAX_AER_HITS),
-     &     SAER_ADC_LEFT(SMAX_AER_HITS),
-     &     SAER_ADC_RIGHT(SMAX_AER_HITS),
+     &     SAER_ADC_POS(SMAX_AER_HITS),
+     &     SAER_ADC_NEG(SMAX_AER_HITS),
      &     SAER_DUMMY(SMAX_AER_HITS),
      &     SAER_TOT_HITS
 *
