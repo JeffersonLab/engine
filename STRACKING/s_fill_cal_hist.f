@@ -8,6 +8,9 @@
 *
 *
 * $Log$
+* Revision 1.8  1999/02/23 18:58:02  csa
+* (JRA) Remove obsolete hf1 call
+*
 * Revision 1.7  1999/02/03 21:13:45  saw
 * Code for new Shower counter tubes
 *
@@ -60,16 +63,10 @@
           histval=float(col)
           if(sidcalplane.gt.0) call hf1(sidcalplane,histval,1.)
           histval=float(row)
-          call hf1(sidcalhits(col),histval,1.)
-          if(scal_adc_pos(ihit).ge.0) then
-            call hf1(sidcalposhits(col),histval,1.)
-          endif
-          if(scal_adc_neg(ihit).ge.0) then
-            call hf1(sidcalneghits(col),histval,1.)
-          endif
+          if(scal_adcs_pos(ihit).gt.0.1) call hf1(sidcalposhits(col),histval,1.)
+          if(scal_adcs_neg(ihit).gt.0.1) call hf1(sidcalneghits(col),histval,1.)
         enddo
       endif
 
       return
       end
-
