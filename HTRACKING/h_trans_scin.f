@@ -9,6 +9,9 @@
 *
 * modifications:
 * $Log$
+* Revision 1.17  1996/01/16 21:35:37  cdaq
+* (JRA) Misc. fixes.
+*
 * Revision 1.16  1995/05/22 19:39:33  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -125,10 +128,6 @@
 ** Return if no valid hits.
       if( hscin_tot_hits .le. 0) return
 
-      do ihit = 1 , hscin_tot_hits
-        htwo_good_times(ihit) = .false.
-      enddo
-
 ** Check for two good TDC values.
       do ihit = 1 , hscin_tot_hits
         if ((hscin_tdc_pos(ihit) .ge. hscin_tdc_min) .and.
@@ -136,6 +135,8 @@
      2       (hscin_tdc_neg(ihit) .ge. hscin_tdc_min) .and.
      3       (hscin_tdc_neg(ihit) .le. hscin_tdc_max)) then
           htwo_good_times(ihit) = .true.
+        else
+          htwo_good_times(ihit) = .false.
         endif
       enddo                             !end of loop that finds tube setting time.
 
@@ -163,27 +164,22 @@
           scint_center = (hscin_pos_coord(ihit)+hscin_neg_coord(ihit))
      $         /2.
           hit_position = scint_center + dist_from_center
+          hit_position = min(hscin_pos_coord(ihit),hit_position)
+          hit_position = max(hscin_neg_coord(ihit),hit_position)
           hscin_dec_hit_coord(ihit) = hit_position
 
 *     Get corrected time.
-          pos_path = abs(hscin_pos_coord(ihit) - hit_position)
-          neg_path = abs(hscin_neg_coord(ihit) - hit_position)
+          pos_path = hscin_pos_coord(ihit) - hit_position
+          neg_path = hit_position - hscin_neg_coord(ihit)
           postime(ihit) = postime(ihit) - pos_path
      $         /hscin_vel_light(ihit)
           negtime(ihit) = negtime(ihit) - neg_path
      $         /hscin_vel_light(ihit)
 
           hscin_cor_time(ihit) = ( postime(ihit) + negtime(ihit) )/2.
-ccc The following sometimes results in square roots of negative numbers
-ccc Supposedly, no one uses this right now (SAW 1/17/95)
-          if(neg_ph(ihit) .ge. 0.0 .and. pos_ph(ihit) .ge. 0.0) then
-            hscin_cor_adc(ihit) = sqrt( neg_ph(ihit) * pos_ph(ihit))
-          else
-            hscin_cor_adc(ihit) = 0.0
-          endif
+*
         else                            !only 1 tube fired
           hscin_dec_hit_coord(ihit) = 0.
-          hscin_cor_adc(ihit) = 0.
           hscin_cor_time(ihit) = 0.     !not a very good 'flag', but there is
                                         ! the logical htwo_good_hits.
         endif
@@ -215,7 +211,6 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
 
 *     Dump decoded bank if hdebugprintscindec is set
       if( hdebugprintscindec .ne. 0) call h_prt_dec_scin(ABORT,errmsg)
-
 
 *    Calculate beta without finding track (to reject cosmics for efficiencies)
 *    using tube only if both pmts fired since the velocity correction is

@@ -6,6 +6,9 @@
 * h_trans_misc fills the hms_decoded_misc common block
 *
 * $Log$
+* Revision 1.4  1996/01/16 21:36:43  cdaq
+* (JRA) Misc. fixes.
+*
 * Revision 1.3  1995/07/20 14:26:00  cdaq
 * (JRA) Add second index (TDC/ADC) to hmisc_dec_data
 *
@@ -22,6 +25,7 @@
 
       include 'hms_data_structures.cmn'
       include 'hms_scin_parms.cmn'
+      include 'gen_event_info.cmn'
 
       logical abort
       character*1024 errmsg
@@ -33,19 +37,18 @@
       save
 
       do ihit = 1 , 48
-        hmisc_dec_data(ihit,1) = -1     ! Clear TDC's
+        hmisc_dec_data(ihit,1) = 0     ! Clear TDC's
         hmisc_dec_data(ihit,2) = -1     ! Clear ADC's
       enddo
       
       do ihit = 1 , hmisc_tot_hits
-c        write(50,*) ihit, hmisc_raw_addr1(ihit), hmisc_raw_addr2(ihit), hmisc_raw_data(ihit)
-c        write(51,*) ihit, hmisc_raw_addr2(ihit), hmisc_raw_data(ihit)
-        hmisc_dec_data(hmisc_raw_addr2(ihit),hmisc_raw_addr1(ihit)) = hmisc_raw_data(ihit)
+        hmisc_dec_data(hmisc_raw_addr2(ihit),hmisc_raw_addr1(ihit)) =
+     $       hmisc_raw_data(ihit)
       enddo
 
-c      do ihit = 1 , 48
-c        write(52,*) ihit, hmisc_dec_data(ihit,1), hmisc_dec_data(ihit,2)
-c      enddo
+c      write(99,*) gen_event_id_number,hmisc_dec_data(9,2),hmisc_dec_data(10,2),
+c     &               hmisc_dec_data(11,2),hmisc_dec_data(12,2),
+c     &               hmisc_dec_data(14,2),hmisc_dec_data(16,2)
 
       return
       end
