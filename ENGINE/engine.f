@@ -2,13 +2,15 @@
 *--------------------------------------------------------
 *-       Prototype C analysis routine
 *-
-*- This program is a first draft of an analysis shell for CEBAF
-*- hall C.  It gets all of its instructions via the CTP package
-*- and a temporary mickey-mouse interface.
+*- This is the analysis shell for CEBAF hall C.
+*  It gets all of its instructions via the CTP package
 *- Loops through data until it encounters an error.
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.23  1996/11/08 15:40:09  saw
+* (JRA) Add analysis of epics events.
+*
 * Revision 1.22  1996/09/04 15:33:43  saw
 * (JRA) Assorted changes and diagnostics
 *
@@ -524,11 +526,11 @@ c            endif
                 if(rpc_on.ne.0) then
                   if(rpc_pend.eq.0.and.rpc_control.eq.0) then
                     do while(rpc_pend.eq.0.and.rpc_control.eq.0)
-                      call thservone(-1) !block until one RPC request serviced
+                      ierr = thservone(-1) !block until one RPC request serviced
                       rpc_pend = thcallback()
                     enddo
                   else
-                    call thservone(0)   !service one RPC requests
+                    ierr = thservone(0)   !service one RPC requests
                     rpc_pend = thcallback()
                   endif
                   if(rpc_pend.lt.0) rpc_pend = 0 ! Last thcallback took care of all
@@ -536,8 +538,11 @@ c            endif
                   if(rpc_control.gt.0) rpc_control = rpc_control - 1
                 endif
 
-              ENDIF
+              endif
+            else if (gen_event_type.eq.131) then ! EPICS event
+              call g_examine_epics_event(CRAW,ABORT,err)
             endif
+
           Else
             if(gen_event_type.eq.129) then
               call g_analyze_scalers(CRAW,ABORT,err)
@@ -574,7 +579,7 @@ c            endif
 *
         since_cnt= since_cnt+1
         if(since_cnt.GE.5000) then
-          print *,' event#',total_event_count,'  ',ABORT
+          print *,' event#',total_event_count
           since_cnt= 0
         endif
 *
@@ -630,7 +635,10 @@ c            endif
       EndIf
 *
 * close charge scalers output file.
-      if (g_charge_scaler_filename.ne.' ') close(unit=217)
+      if (g_charge_scaler_filename.ne.' ') close(unit=G_LUN_CHARGE_SCALER)
+*
+* close epics output file.
+      if (g_epics_output_filename.ne.' ') close(unit=G_LUN_EPICS_OUTPUT)
 *
       call g_dump_peds
       call h_dump_peds
