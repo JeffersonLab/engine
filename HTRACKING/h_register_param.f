@@ -13,7 +13,10 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
-* Revision 1.7  1994/06/17 17:46:36  cdaq
+* Revision 1.8  1994/08/18 03:52:45  cdaq
+* (SAW) Call makereg generated routines to register variables
+*
+* Revision 1.7  1994/06/17  17:46:36  cdaq
 * (KBB) Upgrade error reporting
 *
 * Revision 1.6  1994/06/06  17:13:37  cdaq
@@ -42,9 +45,6 @@
       logical ABORT
       character*(*) err
 *
-      INCLUDE 'gen_data_structures.cmn'
-      INCLUDE 'gen_routines.dec'
-*
       logical FAIL
       character*1000 why
 *
@@ -53,34 +53,32 @@
       ABORT = .false.
 *
 *     register tracking variables
-      call h_register_track_param(ABORT,err)
+*
+
+      call r_hms_tracking
+      call r_hms_geometry
+      call r_hms_track_histid
+      call r_hms_recon_elements
+      call r_hms_physics_sing
 *
 *     register cal, tof and cer variables
-      call h_register_id_param(FAIL,why)
-      IF(err.NE.' ' .and. why.NE.' ') THEN
-         call G_append(err,' & '//why)
-      ELSEIF(why.NE.' ') THEN
-         err = why
-      ENDIF
-      ABORT= ABORT .or. FAIL
+*
+
+      call r_hms_scin_parms
+      call r_hms_scin_tof
+      call r_hms_calorimeter
+      call r_hms_id_histid
 *
 *     register bypass switches
-      call h_register_bypass(FAIL,why)
-      IF(err.NE.' ' .and. why.NE.' ') THEN
-         call G_append(err,' & '//why)
-      ELSEIF(why.NE.' ') THEN
-         err = why
-      ENDIF
-      ABORT= ABORT .or. FAIL
+*
+
+      call r_hms_bypass_switches
+
 *
 *     register hms statistics
-      call h_register_statistics(FAIL,why)
-      IF(err.NE.' ' .and. why.NE.' ') THEN
-         call G_append(err,' & '//why)
-      ELSEIF(why.NE.' ') THEN
-         err = why
-      ENDIF
-      ABORT= ABORT .or. FAIL
+*
+
+      call r_hms_statistics
 *
       IF(ABORT .or. err.NE.' ') call G_add_path(here,err)
 *
