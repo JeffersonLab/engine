@@ -3,8 +3,11 @@
 *     to logical detector identification.
 *
 *     $Log$
-*     Revision 1.1  1994/02/07 19:36:23  cdaq
-*     Initial revision
+*     Revision 1.2  1994/04/05 14:31:10  cdaq
+*     Add g_decode_subaddbit for location in FB word of sub address
+*
+* Revision 1.1  1994/02/07  19:36:23  cdaq
+* Initial revision
 *
 *
       integer G_DECODE_MAXWORDS                 ! Must exceed number of
@@ -15,6 +18,7 @@
       parameter (G_DECODE_MAXSLOTS=25)          ! # slots in a FB crate
       integer*4 g_decode_slotpointer            ! Pointer into map arrays
       integer*4 g_decode_subaddcnt              ! Number of subadds per slot
+      integer*4 g_decode_subaddbit              ! bit shift to get subadd
       integer*4 g_decode_slotmask
       integer*4 g_decode_didmap
       integer*4 g_decode_planemap, g_decode_countermap
@@ -23,6 +27,7 @@
       common /UPCOMMON/
      $     g_decode_slotpointer(G_DECODE_MAXROCS, G_DECODE_MAXSLOTS),
      $     g_decode_subaddcnt(G_DECODE_MAXROCS,G_DECODE_MAXSLOTS),
+     $     g_decode_subaddbit(G_DECODE_MAXROCS,G_DECODE_MAXSLOTS),
      $     g_decode_slotmask(G_DECODE_MAXROCS,G_DECODE_MAXSLOTS),
      $     g_decode_didmap(G_DECODE_MAXWORDS),
      $     g_decode_planemap(G_DECODE_MAXWORDS),
