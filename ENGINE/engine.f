@@ -9,9 +9,12 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 *-    $Log$
-*-    Revision 1.10  1994/10/19 20:40:29  cdaq
-*-    (SAW) Add handling of RPC requests
+*-    Revision 1.11  1994/11/22 20:12:01  cdaq
+*-    (SAW) Change "" to " " so this would compile under ultrix.
 *-
+* Revision 1.10  1994/10/19  20:40:29  cdaq
+* (SAW) Add handling of RPC requests
+*
 * Revision 1.9  1994/07/07  15:28:29  cdaq
 * (SAW) Move check for scaler event to proper place
 *
@@ -138,10 +141,10 @@
 *
       if(rpc_on.ne.0) then
         print *,"*****************************************************"
-        print *,""
+        print *," "
         print *,"ENGINE is enabled to receive RPC requests"
         if(rpc_control.eq.0) then
-          print *,""
+          print *," "
           print *,"ENGINE will HANG waiting for RPC requests"
                 else if(rpc_control.gt.0) then
           print *,"ENGINE will HANG to waitfor RPC requests after "
@@ -153,7 +156,7 @@
           print *,"    rpc_on = 0 ; Turns off RPC handling"
           print *,"    rpc_control = -1 ; No Hanging, but RPC handled"
         endif
-        print *,""
+        print *," "
         print *,"*****************************************************"
 
         call thservset(0,0)             !prepare for RPC requests
