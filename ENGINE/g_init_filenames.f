@@ -1,4 +1,4 @@
-      subroutine g_init_filenames(ABORT, error, env_var)
+      subroutine g_init_filenames(ABORT, err, env_var)
 *----------------------------------------------------------------------
 *-    Purpose and Methods:
 *-
@@ -17,15 +17,18 @@
 *-    Outputs:
 *-
 *-    ABORT
-*-    error
+*-    err
 *-
 *-    Created               Steve Wood, CEBAF
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 *-    $Log$
-*-    Revision 1.11  1995/07/27 19:35:15  cdaq
-*-    (SAW) Add call to g_ctp_database to set ctp vars by run number
+*-    Revision 1.12  1995/09/01 14:31:03  cdaq
+*-    (JRA) Blank out g_ctp_kinematics_filename
 *-
+* Revision 1.11  1995/07/27  19:35:15  cdaq
+* (SAW) Add call to g_ctp_database to set ctp vars by run number
+*
 * Revision 1.10  1995/05/11  19:01:29  cdaq
 * (SAW) Check 0 in g_config_filename in case user doesn't update engine.f
 *
@@ -65,7 +68,7 @@
       parameter (here= 'g_init_filenames')
 *
       logical ABORT
-      character*(*) error
+      character*(*) err
       character*(*) env_var
 *
       include 'gen_filenames.cmn'
@@ -92,6 +95,7 @@
       g_histout_filename = ' '
       g_decode_map_filename = ' '
       g_ctp_database_filename = ' '
+      g_ctp_kinematics_filename = ' '
 *
       s_recon_coeff_filename = ' '
       h_recon_coeff_filename = ' '
@@ -119,7 +123,7 @@
 *
       ABORT= g_config_filename.EQ.' '
       IF(ABORT) THEN
-        error= here//':blank environmental variable '//env_var
+        err= here//':blank environmental variable '//env_var
         RETURN
       ENDIF
 *
@@ -136,28 +140,29 @@
 
       ABORT= .NOT.g_config_loaded
       IF(ABORT) THEN
-        error= ':opened OK, but thbook command failed from "'//file//'"'
-        call G_add_path(here,error)
+        err= ':opened OK, but thbook command failed from "'//file//'"'
+        call G_add_path(here,err)
       ELSE
-        error= ' '
+        err= ' '
       ENDIF
 *
 *     Now if there is a g_ctp_database_filename set, pass the run number
 *     to it to set CTP variables
 *
       if(.not.ABORT.and.g_ctp_database_filename.ne.' ') then
-        call g_ctp_database(ABORT, error
+        call g_ctp_database(ABORT, err
      $       ,gen_run_number, g_ctp_database_filename)
         IF(ABORT) THEN
-          call G_add_path(here,error)
+          call G_add_path(here,err)
         endif
       ENDIF
+*
       return
 *
 999   g_config_loaded= .FALSE.
       ABORT= .NOT.g_config_loaded
-      error= ':unable to open file "'//file//'"'
-      call G_add_path(here,error)
+      err= ':unable to open file "'//file//'"'
+      call G_add_path(here,err)
       return
 *
       end
