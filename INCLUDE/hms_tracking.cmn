@@ -8,7 +8,10 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.15  1994/10/12 18:16:13  cdaq
+* Revision 1.16  1994/10/28 15:55:24  cdaq
+* (DM) Change drift time array parmeters to variables
+*
+* Revision 1.15  1994/10/12  18:16:13  cdaq
 * (DJM) Add good plane pattern arrays, add matrix inversion to initialization
 *
 * Revision 1.14  1994/09/20  17:13:25  cdaq
@@ -70,20 +73,19 @@
 *
 *     Parameters for drift time to distance calculation
 *
-      integer*4 hdriftbins          ! number of bins in drift time lookup table
-      parameter (hdriftbins=138)
+      integer*4 hdriftbins_max          ! maximum number of bins for drift time
+      parameter (hdriftbins_max=200)    ! lookup table
+      real*4    hdriftbins         ! number of bins for drift time lookup table
       real*4    hdriftbinsz         ! drift bin size in nsec of lookup table
-      parameter (hdriftbinsz=2.)
       real*4    hdrift1stbin        ! drift time of 1st bin in nsec of lookup
-      parameter (hdrift1stbin=-25.)
       real*4     fract              !fraction of integrated time spectrum
       real*4     fractinterp        !  interpolated fraction 
-      real*4 hwc1x1fract(hdriftbins),hwc1y1fract(hdriftbins),
-     &       hwc1u1fract(hdriftbins),hwc1v1fract(hdriftbins),
-     &       hwc1y2fract(hdriftbins),hwc1x2fract(hdriftbins),
-     &       hwc2x1fract(hdriftbins),hwc2y1fract(hdriftbins),
-     &       hwc2u1fract(hdriftbins),hwc2v1fract(hdriftbins),
-     &       hwc2y2fract(hdriftbins),hwc2x2fract(hdriftbins)
+      real*4 hwc1x1fract(hdriftbins_max),hwc1y1fract(hdriftbins_max),
+     &       hwc1u1fract(hdriftbins_max),hwc1v1fract(hdriftbins_max),
+     &       hwc1y2fract(hdriftbins_max),hwc1x2fract(hdriftbins_max),
+     &       hwc2x1fract(hdriftbins_max),hwc2y1fract(hdriftbins_max),
+     &       hwc2u1fract(hdriftbins_max),hwc2v1fract(hdriftbins_max),
+     &       hwc2y2fract(hdriftbins_max),hwc2x2fract(hdriftbins_max)
 
       equivalence (hwc1x1fract(1),fract(1,1))
       equivalence (hwc1y1fract(1),fract(1,2))
@@ -98,7 +100,8 @@
       equivalence (hwc2y2fract(1),fract(1,11))
       equivalence (hwc2x2fract(1),fract(1,12))
 
-      common/HMS_DRIFT/fract(hdriftbins,12),fractinterp
+      common/HMS_DRIFT/fract(hdriftbins_max,12),fractinterp,
+     $     hdriftbinsz,hdrift1stbin,hdriftbins
 
       integer*4 hdc_num_planes      ! actual number of dc chambers - set in CTP
       integer*4 hmax_num_chambers   ! maximum number of chambers
