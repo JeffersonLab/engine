@@ -5,7 +5,10 @@
 *                              change name to sos_tracking.cmn
 *                              put sluno and debugflags from parameters to CTP
 * $Log$
-* Revision 1.3  1994/06/06 17:06:05  cdaq
+* Revision 1.4  1994/08/05 20:00:36  cdaq
+* (SAW) Add "CTPTYPE=event,parm" directive for auto generation of CTP reg calls
+*
+* Revision 1.3  1994/06/06  17:06:05  cdaq
 * (DFG) add ssingle_stub
 *
 * Revision 1.2  1994/03/24  18:40:37  cdaq
@@ -14,6 +17,7 @@
 * Revision 1.1  1994/02/22  14:47:57  cdaq
 * Initial revision
 *
+*     CTPTYPE=parm
 *
       integer*4 sdc_num_planes      ! actual number of dc chambers - st in CTP
       integer*4 smax_num_chambers   ! maximum number of chambers
@@ -25,6 +29,9 @@
       integer*4 smax_hits_per_point ! maximum number of hits per point
       parameter (smax_space_points=50)
       parameter (smax_hits_per_point=20)
+*
+*     CTPTYPE=event
+*
       integer*4 snspace_points  ! number of space points in each chamber
       integer*4 snspace_points_tot ! total number of space points after select.
       real*4 sspace_points         ! array of x, y of space points
@@ -35,6 +42,9 @@
                                    ! (n,2) = number of valid combinations
                                    ! (n,3...) hit numbers for space point
       integer*4 sncham_hits
+*
+*     CTPTYPE=parm
+*
       integer*4 smin_hit
       integer*4 smin_combos
 
@@ -43,6 +53,9 @@
       real*4 sxpt_track_criterion   ! stub link criterion on xp_t
       real*4 sypt_track_criterion  ! stub link criterion on yp_t
 
+*
+*     CTPTYPE=event
+*
       integer*4 strack_fit_num     ! track number in fitting loop
 
       integer*4 snum_fpray_param   ! number of ray parameters in focal plane
@@ -61,6 +74,8 @@
      &     sdc_num_planes,sdc_num_chambers
 
 *     
+*     CTPTYPE=parm
+*
 *     sos print routines logical unit number for output
       integer*4 sluno
 *     debug print flags
