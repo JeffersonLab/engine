@@ -14,6 +14,9 @@
 *       23 March 1993   DFG
 *            Remove /nolist from include statement. UNIX doesn't like it.
 * $Log$
+* Revision 1.7  1996/04/30 12:44:35  saw
+* (JRA) Calculate expected particle velocity
+*
 * Revision 1.6  1995/05/22 19:39:14  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -96,5 +99,9 @@
         enddo                           !loop over counters
       enddo                             !loop over planes
       
+* need expected particle velocity for start time calculation.
+      hbeta_pcent = hpcentral/sqrt(hpcentral*hpcentral+hpartmass*hpartmass)
+
+
       return
       end
