@@ -9,9 +9,12 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 *-    $Log$
-*-    Revision 1.4  1994/04/15 20:31:25  cdaq
-*-    (SAW) Changes for ONLINE use
+*-    Revision 1.5  1994/06/07 18:22:58  cdaq
+*-    (SAW) Add calls to g_examine_physics_event and g_examine_control_event
 *-
+* Revision 1.4  1994/04/15  20:31:25  cdaq
+* (SAW) Changes for ONLINE use
+*
 * Revision 1.3  1994/03/24  22:02:12  cdaq
 * Reorganize for online compatibility
 *
@@ -129,15 +132,25 @@
 *
          EndIf
 *
-         If(.NOT.problems) Then                 !reconstruct event into
-            call G_reconstruction(CRAW,ABORT,err)    !COMMONs
-            problems= problems .OR. ABORT
-         EndIf
+*     Check if this is a physics event or a CODA control event.
 *
-         If(.NOT.problems) Then
-            call G_keep_results(ABORT,err)      !file away results as
-            problems= problems .OR. ABORT       !specified by interface
-         EndIf
+         if(.not.problems) then
+            if(iand(CRAW(2),'FFFF'x).eq.'10CC'x) then ! Physics event
+*
+*     Need to add in KB's code for selecting which event types to analyze.
+*
+               call G_reconstruction(CRAW,ABORT,err) !COMMONs
+               problems= problems .OR. ABORT
+
+               If(.NOT.problems) Then
+                  call G_keep_results(ABORT,err) !file away results as
+                  problems= problems .OR. ABORT !specified by interface
+               EndIf
+            else
+               call g_examine_control_event(CRAW,ABORT,err)
+            EndIf
+         endif
+*
 *
          If(ABORT .or. err.NE.' ') Then
             call G_add_path(here,err)           !only if problems
