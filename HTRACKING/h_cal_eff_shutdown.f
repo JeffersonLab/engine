@@ -16,6 +16,9 @@
 * h_cal_eff_shutdown does some final manipulation of the numbers.
 *
 * $Log$
+* Revision 1.4  1995/10/09 20:09:37  cdaq
+* (JRA) Add bypass switch around writing of pedestal data
+*
 * Revision 1.3  1995/08/31 14:57:36  cdaq
 * (JRA) Calculate and printout pedestals
 *
@@ -39,6 +42,7 @@
       INCLUDE 'gen_units.par'
       include 'hms_calorimeter.cmn'
       include 'hms_statistics.cmn'
+      include 'hms_tracking.cmn'
 
       integer col,row,blk
       real ave,ave2,num
@@ -65,24 +69,26 @@
         hcal_zero_thresh(blk)=min(50.,max(20.,3*hcal_zero_sig(blk)))
       enddo
 
-      write(39,*) '; calorimeter pedestal centroids'
-      write(39,*) ' hcal_ped_mean = '
-      write(39,111) (hcal_zero_ave(blk),blk=1,hmax_cal_rows)
-      write(39,111) (hcal_zero_ave(blk),blk=hmax_cal_rows+1,2*hmax_cal_rows)
-      write(39,111) (hcal_zero_ave(blk),blk=2*hmax_cal_rows+1,3*hmax_cal_rows)
-      write(39,111) (hcal_zero_ave(blk),blk=3*hmax_cal_rows+1,4*hmax_cal_rows)
-      write(39,*) '; calorimeter ped. sigma (sqrt(variance))'
-      write(39,*) ' hcal_ped_rms = '
-      write(39,111) (hcal_zero_sig(blk),blk=1,hmax_cal_rows)
-      write(39,111) (hcal_zero_sig(blk),blk=hmax_cal_rows+1,2*hmax_cal_rows)
-      write(39,111) (hcal_zero_sig(blk),blk=2*hmax_cal_rows+1,3*hmax_cal_rows)
-      write(39,111) (hcal_zero_sig(blk),blk=3*hmax_cal_rows+1,4*hmax_cal_rows)
-      write(39,*) '; calorimeter threshold above ped. =MIN(50,MAX(20,3*sigma))'
-      write(39,*) 'hcal_threshold = '
-      write(39,111) (hcal_zero_thresh(blk),blk=1,hmax_cal_rows)
-      write(39,111) (hcal_zero_thresh(blk),blk=hmax_cal_rows+1,2*hmax_cal_rows)
-      write(39,111) (hcal_zero_thresh(blk),blk=2*hmax_cal_rows+1,3*hmax_cal_rows)
-      write(39,111) (hcal_zero_thresh(blk),blk=3*hmax_cal_rows+1,4*hmax_cal_rows)
+      if (hdebugcalcpeds.ne.0) then
+        write(39,*) '; calorimeter pedestal centroids'
+        write(39,*) ' hcal_ped_mean = '
+        write(39,111) (hcal_zero_ave(blk),blk=1,hmax_cal_rows)
+        write(39,111) (hcal_zero_ave(blk),blk=hmax_cal_rows+1,2*hmax_cal_rows)
+        write(39,111) (hcal_zero_ave(blk),blk=2*hmax_cal_rows+1,3*hmax_cal_rows)
+        write(39,111) (hcal_zero_ave(blk),blk=3*hmax_cal_rows+1,4*hmax_cal_rows)
+        write(39,*) '; calorimeter ped. sigma (sqrt(variance))'
+        write(39,*) ' hcal_ped_rms = '
+        write(39,111) (hcal_zero_sig(blk),blk=1,hmax_cal_rows)
+        write(39,111) (hcal_zero_sig(blk),blk=hmax_cal_rows+1,2*hmax_cal_rows)
+        write(39,111) (hcal_zero_sig(blk),blk=2*hmax_cal_rows+1,3*hmax_cal_rows)
+        write(39,111) (hcal_zero_sig(blk),blk=3*hmax_cal_rows+1,4*hmax_cal_rows)
+        write(39,*) '; calorimeter threshold above ped. =MIN(50,MAX(20,3*sigma))'
+        write(39,*) 'hcal_threshold = '
+        write(39,111) (hcal_zero_thresh(blk),blk=1,hmax_cal_rows)
+        write(39,111) (hcal_zero_thresh(blk),blk=hmax_cal_rows+1,2*hmax_cal_rows)
+        write(39,111) (hcal_zero_thresh(blk),blk=2*hmax_cal_rows+1,3*hmax_cal_rows)
+        write(39,111) (hcal_zero_thresh(blk),blk=3*hmax_cal_rows+1,4*hmax_cal_rows)
+      endif
 111   format (12(f5.1,','),f5.1)
       return
       end
