@@ -10,7 +10,10 @@
 *-                                Change lun
 *-                7 Apr 1884      DFG   Change print order
 * $Log$
-* Revision 1.2  1995/01/27 20:26:00  cdaq
+* Revision 1.3  1995/05/22 19:39:20  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1995/01/27  20:26:00  cdaq
 * (JRA) Subtract pedestal from ADC value
 *
 * Revision 1.1  1994/04/13  15:41:33  cdaq
@@ -25,7 +28,7 @@
       integer*4 row,col,nb
       real*4 adc
 *
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
       include 'hms_tracking.cmn'
 *

@@ -2,14 +2,17 @@
 *     prints the output of hms track fittinh
 *     d.f. geesaman           17 January 1994
 * $Log$
-* Revision 1.2  1994/06/06 16:42:03  cdaq
+* Revision 1.3  1995/05/22 19:39:19  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1994/06/06  16:42:03  cdaq
 * (DFG) print warning if hsingle_stub is set.
 *
 * Revision 1.1  1994/02/19  06:17:36  cdaq
 * Initial revision
 *
       implicit none
-      include "gen_data_structures.cmn"
+      include "hms_data_structures.cmn"
       include "hms_tracking.cmn"
 *
       external H_DPSIFUN

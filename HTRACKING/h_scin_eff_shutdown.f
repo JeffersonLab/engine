@@ -16,7 +16,10 @@
 * h_scin_eff_shutdown does some final manipulation of the numbers.
 *
 * $Log$
-* Revision 1.3  1995/05/17 13:58:29  cdaq
+* Revision 1.4  1995/05/22 19:39:26  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1995/05/17  13:58:29  cdaq
 * (JRA) Write out list of potential PMT problems
 *
 * Revision 1.2  1995/05/11  20:27:13  cdaq
@@ -34,7 +37,7 @@
       logical ABORT
       character*(*) errmsg
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       include 'hms_scin_parms.cmn'

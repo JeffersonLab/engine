@@ -10,7 +10,10 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
-* Revision 1.2  1995/01/27 19:10:23  cdaq
+* Revision 1.3  1995/05/22 19:39:16  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1995/01/27  19:10:23  cdaq
 * (JRA) Trivial write statement format changes
 *
 * Revision 1.1  1994/03/24  20:15:18  cdaq
@@ -27,7 +30,7 @@
        character*(*) err
 *
        integer*4 j
-       include 'gen_data_structures.cmn'
+       include 'hms_data_structures.cmn'
        include 'gen_constants.par'
        include 'gen_units.par'
        include 'hms_tracking.cmn'

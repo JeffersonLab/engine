@@ -16,7 +16,10 @@
 *- 
 *-   Created 10-JUN-1994     D. F. Geesaman
 * $Log$
-* Revision 1.3  1995/02/23 15:37:57  cdaq
+* Revision 1.4  1995/05/22 19:39:16  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1995/02/23  15:37:57  cdaq
 * (JRA) Move scint eff's to h_scin_eff, add call to h_cal_eff
 *
 * Revision 1.2  1994/06/15  20:22:49  cdaq
@@ -35,7 +38,7 @@ c-
       logical ABORT
       character*(*) err
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'gen_routines.dec'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'

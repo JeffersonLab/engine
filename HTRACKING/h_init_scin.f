@@ -14,7 +14,10 @@
 *       23 March 1993   DFG
 *            Remove /nolist from include statement. UNIX doesn't like it.
 * $Log$
-* Revision 1.5  1995/02/23 13:35:34  cdaq
+* Revision 1.6  1995/05/22 19:39:14  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.5  1995/02/23  13:35:34  cdaq
 * (JRA) Remove _coord fro hhodo_center array.  Edge coordinates by
 * center locations.
 *
@@ -34,7 +37,7 @@
 
       implicit none
 
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hms_scin_parms.cmn'
       include 'hms_scin_tof.cmn'
       include 'hms_statistics.cmn'

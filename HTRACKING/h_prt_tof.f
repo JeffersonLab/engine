@@ -8,7 +8,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.3  1995/02/02 13:12:45  cdaq
+* Revision 1.4  1995/05/22 19:39:24  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1995/02/02  13:12:45  cdaq
 * (JRA) Cosmetic changes
 *
 * Revision 1.2  1994/09/13  20:28:43  cdaq
@@ -21,7 +24,7 @@
 
       implicit none
 
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hms_scin_parms.cmn'
       include 'hms_scin_tof.cmn'
       include 'hms_tracking.cmn'

@@ -14,7 +14,10 @@
 *            changed name from h_target_dump to h_print_tar_tracks
 *            made outpu lun hluno
 * $Log$
-* Revision 1.2  1994/05/12 20:12:56  cdaq
+* Revision 1.3  1995/05/22 19:39:18  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1994/05/12  20:12:56  cdaq
 * (DFG) check for more than 0 tracks
 * (SAW) cosmetic formatting changes to source code
 *
@@ -27,32 +30,32 @@
 
 *     Include files.
       
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hms_tracking.cmn'
 
 *     Misc. variables.
 
-      integer*4        i,j,k,l,m,n,itrk
+      integer*4 itrk
 
 *=============================Executable Code =============================
       if(hntracks_tar .gt. 0 ) then
 *     Write out header.
-         write (hluno,1001)   'HMS TARGET TRACKS'
-         write (hluno,1002)
+        write (hluno,1001)   'HMS TARGET TRACKS'
+        write (hluno,1002)
          
 *     Loop over tracks.
 
-         do itrk = 1,hntracks_tar
+        do itrk = 1,hntracks_tar
 
 *     Write out data lines.
 
-            write (hluno,1003) itrk,
-     $           hx_tar(itrk),hxp_tar(itrk),
-     $           hy_tar(itrk),hyp_tar(itrk),
-     $           hz_tar(itrk),
-     $           hdelta_tar(itrk),
-     $           hp_tar(itrk)
-         enddo
+          write (hluno,1003) itrk,
+     $         hx_tar(itrk),hxp_tar(itrk),
+     $         hy_tar(itrk),hyp_tar(itrk),
+     $         hz_tar(itrk),
+     $         hdelta_tar(itrk),
+     $         hp_tar(itrk)
+        enddo
       endif
       return
       

@@ -5,7 +5,10 @@
 *
 *     d.f. geesaman              17 feb 1994
 * $Log$
-* Revision 1.4  1994/11/22 20:03:46  cdaq
+* Revision 1.5  1995/05/22 19:39:09  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.4  1994/11/22  20:03:46  cdaq
 * (SAW) Change fract to hfract.  Make fractinterp a local variable
 *
 * Revision 1.3  1994/08/18  03:34:21  cdaq
@@ -22,7 +25,7 @@
 * Initial revision
 *  
       implicit none
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hms_geometry.cmn'
       include 'hms_tracking.cmn'        ! for lookup tables
 *

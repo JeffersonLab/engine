@@ -6,7 +6,10 @@
 *-
 *-      Created: 20 Mar 1994      Tsolak A. Amatuni
 * $Log$
-* Revision 1.2  1994/06/14 03:12:22  cdaq
+* Revision 1.3  1995/05/22 19:39:13  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1994/06/14  03:12:22  cdaq
 * (DFG) make all parameters CTP, not hard wired
 *
 * Revision 1.1  1994/04/13  15:39:11  cdaq
@@ -29,7 +32,7 @@
       real*4 xi   !Temporary
       real*4 zi   !Temporary
 *
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
 *
 *-----Initialize the positions

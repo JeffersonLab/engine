@@ -1,7 +1,10 @@
       subroutine h_analyze_pedestal(ABORT,err)
 *
 * $Log$
-* Revision 1.2  1995/05/17 13:56:04  cdaq
+* Revision 1.3  1995/05/22 19:37:05  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1995/05/17  13:56:04  cdaq
 * (JRA) Add Cernekov pedestals, cosmetic changes
 *
 * Revision 1.1  1995/04/01  19:36:40  cdaq
@@ -23,7 +26,7 @@
       integer*4 blk
       integer*4 pmt
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_pedestals.cmn'
 *
 *

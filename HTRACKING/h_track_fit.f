@@ -9,7 +9,10 @@
 *                              remove minuit. Make fit linear
 *                              still does not do errors properly
 * $Log$
-* Revision 1.8  1995/04/06 19:32:58  cdaq
+* Revision 1.9  1995/05/22 19:39:31  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.8  1995/04/06  19:32:58  cdaq
 * (JRA) Rename residuals variables
 *
 * Revision 1.7  1995/01/27  20:26:50  cdaq
@@ -36,7 +39,7 @@
 *
 *
       implicit none
-      include "gen_data_structures.cmn"
+      include "hms_data_structures.cmn"
       include "hms_tracking.cmn"
       include "hms_geometry.cmn"
       external H_DPSIFUN

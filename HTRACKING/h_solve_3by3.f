@@ -4,7 +4,10 @@
 *     Used in find_best_stub.f
 
 * $Log$
-* Revision 1.2  1994/11/22 20:07:20  cdaq
+* Revision 1.3  1995/05/22 19:39:27  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1994/11/22  20:07:20  cdaq
 * (SAW) Change name, add h to aainv3, move to HTRACKING directory.
 *
 * Revision 1.1  1994/10/12  18:42:59  cdaq
@@ -18,7 +21,7 @@
 
 *
       implicit none
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hms_tracking.cmn'
 
 

@@ -23,7 +23,10 @@
 * the correction parameters.
 *
 * $Log$
-* Revision 1.13  1995/02/10 18:59:41  cdaq
+* Revision 1.14  1995/05/22 19:39:29  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.13  1995/02/10  18:59:41  cdaq
 * (JRA) Add track index to hgood_plane_time, hgood_scin_time, hgood_tdc_pos,
 * and  hgood_tdc_neg
 *
@@ -75,7 +78,7 @@
       logical ABORT
       character*(*) errmsg
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       include 'hms_scin_parms.cmn'

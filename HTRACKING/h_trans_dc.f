@@ -13,7 +13,10 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
-* Revision 1.9  1995/05/17 14:02:20  cdaq
+* Revision 1.10  1995/05/22 19:39:32  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.9  1995/05/17  14:02:20  cdaq
 * (JRA) Add hist for all dc tdc's in one histogram.
 *
 * Revision 1.8  1995/04/06  19:34:34  cdaq
@@ -51,7 +54,7 @@
       logical ABORT
       character*(*) err
 *
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'gen_constants.par'
       include 'gen_units.par'
       include 'hms_tracking.cmn'

@@ -17,7 +17,10 @@
 *
 *     d.f. geesaman                   17 January 1994
 * $Log$
-* Revision 1.2  1994/02/21 03:11:25  cdaq
+* Revision 1.3  1995/05/22 19:39:08  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1994/02/21  03:11:25  cdaq
 * (SAW) remove dfloat call since arg and result both real*8
 *
 c Revision 1.1  1994/02/19  06:13:29  cdaq
@@ -25,7 +28,7 @@ c Initial revision
 c
 *
       implicit none
-      include "gen_data_structures.cmn"
+      include "hms_data_structures.cmn"
       include "hms_geometry.cmn"
 *
 *     input

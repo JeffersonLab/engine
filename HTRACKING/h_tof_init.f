@@ -9,7 +9,10 @@
 *
 * modifications: 31 Mar 1994    DFG  Check for 0 hits
 * $Log$
-* Revision 1.5  1995/02/21 16:57:28  cdaq
+* Revision 1.6  1995/05/22 19:39:30  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.5  1995/02/21  16:57:28  cdaq
 * (JRA) Change hhodo_center_coord to hhodo_center
 *
 * Revision 1.4  1995/02/02  16:12:50  cdaq
@@ -28,7 +31,7 @@
 
       implicit none
 
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hms_scin_parms.cmn'
       include 'hms_scin_tof.cmn'
 

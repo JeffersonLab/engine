@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.15  1995/05/17 14:12:13  cdaq
+* Revision 1.16  1995/05/22 19:39:33  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.15  1995/05/17  14:12:13  cdaq
 * (JRA) Add hscintimes user histogram
 *
 * Revision 1.14  1995/05/11  19:11:45  cdaq
@@ -65,7 +68,7 @@
 
       implicit none
 
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hms_scin_parms.cmn'
       include 'hms_scin_tof.cmn'
       include 'hms_id_histid.cmn'

@@ -3,11 +3,14 @@
 *     All the results are contained in hms_tracking.inc
 *     d.f. geesaman          17 January 1994
 * $Log$
-* Revision 1.1  1994/02/19 06:16:52  cdaq
+* Revision 1.2  1995/05/22 19:39:18  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.1  1994/02/19  06:16:52  cdaq
 * Initial revision
 *
       implicit none
-      include "gen_data_structures.cmn"
+      include "hms_data_structures.cmn"
       include "hms_tracking.cmn"
       include "hms_geometry.cmn"
 *     local variables

@@ -14,7 +14,10 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
-* Revision 1.8  1994/10/11 19:01:38  cdaq
+* Revision 1.9  1995/05/22 19:39:15  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.8  1994/10/11  19:01:38  cdaq
 * (DJM) Move hdc_sing_wcoord filling into h_left_right
 *
 * Revision 1.7  1994/09/19  20:31:39  cdaq
@@ -55,7 +58,7 @@
       logical ABORT
       character*(*) err
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
 *

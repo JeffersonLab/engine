@@ -16,7 +16,10 @@
 * h_cal_eff_shutdown does some final manipulation of the numbers.
 *
 * $Log$
-* Revision 1.1  1995/02/23 13:32:00  cdaq
+* Revision 1.2  1995/05/22 19:39:05  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.1  1995/02/23  13:32:00  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -28,7 +31,7 @@
       logical ABORT
       character*(*) errmsg
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       include 'hms_calorimeter.cmn'

@@ -16,7 +16,10 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
-* Revision 1.9  1995/04/06 19:31:54  cdaq
+* Revision 1.10  1995/05/22 19:39:28  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.9  1995/04/06  19:31:54  cdaq
 * (SAW) Put in ddutta's pre cosy x-x', y-y' transformation
 *
 * Revision 1.8  1995/03/22  16:22:40  cdaq
@@ -75,7 +78,7 @@
       character*(*) err
       integer*4   istat
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       include 'hms_tracking.cmn'

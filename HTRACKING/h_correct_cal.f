@@ -10,7 +10,10 @@
 *-      Created 15 Mar 1994      Tsolak A. Amatuni
 *
 * $Log$
-* Revision 1.2  1994/11/22 20:02:52  cdaq
+* Revision 1.3  1995/05/22 19:39:08  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1994/11/22  20:02:52  cdaq
 * (???) Hack in a correction for attenuation length
 *
 * Revision 1.1  1994/04/12  21:30:48  cdaq
@@ -29,7 +32,7 @@
       real*4 x,y         !Impact point coordinates
       real*4 h_correct_cal
 *
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
 *
 *

@@ -4,7 +4,10 @@
 *
 *     d.f. geesaman             17 January 1994
 * $Log$
-* Revision 1.2  1994/04/13 20:38:06  cdaq
+* Revision 1.3  1995/05/22 19:39:10  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1994/04/13  20:38:06  cdaq
 * (SAW) Change name of dummy arg to dumarg
 *
 * Revision 1.1  1994/02/19  06:14:15  cdaq
@@ -14,7 +17,7 @@
       implicit none
       external H_DPSIFUN
       real*8 H_DPSIFUN
-      include "gen_data_structures.cmn"
+      include "hms_data_structures.cmn"
       include "hms_tracking.cmn"
       include "hms_geometry.cmn"
 *

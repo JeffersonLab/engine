@@ -18,7 +18,10 @@
 * for each signal.
 *
 * $Log$
-* Revision 1.2  1995/05/11 19:03:50  cdaq
+* Revision 1.3  1995/05/22 19:39:09  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1995/05/11  19:03:50  cdaq
 * (JRA) Formatting changes
 *
 * Revision 1.1  1995/01/31  21:34:03  cdaq
@@ -33,7 +36,7 @@
       logical ABORT
       character*(*) errmsg
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       include 'hms_scin_parms.cmn'

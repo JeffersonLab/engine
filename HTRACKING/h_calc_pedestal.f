@@ -1,7 +1,10 @@
       subroutine h_calc_pedestal(ABORT,err)
 *
 * $Log$
-* Revision 1.2  1995/05/17 13:56:54  cdaq
+* Revision 1.3  1995/05/22 19:39:06  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1995/05/17  13:56:54  cdaq
 * (JRA) Float integer accumulators before arithmetic
 *
 * Revision 1.1  1995/04/01  19:36:25  cdaq
@@ -22,7 +25,7 @@
       integer*4 pmt
       real*4 sig2
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_pedestals.cmn'
       INCLUDE 'hms_scin_parms.cmn'
       INCLUDE 'hms_calorimeter.cmn'

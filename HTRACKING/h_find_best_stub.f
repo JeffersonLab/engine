@@ -7,7 +7,10 @@
 *     
 *     d. f. geesaman
 * $Log$
-* Revision 1.3  1994/11/22 20:04:56  cdaq
+* Revision 1.4  1995/05/22 19:39:12  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1994/11/22  20:04:56  cdaq
 * (SAW) Matrix solver routine now called h_solve_3by3
 *
 * Revision 1.2  1994/10/12  18:38:46  cdaq
@@ -22,7 +25,7 @@
 *     Called by H_LEFT_RIGHT
 *
       implicit none
-      include "gen_data_structures.cmn"
+      include "hms_data_structures.cmn"
       include "hms_tracking.cmn"
       include "hms_geometry.cmn"
 

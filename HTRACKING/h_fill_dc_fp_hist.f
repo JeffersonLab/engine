@@ -8,7 +8,10 @@
 *                                   Transfer ID in common block
 *                                   Implement flag to turn block on
 * $Log$
-* Revision 1.4  1995/04/06 19:27:11  cdaq
+* Revision 1.5  1995/05/22 19:39:11  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.4  1995/04/06  19:27:11  cdaq
 * (JRA) Rename residuals variables
 *
 * Revision 1.3  1994/08/18  03:13:08  cdaq
@@ -27,7 +30,7 @@
       character*50 here
       parameter (here= 'h_fill_dc_fp_hist')
 *
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hms_track_histid.cmn'
       include 'hms_tracking.cmn'
 *

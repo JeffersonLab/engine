@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 *-    $Log$
-*-    Revision 1.8  1995/05/11 19:05:48  cdaq
-*-    (JRA) Add call to h_trans_misc
+*-    Revision 1.9  1995/05/22 19:39:25  cdaq
+*-    (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *-
+* Revision 1.8  1995/05/11  19:05:48  cdaq
+* (JRA) Add call to h_trans_misc
+*
 * Revision 1.7  1995/02/02  13:06:13  cdaq
 * (SAW) Add call to h_select_best_track
 *
@@ -51,7 +54,7 @@
       logical ABORT
       character*(*) err
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       include 'hms_scin_parms.cmn'

@@ -16,7 +16,10 @@
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 *
 * $Log$
-* Revision 1.3  1994/09/13 19:39:14  cdaq
+* Revision 1.4  1995/05/22 19:39:04  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1994/09/13  19:39:14  cdaq
 * (JRA) Add preshower energy
 *
 * Revision 1.2  1994/04/12  21:24:55  cdaq
@@ -39,7 +42,7 @@
       real*4    cor          !Correction factor for X,Y dependence
       real*4 h_correct_cal   !External function to compute "cor" 
 *
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
 *
       do nt=1,hntracks_fp

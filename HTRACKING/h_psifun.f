@@ -15,12 +15,15 @@
 *
 *     d.f. geesaman                   1 September 1993
 * $Log$
-* Revision 1.1  1994/02/19 06:17:49  cdaq
+* Revision 1.2  1995/05/22 19:39:24  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.1  1994/02/19  06:17:49  cdaq
 * Initial revision
 *
 *
       implicit none
-      include "gen_data_structures.cmn"
+      include "hms_data_structures.cmn"
       include "hms_geometry.cmn"
 *
 *     input

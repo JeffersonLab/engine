@@ -5,7 +5,10 @@
 *
 *     d.f. geesaman              17 feb 1994
 * $Log$
-* Revision 1.3  1994/10/11 21:07:05  cdaq
+* Revision 1.4  1995/05/22 19:39:09  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1994/10/11  21:07:05  cdaq
 * (JRA) Replace simple functions with existing ctp variables
 *
 * Revision 1.2  1994/03/24  18:51:52  cdaq
@@ -17,7 +20,7 @@
 *     
 *  
       implicit none
-      include "gen_data_structures.cmn"
+      include "hms_data_structures.cmn"
       include "hms_tracking.cmn"
       include "hms_geometry.cmn"
 *

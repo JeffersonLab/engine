@@ -10,7 +10,10 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
-* Revision 1.6  1995/02/02 16:10:49  cdaq
+* Revision 1.7  1995/05/22 19:39:23  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.6  1995/02/02  16:10:49  cdaq
 * (JRA) Make hscin_all_adc_pos/neg floating
 *
 * Revision 1.5  1994/09/13  20:23:29  cdaq
@@ -39,7 +42,7 @@
       character*(*) err
 *
       integer*4 j
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'gen_constants.par'
       include 'gen_units.par'
       include 'hms_tracking.cmn'

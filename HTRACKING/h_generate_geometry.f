@@ -8,7 +8,10 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change HPLANE_PARAM to individual arrays
 * $Log$
-* Revision 1.4  1995/04/06 19:28:27  cdaq
+* Revision 1.5  1995/05/22 19:39:13  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.4  1995/04/06  19:28:27  cdaq
 * (SAW) Remove hardwired plane and chamber counts
 *
 * Revision 1.3  1994/11/22  20:05:58  cdaq
@@ -22,7 +25,7 @@
 *
 *
       implicit none
-      include "gen_data_structures.cmn"
+      include "hms_data_structures.cmn"
       include "hms_tracking.cmn"
       include "hms_geometry.cmn"
 *

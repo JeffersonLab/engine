@@ -5,7 +5,10 @@
 *     space point.
 *     d. f. geesaman           17 January 1994
 * $Log$
-* Revision 1.7  1995/04/06 19:29:23  cdaq
+* Revision 1.8  1995/05/22 19:39:14  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.7  1995/04/06  19:29:23  cdaq
 * (JRA) HMAX_NUM_DC_PLANES -> HDC_NUM_PLANES
 *
 * Revision 1.6  1994/10/12  18:30:52  cdaq
@@ -29,7 +32,7 @@
 *
       implicit none
       save
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hms_tracking.cmn'
       include 'hms_geometry.cmn'
 *

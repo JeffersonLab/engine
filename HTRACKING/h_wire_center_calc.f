@@ -8,7 +8,10 @@
 *     modified   dfg  18 feb 1994
 *                         add option to reverse plane wire numbering
 * $Log$
-* Revision 1.3  1994/09/13 21:49:06  cdaq
+* Revision 1.4  1995/05/22 19:39:33  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1994/09/13  21:49:06  cdaq
 * (JRA) Calculate wire chamber offsets
 *
 * Revision 1.2  1994/02/22  05:34:03  cdaq
@@ -20,7 +23,7 @@
 *     
 *  
       implicit none
-      include "gen_data_structures.cmn"
+      include "hms_data_structures.cmn"
       include "hms_geometry.cmn"
 *
 *     input

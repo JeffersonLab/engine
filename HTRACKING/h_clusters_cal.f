@@ -22,7 +22,10 @@
 *-                                Change name of print routine
 *                10 Apr 1994      DFG Protect for Et=0 division
 * $Log$
-* Revision 1.3  1994/08/02 20:00:12  cdaq
+* Revision 1.4  1995/05/22 19:39:07  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1994/08/02  20:00:12  cdaq
 * (JRA) Catch some out of bounds problems
 *
 * Revision 1.2  1994/04/13  05:31:37  cdaq
@@ -50,7 +53,7 @@
       integer*4 d_row,d_col            !Distance between rows(columns)
       logical tagged
 *
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
 *
 *
