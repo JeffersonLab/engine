@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.6  1996/01/22 15:06:41  saw
+* (JRA) Change ntuple contents
+*
 * Revision 1.5  1996/01/16 21:01:33  cdaq
 * (JRA) Add HSDELTA and SSDELTA
 *
@@ -39,14 +42,16 @@
       INCLUDE 'coin_data_structures.cmn'
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'sos_data_structures.cmn'
+      INCLUDE 'hms_scin_parms.cmn'
+      INCLUDE 'sos_scin_parms.cmn'
       INCLUDE 'gen_event_info.cmn'
-      include 'hms_scin_parms.cmn'
+      INCLUDE 'gen_scalers.cmn'
 *
       logical HEXIST    !CERNLIB function
 *
-      character*80 directory,name,msg
       integer m
-      real*8 coin_time,ss_time,hs_time
+      real*4 hpath,spath
+      real*4 sbeta_from_p,sbeta_from_pcent,sdelta_tof
 *
 *--------------------------------------------------------
       err= ' '
@@ -55,53 +60,82 @@
       IF(.NOT.c_Ntuple_exists) RETURN       !nothing to do
 *
 **********begin insert description of contents of COIN tuple ******
-c      coin_time = (hmisc_dec_data(1,10) -2576)/10. ! ???
+      ctime_coin_cor = smisc_dec_data(9,1)/9.69 - sstime_at_fp + hstime_at_fp
+      hpath = -.0148*hsx_fp+11.6*hsxp_fp-31.8*hsxp_fp*hsxp_fp
+      spath = 2.78*ssxp_fp-4.0*ssxp_fp*ssxp_fp+.00293*ssy_fp
+      sbeta_from_p = ssp/(ssenergy+.00000001)
+      sbeta_from_pcent = spcentral/
+     &     sqrt(spcentral*spcentral+spartmass*spartmass+.0001)
+      sdelta_tof = 7.5/.3/(sbeta_from_p+.000001) - 7.5/.3/sbeta_from_pcent
+      ctime_coin_cor = ctime_coin_cor - hpath + spath/sbeta_from_p - sdelta_tof
 
-      hs_time= hstart_time -120
-      ss_time= sstart_time -50
       m= 0
       m= m+1
-      c_Ntuple_contents(m)= HSX_FP         ! beam X rastor
+      c_Ntuple_contents(m)= CTIME_COIN_COR ! Corrected Coincidence time
       m= m+1
-      c_Ntuple_contents(m)= HSY_FP         ! beam Y rastor
+      c_Ntuple_contents(m)= GBEAM_X          ! Beam X Position
       m= m+1
-      c_Ntuple_contents(m)= HSXP_FP  ! Missing mass of undetected hadron system
+      c_Ntuple_contents(m)= GBEAM_Y          ! Beam Y Position
       m= m+1
-      c_Ntuple_contents(m)= HSYP_FP   ! Magnitude of missing momentum 
+      c_Ntuple_contents(m)= GBEAM_XP          ! Beam X Position
       m= m+1
-      c_Ntuple_contents(m)= HSX_TAR  ! X component of missing momentum
+      c_Ntuple_contents(m)= GBEAM_YP          ! Beam Y Position
       m= m+1
-      c_Ntuple_contents(m)= HSY_TAR  ! Y component of missing momentum
+      c_Ntuple_contents(m)= HSX_FP         ! HMS Focal Plane
       m= m+1
-      c_Ntuple_contents(m)= HSXP_TAR  ! Z component of missing momentum
+      c_Ntuple_contents(m)= HSY_FP         ! 
       m= m+1
-      c_Ntuple_contents(m)= HSYP_TAR ! Corrected Coincidence time
+      c_Ntuple_contents(m)= HSXP_FP        ! 
       m= m+1
-      c_Ntuple_contents(m)= HSDELTA
+      c_Ntuple_contents(m)= HSYP_FP        ! 
       m= m+1
-      c_Ntuple_contents(m)= HS_TIME
-      m=m+1
-      c_Ntuple_contents(m)= SSX_FP ! Corrected Coincidence time
+      c_Ntuple_contents(m)= SSX_FP         ! SOS Focal Plane
       m= m+1
-      c_Ntuple_contents(m)= SSY_FP ! Corrected Coincidence time
+      c_Ntuple_contents(m)= SSY_FP         ! 
       m= m+1
-      c_Ntuple_contents(m)= SSXP_FP ! Corrected Coincidence time
+      c_Ntuple_contents(m)= SSXP_FP        ! 
       m= m+1
-      c_Ntuple_contents(m)= SSYP_FP ! Corrected Coincidence time
+      c_Ntuple_contents(m)= SSYP_FP        ! 
       m= m+1
-      c_Ntuple_contents(m)= SSX_TAR ! Corrected Coincidence time
+      c_Ntuple_contents(m)= HSY_TAR        ! HMS Target
       m= m+1
-      c_Ntuple_contents(m)= SSY_TAR ! Corrected Coincidence time
+      c_Ntuple_contents(m)= HSXP_TAR       ! 
       m= m+1
-      c_Ntuple_contents(m)= SSXP_TAR ! Corrected Coincidence time
+      c_Ntuple_contents(m)= HSYP_TAR       ! 
       m= m+1
-      c_Ntuple_contents(m)= SSYP_TAR ! Corrected Coincidence time
+      c_Ntuple_contents(m)= HSDELTA        !
       m= m+1
-      c_Ntuple_contents(m)= SSDELTA
+      c_Ntuple_contents(m)= SSY_TAR        ! SOS Target
       m= m+1
-      c_Ntuple_contents(m)= SS_TIME
-      m=m+1
-      c_Ntuple_contents(m)= COIN_TIME ! Corrected Coincidence time
+      c_Ntuple_contents(m)= SSXP_TAR       ! 
+      m= m+1
+      c_Ntuple_contents(m)= SSYP_TAR       ! 
+      m= m+1
+      c_Ntuple_contents(m)= SSDELTA        !
+      m= m+1
+      c_Ntuple_contents(m)= HCER_NPE_SUM   ! HMS Particle Id.
+      m= m+1
+      c_Ntuple_contents(m)= HSTRACK_ET     !
+      m= m+1
+      c_Ntuple_contents(m)= HSTRACK_PRESHOWER_E     !
+      m= m+1
+      c_Ntuple_contents(m)= HSBETA         !
+      m= m+1
+      c_Ntuple_contents(m)= HSDEDX(1)      !
+      m= m+1
+      c_Ntuple_contents(m)= SCER_NPE_SUM   ! SOS Particle Id.
+      m= m+1
+      c_Ntuple_contents(m)= 0.0            ! SAER_NPE_SUM
+      m= m+1
+      c_Ntuple_contents(m)= SSTRACK_ET     !
+      m= m+1
+      c_Ntuple_contents(m)= SSTRACK_PRESHOWER_E     !
+      m= m+1
+      c_Ntuple_contents(m)= SSBETA         !
+      m= m+1
+      c_Ntuple_contents(m)= SSDEDX(1)      !
+      m= m+1
+      c_Ntuple_contents(m)= g_bcm1_charge  ! Charge of last scaler event
       m= m+1
       c_Ntuple_contents(m)= FLOAT(gen_event_ID_number)
 ***********end insert description of contents of COIN tuple********

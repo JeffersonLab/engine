@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.7  1996/01/22 15:06:25  saw
+* (JRA) Change ntuple contents
+*
 * Revision 1.6  1996/01/16 21:01:12  cdaq
 * (JRA) Add HSDELTA and SSDELTA
 *
@@ -128,49 +131,73 @@
 *
 **********begin insert description of contents of COIN tuple ******
       m= 0
-      m= m+1
-      c_Ntuple_tag(m)= 'HSX_FP'         ! beam X rastor
-      m= m+1
-      c_Ntuple_tag(m)= 'HSY_FP'         ! beam Y rastor
-      m= m+1
-      c_Ntuple_tag(m)= 'HSXP_FP' !'CMISSING_MASS'!Missing mass of undetected hadron system
-      m= m+1
-      c_Ntuple_tag(m)= 'HSYP_FP'  !'CMISSING_MOM'!Magnitude of missing momentum 
-      m= m+1
-      c_Ntuple_tag(m)= 'HSX_TAR' !'CMISSING_MOMX'!X component of missing momentum
-      m= m+1
-      c_Ntuple_tag(m)= 'HSY_TAR' !'CMISSING_MOMY'  ! Y component of missing momentum
-      m= m+1
-      c_Ntuple_tag(m)= 'HSXP_TAR' !'CMISSING_MOMZ'  ! Z component of missing momentum
-      m= m+1
-      c_Ntuple_tag(m)= 'HSYP_TAR' ! Corrected Coincidence time
-      m= m+1
-      c_Ntuple_tag(m)= 'HSDELTA'
-      m= m+1
-      c_Ntuple_tag(m)= 'HS_TIME'
       m=m+1
-      c_Ntuple_tag(m)= 'SSX_FP'
-      m=m+1
-      c_Ntuple_tag(m)= 'SSY_FP'
-      m=m+1
-      c_Ntuple_tag(m)= 'SSXP_FP'
-      m=m+1
-      c_Ntuple_tag(m)= 'SSYP_FP'
-      m=m+1
-      c_Ntuple_tag(m)= 'SSX_TAR'
-      m=m+1
-      c_Ntuple_tag(m)= 'SSY_TAR'
-      m=m+1
-      c_Ntuple_tag(m)= 'SSXP_TAR'
-      m=m+1
-      c_Ntuple_tag(m)= 'SSYP_TAR'
-      m=m+1
-      c_Ntuple_tag(m)= 'SSDELTA'
+      c_Ntuple_tag(m)= 'cointime'      ! Corrected Coincidence Time
       m= m+1
-      c_Ntuple_tag(m)= 'SS_TIME'
-      m=m+1
-      c_Ntuple_tag(m)= 'COIN_TIME'
-      m=m+1
+      c_Ntuple_tag(m)= 'beamx'         ! Beam X Position
+      m= m+1
+      c_Ntuple_tag(m)= 'beamy'         ! Beam Y Position
+      m= m+1
+      c_Ntuple_tag(m)= 'beamxp'        ! Beam X Angle
+      m= m+1
+      c_Ntuple_tag(m)= 'beamyp'        ! Beam Y Angle
+      m= m+1
+      c_Ntuple_tag(m)= 'hsxfp'         ! HMS Focal Plane
+      m= m+1
+      c_Ntuple_tag(m)= 'hsyfp'         ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'hsxpfp'        !
+      m= m+1
+      c_Ntuple_tag(m)= 'hsypfp'        !
+      m= m+1
+      c_Ntuple_tag(m)= 'ssxfp'         ! SOS Focal Plane
+      m= m+1
+      c_Ntuple_tag(m)= 'ssyfp'         !
+      m= m+1
+      c_Ntuple_tag(m)= 'ssxpfp'        !
+      m= m+1
+      c_Ntuple_tag(m)= 'ssypfp'        !
+      m= m+1
+      c_Ntuple_tag(m)= 'hsytar'        ! HMS Target
+      m= m+1
+      c_Ntuple_tag(m)= 'hsxptar'       !
+      m= m+1
+      c_Ntuple_tag(m)= 'hsyptar'       ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'hsdelta'        ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'ssytar'        ! SOS Target
+      m= m+1
+      c_Ntuple_tag(m)= 'ssxptar'       ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'ssyptar'       ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'ssdelta'        ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'hcer_npe'       ! HMS Particle Id.
+      m= m+1
+      c_Ntuple_tag(m)= 'hsshtrk'        ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'hsprtrk'        ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'hsbeta'         ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'hsdedx1'        ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'scer_npe'       ! SOS Particle Id.
+      m= m+1
+      c_Ntuple_tag(m)= 'saer_npe'       ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'ssshtrk'        ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'ssprtrk'        ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'ssbeta'         ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'ssdedx1'        ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'charge'         ! Charge of last Scaler Event
+      m= m+1
       c_Ntuple_tag(m)= 'eventID' ! CODA event ID#
       c_Ntuple_size= m
 ***********end insert description of contents of COIN tuple********
