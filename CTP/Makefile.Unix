@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.8  1995/04/06 20:08:28  cdaq
+# Revision 1.9  1995/07/28 14:12:36  cdaq
+# (SAW) SGI/IRIX compatibility
+#
+# Revision 1.8  1995/04/06  20:08:28  cdaq
 # (SAW) Fix typo in a RPCGEN line
 #
 # Revision 1.7  1995/03/13  19:46:01  cdaq
@@ -41,6 +44,13 @@ bin_targets = makereg
 
 install-dirs := lib bin
 
+ifeq ($(ARCH),IRIX)
+  CC = gcc
+  CFLAGS = -DNOFNMATCH
+  RPCCOM=rpcgen
+  OSTYPE=IRIX
+endif
+
 ifeq ($(ARCH),HPUX)
   CC = gcc
   CFLAGS = -D_HPUX_SOURCE -Dextname -g
@@ -67,6 +77,8 @@ endif
 ##library: libctp.a
 
 ##$(LIBROOT)/libctp.a: $(libctp_members)
+
+makereg: makereg.o
 
 daVarRpc_xdr.c: daVarRpc.x
 	rm -f $@
