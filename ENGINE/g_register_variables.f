@@ -16,8 +16,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.1  1994/02/11 18:35:11  cdaq
-*     Initial revision
+*     Revision 1.2  1994/03/24 15:29:53  cdaq
+*     (SAW) Add registration of rebook flags for parm,test,hist
+*
+* Revision 1.1  1994/02/11  18:35:11  cdaq
+* Initial revision
 *
 *
 *----------------------------------------------------------------------
@@ -44,12 +47,24 @@
       ierr = regparmstring('hist_filename',g_ctp_hist_filename,0)
       if(ierr.ne.0) err = 'unable to register "hist_filename"'
       abort = ierr.ne.0
+      ierr = regparmint('hist_rebook',g_hist_rebook,0)
+      if(ierr.ne.0) err = 'unable to register "hist_rebook"'
+      abort = ierr.ne.0
+*
       ierr = regparmstring('parm_filename',g_ctp_parm_filename,0)
       if(ierr.ne.0) err = 'unable to register "parm_filename"'
       abort = ierr.ne.0
+      ierr = regparmint('parm_rebook',g_parm_rebook,0)
+      if(ierr.ne.0) err = 'unable to register "parm_rebook"'
+      abort = ierr.ne.0
+*
       ierr = regparmstring('test_filename',g_ctp_test_filename,0)
       if(ierr.ne.0) err = 'unable to register "test_filename"'
       abort = ierr.ne.0
+      ierr = regparmint('test_rebook',g_test_rebook,0)
+      if(ierr.ne.0) err = 'unable to register "test_rebook"'
+      abort = ierr.ne.0
+*
       ierr = regparmstring('data_source_filename'
      $     ,g_data_source_filename,0)
       if(ierr.ne.0) err = 'unable to register "data_source_filename"'
