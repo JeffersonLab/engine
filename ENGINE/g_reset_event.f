@@ -12,9 +12,12 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.3  1994/02/17 21:49:57  cdaq
-*-    Simplify error handling to be like g_clear_event
+*-    Revision 1.4  1994/02/22 19:47:36  cdaq
+*-    Change gmc_reset_event to gmc_mc_reset
 *-
+* Revision 1.3  1994/02/17  21:49:57  cdaq
+* Simplify error handling to be like g_clear_event
+*
 * Revision 1.2  1994/02/17  21:43:39  cdaq
 * Add call to gmc_reset_event
 *
@@ -62,7 +65,7 @@
 *     
       call C_reset_event(COIN_ABORT,COIN_err)
 *     
-      call gmc_reset_event(gmc_abort, gmc_err)
+      call gmc_mc_reset(gmc_abort, gmc_err)
 *     
       abort = hms_abort.or.sos_abort.or.coin_abort.or.gmc_abort
 *
