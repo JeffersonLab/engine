@@ -10,7 +10,10 @@
 *- 
 *-   Created  17-May-1994   Kevin B. Beard, Hampton U.
 * $Log$
-* Revision 1.2  1994/06/07 18:18:45  cdaq
+* Revision 1.3  1994/06/09 04:29:44  cdaq
+* (SAW) Replace g_build_note calls with write(var, ... calls
+*
+* Revision 1.2  1994/06/07  18:18:45  cdaq
 * (SAW) Split g_examine_event into g_examine_control_event
 *       and g_examine_physics_event.
 *
@@ -35,7 +38,7 @@
       integer iv(10),dy,mth,yr,hr,min,sec,m,EvType,status,nth
       real rv(10)
       logical control,nontrivial,bad_sync
-      character*80 msg,note
+      character*160 msg,note
 *
       integer SYNC_EvType,PRESTART_EvType,GO_EvType,END_EvType
       integer PAUSE_EvType
@@ -102,7 +105,7 @@
             gen_run_triggered(m)= 0
          enddo
 *     
-         write(msg,'("INFO:PRESTART Run #",i5," type #",i3,a)')
+         write(msg,'("INFO:PRESTART Run #",i5," type #",i4,1x,a)')
      $        gen_run_number,gen_run_type,gen_run_date_start
          call G_log_message(msg)
 *     
