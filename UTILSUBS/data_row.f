@@ -2,6 +2,10 @@ c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 c
 c  Handy & general string manipulations.
 c
+c     $Log$
+c     Revision 1.3  1994/02/02 18:45:17  cdaq
+c     Add Log keyword
+c
 c========================================================================
        SUBROUTINE data_row(string) 
        IMPLICIT NONE
