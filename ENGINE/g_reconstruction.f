@@ -13,10 +13,13 @@
 *- 
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
-*-    $Log$
-*-    Revision 1.11  1995/05/22 20:50:45  cdaq
-*-    (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
-*-
+* $Log$
+* Revision 1.12  1995/10/09 18:28:41  cdaq
+* (JRA) Only call spec analysis routines that correspond to trigger type
+*
+* Revision 1.11  1995/05/22 20:50:45  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
 * Revision 1.10  1995/04/01  19:50:22  cdaq
 * (JRA) Add pedestal event handling
 *
@@ -62,6 +65,7 @@
 *     
       INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_event_info.cmn'
+      INCLUDE 'hack_.cmn'
 *     
       logical FAIL
       character*1024 why
@@ -98,35 +102,49 @@
       ENDIF
 *
 *-HMS reconstruction
-      call H_reconstruction(FAIL,why)
-      IF(err.NE.' ' .and. why.NE.' ') THEN
-        call G_append(err,' & '//why)
-      ELSEIF(why.NE.' ') THEN
-        err= why
+      IF(gen_event_type.eq.1 .or. gen_event_type.eq.3) then  !HMS/COIN trig
+        call H_reconstruction(FAIL,why)
+        IF(err.NE.' ' .and. why.NE.' ') THEN
+          call G_append(err,' & '//why)
+        ELSEIF(why.NE.' ') THEN
+          err= why
+        ENDIF
+        ABORT= ABORT .or. FAIL
       ENDIF
-      ABORT= ABORT .or. FAIL
 *
 *-SOS reconstruction
-      call S_reconstruction(FAIL,why)
-      IF(err.NE.' ' .and. why.NE.' ') THEN
-        call G_append(err,' & '//why)
-      ELSEIF(why.NE.' ') THEN
-        err= why
+      IF(gen_event_type.eq.2 .or. gen_event_type.eq.3) then  !SOS/COIN trig
+        call S_reconstruction(FAIL,why)
+        IF(err.NE.' ' .and. why.NE.' ') THEN
+          call G_append(err,' & '//why)
+        ELSEIF(why.NE.' ') THEN
+          err= why
+        ENDIF
+        ABORT= ABORT .or. FAIL
       ENDIF
-      ABORT= ABORT .or. FAIL
 *
 *-COIN reconstruction
-      call C_reconstruction(ABORT,err)
-      IF(err.NE.' ' .and. why.NE.' ') THEN
-        call G_append(err,' & '//why)
-      ELSEIF(why.NE.' ') THEN
-        err= why
+      IF(gen_event_type.eq.3) then  !COIN trig
+        call C_reconstruction(FAIL,why)
+        IF(err.NE.' ' .and. why.NE.' ') THEN
+          call G_append(err,' & '//why)
+        ELSEIF(why.NE.' ') THEN
+          err= why
+        ENDIF
+        ABORT= ABORT .or. FAIL
       ENDIF
-      ABORT= ABORT .or. FAIL
 *
       IF(ABORT .or. err.NE.' ') call G_add_path(here,err)
 *
-      call hack_anal(ABORT,err)
+      IF(hack_enable.ne.0) then
+        call hack_anal(FAIL,why)
+        IF(err.NE.' ' .and. why.NE.' ') THEN
+          call G_append(err,' & '//why)
+        ELSEIF(why.NE.' ') THEN
+          err= why
+        ENDIF
+        ABORT= ABORT .or. FAIL
+      ENDIF
 *
       RETURN
       END
