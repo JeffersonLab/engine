@@ -10,8 +10,8 @@
 *- 
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.3  1994/06/14 03:16:09  cdaq
-*-    (DFG) Add CEBEAM calculation
+*-    Revision 1.4  1995/05/11 13:44:50  cdaq
+*-    (SAW) Add calculation of s from beam and target info
 *-
 * Revision 1.3  1994/06/14  03:16:09  cdaq
 * (DFG) Add CEBEAM calculation
