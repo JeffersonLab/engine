@@ -9,10 +9,12 @@
 *- 
 *-   Created  30-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.1  1994/02/04 22:11:29  cdaq
-*-    Initial revision
+*-    Revision 1.2  1995/01/27 20:11:48  cdaq
+*-    (SAW) Add setting of ABORT
 *-
-c
+* Revision 1.1  1994/02/04  22:11:29  cdaq
+* Initial revision
+*
 *-
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
@@ -36,6 +38,7 @@ c
 *
 *--------------------------------------------------------
       err= ' '
+      ABORT = .FALSE.
       g_data_source_in_hndl= 0
 *
       status = evopen(g_data_source_filename,'r',g_data_source_in_hndl)
@@ -49,6 +52,7 @@ c
       IF(.not.g_data_source_opened) THEN
         err= ':could not open "'//g_data_source_filename//'"'
         call G_add_path(here,err)
+        ABORT = .TRUE.
       ENDIF
 *
       RETURN
