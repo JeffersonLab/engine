@@ -1,11 +1,14 @@
-      function h_drift_dist_calc(plane,wire,time)
+      real*4 function h_drift_dist_calc(plane,wire,time)
 *
 *     function to calculate hms drift time from tdc value in hms
 *     wire chambers
 *
 *     d.f. geesaman              17 feb 1994
 * $Log$
-* Revision 1.3  1994/08/18 03:34:21  cdaq
+* Revision 1.4  1994/11/22 20:03:46  cdaq
+* (SAW) Change fract to hfract.  Make fractinterp a local variable
+*
+* Revision 1.3  1994/08/18  03:34:21  cdaq
 * (DJM) Use a lookup table to map fractional area to distance.  (worked for
 * the prototype chamber).  Lots of parameters but easier than fitting.
 * Could not use a single map for all 12 planes since drift time spectra a
@@ -29,10 +32,9 @@
       integer*4  wire       !  wire number  of hit
       integer*4  ilo,ihi    !  interpolate between bins ilo and ilo+1
       real*4     time       !  drift time in ns
+      real*4     fractinterp        !  interpolated fraction 
 *
 *     output
-*
-      real*4     h_drift_dist_calc        !  drift distance in cm
 *
 
 * look in the appropriate drift time to distance table and perform a linear
@@ -45,8 +47,8 @@
       ilo = int(time/hdriftbinsz) - int(hdrift1stbin/hdriftbinsz) + 1
       ihi = ilo + 1
       if( ilo.ge.1 .and. ihi.le.hdriftbins)then 
-        fractinterp = fract(ilo,plane) + 
-     &    ( (fract(ilo+1,plane)-fract(ilo,plane))/hdriftbinsz )*
+        fractinterp = hfract(ilo,plane) + 
+     &    ( (hfract(ilo+1,plane)-hfract(ilo,plane))/hdriftbinsz )*
      &    (time - (ilo-1)*hdriftbinsz - hdrift1stbin)
       else
         if( ilo.lt.1 )then
