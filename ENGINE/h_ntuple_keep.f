@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.7  1996/01/16 17:01:55  cdaq
+* (JRA) Modify ntuple contents
+*
 * Revision 1.6  1995/09/01 13:38:28  cdaq
 * (JRA) Add Cerenkov photoelectron count to ntuple
 *
@@ -40,6 +43,10 @@
       INCLUDE 'h_ntuple.cmn'
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'gen_event_info.cmn'
+      INCLUDE 'hms_tracking.cmn'
+      INCLUDE 'hms_physics_sing.cmn'
+      INCLUDE 'hms_scin_tof.cmn'
+      include 'hms_track_histid.cmn'  !temp junk.
 *
       logical HEXIST	!CERNLIB function
 *
@@ -54,16 +61,16 @@
 ************************************************
       m= 0
 *  
-      m= m+1
-      h_Ntuple_contents(m)= HCER_ADC(1) ! cerenkov adc #1
-      m= m+1
-      h_Ntuple_contents(m)= HCER_ADC(2) ! cerenkov adc #2
+c      m= m+1
+c      h_Ntuple_contents(m)= HCER_ADC(1) ! cerenkov adc #1
+c      m= m+1
+c      h_Ntuple_contents(m)= HCER_ADC(2) ! cerenkov adc #2
       m= m+1
       h_Ntuple_contents(m)= HCER_NPE_SUM ! cerenkov photoelectron spectrum
       m= m+1
-      h_Ntuple_contents(m)= HSP	! Lab momentum of chosen track in GeV/c
+      h_Ntuple_contents(m)= HSP	        ! Lab momentum of chosen track in GeV/c
       m= m+1
-      h_Ntuple_contents(m)= HSENERGY! Lab total energy of chosen track in GeV
+      h_Ntuple_contents(m)= HSENERGY    ! Lab total energy of chosen track in GeV
       m= m+1
       h_Ntuple_contents(m)= HSDELTA	! Spectrometer delta of chosen track
       m= m+1
@@ -74,15 +81,15 @@
       h_Ntuple_contents(m)= HSMINV	! Invariant Mass of remaing hadronic system
       m= m+1
       h_Ntuple_contents(m)= HSZBEAM! Lab Z coordinate of intersection of beam
-                                ! track with spectrometer ray
+c                                ! track with spectrometer ray
       m= m+1
       h_Ntuple_contents(m)= HSDEDX(1)	! DEDX of chosen track in 1st scin plane
-      m= m+1
-      h_Ntuple_contents(m)= HSDEDX(2)	! DEDX of chosen track in 2nd scin plane
-      m= m+1
-      h_Ntuple_contents(m)= HSDEDX(3)	! DEDX of chosen track in 3rd scin plane
-      m= m+1
-      h_Ntuple_contents(m)= HSDEDX(4)	! DEDX of chosen track in 4th scin plane
+c      m= m+1
+c      h_Ntuple_contents(m)= HSDEDX(2)	! DEDX of chosen track in 2nd scin plane
+c      m= m+1
+c      h_Ntuple_contents(m)= HSDEDX(3)	! DEDX of chosen track in 3rd scin plane
+c      m= m+1
+c      h_Ntuple_contents(m)= HSDEDX(4)	! DEDX of chosen track in 4th scin plane
       m= m+1
       h_Ntuple_contents(m)= HSBETA	! BETA of chosen track
       m= m+1
@@ -102,7 +109,7 @@
       m= m+1
       h_Ntuple_contents(m)= HSCHI2PERDEG	! CHI2 per degree of freedom of chosen track.
       m= m+1
-      h_Ntuple_contents(m)= HSX_TAR
+      h_Ntuple_contents(m)= float(HSNFREE_FP)
       m= m+1
       h_Ntuple_contents(m)= HSY_TAR
       m= m+1
@@ -110,17 +117,102 @@
       m= m+1
       h_Ntuple_contents(m)= HSYP_TAR
 *
-      m= m+1
-      h_Ntuple_contents(m)= float(HSNUM_FPTRACK)! Index of focal plane track chosen
-      m= m+1
-      h_Ntuple_contents(m)= float(HSNUM_TARTRACK)! Index of target track chosen
-      m= m+1
-      h_Ntuple_contents(m)= float(HSID_LUND)! LUND particle ID code -- not yet filled
-      m= m+1
-      h_Ntuple_contents(m)= float(HSNFREE_FP)
+c      m= m+1
+c      h_Ntuple_contents(m)= float(HSNUM_FPTRACK)! Index of focal plane track chosen
+c      m= m+1
+c      h_Ntuple_contents(m)= float(HSID_LUND)! LUND particle ID code -- not yet filled
 *
       m= m+1
       h_Ntuple_contents(m)= float(gen_event_ID_number)
+*
+      m= m+1
+      h_Ntuple_contents(m)= hscin_tot_hits
+      m= m+1
+      h_Ntuple_contents(m)= hsnum_scin_hit
+      m= m+1
+      h_Ntuple_contents(m)= hstart_time
+c      m= m+1
+c      h_Ntuple_contents(m)= h_fptime(1)
+c      m= m+1
+c      h_Ntuple_contents(m)= h_fptime(2)
+c      m= m+1
+c      h_Ntuple_contents(m)= h_fptime(3)
+c      m= m+1
+c      h_Ntuple_contents(m)= h_fptime(4)
+c      m= m+1
+c      h_Ntuple_contents(m)= hsscin_elem_hit(1)
+c      m= m+1
+c      h_Ntuple_contents(m)= hsscin_elem_hit(2)
+c      m= m+1
+c      h_Ntuple_contents(m)= hsscin_elem_hit(3)
+c      m= m+1
+c      h_Ntuple_contents(m)= hsscin_elem_hit(4)
+      m= m+1
+      h_Ntuple_contents(m)= hdc_raw_tot_hits
+      m= m+1
+      h_Ntuple_contents(m)= hdc_tot_hits
+*
+c      m= m+1
+c      h_Ntuple_contents(m)= hsx_sp1
+c      m= m+1
+c      h_Ntuple_contents(m)= hsy_sp1
+c      m= m+1
+c      h_Ntuple_contents(m)= hsxp_sp1
+c      m= m+1
+c      h_Ntuple_contents(m)= hsx_sp2
+c      m= m+1
+c      h_Ntuple_contents(m)= hsy_sp2
+c      m= m+1
+c      h_Ntuple_contents(m)= hsxp_sp2
+*
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_res(1)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_res(2)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_res(3)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_res(4)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_res(5)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_res(6)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_res(7)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_res(8)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_res(9)
+c      m= m+1
+c     h_Ntuple_contents(m)= hdc_sing_res(10)
+c     m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_res(11)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_res(12)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_driftdis(1)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_driftdis(2)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_driftdis(3)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_driftdis(4)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_driftdis(5)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_driftdis(6)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_driftdis(7)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_driftdis(8)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_driftdis(9)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_driftdis(10)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_driftdis(11)
+c      m= m+1
+c      h_Ntuple_contents(m)= hdc_sing_driftdis(12)
 *
 ************************************************
 *

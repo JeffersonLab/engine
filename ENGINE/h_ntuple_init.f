@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.8  1996/01/16 17:03:52  cdaq
+* (JRA) Modify ntuple contents
+*
 * Revision 1.7  1995/09/01 13:38:05  cdaq
 * (JRA) Add Cerenkov photoelectron count to ntuple
 *
@@ -133,73 +136,158 @@
 **********begin insert description of contents of HMS tuple ******
       m= 0
 *  
+c      m= m+1
+c      h_Ntuple_tag(m)= 'cer1'	! cerenkov adc # 1
+c      m= m+1
+c      h_Ntuple_tag(m)= 'cer2'	! cerenkov adc # 2
       m= m+1
-      h_Ntuple_tag(m)= 'Hcer_1'	! cerenkov adc # 1
+      h_Ntuple_tag(m)= 'cer' ! cerenkov photoelectron spectrum
       m= m+1
-      h_Ntuple_tag(m)= 'Hcer_2'	! cerenkov adc # 2
+      h_Ntuple_tag(m)= 'p'	! Lab momentum of chosen track in GeV/c
       m= m+1
-      h_Ntuple_tag(m)= 'HCER_NPE' ! cerenkov photoelectron spectrum
+      h_Ntuple_tag(m)= 'e'      ! Lab total energy of chosen track in GeV
       m= m+1
-      h_Ntuple_tag(m)= 'HSP'	! Lab momentum of chosen track in GeV/c
+      h_Ntuple_tag(m)= 'delta'	! Spectrometer delta of chosen track
       m= m+1
-      h_Ntuple_tag(m)= 'HSENERGY'! Lab total energy of chosen track in GeV
+      h_Ntuple_tag(m)= 'theta'	! Lab Scattering angle in radians
       m= m+1
-      h_Ntuple_tag(m)= 'HSDELTA'	! Spectrometer delta of chosen track
+      h_Ntuple_tag(m)= 'phi'	! Lab Azymuthal angle in radians
       m= m+1
-      h_Ntuple_tag(m)= 'HSTHETA'	! Lab Scattering angle in radians
+      h_Ntuple_tag(m)= 'wsq'	! Invariant Mass of remaing hadronic system
       m= m+1
-      h_Ntuple_tag(m)= 'HSPHI'	! Lab Azymuthal angle in radians
-      m= m+1
-      h_Ntuple_tag(m)= 'HSMINV'	! Invariant Mass of remaing hadronic system
-      m= m+1
-      h_Ntuple_tag(m)= 'HSZBEAM'! Lab Z coordinate of intersection of beam
+      h_Ntuple_tag(m)= 'zbeam'! Lab Z coordinate of intersection of beam
                                 ! track with spectrometer ray
       m= m+1
-      h_Ntuple_tag(m)= 'HSDEDX1'	! DEDX of chosen track in 1st scin plane
+      h_Ntuple_tag(m)= 'dedx1'	! DEDX of chosen track in 1st scin plane
+c      m= m+1
+c      h_Ntuple_tag(m)= 'dedx2'	! DEDX of chosen track in 2nd scin plane
+c      m= m+1
+c      h_Ntuple_tag(m)= 'dedx3'	! DEDX of chosen track in 3rd scin plane
+c      m= m+1
+c      h_Ntuple_tag(m)= 'dedx4'	! DEDX of chosen track in 4th scin plane
       m= m+1
-      h_Ntuple_tag(m)= 'HSDEDX2'	! DEDX of chosen track in 2nd scin plane
+      h_Ntuple_tag(m)= 'beta'	! BETA of chosen track
       m= m+1
-      h_Ntuple_tag(m)= 'HSDEDX3'	! DEDX of chosen track in 3rd scin plane
+      h_Ntuple_tag(m)= 'shtrk'  ! 'HSTRACK_ET'	! Total shower energy of chosen track
       m= m+1
-      h_Ntuple_tag(m)= 'HSDEDX4'	! DEDX of chosen track in 4th scin plane
+      h_Ntuple_tag(m)= 'prtrk'  !'HSTRACK_PRESHOWER_E' ! preshower of chosen track
       m= m+1
-      h_Ntuple_tag(m)= 'HSBETA'	! BETA of chosen track
+      h_Ntuple_tag(m)= 'fptime'
       m= m+1
-      h_Ntuple_tag(m)= 'HStrk_ET'! 'HSTRACK_ET'	! Total shower energy of chosen track
+      h_Ntuple_tag(m)= 'xfp'		! X focal plane position 
       m= m+1
-      h_Ntuple_tag(m)= 'HStrk_PRESHOWER_E'!'HSTRACK_PRESHOWER_E' ! preshower of chosen track
+      h_Ntuple_tag(m)= 'yfp'
       m= m+1
-      h_Ntuple_tag(m)= 'HSTIME_AT_FP'
+      h_Ntuple_tag(m)= 'xpfp'
       m= m+1
-      h_Ntuple_tag(m)= 'HSX_FP'		! X focal plane position 
+      h_Ntuple_tag(m)= 'ypfp'
       m= m+1
-      h_Ntuple_tag(m)= 'HSY_FP'
+      h_Ntuple_tag(m)= 'chi2'	! CHI2 per degree of freedom of chosen track.
       m= m+1
-      h_Ntuple_tag(m)= 'HSXP_FP'
+      h_Ntuple_tag(m)= 'ndof'
       m= m+1
-      h_Ntuple_tag(m)= 'HSYP_FP'
+      h_Ntuple_tag(m)= 'ytar'
       m= m+1
-      h_Ntuple_tag(m)= 'HSCHI2PERDEG'	! CHI2 per degree of freedom of chosen track.
+      h_Ntuple_tag(m)= 'xptar'
       m= m+1
-      h_Ntuple_tag(m)= 'HSX_TAR'
-      m= m+1
-      h_Ntuple_tag(m)= 'HSY_TAR'
-      m= m+1
-      h_Ntuple_tag(m)= 'HSXP_TAR'
-      m= m+1
-      h_Ntuple_tag(m)= 'HSYP_TAR'
+      h_Ntuple_tag(m)= 'yptar'
 *
-      m= m+1
-      h_Ntuple_tag(m)= 'HSNUM_FPTRACK'	! Index of focal plane track chosen
-      m= m+1
-      h_Ntuple_tag(m)= 'HSNUM_TARTRACK'	! Index of target track chosen
-      m= m+1
-      h_Ntuple_tag(m)= 'HSID_LUND'	! LUND particle ID code -- not yet filled
-      m= m+1
-      h_Ntuple_tag(m)= 'HSNFREE_FP'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'trknum'       ! Index of focal plane track chosen
+c      m= m+1
+c      h_Ntuple_tag(m)= 'HSID_LUND'    ! LUND particle ID code -- not yet filled
 *
       m= m+1
       h_Ntuple_tag(m)= 'eventID'
+*
+      m= m+1
+      h_Ntuple_tag(m)= 'scintothits'
+      m= m+1
+      h_Ntuple_tag(m)= 'scinhits'
+      m= m+1
+      h_Ntuple_tag(m)= 'starttime'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'fptim1'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'fptim2'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'fptim3'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'fptim4'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'scinhit1'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'scinhit2'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'scinhit3'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'scinhit4'
+      m= m+1
+      h_Ntuple_tag(m)= 'hdc_raw_hits'
+      m= m+1
+      h_Ntuple_tag(m)= 'hdc_hits'
+*
+c      m= m+1
+c      h_Ntuple_tag(m)= 'hx_sp1'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'hy_sp1'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'hxp_sp1'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'hx_sp2'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'hy_sp2'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'hxp_sp2'
+*
+c      m= m+1
+c      h_Ntuple_tag(m)= 'res1'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'res2'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'res3'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'res4'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'res5'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'res6'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'res7'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'res8'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'res9'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'res10'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'res11'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'res12'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'dist1'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'dist2'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'dist3'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'dist4'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'dist5'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'dist6'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'dist7'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'dist8'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'dist9'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'dist10'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'dist11'
+c      m= m+1
+c      h_Ntuple_tag(m)= 'dist12'
 *
       h_Ntuple_size= m     !total size
 ***********end insert description of contents of HMS tuple********
@@ -238,10 +326,10 @@
       IF(ABORT) THEN
         err= ':unable to create '//msg
         call G_add_path(here,err)
-      ELSE
-        pat= ':created '//msg
-        call G_add_path(here,pat)
-        call G_log_message('INFO: '//pat)
+c      ELSE
+c        pat= ':created '//msg
+c        call G_add_path(here,pat)
+c        call G_log_message('INFO: '//pat)
       ENDIF
 *
       RETURN
