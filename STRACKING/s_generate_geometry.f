@@ -8,6 +8,9 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change SPLANE_PARAM to individual arrays
 * $Log$
+* Revision 1.6  1996/04/30 17:13:09  saw
+* (JRA) Set up card drift time delay structures
+*
 * Revision 1.5  1995/10/10 14:21:21  cdaq
 * (JRA) Calculate wire velocity correction parameters.  Cosmetics and comments
 *
@@ -31,6 +34,7 @@
       include "sos_geometry.cmn"
 *
 *     local variables
+      logical missing_card_no
       integer*4 pln,i,j,k,pindex,ich
       real*4 cosalpha,sinalpha,cosbeta,sinbeta,cosgamma,singamma,z0
       real*4 stubxchi,stubxpsi,stubychi,stubypsi
@@ -47,6 +51,19 @@
 *     sdc_sigma(pln)       = sigma
 *
       sdc_planes_per_chamber = sdc_num_planes / sdc_num_chambers
+
+      missing_card_no = .false.
+      do j=1,smax_num_dc_planes
+        do i=1,sdc_max_wires_per_plane
+          if (sdc_card_no(i,j).eq.0) then
+       write(6,*) 'card number = 0 for wire,plane=',i,j
+            missing_card_no = .true.
+            sdc_card_no(i,j)=1        !avoid 0 in array index
+            sdc_card_delay(1)=0      !no delay for wires
+          endif
+        enddo
+      enddo
+      if (missing_card_no) write(6,*) 'missing sdc_card_no(IGNORE THIS-JRA)'
 *
 *     loop over all planes
 *
@@ -150,9 +167,9 @@
 *
 *     The following is pretty gross, but might actually work for an
 *     arbitrary number of chambers if each chamber has the same number of
-*     planes and SDC_NUM_PLANES is SDC_NUM_CHAMBERS * # of planes/chamber
+*     planes and sdc_num_planes is SDC_NUM_CHAMBERS * # of planes/chamber
 *
-      do pindex=1,SDC_NUM_PLANES+SDC_NUM_CHAMBERS
+      do pindex=1,sdc_num_planes+SDC_NUM_CHAMBERS
 
 * generate the matrix SAA3 for an sdc missing a particular plane
         do i=1,3
@@ -161,18 +178,18 @@
             if(j.lt.i)then              ! SAA3 is symmetric so only calculate 6 terms
               SAA3(i,j)=SAA3(j,i)
             else
-              if(pindex.le.SDC_NUM_PLANES) then
-                ich = (pindex-1)/(SDC_PLANES_PER_CHAMBER)+1
-                do k=(ich-1)*(SDC_PLANES_PER_CHAMBER)+1
-     $               ,ich*(SDC_PLANES_PER_CHAMBER)
+              if(pindex.le.sdc_num_planes) then
+                ich = (pindex-1)/(sdc_planes_per_chamber)+1
+                do k=(ich-1)*(sdc_planes_per_chamber)+1
+     $               ,ich*(sdc_planes_per_chamber)
                   if(pindex.ne.k) then
                     SAA3(i,j)=SAA3(i,j) + sstubcoef(k,i)*sstubcoef(k,j)
                   endif
                 enddo
               else
-                ich = pindex - SDC_NUM_PLANES
-                do k=(ich-1)*(SDC_PLANES_PER_CHAMBER)+1
-     $               ,ich*(SDC_PLANES_PER_CHAMBER)
+                ich = pindex - sdc_num_planes
+                do k=(ich-1)*(sdc_planes_per_chamber)+1
+     $               ,ich*(sdc_planes_per_chamber)
                   SAA3(i,j)=SAA3(i,j) + sstubcoef(k,i)*sstubcoef(k,j)
                 enddo
               endif
