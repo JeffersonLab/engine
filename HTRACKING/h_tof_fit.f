@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.3  1994/07/08 19:42:31  cdaq
+* Revision 1.4  1994/07/11 18:34:35  cdaq
+* (JRA) Increase comparison of tmpdenom from 1e-15 to 1e-10
+*
+* Revision 1.3  1994/07/08  19:42:31  cdaq
 * (JRA) Change fit from velocity to beta.  Bad fits give beta=0
 *
 * Revision 1.2  1994/06/14  04:53:41  cdaq
@@ -66,7 +69,7 @@
       tmp = sumw*sumzz - sumz*sumz
       t0 = (sumt*sumzz - sumz*sumtz) / tmp
       tmpdenom = sumw*sumtz - sumz*sumt
-      if(tmpdenom .gt. 1.e-15) then
+      if(tmpdenom .gt. 1.e-10) then
          hbeta(trk) = tmp / tmpdenom        !velocity in cm/ns.
          hbeta(trk) = hbeta(trk) / 29.9979  !velocity/c
          hbeta_chisq(trk) = 0.
