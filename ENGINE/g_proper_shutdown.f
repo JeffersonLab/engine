@@ -10,6 +10,9 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 * $Log$
+* Revision 1.11  1996/09/04 14:40:05  saw
+* (JRA) Get filename for "bad" report from a ctp variable
+*
 * Revision 1.10  1995/10/09 18:44:27  cdaq
 * (JRA) Only write pedestal file if appropriate control flag(s) set.
 *
@@ -74,9 +77,14 @@
       bad_report = .TRUE.
       err_report = 'Failed to open report file'
 
-      file = "scalers/bad%d.txt"
-      call g_sub_run_number(file,gen_run_number)
-      open(unit=SPAREID,file=file,status='unknown')
+      if (g_bad_output_filename.ne.' ') then
+        file = g_bad_output_filename
+        call g_sub_run_number(file, gen_run_number)
+
+        open(unit=SPAREID,file=file,status='unknown')
+      else
+        open(unit=SPAREID,file='bad.tmp',status='unknown')
+      endif
 
 c temporary files for pedestal calculation.
       if (hdebugcalcpeds.ne.0 .or. sdebugcalcpeds.ne.0) then
