@@ -3,7 +3,7 @@
 *-       Prototype C analysis routine
 *-
 *-
-*-   Purpose and Methods : Resets all quantities before an event is processed.
+*-   Purpose and Methods : Resets all quantities AT THE BEGINNING OF THE RUN
 *-
 *- 
 *-   Output: ABORT	- success or failure
@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
 * $Log$
+* Revision 1.10  1996/01/16 17:07:55  cdaq
+* (JRA) Zero out ADC threshold readback array
+*
 * Revision 1.9  1995/10/09 18:45:20  cdaq
 * (JRA) Add scaler event reset call.  Remove monte carlo stuff.
 *
@@ -58,9 +61,10 @@
       logical HMS_ABORT,SOS_ABORT,COIN_ABORT,SCAL_ABORT
       character*132 HMS_err,SOS_err,COIN_err,SCAL_err
 *
-      integer hit
+      integer hit,chan,roc,slot
 *
       INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'gen_decode_common.cmn'
 *
 *--------------------------------------------------------
 *
@@ -83,6 +87,14 @@
         CBPM_ADCVAL(hit) = 0
       enddo
       CBPM_TOT_HITS = 0
+*
+      do slot=1,gmax_slot_with_adc
+        do roc=1,gmax_roc_with_adc
+          do chan=1,gnum_adc_channels
+            g_threshold_readback(chan,roc,slot)=0
+          enddo
+        enddo
+      enddo
 *
       call g_scaler_reset_event(SCAL_ABORT,SCAL_err)
 *
