@@ -6,6 +6,9 @@
 * July 1995  Derek van Westrum (vanwestr@cebaf.gov)
 *
 * $Log$
+* Revision 1.2  1996/01/17 16:40:27  cdaq
+* (SAW) Change an include file name
+*
 * Revision 1.1  1995/07/31 15:24:52  cdaq
 * Initial revision
 *
@@ -18,9 +21,9 @@
       include 'sos_calorimeter.cmn'
       include 'gen_event_info.cmn'
       include 'sos_one_ev.par'
-      include 'gctrak.inc'
-      include 'gckine.inc'
-      include 'gcvolu.inc'
+      include 'gen_one_ev_gctrak.cmn'
+      include 'gen_one_ev_gckine.cmn'
+      include 'gen_one_ev_gcvolu.cmn'
       character*5 scinname 
       character*5 blockname
       integer istrip
