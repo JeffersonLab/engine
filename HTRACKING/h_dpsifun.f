@@ -17,9 +17,12 @@
 *
 *     d.f. geesaman                   17 January 1994
 * $Log$
-* Revision 1.1  1994/02/19 06:13:29  cdaq
-* Initial revision
+* Revision 1.2  1994/02/21 03:11:25  cdaq
+* (SAW) remove dfloat call since arg and result both real*8
 *
+c Revision 1.1  1994/02/19  06:13:29  cdaq
+c Initial revision
+c
 *
       implicit none
       include "gen_data_structures.cmn"
@@ -36,16 +39,16 @@
       parameter (infinity = 1.0d20)
       parameter (cinfinity = 1/infinity)
 *
-      H_DPSIFUN =  ray(3)*ray(2)*dfloat(hplane_coeff(1,iplane)) 
-     &        + ray(4)*ray(1)*dfloat(hplane_coeff(2,iplane))
-     &        + ray(3)*dfloat(hplane_coeff(3,iplane)) 
-     &        + ray(4)*dfloat(hplane_coeff(4,iplane))
-     &        + ray(1)*dfloat(hplane_coeff(5,iplane))
-     &        + ray(2)*dfloat(hplane_coeff(6,iplane))
+      H_DPSIFUN =  ray(3)*ray(2)*(hplane_coeff(1,iplane)) 
+     &        + ray(4)*ray(1)*(hplane_coeff(2,iplane))
+     &        + ray(3)*(hplane_coeff(3,iplane)) 
+     &        + ray(4)*(hplane_coeff(4,iplane))
+     &        + ray(1)*(hplane_coeff(5,iplane))
+     &        + ray(2)*(hplane_coeff(6,iplane))
 *
-      denom = ray(3)*dfloat(hplane_coeff(7,iplane)) 
-     &      + ray(4)*dfloat(hplane_coeff(8,iplane))  
-     &      + dfloat(hplane_coeff(9,iplane))
+      denom = ray(3)*(hplane_coeff(7,iplane)) 
+     &      + ray(4)*(hplane_coeff(8,iplane))  
+     &      + (hplane_coeff(9,iplane))
 *
       if(abs(denom).lt.cinfinity) then
           H_DPSIFUN=infinity
