@@ -1,7 +1,10 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
-* Revision 1.5  1995/07/27 19:04:54  cdaq
+* Revision 1.6  1995/09/01 13:41:25  cdaq
+* (JRA) Calculate time of run
+*
+* Revision 1.5  1995/07/27  19:04:54  cdaq
 * (SAW) Use specific bit manipulation routines for f2c compatibility
 *
 * Revision 1.4  1995/04/06  20:04:33  cdaq
@@ -78,9 +81,7 @@ c
               index=address+counter
               realscal=float(event(pointer+counter))
               if (realscal.lt.-0.5) then
-c                  type *,realscal
                   realscal=realscal+4294967296.
-c                  type *,realscal
               endif
               if ( (realscal+float(nroll(index))*4294967296.) .ge.
      &              scalers(index) ) then       ! 2**32 = 4.295e+9
@@ -98,6 +99,10 @@ c                  type *,realscal
          call g_add_path(here,err)
          return
       endif
+
+
+! calculate time of run (must not be zero to avoid div. by zero).
+      g_time = max(0.001,scalers(g_clock_index)/g_clock_rate)
 
       return
       end
