@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19  2005/03/15 21:08:08  jones
+* Add code to filter the scintillator tdc hits and group them by time. ( P. Bosted)
+*
 * Revision 1.18  1999/06/10 16:52:12  csa
 * (JRA) Cosmetic changes
 *
@@ -105,6 +108,9 @@
       real*4 path
       real*4 sum_fp_time,sum_plane_time(hnum_scin_planes)
       integer*4 num_fp_time,num_plane_time(hnum_scin_planes)
+      integer timehist(200),i,j,jmax,maxhit,nfound
+      real*4 time_pos(1000),time_neg(1000),tmin,time_tolerance
+      logical keep_pos(1000),keep_neg(1000),first/.true./
       save
 *
 *--------------------------------------------------------
@@ -142,6 +148,119 @@
           num_plane_time(plane) = 0
         enddo
 
+! Calculate all corrected hit times and histogram
+! This uses a copy of code below. Results are save in time_pos,neg
+! including the z-pos. correction assuming nominal value of betap
+! Code is currently hard-wired to look for a peak in the
+! range of 0 to 100 nsec, with a group of times that all
+! agree withing a time_tolerance of time_tolerance nsec. The normal
+! peak position appears to be around 35 nsec.
+! NOTE: if want to find farticles with beta different than
+!       reference particle, need to make sure this is big enough
+!       to accomodate difference in TOF for other particles
+! Default value in case user hasnt definedd something reasonable
+        time_tolerance=3.0
+        if(htof_tolerance.gt.0.5.and.htof_tolerance.lt.10000.) then
+          time_tolerance=htof_tolerance
+        endif
+        if(first) then
+           first=.false.
+           write(*,'(//1x,''USING '',f8.2,'' NSEC WINDOW FOR'',
+     >     ''  HMS TOF AND FP CALCULATIONS'')') time_tolerance
+           write(*,'(//)')
+        endif
+        nfound = 0
+        do j=1,200
+          timehist(j)=0
+        enddo
+        do hit = 1 , hscin_tot_hits
+          i=min(1000,hit)
+          time_pos(i)=-99.
+          time_neg(i)=-99.
+          keep_pos(i)=.false.
+          keep_neg(i)=.false.
+          plane = hscin_plane_num(hit)
+          xhit_coord = hx_fp(trk) + hxp_fp(trk)*hscin_zpos(hit)
+          yhit_coord = hy_fp(trk) + hyp_fp(trk)*hscin_zpos(hit)
+          if (plane.eq.1 .or. plane.eq.3) then !x plane
+            hscin_trans_coord(hit) = xhit_coord
+            hscin_long_coord(hit) = yhit_coord
+          else if (plane.eq.2 .or. plane.eq.4) then !y plane
+            hscin_trans_coord(hit) = yhit_coord
+            hscin_long_coord(hit) = xhit_coord
+          else                          !bad plane #.
+            abort = .true.
+            write(errmsg,*) 'hscin_plane_num(',hit,') = ',plane
+            call g_prepend(here,errmsg)
+            return
+          endif
+          if (abs(hscin_center_coord(hit)-hscin_trans_coord(hit))
+     &         .lt.(hscin_width(hit)/2.+hscin_slop(hit))) then
+            if(hscin_tdc_pos(hit) .ge. hscin_tdc_min .and.  
+     &          hscin_tdc_pos(hit) .le. hscin_tdc_max) then
+              adc_ph = hscin_adc_pos(hit)
+              path = hscin_pos_coord(hit) - hscin_long_coord(hit)
+              time = hscin_tdc_pos(hit) * hscin_tdc_to_time
+              time = time - hscin_pos_phc_coeff(hit) *
+     &             sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
+              time = time - path/hscin_vel_light(hit)
+     &                  - (hscin_zpos(hit)/(29.979*betap) *
+     &          sqrt(1.+hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
+              time_pos(i) = time - hscin_pos_time_offset(hit)
+              nfound = nfound + 1
+              do j=1,200
+                tmin = 0.5*float(j)                
+                if(time_pos(i) .gt. tmin .and.
+     >             time_pos(i) .lt. tmin + time_tolerance) 
+     >            timehist(j) = timehist(j) + 1
+              enddo
+            endif
+            if (hscin_tdc_neg(hit).ge.hscin_tdc_min .and. !good tdc
+     1           hscin_tdc_neg(hit).le.hscin_tdc_max) then
+              adc_ph = hscin_adc_neg(hit)
+              path = hscin_long_coord(hit) - hscin_neg_coord(hit)
+              time = hscin_tdc_neg(hit) * hscin_tdc_to_time
+              time = time - hscin_neg_phc_coeff(hit) *
+     &             sqrt(max(0.,(adc_ph/hscin_neg_minph(hit)-1.)))
+              time = time - path/hscin_vel_light(hit)
+     &                    - (hscin_zpos(hit)/(29.979*betap) *
+     &          sqrt(1.+hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
+              time_neg(i) = time - hscin_neg_time_offset(hit)
+              nfound = nfound + 1
+              do j=1,200
+                tmin = 0.5*float(j)                
+                if(time_neg(i) .gt. tmin .and.
+     >             time_neg(i) .lt. tmin + time_tolerance) 
+     >            timehist(j) = timehist(j)+1
+             enddo
+            endif
+          endif
+        enddo
+! Find bin with most hits
+        jmax=0
+        maxhit=0
+        do j=1,200
+          if(timehist(j) .gt. maxhit) then
+            jmax = j
+            maxhit = timehist(j)
+          endif
+        enddo
+        if(jmax.gt.0) then
+          tmin = 0.5*float(jmax) 
+          do hit = 1 , hscin_tot_hits
+            i=min(1000,hit)
+            if(time_pos(i) .gt. tmin .and.
+     >         time_pos(i) .lt. tmin + time_tolerance) then
+              keep_pos(i) = .true.
+            endif
+            if(time_neg(i) .gt. tmin .and.
+     >         time_neg(i) .lt. tmin + time_tolerance) then
+              keep_neg(i) = .true.
+            endif
+          enddo
+        endif
+
+! Resume regular tof code, now using time filer from above
         do hit = 1 , hscin_tot_hits
           hgood_scin_time(trk,hit) = .false.
           hgood_tdc_pos(trk,hit) = .false.
@@ -178,7 +297,8 @@
             hscin_on_track(trk,hit) = .true.
 **    Check for good TDC
             if (hscin_tdc_pos(hit) .ge. hscin_tdc_min .and.  
-     &          hscin_tdc_pos(hit) .le. hscin_tdc_max) then
+     &          hscin_tdc_pos(hit) .le. hscin_tdc_max .and.
+     >          keep_pos(hit)) then
 
 **    Calculate time for each tube with a good tdc. 'pos' side first.
               hgood_tdc_pos(trk,hit) = .true.
@@ -197,7 +317,8 @@
 
 **    Repeat for pmts on 'negative' side
             if (hscin_tdc_neg(hit).ge.hscin_tdc_min .and. !good tdc
-     1           hscin_tdc_neg(hit).le.hscin_tdc_max) then
+     1           hscin_tdc_neg(hit).le.hscin_tdc_max.and.
+     >           keep_neg(hit)) then
 
               hgood_tdc_neg(trk,hit) = .true.
               hntof = hntof + 1
@@ -288,7 +409,6 @@ c     Get time at focal plane
           hbeta(trk) = 0.
           hbeta_chisq(trk) = -1.
         endif
-        
         if (num_fp_time .ne. 0) then
           htime_at_fp(trk) = sum_fp_time / float(num_fp_time)
         endif
@@ -312,6 +432,16 @@ c     Get time at focal plane
 
         if(hdebugprinttoftracks.ne.0 ) call h_prt_tof(trk)
 
+
+        if(hntracks_fp.gt.1000) then
+          if(trk.eq.1) write(*,'(/1x,''hms tol='',f8.2)') time_tolerance
+          write(*,'(5i3,4L2,7f7.2)') trk,nfound,jmax,timehist(max(1,jmax)),
+     >      hnum_pmt_hit(trk),
+     >      hgood_plane_time(trk,1),hgood_plane_time(trk,3),
+     >      hgood_plane_time(trk,2),hgood_plane_time(trk,4),
+     >      htime_at_fp(trk),hbeta(trk),hbeta_chisq(trk),
+     >      hdelta_tar(trk),hy_tar(trk),hxp_tar(trk),hyp_tar(trk)
+        endif
       enddo                             !end of loop over tracks
 
  666  continue
