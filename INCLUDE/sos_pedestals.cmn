@@ -2,6 +2,9 @@
 *                      of pedestal events at the beginning of each run.
 *
 * $Log$
+* Revision 1.5  1996/04/30 14:02:09  saw
+* (JRA) Make aerogel parameters PARM type
+*
 * Revision 1.4  1996/01/17 15:09:10  cdaq
 * (JRA) Add "_new_" pedestal variables
 *
@@ -151,16 +154,16 @@
       integer*4 saer_neg_ped_sum(smax_aer_hits)
       integer*4 saer_pos_ped_num(smax_aer_hits)
       integer*4 saer_neg_ped_num(smax_aer_hits)
+*
+*     CTPTYPE=parm
+*
+      integer*4 saer_min_peds
       real*4 saer_pos_ped_mean(smax_aer_hits)
       real*4 saer_neg_ped_mean(smax_aer_hits)
       real*4 saer_pos_ped_rms(smax_aer_hits)
       real*4 saer_neg_ped_rms(smax_aer_hits)
       real*4 saer_pos_threshold(smax_aer_hits)
       real*4 saer_neg_threshold(smax_aer_hits)
-*
-*     CTPTYPE=parm
-*
-      integer*4 saer_min_peds
 *
       common/sos_aero_pedestals/
      &   saer_pos_ped_sum2,       !sum of squares
