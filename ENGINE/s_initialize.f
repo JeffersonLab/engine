@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 *-    $Log$
-*-    Revision 1.10  1994/06/16 03:46:17  cdaq
-*-    *** empty log message ***
+*-    Revision 1.11  1994/06/17 04:02:58  cdaq
+*-    (KBB) Upgrade error reporting
 *-
+* Revision 1.10  1994/06/16  03:46:17  cdaq
+* *** empty log message ***
+*
 * Revision 1.9  1994/06/14  04:03:48  cdaq
 * (DFG) Add call to s_init_physics
 *
@@ -57,6 +60,9 @@
       character*20 err1
       integer*4 istat 
 *
+      logical FAIL
+      character*1000 why
+*
 *--------------------------------------------------------
       ABORT = .FALSE.
       err= ' '
@@ -65,35 +71,54 @@
 *
       call s_initialize_fitting         ! Minuit initialization
 *
-*     calculate secondary scintillator and time of flight parameters
-      call s_init_scin(ABORT,err)
-      if(ABORT) then
-         call g_add_path(here,err)
+*-calculate secondary scintillator and time of flight parameters
+      call s_init_scin(FAIL,why)
+      if(why.NE.' ') then
+        err= why
       endif
-*     calculate secondary calorimeter parameters
-      call s_init_cal(ABORT,err)
-      if(ABORT) then
-         call g_add_path(here,err)
-      endif
-*     read in Optical matrix elements
-      call s_targ_trans_init(ABORT,err,istat)
-      if(ABORT) then
-         call g_build_note(':istat=@','@',istat,' ',1.,'(I3)',err1)
-         call G_prepend(err1,err)
-         call g_rep_err(ABORT,err)
-         call g_add_path(here,err)
-      endif
-*     calculate physics singles constants
-      call s_init_physics(ABORT,err)
-      if(ABORT) then
-         call g_add_path(here,err)
-      endif
+      ABORT= ABORT .or. FAIL
 *
-      call s_ntuple_init(ABORT,err)
-*
-      if(ABORT) then
-         call g_add_path(here,err)
+*-calculate secondary calorimeter parameters
+      call s_init_cal(FAIL,why)
+      if(err.NE.' ' .and. why.NE.' ') then   !keep warnings
+        call G_append(err,' & '//why)
+      elseif(why.NE.' ') then
+        err= why
       endif
+      ABORT= ABORT .or. FAIL
+*
+*-read in Optical matrix elements
+      call s_targ_trans_init(FAIL,why,istat)
+      if(ABORT) then
+         call g_build_note(':istat=@-','@',istat,' ',1.,'(I3)',err1)
+         call G_prepend(err1,why)
+      endif
+      if(err.NE.' ' .and. why.NE.' ') then   !keep warnings
+        call G_append(err,' & '//why)
+      elseif(why.NE.' ') then
+        err= why
+      endif
+      ABORT= ABORT .or. FAIL
+*
+*
+*-calculate physics singles constants
+      call s_init_physics(FAIL,why)
+      if(err.NE.' ' .and. why.NE.' ') then
+        call G_append(err,' & '//why)
+      elseif(why.NE.' ') then
+        err= why
+      endif
+      ABORT= ABORT .or. FAIL
+*
+      call s_ntuple_init(FAIL,why)
+      if(err.NE.' ' .and. why.NE.' ') then
+        call G_append(err,' & '//why)
+      elseif(why.NE.' ') then
+        err= why
+      endif
+      ABORT= ABORT .or. FAIL
+*
+      if(ABORT .or. err.NE.' ') call g_add_path(here,err)
 *
       return
       end
