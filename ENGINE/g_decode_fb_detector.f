@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.15  1996/01/16 20:51:55  cdaq
+* (SAW) Fixes:  Forgot why
+*
 * Revision 1.14  1995/11/28 18:59:24  cdaq
 * (SAW) Change arrays that use roc as index to start with zero.
 *
@@ -58,6 +61,7 @@
 
 *     The following arguments get modified.
       integer*4 oslot
+      integer*4 buffer
       integer*4 hitcount,planelist(*),counterlist(*)
       integer*4 signal0(*),signal1(*),signal2(*),signal3(*)
       integer pointer,newdid,subadd,slot,mappointer,plane
@@ -66,6 +70,7 @@
       include 'gen_decode_common.cmn'
       include 'gen_detectorids.par'
       include 'gen_scalers.cmn'
+      include 'gen_event_info.cmn'
       integer iscaler,nscalers
 *
       integer h,hshift
@@ -88,18 +93,19 @@
           pointer = pointer + 1
           goto 987
         endif
+
 *
 *     Check for event by event scalers thrown in by the scaler hack.
 *
 *        if(jiand(evfrag(pointer),'FF000000'x).eq.'DA000000'x) then ! Magic header
 *          nscalers = jiand(evfrag(pointer),'FF'x)
 *          do iscaler=1,nscalers
-**            type *,iscaler,evfrag(pointer+iscaler)
 *            evscalers(iscaler) = evfrag(pointer+iscaler)
 *          enddo
 *          pointer = pointer + nscalers + 1
 *          goto 987
 *        endif
+
         if(evfrag(pointer).le.1.and.evfrag(pointer).ge.0) then
           write(6,'(" BAD FB value evfrag(",i4,")=",z10," ROC=",i2)')
      $         pointer,evfrag(pointer),roc
@@ -108,12 +114,16 @@
         endif
         slot = jiand(JISHFT(evfrag(pointer),-27),'1F'X)
         if(slot.ne.oslot.or.firsttime) then
-*          if (slot.le.0 .or. slot.ge.26 .or. roc.le.0 .or. roc.ge.9) then
-*            write (6,*) 'roc,slot=',roc,slot
-*            write (6,*) 'evfrag(pointer)=',evfrag(pointer)
-*          endif
-          mappointer = g_decode_slotpointer(roc,slot)
-          subaddbit = g_decode_subaddbit(roc,slot) ! Usually 16 or 17
+          if (slot.le.0 .or. slot.ge.26 .or. roc.le.0 .or. roc.ge.9) then
+            write (6,*) 'roc,slot=',roc,slot
+            write (6,'(a,z8)') 'evfrag(pointer)=',evfrag(pointer)
+            write (6,*) 'gen_event_id_number=',gen_event_id_number
+            pointer = pointer + 1
+            goto 987
+          else
+            mappointer = g_decode_slotpointer(roc,slot)
+            subaddbit = g_decode_subaddbit(roc,slot) ! Usually 16 or 17
+          endif
         endif
         if(slot.ne.oslot) then
           oslot = slot
@@ -131,13 +141,9 @@ c
           if(subaddbit.eq.17) then      ! Is not an 1872A (which has not headers)
             if(jiand(evfrag(pointer),'00FE0000'X).eq.0) then ! probably a header
               if(jiand(evfrag(pointer),'07FF0000'X).ne.0) then
-                print *,
-     $               "SHIT: we misidentified a real data word as a header
-     $               "
+                print *,"SHIT:misidentified real data word as a header"
                 print *,"DID=",did,", SLOT=",slot,", POINTER=",pointer
               else
-*                print *,"FOUND NEW HEADER in roc, slot ",roc,slot
-
                 pointer = pointer + 1
                 goto 987
               endif
@@ -145,9 +151,24 @@ c
           endif
         endif
 *
+***********************
+cc     write(6,*) buffer
+c          buffer = jiand(JISHFT(evfrag(pointer),-24),'03'X)
+c          if (g_decode_bufnum .ne. buffer) then
+c            if (g_decode_bufnum.eq.-1) then 
+c              g_decode_bufnum=buffer
+c            else
+c            write (6,*) 'g_decode_fb_detector: roc,slot,buffer='
+c     &             ,roc,slot,buffer,'but previous data was buffer=',
+c     &             g_decode_bufnum
+c              write (6,*) 'gen_event_id_number=',gen_event_id_number
+cc              stop
+c            endif
+c          endif
+*************************
         subadd = jiand(JISHFT(evfrag(pointer),-subaddbit),'7F'X)
 *
-*     If an module that uses a shift of 17 for the subaddress is in a slot
+*     If a module that uses a shift of 17 for the subaddress is in a slot
 *     that we havn't told the map file about, it's data will end up in the
 *     unstrimented channel "detector" hit list.  However, the decoder will
 *     think that the subaddress starts in channel 16 (since some Lecroy
@@ -246,7 +267,8 @@ c
               endif
             else if(hitcount.eq.maxhits .and. printerr) then ! Only print this message once
               print *,'g_decode_fb_detector: Max exceeded, did=',
-     $             did,', max=',maxhits
+     $             did,', max=',maxhits,': event',gen_event_id_number
+              print *,'   roc,slot,cntr=',roc,slot,counter
               printerr = .false.
 *     
 *     Print/generate some kind of error that the hit array has been
