@@ -8,6 +8,9 @@
 *
 *
 * $Log$
+* Revision 1.6  1999/01/29 17:34:58  saw
+* Add variables for second tubes on shower counter
+*
 * Revision 1.5  1999/01/27 16:02:45  saw
 * Check if some hists are defined before filling
 *
@@ -44,6 +47,8 @@
 *
       ABORT= .FALSE.
       err= ' '
+*
+*     Light in either tube will do
 *
       if(scal_num_hits .gt. 0 ) then
         do ihit=1,scal_num_hits

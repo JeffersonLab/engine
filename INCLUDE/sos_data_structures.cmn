@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.8  1999/01/29 17:34:23  saw
+* Add variables for second tubes on shower counter
+*
 * Revision 1.7  1996/11/19 18:49:15  saw
 * (WH) Add data structures for Lucite counter
 *
@@ -245,16 +248,29 @@
       INTEGER*4 SMAX_CAL_COLUMNS      !Number of calorimeter columns
       PARAMETER (SMAX_CAL_COLUMNS=4)
       INTEGER*4 SCAL_TOT_HITS
+      INTEGER*4 SCAL_POS_HITS
+      INTEGER*4 SCAL_NEG_HITS
       INTEGER*4 SCAL_COLUMN(SMAX_CAL_BLOCKS)
       INTEGER*4 SCAL_ROW(SMAX_CAL_BLOCKS)
+      INTEGER*4 SCAL_ADC_POS(SMAX_CAL_BLOCKS)
+      INTEGER*4 SCAL_ADC_NEG(SMAX_CAL_BLOCKS)
       INTEGER*4 SCAL_ADC(SMAX_CAL_BLOCKS)
+      equivalence (scal_adc, scal_adc_pos) ! For old code
+      REAL*4 SCAL_REALADC_POS(SMAX_CAL_BLOCKS)
+      REAL*4 SCAL_REALADC_NEG(SMAX_CAL_BLOCKS)
       REAL*4 SCAL_REALADC(SMAX_CAL_BLOCKS)
+      equivalence (scal_realadc, scal_realadc_pos)
+
       COMMON/SOS_RAW_CAL/
-     &     SCAL_REALADC,
      &     SCAL_COLUMN,
      &     SCAL_ROW,
-     &     SCAL_ADC,
-     &     SCAL_TOT_HITS
+     &     SCAL_ADC_POS,
+     &     SCAL_ADC_NEG,
+     &     SCAL_REALADC_POS,
+     &     SCAL_REALADC_NEG,
+     &     SCAL_TOT_HITS,
+     &     SCAL_POS_HITS,
+     &     SCAL_NEG_HITS
 *
 *    DECODED CALORIMETER QUANTITIES
 *    FILLED BY S_TRANS_CAL USING ONLY THE CALORIMETER INFORMATION
@@ -276,6 +292,12 @@
       REAL*4 SCAL_E3               !                            #3
       REAL*4 SCAL_E4               !                            #4
       REAL*4 SCAL_ET               !TOTAL ENERGY IN THE CALORIMETER
+      REAL*4 SCAL_E1_POS
+      REAL*4 SCAL_E1_NEG
+      REAL*4 SCAL_E2_POS
+      REAL*4 SCAL_E2_NEG
+      REAL*4 SBLOCK_DE_POS
+      REAL*4 SBLOCK_DE_NEG
       COMMON/SOS_DECODED_CAL/
      &     SBLOCK_XC(SMAX_CAL_BLOCKS),
      &     SBLOCK_ZC(SMAX_CAL_BLOCKS),
@@ -285,6 +307,12 @@
      &     SCAL_E3,
      &     SCAL_E4,
      &     SCAL_ET,
+     &     SCAL_E1_POS,
+     &     SCAL_E1_NEG,
+     &     SCAL_E2_POS,
+     &     SCAL_E2_NEG,
+     &     SBLOCK_DE_POS(SMAX_CAL_BLOCKS),
+     &     SBLOCK_DE_NEG(SMAX_CAL_BLOCKS),
      &     SNHITS_CAL
 *
 *
@@ -495,6 +523,10 @@
       REAL*4    STRACK_E4(SNTRACKS_MAX)
       REAL*4    STRACK_ET(SNTRACKS_MAX)
       REAL*4    STRACK_PRESHOWER_E(SNTRACKS_MAX)
+      REAL*4    STRACK_E1_POS(SNTRACKS_MAX)
+      REAL*4    STRACK_E1_NEG(SNTRACKS_MAX)
+      REAL*4    STRACK_E2_POS(SNTRACKS_MAX)
+      REAL*4    STRACK_E2_NEG(SNTRACKS_MAX)
 *
       INTEGER*4 SSCIN_HIT(SNTRACKS_MAX,SMAX_SCIN_HITS)
       INTEGER*4 SNUM_SCIN_HIT(SNTRACKS_MAX)
@@ -522,7 +554,12 @@
      D                             ! EACH TRACK
      E     SNUM_SCIN_HIT,          ! NUMBER OF HITS FOR EACH TRACK
      F     SNUM_PMT_HIT,           ! NUMBER OF PMT HITS FOR EACH TRACK
-     G     SSCIN_FPTIME
+     G     SSCIN_FPTIME,
+     H     STRACK_E1_POS,
+     I     STRACK_E1_NEG,
+     J     STRACK_E2_POS,
+     K     STRACK_E2_NEG
+
 *
 *
 *     SOS SINGLES PHYSICS COMMON BLOCKS

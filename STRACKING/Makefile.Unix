@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.21  1999/01/29 17:34:56  saw
+# Add variables for second tubes on shower counter
+#
 # Revision 1.20  1999/01/21 21:41:48  saw
 # Clean up Include file rules
 #
@@ -91,7 +94,8 @@ newerstuff = s_fill_dc_target_hist.f s_targ_trans_init.f \
 	s_cer_eff.f s_cer_eff_shutdown.f s_init_cer.f s_trans_cer.f \
 	s_dc_eff.f s_dc_eff_shutdown.f s_dump_peds.f s_dump_cal.f \
 	s_report_bad_data.f s_dc_trk_eff.f s_dc_trk_eff_shutdown.f \
-	s_find_easy_space_point.f s_aero.f s_track_tests.f s_lucite.f
+	s_find_easy_space_point.f s_aero.f s_track_tests.f s_lucite.f \
+	s_correct_cal_pos.f s_correct_cal_neg.f s_correct_cal_two.f
 makeregstuff = r_sos_filenames.f r_sos_tracking.f r_sos_geometry.f \
 	 r_sos_track_histid.f r_sos_recon_elements.f r_sos_physics_sing.f \
 	r_sos_scin_parms.f r_sos_scin_tof.f r_sos_calorimeter.f \

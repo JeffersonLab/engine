@@ -2,6 +2,9 @@
 *                      of pedestal events at the beginning of each run.
 *
 * $Log$
+* Revision 1.8  1999/01/29 17:34:23  saw
+* Add variables for second tubes on shower counter
+*
 * Revision 1.7  1996/11/19 18:49:39  saw
 * (WH) Add data structures for Lucite counter
 *
@@ -87,28 +90,42 @@
 *
 *     CTPTYPE=event
 *
-      integer*4 scal_ped_sum2(smax_cal_blocks)
-      integer*4 scal_ped_sum(smax_cal_blocks)
-      integer*4 scal_ped_num(smax_cal_blocks)
+      integer*4 scal_pos_ped_sum2(smax_cal_blocks)
+      integer*4 scal_neg_ped_sum2(smax_cal_blocks)
+      integer*4 scal_pos_ped_sum(smax_cal_blocks)
+      integer*4 scal_neg_ped_sum(smax_cal_blocks)
+      integer*4 scal_pos_ped_num(smax_cal_blocks)
+      integer*4 scal_neg_ped_num(smax_cal_blocks)
+
       integer*4 scal_num_ped_changes
-      integer*4 scal_changed_block(smax_cal_blocks)
-      real*4 scal_ped_change(smax_cal_blocks)
-      real*4 scal_new_ped(smax_cal_blocks)
-      real*4 scal_new_rms(smax_cal_blocks)
+      integer*4 scal_changed_block(2*smax_cal_blocks)
+      integer*4 scal_changed_sign(2*smax_cal_blocks) ! 1=pos, 2=neg
+      real*4 scal_ped_change(2*smax_cal_blocks)
+
+      real*4 scal_new_ped_pos(2*smax_cal_blocks)
+      real*4 scal_new_ped_neg(2*smax_cal_blocks)
+      real*4 scal_new_rms_pos(2*smax_cal_blocks)
+      real*4 scal_new_rms_neg(2*smax_cal_blocks)
 *
 *     CTPTYPE=parm
 *
       integer*4 scal_min_peds
 *
       common/sos_cal_ped_stats/
-     &   scal_ped_sum2,       !sum of squares
-     &   scal_ped_sum,        !sum of peds
-     &   scal_ped_num,        !number of peds
+     &   scal_pos_ped_sum2,       !sum of squares
+     &   scal_neg_ped_sum2,       !sum of squares
+     &   scal_pos_ped_sum,        !sum of peds
+     &   scal_neg_ped_sum,        !sum of peds
+     &   scal_pos_ped_num,        !number of peds
+     &   scal_neg_ped_num,        !number of peds
      &   scal_min_peds,       !# of peds required to override default pedestals
-     &   scal_new_ped,        !(new) calculated pedestals.
-     &   scal_new_rms,        !(new) calculated rms.
+     &   scal_new_ped_pos,        !(new) calculated pedestals.
+     &   scal_new_ped_neg,        !(new) calculated pedestals.
+     &   scal_new_rms_pos,        !(new) calculated rms.
+     &   scal_new_rms_neg,        !(new) calculated rms.
      &   scal_num_ped_changes,!# of peds with 2 sigma changes from param file
      &   scal_changed_block,
+     &   scal_changed_sign, ! 1=pos, 2=neg
      &   scal_ped_change
 *
 * GAS CERENKOV PEDESTALS
@@ -240,11 +257,13 @@
 *
       real*4 shodo_new_threshold_pos(snum_scin_planes,snum_scin_elements)
       real*4 shodo_new_threshold_neg(snum_scin_planes,snum_scin_elements)
-      real*4 scal_new_adc_threshold(smax_cal_blocks)
+      real*4 scal_new_adc_threshold_pos(smax_cal_blocks)
+      real*4 scal_new_adc_threshold_neg(smax_cal_blocks)
       real*4 scer_new_adc_threshold(smax_cer_hits)
 *
       common/sos_adc_thresholds/
      &   shodo_new_threshold_pos,
      &   shodo_new_threshold_neg,
-     &   scal_new_adc_threshold,
+     &   scal_new_adc_threshold_pos,
+     &   scal_new_adc_threshold_neg,
      &   scer_new_adc_threshold

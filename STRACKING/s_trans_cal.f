@@ -16,6 +16,9 @@
 *-
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 * $Log$
+* Revision 1.4  1999/01/29 17:34:59  saw
+* Add variables for second tubes on shower counter
+*
 * Revision 1.3  1995/05/22 19:46:02  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -38,7 +41,7 @@
       integer*4 nh      !Hit number
       integer*4 row     !Row number
       integer*4 col     !Column number
-      real*4 adc        !ADC-PED value
+      real*4 adc_pos, adc_neg !ADC-PED value
 *
       include 'sos_data_structures.cmn'
       include 'sos_calorimeter.cmn'
@@ -64,13 +67,19 @@
       do nh=1,scal_num_hits
         row=scal_rows(nh)
         col=scal_cols(nh)
-        adc=scal_adcs(nh)
+        adc_pos=scal_adcs_pos(nh)
+        adc_neg=scal_adcs_neg(nh)
         nb =row+smax_cal_rows*(col-1)
 *
 *------Determine position and energy deposition for each block
         sblock_xc(nh)=scal_block_xc(nb)
         sblock_zc(nh)=scal_block_zc(nb)
-        sblock_de(nh)=adc*scal_cal_const(nb)*scal_gain_cor(nb)
+        if(col.le.scal_num_neg_columns) then ! Blocks with two tubes
+          sblock_de(nh)=adc_pos*scal_pos_cal_const(nb)*scal_pos_gain_cor(nb)
+     $         +adc_neg*scal_neg_cal_const(nb)*scal_neg_gain_cor(nb)
+        else                            ! Blocks with single tube
+          sblock_de(nh)=adc_pos*scal_pos_cal_const(nb)*scal_pos_gain_cor(nb)
+        endif
 *
 *------Accumulate the integral energy depositions
         if(col.eq.1) scal_e1=scal_e1+sblock_de(nh)

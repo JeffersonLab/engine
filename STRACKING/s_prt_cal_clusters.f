@@ -8,6 +8,9 @@
 *-      Modified 25 Mar 1994      DFG
 *-                                change name and lun
 * $Log$
+* Revision 1.3  1999/01/29 17:34:58  saw
+* Add variables for second tubes on shower counter
+*
 * Revision 1.2  1995/05/22 19:45:47  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -47,7 +50,7 @@
       write(slun_dbg_cal,30)
    30 format(/,
      &' Cluster',/,
-     &' #(size)    XC[cm]  E1[GeV]  E2[GeV]  E3[GeV]  E4[GeV]  ET[GeV]')
+     &' #(size)    XC[cm]  E1[GeV]  E2[GeV]  E3[GeV]  E4[GeV]  ET[GeV]] E1_POS[GeV] E1_NEG[GeV] E2_POS[GeV] E2_NEG[GeV] ')
 *
       if(snclusters_cal.le.0) return
 *
@@ -60,7 +63,11 @@
      &   scluster_e2(nc),
      &   scluster_e3(nc),
      &   scluster_e4(nc),
-     &   scluster_et(nc)
+     &   scluster_et(nc),
+     &   scluster_e1_pos(nc),
+     &   scluster_e1_neg(nc),
+     &   scluster_e2_pos(nc),
+     &   scluster_e2_neg(nc)
    40    format(i3,'(',i3,')',4x,f6.2,5(1x,f8.4))
       enddo
 *

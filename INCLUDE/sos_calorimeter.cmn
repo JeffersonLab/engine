@@ -1,6 +1,9 @@
 *
 *      SOS calorimeter. Parameters from sos_positions.parm
 * $Log$
+* Revision 1.9  1999/01/29 17:34:22  saw
+* Add variables for second tubes on shower counter
+*
 * Revision 1.8  1996/09/04 16:26:21  saw
 * (JRA) Add variable for normalized sum of first 3 layers on track.
 *
@@ -127,12 +130,14 @@
 *
       integer*4 scal_rows          !Row number. Copied from sos_raw_cal
       integer*4 scal_cols          !Column number. Copied from sos_raw_cal
-      real*4    scal_adcs          !Pulse height in channels(ADC-PED).
+      real*4    scal_adcs_pos      !Pulse height in channels(ADC-PED).
+      real*4    scal_adcs_neg      !Pulse height in channels(ADC-PED).
       integer*4 scal_num_hits      !Total number of hits above threshold
       common/sos_sparsified_cal/ 
      &       scal_rows(smax_cal_blocks),
      &       scal_cols(smax_cal_blocks),
-     &       scal_adcs(smax_cal_blocks),
+     &       scal_adcs_neg(smax_cal_blocks),
+     &       scal_adcs_pos(smax_cal_blocks),
      &       scal_num_hits
 *
 *      SOS calorimeter. Cluster data, filled by s_clusters_cal
@@ -148,6 +153,13 @@
       real*4 scluster_e3      !                            #3
       real*4 scluster_e4      !                            #4
       real*4 scluster_et      !Total energy deposition
+
+      real*4 scluster_e1_pos      !Energy deposition in column #POS_1
+      real*4 scluster_e1_neg      !Energy deposition in column #NEG_1
+*
+      real*4 scluster_e2_pos      !Energy deposition in column #POS_2
+      real*4 scluster_e2_neg      !Energy deposition in column #NEG_2
+
       common/sos_clusters_cal/
      &       scluster_hit(smax_cal_blocks),
      &       scluster_size(snclusters_max),
@@ -156,6 +168,10 @@
      &       scluster_e2(snclusters_max),
      &       scluster_e3(snclusters_max),
      &       scluster_e4(snclusters_max),
+     &       scluster_e1_pos(snclusters_max),
+     &       scluster_e1_neg(snclusters_max),
+     &       scluster_e2_pos(snclusters_max),
+     &       scluster_e2_neg(snclusters_max),
      &       scluster_et(snclusters_max),
      &       snclusters_cal
 *
@@ -175,29 +191,43 @@
 *
 *      SOS calorimeter. ADC pedestals and thresholds
 *
-      real*4 scal_ped_mean      !Mean pedestal value
-      real*4 scal_ped_rms       !Pedestal rms deviation
-      real*4 scal_threshold     !Threshold=3.*scal_ped_rms
+      real*4 scal_pos_ped_mean      !Mean pedestal value
+      real*4 scal_pos_ped_rms       !Pedestal rms deviation
+      real*4 scal_pos_threshold     !Threshold=3.*scal_ped_rms
+      real*4 scal_neg_ped_mean      !Mean pedestal value
+      real*4 scal_neg_ped_rms       !Pedestal rms deviation
+      real*4 scal_neg_threshold     !Threshold=3.*scal_ped_rms
       common/sos_cal_pedestals/
-     &       scal_ped_mean(smax_cal_blocks),
-     &       scal_ped_rms(smax_cal_blocks),
-     &       scal_threshold(smax_cal_blocks)
+     &       scal_pos_ped_mean(smax_cal_blocks),
+     &       scal_pos_ped_rms(smax_cal_blocks),
+     &       scal_pos_threshold(smax_cal_blocks),
+     &       scal_neg_ped_mean(smax_cal_blocks),
+     &       scal_neg_ped_rms(smax_cal_blocks),
+     &       scal_neg_threshold(smax_cal_blocks)
 *
 *      SOS calorimeter. Calibration constants
 *
-      real*4 scal_cal_const      !Calibration constants
+      real*4 scal_pos_cal_const      !Calibration constants
+      real*4 scal_neg_cal_const      !Calibration constants
       common/sos_cal_const/
-     &       scal_cal_const(smax_cal_blocks)
+     &       scal_pos_cal_const(smax_cal_blocks),
+     &       scal_neg_cal_const(smax_cal_blocks)
 *
 *      SOS calorimeter. Relative gains & correction factors
 *
-      real*4 scal_gain_ini   !Relative gains during the last calibration
-      real*4 scal_gain_cur   !Current relative gains
-      real*4 scal_gain_cor   !Correction factor: cor=ini/cur
+      real*4 scal_pos_gain_ini   !Relative gains during the last calibration
+      real*4 scal_pos_gain_cur   !Current relative gains
+      real*4 scal_pos_gain_cor   !Correction factor: cor=ini/cur
+      real*4 scal_neg_gain_ini   !Relative gains during the last calibration
+      real*4 scal_neg_gain_cur   !Current relative gains
+      real*4 scal_neg_gain_cor   !Correction factor: cor=ini/cur
       common/sos_cal_monitor/
-     &       scal_gain_ini(smax_cal_blocks),
-     &       scal_gain_cur(smax_cal_blocks),
-     &       scal_gain_cor(smax_cal_blocks)
+     &       scal_pos_gain_ini(smax_cal_blocks),
+     &       scal_pos_gain_cur(smax_cal_blocks),
+     &       scal_pos_gain_cor(smax_cal_blocks),
+     &       scal_neg_gain_ini(smax_cal_blocks),
+     &       scal_neg_gain_cur(smax_cal_blocks),
+     &       scal_neg_gain_cor(smax_cal_blocks)
 *
 *      SOS calorimeter. Debuging LUN and flags
 *
@@ -208,6 +238,7 @@
       integer*4 sdbg_clusters_cal
       integer*4 sdbg_tracks_cal
       integer*4 sdbg_tests_cal
+      integer*4 scal_num_neg_columns
       common/sos_cal_flags/
      &       slun_dbg_cal,
      &       sdbg_raw_cal,
@@ -215,7 +246,8 @@
      &       sdbg_decoded_cal,
      &       sdbg_clusters_cal,
      &       sdbg_tracks_cal,
-     &       sdbg_tests_cal
+     &       sdbg_tests_cal,
+     $     scal_num_neg_columns
 
 
 *

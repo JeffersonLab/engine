@@ -1,6 +1,9 @@
       subroutine s_dump_peds(ABORT,err)
 *
 * $Log$
+* Revision 1.6  1999/01/29 17:34:58  saw
+* Add variables for second tubes on shower counter
+*
 * Revision 1.5  1996/11/07 19:50:44  saw
 * (JRA) ??
 *
@@ -93,29 +96,46 @@
 111   format(10x,3(f6.1,','),f6.1)
 *
 *
-* CALORIMETER PEDESTALS
+* CALORIMETER PEDESTALS ( Hamlet test version) 
 *
-      write(SPAREID,*) '; calorimeter pedestal centroids'
-      write(SPAREID,*) ' scal_ped_mean = '
-      write(SPAREID,112) (scal_ped_mean(blk),blk=1,smax_cal_rows)
-      write(SPAREID,112) (scal_ped_mean(blk),blk=smax_cal_rows+1,2*smax_cal_rows)
-      write(SPAREID,112) (scal_ped_mean(blk),blk=2*smax_cal_rows+1,3*smax_cal_rows)
-      write(SPAREID,112) (scal_ped_mean(blk),blk=3*smax_cal_rows+1,4*smax_cal_rows)
+      write(SPAREID,*) ' scal_pos_ped_mean = '
+      write(SPAREID,112) (scal_pos_ped_mean(blk),blk=1,smax_cal_rows)
+      write(SPAREID,112) (scal_pos_ped_mean(blk),blk=smax_cal_rows+1,2*smax_cal_rows)
+      write(SPAREID,112) (scal_pos_ped_mean(blk),blk=2*smax_cal_rows+1,3*smax_cal_rows)
+      write(SPAREID,112) (scal_pos_ped_mean(blk),blk=3*smax_cal_rows+1,4*smax_cal_rows)
       write(SPAREID,*) '; calorimeter ped. sigma (sqrt(variance))'
-      write(SPAREID,*) ' scal_ped_rms = '
-      write(SPAREID,112) (scal_ped_rms(blk),blk=1,smax_cal_rows)
-      write(SPAREID,112) (scal_ped_rms(blk),blk=smax_cal_rows+1,2*smax_cal_rows)
-      write(SPAREID,112) (scal_ped_rms(blk),blk=2*smax_cal_rows+1,3*smax_cal_rows)
-      write(SPAREID,112) (scal_ped_rms(blk),blk=3*smax_cal_rows+1,4*smax_cal_rows)
+      write(SPAREID,*) ' scal_pos_ped_rms = '
+      write(SPAREID,112) (scal_pos_ped_rms(blk),blk=1,smax_cal_rows)
+      write(SPAREID,112) (scal_pos_ped_rms(blk),blk=smax_cal_rows+1,2*smax_cal_rows)
+      write(SPAREID,112) (scal_pos_ped_rms(blk),blk=2*smax_cal_rows+1,3*smax_cal_rows)
+      write(SPAREID,112) (scal_pos_ped_rms(blk),blk=3*smax_cal_rows+1,4*smax_cal_rows)
       write(SPAREID,*) '; calorimeter threshold above ped. =MIN(50,MAX(10,3*sigma))'
-      write(SPAREID,*) 'scal_threshold = '
-      write(SPAREID,112) (scal_threshold(blk),blk=1,smax_cal_rows)
-      write(SPAREID,112) (scal_threshold(blk),blk=smax_cal_rows+1,2*smax_cal_rows)
-      write(SPAREID,112) (scal_threshold(blk),blk=2*smax_cal_rows+1,3*smax_cal_rows)
-      write(SPAREID,112) (scal_threshold(blk),blk=3*smax_cal_rows+1,4*smax_cal_rows)
-112   format (10(f5.1,','),f5.1)
+      write(SPAREID,*) 'scal_new_threshold_pos = '
+      write(SPAREID,112) (scal_new_adc_threshold_pos(blk),blk=1,smax_cal_rows)
+      write(SPAREID,112) (scal_new_adc_threshold_pos(blk),blk=smax_cal_rows+1,2*smax_cal_rows)
+      write(SPAREID,112) (scal_new_adc_threshold_pos(blk),blk=2*smax_cal_rows+1,3*smax_cal_rows)
+      write(SPAREID,112) (scal_new_adc_threshold_pos(blk),blk=3*smax_cal_rows+1,4*smax_cal_rows)
+*      
+      write(SPAREID,*) ' scal_neg_ped_mean = '
+      write(SPAREID,112) (scal_neg_ped_mean(blk),blk=1,smax_cal_rows)
+      write(SPAREID,112) (scal_neg_ped_mean(blk),blk=smax_cal_rows+1,2*smax_cal_rows)
+      write(SPAREID,112) (scal_neg_ped_mean(blk),blk=2*smax_cal_rows+1,3*smax_cal_rows)
+      write(SPAREID,112) (scal_neg_ped_mean(blk),blk=3*smax_cal_rows+1,4*smax_cal_rows)
+      write(SPAREID,*) '; calorimeter ped. sigma (sqrt(variance))'
+      write(SPAREID,*) ' scal_ped_neg_rms = '
+      write(SPAREID,112) (scal_neg_ped_rms(blk),blk=1,smax_cal_rows)
+      write(SPAREID,112) (scal_neg_ped_rms(blk),blk=smax_cal_rows+1,2*smax_cal_rows)
+      write(SPAREID,112) (scal_neg_ped_rms(blk),blk=2*smax_cal_rows+1,3*smax_cal_rows)
+      write(SPAREID,112) (scal_neg_ped_rms(blk),blk=3*smax_cal_rows+1,4*smax_cal_rows)
+      write(SPAREID,*) '; calorimeter threshold above ped. =MIN(50,MAX(10,3*sigma))'
+      write(SPAREID,*) 'scal_new_threshold_neg = '
+      write(SPAREID,112) (scal_new_adc_threshold_neg(blk),blk=1,smax_cal_rows)
+      write(SPAREID,112) (scal_new_adc_threshold_neg(blk),blk=smax_cal_rows+1,2*smax_cal_rows)
+      write(SPAREID,112) (scal_new_adc_threshold_neg(blk),blk=2*smax_cal_rows+1,3*smax_cal_rows)
+      write(SPAREID,112) (scal_new_adc_threshold_neg(blk),blk=3*smax_cal_rows+1,4*smax_cal_rows)
+***
+112   format (12(f5.1,','),f5.1)
 
-*
 *
 * GAS CERENKOV PEDESTALS
 *

@@ -10,6 +10,9 @@
 *-                                Change lun
 *-                7 Apr 1994      DFG  Change print order
 * $Log$
+* Revision 1.4  1999/01/29 17:34:59  saw
+* Add variables for second tubes on shower counter
+*
 * Revision 1.3  1995/08/31 20:41:54  cdaq
 * (JRA) Subtract pedestal in raw data dump
 *
@@ -26,7 +29,7 @@
 *
       integer*4 hit      !Hit number
       integer*4 row,col,nb
-      real*4 adc
+      real*4 adc_pos, adc_neg
 
 *
       include 'sos_data_structures.cmn'
@@ -45,10 +48,16 @@
         row=scal_row(hit)
         col=scal_column(hit)
         nb =row+smax_cal_rows*(col-1)
-        adc=float(scal_adc(hit))-scal_ped_mean(nb)
-        write(slun_dbg_cal,20)
-     &       hit,scal_column(hit),scal_row(hit),adc
- 20     format(i5,3x,i5,4x,i5,7x,i5)
+        adc_pos=float(scal_adc_pos(hit))-scal_pos_ped_mean(nb)
+        adc_neg=float(scal_adc_neg(hit))-scal_neg_ped_mean(nb)
+        if(col.le.scal_num_neg_columns) then
+          write(slun_dbg_cal,20)
+     &         hit,scal_column(hit),scal_row(hit),adc_pos,adc_neg
+ 20       format(i5,3x,i5,4x,i5,7x,2f8.1)
+        else
+          write(slun_dbg_cal,20)
+     &         hit,scal_column(hit),scal_row(hit),adc_pos
+        endif
       enddo
 *
       return

@@ -1,28 +1,19 @@
 *=======================================================================
-      function s_correct_cal(x,y,abort,errmsg)
+      function s_correct_cal_pos(x,y,abort,errmsg)
 *=======================================================================
 *-
 *-      Purpose: Returns the impact point correction factor. This
 *-               factor is to be applied to the energy depositions.
+*-               The final energy is the ADC value TIMES the correction factor.
 *-
 *-      Input Parameters: x,y - impact point coordinates
 *-
 *-      Created 15 Mar 1994      Tsolak A. Amatuni
+*
 * $Log$
-* Revision 1.5  1999/01/29 17:34:57  saw
+* Revision 1.1  1999/01/29 17:34:57  saw
 * Add variables for second tubes on shower counter
 *
-* Revision 1.4  1995/05/22 19:45:34  cdaq
-* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
-*
-* Revision 1.3  1995/05/11  21:02:59  cdaq
-* (???) Tweak hardwired attenuation length
-*
-* Revision 1.2  1994/11/22  21:09:22  cdaq
-* (SPB) Recopied from hms file and modified names for SOS
-*
-* Revision 1.1  1994/04/13  18:10:02  cdaq
-* Initial revision
 *
 *-----------------------------------------------------------------------
 *
@@ -31,19 +22,19 @@
 *
       logical abort
       character*(*) errmsg
-      character*13 here
-      parameter (here='S_CORRECT_CAL')
+      character*17 here
+      parameter (here='S_CORRECT_CAL_POS')
 *
       real*4 x,y         !Impact point coordinates
-      real*4 s_correct_cal
+      real*4 s_correct_cal_pos
 *
       include 'sos_data_structures.cmn'
       include 'sos_calorimeter.cmn'
 *
 *
-      s_correct_cal=1.
-      s_correct_cal=exp(-y/400.)  !400 cm atten length.
-      s_correct_cal=s_correct_cal/(1. + y*y/12000)
+      s_correct_cal_pos=exp(y/200.) !200 cm atten length.
+      s_correct_cal_pos=s_correct_cal_pos/(1. + y*y/8000.)
+
 *
       return
       end

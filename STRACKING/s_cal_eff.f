@@ -15,6 +15,9 @@
 * s_cal_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
+* Revision 1.6  1999/01/29 17:34:56  saw
+* Add variables for second tubes on shower counter
+*
 * Revision 1.5  1996/09/04 20:17:05  saw
 * (JRA) Require more than one photoelectron
 *
@@ -33,7 +36,7 @@
 *--------------------------------------------------------
       IMPLICIT NONE
 *
-      character*50 here
+      character*9 here
       parameter (here= 'S_CAL_EFF')
 *
       logical ABORT
@@ -49,7 +52,7 @@
       integer col,row,blk
       integer hit_row(smax_cal_columns)
       integer nhit
-      real    adc
+      real    adc_pos, adc_neg
       real    hit_pos(smax_cal_columns),hit_dist(smax_cal_columns)
       real    histval
       save
@@ -98,7 +101,9 @@
       do nhit=1,scal_num_hits
         row=scal_rows(nhit)
         col=scal_cols(nhit)
-        adc=scal_adcs(nhit)
+* We don't actually do anything with the following values?
+        adc_pos=scal_adcs_pos(nhit)
+        adc_neg=scal_adcs_neg(nhit)
         blk=row+smax_cal_rows*(col-1)
 
 * fill the dpos histograms.

@@ -17,6 +17,9 @@
 * block.
 *
 * $Log$
+* Revision 1.3  1999/01/29 17:34:58  saw
+* Add variables for second tubes on shower counter
+*
 * Revision 1.2  1996/01/17 18:07:51  cdaq
 * (JRA) Put track and delta cuts on what get's written out
 *
@@ -42,10 +45,18 @@
 *
 *  Write out cal fitting data.
 *
+*  What should this do for new tubes?
+*
+
       if (ssshtrk.ge.0.75 .and. abs(ssdelta).le.20
      $     .and. scer_npe_sum.ge.0.5) then
-         write(35,'(1x,44f7.1,1x,e11.4)')
-     &        (scal_realadc(blk),blk=1,smax_cal_blocks),ssp
+        write(35,'(1x,52f7.1,1x,e11.4)') 
+     &       (scal_realadc_pos(blk),blk=1,smax_cal_blocks),ssp
+
+        if(scal_num_neg_columns.gt.0) then
+          write(35,'(1x,52f7.1,1x,e11.4)') 
+     &       (scal_realadc_neg(blk),blk=1,smax_cal_blocks),ssp
+        endif
       endif
       RETURN
       END

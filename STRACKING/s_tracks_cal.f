@@ -15,6 +15,9 @@
 *-      Modified 25 Mar 1994      DFG
 *-                                Change name of print routine
 * $Log$
+* Revision 1.7  1999/01/29 17:34:59  saw
+* Add variables for second tubes on shower counter
+*
 * Revision 1.6  1997/02/13 14:13:29  saw
 * (JRA) Correct error in position of top edge of fiducial cut.
 *
@@ -102,16 +105,20 @@
         endif                           !End ... if number of clusters > 0
       enddo                             !End loop over detector tracks
 *
+* (SAW Dec 10, 1998) Why do we use data events rather than ped events to 
+* get the pedestals.  Anyway, The following does nothing with the tubes on
+* the negative ends.
       if (sdebugcalcpeds.ne.0) then
         if(sntracks_fp.eq.1) then   !use blocks not on track to find pedestal
           do hit=1,scal_tot_hits
             blk=scal_row(hit)+smax_cal_rows*(scal_column(hit)-1)
             xblk=scal_block_xc(blk)
             if (abs(xf-xblk).ge.20. .and. abs(xb-xblk).ge.20.) then !blk not hit
+* Neg tubes?
              if (scal_zero_num(blk).le.2000) then !avoid overflow in sum**2
-                scal_zero_sum(blk)=scal_zero_sum(blk)+scal_adc(hit)
+                scal_zero_sum(blk)=scal_zero_sum(blk)+scal_adc_pos(hit)
                 scal_zero_sum2(blk)=scal_zero_sum2(blk)
-     &                             +scal_adc(hit)*scal_adc(hit)
+     &                             +scal_adc_pos(hit)*scal_adc_pos(hit)
                 scal_zero_num(blk)=scal_zero_num(blk)+1
               endif
             endif

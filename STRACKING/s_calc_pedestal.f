@@ -1,6 +1,9 @@
       subroutine s_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.11  1999/01/29 17:34:57  saw
+* Add variables for second tubes on shower counter
+*
 * Revision 1.10  1996/11/07 19:49:46  saw
 * (WH) Add calculations for Lucite Cerenkov
 *
@@ -124,30 +127,62 @@
 *
       ind = 0
       do blk = 1 , smax_cal_blocks
-        num=max(1.,float(scal_ped_num(blk)))
-        scal_new_ped(blk) = scal_ped_sum(blk) / num
-        sig2 = float(scal_ped_sum2(blk))/num - scal_new_ped(blk)**2
-        scal_new_rms(blk) = sqrt(max(0.,sig2))
-c        scal_new_adc_threshold(blk) = scal_new_ped(blk)+2.*scal_new_rms(blk)
-        scal_new_adc_threshold(blk) = scal_new_ped(blk)+15.
-
-        if (abs(scal_ped_mean(blk)-scal_new_ped(blk))
-     &                 .ge.(2.*scal_new_rms(blk))) then
+      
+* calculate new pedestal values, positive tubes first.      
+       num=max(1.,float(scal_pos_ped_num(blk)))
+c      write(6,*) blk,'+',num     
+        scal_new_ped_pos(blk)=scal_pos_ped_sum(blk)/num
+        sig2 = float(scal_pos_ped_sum2(blk))/num - scal_new_ped_pos(blk)**2
+        scal_new_rms_pos(blk)=sqrt(max(0.,sig2))
+*        scal_new_adc_threshold_pos(blk)=scal_pos_new_ped(blk)+
+*     &                  2.*scal_new_rms_pos(blk)
+c        type *,blk,smax_cal_blocks,scal_new_adc_threshold_pos(blk),scal_pos_new_ped(blk)
+        scal_new_adc_threshold_pos(blk)=scal_new_ped_pos(blk)+15.
+        if (abs(scal_pos_ped_mean(blk)-scal_new_ped_pos(blk))
+     &                 .ge.(2.*scal_new_rms_pos(blk))) then
           ind = ind + 1
           scal_changed_block(ind)=blk
-          scal_ped_change(ind)=scal_new_ped(blk)-scal_ped_mean(blk)
+          scal_changed_sign(ind)=1         ! 1=pos,2=neg.
+          scal_ped_change(ind)=scal_new_ped_pos(blk)-
+     &                         scal_pos_ped_mean(blk) 
         endif
+        
 
         if (num.gt.scal_min_peds .and. scal_min_peds.ne.0) then
-          scal_ped_mean(blk)=scal_new_ped(blk)
-          scal_ped_rms(blk)=scal_new_rms(blk)
-          scal_threshold(blk) = min(50.,max(10.,3.*scal_new_rms(blk)))
+          scal_pos_ped_mean(blk)=scal_new_ped_pos(blk)
+          scal_pos_ped_rms(blk)=scal_new_rms_pos(blk)
+          scal_pos_threshold(blk)=min(50.,max(10.,3.*scal_new_rms_pos(blk)))
         endif
-
+        
+*do it all again for negative tubes.
+       num=max(1.,float(scal_neg_ped_num(blk)))
+c      write(6,*) blk,'-',num     
+        scal_new_ped_neg(blk)=scal_neg_ped_sum(blk)/num
+        sig2 = float(scal_neg_ped_sum2(blk))/num-scal_new_ped_neg(blk)**2
+        scal_new_rms_neg(blk)=sqrt(max(0.,sig2))
+*        scal_new_adc_threshold_neg(blk)=scal_neg_new_ped(blk)+
+*     &                  2.*scal_new_rms_neg(blk)
+        scal_new_adc_threshold_neg(blk)=scal_new_ped_neg(blk)+15.
+c        type *,blk,smax_cal_blocks,scal_new_adc_threshold_neg(blk),scal_neg_new_ped(blk)
+        if (abs(scal_neg_ped_mean(blk)-scal_new_ped_neg(blk))
+     &                 .ge.(2.*scal_new_rms_neg(blk))) then
+          ind = ind + 1
+          scal_changed_block(ind)=blk
+          scal_changed_sign(ind)=2         ! 1=pos,2=neg.
+          scal_ped_change(ind)=scal_new_ped_neg(blk)-
+     &                         scal_neg_ped_mean(blk) 
+        endif
+  
+c        type *,num,scal_min_peds
+        if (num.gt.scal_min_peds .and. scal_min_peds.ne.0) then
+          scal_neg_ped_mean(blk)=scal_new_ped_neg(blk)
+          scal_neg_ped_rms(blk)=scal_new_rms_neg(blk)
+          scal_neg_threshold(blk)=min(50.,max(10.,3.*scal_new_rms_neg(blk)))
+        endif
+  
       enddo
       scal_num_ped_changes = ind
 
-*
 *
 * GAS CERENKOV PEDESTALS
 *
@@ -246,7 +281,8 @@ c        scal_new_adc_threshold(blk) = scal_new_ped(blk)+2.*scal_new_rms(blk)
         signalcount=1
         write(SPAREID,*) 'slot=',slot
         call g_output_thresholds(SPAREID,roc,slot,signalcount,smax_cal_rows,
-     &      scal_new_adc_threshold,0,scal_new_rms,0)
+     &      scal_new_adc_threshold_pos,scal_new_adc_threshold_neg,
+     &      scal_new_rms_pos,scal_new_rms_neg)
 
 c Want aero as well.  For now, don't sparsify at all.
 c        slot=3
@@ -281,6 +317,13 @@ c
         do ind=49,64
           write(SPAREID,*) '4000'
         enddo
+
+        slot=5
+        signalcount=2
+        write(SPAREID,*) 'slot=',slot
+        call g_output_thresholds(SPAREID,roc,slot,signalcount,smax_cal_rows,
+     &      scal_new_adc_threshold_pos,scal_new_adc_threshold_neg,
+     &      scal_new_rms_pos,scal_new_rms_neg)
 
         slot=7
         signalcount=2

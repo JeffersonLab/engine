@@ -1,6 +1,9 @@
       subroutine s_analyze_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.8  1999/01/29 17:34:56  saw
+* Add variables for second tubes on shower counter
+*
 * Revision 1.7  1996/11/07 19:49:10  saw
 * (WH) Add pedestal analysis for lucite cerenkov
 *
@@ -66,9 +69,16 @@
         row = scal_row(ihit)
         col = scal_column(ihit)
         blk = row + (col-1)*smax_cal_rows
-        scal_ped_sum2(blk) = scal_ped_sum2(blk) + scal_adc(ihit)*scal_adc(ihit)
-        scal_ped_sum(blk) = scal_ped_sum(blk) + scal_adc(ihit)
-        scal_ped_num(blk) = scal_ped_num(blk) + 1
+
+        scal_pos_ped_sum2(blk) = scal_pos_ped_sum2(blk) +
+     $       scal_adc_pos(ihit)*scal_adc_pos(ihit)
+        scal_pos_ped_sum(blk) = scal_pos_ped_sum(blk) + scal_adc_pos(ihit)
+        scal_pos_ped_num(blk) = scal_pos_ped_num(blk) + 1
+
+        scal_neg_ped_sum2(blk) = scal_neg_ped_sum2(blk) +
+     $       scal_adc_neg(ihit)*scal_adc_neg(ihit)
+        scal_neg_ped_sum(blk) = scal_neg_ped_sum(blk) + scal_adc_neg(ihit)
+        scal_neg_ped_num(blk) = scal_neg_ped_num(blk) + 1
       enddo
 *
 *

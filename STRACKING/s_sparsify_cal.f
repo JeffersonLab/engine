@@ -13,6 +13,9 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to s_raw_dump_all
 * $Log$
+* Revision 1.8  1999/01/29 17:34:59  saw
+* Add variables for second tubes on shower counter
+*
 * Revision 1.7  1996/01/17 18:58:19  cdaq
 * (JRA) Only histogram ADC's that are not 200 above pedestal
 *
@@ -48,7 +51,8 @@
       integer*4 nh        !Loop variable for raw hits
       integer*4 nb        !Block number
       integer*4 row,col   !Row & column numbers
-      integer*4 adc       !ADC value
+      integer*4 adc_pos   !ADC value
+      integer*4 adc_neg   !ADC value
       integer*4 adc_max   !Max. channel #
       parameter (adc_max=4095)
 
@@ -67,7 +71,8 @@
 *
       scal_num_hits=0
       do nb = 1 , smax_cal_blocks
-        scal_realadc(nb)=-100
+        scal_realadc_pos(nb)=-100
+        scal_realadc_neg(nb)=-100
       enddo
 *
       if(scal_tot_hits.le.0) return
@@ -77,7 +82,8 @@
       do nh=1,scal_tot_hits      
          row=scal_row(nh)
          col=scal_column(nh)
-         adc=scal_adc(nh)
+         adc_pos=scal_adc_pos(nh)
+         adc_neg=scal_adc_neg(nh)
 *
 *------Check the validity of raw data
 c         abort=row.le.0.or.row.gt.smax_cal_rows
@@ -104,14 +110,21 @@ c         endif
 *------Sparsify the raw data
          nb =row+smax_cal_rows*(col-1)
 
-         scal_realadc(nb) = float(adc)-scal_ped_mean(nb)
-         if (scal_realadc(nb).le.200)
-     $        call hf1(sidcalsumadc,scal_realadc(nb),1.)
-         if(scal_realadc(nb).gt.scal_threshold(nb)) then
+         scal_realadc_pos(nb) = 1.0
+         scal_realadc_neg(nb) = 1.0
+*     Need to do this right
+         scal_realadc_pos(nb) = float(adc_pos) - scal_pos_ped_mean(nb)
+         scal_realadc_neg(nb) = float(adc_neg) - scal_neg_ped_mean(nb)
+         if (scal_realadc_pos(nb).le.200)
+     $        call hf1(sidcalsumadc,scal_realadc_pos(nb),1.)
+* ??
+         if(scal_realadc_pos(nb).gt.scal_pos_threshold(nb) .or.
+     $        scal_realadc_neg(nb).gt.scal_neg_threshold(nb)) then
             scal_num_hits           =scal_num_hits+1
             scal_rows(scal_num_hits)=row
             scal_cols(scal_num_hits)=col
-            scal_adcs(scal_num_hits)=scal_realadc(nb)
+            scal_adcs_pos(scal_num_hits)=scal_realadc_pos(nb)
+            scal_adcs_neg(scal_num_hits)=scal_realadc_neg(nb)
          endif
       enddo                      !End loop over raw hits
 *
