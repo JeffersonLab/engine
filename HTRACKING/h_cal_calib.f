@@ -39,7 +39,7 @@ c
 
       if (ncall .eq. 1) then
 	call g_IO_control(spare_id,'ANY',ABORT,err)  !get IO channel
-         open(spare_id)
+         open(spare_id,file='h_cal_calib.raw_data')
          do ipmt=1,78
             nct_hit_blk(ipmt)=0
          enddo
@@ -139,7 +139,7 @@ c
 *
 *     Get thresholds on total_signal/p_tar.
 *
-      open(lun,err=989)
+      open(lun,file='h_cal_calib.raw_data',err=989)
       avr=0.
       sig=0.
       nev=0
@@ -176,9 +176,13 @@ D      print*,avr,sig,nev
       thr_hi=avr+3.*sig
 D      write(*,*) 'thr_lo=',thr_lo,'   thr_hi=',thr_hi
 
- 989  write(*,*) ' error opening file',lun,' in hcal_raw_thr.f'
+      return
+
+ 989  write(*,*) ' error opening file h_cal_calib.raw_data, channel ',lun,
+     *           ' in hcal_raw_thr.f'
 c
       end
+*=======================================================================
 	subroutine hcal_clb_det(lun,nrun,thr_lo,thr_hi)
 	implicit none
 c
@@ -226,7 +230,7 @@ c
 
 	real xh,yh
 
-	open(lun)
+	open(lun,file='h_cal_calib.raw_data')
 
 	do i=1,npmts
 	   q0(i)=0.
@@ -243,7 +247,7 @@ c
 	nev=0
 	eod=.false.
 	do while(.not.eod)
-	   call get_data(lun,eb,q,xh,yh,eod,thr_lo,thr_hi)
+	   call h_get_data(lun,eb,q,xh,yh,eod,thr_lo,thr_hi)
 	   if(.not.eod) then
 	      do i=1,npmts
 		 if(q(i).gt.0.) then
@@ -284,7 +288,7 @@ c	      print*,nums(numsel),numsel,nf(i)
 D	print*,'numsel =',numsel
 	write(*,'(''Number of events for each PMT for calib for run '',i7,'', '',
 	1    i6,'' events processed'')') nrun,nev
-	write(*,*) ' PMT with less than', minf,'events  are not included in calibration.'
+	write(*,*) ' PMT with less than', minf,' events  are not included in calibration.'
 	write(*,*)
 	write(*,11) 'hcal_pos_gain_cor=',(nf(i),i=       1,  nrow)
 	write(*,11) '                  ',(nf(i),i=  nrow+1,2*nrow)
@@ -321,56 +325,58 @@ D	write(*,'(2e10.3,i5)') (ac(i),au(i),i,i=1,npmts)
 	call g_IO_control(spare_id,'ANY',ABORT,err)  !get IO channel
 	open(spare_id,file=fn)
 
-	write(spare_id,'(''Calibration constants for run '',i7,'', '',
+	write(spare_id,'(''; Calibration constants for run '',i7,'', '',
 	1    i6,'' events processed'')') nrun,nev
 	write(spare_id,*)
 
-*       write(spare_id,10) 'hcal_pos_gain_cor=',(ac(i)*1.D+3,i=       1,  nrow)
-*       write(spare_id,10) '                  ',(ac(i)*1.D+3,i=  nrow+1,2*nrow)
-*       write(spare_id,10) '                  ',(ac(i)*1.D+3,i=2*nrow+1,3*nrow)
-*       write(spare_id,10) '                  ',(ac(i)*1.D+3,i=3*nrow+1,4*nrow)
-*       write(spare_id,10) 'hcal_neg_gain_cor=',(ac(i)*1.D+3,i=4*nrow+1,5*nrow)
-*       write(spare_id,10) '                  ',(ac(i)*1.D+3,i=5*nrow+1,6*nrow)
-*       write(spare_id,10) '                  ',(0.,         i=6*nrow+1,7*nrow)
-*       write(spare_id,10) '                  ',(0.,         i=7*nrow+1,8*nrow)
-	write(spare_id,10) 'hcal_pos_gain_cor=',(ac(i)*2.D+3,i=       1,  nrow)
-	write(spare_id,10) '                  ',(ac(i)*2.D+3,i=  nrow+1,2*nrow)
-	write(spare_id,10) '                  ',(ac(i)*1.D+3,i=2*nrow+1,3*nrow)
-	write(spare_id,10) '                  ',(ac(i)*1.D+3,i=3*nrow+1,4*nrow)
-	write(spare_id,10) 'hcal_neg_gain_cor=',(ac(i)*2.D+3,i=4*nrow+1,5*nrow)
-	write(spare_id,10) '                  ',(ac(i)*2.D+3,i=5*nrow+1,6*nrow)
-	write(spare_id,10) '                  ',(0.,         i=6*nrow+1,7*nrow)
-	write(spare_id,10) '                  ',(0.,         i=7*nrow+1,8*nrow)
+        write(spare_id,10) 'hcal_pos_gain_cor=',(ac(i)*1.D+3,i=       1,  nrow)
+        write(spare_id,10) '                  ',(ac(i)*1.D+3,i=  nrow+1,2*nrow)
+        write(spare_id,10) '                  ',(ac(i)*1.D+3,i=2*nrow+1,3*nrow)
+        write(spare_id,10) '                  ',(ac(i)*1.D+3,i=3*nrow+1,4*nrow)
+        write(spare_id,10) 'hcal_neg_gain_cor=',(ac(i)*1.D+3,i=4*nrow+1,5*nrow)
+        write(spare_id,10) '                  ',(ac(i)*1.D+3,i=5*nrow+1,6*nrow)
+        write(spare_id,10) '                  ',(0.,         i=6*nrow+1,7*nrow)
+        write(spare_id,10) '                  ',(0.,         i=7*nrow+1,8*nrow)
+*	write(spare_id,10) 'hcal_pos_gain_cor=',(ac(i)*2.D+3,i=       1,  nrow)
+*	write(spare_id,10) '                  ',(ac(i)*2.D+3,i=  nrow+1,2*nrow)
+*	write(spare_id,10) '                  ',(ac(i)*1.D+3,i=2*nrow+1,3*nrow)
+*	write(spare_id,10) '                  ',(ac(i)*1.D+3,i=3*nrow+1,4*nrow)
+*	write(spare_id,10) 'hcal_neg_gain_cor=',(ac(i)*2.D+3,i=4*nrow+1,5*nrow)
+*	write(spare_id,10) '                  ',(ac(i)*2.D+3,i=5*nrow+1,6*nrow)
+*	write(spare_id,10) '                  ',(0.,         i=6*nrow+1,7*nrow)
+*	write(spare_id,10) '                  ',(0.,         i=7*nrow+1,8*nrow)
 
 	close(spare_id)
         call G_IO_control(spare_ID,'FREE',ABORT,err) !free up IO channel
 
+	write(*,*)
 	write(*,'(''Calibration constants for run '',i7,'', '',
 	1    i6,'' events processed'')') nrun,nev
 	write(*,*)
 	write(*,*) ' constants written to ',fn
 	write(*,*)
-	write(*,10) 'hcal_pos_gain_cor=',(ac(i)*2.D+3,i=       1,  nrow)
-	write(*,10) '                  ',(ac(i)*2.D+3,i=  nrow+1,2*nrow)
+	write(*,10) 'hcal_pos_gain_cor=',(ac(i)*1.D+3,i=       1,  nrow)
+	write(*,10) '                  ',(ac(i)*1.D+3,i=  nrow+1,2*nrow)
 	write(*,10) '                  ',(ac(i)*1.D+3,i=2*nrow+1,3*nrow)
 	write(*,10) '                  ',(ac(i)*1.D+3,i=3*nrow+1,4*nrow)
-	write(*,10) 'hcal_neg_gain_cor=',(ac(i)*2.D+3,i=4*nrow+1,5*nrow)
-	write(*,10) '                  ',(ac(i)*2.D+3,i=5*nrow+1,6*nrow)
+	write(*,10) 'hcal_neg_gain_cor=',(ac(i)*1.D+3,i=4*nrow+1,5*nrow)
+	write(*,10) '                  ',(ac(i)*1.D+3,i=5*nrow+1,6*nrow)
 	write(*,10) '                  ',(0.,         i=6*nrow+1,7*nrow)
 	write(*,10) '                  ',(0.,         i=7*nrow+1,8*nrow)
 
  10	format(a18,13(f6.3,','))
  11	format(a18,13(i5,','))
 
-	open(lun)
+	open(lun,file='h_cal_calib.raw_data')
 	call g_IO_control(spare_id,'ANY',ABORT,err)  !get IO channel
-        open(spare_id)
-	write(*,*) 'In hms shower cal  creating file fort.',spare_id
+        open(spare_id,file='h_cal_calib.cal_data')
+	write(*,*) 'In hms shower cal  creating h_cal_calib.cal_data, ',
+     *       'channel ',spare_id
 
 	nev=0
 	eod=.false.
 	do while(.not.eod)
-	   call get_data(lun,eb,q,xh,yh,eod,0.,1.E+8)
+	   call h_get_data(lun,eb,q,xh,yh,eod,0.,1.E+8)
 	   if(.not.eod) then
 	      s=0.
 *	      t=0.
@@ -455,7 +461,7 @@ D	      write(66,'(e12.5)') qm(j,i)
 
 	end
 *-----------------------------------------------------------------------
-      subroutine get_data(lun,eb,q,xh,yh,eod,thr_lo,thr_hi)
+      subroutine h_get_data(lun,eb,q,xh,yh,eod,thr_lo,thr_hi)
       implicit none
 c
       integer lun

@@ -16,6 +16,12 @@
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 *
 * $Log$
+* Revision 1.10.2.1  2003/04/03 01:00:10  cdaq
+* Match main branch tag apr-02-2003
+*
+* Revision 1.11  2003/04/03 00:43:13  jones
+* Update to calibration (V. Tadevosyan0
+*
 * Revision 1.10  2002/09/26 14:31:56  jones
 *     the energy determination for planes A and B can use
 *     both pos and neg PMT depending on setting of hcal_num_neg_columns.
@@ -53,6 +59,7 @@
 
       logical abort
       character*(*) errmsg
+
       character*5 here
       parameter (here='H_CAL')
 
@@ -61,12 +68,9 @@
       real*4 cor         !Correction factor for X,Y dependenc.   ! Single   PMT
       real*4 cor_pos     !Correction factor for X,Y dependenc.   ! Single  "POS_PMT"
       real*4 cor_neg     !Correction factor for X,Y dependenc.   ! Single  "NEG_PMT" 
-c      real*4 cor_two     !Correction factor for X,Y dependence.  ! "POS_PMT" + "NEG_PMT"  
       real*4 h_correct_cal              !External function to compute "cor". 
       real*4 h_correct_cal_pos          !External function to compute "cor_pos". 
       real*4 h_correct_cal_neg          !External function to compute "cor_neg"   
-c      real*4 h_correct_cal_two          !External function to compute "cor_two"
-
 
       include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
@@ -74,10 +78,10 @@ c      real*4 h_correct_cal_two          !External function to compute "cor_two"
 *--------------------------------------------------------
 *
       do nt=1,hntracks_fp
-         htrack_e1_pos(nt)=0.      !  Only pos_pmt for layer "A"
-         htrack_e1_neg(nt)=0.      !  Only_neg_pmt for layer "A"
-         htrack_e2_pos(nt)=0.      !  Only_pos_pmt for layer "B"  
-         htrack_e2_neg(nt)=0.      !  Only_neg_pmt for layer "B" 
+         htrack_e1_pos(nt)=0.   !  Only pos_pmt for layer "A"
+         htrack_e1_neg(nt)=0.   !  Only_neg_pmt for layer "A"
+         htrack_e2_pos(nt)=0.   !  Only_pos_pmt for layer "B"  
+         htrack_e2_neg(nt)=0.   !  Only_neg_pmt for layer "B" 
          htrack_e1(nt)=0.
          htrack_e2(nt)=0.
          htrack_e3(nt)=0.
@@ -101,69 +105,53 @@ c      real*4 h_correct_cal_two          !External function to compute "cor_two"
 *      Return if there are no tracks found or none of the found
 *      tracks matches a cluster in the calorimeter.
 *
-      if(hntracks_fp .le.0) go to 100   !Return
-      if(hntracks_cal.le.0) go to 100   !Return
+      if(hntracks_fp .le.0) go to 100 !Return
+      if(hntracks_cal.le.0) go to 100 !Return
 
       do nt =1,hntracks_fp
+
          nc=hcluster_track(nt)
 
          if(nc.gt.0) then
-           cor    =h_correct_cal(htrack_xc(nt),htrack_yc(nt))      ! For single "pmt"
-           cor_pos=h_correct_cal_pos(htrack_xc(nt),htrack_yc(nt))  ! For single "pos_pmt"
-           cor_neg=h_correct_cal_neg(htrack_xc(nt),htrack_yc(nt))  ! For single "neg_pmt"
-c           cor_two=h_correct_cal_two(htrack_xc(nt),htrack_yc(nt))  ! For "pos_pmt"+"neg_pmt"
+            cor    =h_correct_cal(htrack_xc(nt),htrack_yc(nt)) ! For single "pmt"
+            cor_pos=h_correct_cal_pos(htrack_xc(nt),htrack_yc(nt)) ! For single "pos_pmt"
+            cor_neg=h_correct_cal_neg(htrack_xc(nt),htrack_yc(nt)) ! For single "neg_pmt"
 
-           hnblocks_cal(nt)=hcluster_size(nc)
+            hnblocks_cal(nt)=hcluster_size(nc)
 *
-*
-**  "cor_two" also may be used for "htrack_e1" and "htrack_e2' as a mean correction 
-*    factor when "POS_PMT" and "NEG_PMT" on use !!
-*
-*                  If "POS_PMT" + "NEG_PMT" then 
-*
-*            htrack_e1(nt)=cor_two*hcluster_e1(nc)          !  For "POS_PMT"+"NEG_PMT"
-*
-           if(hcal_num_neg_columns.ge.1) then
-             htrack_e1_pos(nt)=cor_pos*hcluster_e1_pos(nc) !  For "A" layer "POS_PMT"    
-             htrack_e1_neg(nt)=cor_neg*hcluster_e1_neg(nc) !  For "A" layer "NEG_PMT"
-             htrack_e1(nt)=(htrack_e1_pos(nt)+htrack_e1_neg(nt))/2 !  For "A" layer "POS"+"NEG_PMT"
-           else
-             htrack_e1(nt)=cor_pos*hcluster_e1(nc) !   IF ONLY "POS_PMT" in layer "A"                
-           endif
+            if(hcal_num_neg_columns.ge.1) then
+               htrack_e1_pos(nt)=cor_pos*hcluster_e1_pos(nc) !  For "A" layer "POS_PMT"    
+               htrack_e1_neg(nt)=cor_neg*hcluster_e1_neg(nc) !  For "A" layer "NEG_PMT"
+               htrack_e1(nt)=htrack_e1_pos(nt)+htrack_e1_neg(nt) !  For "A" layer "POS"+"NEG_PMT"
+            else
+               htrack_e1(nt)=cor_pos*hcluster_e1(nc) !   IF ONLY "POS_PMT" in layer "A"                
+            endif
 
-           if(hcal_num_neg_columns.ge.2) then
-             htrack_e2_pos(nt)=cor_pos*hcluster_e2_pos(nc) !  For "B" layer "POS_PMT"    
-             htrack_e2_neg(nt)=cor_neg*hcluster_e2_neg(nc) !  For "B" layer "NEG_PMT"
-             htrack_e2(nt)=(htrack_e2_pos(nt)+htrack_e2_neg(nt))/2 !  For "B" layer "POS"+"NEG_PMT"
-           else
-             htrack_e2(nt)=cor_pos*hcluster_e2(nc) !   IF ONLY "POS_PMT" in layer "B"
-           endif
+            if(hcal_num_neg_columns.ge.2) then
+               htrack_e2_pos(nt)=cor_pos*hcluster_e2_pos(nc) !  For "B" layer "POS_PMT"    
+               htrack_e2_neg(nt)=cor_neg*hcluster_e2_neg(nc) !  For "B" layer "NEG_PMT"
+               htrack_e2(nt)=htrack_e2_pos(nt)+htrack_e2_neg(nt) !  For "B" layer "POS"+"NEG_PMT"
+            else
+               htrack_e2(nt)=cor_pos*hcluster_e2(nc) !   IF ONLY "POS_PMT" in layer "B"
+            endif
 
-           if(hcal_num_neg_columns.ge.3) then
-             print *,"Extra tubes on more than two layers not supported"
-           endif
+            if(hcal_num_neg_columns.ge.3) then
+               print *,"Extra tubes on more than two layers not supported"
+            endif
 
-***           htrack_e1(nt)=cor_pos*hcluster_e1(nc)    !Just use old PMTs until code/fitting stuff is OK.
-***           htrack_e2(nt)=cor_pos*hcluster_e2(nc)    !Just use old PMTs until code/fitting stuff is OK.
-***           htrack_e3(nt)=cor_pos*hcluster_e3(nc)  
-***           htrack_e4(nt)=cor_pos*hcluster_e4(nc)
-           htrack_e3(nt)=cor*hcluster_e3(nc)  
-           htrack_e4(nt)=cor*hcluster_e4(nc)
+            htrack_e3(nt)=cor*hcluster_e3(nc)  
+            htrack_e4(nt)=cor*hcluster_e4(nc)
 
- 
-           htrack_et(nt)=htrack_e1(nt)+htrack_e2(nt)+ htrack_e3(nt)
-     &          +htrack_e4(nt) 
-           if(hcal_num_neg_columns.ge.1) then
-             htrack_preshower_e(nt)=cor_pos*hcluster_e1(nc)+cor_neg
-     &            *hcluster_e1(nc) 
-           else
-             htrack_preshower_e(nt)=cor_pos*hcluster_e1(nc)  
-           endif
+            htrack_et(nt)=htrack_e1(nt)+htrack_e2(nt)+ htrack_e3(nt)
+     &           +htrack_e4(nt) 
 
-         endif                          !End ... if nc > 0
-      enddo                             !End loop over detector tracks
+            htrack_preshower_e(nt)=htrack_e1(nt)
 
-  100 continue
+         endif                  !End ... if nc > 0
+
+      enddo                     !End loop over detector tracks
+
+ 100  continue
       if(hdbg_tests_cal.gt.0) call h_prt_cal_tests
 
       return

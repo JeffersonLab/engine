@@ -10,6 +10,16 @@
 *
 *     d.f. geesaman           17 January 1994
 * $Log$
+* Revision 1.7.2.1  2003/04/03 01:00:11  cdaq
+* Match main branch tag apr-02-2003
+*
+* Revision 1.9  2003/04/01 15:21:33  jones
+*  minor change
+*
+* Revision 1.8  2003/04/01 13:49:26  jones
+* Modifications to tracking codes.
+* Mainly fix problems at high rates. (M. E. Christy)
+*
 * Revision 1.7  1996/08/30 19:58:15  saw
 * (DVW) Added some track tests
 *
@@ -76,6 +86,10 @@
      $      access='append')
       endif
       hstubtest = 0
+c
+      if (HNTRACKS_MAX_FP .eq. 0) HNTRACKS_MAX_FP = 10 ! in case not set in param file.
+      if (HNTRACKS_MAX_FP .gt. HNTRACKS_MAX) HNTRACKS_MAX_FP = HNTRACKS_MAX ! in case set too high  in param file.
+c
 *
       ABORT= .FALSE.
       err=' '
@@ -142,7 +156,7 @@
              if(newtrack.eq.1) then         
              hstubtest=1
 *     make a new track
-              if(hntracks_fp.lt.hntracks_max) then ! are there too many 
+              if(hntracks_fp.lt.hntracks_max_fp) then ! are there too many 
                hntracks_fp=hntracks_fp+1 ! increment the number of tracks
                sptracks=1               ! one track with this seed
                stub_tracks(1)=hntracks_fp
@@ -155,7 +169,10 @@
                hy_sp2(hntracks_fp)=hbeststub(isp2,2)
                hxp_sp1(hntracks_fp)=hbeststub(isp1,3)
                hxp_sp2(hntracks_fp)=hbeststub(isp2,3)
-               newtrack=0               ! make no more track in this loop
+               newtrack=0               ! make no more tracks in this loop
+              else                      !!  MEC - added the next 3 lines to 
+               hntracks_fp = 0          !!  fail events with more than the 
+               return                   !!  Max # of allowed tracks.
               endif                     ! end test on too many tracks
              else
 *     check if there is another space point in same chamber
@@ -184,7 +201,7 @@
 *     if there is another point in the same chamber in this track
 *     create a new track with all the same space points except spoint
                 else
-                 if(hntracks_fp.lt.hntracks_max) then ! are there too many 
+                 if(hntracks_fp.lt.hntracks_max_fp) then ! are there too many 
                   hntracks_fp=hntracks_fp+1 ! increment the number of tracks
                   sptracks= sptracks+1  ! one track with this seed
                   stub_tracks(sptracks) = hntracks_fp
@@ -198,6 +215,9 @@
                     track_space_points(hntracks_fp,isp+1)= isp2
                    endif                ! end check for dup on copy
                   enddo                 ! end copy of track
+                 else                      !!  MEC - added the next 3 lines to 
+                  hntracks_fp = 0          !!  fail events with more than the 
+                  return                   !!  Max # of allowed tracks.
                  endif                  ! end if on too many tracks
                 endif                   ! end if on same chamber
                endif                    ! end if on  duplicate point
@@ -214,10 +234,13 @@
 *     This will have poor resolution but may be appropriate for debugging
 *
        do isp1=1,hnspace_points_tot     ! loop over all points
-        if(hntracks_fp.lt.hntracks_max) then ! are there too many 
+        if(hntracks_fp.lt.hntracks_max_fp) then ! are there too many 
          hntracks_fp=hntracks_fp+1      ! increment the number of tracks
          track_space_points(hntracks_fp,1)= 1
          track_space_points(hntracks_fp,2)= isp1
+        else                      !!  MEC - added the next 3 lines to 
+         hntracks_fp = 0          !!  fail events with more than the 
+         return                   !!  Max # of allowed tracks.
         endif                           ! end if on too many tracks
        enddo                            ! end loop over all space points
       endif                             ! end test on hsingle_stub 

@@ -6,6 +6,12 @@
 *-
 *-      Created: 20 Mar 1994      Tsolak A. Amatuni
 * $Log$
+* Revision 1.4.2.1  2003/04/03 01:00:11  cdaq
+* Match main branch tag apr-02-2003
+*
+* Revision 1.5  2003/04/03 00:43:13  jones
+* Update to calibration (V. Tadevosyan0
+*
 * Revision 1.4  1998/12/17 22:02:39  saw
 * Support extra set of tubes on HMS shower counter
 *
@@ -32,8 +38,6 @@
       integer*4 block      !Block number
       integer*4 row        !Row number
       integer*4 column     !Column number
-      real*4 xi   !Temporary
-      real*4 zi   !Temporary
 *
       include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
