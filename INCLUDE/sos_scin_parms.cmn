@@ -12,6 +12,9 @@
 *           Add definition of snum_scin_elements and set parameter value
 *
 * $Log$
+* Revision 1.8  1996/09/04 16:31:26  saw
+* (JRA) Add misc scaler
+*
 * Revision 1.7  1996/01/24 16:20:17  saw
 * (JRA) Make smisc_dec_data two dimensional
 *
@@ -172,9 +175,11 @@ c      integer*4 sscin_num_counters(SNUM_SCIN_PLANES)
 *     CTPTYPE=event
 *
       integer*4 smisc_dec_data(smax_misc_hits,snum_misc_planes)
+      integer*4 smisc_scaler(smax_misc_hits,snum_misc_planes)
 
       common/sos_misc_parms/
-     &   smisc_dec_data
+     &   smisc_dec_data,
+     &   smisc_scaler
 
 
       integer*4 sscin_zero_pos(snum_scin_planes,snum_scin_elements)
