@@ -8,7 +8,10 @@
 *                                   Transfer ID in common block
 *                                   Implement flag to turn block on
 * $Log$
-* Revision 1.2  1994/08/18 04:34:23  cdaq
+* Revision 1.3  1995/04/06 19:35:40  cdaq
+* (JRA) Add WC residual histograms
+*
+* Revision 1.2  1994/08/18  04:34:23  cdaq
 * (SAW) Indentation changes
 *
 * Revision 1.1  1994/04/13  18:10:39  cdaq
@@ -24,10 +27,11 @@
       character*(*) err
       real*4  histval
       integer*4 itrk
-
+      integer*4 plane
 *
       include 'gen_data_structures.cmn'
       include 'sos_track_histid.cmn'
+      include 'sos_tracking.cmn'
 *
       SAVE
 *--------------------------------------------------------
@@ -59,8 +63,12 @@
               histval = -1.
             endif
             call hf1(sidschi2perdeg_fp,histval,1.)
-*     
-*     
+*
+            do plane = 1,sdc_num_planes
+              call hf1(sidres_fp(plane),sdc_double_residual(itrk,plane),1.)
+              call hf1(sidsingres_fp(plane),sdc_single_residual(itrk,plane),1.)
+            enddo
+
           enddo                         ! end loop over hits
         endif                           ! end test on zero hits       
       endif                             ! end test on histogramming flag
