@@ -20,6 +20,9 @@
 *-                           Dummy Shell routine
 *
 * $Log$
+* Revision 1.23.12.1  2004/09/07 18:42:25  cdaq
+* added pretrigger signals to hms and sos ntuples
+*
 * Revision 1.23  2003/11/28 14:57:03  jones
 * Added variable hsxp_tar_temp = hsxp_tar + h_oopcentral_offset  (MKJ)
 *
@@ -82,7 +85,6 @@
 * (SAW) Reformat and cleanup
 *
 * Revision 1.7  1995/02/10  18:44:47  cdaq
-* (SAW) _tar values are now angles instead of slopes
 *
 * Revision 1.6  1995/02/02  13:05:40  cdaq
 * (SAW) Moved best track selection code into H_SELECT_BEST_TRACK (new)
@@ -130,6 +132,7 @@
       INCLUDE 'hms_track_histid.cmn'
       include 'gen_event_info.cmn'
       include 'hms_scin_tof.cmn'
+    !  include 'eps_constants.par'
 
 *     local variables 
 
@@ -144,6 +147,7 @@
       real*4 hstheta_1st
       real*4 scalar,mink
       real*4 hsxp_tar_temp
+!      real*4 yscale
 *
 *--------------------------------------------------------
 *
@@ -200,6 +204,13 @@
       hsx_sp2      = hx_sp2(itrkfp)
       hsy_sp2      = hy_sp2(itrkfp)
       hsxp_sp2     = hxp_sp2(itrkfp)
+
+      hspipre      = hmisc_dec_data(30,1) ! HMS pipre TDC
+      hselhi       = hmisc_dec_data(41,1) ! HMS elhi TDC
+      hsello       = hmisc_dec_data(42,1) ! HMS ello TDC
+      hsprhi       = hmisc_dec_data(43,1) ! HMS prhi TDC
+      hsprlo       = hmisc_dec_data(44,1) ! HMS prlo TDC
+      hsshlo       = hmisc_dec_data(45,1) ! HMS pshlo TDC
 
       if(hidscintimes.gt.0) then
         do ihit=1,hnum_scin_hit(itrkfp)
@@ -298,6 +309,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 
 *     Do energy loss, which is particle specific
 
+*  check this! js
       hstheta_1st = htheta_lab*TT/180. - atan(hsyp_tar) ! rough scat
                                                         ! angle
       hsinplane = htheta_lab*TT/180. - atan(hsyp_tar) ! rough scat angle
@@ -382,7 +394,7 @@ c      if (hsphi .gt. 0.) hsphi = hsphi - tt
 
 *     Target particle 4-momentum
 
-      hs_tvec(1) = gtarg_mass(gtarg_num)*m_amu
+      hs_tvec(1) = mass_nucleon !gtarg_mass(gtarg_num)*m_amu
       hs_tvec(2) = 0.
       hs_tvec(3) = 0.
       hs_tvec(4) = 0.
@@ -394,7 +406,7 @@ c      if (hsphi .gt. 0.) hsphi = hsphi - tt
          Wvec(i)    = -1000.
       enddo 
 
-      hsq3     = -1000.
+       hsq3     = -1000.
       hsbigq2  = -1000.
       W2       = -1000.
       hinvmass = -1000.
@@ -403,10 +415,10 @@ c      if (hsphi .gt. 0.) hsphi = hsphi - tt
 *     the particle in the HMS is an electron.
 
       if (hpartmass .lt. 2.*mass_electron) then
-
          do i=1,4
             hs_qvec(i) = hs_kvec(i) - hs_kpvec(i)
             Wvec(i)    = hs_qvec(i) + hs_tvec(i) ! Q+P 4 vector
+c     write(29,*) 'index, kv,kpv,tv,wv', i,hs_kvec(i),hs_kpvec(i),hs_tvec(i),Wvec(i)
          enddo 
 
 *     Magnitudes
@@ -414,11 +426,18 @@ c      if (hsphi .gt. 0.) hsphi = hsphi - tt
          hsq3    = sqrt(scalar(hs_qvec,hs_qvec))
          hsbigq2 = -mink(hs_qvec,hs_qvec) 
          W2      = mink(Wvec,Wvec)
+	 hsnu = gebeam-hsenergy
          if(W2.ge.0 ) then
             hinvmass = SQRT(W2)
          else
             hinvmass = 0.
          endif
+c	 write(15,*) 'hsnu', hsnu
+	 hsx_bj = hsbigq2/(2.0*mass_nucleon*hsnu)
+	 y_scale = yscale(gebeam,hsenergy,hsbigq2,hstheta,
+     +   gtarg_a(gtarg_num),yscale_eps(gtarg_a(gtarg_num)))
+         xsi_scale = 2*hsx_bj/(1+sqrt(1+4*mass_nucleon**2*hsx_bj**2/hsbigq2))
+c     write(29,*)'hstheta, W2', hstheta, W2
 
 *     Calculate elastic scattering kinematical correction
 
@@ -514,3 +533,72 @@ C-----------------------------------------------------------------------
       mink=vec1(1)*vec2(1)-scalar(vec1,vec2)
       return
       end
+      
+      REAL*4 FUNCTION YSCALE(E,EP,QSQ,THR,A,EPS)
+      IMPLICIT NONE
+      INCLUDE 'gen_constants.par'
+      REAL*4 E, EP,THR,A, NU,W,WP,AG,BG,PART1,PART2,PART3,EPS,QSQ,CG,backup,RAD
+      yscale = 0.0
+!      write (15,*) 'in y scale'
+!      write (15,*) ' e, ep, qsq,thr,a', e,ep,qsq,thr,a
+      NU = E-EP
+      !EPS=EPS(A)
+      !QSQ = 4*E*EP*(SIN(THR/2))**2
+      !write (6,*)' qsq is ', QSQ
+      !write (15,*) 'eps, e,ep,nu,a', EPS,E,EP,nu,A
+      W = NU+A*mass_nucleon-EPS
+      WP = W**2+((A-1)*mass_nucleon)**2-mass_nucleon**2
+      !write (15,*) 'w, wp, qsq', w,wp,qsq
+      AG = 4*W**2-4*(NU**2+QSQ)
+      BG = SQRT(NU**2+QSQ)*(4*WP-4*(NU**2+QSQ))
+      PART1 = 4*W**2*(((A-1)*mass_nucleon)**2)
+      PART2 = 2*WP*(QSQ+NU**2)
+      PART3 = (QSQ+NU**2)**2
+      CG = PART1+PART2-PART3-WP**2
+      rad = BG**2-4*AG*CG
+      !write (15,*) 'A, B, C, RAD', AG,BG,CG,RAD
+      if (rad.lt.0) return
+      YSCALE = (-BG+SQRT(BG**2-4*AG*CG))/(2*AG)
+      backup =  (-BG-SQRT(BG**2-4*AG*CG))/(2*AG)
+      !write(6,*)'got y of', YSCALE
+      !write (6,*) 'got backup y of ', backup
+      RETURN
+      END
+
+
+      REAL*4 function yscale_eps(A)
+      IMPLICIT NONE
+      REAL*4 A
+      yscale_eps = 0.0
+      if( a .eq. 2)then       !deut
+          yscale_eps = 0.0022
+      else
+      if (a .eq. 3)then       !he3
+          yscale_eps = 0.0055
+      else
+      if (a .eq. 4)then       !he4
+          yscale_eps = 0.020
+      else
+      if (a .eq. 12)then      !carbon
+          yscale_eps = 0.016
+      else
+      if (a .eq. 27)then      !alum
+          yscale_eps = 0.0083
+      else
+      if (a .eq. 56)then      !iron
+          yscale_eps = 0.010
+      else
+      if(a .eq. 197)then      !gold, Jerry, Gold!
+          yscale_eps = 0.006
+      !else
+      !    yscale_eps = 0.0
+      !endif
+      endif
+      endif
+      endif
+      endif
+      endif
+      endif
+      endif
+      RETURN
+      END

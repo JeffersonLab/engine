@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.11.10.2  2004/09/07 18:39:34  cdaq
+* added pretrigger signals to hms and sos ntuples
+*
 * Revision 1.11.10.1  2004/06/23 19:30:25  cdaq
 * removed duplicate 'hsshtrk' entry
 *
@@ -125,6 +128,18 @@ c
       endif
 *
       m= 0
+      m=m+1
+      h_Ntuple_tag(m)= 'hspipre'
+      m=m+1
+      h_Ntuple_tag(m)= 'hselhi'
+      m=m+1
+      h_Ntuple_tag(m)= 'hsello'
+      m=m+1
+      h_Ntuple_tag(m)= 'hsprhi'
+      m=m+1
+      h_Ntuple_tag(m)= 'hsprlo'
+      m=m+1
+      h_Ntuple_tag(m)= 'hsshlo'
       m= m+1
       h_Ntuple_tag(m)= 'hcer_npe' ! cerenkov photoelectron spectrum
       m= m+1

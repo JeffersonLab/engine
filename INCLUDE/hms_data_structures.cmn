@@ -5,6 +5,9 @@
 *     Author:   D. F. Geesaman          1 September 1993
 *
 * $Log$
+* Revision 1.12.12.3  2004/09/07 18:42:05  cdaq
+* added pretrigger signals to hms and sos ntuples
+*
 * Revision 1.12.12.2  2004/09/07 18:03:29  cdaq
 * added hpcentral_set
 *
@@ -609,6 +612,12 @@
       real*4 yscale		   ! real function that calculates Y
       real*4 xsi_scale	           ! nachtmann variable (=x at Q2=1)
       real*4 yscale_eps	           ! separation energy
+      real*4 hspipre               ! hms pipre TDC value
+      real*4 hselhi                ! hms elhi TDC value
+      real*4 hsello                ! hms ello TDC value
+      real*4 hsprhi                ! hms pre-shower hi TDC value
+      real*4 hsprlo                ! hms pre-shower lo TDC value
+      real*4 hsshlo                ! hms shower lo TDC value
 *
       INTEGER*4 HSNUM_FPTRACK    ! Index of focal plane track chosen
       INTEGER*4 HSNUM_TARTRACK   ! Index of target track chosen
@@ -660,7 +669,13 @@
      & hsnu,
      & hsx_bj,
      & y_scale,
-     & xsi_scale
+     & xsi_scale,
+     & hspipre,
+     & hselhi,
+     & hsello,
+     & hsprhi,
+     & hsprlo,
+     & hsshlo
 *     & hsthetaq,hsphiq
 *
       COMMON/HMS_PHYSICS_I4/

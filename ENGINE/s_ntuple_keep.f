@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.8.10.1  2004/09/07 18:39:52  cdaq
+* added pretrigger signals to hms and sos ntuples
+*
 * Revision 1.8  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -89,6 +92,18 @@ c
       endif
 *
       m= 0
+      m= m+1
+      s_Ntuple_contents(m)= sspipre      ! SOS pipre TDC value
+      m= m+1
+      s_Ntuple_contents(m)= sselhi       ! SOS elhi TDC value
+      m= m+1
+      s_Ntuple_contents(m)= ssello       ! SOS ello TDC value
+      m= m+1
+      s_Ntuple_contents(m)= ssprhi       ! SOS prhi TDC value
+      m= m+1
+      s_Ntuple_contents(m)= ssprlo       ! SOS prlo TDC value
+      m= m+1
+      s_Ntuple_contents(m)= ssshlo       ! SOS shlo TDC value
       m= m+1
       s_Ntuple_contents(m)= SSOMEGA !
       m= m+1

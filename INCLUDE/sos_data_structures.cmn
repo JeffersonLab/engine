@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.10.12.2  2004/09/07 18:42:10  cdaq
+* added pretrigger signals to hms and sos ntuples
+*
 * Revision 1.10.12.1  2004/09/07 18:03:39  cdaq
 * added spcentral_set
 *
@@ -630,6 +633,13 @@
       REAL*4 SSTHET_GAMMA
       REAL*4 SSX_bj
 *
+      real*4 sspipre               ! sos pipre TDC value
+      real*4 sselhi                ! sos elhi TDC value
+      real*4 ssello                ! sos ello TDC value
+      real*4 ssprhi                ! sos pre-shower hi TDC value
+      real*4 ssprlo                ! sos pre-shower lo TDC value
+      real*4 ssshlo                ! sos shower lo TDC value
+*
       INTEGER*4 SSNUM_FPTRACK      ! Index of focal plane track chosen
       INTEGER*4 SSNUM_TARTRACK     ! Index of target track chosen
       INTEGER*4 SSID_LUND          ! LUND particle ID code -- not yet filled
@@ -679,7 +689,13 @@
      & SSCORRE,
      & SSOMEGA,
      & SSTHET_GAMMA,
-     & SSX_bj
+     & SSX_bj,
+     & sspipre,
+     & sselhi,
+     & ssello,
+     & ssprhi,
+     & ssprlo,
+     & ssshlo
 *     & SSTHETAQ, SSPHIQ,
 *
       COMMON/SOS_PHYSICS_I4/

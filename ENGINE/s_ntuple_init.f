@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.8.10.1  2004/09/07 18:40:01  cdaq
+* added pretrigger signals to hms and sos ntuples
+*
 * Revision 1.8  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -120,6 +123,18 @@ c
       endif
 *
       m= 0
+      m=m+1
+      s_Ntuple_tag(m)= 'sspipre'
+      m=m+1
+      s_Ntuple_tag(m)= 'sselhi'
+      m=m+1
+      s_Ntuple_tag(m)= 'ssello'
+      m=m+1
+      s_Ntuple_tag(m)= 'ssprhi'
+      m=m+1
+      s_Ntuple_tag(m)= 'ssprlo'
+      m=m+1
+      s_Ntuple_tag(m)= 'ssshlo'
       m= m+1
       s_Ntuple_tag(m)= 'omega' ! 
       m= m+1

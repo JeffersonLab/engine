@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.10.2  2004/09/07 18:39:47  cdaq
+* added pretrigger signals to hms and sos ntuples
+*
 * Revision 1.10.10.1  2004/06/23 19:30:31  cdaq
 * removed duplicate 'hsshtrk' entry
 *
@@ -90,32 +93,44 @@ c
       m= 0
 *  
       m= m+1
+      h_Ntuple_contents(m)= hspipre      ! HMS pipre TDC value
+      m= m+1
+      h_Ntuple_contents(m)= hselhi       ! HMS elhi TDC value
+      m= m+1
+      h_Ntuple_contents(m)= hsello       ! HMS ello TDC value
+      m= m+1
+      h_Ntuple_contents(m)= hsprhi       ! HMS prhi TDC value
+      m= m+1
+      h_Ntuple_contents(m)= hsprlo       ! HMS prlo TDC value
+      m= m+1
+      h_Ntuple_contents(m)= hsshlo       ! HMS shlo TDC value
+      m= m+1
       h_Ntuple_contents(m)= HCER_NPE_SUM ! cerenkov photoelectron spectrum
       m=m+1
  !     h_Ntuple_contents(m)= hsprtrk
  !     m=m+1
-      h_Ntuple_contents(m)= HSP	        ! Lab momentum of chosen track in GeV/c
+      h_Ntuple_contents(m)= HSP	         ! Lab momentum of chosen track in GeV/c
       m= m+1
-      h_Ntuple_contents(m)= HSENERGY    ! Lab total energy of chosen track in GeV
+      h_Ntuple_contents(m)= HSENERGY     ! Lab total energy of chosen track in GeV
       m= m+1
       h_Ntuple_contents(m)= gbcm1_charge ! Charge of last scaler event
       m= m+1
-      h_Ntuple_contents(m)= HSDELTA	! Spectrometer delta of chosen track
+      h_Ntuple_contents(m)= HSDELTA	 ! Spectrometer delta of chosen track
       m= m+1
-      h_Ntuple_contents(m)= HSTHETA	! Lab Scattering angle in radians
+      h_Ntuple_contents(m)= HSTHETA	 ! Lab Scattering angle in radians
       m= m+1
-      h_Ntuple_contents(m)= HSPHI	! Lab Azymuthal angle in radians
+      h_Ntuple_contents(m)= HSPHI	 ! Lab Azymuthal angle in radians
       m= m+1
-      h_Ntuple_contents(m)= HINVMASS	! Invariant Mass of remaing hadronic system
+      h_Ntuple_contents(m)= HINVMASS	 ! Invariant Mass of remaing hadronic system
       m= m+1
-      h_Ntuple_contents(m)= HSZBEAM! Lab Z coordinate of intersection of beam
-c                                ! track with spectrometer ray
+      h_Ntuple_contents(m)= HSZBEAM      ! Lab Z coordinate of intersection of beam
+c                                        ! track with spectrometer ray
       m= m+1
-      h_Ntuple_contents(m)= HSDEDX(1)	! DEDX of chosen track in 1st scin plane
+      h_Ntuple_contents(m)= HSDEDX(1)	 ! DEDX of chosen track in 1st scin plane
       m= m+1
-      h_Ntuple_contents(m)= HSBETA	! BETA of chosen track
+      h_Ntuple_contents(m)= HSBETA	 ! BETA of chosen track
       m= m+1
-      h_Ntuple_contents(m)= HSSHTRK	! Total shower energy of chosen track
+      h_Ntuple_contents(m)= HSSHTRK	 ! Total shower energy of chosen track
       m= m+1
       h_Ntuple_contents(m)= HSTRACK_PRESHOWER_E	! preshower of chosen track
       m= m+1
