@@ -13,6 +13,9 @@
 * Derek van Westrum (vanwestr@cebaf.gov)
 *
 * $Log$
+* Revision 1.4  1996/04/30 14:10:39  saw
+* (DVW) Code update
+*
 * Revision 1.3  1996/01/17 16:37:48  cdaq
 * (DVW) Tweak hodoscale
 *
@@ -30,11 +33,6 @@
       include 'sos_calorimeter.cmn'
       include 'sos_scin_parms.cmn'
 
-*One day these will be ctp variables...
-      real*4    SHOWER_X_OFFSET,SHOWER_Y_OFFSET
-      parameter (SHOWER_X_OFFSET = 11.3)       ! offset
-      parameter (SHOWER_Y_OFFSET = 0.) ! offset
-
       real*4    SHUT_WIDTH,SHUT_HEIGHT
       parameter (SHUT_WIDTH = 100.)     ! full width of the det. hut
       parameter (SHUT_HEIGHT = 800.)    ! full height of the det. hut
@@ -50,6 +48,11 @@
       real*4 ywirelength                   
       real*4 uwirelength
       real*4 vwirelength
+      parameter(xwirelength = 40.0)
+      parameter(ywirelength = 66.0)
+      parameter(uwirelength = 80)   != xwirelength/sin(60 degrees)
+      parameter(vwirelength = 80)   != xwirelength/sin(60 degrees)
+
 
       character*5 scinname 
       character*5 layername
@@ -83,13 +86,6 @@
       par(3) = SHUT_HEIGHT / 2.         ! half height in z of mother volume
       call g_ugsvolu ('SHUT', 'BOX ', SHUTMEDIA, par, 3, ivolu)
       call gsatt ('SHUT', 'SEEN', 0)	! can't see the hut
-
-* Define some wire lengths..
-
-      xwirelength = 40.0
-      ywirelength = 60.0
-      uwirelength = xwirelength / SIN(sdc_alpha_angle(1))
-      vwirelength = xwirelength / SIN(sdc_alpha_angle(2))
 
 
 * Now define the wire chambers as a collection of planes
@@ -345,12 +341,12 @@
       call gsatt ('HOD2', 'SEEN', 0)	! can't see the hodo box
 *                                         added by Derek
 *
-      x = sscin_1x_offset
-      y = -sscin_1y_offset
+      x = -sscin_1x_offset
+      y = sscin_1y_offset
       z = sscin_1x_zpos
       call gspos ('HOD1', 1, 'SHUT', x, y, z, 0, 'ONLY') ! lower hodo
-      x = sscin_2x_offset
-      y = -sscin_2y_offset
+      x = -sscin_2x_offset
+      y = sscin_2y_offset
       z = sscin_2x_zpos
       call gspos ('HOD2', 1, 'SHUT', x, y, z, 0, 'ONLY') ! upper hodo
 
@@ -416,8 +412,12 @@
 ! half height of the shower detector
       par(3) = smax_cal_columns * scal_block_xsize / 2.
       call g_ugsvolu ('SHOW', 'BOX ', DETMEDIA, par, 3, ivolu)
-      x = SHOWER_X_OFFSET 
-      y = SHOWER_Y_OFFSET
+
+!for the x offset, we take the center of the top and bottom blocks
+!This assumes that all the blocks are
+!the same heighth and width as scal_1pr
+      x = -(scal_block_xc(1) + scal_block_xc(smax_cal_rows))/2
+      y = scal_block_yc(1)
       z = scal_1pr_zpos + smax_cal_columns*scal_block_xsize/2.
       call gspos ('SHOW', 1, 'SHUT', x, y, z, 0, 'ONLY')
       call gsatt ('SHOW','SEEN',0)
