@@ -1,6 +1,9 @@
       subroutine s_analyze_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.6  1996/04/30 17:00:53  saw
+* (JRA) Change some aerogel variable names
+*
 * Revision 1.5  1995/10/09 20:07:55  cdaq
 * (JRA) Use scer_raw_adc instead of hcer_adc
 *
@@ -81,10 +84,10 @@
 *
       do ihit = 1 , saer_tot_hits
         blk = saer_pair_num(ihit)
-        saer_pos_ped_sum2(blk) = saer_pos_ped_sum2(blk) + saer_adc_left(ihit)*saer_adc_left(ihit)
-        saer_neg_ped_sum2(blk) = saer_neg_ped_sum2(blk) + saer_adc_right(ihit)*saer_adc_right(ihit)
-        saer_pos_ped_sum(blk) = saer_pos_ped_sum(blk) + saer_adc_left(ihit)
-        saer_neg_ped_sum(blk) = saer_neg_ped_sum(blk) + saer_adc_right(ihit)
+        saer_pos_ped_sum2(blk) = saer_pos_ped_sum2(blk) + saer_adc_pos(ihit)*saer_adc_pos(ihit)
+        saer_neg_ped_sum2(blk) = saer_neg_ped_sum2(blk) + saer_adc_neg(ihit)*saer_adc_neg(ihit)
+        saer_pos_ped_sum(blk) = saer_pos_ped_sum(blk) + saer_adc_pos(ihit)
+        saer_neg_ped_sum(blk) = saer_neg_ped_sum(blk) + saer_adc_neg(ihit)
         saer_pos_ped_num(blk) = saer_pos_ped_num(blk) + 1
         saer_neg_ped_num(blk) = saer_neg_ped_num(blk) + 1
       enddo
