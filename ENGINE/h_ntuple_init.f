@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.11.10.1  2004/06/23 19:30:25  cdaq
+* removed duplicate 'hsshtrk' entry
+*
 * Revision 1.11  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -125,6 +128,8 @@ c
       m= m+1
       h_Ntuple_tag(m)= 'hcer_npe' ! cerenkov photoelectron spectrum
       m= m+1
+!      h_Ntuple_tag(m) = 'prstknr'
+!      m=m+1
       h_Ntuple_tag(m)= 'hsp'     ! Lab momentum of chosen track in GeV/c
       m= m+1
       h_Ntuple_tag(m)= 'hse'      ! Lab total energy of chosen track in GeV
@@ -192,7 +197,18 @@ c
       h_Ntuple_tag(m)= 'bpmc_x'
       m= m+1
       h_Ntuple_tag(m)= 'bpmc_y'
-
+      m= m+1
+      h_Ntuple_tag(m)= 'nu'
+      m=m+1
+      h_Ntuple_tag(m)= 'x_bj'
+      m=m+1
+      h_Ntuple_tag(m)= 'Q2'
+      m=m+1
+      h_Ntuple_tag(m)= 'y_scale'
+      m=m+1
+      h_Ntuple_tag(m)= 'xsi'
+      
+      
       h_Ntuple_size= m     !total size
 * Open ntuple
 

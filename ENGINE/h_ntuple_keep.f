@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.10.1  2004/06/23 19:30:31  cdaq
+* removed duplicate 'hsshtrk' entry
+*
 * Revision 1.10  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -58,6 +61,8 @@
       INCLUDE 'hms_scin_tof.cmn'
       INCLUDE 'gen_scalers.cmn'
       include 'hms_track_histid.cmn'  !temp junk.
+      INCLUDE 'hms_calorimeter.cmn'
+      INCLUDE 'hms_cer_parms.cmn'
 *
       logical HEXIST	!CERNLIB function
 *
@@ -86,7 +91,9 @@ c
 *  
       m= m+1
       h_Ntuple_contents(m)= HCER_NPE_SUM ! cerenkov photoelectron spectrum
-      m= m+1
+      m=m+1
+ !     h_Ntuple_contents(m)= hsprtrk
+ !     m=m+1
       h_Ntuple_contents(m)= HSP	        ! Lab momentum of chosen track in GeV/c
       m= m+1
       h_Ntuple_contents(m)= HSENERGY    ! Lab total energy of chosen track in GeV
@@ -108,7 +115,7 @@ c                                ! track with spectrometer ray
       m= m+1
       h_Ntuple_contents(m)= HSBETA	! BETA of chosen track
       m= m+1
-      h_Ntuple_contents(m)= HSTRACK_ET	! Total shower energy of chosen track
+      h_Ntuple_contents(m)= HSSHTRK	! Total shower energy of chosen track
       m= m+1
       h_Ntuple_contents(m)= HSTRACK_PRESHOWER_E	! preshower of chosen track
       m= m+1
@@ -152,6 +159,17 @@ c
       h_Ntuple_contents(m)= gbpm_x(3)
       m= m+1
       h_Ntuple_contents(m)= gbpm_y(3)
+      m= m+1
+      h_Ntuple_contents(m)= hsnu
+      m= m+1
+      h_Ntuple_contents(m)= hsx_bj
+      m= m+1
+      h_Ntuple_contents(m)= hsbigq2
+      m= m+1
+      h_Ntuple_contents(m)= y_scale
+      m= m+1
+      h_Ntuple_contents(m)= xsi_scale
+
 
 * Experiment dependent entries start here.
 
