@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.4  1994/08/18 04:21:48  cdaq
+# Revision 1.5  1994/10/11 18:31:42  cdaq
+# (SAW) Add thClient
+#
+# Revision 1.4  1994/08/18  04:21:48  cdaq
 # (SAW) Add makereg.c
 #
 # Revision 1.3  1994/08/04  03:49:08  cdaq
@@ -16,7 +19,7 @@ include $(Csoft)/etc/Makefile
 
 ctp_sources = thTest.c thTestParse.c thTestExecute.c thHandlers.c thParm.c \
 	thUtils.c thLoad.c thHist.c daVarRegister.c daVarRpcProc.c \
-	daVarServ.c thReport.c thGethit.c
+	daVarServ.c thReport.c thGethit.c thClient.c
 derived_sources = daVarRpc_svc.c daVarRpc_xdr.c
 
 libsources = $(ctp_sources) $(derived_sources)
