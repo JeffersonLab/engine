@@ -5,7 +5,10 @@
 *                   David Potterveld, Argonne National Lab.                    *
 *   Modified:    21-JAN-94   DFG    change max_ to smax_
 * $Log$
-* Revision 1.2  1994/08/05 20:43:13  cdaq
+* Revision 1.3  1995/04/06 20:30:40  cdaq
+* (SAW) Add ddutta's pre cosy transformation stuff
+*
+* Revision 1.2  1994/08/05  20:43:13  cdaq
 * (SAW) Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
 *
 * Revision 1.1  1994/02/22  14:47:47  cdaq
@@ -18,6 +21,8 @@
       parameter       (smax_recon_elements = 1000) !Max # coeff elements
 
       real*4           s_recon_coeff(4,smax_recon_elements)
+      real*4           s_ang_slope_x,s_ang_slope_y
+      real*4           s_ang_offset_x,s_ang_offset_y
       integer*4        s_recon_expon(4,smax_recon_elements)
       integer*4        s_num_recon_terms
       integer*4        s_recon_initted
@@ -26,7 +31,9 @@
      >     s_recon_initted,             !Initialization flag.
      >     s_num_recon_terms,           !Number of terms.
      >     s_recon_coeff,               !Coefficients.
-     >     s_recon_expon                !Exponents.
+     >     s_recon_expon,               !Exponents.
+     >     s_ang_slope_x, s_ang_slope_y, ! Slopes for rotation of f plane
+     >     s_ang_offset_x, s_ang_offset_y ! Slopes for rotation of f plane
 
 ********************************************************************************
 
