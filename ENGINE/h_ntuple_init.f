@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.9.2.2  2003/09/04 21:10:33  jones
+* add event type to ntuple (mkj)
+*
 * Revision 1.9.2.1  2003/04/04 12:54:42  cdaq
 * add beam parameters to ntuple
 *
@@ -185,6 +188,8 @@
       h_Ntuple_tag(m)= 'hstart'
       m= m+1
       h_Ntuple_tag(m)= 'eventID'
+      m= m+1
+      h_Ntuple_tag(m)= 'evtype'
 
 * Experiment dependent entries start here.
 c
