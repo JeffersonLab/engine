@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.9  1995/01/27 20:48:08  cdaq
+# Revision 1.10  1995/03/08 20:32:52  cdaq
+# (SAW) Add -f switch on include file copy commands
+#
+# Revision 1.9  1995/01/27  20:48:08  cdaq
 # (SAW) Add sieve slit routines
 #
 # Revision 1.8  1994/11/23  15:37:39  cdaq
@@ -128,15 +131,15 @@ r_%.f : %.cmn $(MAKEREG)
 .PRECIOUS: r_%.f
 
 %.cmn :: ../INCLUDE/%.cmn
-	cp $< $@
+	cp -f $< $@
 
 %.dec :: ../INCLUDE/%.dec
-	cp $< $@
+	cp -f $< $@
 
 %.par :: ../INCLUDE/%.par
-	cp $< $@
+	cp -f $< $@
 	
 %.dte :: ../INCLUDE/%.dte
-	cp $< $@
+	cp -f $< $@
 	
 include $(sources:.f=.d)
