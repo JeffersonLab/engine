@@ -8,7 +8,11 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.10  1994/08/16 13:25:30  cdaq
+* Revision 1.11  1994/08/18 02:15:35  cdaq
+* (DM) Add 2-d arrays for residuals
+* (DJM) Add parameter for drift time to ditance calculation
+*
+* Revision 1.10  1994/08/16  13:25:30  cdaq
 * (DJA) Add wire velocity correction parameters
 *
 * Revision 1.9  1994/08/16  03:56:54  cdaq
@@ -48,6 +52,39 @@
 *
 *      CTPTYPE=parm
 *
+*
+*     Parameters for drift time to distance calculation
+*
+      integer*4 hdriftbins          ! number of bins in drift time lookup table
+      parameter (hdriftbins=138)
+      real*4    hdriftbinsz         ! drift bin size in nsec of lookup table
+      parameter (hdriftbinsz=2.)
+      real*4    hdrift1stbin        ! drift time of 1st bin in nsec of lookup
+      parameter (hdrift1stbin=-25.)
+      real*4     fract              !fraction of integrated time spectrum
+      real*4     fractinterp        !  interpolated fraction 
+      real*4 hwc1x1fract(hdriftbins),hwc1y1fract(hdriftbins),
+     &       hwc1u1fract(hdriftbins),hwc1v1fract(hdriftbins),
+     &       hwc1y2fract(hdriftbins),hwc1x2fract(hdriftbins),
+     &       hwc2x1fract(hdriftbins),hwc2y1fract(hdriftbins),
+     &       hwc2u1fract(hdriftbins),hwc2v1fract(hdriftbins),
+     &       hwc2y2fract(hdriftbins),hwc2x2fract(hdriftbins)
+
+      equivalence (hwc1x1fract(1),fract(1,1))
+      equivalence (hwc1y1fract(1),fract(1,2))
+      equivalence (hwc1u1fract(1),fract(1,3))
+      equivalence (hwc1v1fract(1),fract(1,4))
+      equivalence (hwc1y2fract(1),fract(1,5))
+      equivalence (hwc1x2fract(1),fract(1,6))
+      equivalence (hwc2x1fract(1),fract(1,7))
+      equivalence (hwc2y1fract(1),fract(1,8))
+      equivalence (hwc2u1fract(1),fract(1,9))
+      equivalence (hwc2v1fract(1),fract(1,10))
+      equivalence (hwc2y2fract(1),fract(1,11))
+      equivalence (hwc2x2fract(1),fract(1,12))
+
+      common/HMS_DRIFT/fract(hdriftbins,12),fractinterp
+
       integer*4 hdc_num_planes      ! actual number of dc chambers - set in CTP
       integer*4 hmax_num_chambers   ! maximum number of chambers
       parameter (hmax_num_chambers=2)
@@ -181,3 +218,13 @@
      &     hwire_early_mult,
      &     hwire_late_mult,
      &     hwire_extra_mult
+*
+*     CTPTYPE=event
+*
+*  complete 2-D array for residuals in all planes over all tracks
+      real*4 hdc_residual(HNTRACKS_MAX,HMAX_NUM_DC_PLANES)
+      real*4 hdc_sing_res(HNTRACKS_MAX,HMAX_NUM_DC_PLANES)
+
+       common/HMS_RESIDUAL/
+     &   hdc_residual,
+     &   hdc_sing_res
