@@ -1,6 +1,9 @@
       subroutine h_one_ev_generate
 *
 * $Log$
+* Revision 1.2  1996/09/04 20:06:16  saw
+* (SAW) hdc_nrwire already integer, don't nint it.
+*
 * Revision 1.1  1996/01/17 16:35:11  cdaq
 * Initial revision
 *
@@ -73,7 +76,7 @@
             lnums(1)  = 1               ! copy one, higher chamber
             lnames(2) = 'WAAX'		! X plane
             lnums(2)  = 1	! copy one
-            wirenum = nint(hdc_nrwire(HDC_PLANE_NUM(chamhit))) + 1
+            wirenum = (hdc_nrwire(HDC_PLANE_NUM(chamhit))) + 1
      &           - HDC_WIRE_NUM(chamhit)
             if (HDC_WIRE_COUNTING(HDC_PLANE_NUM(chamhit)) .EQ. 1)
      &           wirenum = HDC_WIRE_NUM(chamhit)
@@ -105,7 +108,7 @@
             lnums(2)  = 1               ! copy one
             wirenum = HDC_WIRE_NUM(chamhit)
             if (HDC_WIRE_COUNTING(HDC_PLANE_NUM(chamhit)) .EQ. 1)
-     &           wirenum = nint(hdc_nrwire(HDC_PLANE_NUM(chamhit)))+1
+     &           wirenum = (hdc_nrwire(HDC_PLANE_NUM(chamhit)))+1
      $           -wirenum
 	    if (wirenum .le. 26) write (wire,'(a,a,a,a)') 'AYA',char(64+wirenum)
 	    if (wirenum .gt. 26) write (wire,'(a,a,a,a)') 'AYB',char(64 - 26 + wirenum)
@@ -125,7 +128,7 @@
             lnums(1)  = 1               ! copy one, higher chamber
             lnames(2) = 'WAAU'		! U plane
             lnums(2)  = 1               ! copy one
-            wirenum = nint(hdc_nrwire(HDC_PLANE_NUM(chamhit))) + 1
+            wirenum = (hdc_nrwire(HDC_PLANE_NUM(chamhit))) + 1
      &           - HDC_WIRE_NUM(chamhit)
             if (HDC_WIRE_COUNTING(HDC_PLANE_NUM(chamhit)) .EQ. 1)
      &           wirenum = HDC_WIRE_NUM(chamhit)
@@ -155,7 +158,7 @@
             lnums(1)  = 1               ! copy one, higher chamber
             lnames(2) = 'WAAV'		! V plane
             lnums(2)  = 1               ! copy one
-            wirenum = nint(hdc_nrwire(HDC_PLANE_NUM(chamhit))) + 1
+            wirenum = (hdc_nrwire(HDC_PLANE_NUM(chamhit))) + 1
      &           - HDC_WIRE_NUM(chamhit)
             if (HDC_WIRE_COUNTING(HDC_PLANE_NUM(chamhit)) .EQ. 1)
      &           wirenum = HDC_WIRE_NUM(chamhit)
@@ -187,7 +190,7 @@
             lnums(2)  = 1               ! copy one
             wirenum = HDC_WIRE_NUM(chamhit)
             if (HDC_WIRE_COUNTING(HDC_PLANE_NUM(chamhit)) .EQ. 1)
-     &           wirenum = nint(hdc_nrwire(HDC_PLANE_NUM(chamhit)))+1
+     &           wirenum = (hdc_nrwire(HDC_PLANE_NUM(chamhit)))+1
      $           -wirenum
 	    if (wirenum .le. 26) write (wire,'(a,a,a,a)') 'AYC',char(64+wirenum)
 	    if (wirenum .gt. 26) write (wire,'(a,a,a,a)') 'AYD',char(64 - 26 + wirenum)
@@ -207,7 +210,7 @@
             lnums(1)  = 1               ! copy one, higher chamber
             lnames(2) = 'WABX'		! X plane
             lnums(2)  = 1               ! copy one
-            wirenum = nint(hdc_nrwire(HDC_PLANE_NUM(chamhit))) + 1
+            wirenum = (hdc_nrwire(HDC_PLANE_NUM(chamhit))) + 1
      &           - HDC_WIRE_NUM(chamhit)
             if (HDC_WIRE_COUNTING(HDC_PLANE_NUM(chamhit)) .EQ. 1)
      &           wirenum = HDC_WIRE_NUM(chamhit)
@@ -238,7 +241,7 @@
             lnums(1)  = 1               ! copy one, higher chamber
             lnames(2) = 'WBAX'		! X plane
             lnums(2)  = 1	! copy one
-            wirenum = nint(hdc_nrwire(HDC_PLANE_NUM(chamhit))) + 1
+            wirenum = (hdc_nrwire(HDC_PLANE_NUM(chamhit))) + 1
      &           - HDC_WIRE_NUM(chamhit)
             if (HDC_WIRE_COUNTING(HDC_PLANE_NUM(chamhit)) .EQ. 1)
      &           wirenum = HDC_WIRE_NUM(chamhit)
@@ -270,7 +273,7 @@
             lnums(2)  = 1               ! copy one
             wirenum = HDC_WIRE_NUM(chamhit)
             if (HDC_WIRE_COUNTING(HDC_PLANE_NUM(chamhit)) .EQ. 1)
-     &           wirenum = nint(hdc_nrwire(HDC_PLANE_NUM(chamhit)))+1
+     &           wirenum = (hdc_nrwire(HDC_PLANE_NUM(chamhit)))+1
      $           -wirenum
 	    if (wirenum .le. 26) write (wire,'(a,a,a,a)') 'BYA',char(64+wirenum)
 	    if (wirenum .gt. 26) write (wire,'(a,a,a,a)') 'BYB',char(64 - 26 + wirenum)
@@ -290,7 +293,7 @@
             lnums(1)  = 1               ! copy one, higher chamber
             lnames(2) = 'WBAU'		! U plane
             lnums(2)  = 1               ! copy one
-            wirenum = nint(hdc_nrwire(HDC_PLANE_NUM(chamhit))) + 1
+            wirenum = (hdc_nrwire(HDC_PLANE_NUM(chamhit))) + 1
      &           - HDC_WIRE_NUM(chamhit)
             if (HDC_WIRE_COUNTING(HDC_PLANE_NUM(chamhit)) .EQ. 1)
      &           wirenum = HDC_WIRE_NUM(chamhit)
@@ -320,7 +323,7 @@
             lnums(1)  = 1               ! copy one, higher chamber
             lnames(2) = 'WBAV'		! V plane
             lnums(2)  = 1               ! copy one
-            wirenum = nint(hdc_nrwire(HDC_PLANE_NUM(chamhit))) + 1
+            wirenum = (hdc_nrwire(HDC_PLANE_NUM(chamhit))) + 1
      &           - HDC_WIRE_NUM(chamhit)
             if (HDC_WIRE_COUNTING(HDC_PLANE_NUM(chamhit)) .EQ. 1)
      &           wirenum = HDC_WIRE_NUM(chamhit)
@@ -350,7 +353,7 @@
             lnums(2)  = 1               ! copy one
             wirenum = HDC_WIRE_NUM(chamhit)
             if (HDC_WIRE_COUNTING(HDC_PLANE_NUM(chamhit)) .EQ. 1)
-     &           wirenum = nint(hdc_nrwire(HDC_PLANE_NUM(chamhit)))+1
+     &           wirenum = (hdc_nrwire(HDC_PLANE_NUM(chamhit)))+1
      $           -wirenum
 	    if (wirenum .le. 26) write (wire,'(a,a,a,a)') 'BYC',char(64+wirenum)
 	    if (wirenum .gt. 26) write (wire,'(a,a,a,a)') 'BYD',char(64 - 26 + wirenum)
@@ -370,7 +373,7 @@
             lnums(1)  = 1               ! copy one, higher chamber
             lnames(2) = 'WBBX'		! X plane
             lnums(2)  = 1               ! copy one
-            wirenum = nint(hdc_nrwire(HDC_PLANE_NUM(chamhit))) + 1
+            wirenum = (hdc_nrwire(HDC_PLANE_NUM(chamhit))) + 1
      &           - HDC_WIRE_NUM(chamhit)
             if (HDC_WIRE_COUNTING(HDC_PLANE_NUM(chamhit)) .EQ. 1)
      &           wirenum = HDC_WIRE_NUM(chamhit)

@@ -1,6 +1,9 @@
       subroutine s_one_ev_generate
 *
 * $Log$
+* Revision 1.2  1996/09/04 20:06:35  saw
+* (SAW) hdc_nrwire already integer, don't nint it.
+*
 * Revision 1.1  1996/01/17 16:37:21  cdaq
 * Initial revision
 *
@@ -71,7 +74,7 @@
             lnums(1)  = 1               ! copy one, higher chamber
             lnames(2) = 'WAAU'		! U plane
             lnums(2)  = 1               ! copy one
-            wirenum = nint(sdc_nrwire(SDC_PLANE_NUM(chamhit))) + 1
+            wirenum = (sdc_nrwire(SDC_PLANE_NUM(chamhit))) + 1
      &           - SDC_WIRE_NUM(chamhit)
             if (SDC_WIRE_COUNTING(SDC_PLANE_NUM(chamhit)) .EQ. 1)
      &           wirenum = SDC_WIRE_NUM(chamhit)
@@ -93,7 +96,7 @@
             lnums(1)  = 1               ! copy one, higher chamber
             lnames(2) = 'WABU'		! U plane
             lnums(2)  = 1               ! copy one
-            wirenum = nint(sdc_nrwire(SDC_PLANE_NUM(chamhit))) + 1
+            wirenum = (sdc_nrwire(SDC_PLANE_NUM(chamhit))) + 1
      &           - SDC_WIRE_NUM(chamhit)
             if (SDC_WIRE_COUNTING(SDC_PLANE_NUM(chamhit)) .EQ. 1)
      &           wirenum = SDC_WIRE_NUM(chamhit)
@@ -115,7 +118,7 @@
             lnums(1)  = 1               ! copy one, higher chamber
             lnames(2) = 'WAAX'		! X plane
             lnums(2)  = 1               ! copy one
-	    wirenum = nint(SDC_nrwire(SDC_PLANE_NUM(chamhit))) + 1
+	    wirenum = (SDC_nrwire(SDC_PLANE_NUM(chamhit))) + 1
      &           - SDC_WIRE_NUM(chamhit)
             if (SDC_WIRE_COUNTING(SDC_PLANE_NUM(chamhit)) .EQ. 1)
      &           wirenum = SDC_WIRE_NUM(chamhit)
@@ -142,7 +145,7 @@
            lnums(1)  = 1                ! copy one, higher chamber
            lnames(2) = 'WABX'		! X plane
            lnums(2)  = 1                ! copy one
-           wirenum = nint(SDC_nrwire(SDC_PLANE_NUM(chamhit))) + 1
+           wirenum = (SDC_nrwire(SDC_PLANE_NUM(chamhit))) + 1
      &          - SDC_WIRE_NUM(chamhit)
            if (SDC_WIRE_COUNTING(SDC_PLANE_NUM(chamhit)) .EQ. 1)
      &          wirenum = SDC_WIRE_NUM(chamhit)
@@ -170,7 +173,7 @@
            lnums(1)  = 1                ! copy one, higher chamber
            lnames(2) = 'WAAV'		! V plane
            lnums(2)  = 1                ! copy one
-           wirenum = nint(SDC_nrwire(SDC_PLANE_NUM(chamhit))) + 1
+           wirenum = (SDC_nrwire(SDC_PLANE_NUM(chamhit))) + 1
      &          - SDC_WIRE_NUM(chamhit)
            if (SDC_WIRE_COUNTING(SDC_PLANE_NUM(chamhit)) .EQ. 1)
      &          wirenum = SDC_WIRE_NUM(chamhit)
@@ -195,7 +198,7 @@
            lnums(1)  = 1                ! copy one, higher chamber
            lnames(2) = 'WABV'		! V plane
            lnums(2)  = 1                ! copy one
-           wirenum = nint(SDC_nrwire(SDC_PLANE_NUM(chamhit))) + 1
+           wirenum = (SDC_nrwire(SDC_PLANE_NUM(chamhit))) + 1
      &          - SDC_WIRE_NUM(chamhit)
            if (SDC_WIRE_COUNTING(SDC_PLANE_NUM(chamhit)) .EQ. 1)
      &          wirenum = SDC_WIRE_NUM(chamhit)
@@ -221,7 +224,7 @@
            lnums(1)  = 1                ! copy one, higher chamber
            lnames(2) = 'WBAU'		! U plane
            lnums(2)  = 1                ! copy one
-           wirenum = nint(sdc_nrwire(SDC_PLANE_NUM(chamhit))) + 1
+           wirenum = (sdc_nrwire(SDC_PLANE_NUM(chamhit))) + 1
      &          - SDC_WIRE_NUM(chamhit)
            if (SDC_WIRE_COUNTING(SDC_PLANE_NUM(chamhit)) .EQ. 1)
      &          wirenum = SDC_WIRE_NUM(chamhit)
@@ -245,7 +248,7 @@
            lnums(1)  = 1                ! copy one, higher chamber
            lnames(2) = 'WBBU'		! U plane
            lnums(2)  = 1                ! copy one
-           wirenum = nint(sdc_nrwire(SDC_PLANE_NUM(chamhit))) + 1
+           wirenum = (sdc_nrwire(SDC_PLANE_NUM(chamhit))) + 1
      &          - SDC_WIRE_NUM(chamhit)
            if (SDC_WIRE_COUNTING(SDC_PLANE_NUM(chamhit)) .EQ. 1)
      &          wirenum = SDC_WIRE_NUM(chamhit)
@@ -269,7 +272,7 @@
            lnums(1)  = 1                ! copy one, higher chamber
            lnames(2) = 'WBAX'		! X plane
            lnums(2)  = 1                ! copy one
-           wirenum = nint(SDC_nrwire(SDC_PLANE_NUM(chamhit))) + 1
+           wirenum = (SDC_nrwire(SDC_PLANE_NUM(chamhit))) + 1
      &          - SDC_WIRE_NUM(chamhit)
            if (SDC_WIRE_COUNTING(SDC_PLANE_NUM(chamhit)) .EQ. 1)
      &          wirenum = SDC_WIRE_NUM(chamhit)
@@ -297,7 +300,7 @@
            lnums(1)  = 1                ! copy one, higher chamber
            lnames(2) = 'WBBX'		! X plane
            lnums(2)  = 1                ! copy one
-           wirenum = nint(SDC_nrwire(SDC_PLANE_NUM(chamhit))) + 1
+           wirenum = (SDC_nrwire(SDC_PLANE_NUM(chamhit))) + 1
      &          - SDC_WIRE_NUM(chamhit)
            if (SDC_WIRE_COUNTING(SDC_PLANE_NUM(chamhit)) .EQ. 1)
      &          wirenum = SDC_WIRE_NUM(chamhit)
@@ -325,7 +328,7 @@
            lnums(1)  = 1                ! copy one, higher chamber
            lnames(2) = 'WBAV'		! V plane
            lnums(2)  = 1                ! copy one
-           wirenum = nint(SDC_nrwire(SDC_PLANE_NUM(chamhit))) + 1
+           wirenum = (SDC_nrwire(SDC_PLANE_NUM(chamhit))) + 1
      &          - SDC_WIRE_NUM(chamhit)
            if (SDC_WIRE_COUNTING(SDC_PLANE_NUM(chamhit)) .EQ. 1)
      &          wirenum = SDC_WIRE_NUM(chamhit)
@@ -350,7 +353,7 @@
            lnums(1)  = 1                ! copy one, higher chamber
            lnames(2) = 'WBBV'		! V plane
            lnums(2)  = 1                ! copy one
-           wirenum = nint(SDC_nrwire(SDC_PLANE_NUM(chamhit))) + 1
+           wirenum = (SDC_nrwire(SDC_PLANE_NUM(chamhit))) + 1
      &          - SDC_WIRE_NUM(chamhit)
            if (SDC_WIRE_COUNTING(SDC_PLANE_NUM(chamhit)) .EQ. 1)
      &          wirenum = SDC_WIRE_NUM(chamhit)
