@@ -9,10 +9,13 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 *-    $Log$
-*-    Revision 1.12  1995/01/31 21:12:17  cdaq
-*-    (SAW) Add gen_run_hist_dump_interval for in run hist dumping.  Add commented
-*-              out code to query user for # of event and hist dump interval.
+*-    Revision 1.13  1995/03/13 18:11:05  cdaq
+*-    (JRA) Write scaler report when histograms are dumped at intervals
 *-
+* Revision 1.12  1995/01/31  21:12:17  cdaq
+* (SAW) Add gen_run_hist_dump_interval for in run hist dumping.  Add commented
+*           out code to query user for # of event and hist dump interval.
+*
 * Revision 1.11  1994/11/22  20:12:01  cdaq
 * (SAW) Change "" to " " so this would compile under ultrix.
 *
@@ -64,13 +67,17 @@
       include 'gen_event_info.cmn'
       include 'gen_run_pref.cmn'
       include 'gen_routines.dec'
+      include 'hms_filenames.cmn'
 *
       logical problems
       integer total_event_count
       integer i,since_cnt,itmp
       integer evtype
       integer rpc_pend                  ! # Pending asynchronous RPC requests
-* 
+      integer ierr
+*      integer SPAREID
+*      parameter (SPAREID=67)
+*
       character*80 g_config_environmental_var
       parameter (g_config_environmental_var= 'ENGINE_CONFIG_FILE')
 *
@@ -146,7 +153,7 @@ c      if (itmp.ne.0) gen_run_starting_event=itmp
 c      write(6,'("Stopping Event #: [",i7,"] "$)') gen_run_stopping_event
 c      read(5,'(i30)') itmp
 c      if (itmp.ne.0) gen_run_stopping_event=itmp
-c      write(6,'("Hist dump intrvl: [",i7,"] "$)') gen_run_hist_dump_interval
+c      write(6,'("Hist dump intrvl: (-1=@end) [",i7,"] "$)') gen_run_hist_dump_interval
 c      read(5,'(i30)') itmp
 c      if (itmp.ne.0) gen_run_hist_dump_interval=itmp
 *
@@ -196,13 +203,6 @@ c      if (itmp.ne.0) gen_run_hist_dump_interval=itmp
           problems= problems .OR. ABORT 
           if(.NOT.ABORT) total_event_count= total_event_count+1
 *     
-          since_cnt= since_cnt+1
-          if(since_cnt.GE.1000) then
-            type *,' event#',total_event_count,'  ',ABORT
-            since_cnt= 0
-          endif
-
-*
         EndIf
 *
         if(mss.NE.' ' .and. err.NE.' ') then
@@ -287,10 +287,25 @@ c      if (itmp.ne.0) gen_run_hist_dump_interval=itmp
      $           then
               print *,"Dumping histograms at event ",total_event_count
               call g_dump_histograms(ABORT,err)
+*
+*     Dump scaler report as well
+              call h_scin_eff_shutdown(ABORT,err)
+              call h_cal_eff_shutdown(ABORT,err)
+              ierr = threp(g_report_blockname,g_report_output_filename)
+              if(ierr.ne.0) then
+                print *,'ierr=',ierr,', error dumping report'
+c                bad_report = .true.
+c                err = 'threpa failed to append report'
+              endif
             endif
           endif
         endif
 *
+        since_cnt= since_cnt+1
+        if(since_cnt.GE.1000) then
+          type *,' event#',total_event_count,'  ',ABORT
+          since_cnt= 0
+        endif
 *
         If(ABORT .or. mss.NE.' ') Then
           call G_add_path(here,mss)     !only if problems
@@ -307,7 +322,7 @@ c      if (itmp.ne.0) gen_run_hist_dump_interval=itmp
 *- Here is where we insert a check for an Remote Proceedure Call (RPC) 
 *- from another process for CTP to interpret
 *
-      ENDDO                             !found a problem
+      ENDDO                             !found a problem or end of run
 *
       type *,'    -------------------------------------'
 *
