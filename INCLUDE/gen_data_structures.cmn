@@ -5,7 +5,10 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
-* Revision 1.18  1994/09/13 21:47:19  cdaq
+* Revision 1.19  1994/09/19 20:26:44  cdaq
+* (SAW) Remove HDC_HITS_PER_PLANE from HMS_DECODED_DC common
+*
+* Revision 1.18  1994/09/13  21:47:19  cdaq
 * (JRA) Remove HGOOD_START_PLANE
 *
 * Revision 1.17  1994/09/13  19:15:21  cdaq
@@ -202,7 +205,6 @@
       INTEGER*4 HDC_PLANE_NUM     ! copied from HMS_RAW_DC
       INTEGER*4 HDC_WIRE_NUM      ! copied from HMS_RAW_DC
       INTEGER*4 HDC_TDC           ! copied from HMS_RAW_DC
-      INTEGER*4 HDC_HITS_PER_PLANE
       INTEGER*4 HDC_TOT_HITS
       REAL*4 HDC_DRIFT_TIME
       REAL*4 HDC_DRIFT_DIS
@@ -216,7 +218,6 @@
      5     HDC_PLANE_NUM(HMAX_DC_HITS),
      6     HDC_WIRE_NUM(HMAX_DC_HITS),
      7     HDC_TDC(HMAX_DC_HITS),
-     8     HDC_HITS_PER_PLANE(HMAX_NUM_DC_PLANES),
      9     HDC_TOT_HITS
 *
 *     HMS RAW SCINTILLATOR HITS
@@ -375,7 +376,6 @@
       REAL*4 HCAL_E3            !                            #3
       REAL*4 HCAL_E4            !                            #4
       REAL*4 HCAL_ET            !TOTAL ENERGY IN THE CALORIMETER
-      REAL*4 HCAL_SLOP          !SLOP IN DISTANCE BETWEEN TRACK AND BLOCK
       COMMON/HMS_DECODED_CAL/
      &     HBLOCK_XC(HMAX_CAL_BLOCKS),
      &     HBLOCK_ZC(HMAX_CAL_BLOCKS),
@@ -385,8 +385,7 @@
      &     HCAL_E3,
      &     HCAL_E4,
      &     HCAL_ET,
-     &     HNHITS_CAL,
-     &     HCAL_SLOP
+     &     HNHITS_CAL
 *
 *     HMS CERENKOV HITS
 *      FILLED BY G_decode_event_by_banks
