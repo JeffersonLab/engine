@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.36  2003/12/17 15:10:56  jones
+*  fix problem in sync filter part
+*
 * Revision 1.35  2003/09/05 21:49:12  jones
 * Merge in online03 changes  (mkj)
 *
@@ -639,13 +642,13 @@ c
               if(gen_event_type.le.gen_MAX_trigger_types .and.
      $           gen_run_enable(gen_event_type-1).ne.0) then
 c
-               if ( insync .eq. 1) then
+               if ( insync .eq. 1 .and. syncfilter_on) then
                   skipped_badsync_events(gen_event_type)=skipped_badsync_events(gen_event_type) + 1
                   sum_analyzed_skipped = sum_analyzed_skipped + 1
                   goto 868
                endif
                if ( ave_current_bcm(bcm_for_threshold_cut)  .le. g_beam_on_thresh_cur(bcm_for_threshold_cut)
-     >               .and. gen_event_type .le. 3 ) then
+     >               .and. gen_event_type .le. 3 .and. syncfilter_on) then
                   skipped_lowbcm_events(gen_event_type)=skipped_lowbcm_events(gen_event_type) + 1
                   sum_analyzed_skipped = sum_analyzed_skipped + 1
                   goto 868
