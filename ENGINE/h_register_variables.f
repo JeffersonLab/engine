@@ -13,8 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.9  1995/01/27 20:15:54  cdaq
-*     (SAW) Add call to sieve slit register routine
+*     Revision 1.10  1995/05/11 18:57:25  cdaq
+*     (SAW) Add calls to register h_ntuple.cmn and h_sieve_ntuple.cmn
+*
+* Revision 1.9  1995/01/27  20:15:54  cdaq
+* (SAW) Add call to sieve slit register routine
 *
 * Revision 1.8  1994/08/18  04:11:26  cdaq
 * (SAW) Call makereg generated routines to register variables
@@ -59,6 +62,10 @@
 *
       call r_hms_filenames
 
+      call r_h_ntuple
+
+      call r_h_sieve_ntuple
+
       call h_register_param(FAIL,why) ! TRACKING ROUTINE
       IF(err.NE.' ' .and. why.NE.' ') THEN   !keep warnings
         call G_append(err,' & '//why)
@@ -67,7 +74,7 @@
       ENDIF
       ABORT= ABORT .or. FAIL
 *
-      call h_ntuple_register(FAIL,why)
+      call h_ntuple_register(FAIL,why)  ! Remove this when ctp files fixed
       IF(err.NE.' ' .and. why.NE.' ') THEN  !keep warnings
         call G_append(err,' & '//why)
       ELSEIF(why.NE.' ') THEN
@@ -77,7 +84,7 @@
 *
       if(ABORT .or. err.NE.' ') call G_add_path(here,err)
 *
-      call h_sv_nt_register(FAIL,why)
+      call h_sv_nt_register(FAIL,why)   ! Remove this when ctp files fixed
       IF(err.NE.' ' .and. why.NE.' ') THEN  !keep warnings
         call G_append(err,' & '//why)
       ELSEIF(why.NE.' ') THEN
