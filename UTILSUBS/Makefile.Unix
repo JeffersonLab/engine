@@ -1,5 +1,11 @@
 #
 # $Log$
+# Revision 1.13.16.1  2004/07/08 20:45:48  saw
+# Make include file rules like other directories.  Avoids leaving copies around.
+#
+# Revision 1.14  2004/07/08 20:01:17  saw
+# Make include file rules like other directories.  Avoids leaving copies around.
+#
 # Revision 1.13  1998/12/07 22:11:35  saw
 # Initial setup
 #
@@ -72,16 +78,13 @@ ifdef NFSDIRECTORY
 .PRECIOUS: ../%.f
 endif
 
-%.cmn:: ../../INCLUDE/%.cmn
+%.cmn ../%.cmn:: ../../INCLUDE/%.cmn
 	$(CP) $< $@
-	$(CP) $< ../$@
 
-%.dec:: ../../INCLUDE/%.dec
+%.dec ../%.dec:: ../../INCLUDE/%.dec
 	$(CP) $< $@
-	$(CP) $< ../$@
 
-%.par:: ../../INCLUDE/%.par
+%.par ../%.par:: ../../INCLUDE/%.par
 	$(CP) $< $@
-	$(CP) $< ../$@
 
 include $(sources:.f=.d)
