@@ -27,7 +27,11 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
-* Revision 1.14  1995/05/11 17:17:00  cdaq
+* Revision 1.15  1995/05/22 13:35:40  cdaq
+* (SAW) Fix up some problems with decoding of parallel link wrappers around
+* fastbus events.  Still doesn't hadle two fb rocs wrapped into one bank.
+*
+* Revision 1.14  1995/05/11  17:17:00  cdaq
 * (SAW) Extend || link hack for SOS.  Add Aerogel detector.
 *
 * Revision 1.13  1995/04/01  19:44:50  cdaq
@@ -83,6 +87,7 @@
       integer*4 did                             ! Detector ID
       integer*4 g_decode_getdid                 ! Get detector ID routine
       integer*4 g_decode_fb_detector            ! Detector unpacking routine
+      integer*4 i
 
       banklength = bank(1) + 1                  ! Bank length including count
 
@@ -99,7 +104,7 @@
         return
       endif
 *
-      if(roc.ge.G_DECODE_MAXROCS) then
+      if(roc.ge.G_DECODE_MAXROCS.and.roc.ne.9) then
         ABORT = .false.                 ! Just warn
         error = ':ROC out of range'
         call g_add_path(here,error)
@@ -107,15 +112,31 @@
       endif
 *
       pointer = 3                               ! First word of bank
-      if (roc.eq.7 .or. roc.eq.8 .or. roc.eq.9) pointer=5  !using parallel link, so next
-                                             !2 words are fb roc header.
-      if (roc.eq.7) then                ! Change || link ROC #'s into ROC #'s
-        roc = 2                         ! used by the FB crates
-      else if(roc.eq.8) then            ! so that only one map file is
-        roc = 1                         ! needed.  (SAW 12/11/94)
-      else if(roc.eq.9) then            ! FBSOS
-        roc = 4
+*      if(roc.ge.7.and.roc.le.9) then
+*        write(6,'(7z9)') (bank(i),i=1,7)
+*        write(6,'(7z9),/') (bank(i),i=8,14)
+*      endif
+      if (roc.eq.7 .or. roc.eq.8 .or. roc.eq.9) then
+*
+*     These 3 rocs are VME front ends for fastbus crates.  At present
+*     we assume that each VME front end is only taking data from one
+*     FB roc and that this FB roc # is in 4 word of the bank.  This
+*     hack will not work when we have roc 8 taking data from both
+*     fbch1 and fbch2.  But it should work for runs up through
+*     at least 5/31/95.
+*
+        pointer=pointer+2               !using parallel link, so next
+        stat_roc = ishft(bank(pointer-1),-16)!2 words are fb roc header.
+        roc = iand(stat_roc,'1F'X)
+*        print *,iand(ishft(bank(2),-16),'1F'X),'->',roc
       endif
+c      if (roc.eq.7) then                ! Change || link ROC #'s into ROC #'s
+c        roc = 2                         ! used by the FB crates
+c      else if(roc.eq.8) then            ! so that only one map file is
+c        roc = 1                         ! needed.  (SAW 12/11/94)
+c      else if(roc.eq.9) then            ! FBSOS
+c        roc = 4
+c      endif
       lastslot = -1
       do while (pointer .le. banklength)
 
