@@ -10,9 +10,12 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.6  1994/06/22 20:55:14  cdaq
-*-    (SAW) Load report templates
+*-    Revision 1.7  1994/08/04 03:08:11  cdaq
+*-    (SAW) Add call to Breuer's hack_initialize
 *-
+* Revision 1.6  1994/06/22  20:55:14  cdaq
+* (SAW) Load report templates
+*
 * Revision 1.5  1994/06/04  02:35:59  cdaq
 * (KBB) Make sure CTP files are non-blank before trying to thload them
 *
@@ -50,8 +53,8 @@
       INCLUDE 'gen_pawspace.cmn'                !includes sizes of special CERNLIB space
 *
       integer ierr
-      logical HMS_ABORT,SOS_ABORT
-      character*132 HMS_err,SOS_err
+      logical HMS_ABORT,SOS_ABORT, HACK_ABORT
+      character*132 HMS_err,SOS_err, HACK_errhack
 *
       logical*4 first_time                      ! Allows routine to be called 
       data first_time /.true./                  ! by online code
@@ -137,10 +140,11 @@
 *
       ENDIF
 *
+      call hack_initialize(HACK_ABORT,HACK_err) ! Ignore error return for now
+*
 *-force reset of all space of all working arrays
 *-(clear just zeros the index of each array)
       IF(.NOT.ABORT) THEN
-*
          call G_reset_event(ABORT,err)
 *
       ENDIF
