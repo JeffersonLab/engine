@@ -16,6 +16,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.5  2004/07/08 20:05:37  saw
+ *   Use dummy fortran ctp tree routines when ROOTSYS not defined.
+ *
  *   Revision 1.4  2004/07/07 18:15:27  saw
  *   Consistenly use thtreeexeg
  *
@@ -75,9 +78,7 @@ thHook thHooks[] = {
      ,thIncTestScalersV,0,0},
   {HISTSTR,thBookHists,thExecuteHistsV,thClearHistsV,0,0,0,0},
   {UHISTSTR,thBookHists,0,0,0,0,0,0},
-#ifdef ROOTTREE
   {TREESTR,thBookTree,thFillTreeV,thClearTreeV,0,0,thWriteTreeV,thCloseTreeV},
-#endif
   {REPORTSTR,thBookReports,0,0,0,0,0,0},
   {0,0,0,0,0,0,0,0}};
 
@@ -309,11 +310,9 @@ MAKEFSUB(thtstclsg,TESTSTR,thClearScalersGroup)
 MAKEFSUB(thtstinsg,TESTSTR,thIncrementScalersGroup)
 MAKEFSUB(thhstexeg,HISTSTR,thExecuteGroup)
 MAKEFSUB(thgethitg,GETHITSTR,thExecuteGroup)
-#ifdef ROOTTREE
 MAKEFSUB(thtreeexeg,TREESTR,thExecuteGroup)
 MAKEFSUB(thtreecloseg,TREESTR,thCloseGroup)
 MAKEFSUB(thtreewriteg,TREESTR,thWriteGroup)
-#endif
 #else
 MAKEFSUB(thtstexeg_,TESTSTR,thExecuteGroup)
 MAKEFSUB(thtstclrg_,TESTSTR,thClearGroup)
@@ -321,11 +320,9 @@ MAKEFSUB(thtstclsg_,TESTSTR,thClearScalersGroup)
 MAKEFSUB(thtstinsg_,TESTSTR,thIncrementScalersGroup)
 MAKEFSUB(thhstexeg_,HISTSTR,thExecuteGroup)
 MAKEFSUB(thgethitg_,GETHITSTR,thExecuteGroup)
-#ifdef ROOTTREE
 MAKEFSUB(thtreeexeg_,TREESTR,thExecuteGroup)
 MAKEFSUB(thtreecloseg_,TREESTR,thCloseGroup)
 MAKEFSUB(thtreewriteg_,TREESTR,thWriteGroup)
-#endif
 #endif
 
 /*
