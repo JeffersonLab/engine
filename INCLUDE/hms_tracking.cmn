@@ -8,7 +8,10 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.19  1995/01/27 20:19:59  cdaq
+* Revision 1.20  1995/04/06 20:19:58  cdaq
+* (JRA) Change residuals variable names
+*
+* Revision 1.19  1995/01/27  20:19:59  cdaq
 * (JRA) Remove Mack's personal focalplane diceamatic (z slicer) code
 *
 * Revision 1.18  1994/12/06  12:46:07  cdaq
@@ -114,6 +117,7 @@
 
       integer*4 hdc_num_planes      ! actual number of dc chambers - set in CTP
       integer*4 hdc_num_chambers    ! actual number of chambers - set in CTP
+      integer*4 hdc_planes_per_chamber
       integer*4 hmax_chamber_hits
       parameter (hmax_chamber_hits=544)
       integer*4 hmax_space_points   ! maximum number of space points
@@ -194,6 +198,7 @@
      &     hncham_hits(hmax_num_chambers),hmin_hit(hmax_num_chambers),
      &     hmin_combos(hmax_num_chambers),htrack_fit_num,
      &     hdc_num_planes,hdc_num_chambers,
+     &     hdc_planes_per_chamber,
      &     hdc_tdc_min_win(HMAX_NUM_DC_PLANES), 
      &     hdc_tdc_max_win(HMAX_NUM_DC_PLANES),
      &     hmax_pr_hits(hmax_num_chambers),
@@ -278,22 +283,18 @@
 *     CTPTYPE=event
 *
 *  complete 2-D array for residuals in all planes over all tracks
-      real*4 hdc_residual(HNTRACKS_MAX,HMAX_NUM_DC_PLANES)
-      real*4 hdc_sing_res(HNTRACKS_MAX,HMAX_NUM_DC_PLANES)
+      real*4 hdc_single_residual(HNTRACKS_MAX,HMAX_NUM_DC_PLANES)
+      real*4 hdc_double_residual(HNTRACKS_MAX,HMAX_NUM_DC_PLANES)
 
 *     djm 8/26/94 arrays containing single and double residual arrays which can be
 *     histogrammed in the normal fashion (ie, not hardwired histograms).
 
-       real*4 hdc1_sing_res(HMAX_NUM_DC_PLANES)
-       real*4 hdc2_sing_res(HMAX_NUM_DC_PLANES)
-       real*4 hdc1_dbl_res(HMAX_NUM_DC_PLANES)
-       real*4 hdc2_dbl_res(HMAX_NUM_DC_PLANES)
+       real*4 hdc_sing_res(HMAX_NUM_DC_PLANES)
+       real*4 hdc_dbl_res(HMAX_NUM_DC_PLANES)
 
 
        common/HMS_RESIDUAL/
-     &   hdc_residual,
+     &   hdc_single_residual,
+     &   hdc_double_residual,
      &   hdc_sing_res,
-     &   hdc1_sing_res,
-     &   hdc2_sing_res,
-     &   hdc1_dbl_res,
-     &   hdc2_dbl_res
+     &   hdc_dbl_res
