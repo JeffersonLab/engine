@@ -13,7 +13,10 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to h_raw_dump_all
 * $Log$
-* Revision 1.4  1995/05/22 19:39:27  cdaq
+* Revision 1.5  1995/07/19 20:04:25  cdaq
+* (JRA) Remove calorimeter raw data validity check
+*
+* Revision 1.4  1995/05/22  19:39:27  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.3  1995/05/11  14:54:05  cdaq
@@ -57,6 +60,9 @@
       endif
 *
       hcal_num_hits=0
+      do nb = 1 , hmax_cal_blocks
+        hcal_realadc(nb)=-100
+      enddo
       if(hcal_tot_hits.le.0) return
 *
 *      Loop over raw hits
@@ -67,36 +73,40 @@
          adc=hcal_adc(nh)
 *
 *------Check the validity of raw data
-         abort=row.le.0.or.row.gt.hmax_cal_rows
-         if(abort) then
-            write(errmsg,*) ':hcal_row(',nh,') = ',row
-            call g_prepend(here,errmsg)
-            return
-         endif
+c         abort=row.le.0.or.row.gt.hmax_cal_rows
+c         if(abort) then
+c         write(90,*) 'row=',row,' : aborting'
+c            write(errmsg,*) ':hcal_row(',nh,') = ',row
+c            call g_prepend(here,errmsg)
+c            return
+c         endif
 *
-         abort=col.le.0.or.col.gt.hmax_cal_columns
-         if(abort) then
-            write(errmsg,*) ':hcal_column(',nh,') = ',col
-            call g_prepend(here,errmsg)
-            return
-         endif
+c         abort=col.le.0.or.col.gt.hmax_cal_columns
+c         if(abort) then
+c         write(90,*) 'col=',col,' : aborting'
+c            write(errmsg,*) ':hcal_column(',nh,') = ',col
+c            call g_prepend(here,errmsg)
+c            return
+c         endif
 *
-         abort=adc.le.0.or.adc.gt.adc_max
-         if(abort) then
-            write(errmsg,*) ':hcal_adc(',nh,') = ',adc
-            call g_prepend(here,errmsg)
-            return
-         endif
+c         abort=adc.le.0.or.adc.gt.adc_max
+c         write(90,*) 'row,col,adc=',row,col,adc
+c         if(abort) then
+c         write(90,*) 'adc=',adc,' : aborting'
+c            write(errmsg,*) ':hcal_adc(',nh,') = ',adc
+c            call g_prepend(here,errmsg)
+c            return
+c         endif
 *
 *------Sparsify the raw data
          nb =row+hmax_cal_rows*(col-1)
 
-         hcal_realadc(nh)=float(adc)-hcal_ped_mean(nb)
-         if(hcal_realadc(nh).gt.hcal_threshold(nb)) then
+         hcal_realadc(nb) = float(adc)-hcal_ped_mean(nb)
+         if(hcal_realadc(nb).gt.hcal_threshold(nb)) then
             hcal_num_hits           =hcal_num_hits+1
             hcal_rows(hcal_num_hits)=row
             hcal_cols(hcal_num_hits)=col
-            hcal_adcs(hcal_num_hits)=hcal_realadc(nh)
+            hcal_adcs(hcal_num_hits)=hcal_realadc(nb)
          endif
       enddo                      !End loop over raw hits
 *
