@@ -1,0 +1,21 @@
+*     gen_one_ev_info.dte
+*     include file for One Event Display
+*-- Original Author : Kevin B. Beard, Hampton Univ.
+*-- Most recent Author : Derek van Westrum
+* $Log$
+* Revision 1.1  1996/01/17 15:46:04  cdaq
+* Initial revision
+*
+*........................................................................
+*- Misc. info. needed for remote display
+*
+      DATA gen_display_RPCclientID/0/
+      DATA gen_display_server_RPCprgmID/0/
+      DATA gen_display_server_machine/' '/
+      DATA gen_display_everything/0/             !handle#
+      DATA gen_display_event_info/0/             !handle#
+      DATA gen_display_wait_events/1000/   !give up after this many events
+      DATA gen_display_wait_seconds/100./  !give up after this time
+      DATA gen_display_interesting/'1'/    !anything is interesting
+*
+

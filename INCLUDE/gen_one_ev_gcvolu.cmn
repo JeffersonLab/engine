@@ -1,0 +1,36 @@
+*       gen_one_ev_gcvolu.cmn
+*       include file for One Event Display
+*-- Original Author : Pat Welch
+*-- Most recent Author : Derek van Westrum
+* $Log$
+* Revision 1.1  1996/01/17 15:44:43  cdaq
+* Initial revision
+*
+*
+* since I normally use implicit none I'll need to type what is here.
+*
+
+c This common block is described in the GEANT manual on page BASE 030-11
+
+c	integer nlevel		! # at which the last medium search stopped
+c	character*4 names	! Volume names at each level
+c	integer number		! User volume numbers at each level
+c	integer lvolum		! System volume numbers at each level
+c	integer lindex		! Physical tree volume indices at each level
+c	integer infrom		! ?
+c	integer nlevmx		! ?
+c	integer nldev		! ?
+c	integer linmx		! ?
+c	real    gtran		! (x,y,z) offsets of the cumulative coord xforms
+c	real    grmat		! Rotation matrix elements for cumulative xforms
+c	real    gonly		! uniqueness flags at each level
+c	real    glx		! current poin in local coordinates system
+
+      INTEGER NLEVEL,NAMES,NUMBER,LVOLUM,LINDEX,INFROM,NLEVMX,
+     +        NLDEV,LINMX
+      REAL GTRAN,GRMAT,GONLY,GLX
+      COMMON/GCVOLU/NLEVEL,NAMES(15),NUMBER(15),
+     +LVOLUM(15),LINDEX(15),INFROM,NLEVMX,NLDEV(15),LINMX(15),
+     +GTRAN(3,15),GRMAT(10,15),GONLY(15),GLX(3)
+C
+

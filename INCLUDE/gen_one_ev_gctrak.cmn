@@ -1,0 +1,69 @@
+*       gen_one_ev_gctrak.cmn
+*       include file for One Event Display
+*-- Original Author : Pat Welch
+*-- Most recent Author : Derek van Westrum
+* $Log$
+* Revision 1.1  1996/01/17 15:44:19  cdaq
+* Initial revision
+*
+*
+* since I normally use implicit none I'll need to type what is here.
+*
+
+c This common block is described in the GEANT manual on page BASE 030-10
+
+c	integer MAXMEC	! maximum number of mechanisms
+c	real    vect	! curreent track params (x,y,z,px/p,py/p,pz/p,p)
+c	real    getot	! Current track total energy
+c	real    gekin	! current track kinetic energy
+c	real    vout	! same as vect after extrapolation (i.e. at end of step)
+c	integer nmec	! Number of mechanisms for current step
+c	integer lmec	! list of mechanism indices for current step
+c	character*4 namec! list of names for the current mechanisms
+c	integer nstep	! Number of steps so far
+c	integer maxnst	! Maximum number of steps allowed
+c	real    destep	! total energy lost in this step
+c	real	destel	! step length
+c	real    safety	! Overestimated distance to closest medium boundary
+c	real    sleng	! track length at current point
+c	real    step	! size of current tracking step
+c	real    snext	! straight distance to next current medium boundary
+c	real    sfield  ! field turning angle step size evaluation
+c	real    tofg	! current time of flight
+c	real    gekrat	! Interpolation factor in table ELOW
+c	real	upwght	! ?
+c	integer ignext	! Flag set to 1 when SNEXT has to be recomputed
+c	integer inwvol	! Flag set to 1 when enetering a volume,
+c			!             2 when leaving a volume, and
+c			!             3 when leaving the experimental setup
+c	integer istop	! Flag set to 1 when track looses its identiy,
+c			!             2 when energy below cut
+c	integer igauto	! ?
+c	integer iekbin	! Current kinetic energy bin in table ELOW
+c	integer ilosl	! ?
+c	integer imull	! ?
+c	integer ingoto	! ?
+c	integer nldown	! ?
+c	integer nlevin	! ?
+c	integer nlvsav	! ?
+c	integer	istory	! ?
+c	integer MAXME1	! ?
+c	real	polar
+c	integer	namec1
+
+      INTEGER NMEC,LMEC,NAMEC,NSTEP ,MAXNST,IGNEXT,INWVOL,ISTOP,MAXMEC
+     + ,IGAUTO,IEKBIN,ILOSL, IMULL,INGOTO,NLDOWN,NLEVIN,NLVSAV,ISTORY
+     + ,MAXME1,NAMEC1
+      REAL  VECT,GETOT,GEKIN,VOUT,DESTEP,DESTEL,SAFETY,SLENG ,STEP
+     + ,SNEXT,SFIELD,TOFG  ,GEKRAT,UPWGHT
+      REAL POLAR
+      PARAMETER (MAXMEC=30)
+      COMMON/GCTRAK/VECT(7),GETOT,GEKIN,VOUT(7),NMEC,LMEC(MAXMEC)
+     + ,NAMEC(MAXMEC),NSTEP ,MAXNST,DESTEP,DESTEL,SAFETY,SLENG
+     + ,STEP  ,SNEXT ,SFIELD,TOFG  ,GEKRAT,UPWGHT,IGNEXT,INWVOL
+     + ,ISTOP ,IGAUTO,IEKBIN, ILOSL, IMULL,INGOTO,NLDOWN,NLEVIN
+     + ,NLVSAV,ISTORY
+      PARAMETER (MAXME1=30)
+      COMMON/GCTPOL/POLAR(3), NAMEC1(MAXME1)
+C
+

@@ -1,0 +1,33 @@
+*       gen_one_ev_gckine.cmn
+*       include file for One Event Display
+*-- Original Author : Pat Welch
+*-- Most recent Author : Derek van Westrum
+* $Log$
+* Revision 1.1  1996/01/17 15:43:35  cdaq
+* Initial revision
+*
+*
+* since I normally use implicit none I'll need to type what is here.
+*
+
+c GCKINE common block as described in the GEANT manual on page BASE 030-4
+
+	integer ikine	! Number of user kinematic parameters
+	real    pkine	! user kinematic parameters
+	integer itra	! Current track number
+	integer istak	! Current stack-track number
+	integer ivert	! Current vertex number
+	integer ipart	! current particle number
+	integer itrtyp	! tracking type of current particle
+	integer napart	! name of current particle
+	real    amass	! mass of current particle in AMU
+	real    charge	! charge of current particle in |e|
+	real    tlife	! life-time of current particle
+	real    vert	! vertex coordinates for current track
+	real    pvert	! track kinematic at origin
+	integer ipaold	! particle number of the last track
+
+      COMMON/GCKINE/IKINE,PKINE(10),ITRA,ISTAK,IVERT,IPART,ITRTYP
+     +      ,NAPART(5),AMASS,CHARGE,TLIFE,VERT(3),PVERT(4),IPAOLD
+C
+
