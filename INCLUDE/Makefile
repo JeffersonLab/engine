@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.10  2002/12/20 21:52:32  jones
+# Modified by Hamlet for new HMS aerogel
+#
 # Revision 1.9  1999/02/23 19:02:59  csa
 # Add gen_epics.cmn
 #
@@ -40,7 +43,7 @@ cmn = gen_data_structures.cmn gen_craw.cmn gen_decode_common.cmn \
 	hms_physics_sing.cmn hms_recon_elements.cmn hms_scin_parms.cmn \
 	hms_scin_tof.cmn hms_statistics.cmn hms_track_histid.cmn \
 	hms_tracking.cmn hms_pedestals.cmn \
-	hms_cer_parms.cmn \
+	hms_cer_parms.cmn hms_aero_parms.cmn \
 	h_ntuple.cmn h_sieve_ntuple.cmn \
 	sos_data_structures.cmn sos_bypass_switches.cmn sos_calorimeter.cmn \
 	sos_filenames.cmn sos_geometry.cmn sos_id_histid.cmn \

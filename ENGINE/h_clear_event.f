@@ -12,6 +12,12 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *
 * $Log$
+* Revision 1.15  2002/12/20 21:55:23  jones
+* Modified by Hamlet for new HMS aerogel
+*
+* Revision 1.15  2002/09/26
+* (Hamlet) Add clear of HMS Aerogel
+*
 * Revision 1.14  1999/02/23 18:25:15  csa
 * Add call to h_ntuple_clear
 *
@@ -112,6 +118,12 @@
         HCER_ADC(tube) = 0
         HCER_NPE(tube) = 0.
       enddo
+
+*
+*     HMS AEROGEL HITS
+*
+      HAERO_TOT_HITS = 0
+
 *
 *     HMS Miscleaneous hits
 *

@@ -5,6 +5,13 @@
 *
 *     Created:     D.F.Geesaman         22 May 1994
 * $Log$
+* Revision 1.6  2002/12/20 21:52:32  jones
+* Modified by Hamlet for new HMS aerogel
+*
+*
+* Revision 1.6  2002/09/26
+* (Hamlet)) Add bypass switch for Aerogel
+*
 * Revision 1.5  1996/09/04 15:48:31  saw
 * (JRA) Add bypass of tracking efficiency flags
 *
@@ -31,6 +38,7 @@
       integer*4 hbypass_tof
       integer*4 hbypass_cal
       integer*4 hbypass_cer
+      integer*4 hbypass_haero
       integer*4 hbypass_physics
       integer*4 hbypass_dc_eff
       integer*4 hbypass_scin_eff
@@ -49,6 +57,7 @@
      &     hbypass_tof,
      &     hbypass_cal,
      &     hbypass_cer,
+     &     hbypass_haero,
      &     hbypass_physics,
      &     hbypass_dc_eff,
      &     hbypass_scin_eff,
@@ -56,3 +65,6 @@
      &     hbypass_cer_eff,
      &     hbypass_track_eff,
      &     hbypass_track_eff_files
+
+
+

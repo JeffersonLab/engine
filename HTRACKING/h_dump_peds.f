@@ -1,6 +1,12 @@
       subroutine h_dump_peds(ABORT,err)
 *
 * $Log$
+* Revision 1.7  2002/12/20 21:53:34  jones
+* Modified by Hamlet for new HMS aerogel
+*
+* Revision 1.7  2002/09/26  
+* (Hamlet) Add HMS aerogel detector 
+*
 * Revision 1.6  1998/12/17 22:02:38  saw
 * Support extra set of tubes on HMS shower counter
 *
@@ -42,6 +48,7 @@
       INCLUDE 'hms_scin_parms.cmn'
       INCLUDE 'hms_calorimeter.cmn'
       INCLUDE 'hms_cer_parms.cmn'
+      INCLUDE 'hms_aero_parms.cmn'
       INCLUDE 'hms_filenames.cmn'
       INCLUDE 'gen_run_info.cmn'
 
@@ -145,6 +152,26 @@
       write(SPAREID,113) (hcer_ped(pmt),pmt=1,hmax_cer_hits)
 113   format (f5.1,',',f5.1)
 
+*
+*
+* HAERO PEDESTALS
+*
+      write(SPAREID,*)' '
+      write(SPAREID,*) 'haero_pos_ped_mean = '
+      write(SPAREID,114) (haero_pos_ped_mean(pmt), pmt=1,HMAX_AERO_HITS)
+      write(SPAREID,*) 'haero_neg_ped_mean = '
+      write(SPAREID,114) (haero_neg_ped_mean(pmt), pmt=1,HMAX_AERO_HITS)
+*
+      write(SPAREID,*)' '
+      write(SPAREID,*) 'haero_pos_ped_rms = '
+      write(SPAREID,114) (haero_pos_ped_rms(pmt), pmt=1,HMAX_AERO_HITS)
+      write(SPAREID,*) 'haero_neg_ped_rms = '
+      write(SPAREID,114) (haero_neg_ped_rms(pmt), pmt=1,HMAX_AERO_HITS)
+*
+114   format (8(f6.1,', '))
+
+
+*
       close(SPAREID)
 
       return

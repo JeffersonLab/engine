@@ -11,6 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 * $Log$
+* Revision 1.13  2002/12/20 21:53:33  jones
+* Modified by Hamlet for new HMS aerogel
+*
+* Revision 1.13  2002/09/30
+* (Hamlet) Add call HMS Aerogel (Took cp from Vardan)
+*
 * Revision 1.12  1996/08/30 20:33:42  saw
 * (DVW?) Add hbypass_track_eff
 *
@@ -120,6 +126,17 @@ c      h_recon_num= h_recon_num + 1
          endif                          ! end test on CER ABORT
       endif                             ! end test on hbypass_trans_cer
 *
+*     Next Aerogel Cerenkov information
+*     HMS_DECODED_AERO====> HMS_TRACK_TESTS
+*
+       if(hbypass_haero.eq.0) then
+         call H_AERO(ABORT,err)
+         if(ABORT) then
+            call G_add_path(here,err)
+*            return
+         endif                                  ! end test of H_AERO ABORT
+       endif                                    ! end test on hbypass_aero
+*
 *     TRANSLATE CALORIMETER 
 *     HMS_RAW_CAL ====> HMS_DECODED_CAL
 *
@@ -203,7 +220,6 @@ c         err=":no tracks found!"
             endif                       ! end test of H_CER ABORT
          endif                          ! end test on hbypass_cer
 *     
-         
 *     Dump HMS_TRACK_TESTS if hdebugprinttracktests is set
          if( hdebugprinttracktests .ne. 0 ) then
             call h_prt_track_tests
@@ -235,3 +251,5 @@ c         err=":no tracks found!"
       ABORT=.FALSE.
       RETURN
       END
+
+

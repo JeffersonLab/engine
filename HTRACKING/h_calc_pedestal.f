@@ -1,6 +1,12 @@
       subroutine h_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.13  2002/12/20 21:53:32  jones
+* Modified by Hamlet for new HMS aerogel
+*
+* Revision 1.13  2002/09/24
+* (Hamlet) Add Aerogel
+*
 * Revision 1.12  1999/02/23 18:36:12  csa
 * (JRA) Cleanup
 *
@@ -36,7 +42,7 @@
 *
 * Revision 1.1  1995/04/01  19:36:25  cdaq
 * Initial revision
-*
+
 *
       implicit none
       save
@@ -65,6 +71,7 @@
       INCLUDE 'hms_cer_parms.cmn'
       INCLUDE 'hms_filenames.cmn'
       INCLUDE 'gen_run_info.cmn'
+      INCLUDE 'hms_aero_parms.cmn'
 *
       integer SPAREID
       parameter (SPAREID=67)
@@ -200,7 +207,55 @@
         endif
       enddo
       hcer_num_ped_changes = ind
+*........................................................................
+*
+*
+* AEROGEL CERENKOV PEDESTALS
+*
+*
+      ind = 0
 
+      do pmt = 1 , hmax_aero_hits
+
+        if (haero_pos_ped_num(pmt) .ge. haero_min_peds .and.
+     &      haero_min_peds .ne. 0) then
+          haero_pos_ped_mean(pmt) = haero_pos_ped_sum(pmt) /
+     &      float(haero_pos_ped_num(pmt))
+          sig2 = float(haero_pos_ped_sum2(pmt))/
+     &            float(haero_pos_ped_num(pmt))-
+     &            haero_pos_ped_mean(pmt)**2
+          haero_pos_ped_rms(pmt) = sqrt(max(0.,sig2))
+        endif
+        if (haero_neg_ped_num(pmt) .ge. haero_min_peds .and.
+     &      haero_min_peds .ne. 0) then
+          haero_neg_ped_mean(pmt) = haero_neg_ped_sum(pmt) /
+     &      float(haero_neg_ped_num(pmt))
+          sig2 = float(haero_neg_ped_sum2(pmt))/
+     &            float(haero_neg_ped_num(pmt))-
+     &            haero_neg_ped_mean(pmt)**2
+          haero_neg_ped_rms(pmt) = sqrt(max(0.,sig2))
+
+          haero_neg_adc_threshold(pmt) = haero_neg_ped_mean(pmt)+ 
+     &    2.0*haero_neg_ped_rms(pmt)
+
+          haero_pos_adc_threshold(pmt) = haero_pos_ped_mean(pmt)+ 
+     &    2.0*haero_pos_ped_rms(pmt)
+
+        endif
+
+      enddo
+
+        print *, ' '
+        print *, 'haero_neg_ped_mean =', haero_neg_ped_mean
+        print *, ' '
+        print *, 'haero_pos_ped_mean =', haero_pos_ped_mean
+        print *, ' '
+        print *, 'haero_pos_adc_threshold =', haero_pos_adc_threshold
+        print *, ' '
+        print *, 'haero_neg_adc_threshold =', haero_neg_adc_threshold
+        print *, ' '
+
+*.........................................................................
 *
 * MISC. PEDESTALS
 *
@@ -228,10 +283,11 @@
       hmisc_num_ped_changes = ind
 
 *
+*
 * WRITE THRESHOLDS TO FILE FOR HARDWARE SPARCIFICATION
 *
-* file opened in g_calc_beam_pedestl.f
-!      if (h_threshold_output_filename.ne.' ') then
+      if (h_threshold_output_filename.ne.' ') then
+* file opened in g_calc_beam_pedestal.f -- if needed
 !        file=h_threshold_output_filename
 !        call g_sub_run_number(file, gen_run_number)
 !        open(unit=SPAREID,file=file,status='unknown')
@@ -276,7 +332,7 @@
      &      hhodo_new_sig_neg)
 
         close(unit=SPAREID)
-!      endif
+      endif
 
       return
       end

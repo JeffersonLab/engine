@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.29  2002/12/20 21:55:23  jones
+* Modified by Hamlet for new HMS aerogel
+*
 * Revision 1.28  2002/09/24 20:10:34  jones
 * Added calls to subroutines h_fieldcorr.f and g_apply_offsets.f
 *
@@ -101,6 +104,8 @@
 *
 *- 
 *--------------------------------------------------------
+c      program engine
+c
       IMPLICIT NONE
       SAVE
 

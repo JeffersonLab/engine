@@ -1,6 +1,9 @@
 * hms_cer_parms.cmn
 *
 * $Log$
+* Revision 1.2  2002/12/20 21:52:33  jones
+* Modified by Hamlet for new HMS aerogel
+*
 * Revision 1.1  1995/08/08 19:15:12  cdaq
 * Initial revision
 *
@@ -59,3 +62,20 @@
      &   hcer_track_counter,
      &   hcer_fired_counter,
      &   hcer_region_eff
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

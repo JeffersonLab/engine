@@ -2,9 +2,16 @@
 *
 *     include file     hms_data_structures.cmn
 *
-*     Author:	D. F. Geesaman		1 September 1993
+*     Author:   D. F. Geesaman          1 September 1993
 *
 * $Log$
+* Revision 1.9  2002/12/20 21:52:34  jones
+* Modified by Hamlet for new HMS aerogel
+*
+*
+* Revision 1.9  2002/09/26
+* (Hamlet) Add structures for HMS Aerogel
+*
 * Revision 1.8  1999/02/23 19:09:29  csa
 * Change some physics vars
 *
@@ -42,6 +49,7 @@
       REAL*4  HPCENTRAL      ! HMS CENTRAL MOMENUTM (GEV)
       REAL*4  HBFIELD        ! HMS B FIELD INCLUDING SIGN
       REAL*4  HPARTMASS      ! EXPECTED MASS OF DETECTED PARTICLE IN HMS
+
       COMMON/HMS_SPECTROMETER/
      &     HTHETA_LAB,
      &     HPHI_LAB,
@@ -344,6 +352,44 @@
      &     HCER_NPE_SUM,
      &     HCER_ADC(HMAX_CER_HITS)
 *
+*..........................................................................
+* (Last revison 01 Dec'02; Hamlet)
+*
+*     HMS AEROGEL HITS
+*      FILLED BY G_decode_event_by_banks
+*
+*     THERE ARE 16 AEROGEL PHOTOTUBES. We will pair tubes on the left and
+*     right side so that are 8 "counters".
+*     POS pmt's on the positive side of Y axis (as for Hodoscope)
+*
+*          TUBE Row
+*          ADC Left VALUE
+*          ADC Right VALUE
+*    THE TOTAL NUMBER OF PHOTOTUBE HITS IS HAERO_TOT_HITS
+*    HOWEVER TO MAKE THE DECODERS SYMMETRICAL TO A SCINT WE MUST ADD
+*    A DUMMY PLANE NUMBER.
+      INTEGER*4 HMAX_AERO_HITS
+      PARAMETER(HMAX_AERO_HITS=8)
+      INTEGER*4 HNUM_AERO_BLOCKS
+      PARAMETER(HNUM_AERO_BLOCKS=8)
+      INTEGER*4 HAERO_TOT_HITS
+      INTEGER*4 HAERO_PLANE
+      INTEGER*4 HAERO_PAIR_NUM
+      INTEGER*4 HAERO_ADC_POS
+      INTEGER*4 HAERO_ADC_NEG
+      INTEGER*4 HAERO_TDC_POS
+      INTEGER*4 HAERO_TDC_NEG
+      COMMON/HMS_RAW_AERO/
+     &     HAERO_PLANE(HMAX_AERO_HITS),
+     &     HAERO_PAIR_NUM(HMAX_AERO_HITS),
+     &     HAERO_ADC_POS(HMAX_AERO_HITS),
+     &     HAERO_ADC_NEG(HMAX_AERO_HITS),
+     &     HAERO_TDC_POS(HMAX_AERO_HITS),
+     &     HAERO_TDC_NEG(HMAX_AERO_HITS),
+     &     HAERO_TOT_HITS
+
+*
+*..........................................................................
 *
 *
 *     HMS DETECTOR TRACK QUANTITIES
@@ -612,4 +658,221 @@
 *     fortran-continuation-string: "&"
 *     comment-column: 35
 *     End:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -1,7 +1,15 @@
 * hms_pedestals.cmn -  counters used for calculating pedestals from the set
 *                      of pedestal events at the beginning of each run.
+
 *
+
 * $Log$
+* Revision 1.6  2002/12/20 21:52:32  jones
+* Modified by Hamlet for new HMS aerogel
+*
+* Revision 1.6  2002/09/26
+* (Hamlet) Add Aerogel pedestals
+*
 * Revision 1.5  1999/02/23 19:16:02  csa
 * (JRA) Add vars for improved pedestal calcs
 *
@@ -169,6 +177,54 @@
      &   hcer_num_ped_changes,!# of peds with 2 sigma changes from param file
      &   hcer_changed_tube,   !list of changed tubes
      &   hcer_ped_change      !change in pedestal
+
+*.........................................................................
+* cp from sos lucite (hamlet)
+*
+*
+* AEROGEL CERENKOV PEDESTALS
+*
+*     CTPTYPE=event
+*
+      integer*4 haero_pos_ped_sum2(hmax_aero_hits)
+      integer*4 haero_neg_ped_sum2(hmax_aero_hits)
+      integer*4 haero_pos_ped_sum(hmax_aero_hits)
+      integer*4 haero_neg_ped_sum(hmax_aero_hits)
+      integer*4 haero_pos_ped_num(hmax_aero_hits)
+      integer*4 haero_neg_ped_num(hmax_aero_hits)
+*
+*     CTPTYPE=parm
+*
+      integer*4 haero_min_peds
+      real*4 haero_pos_ped_mean(hmax_aero_hits)
+      real*4 haero_neg_ped_mean(hmax_aero_hits)
+      real*4 haero_pos_ped_rms(hmax_aero_hits)
+      real*4 haero_neg_ped_rms(hmax_aero_hits)
+
+      integer*4 haero_pos_adc_threshold(hmax_aero_hits)
+      integer*4 haero_neg_adc_threshold(hmax_aero_hits)
+      integer*4 haero_pos_ped_limit(hmax_aero_hits)
+      integer*4 haero_neg_ped_limit(hmax_aero_hits)
+*
+      common/hms_aeroi_pedestals/
+     &   haero_pos_ped_sum2,       !sum of squares
+     &   haero_neg_ped_sum2,       !sum of squares
+     &   haero_pos_ped_sum,        !sum of peds
+     &   haero_neg_ped_sum,        !sum of peds
+     &   haero_pos_ped_num,        !number of peds
+     &   haero_neg_ped_num,        !number of peds
+     &   haero_pos_ped_limit,      !max. allowed ped 
+     &   haero_neg_ped_limit,      !max. allowed ped
+     &   haero_min_peds,           !# of peds required to override default pedestals
+     &   haero_pos_ped_mean,       !calculated pedestal value
+     &   haero_neg_ped_mean,
+     &   haero_pos_ped_rms,        !calculated pedestal width
+     &   haero_neg_ped_rms,
+     &   haero_pos_adc_threshold,
+     &   haero_neg_adc_threshold
+
+*
+*.........................................................................
 *
 * MISC. PEDESTALS
 *
@@ -180,6 +236,7 @@
       integer*4 hmisc_ped_num(hmax_misc_hits)
       integer*4 hmisc_num_ped_changes
       integer*4 hmisc_changed_tube(hmax_misc_hits)
+*
       real*4 hmisc_ped(hmax_misc_hits)
       real*4 hmisc_ped_change(hmax_misc_hits)
       real*4 hmisc_ped_mean(hmax_misc_hits)
@@ -224,3 +281,4 @@
      &   hcal_new_adc_threshold_neg,
      &   hcer_new_adc_threshold,
      &   hmisc_new_adc_threshold
+

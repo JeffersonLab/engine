@@ -7,6 +7,12 @@
 *     Date:      9 April 1994
 *
 * $Log$
+* Revision 1.8  2002/12/20 21:53:33  jones
+* Modified by Hamlet for new HMS aerogel
+*
+* Revision 1.8  2002/10/05 (Hamlet)
+* Add HMS Aerogel
+*
 * Revision 1.7  1999/02/23 18:38:56  csa
 * (JRA) Add pos/neg cal stuff
 *
@@ -221,6 +227,7 @@ c
         enddo                           ! end loop over scintillator counters
       enddo                             ! end loop over scintillator plane
 
+*
       hidcalplane = thgetid('hcalplane')
       hidcalposhits(1) = thgetid('hcalaposhits')
       hidcalposhits(2) = thgetid('hcalbposhits')
@@ -233,6 +240,17 @@ c
       hidcalsumadc = thgetid('hcalsumadc')
 
       hidmisctdcs = thgetid('hmisctdcs')
+
+c
+* HMS Aerogel
+
+      hidhaero_adc_pos_hits = thgetid('haeroadcposhits')
+      hidhaero_adc_neg_hits = thgetid('haeroadcneghits')
+      hidhaero_tdc_pos_hits = thgetid('haerotdcposhits')
+      hidhaero_tdc_neg_hits = thgetid('haerotdcneghits')
+      hidhaero_adc_pos_pedsubtr = thgetid('haeroadcpospedsubtr')
+      hidhaero_adc_neg_pedsubtr = thgetid('haeroadcnegpedsubtr')
+c
 
       RETURN
       END

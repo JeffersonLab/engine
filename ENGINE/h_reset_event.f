@@ -14,7 +14,14 @@
 *-
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
+*
 * $Log$
+* Revision 1.17  2002/12/20 21:55:23  jones
+* Modified by Hamlet for new HMS aerogel
+*
+* Revision 1.17  2002/09/26
+* (Hamlet) Add reset for HMS Aerogel (Took from Vardan)
+*
 * Revision 1.16  1999/08/20 14:52:18  saw
 * Put in warning if Xscin_tdc_max is bigger than 4094
 *
@@ -95,6 +102,15 @@
         hcer_ped_sum(i)=0
       enddo
 
+      do i=1,hmax_aero_hits
+        haero_pos_ped_num(i)=0
+        haero_pos_ped_sum2(i)=0
+        haero_pos_ped_sum(i)=0
+        haero_neg_ped_num(i)=0
+        haero_neg_ped_sum2(i)=0
+        haero_neg_ped_sum(i)=0
+      enddo
+
       DO hit= 1,HMAX_DC_HITS
          HDC_RAW_PLANE_NUM(hit)= 0
          HDC_RAW_WIRE_NUM(hit)= 0
@@ -164,6 +180,17 @@
          HCER_PLANE(hit)= 0
       ENDDO
       HCER_TOT_HITS= 0
+*
+*     HMS AEROGEL HITS
+*
+      DO hit= 1,HMAX_AERO_HITS
+         HAERO_PAIR_NUM(hit) = 0
+         HAERO_ADC_POS(hit) = 0
+         HAERO_ADC_NEG(hit) = 0
+         HAERO_PLANE(hit) = 0
+      ENDDO
+      HAERO_TOT_HITS = 0
+
 *     
 *     HMS Miscleaneous hits
 *

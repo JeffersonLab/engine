@@ -13,6 +13,9 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
+* Revision 1.11  2002/12/20 21:53:34  jones
+* Modified by Hamlet for new HMS aerogel
+*
 * Revision 1.10  1995/08/31 14:45:31  cdaq
 * (JRA) Register Cerenkov variables
 *
@@ -75,6 +78,7 @@
       call r_hms_cer_parms
       call r_hms_calorimeter
       call r_hms_id_histid
+      call r_hms_aero_parms
 *
 *     register bypass switches
 *

@@ -1,6 +1,12 @@
       subroutine h_analyze_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.9  2002/12/20 21:53:34  jones
+* Modified by Hamlet for new HMS aerogel
+*
+* Revision 1.9  2002/09/24 
+* (Hamlet) Add pedestals for HMS Aerogel
+*
 * Revision 1.8  1999/06/10 16:46:06  csa
 * (JRA) Removed two calorimeter debugging statements
 *
@@ -134,6 +140,33 @@ c        call hf1(hidsumnegadc(pln),histval,1.)
         endif
       enddo
 *
+*.............................................................................
+*
+* AEROGEL CERENKOV PEDESTALS
+*
+      do ihit = 1 , haero_tot_hits
+        blk = haero_pair_num(ihit)
+        if (haero_adc_pos(ihit) .le. haero_pos_ped_limit(blk)) then
+          haero_pos_ped_sum2(blk) = haero_pos_ped_sum2(blk) + haero_adc_pos(ihit)*haero_adc_pos(ihit)
+          haero_pos_ped_sum(blk) = haero_pos_ped_sum(blk) + haero_adc_pos(ihit)
+          haero_pos_ped_num(blk) = haero_pos_ped_num(blk) + 1
+          if (haero_pos_ped_num(blk).eq.nint(haero_min_peds/5.)) then
+            haero_pos_ped_limit(blk) = 100 +
+     &              haero_pos_ped_sum(blk) / haero_pos_ped_num(blk)
+          endif
+        endif
+        if (haero_adc_neg(ihit) .le. haero_neg_ped_limit(blk)) then
+          haero_neg_ped_sum2(blk) = haero_neg_ped_sum2(blk) + haero_adc_neg(ihit)*haero_adc_neg(ihit)
+          haero_neg_ped_sum(blk) = haero_neg_ped_sum(blk) + haero_adc_neg(ihit)
+          haero_neg_ped_num(blk) = haero_neg_ped_num(blk) + 1
+          if (haero_neg_ped_num(blk).eq.nint(haero_min_peds/5.)) then
+            haero_neg_ped_limit(blk) = 100 +
+     &              haero_neg_ped_sum(blk) / haero_neg_ped_num(blk)
+          endif
+        endif
+      enddo
+*
+*............................................................................
 *
 * MISC PEDESTALS
 *

@@ -1,0 +1,77 @@
+* hms_aero_parms.cmn
+*
+* $Log$
+* Revision 1.1  2002/12/20 21:52:32  jones
+* Modified by Hamlet for new HMS aerogel
+*
+* Revision 1.1 (hamlet)  2002/09/24
+* As initial version took cp from sos_aero_parms.cmn     
+*
+*%%   include 'hms_data_structures.cmn'
+
+*
+*      CTPTYPE = parm
+*
+      real*4 haero_pos_gain(HMAX_AERO_HITS)
+      real*4 haero_neg_gain(HMAX_AERO_HITS)
+
+*
+*      CTPTYPE = event
+*
+      integer*4 haero_tot_good_hits
+
+      integer*4 haero_adc_pos_hits,haero_adc_neg_hits
+      integer*4 haero_tdc_pos_hits,haero_tdc_neg_hits
+
+      integer*4 haero_rawadc_neg(HMAX_AERO_HITS)
+      integer*4 haero_rawadc_pos(HMAX_AERO_HITS)
+      integer*4 haero_adc_neg_pedsubtr(HMAX_AERO_HITS)
+      integer*4 haero_adc_pos_pedsubtr(HMAX_AERO_HITS)
+
+      integer*4 haero_rawtdc_neg(HMAX_AERO_HITS)
+      integer*4 haero_rawtdc_pos(HMAX_AERO_HITS)
+C      integer*4 haero_tdc_neg(HMAX_AERO_HITS)
+C      integer*4 haero_tdc_pos(HMAX_AERO_HITS)
+
+      integer*4 aero_tp(HMAX_AERO_HITS)
+      integer*4 aero_tn(HMAX_AERO_HITS)
+
+      integer*4 aero_ep(HMAX_AERO_HITS)
+      integer*4 aero_en(HMAX_AERO_HITS)
+
+      real*4 haero_pos_npe(HMAX_AERO_HITS)
+      real*4 haero_neg_npe(HMAX_AERO_HITS)
+      real*4 haero_sum(HMAX_AERO_HITS)
+      real*4 haero_neg_npe_sum
+      real*4 haero_pos_npe_sum
+      real*4 haero_npe_sum
+     
+      real*4 aero_pos
+      real*4 aero_neg
+      real*4 aero_tot
+
+      common /aeroi_calib/
+     &  haero_tot_good_hits,
+     &  haero_adc_pos_hits,
+     &  haero_adc_neg_hits,
+     &  haero_tdc_pos_hits,
+     &  haero_tdc_neg_hits,
+     &  haero_pos_npe,
+     &  haero_neg_npe,
+     &  haero_pos_gain,
+     &  haero_neg_gain,
+     &  haero_neg_npe_sum,
+     &  haero_pos_npe_sum,
+     &  haero_npe_sum,
+     &  haero_sum,
+     &  aero_pos,
+     &  aero_neg,     
+     &  aero_tot,
+     &  haero_rawadc_neg,
+     &  haero_rawadc_pos,
+     &  haero_rawtdc_neg,
+     &  haero_rawtdc_pos,
+     &  aero_tp,
+     &  aero_tn,
+     &  aero_ep,
+     &  aero_en

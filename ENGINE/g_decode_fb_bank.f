@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.31  2002/12/20 21:55:22  jones
+* Modified by Hamlet for new HMS aerogel
+*
 * Revision 1.30  1999/11/04 20:35:15  saw
 * Linux/G77 compatibility fixes
 *
@@ -273,6 +276,32 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddress
      $           HMAX_CER_HITS, HCER_TOT_HITS, HCER_PLANE,
      $           HCER_TUBE_NUM, 1, HCER_RAW_ADC, 0, 0, 0)
 
+*
+*====================== HMS AEROGEL ==================================
+*
+
+          else if (did.eq.HAERO_ID) then
+*
+*     Aerogel has two tubes for each "counter".  Since we may use all
+*     TDC's, we will tell the decoder that we have 4 signals, array 
+*     3rd and 4th will use for TDC signals.
+*    
+*     HAERO_PLANE is a dummy array.
+*     
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &           maxwords, did,
+     $           HMAX_AERO_HITS, HAERO_TOT_HITS, HAERO_PLANE,
+     $           HAERO_PAIR_NUM, 4, HAERO_ADC_POS, HAERO_ADC_NEG,
+     $           HAERO_TDC_POS, HAERO_TDC_NEG)
+
+*            print *,'HAERO_TDC_POS',HAERO_TDC_POS
+*            print *,'HAERO_TDC_NEG',HAERO_TDC_NEG
+
+*
+*
+************************************************************************
+*
           else if (did.eq.HMISC_ID) then
 *
 *     This array is for data words that don't belong to a specific

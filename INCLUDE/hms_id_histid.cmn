@@ -11,6 +11,12 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
+* Revision 1.13  2002/12/20 21:52:33  jones
+* Modified by Hamlet for new HMS aerogel
+*
+* Revision 1.13  2002/10/08 (Hamlet)
+* Add HMS Aerogel histograms
+*
 * Revision 1.12  1999/02/23 19:10:42  csa
 * (JRA) Add hidscindpos_pid, cleanup
 *
@@ -86,6 +92,17 @@
       integer*4 hiddcdposx,hiddcdposy,hiddcdposxp,hiddcdposyp
       integer*4 hidmisctdcs
 *
+c
+      integer*4 hidhaero_adc_pos_hits
+      integer*4 hidhaero_adc_neg_hits
+
+      integer*4 hidhaero_adc_pos_pedsubtr
+      integer*4 hidhaero_adc_neg_pedsubtr
+
+      integer*4 hidhaero_tdc_pos_hits
+      integer*4 hidhaero_tdc_neg_hits
+
+c
       common/hms_id_histid/
      &     hidscinrawtothits,
      &     hidscinplane,
@@ -113,7 +130,10 @@
      &     hidcaldpos,
      &     hiddcdposx,hiddcdposy,hiddcdposxp,hiddcdposyp,
      &     hidmisctdcs,
-     &     hidscindpos_pid
+     &     hidscindpos_pid,
+     &     hidhaero_adc_pos_pedsubtr,hidhaero_adc_neg_pedsubtr,
+     &     hidhaero_adc_pos_hits,hidhaero_adc_neg_hits,
+     &     hidhaero_tdc_pos_hits,hidhaero_tdc_neg_hits
 
 *
 *     CTPTYPE=parm
