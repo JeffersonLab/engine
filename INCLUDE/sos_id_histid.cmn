@@ -11,6 +11,9 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
+* Revision 1.9  1996/09/04 16:28:58  saw
+* (JRA) Add sidmisctdcs
+*
 * Revision 1.8  1996/01/17 15:09:34  cdaq
 * (JRA) Add sidscintimes histogram
 *
@@ -64,6 +67,7 @@
       integer*4 sidscindpos(SNUM_SCIN_PLANES)
       integer*4 sidcaldpos
       integer*4 siddcdposx,siddcdposy,siddcdposxp,siddcdposyp
+      integer*4 sidmisctdcs
 *
       common/sos_id_histid/
      &     sidscinrawtothits,
@@ -88,7 +92,8 @@
      &     sidcalsumadc,
      &     sidscindpos,
      &     sidcaldpos,
-     &     siddcdposx,siddcdposy,siddcdposxp,siddcdposyp
+     &     siddcdposx,siddcdposy,siddcdposxp,siddcdposyp,
+     &     sidmisctdcs
 
 *
 *     CTPTYPE=parm
