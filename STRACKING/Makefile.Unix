@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.3  1994/06/07 18:50:41  cdaq
+# Revision 1.4  1994/06/14 05:02:25  cdaq
+# (SAW) Add s_init_physics and s_physics_stat
+#
+# Revision 1.3  1994/06/07  18:50:41  cdaq
 # Add register_bypass and register_statistics routines
 #
 # Revision 1.2  1994/05/19  13:55:24  cdaq
@@ -29,7 +32,7 @@ newstuff = s_cal.f s_clusters_cal.f s_correct_cal.f s_fill_dc_dec_hist.f \
 	s_sparsify_cal.f s_tof.f s_tof_init.f s_tof_fit.f s_tracks_cal.f \
 	s_trans_cal.f s_trans_scin.f s_fill_scin_raw_hist.f
 newerstuff = s_fill_dc_target_hist.f s_targ_trans_init.f s_register_bypass.f \
-	s_register_statistics.f
+	s_register_statistics.f s_init_physics.f s_physics_stat.f
 
 libsources = $(sources) $(newstuff) $(newerstuff)
 
