@@ -19,6 +19,9 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.19  1999/02/10 17:45:41  csa
+* Cleanup and bugfixes (mostly G. Warren)
+*
 * Revision 1.18  1996/08/30 19:59:36  saw
 * (JRA) Improved track length calculation.  Photon E calc. for (gamma,p)
 *
@@ -101,281 +104,369 @@
       INCLUDE 'hms_track_histid.cmn'
       include 'gen_event_info.cmn'
       include 'hms_scin_tof.cmn'
-*
+
 *     local variables 
+
       integer*4 i,ip,ihit
       integer*4 itrkfp
-      real*4 cosgamma,tandelphi,sinhphi,coshstheta,sinhstheta
-      real*4 t1,ta,p3,t3,hminv2
-      real*4 coshsthetaq
-      real*4 sind,tand                  ! For f2c
+      real*4 coshstheta,sinhstheta
       real*4 p_nonzero
       real*4 xdist,ydist,dist(12),res(12)
       real*4 tmp,W2
-      real*4 denom
+      real*4 hsp_z
+      real*4 Wvec(4)
+      real*4 hstheta_1st
+      real*4 scalar,mink
 *
 *--------------------------------------------------------
 *
       ierr=0
       hphi_lab=0.0
-      if(hsnum_fptrack.gt.0) then       ! Good track has been selected
-        itrkfp=hsnum_fptrack
-        hsp = hp_tar(hsnum_tartrack)
-        hsenergy = sqrt(hsp*hsp+hpartmass*hpartmass)
+
+      if (hsnum_fptrack.le.0) return    ! No Good track 
+
+      itrkfp=hsnum_fptrack
+
 *     Copy variables for ntuple so we can test on them
-        hsdelta  = hdelta_tar(hsnum_tartrack)
-        hsx_tar  = hx_tar(hsnum_tartrack)
-        hsy_tar  = hy_tar(hsnum_tartrack)
-        hsxp_tar  = hxp_tar(hsnum_tartrack) ! This is an angle (radians)
-        hsyp_tar  = hyp_tar(hsnum_tartrack) ! This is an angle (radians)
-        hsbeta   = hbeta(itrkfp)
-        hsbeta_chisq = hbeta_chisq(itrkfp)
-        hstime_at_fp   = htime_at_fp(itrkfp)
 
-        hstrack_et   = htrack_et(itrkfp)
-        hstrack_preshower_e   = htrack_preshower_e(itrkfp)
-        p_nonzero = max(.0001,hsp)      !momentum (used to normalize calorim.)
-        hscal_suma = hcal_e1/p_nonzero  !normalized cal. plane sums
-        hscal_sumb = hcal_e2/p_nonzero
-        hscal_sumc = hcal_e3/p_nonzero
-        hscal_sumd = hcal_e4/p_nonzero
-        hsprsum = hscal_suma
-        hsshsum = hcal_et/p_nonzero
-        hsprtrk = hstrack_preshower_e/p_nonzero
-        hsshtrk = hstrack_et/p_nonzero
+      hsdelta      = hdelta_tar(hsnum_tartrack)
+      hsx_tar      = hx_tar(hsnum_tartrack)
+      hsy_tar      = hy_tar(hsnum_tartrack)
+      hsxp_tar     = hxp_tar(hsnum_tartrack) ! This is an angle (radians)
+      hsyp_tar     = hyp_tar(hsnum_tartrack) ! This is an angle (radians)
+      hsbeta       = hbeta(itrkfp)
+      hsbeta_chisq = hbeta_chisq(itrkfp)
+      hstime_at_fp = htime_at_fp(itrkfp)
 
-        hsx_sp1 = hx_sp1(itrkfp)
-        hsy_sp1 = hy_sp1(itrkfp)
-        hsxp_sp1= hxp_sp1(itrkfp)
-        hsx_sp2 = hx_sp2(itrkfp)
-        hsy_sp2 = hy_sp2(itrkfp)
-        hsxp_sp2= hxp_sp2(itrkfp)
+      hsx_fp  = hx_fp(itrkfp)
+      hsy_fp  = hy_fp(itrkfp)
+      hsxp_fp = hxp_fp(itrkfp) ! This is a slope (dx/dz)
+      hsyp_fp = hyp_fp(itrkfp) ! This is a slope (dy/dz)
 
-        do ihit=1,hnum_scin_hit(itrkfp)
-          call hf1(hidscintimes,hscin_fptime(itrkfp,ihit),1.)
-        enddo
+*     Correct delta (this must be called AFTER filling 
+*     focal plane quantites).
 
-        do ihit=1,hntrack_hits(itrkfp,1)
-          call hf1(hidcuttdc,
+      call h_satcorr(ABORT,err)
+      hsp = hpcentral*(1.0 + hsdelta/100.) !Momentum in GeV
+      hsenergy = sqrt(hsp*hsp+hpartmass*hpartmass)        
+
+      hstrack_et   = htrack_et(itrkfp)
+      hstrack_preshower_e = htrack_preshower_e(itrkfp)
+      p_nonzero    = max(.0001,hsp)      !momentum (used to normalize calorim.)
+      hscal_suma   = hcal_e1/p_nonzero  !normalized cal. plane sums
+      hscal_sumb   = hcal_e2/p_nonzero
+      hscal_sumc   = hcal_e3/p_nonzero
+      hscal_sumd   = hcal_e4/p_nonzero
+      hsprsum      = hscal_suma
+      hsshsum      = hcal_et/p_nonzero
+      hsprtrk      = hstrack_preshower_e/p_nonzero
+      hsshtrk      = hstrack_et/p_nonzero
+
+      hsx_sp1      = hx_sp1(itrkfp)
+      hsy_sp1      = hy_sp1(itrkfp)
+      hsxp_sp1     = hxp_sp1(itrkfp)
+      hsx_sp2      = hx_sp2(itrkfp)
+      hsy_sp2      = hy_sp2(itrkfp)
+      hsxp_sp2     = hxp_sp2(itrkfp)
+
+      do ihit=1,hnum_scin_hit(itrkfp)
+        call hf1(hidscintimes,hscin_fptime(itrkfp,ihit),1.)
+      enddo
+
+      do ihit=1,hntrack_hits(itrkfp,1)
+        call hf1(hidcuttdc,
      &       float(hdc_tdc(hntrack_hits(itrkfp,ihit+1))),1.)
-        enddo
+      enddo
 
-        hsx_fp   = hx_fp(itrkfp)
-        hsy_fp   = hy_fp(itrkfp)
-        hsxp_fp   = hxp_fp(itrkfp) ! This is a slope (dx/dz)
-        hsyp_fp   = hyp_fp(itrkfp) ! This is a slope (dy/dz)
-        hsx_dc1 = hsx_fp + hsxp_fp * hdc_1_zpos
-        hsy_dc1 = hsy_fp + hsyp_fp * hdc_1_zpos
-        hsx_dc2 = hsx_fp + hsxp_fp * hdc_2_zpos
-        hsy_dc2 = hsy_fp + hsyp_fp * hdc_2_zpos
-        hsx_s1 = hsx_fp + hsxp_fp * hscin_1x_zpos
-        hsy_s1 = hsy_fp + hsyp_fp * hscin_1x_zpos
-        hsx_cer = hsx_fp + hsxp_fp * hcer_mirror_zpos
-        hsy_cer = hsy_fp + hsyp_fp * hcer_mirror_zpos
-        hsx_s2 = hsx_fp + hsxp_fp * hscin_2x_zpos
-        hsy_s2 = hsy_fp + hsyp_fp * hscin_2x_zpos
-        hsx_cal = hsx_fp + hsxp_fp * hcal_1pr_zpos
-        hsy_cal = hsy_fp + hsyp_fp * hcal_1pr_zpos
+      hsx_dc1 = hsx_fp  +  hsxp_fp * hdc_1_zpos
+      hsy_dc1 = hsy_fp  +  hsyp_fp * hdc_1_zpos
+      hsx_dc2 = hsx_fp  +  hsxp_fp * hdc_2_zpos
+      hsy_dc2 = hsy_fp  +  hsyp_fp * hdc_2_zpos
+      hsx_s1  = hsx_fp  +  hsxp_fp * hscin_1x_zpos
+      hsy_s1  = hsy_fp  +  hsyp_fp * hscin_1x_zpos
+      hsx_cer = hsx_fp  +  hsxp_fp * hcer_mirror_zpos
+      hsy_cer = hsy_fp  +  hsyp_fp * hcer_mirror_zpos
+      hsx_s2  = hsx_fp  +  hsxp_fp * hscin_2x_zpos
+      hsy_s2  = hsy_fp  +  hsyp_fp * hscin_2x_zpos
+      hsx_cal = hsx_fp  +  hsxp_fp * hcal_1pr_zpos
+      hsy_cal = hsy_fp  +  hsyp_fp * hcal_1pr_zpos
 
-        hsbeta_p = hsp/max(hsenergy,.00001)
+      hsbeta_p = hsp/max(hsenergy,.00001)
+
 C old 'fit' value for pathlen correction
 C        hspathlength = -1.47e-2*hsx_fp + 11.6*hsxp_fp - 36*hsxp_fp**2
 C new 'modeled' value.
-        hspathlength = 12.462*hsxp_fp + 0.1138*hsxp_fp*hsx_fp
-     &                -0.0154*hsx_fp - 72.292*hsxp_fp**2
-     &                -0.0000544*hsx_fp**2 - 116.52*hsyp_fp**2
 
-        hspath_cor = hspathlength/hsbeta_p -
+      hspathlength = 12.462*hsxp_fp      + 0.1138*hsxp_fp*hsx_fp
+     &              -0.0154*hsx_fp       - 72.292*hsxp_fp**2
+     &              -0.0000544*hsx_fp**2 - 116.52*hsyp_fp**2
+
+      hspath_cor = hspathlength/hsbeta_p -
      &      hpathlength_central/speed_of_light*(1/max(.01,hsbeta_p) - 1)
 
-        hsrftime = hmisc_dec_data(8,1)/9.46
-     &           - (hstime_at_fp-hstart_time_center) - hspath_cor
-        do ip=1,4
-          hsscin_elem_hit(ip)=0
-        enddo
-        do i=1,hnum_scin_hit(itrkfp)
-          ip=hscin_plane_num(hscin_hit(itrkfp,i))
-          if (hsscin_elem_hit(ip).eq.0) then
-            hsscin_elem_hit(ip)=hscin_counter_num(hscin_hit(
-     $           itrkfp,i))
-            hsdedx(ip)=hdedx(itrkfp,i)
-          else                          ! more than 1 hit in plane
-            hsscin_elem_hit(ip)=18
-            hsdedx(ip)=sqrt(hsdedx(ip)*hdedx(itrkfp,i))
-          endif
-        enddo
+      hsrftime = hmisc_dec_data(49,1)/9.46
+     &         - (hstime_at_fp-hstart_time_center) - hspath_cor
 
-        hsnum_scin_hit = hnum_scin_hit(itrkfp)
-        hsnum_pmt_hit = hnum_pmt_hit(itrkfp)
+      do ip = 1,4
+        hsscin_elem_hit(ip) = 0
+      enddo
 
-        hschi2perdeg  = hchi2_fp(itrkfp)
-     $       /float(hnfree_fp(itrkfp))
-        hsnfree_fp = hnfree_fp(itrkfp)
-
-        do ip = 1, hdc_num_planes
-          hdc_sing_res(ip)=hdc_single_residual(itrkfp,ip)
-          hsdc_track_coord(ip)=hdc_track_coord(itrkfp,ip)
-        enddo
-
-        if (hntrack_hits(itrkfp,1).eq.12 .and. hschi2perdeg.le.4) then
-          xdist=hsx_dc1
-          ydist=hsy_dc1
-          do ip=1,12
-            if (hdc_readout_x(ip)) then
-              dist(ip) = ydist*hdc_readout_corr(ip)
-            else                        !readout from top/bottom
-              dist(ip) = xdist*hdc_readout_corr(ip)
-            endif
-            res(ip)=hdc_sing_res(ip)
-            tmp = hdc_plane_wirecoord(itrkfp,ip)
-     $           -hdc_plane_wirecenter(itrkfp,ip)
-            if (tmp.eq.0) then          !drift dist = 0
-              res(ip)=abs(res(ip))
-            else
-              res(ip)=res(ip) * (abs(tmp)/tmp) !convert +/- res to near/far res
-            endif
-          enddo
-c           write(37,'(12f7.2,12f8.3,12f8.5)') (hsdc_track_coord(ip),ip=1,12),
-c     &    (dist(ip),ip=1,12),(res(ip),ip=1,12)
+      do i = 1,hnum_scin_hit(itrkfp)
+        ip = hscin_plane_num(hscin_hit(itrkfp,i))
+        if (hsscin_elem_hit(ip).eq.0) then
+          hsscin_elem_hit(ip) = hscin_counter_num(hscin_hit(itrkfp,i))
+          hsdedx(ip)          = hdedx(itrkfp,i)
+        else                          ! more than 1 hit in plane
+          hsscin_elem_hit(ip) = 18
+          hsdedx(ip)          = sqrt(hsdedx(ip)*hdedx(itrkfp,i))
         endif
+      enddo
 
-        hstheta =htheta_lab*TT/180. - hsyp_tar
-        HSP = hpcentral*(1 + hsdelta/100.)
-        sinhstheta = sin(hstheta)
-        coshstheta = cos(hstheta)
-        tandelphi = hsxp_tar /
-     &       ( sinhthetas - coshthetas*hsyp_tar)
-        hsphi = hphi_lab + atan(tandelphi) ! hphi_lab MUST BE MULTIPLE OF
-        sinhphi = sin(hsphi)            ! PI/2, OR ABOVE IS CRAP
-        if(hpartmass .lt. 2*mass_electron) then ! Less than 1 MeV, HMS is elec
-          if(gtarg_z(gtarg_num).gt.0.)then
-            call total_eloss(1,.true.,gtarg_z(gtarg_num),
-     $           gtarg_a(gtarg_num),gtarg_thick(gtarg_num),
-     $           gtarg_dens(gtarg_num),
-     $           hstheta,gtarg_theta,1.0,hseloss)
-            hsenergy=hsenergy- hseloss
-          else
-            hseloss=0.
+      hsnum_scin_hit = hnum_scin_hit(itrkfp)
+      hsnum_pmt_hit  = hnum_pmt_hit(itrkfp)
+
+      hschi2perdeg   = hchi2_fp(itrkfp) / float(hnfree_fp(itrkfp))
+      hsnfree_fp     = hnfree_fp(itrkfp)
+
+      do ip = 1, hdc_num_planes
+        hdc_sing_res(ip)     = hdc_single_residual(itrkfp,ip)
+        hsdc_track_coord(ip) = hdc_track_coord(itrkfp,ip)
+      enddo
+
+      if (hntrack_hits(itrkfp,1).eq.12 .and. hschi2perdeg.le.4) then
+        xdist = hsx_dc1
+        ydist = hsy_dc1
+        do ip = 1,12
+          if (hdc_readout_x(ip)) then
+            dist(ip) = ydist*hdc_readout_corr(ip)
+          else                        !readout from top/bottom
+            dist(ip) = xdist*hdc_readout_corr(ip)
           endif
-          hqx = -HSP*cos(HSxp_tar)*sinhstheta
-          hqy = -HSP*sin(Hsxp_tar)
-          hqz = gpbeam - HSP*cos(HSxp_tar)*coshstheta
-          hqabs= sqrt(hqx**2+hqy**2+hqz**2)
-          W2 = gtarg_mass(gtarg_num)**2 +
-     $         2.*gtarg_mass(gtarg_num)*(gpbeam-hsp) - hqabs**2 +
-     $         (gpbeam-hsp)**2
-          if(W2.ge.0 ) then
-            hinvmass = SQRT(W2)
+          res(ip) = hdc_sing_res(ip)
+          tmp = hdc_plane_wirecoord(itrkfp,ip)
+     $        - hdc_plane_wirecenter(itrkfp,ip)
+          if (tmp.eq.0) then          !drift dist = 0
+            res(ip) = abs(res(ip))
           else
-            hinvmass = 0.
+            res(ip) = res(ip) * (abs(tmp)/tmp) !convert +/- res to near/far res
           endif
-        else
-          if(gtarg_z(gtarg_num).gt.0.)then
-            call total_eloss(1,.false.,gtarg_z(gtarg_num),
-     $           gtarg_a(gtarg_num),
+        enddo
+c       write(37,'(12f7.2,12f8.3,12f8.5)') (hsdc_track_coord(ip),ip=1,12),
+c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
+      endif
+
+*     Do energy loss, which is particle specific
+
+      hstheta_1st = htheta_lab*TT/180. - atan(hsyp_tar) ! rough scat angle
+
+      if (hpartmass .lt. 2.*mass_electron) then ! for electron
+        if (gtarg_z(gtarg_num).gt.0.) then
+          call total_eloss(1,.true.,gtarg_z(gtarg_num),gtarg_a(gtarg_num),
      $           gtarg_thick(gtarg_num),gtarg_dens(gtarg_num),
-     $           hstheta,gtarg_theta,hsbeta,hseloss)
-            hsenergy = hsenergy - hseloss
-          else
-            hseloss=0.
-          endif
+     $           hstheta_1st,gtarg_theta,1.0,hseloss)
+         else
+           hseloss=0.
         endif
-*     Calculate elastic scattering kinematics
-        t1  = 2.*hphysicsa*gpbeam*coshstheta      
-        ta  = 4*gpbeam**2*coshstheta**2 - hphysicsb**2
-ccc   SAW 1/17/95.  Add the stuff after the or.
-        if(ta.eq.0.0 .or. ( hphysicab2 + hphysicsm3b * ta).lt.0.0) then
-          p3=0.       
+      else   ! not an electron
+        if (gtarg_z(gtarg_num).gt.0.) then
+          call total_eloss(1,.false.,gtarg_z(gtarg_num),gtarg_a(gtarg_num),
+     $           gtarg_thick(gtarg_num),gtarg_dens(gtarg_num),
+     $           hstheta_1st,gtarg_theta,hsbeta,hseloss)
         else
-          t3  = ta-hphysicsb**2
-          p3  = (T1 - sqrt( hphysicab2 + hphysicsm3b * ta)) / ta
+          hseloss=0.
         endif
+      endif           ! particle specific stuff
+
+*     Correct hsenergy and hsp for eloss at the target
+
+      hscorre = hsenergy + hseloss
+      hscorrp = sqrt(hscorre**2-hpartmass**2)
+
+*     Begin Kinematic stuff
+
+*     coordinate system :
+*     z points downstream along beam
+*     x points downward 
+*     y points toward beam left (away from HMS)
+*
+*     This coordinate system is a just a simple rotation away from the
+*     TRANSPORT coordinate system used in the spectrometers
+
+      hsp_z = hscorrp/sqrt(1.+hsxp_tar**2+hsyp_tar**2)
+            
+*     Initial Electron
+
+      hs_kvec(1) = gebeam  ! after energy loss in target
+      hs_kvec(2) = 0
+      hs_kvec(3) = 0
+      hs_kvec(4) = gebeam 
+
+*     Scattered Particle calculation without small angle approximation
+*     - gaw 98/10/5
+
+      hs_kpvec(1) =  hscorre
+      hs_kpvec(2) =  hsp_z*hsxp_tar
+      hs_kpvec(3) =  hsp_z*(hsyp_tar*coshthetas-sinhthetas)
+      hs_kpvec(4) =  hsp_z*(hsyp_tar*sinhthetas+coshthetas)
+
+*     Angles for Scattered particle. Theta and phi are conventional
+*     polar/azimuthal angles defined w.r.t. coordinate system defined
+*     above. In rad, of course. Note that phi is around -pi/2 for HMS,
+*     +pi/2 for SOS.
+
+      if (abs(hs_kpvec(4)/hsp).le.1.) then
+        hstheta = acos(hs_kpvec(4)/hscorrp)
+      else
+        hstheta = -10.
+      endif
+      hsphi = atan(hs_kpvec(3)/hs_kpvec(2))
+
+      sinhstheta = sin(hstheta)
+      coshstheta = cos(hstheta)
+
+      hsphi = hphi_lab + hsphi
+      if (hsphi .gt. 0.) hsphi = hsphi - tt
+
+*     hszbeam is the intersection of the beam ray with the
+*     spectrometer as measured along the z axis.
+
+      if( sinhstheta .eq. 0.) then
+        hszbeam = 0.
+      else
+        hszbeam = sin(hsphi) * ( -hsy_tar + gbeam_y * coshstheta) /
+     $         sinhstheta 
+      endif                           ! end test on sinhstheta=0
+
+*     Target particle 4-momentum
+
+      hs_tvec(1) = gtarg_mass(gtarg_num)*m_amu
+      hs_tvec(2) = 0.
+      hs_tvec(3) = 0.
+      hs_tvec(4) = 0.
+
+*     Initialize the electron-specific variables
+
+      do i=1,4
+         hs_qvec(i) = -1000.
+         Wvec(i)    = -1000.
+      enddo 
+
+      hsq3     = -1000.
+      hsbigq2  = -1000.
+      W2       = -1000.
+      hinvmass = -1000.
+
+*     Calculate quantities that are meaningful only if 
+*     the particle in the HMS is an electron.
+
+      if (hpartmass .lt. 2.*mass_electron) then
+
+         do i=1,4
+            hs_qvec(i) = hs_kvec(i) - hs_kpvec(i)
+            Wvec(i)    = hs_qvec(i) + hs_tvec(i) ! Q+P 4 vector
+         enddo 
+
+*     Magnitudes
+
+         hsq3    = sqrt(scalar(hs_qvec,hs_qvec))
+         hsbigq2 = -mink(hs_qvec,hs_qvec) 
+         W2      = mink(Wvec,Wvec)
+         if(W2.ge.0 ) then
+            hinvmass = SQRT(W2)
+         else
+            hinvmass = 0.
+         endif
+
+*     Calculate elastic scattering kinematical correction
+
+*     t1  = 2.*hphysicsa*gpbeam*coshstheta      
+*     ta  = 4.*gpbeam**2*coshstheta**2 - hphysicsb**2
+
+*     SAW 1/17/95.  Add the stuff after the or.
+
+*     if(ta.eq.0.0 .or. ( hphysicab2 + hphysicsm3b * ta).lt.0.0) then
+*     p3=0.       
+*     else
+*     t3  = ta-hphysicsb**2
+*     p3  = (T1 - sqrt( hphysicab2 + hphysicsm3b * ta)) / ta
+*     endif
+
 *     This is the difference in the momentum obtained by tracking
 *     and the momentum from elastic kinematics
-        hselas_cor = hsp - P3
-*     invariant mass of the remaining particles
-        hminv2 =   ( (gebeam+gtarg_mass(gtarg_num)-hsenergy)**2
-     &       - (gpbeam - hsp * coshstheta)**2
-     &       - ( hsp * sinhstheta)**2  )       
-        if(hminv2.ge.0 ) then
-          hsminv = sqrt(hminv2)
-        else
-          hsminv = 0.
-        endif                           ! end test on positive arg of SQRT
-*     hszbeam is the intersection of the beam ray with the spectrometer
-*     as measured along the z axis.
-        if( sinhstheta .eq. 0.) then
-          hszbeam = 0.
-        else
-          hszbeam = sinhphi * ( -hsy_tar + gbeam_y * coshstheta) /
-     $         sinhstheta 
-        endif                           ! end test on sinhstheta=0
-*
-*     More kinematics
-*
-        if(hsbeta.gt.0) then
-          hsmass2 = (1/hsbeta**2 - 1)*hsp**2
-        else
-          hsmass2 = 1.0e10
-        endif
 
-        hst = (gebeam - hsenergy)**2
-     $       - (gpbeam - hsp*coshstheta)**2 - (hsp*sinhstheta)**2
-        hsu = (gtarg_mass(gtarg_num) - hsenergy)**2 - hsp**2
-        if(hseloss.eq.0.)then
-          hseloss = gebeam - hsenergy
-        endif
-        hsq3 = sqrt(gpbeam**2 + hsp**2 - 2*gpbeam*hsp*coshstheta)
-        if(gpbeam.ne.0.and.hsq3.ne.0.)then
-          coshsthetaq = (gpbeam**2 - gpbeam*hsp*coshstheta)/gpbeam/hsq3
-        endif
-        if(coshsthetaq.le.1.and.coshsthetaq.ge.-1.)then
-          hsthetaq = acos(coshsthetaq)
-        endif
-        hsphiq = hsphi + tt
-        hsbigq2 = -hst
-        hsx = hsbigq2/(2*mass_nucleon*hseloss)
-        hsy = hseloss/gebeam
-        hsw2 = gtarg_mass(gtarg_num)**2 +
-     $       2*gtarg_mass(gtarg_num)*hseloss - hsbigq2
-        if(hsw2.ge.0.0) then
-          hsw = sqrt(hsw2)
-        else
-          hsw = 0.0
-        endif
+*     hselas_cor = hsp - P3
 
-*     Calculate photon energy in GeV (E89-012):
-        denom = hphoto_mtarget - hsenergy + hsp*coshstheta
-        if (abs(denom).le.1.e-10) then
-           hsegamma = -1000.0
-        else
-           hsegamma = ( hsenergy * hphoto_mtarget
-     &       - 0.5*(hphoto_mtarget**2 + hpartmass**2
-     &       - hphoto_mrecoil**2) ) / denom
-        endif
+      endif
 
-*     Photon energy (assuming D2 target, Proton or Deut. detected).
-        denom = 1.87561 - sqrt(hsp**2 + 0.93827**2) + hsp*coshstheta
-        hsegamma_p= ( sqrt(hsp**2+0.93827**2) * 1.87561
-     &       - 0.5*(1.87561**2 + 0.93827**2 - 0.93957**2) )/denom
+      if (.false.) then
+*      if (.true.) then
+         write(6,*)' ***********************************'
+         write(6,*)' h_phys: htheta_lab, hphi_lab =',htheta_lab,hphi_lab
+         write(6,*)' h_phys: hsdelta            =',hsdelta
+         write(6,*)' h_phys: hsx_tar, hsy_tar   =',hsx_tar,hsy_tar
+         write(6,*)' h_phys: hsxp_tar, hsyp_tar =',hsxp_tar,hsyp_tar
+         write(6,*)' h_phys: hsbeta, hsbeta_p   =',hsbeta,hsbeta_p
+         write(6,*)' h_phys: hsenergy, hsp      =',hsenergy,hsp
+         write(6,*)' h_phys: hseloss            =',hseloss
+         write(6,*)' h_phys: hscorre, hscorrp   =',hscorre,hscorrp
+         write(6,*)' h_phys: hstheta_1st        =',hstheta_1st
+         write(6,*)' h_phys: hsp_z              =',hsp_z
+         write(6,*)' h_phys: hs_kvec            =',hs_kvec
+         write(6,*)' h_phys: cos/sinhthetas     =',coshthetas,sinhthetas
+         write(6,*)' h_phys: hs_kpvec           =',hs_kpvec
+         write(6,*)' h_phys: hs_tvec            =',hs_tvec
+         write(6,*)' h_phys: hs_qvec            =',hs_qvec
+         write(6,*)' h_phys: Wvec               =',Wvec
+         write(6,*)' h_phys: hsq3               =',hsq3
+         write(6,*)' h_phys: hsbigq2, W2        =',hsbigq2,W2
+         write(6,*)' h_phys: hstheta, hsphi     =',hstheta,hsphi
+      endif
 
-        denom = 1.87561 - sqrt(hsp**2 + 1.87561**2) + hsp*coshstheta
-        hsegamma_d= ( sqrt(hsp**2+1.87561**2) * 1.87561
-     &       - 0.5*(1.87561**2 + 1.87561**2 - 0.13497**2) )/denom
-
-c------------------------------------------------------------------------
-
-*
 *     Write raw timing information for fitting.
-        if(hdebugdumptof.ne.0) call h_dump_tof
-        if(hdebugdumpcal.ne.0) call h_dump_cal
-*
+
+      if(hdebugdumptof.ne.0) call h_dump_tof
+      if(hdebugdumpcal.ne.0) call h_dump_cal
+
 *     Calculate physics statistics and wire chamber efficencies.
-        call h_physics_stat(ABORT,err)
-        ABORT= ierr.ne.0 .or. ABORT
-        IF(ABORT) THEN
-          call G_add_path(here,err)
-        ENDIF
-      endif                             ! end test on zero tracks
+
+      call h_physics_stat(ABORT,err)
+      ABORT= ierr.ne.0 .or. ABORT
+      IF(ABORT) THEN
+        call G_add_path(here,err)
+      ENDIF
+
+      return
+      end
+
+***************************************************
+
+      real*4 function scalar(vec1,vec2)
+
+*     scalar product of vec1 and vec2
+
+      real*4 vec1(4)
+      real*4 vec2(4)
+      
+      scalar = 0
+
+      do i=2,4
+         scalar=vec1(i)*vec2(i)+scalar
+      enddo
+
+      return
+      end
+
+***************************************************
+
+      real*4 function mink(vec1,vec2)
+
+*     Minkowski product
+
+      implicit none
+
+      real*4 vec1(4),vec2(4)
+      real scalar
+      
+      mink=vec1(1)*vec2(1)-scalar(vec1,vec2)
       return
       end
