@@ -1,6 +1,9 @@
       subroutine s_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.13.2.1  2003/04/09 02:45:38  cdaq
+* hardwire gas cerenkov thresholds to zero
+*
 * Revision 1.13  1999/02/23 18:57:19  csa
 * (JRA) Sparsify aerogel/lucite channels, cleanup
 *
@@ -291,17 +294,31 @@ c     &      scer_new_adc_threshold,0,scer_new_rms,0)
 c
 
 *
-* JRA - 2/18/99 - sparsify all aerogel/lucite channels for early '99
-* running.
-*
+* JRA - 4/8/03 - Gaskell says he want's unsparsified gas cerernkov for
+* the '03 running:
+
         slot=3
         write(SPAREID,*) 'slot=',slot
         do ind=1,4
-          write(SPAREID,*) int(scer_new_adc_threshold(ind))
+          write(SPAREID,'(a6)') '     0'
         enddo
         do ind=5,64
           write(SPAREID,'(a6)') '  4000'
         enddo
+
+
+* JRA - 2/18/99 - sparsify all aerogel/lucite channels for early '99
+* running.
+*
+*        slot=3
+*        write(SPAREID,*) 'slot=',slot
+*        do ind=1,4
+*          write(SPAREID,*) int(scer_new_adc_threshold(ind))
+*        enddo
+*        do ind=5,64
+*          write(SPAREID,'(a6)') '  4000'
+*        enddo
+
 
 c        slot=3
 c        write(SPAREID,*) 'slot=',slot

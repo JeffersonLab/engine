@@ -1,6 +1,9 @@
       subroutine h_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.13.2.2  2003/04/09 02:45:33  cdaq
+* hardwire gas cerenkov thresholds to zero
+*
 * Revision 1.13.2.1  2003/04/06 06:21:28  cdaq
 * Added (hardwired) output of beamline ADC thresholds and automatic output of aerogel pedestals
 *
@@ -90,7 +93,7 @@
           num=max(1.,float(hhodo_pos_ped_num(pln,cnt)))
           hhodo_new_ped_pos(pln,cnt) = float(hhodo_pos_ped_sum(pln,cnt)) / num
           sig2 = float(hhodo_pos_ped_sum2(pln,cnt))/num -
-     $           hhodo_new_ped_pos(pln,cnt)**2
+     &           hhodo_new_ped_pos(pln,cnt)**2
           hhodo_new_sig_pos(pln,cnt) = sqrt(max(0.,sig2))
           hhodo_new_threshold_pos(pln,cnt)=hhodo_new_ped_pos(pln,cnt)+15.
 
@@ -253,15 +256,15 @@
 
       enddo
 
-      print *, ' '
-      print *, 'haero_pos_ped_mean =', haero_neg_ped_mean
-      print *, ' '
-      print *, 'haero_neg_ped_mean =', haero_pos_ped_mean
-      print *, ' '
-      print *, 'haero_pos_adc_threshold =', haero_new_threshold_pos
-      print *, ' '
-      print *, 'haero_neg_adc_threshold =', haero_new_threshold_neg
-      print *, ' '
+*      print *, ' '
+*      print *, 'haero_pos_ped_mean =', haero_neg_ped_mean
+*      print *, ' '
+*      print *, 'haero_neg_ped_mean =', haero_pos_ped_mean
+*      print *, ' '
+*      print *, 'haero_pos_adc_threshold =', haero_new_threshold_pos
+*      print *, ' '
+*      print *, 'haero_neg_adc_threshold =', haero_new_threshold_neg
+*      print *, ' '
 
 *.........................................................................
 *
@@ -305,16 +308,12 @@
         write(SPAREID,*) 'Slot 13 (beamline stuff) is hardwired in h_calc_pedestal.f'
         write(SPAREID,*) 'slot=  13'
         do ind=1,16
-           write(SPAREID,*) '    0'    !BPM and raster stuff
+           write(SPAREID,*) '    0'    !BPM and raster stuff (4blank,2x4BPM,4raster)
         enddo
         do ind=17,20
-           write(SPAREID,*) '    0'    !?? "Paul Gueye" cable
+           write(SPAREID,*) '    0'    !?? "Paul Gueye" cable (4BPM)
         enddo
-        do ind=21,23
-           write(SPAREID,*) ' 4000'    !empty
-        enddo
-        write(SPAREID,*)    '    0'    !'fast raster gate'
-        do ind=24,32
+        do ind=21,32
            write(SPAREID,*) ' 4000'    !empty
         enddo
         do ind=33,64
@@ -330,11 +329,24 @@
      &      hcal_new_adc_threshold_pos,hcal_new_adc_threshold_neg,
      &      hcal_new_rms_pos,hcal_new_rms_neg)
 
+*
+* JRA - 4/8/03 - Gaskell says he want's unsparsified gas cerernkov for
+* the '03 running:
+
         slot=3
-        signalcount=1
         write(SPAREID,*) 'slot=',slot
-        call g_output_thresholds(SPAREID,roc,slot,signalcount,hmax_cer_hits,
-     &      hcer_new_adc_threshold,0,hcer_new_rms,0)
+        do ind=1,2
+          write(SPAREID,'(a6)') '     0'
+        enddo
+        do ind=3,64
+          write(SPAREID,'(a6)') '  4000'
+        enddo
+
+*        slot=3
+*        signalcount=1
+*        write(SPAREID,*) 'slot=',slot
+*        call g_output_thresholds(SPAREID,roc,slot,signalcount,hmax_cer_hits,
+*     &      hcer_new_adc_threshold,0,hcer_new_rms,0)
 
         slot=5
         signalcount=2
