@@ -10,6 +10,9 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 * $Log$
+* Revision 1.14  2004/07/08 20:09:47  saw
+* Flush CTP Root trees
+*
 * Revision 1.13  2004/02/17 17:27:10  jones
 * Only dump histograms when g_histout_filename is set.
 *
@@ -82,6 +85,8 @@
 *--------------------------------------------------------
       bad_report = .TRUE.
       err_report = 'Failed to open report file'
+
+      ierr=thtreewriteg('all') ! Flush
 
       if (g_bad_output_filename.ne.' ') then
         file = g_bad_output_filename
