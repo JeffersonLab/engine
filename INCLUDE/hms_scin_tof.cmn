@@ -1,7 +1,10 @@
 * hms_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the hms time of flight.
 * $Log$
-* Revision 1.3  1994/07/08 19:27:12  cdaq
+* Revision 1.4  1994/08/04 18:02:13  cdaq
+* (SAW) Add "CTPTYPE=event" directive for auto generation of CTP reg calls
+*
+* Revision 1.3  1994/07/08  19:27:12  cdaq
 * (JRA) Add hscin_on_track table
 *
 * Revision 1.2  1994/05/13  02:51:53  cdaq
@@ -10,7 +13,8 @@
 * Revision 1.1  1994/04/13  18:06:20  cdaq
 * Initial revision
 *
-
+*     CTPTYPE=event
+*
       integer*4 hntof
 
       real*4 hscin_long_coord(hmax_scin_hits)
