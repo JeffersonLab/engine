@@ -1,6 +1,9 @@
       subroutine h_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.12  1999/02/23 18:36:12  csa
+* (JRA) Cleanup
+*
 * Revision 1.11  1999/02/03 21:13:23  saw
 * Code for new Shower counter tubes
 *
@@ -75,13 +78,10 @@
 
 *calculate new pedestal values, positive tubes first.
           num=max(1.,float(hhodo_pos_ped_num(pln,cnt)))
-c	write(6,*) pln,cnt,'+',num
           hhodo_new_ped_pos(pln,cnt) = float(hhodo_pos_ped_sum(pln,cnt)) / num
           sig2 = float(hhodo_pos_ped_sum2(pln,cnt))/num -
      $           hhodo_new_ped_pos(pln,cnt)**2
           hhodo_new_sig_pos(pln,cnt) = sqrt(max(0.,sig2))
-c          hhodo_new_threshold_pos(pln,cnt)=hhodo_new_ped_pos(pln,cnt)+
-c     &           2.*hhodo_new_sig_pos(pln,cnt)
           hhodo_new_threshold_pos(pln,cnt)=hhodo_new_ped_pos(pln,cnt)+15.
 
 *note channels with 2 sigma difference from paramter file values.
@@ -102,13 +102,10 @@ c     &           2.*hhodo_new_sig_pos(pln,cnt)
 
 *do it all again for negative tubes.
           num=max(1.,float(hhodo_neg_ped_num(pln,cnt)))
-c	write(6,*) pln,cnt,'-',num
           hhodo_new_ped_neg(pln,cnt) = float(hhodo_neg_ped_sum(pln,cnt)) / num
           sig2 = float(hhodo_neg_ped_sum2(pln,cnt))/num -
      $           hhodo_new_ped_neg(pln,cnt)**2
           hhodo_new_sig_neg(pln,cnt) = sqrt(max(0.,sig2))
-c          hhodo_new_threshold_neg(pln,cnt)=hhodo_new_ped_neg(pln,cnt)+
-c     &           2.*hhodo_new_sig_neg(pln,cnt)
           hhodo_new_threshold_neg(pln,cnt)=hhodo_new_ped_neg(pln,cnt)+15.
 
           if (abs(hscin_all_ped_neg(pln,cnt)-hhodo_new_ped_neg(pln,cnt))
@@ -137,13 +134,9 @@ c     &           2.*hhodo_new_sig_neg(pln,cnt)
       
 * calculate new pedestal values, positive tubes first.      
        num=max(1.,float(hcal_pos_ped_num(blk)))
-c      write(6,*) blk,'+',num     
         hcal_new_ped_pos(blk)=hcal_pos_ped_sum(blk)/num
         sig2 = float(hcal_pos_ped_sum2(blk))/num - hcal_new_ped_pos(blk)**2
         hcal_new_rms_pos(blk)=sqrt(max(0.,sig2))
-*        hcal_new_adc_threshold_pos(blk)=hcal_new_ped_pos(blk)+
-*     &                  2.*hcal_new_rms_pos(blk)
-c        type *,blk,hmax_cal_blocks,hcal_new_adc_threshold_pos(blk),hcal_new_ped_pos(blk)
         hcal_new_adc_threshold_pos(blk)=hcal_new_ped_pos(blk)+15.
         if (abs(hcal_pos_ped_mean(blk)-hcal_new_ped_pos(blk))
      &                 .ge.(2.*hcal_new_rms_pos(blk))) then
@@ -163,14 +156,10 @@ c        type *,blk,hmax_cal_blocks,hcal_new_adc_threshold_pos(blk),hcal_new_ped
         
 *do it all again for negative tubes.
        num=max(1.,float(hcal_neg_ped_num(blk)))
-c      write(6,*) blk,'-',num     
         hcal_new_ped_neg(blk)=hcal_neg_ped_sum(blk)/num
         sig2 = float(hcal_neg_ped_sum2(blk))/num-hcal_new_ped_neg(blk)**2
         hcal_new_rms_neg(blk)=sqrt(max(0.,sig2))
-*        hcal_new_adc_threshold_neg(blk)=hcal_neg_new_ped(blk)+
-*     &                  2.*hcal_new_rms_neg(blk)
         hcal_new_adc_threshold_neg(blk)=hcal_new_ped_neg(blk)+15.
-c        type *,blk,hmax_cal_blocks,hcal_new_adc_threshold_neg(blk),hcal_neg_new_ped(blk)
         if (abs(hcal_neg_ped_mean(blk)-hcal_new_ped_neg(blk))
      &                 .ge.(2.*hcal_new_rms_neg(blk))) then
           ind = ind + 1
@@ -180,7 +169,6 @@ c        type *,blk,hmax_cal_blocks,hcal_new_adc_threshold_neg(blk),hcal_neg_new
      &                         hcal_neg_ped_mean(blk) 
         endif
   
-c        type *,num,hcal_min_peds
         if (num.gt.hcal_min_peds .and. hcal_min_peds.ne.0) then
           hcal_neg_ped_mean(blk)=hcal_new_ped_neg(blk)
           hcal_neg_ped_rms(blk)=hcal_new_rms_neg(blk)
@@ -196,11 +184,9 @@ c        type *,num,hcal_min_peds
       ind = 0
       do pmt = 1 , hmax_cer_hits
         num=max(1.,float(hcer_ped_num(pmt)))
-c	write(6,*) 'pmt,num'
         hcer_new_ped(pmt) = float(hcer_ped_sum(pmt)) / num
         sig2 = float(hcer_ped_sum2(pmt))/ num - hcer_new_ped(pmt)**2
         hcer_new_rms(pmt) = sqrt(max(0.,sig2))
-c        hcer_new_adc_threshold(pmt)=hcer_new_ped(pmt)+2.*hcer_new_rms(pmt)
         hcer_new_adc_threshold(pmt)=hcer_new_ped(pmt)+15.
         if (abs(hcer_ped(pmt)-hcer_new_ped(pmt))
      &                 .ge.(2.*hcer_new_rms(pmt))) then
@@ -240,7 +226,6 @@ c        hcer_new_adc_threshold(pmt)=hcer_new_ped(pmt)+2.*hcer_new_rms(pmt)
         endif    !chose ADC hits.
       enddo
       hmisc_num_ped_changes = ind
-
 
 *
 * WRITE THRESHOLDS TO FILE FOR HARDWARE SPARCIFICATION
