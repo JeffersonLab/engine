@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *
 * $Log$
+* Revision 1.14  1999/02/23 18:25:15  csa
+* Add call to h_ntuple_clear
+*
 * Revision 1.13  1996/01/16 17:05:05  cdaq
 * no change
 *
@@ -125,6 +128,9 @@
       HSNUM_FPTRACK = 0
       HSNUM_TARTRACK = 0
 *
+
+      call h_ntuple_clear
+
       ABORT= .FALSE.
       err= ' '
       RETURN
