@@ -11,6 +11,10 @@
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *
 * $Log$
+* Revision 1.6  1996/09/04 14:42:14  saw
+* (JRA) Make HSNUM_FPTRACK.gt.0 instead of HNTRACKS_FP .gt. 0 the
+*       criteria for adding to ntuples
+*
 * Revision 1.5  1996/01/16 17:03:06  cdaq
 * no change
 *
@@ -49,7 +53,7 @@
       ABORT= .FALSE.
       err= ' '
 *
-      if(HNTRACKS_FP .gt. 0)call h_ntuple_keep(ABORT,err) ! check for tracks
+      if(HSNUM_FPTRACK.gt.0) call h_ntuple_keep(ABORT,err)! check for good tracks
 *
       IF(ABORT) THEN
          call G_add_path(here,err)
@@ -59,7 +63,7 @@
 *
 * Need to fix up the bloody error reporting
 *
-      if(HNTRACKS_FP.gt.0)call h_sv_nt_keep(ABORT,err) ! at least one track
+      if(HSNUM_FPTRACK.gt.0)call h_sv_nt_keep(ABORT,err) ! at least one track
 *
       IF(ABORT) THEN
          call G_add_path(here,err)
