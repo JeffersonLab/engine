@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.3  1995/01/27 21:09:22  cdaq
+# Revision 1.4  1995/05/24 14:04:15  cdaq
+# (SAW) Add -lm library for CTP
+#
+# Revision 1.3  1995/01/27  21:09:22  cdaq
 # (SAW) Remove RCS from include file rules
 #
 # Revision 1.2  1994/08/04  03:51:30  cdaq
@@ -26,7 +29,7 @@ objects := $(patsubst %.f, %.o, $(sources))
 ifeq ($(ARCH),HPUX)
   CC = gcc
   OTHERLIBS = -Wl,-L$(CODA)/HP_UX/lib \
-	-lana -lmsg -lcoda -Wl,-L$(CERN_ROOT)/lib -lpacklib
+	-lana -lmsg -lcoda -Wl,-L$(CERN_ROOT)/lib -lpacklib -lm
 endif
 
 ifeq ($(ARCH),ULTRIX)
