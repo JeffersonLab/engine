@@ -13,7 +13,10 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
-* Revision 1.5  1994/11/23 15:08:04  cdaq
+* Revision 1.6  1995/04/06 19:52:15  cdaq
+* (JRA) SMAX_NUM_DC_PLANES -> SDC_NUM_PLANES
+*
+* Revision 1.5  1994/11/23  15:08:04  cdaq
 * * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.4  1994/04/13  18:56:40  cdaq
@@ -58,7 +61,7 @@
       old_plane = -1
       goodhit = 0
       if (sdc_center(1).eq.0.) then   !initialize hdc_center if not yet set.
-        do plane = 1, smax_num_dc_planes
+        do plane = 1, sdc_num_planes
           chamber = sdc_chamber_planes(plane)
           sdc_center(plane) = sdc_xcenter(chamber)
      $         *sin(sdc_alpha_angle(plane))+sdc_ycenter(chamber)
