@@ -19,7 +19,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.9  1995/07/20 18:59:15  cdaq
+* Revision 1.10  1995/08/31 18:45:26  cdaq
+* (JRA) Add projection to cerenkov mirror pos, fill sdc_sing_res array
+*
+* Revision 1.9  1995/07/20  18:59:15  cdaq
 * (SAW) Declare sind and tand for f2c compatibility
 *
 * Revision 1.8  1995/05/22  19:45:43  cdaq
@@ -69,8 +72,9 @@
       INCLUDE 'mc_structures.cmn'
       INCLUDE 'sos_calorimeter.cmn'
       INCLUDE 'sos_scin_parms.cmn'
-*      INCLUDE 'sos_scin_tof.cmn'
       INCLUDE 'sos_tracking.cmn'
+      INCLUDE 'sos_cer_parms.cmn'
+      INCLUDE 'sos_geometry.cmn'
 *     
 *     local variables 
       integer*4 i,ip
@@ -100,18 +104,18 @@
         SSXP_FP   = SXP_FP(SSNUM_FPTRACK) ! This is a slope (dx/dz)
         SSYP_FP   = SYP_FP(SSNUM_FPTRACK) ! This is a slope (dy/dz)
 
-c     ssx_dc1 = ssx_fp + ssxp_fp * sdc_zpos(1)
-c     ssy_dc1 = ssy_fp + ssyp_fp * sdc_zpos(1)
-c     ssx_dc2 = ssx_fp + ssxp_fp * sdc_zpos(2)
-c     ssy_dc2 = ssy_fp + ssyp_fp * sdc_zpos(2)
+        ssx_dc1 = ssx_fp + ssxp_fp * sdc_1_zpos
+        ssy_dc1 = ssy_fp + ssyp_fp * sdc_1_zpos
+        ssx_dc2 = ssx_fp + ssxp_fp * sdc_2_zpos
+        ssy_dc2 = ssy_fp + ssyp_fp * sdc_2_zpos
         ssx_s1 = ssx_fp + ssxp_fp * sscin_1x_zpos
         ssy_s1 = ssy_fp + ssyp_fp * sscin_1x_zpos
+        ssx_cer = ssx_fp + ssxp_fp * scer_mirror_zpos
+        ssy_cer = ssy_fp + ssyp_fp * scer_mirror_zpos
         ssx_s2 = ssx_fp + ssxp_fp * sscin_2x_zpos
         ssy_s2 = ssy_fp + ssyp_fp * sscin_2x_zpos
         ssx_cal = ssx_fp + ssxp_fp * scal_1pr_zpos
         ssy_cal = ssy_fp + ssyp_fp * scal_1pr_zpos
-c     ?????
-        strue_x_fp = ssx_fp / sind(85.0) / (1/tand(85.0) - ssxp_fp)
 
         do ip=1,4
           ssscin_elem_hit(ip)=0
@@ -130,6 +134,10 @@ c     ?????
 
         ssnum_scin_hit = snum_scin_hit(ssnum_fptrack)
         ssnum_pmt_hit = snum_pmt_hit(ssnum_fptrack)
+
+        do ip = 1 , sdc_num_planes
+          sdc_sing_res(ip)=sdc_single_residual(ssnum_fptrack,ip)
+        enddo
 
         SSCHI2PERDEG  = SCHI2_FP(SSNUM_FPTRACK)
      $       /FLOAT(SNFREE_FP(SSNUM_FPTRACK))
