@@ -8,6 +8,9 @@
 * needed for the drift chamber and tof analysis.
 *
 * $Log$
+* Revision 1.13  1999/06/10 16:57:58  csa
+* (JRA) Cosmetic changes
+*
 * Revision 1.12  1996/04/30 17:15:39  saw
 * (JRA) Cleanup
 *
@@ -112,89 +115,83 @@
       if( sscin_tot_hits .le. 0) return
 
 ** Check for two good TDC values.
-        do ihit = 1 , sscin_tot_hits
-          if ((sscin_tdc_pos(ihit) .ge. sscin_tdc_min) .and.
-     1         (sscin_tdc_pos(ihit) .le. sscin_tdc_max) .and.
-     2         (sscin_tdc_neg(ihit) .ge. sscin_tdc_min) .and.
-     3         (sscin_tdc_neg(ihit) .le. sscin_tdc_max)) then
-            stwo_good_times(ihit) = .true.
-          else
-            stwo_good_times(ihit) = .false.
-          endif
-        enddo                           !end of loop that finds tube setting time.
+      do ihit = 1 , sscin_tot_hits
+        if ((sscin_tdc_pos(ihit) .ge. sscin_tdc_min) .and.
+     1       (sscin_tdc_pos(ihit) .le. sscin_tdc_max) .and.
+     2       (sscin_tdc_neg(ihit) .ge. sscin_tdc_min) .and.
+     3       (sscin_tdc_neg(ihit) .le. sscin_tdc_max)) then
+          stwo_good_times(ihit) = .true.
+        else
+          stwo_good_times(ihit) = .false.
+        endif
+      enddo                           !end of loop that finds tube setting time.
 
 ** Get corrected time/adc for each scintillator hit
-        do ihit = 1 , sscin_tot_hits
-          if (stwo_good_times(ihit)) then !both tubes fired
+      do ihit = 1 , sscin_tot_hits
+        if (stwo_good_times(ihit)) then !both tubes fired
 
 *  Correct time for everything except veloc. correction in order to
 *  find hit location from difference in tdc.
-            pos_ph(ihit) = sscin_adc_pos(ihit)
-            postime(ihit) = sscin_tdc_pos(ihit) * sscin_tdc_to_time
-            postime(ihit) = postime(ihit) - sscin_pos_phc_coeff(ihit) * 
+          pos_ph(ihit) = sscin_adc_pos(ihit)
+          postime(ihit) = sscin_tdc_pos(ihit) * sscin_tdc_to_time
+          postime(ihit) = postime(ihit) - sscin_pos_phc_coeff(ihit) * 
      1           sqrt(max(0.,(pos_ph(ihit)/sscin_pos_minph(ihit)-1.)))
-            postime(ihit) = postime(ihit) - sscin_pos_time_offset(ihit)
+          postime(ihit) = postime(ihit) - sscin_pos_time_offset(ihit)
             
-            neg_ph(ihit) = sscin_adc_neg(ihit)
-            negtime(ihit) = sscin_tdc_neg(ihit) * sscin_tdc_to_time
-            negtime(ihit) = negtime(ihit) - sscin_neg_phc_coeff(ihit) * 
+          neg_ph(ihit) = sscin_adc_neg(ihit)
+          negtime(ihit) = sscin_tdc_neg(ihit) * sscin_tdc_to_time
+          negtime(ihit) = negtime(ihit) - sscin_neg_phc_coeff(ihit) * 
      1           sqrt(max(0.,(neg_ph(ihit)/sscin_neg_minph(ihit)-1.)))
-            negtime(ihit) = negtime(ihit) - sscin_neg_time_offset(ihit)
+          negtime(ihit) = negtime(ihit) - sscin_neg_time_offset(ihit)
 
 *  Find hit position.  If postime larger, then hit was nearer negative side.
-            dist_from_center = 0.5*(negtime(ihit) - postime(ihit))
+          dist_from_center = 0.5*(negtime(ihit) - postime(ihit))
      1           * sscin_vel_light(ihit)
-            scint_center = (sscin_pos_coord(ihit)+sscin_neg_coord(ihit))
-     $           /2.
-            hit_position = scint_center + dist_from_center
-            hit_position = min(sscin_pos_coord(ihit),hit_position)
-            hit_position = max(sscin_neg_coord(ihit),hit_position)
-            sscin_dec_hit_coord(ihit) = hit_position
+          scint_center = (sscin_pos_coord(ihit)+sscin_neg_coord(ihit))/2.
+          hit_position = scint_center + dist_from_center
+          hit_position = min(sscin_pos_coord(ihit),hit_position)
+          hit_position = max(sscin_neg_coord(ihit),hit_position)
+          sscin_dec_hit_coord(ihit) = hit_position
  
 *     Get corrected time.
-            pos_path = sscin_pos_coord(ihit) - hit_position
-            neg_path = hit_position - sscin_neg_coord(ihit)
-            postime(ihit) = postime(ihit) - pos_path
-     $           /sscin_vel_light(ihit)
-            negtime(ihit) = negtime(ihit) - neg_path
-     $           /sscin_vel_light(ihit)
+          pos_path = sscin_pos_coord(ihit) - hit_position
+          neg_path = hit_position - sscin_neg_coord(ihit)
+          postime(ihit) = postime(ihit) - pos_path/sscin_vel_light(ihit)
+          negtime(ihit) = negtime(ihit) - neg_path/sscin_vel_light(ihit)
+          sscin_cor_time(ihit) = ( postime(ihit) + negtime(ihit) )/2.
 
-            sscin_cor_time(ihit) = ( postime(ihit) + negtime(ihit) )/2.
-*
-          else                          !only 1 tube fired
-            sscin_dec_hit_coord(ihit) = 0.
-            sscin_cor_time(ihit) = 0.   !not a very good 'flag', but there is
-                                        ! the logical stwo_good_hits.
-          endif
-        enddo                           !loop over hits to find ave time,adc.
-
-* TEMPORARY START TIME CALCULATION.  ASSUME XP=YP=0 RADIANS.  PROJECT ALL
-*     TIME VALUES TO FOCAL PLANE.  USE AVERAGE FOR START TIME.
-*   WORKS FOR ELECTRONS ONLY NOW
-        time_num = 0
-        time_sum = 0.
-        do ihit = 1 , sscin_tot_hits
-          if (stwo_good_times(ihit)) then
-            fptime  = sscin_cor_time(ihit)
-     $           - sscin_zpos(ihit)/(sbeta_pcent*29.989)
-            call hf1(sidscinalltimes,fptime,1.)
-            if (abs(fptime-sstart_time_center).le.sstart_time_slop) then
-              time_sum = time_sum + fptime
-              time_num = time_num + 1
-            endif
-          endif
-        enddo
-        if (time_num.eq.0) then
-          sgood_start_time = .false.
-          sstart_time = sstart_time_center
-        else
-          sgood_start_time = .true.
-          sstart_time = time_sum / float(time_num)
+        else                          !only 1 tube fired
+          sscin_dec_hit_coord(ihit) = 0.
+          sscin_cor_time(ihit) = 0.   !not a very good 'flag', but there is
+                                      ! the logical stwo_good_hits.
         endif
+      enddo                           !loop over hits to find ave time,adc.
+
+* start time calculation.  assume xp=yp=0 radians.  project all
+* time values to focal plane.  use average for start time.
+      time_num = 0
+      time_sum = 0.
+      do ihit = 1 , sscin_tot_hits
+        if (stwo_good_times(ihit)) then
+          fptime  = sscin_cor_time(ihit) - sscin_zpos(ihit)/(29.979*sbeta_pcent)
+          call hf1(sidscinalltimes,fptime,1.)
+          if (abs(fptime-sstart_time_center).le.sstart_time_slop) then
+            time_sum = time_sum + fptime
+            time_num = time_num + 1
+          endif
+        endif
+      enddo
+      if (time_num.eq.0) then
+        sgood_start_time = .false.
+        sstart_time = sstart_time_center
+      else
+        sgood_start_time = .true.
+        sstart_time = time_sum / float(time_num)
+      endif
 
 
 *     Dump decoded bank if sdebugprintscindec is set
-        if( sdebugprintscindec .ne. 0) call s_prt_dec_scin(ABORT,errmsg)
+      if( sdebugprintscindec .ne. 0) call s_prt_dec_scin(ABORT,errmsg)
 
 *    Calculate beta without finding track (to reject cosmics for efficiencies)
 *    using tube only if both pmts fired since the velocity correction is
@@ -221,7 +218,7 @@
 
 *    Fit beta if there are enough time measurements (one upper, one lower)
       if ((goodtime(1) .or. goodtime(2)) .and.
-     1     (goodtime(3) .or. goodtime(4))) then
+     1    (goodtime(3) .or. goodtime(4))) then
 
         sxp_fp(dumtrk)=0.0
         syp_fp(dumtrk)=0.0

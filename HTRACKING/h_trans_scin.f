@@ -9,6 +9,9 @@
 *
 * modifications:
 * $Log$
+* Revision 1.19  1999/06/10 16:53:04  csa
+* (JRA) Cosmetic changes
+*
 * Revision 1.18  1996/04/30 12:46:50  saw
 * (JRA) Clean up
 *
@@ -164,8 +167,7 @@
 * Find hit position.  If postime larger, then hit was nearer negative side.
           dist_from_center = 0.5*(negtime(ihit) - postime(ihit))
      1         * hscin_vel_light(ihit)
-          scint_center = (hscin_pos_coord(ihit)+hscin_neg_coord(ihit))
-     $         /2.
+          scint_center = (hscin_pos_coord(ihit)+hscin_neg_coord(ihit))/2.
           hit_position = scint_center + dist_from_center
           hit_position = min(hscin_pos_coord(ihit),hit_position)
           hit_position = max(hscin_neg_coord(ihit),hit_position)
@@ -174,13 +176,10 @@
 *     Get corrected time.
           pos_path = hscin_pos_coord(ihit) - hit_position
           neg_path = hit_position - hscin_neg_coord(ihit)
-          postime(ihit) = postime(ihit) - pos_path
-     $         /hscin_vel_light(ihit)
-          negtime(ihit) = negtime(ihit) - neg_path
-     $         /hscin_vel_light(ihit)
-
+          postime(ihit) = postime(ihit) - pos_path/hscin_vel_light(ihit)
+          negtime(ihit) = negtime(ihit) - neg_path/hscin_vel_light(ihit)
           hscin_cor_time(ihit) = ( postime(ihit) + negtime(ihit) )/2.
-*
+
         else                            !only 1 tube fired
           hscin_dec_hit_coord(ihit) = 0.
           hscin_cor_time(ihit) = 0.     !not a very good 'flag', but there is
@@ -188,14 +187,13 @@
         endif
       enddo                             !loop over hits to find ave time,adc.
 
-* START TIME CALCULATION.  ASSUME XP=YP=0 RADIANS.  PROJECT ALL
-*  TIME VALUES TO FOCAL PLANE.  USE AVERAGE FOR START TIME.
+* start time calculation.  assume xp=yp=0 radians.  project all
+* time values to focal plane.  use average for start time.
       time_num = 0
       time_sum = 0.
       do ihit = 1 , hscin_tot_hits
         if (htwo_good_times(ihit)) then
-          fptime  = hscin_cor_time(ihit)
-     $         - hscin_zpos(ihit)/(hbeta_pcent*29.989)
+          fptime  = hscin_cor_time(ihit) - hscin_zpos(ihit)/(29.979*hbeta_pcent)
           call hf1(hidscinalltimes,fptime,1.)
           if (abs(fptime-hstart_time_center).le.hstart_time_slop) then
             time_sum = time_sum + fptime
@@ -240,7 +238,7 @@
 
 *    Fit beta if there are enough time measurements (one upper, one lower)
       if ((goodtime(1) .or. goodtime(2)) .and.
-     1     (goodtime(3) .or. goodtime(4))) then
+     1    (goodtime(3) .or. goodtime(4))) then
 
         hxp_fp(dumtrk)=0.0
         hyp_fp(dumtrk)=0.0
