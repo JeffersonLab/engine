@@ -1,10 +1,13 @@
-      subroutine H_FCNCHISQ(npar,grad,fval,ray,iflag,dummy)
+      subroutine H_FCNCHISQ(npar,grad,fval,ray,iflag,dumarg)
 *     This subroutine calculates chi**2 for MINUIT for HMS. The
 *     arguments are determined by MINUIT
 *
 *     d.f. geesaman             17 January 1994
 * $Log$
-* Revision 1.1  1994/02/19 06:14:15  cdaq
+* Revision 1.2  1994/04/13 20:38:06  cdaq
+* (SAW) Change name of dummy arg to dumarg
+*
+* Revision 1.1  1994/02/19  06:14:15  cdaq
 * Initial revision
 *
 *
@@ -16,7 +19,7 @@
       include "hms_geometry.cmn"
 *
 *     input
-      real*8 ray(*),grad(*),dummy
+      real*8 ray(*),grad(*),dumarg
       integer*4 npar,iflag
 *     output
       real*8 fval                              ! value of chi2
