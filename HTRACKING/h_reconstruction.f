@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 *-    $Log$
-*-    Revision 1.5  1994/05/12 21:18:13  cdaq
-*-    (DFG) Put h_prt_track_tests here. Remove from h_tof
+*-    Revision 1.6  1994/06/06 16:49:49  cdaq
+*-    (DFG) add h_recon_num and bypass switches
 *-
+* Revision 1.5  1994/05/12  21:18:13  cdaq
+* (DFG) Put h_prt_track_tests here. Remove from h_tof
+*
 * Revision 1.4  1994/04/13  16:06:00  cdaq
 * (DFG) Add consolidated call to h_raw_dump_all
 *       Commented out returns after ABORT's
@@ -46,6 +49,8 @@
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       include 'hms_scin_parms.cmn'
+      include 'hms_bypass_switches.cmn'
+      include 'hms_statistics.cmn'
 *
 *     Local variables
       integer*4 istat
@@ -53,6 +58,9 @@
 *
       ABORT= .TRUE.
       err= ':no events analyzed!'
+*
+* increment reconstructed number
+      h_recon_num= h_recon_num + 1
 *
 *     dump
       call h_raw_dump_all(ABORT,err)
@@ -64,94 +72,112 @@
 *     TRANSLATE SCINTILATORS AND CALCULATE START TIME
 *     HMS_RAW_SCIN ====> HMS_DECODED_SCIN
 *
-      call H_TRANS_SCIN(ABORT,err)
-      if(ABORT)  then
-         call G_add_path(here,err)
-*         return
-      endif                             ! end test on SCIN ABORT
+      If(hbypass_trans_scin.eq.0) then
+         call H_TRANS_SCIN(ABORT,err)
+         if(ABORT)  then
+            call G_add_path(here,err)
+*     return
+         endif                          ! end test on SCIN ABORT
+      endif                             ! end test on hbypass_trans_scin
 *
 *     TRANSLATE CALORIMETER 
 *     HMS_RAW_CAL ====> HMS_DECODED_CAL
 *
-      call H_TRANS_CAL(ABORT,err)
-      if(ABORT)   then
-         call G_add_path(here,err)
-*         return
-      endif                             ! end test on CAL ABORT
-*
+      if(hbypass_trans_cal.eq.0) then
+         call H_TRANS_CAL(ABORT,err)
+         if(ABORT)   then
+            call G_add_path(here,err)
+*     return
+         endif                          ! end test on CAL ABORT
+      endif                             ! end test on hbypass_trans_cal
+*     
 *     TRANLATE DRIFT CHAMBERS
 *     HMS_RAW_DC + HMS_DECODED_SCIN ====>  HMS_DECODED_DC
-      call H_TRANS_DC(ABORT,err)
-      if(ABORT) then
-         call G_add_path(here,err)
-         return
-      endif                             ! end test on H_TRANS_DC ABORT
-      call H_TRACK(ABORT,err)
-      if(ABORT)  then
-         call G_add_path(here,err)
-         return
-      endif                             ! end test on H_TRACK ABORT
+      if(hbypass_trans_dc.eq.0) then
+         call H_TRANS_DC(ABORT,err)
+         if(ABORT) then
+            call G_add_path(here,err)
+            return
+         endif                          ! end test on H_TRANS_DC ABORT
+      endif                             ! end test on hbypass_trans_dc
+      if(hbypass_track.eq.0) then
+         call H_TRACK(ABORT,err)
+         if(ABORT)  then
+            call G_add_path(here,err)
+            return
+         endif                          ! end test on H_TRACK ABORT
+      endif                             ! end test on hbypass_track
 *     only proceed if the number of tracks is greater than one
-*
+*     
       if(HNTRACKS_FP .lt. 1) then
          ABORT=.FALSE.
          err=":no tracks found!"
          return
       else
 *     Proceed if one or more track has been found
-*
+*     
 *     Project tracks back to target
 *     HMS_FOCAL_PLANE  ====>  HMS_TARGET
-*
-         call H_TARG_TRANS(ABORT,err,istat)
-         if(ABORT) then
-            call G_add_path(here,err)
-            return
-         endif                          ! end test on H_TARG_TRANS ABORT
-*
+*     
+         if(hbypass_targ_trans.eq. 0) then
+            call H_TARG_TRANS(ABORT,err,istat)
+            if(ABORT) then
+               call G_add_path(here,err)
+               return
+            endif                       ! end test on H_TARG_TRANS ABORT
+         endif                          ! end test on hbypass_target_trans
+*     
 *     Now begin to process particle identification information
 *     First scintillator and time of flight
 *     HMS_RAW_SCIN ====> HMS_TRACK_TESTS
 *
-         call H_TOF(ABORT,err)
-         if(ABORT) then
-            call G_add_path(here,err)
-            return
-         endif                          ! end test of H_TOF ABORT
+         if(hbypass_tof.eq.0) then
+            call H_TOF(ABORT,err)
+            if(ABORT) then
+               call G_add_path(here,err)
+               return
+            endif                       ! end test of H_TOF ABORT
+         endif                          ! end test on hbypass_tof
 *     Next Calorimeter information
 *     HMS_DECODED_CAL ====> HMS_TRACK_TESTS
 *
-         call H_CAL(ABORT,err)
-         if(ABORT) then
-            call G_add_path(here,err)
-*            return
-         endif                          ! end test of H_CAL ABORT
+         if(hbypass_cal.eq.0) then
+            call H_CAL(ABORT,err)
+            if(ABORT) then
+               call G_add_path(here,err)
+*     return
+            endif                       ! end test of H_CAL ABORT
+         endif                          ! end test on hbypass_cal
 *     Next Cerenkov information
 *     HMS_DECODED_CER ====> HMS_TRACK_TESTS
-*
-         call H_CER(ABORT,err)
-         if(ABORT) then
-            call G_add_path(here,err)
-*            return
-         endif                          ! end test of H_CER ABORT
-*
-
+*     
+         if(hbypass_cer.eq.0) then
+            call H_CER(ABORT,err)
+            if(ABORT) then
+               call G_add_path(here,err)
+*     return
+            endif                       ! end test of H_CER ABORT
+         endif                          ! end test on hbypass_cer
+*     
+         
 *     Dump HMS_TRACK_TESTS if hdebugprinttracktests is set
-          if( hdebugprinttracktests .ne. 0 ) then
+         if( hdebugprinttracktests .ne. 0 ) then
             call h_prt_track_tests
-          endif
-*
+         endif
+*     
 *     Combine results in HMS physics analysis
 *     HMS_TARGET + HMS_TRACK_TESTS ====>  HMS_PHYSICS
-*
-         call H_PHYSICS(ABORT,err)
-         if(ABORT) then
-            call G_add_path(here,err)
-            return
-         endif                          ! end test of H_PHYSICS ABORT
-*
+*     
+         if(hbypass_physics.eq.0) then
+            call H_PHYSICS(ABORT,err)
+            if(ABORT) then
+               call G_add_path(here,err)
+               return
+            endif                       ! end test of H_PHYSICS ABORT
+         endif                          ! end test on hbypass_physics
+*     
       endif                             ! end test no tracks found       
-*      
+*     
 *
 *     Successful return
       ABORT=.FALSE.
