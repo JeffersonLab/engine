@@ -8,7 +8,10 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
-* Revision 1.3  1995/05/22 20:50:43  cdaq
+* Revision 1.4  1995/09/01 15:45:21  cdaq
+* (JRA) Add spectrometer kinematic vars to ntuple
+*
+* Revision 1.3  1995/05/22  20:50:43  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.2  1994/06/17  02:41:25  cdaq
@@ -31,12 +34,16 @@
       INCLUDE 'c_ntuple.cmn'
       INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'coin_data_structures.cmn'
+      INCLUDE 'hms_data_structures.cmn'
+      INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'gen_event_info.cmn'
+      include 'hms_scin_parms.cmn'
 *
       logical HEXIST    !CERNLIB function
 *
       character*80 directory,name,msg
       integer m
+      real*8 coin_time,ss_time,hs_time
 *
 *--------------------------------------------------------
       err= ' '
@@ -45,23 +52,49 @@
       IF(.NOT.c_Ntuple_exists) RETURN       !nothing to do
 *
 **********begin insert description of contents of COIN tuple ******
+c      coin_time = (hmisc_dec_data(1,10) -2576)/10. ! ???
+
+      hs_time= hstart_time -120
+      ss_time= sstart_time -50
       m= 0
       m= m+1
-      c_Ntuple_contents(m)= CXRAST         ! beam X rastor
+      c_Ntuple_contents(m)= HSX_FP         ! beam X rastor
       m= m+1
-      c_Ntuple_contents(m)= CYRAST         ! beam Y rastor
+      c_Ntuple_contents(m)= HSY_FP         ! beam Y rastor
       m= m+1
-      c_Ntuple_contents(m)= CMISSING_MASS  ! Missing mass of undetected hadron system
+      c_Ntuple_contents(m)= HSXP_FP  ! Missing mass of undetected hadron system
       m= m+1
-      c_Ntuple_contents(m)= CMISSING_MOM   ! Magnitude of missing momentum 
+      c_Ntuple_contents(m)= HSYP_FP   ! Magnitude of missing momentum 
       m= m+1
-      c_Ntuple_contents(m)= CMISSING_MOMX  ! X component of missing momentum
+      c_Ntuple_contents(m)= HSX_TAR  ! X component of missing momentum
       m= m+1
-      c_Ntuple_contents(m)= CMISSING_MOMY  ! Y component of missing momentum
+      c_Ntuple_contents(m)= HSY_TAR  ! Y component of missing momentum
       m= m+1
-      c_Ntuple_contents(m)= CMISSING_MOMZ  ! Z component of missing momentum
+      c_Ntuple_contents(m)= HSXP_TAR  ! Z component of missing momentum
       m= m+1
-      c_Ntuple_contents(m)= CTIME_COIN_COR ! Corrected Coincidence time
+      c_Ntuple_contents(m)= HSYP_TAR ! Corrected Coincidence time
+      m= m+1
+      c_Ntuple_contents(m)= HS_TIME
+      m=m+1
+      c_Ntuple_contents(m)= SSX_FP ! Corrected Coincidence time
+      m= m+1
+      c_Ntuple_contents(m)= SSY_FP ! Corrected Coincidence time
+      m= m+1
+      c_Ntuple_contents(m)= SSXP_FP ! Corrected Coincidence time
+      m= m+1
+      c_Ntuple_contents(m)= SSYP_FP ! Corrected Coincidence time
+      m= m+1
+      c_Ntuple_contents(m)= SSX_TAR ! Corrected Coincidence time
+      m= m+1
+      c_Ntuple_contents(m)= SSY_TAR ! Corrected Coincidence time
+      m= m+1
+      c_Ntuple_contents(m)= SSXP_TAR ! Corrected Coincidence time
+      m= m+1
+      c_Ntuple_contents(m)= SSYP_TAR ! Corrected Coincidence time
+      m= m+1
+      c_Ntuple_contents(m)= ss_time
+      m=m+1
+      c_Ntuple_contents(m)= COIN_TIME ! Corrected Coincidence time
       m= m+1
       c_Ntuple_contents(m)= FLOAT(gen_event_ID_number)
 ***********end insert description of contents of COIN tuple********
