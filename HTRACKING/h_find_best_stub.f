@@ -7,6 +7,9 @@
 *     
 *     d. f. geesaman
 * $Log$
+* Revision 1.5  1995/10/10 13:37:10  cdaq
+* (JRA) Cleanup
+*
 * Revision 1.4  1995/05/22 19:39:12  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -35,7 +38,7 @@
       real*4 plusminus(*)
 *
 *     output quantitites
-      real*8 dstub(4)               !, x, xp , y, yp of local line fit
+      real*8 dstub(3)               !, x, xp , y of local line fit
       real*4 stub(4)
       real*4 chi2                  ! chi2 of fit      
 *
@@ -47,22 +50,20 @@
       integer*4 ihit,ierr
       integer*4 i
 *
-
-      chi2=10000.
 *     calculate trial hit position
       do ihit=1,numhits
-         position(ihit)=HDC_WIRE_CENTER(hits(ihit)) +
-     &          plusminus(ihit)*HDC_DRIFT_DIS(hits(ihit))
+        position(ihit)=HDC_WIRE_CENTER(hits(ihit)) +
+     &       plusminus(ihit)*HDC_DRIFT_DIS(hits(ihit))
       enddo
 
 *     calculate least squares matrix coefficients
       do i=1,3
         TT(i)=0.
-          do ihit=1,numhits
-           TT(i)=TT(i)+((position(ihit)-hpsi0(pl(ihit)))*
-     &          hstubcoef(pl(ihit),i)) /hdc_sigma(pl(ihit))
-         enddo
-       enddo
+        do ihit=1,numhits
+          TT(i)=TT(i)+((position(ihit)-hpsi0(pl(ihit)))*
+     &         hstubcoef(pl(ihit),i)) /hdc_sigma(pl(ihit))
+        enddo
+      enddo
 *
 * djm 10/2/94 removed repetitive calculations of matrix AA3. This matrix and its
 * inverse now calculated for the 14 most popular hit plane configurations and stored 
@@ -72,20 +73,21 @@
       call h_solve_3by3(TT,pindex,dstub,ierr)
 *
       if(ierr.ne.0) then
-         stub(1)=10000.
-         stub(2)=10000.
-         stub(3)=2.
-         stub(4)=2.
+        chi2=10000.
+        stub(1)=10000.
+        stub(2)=10000.
+        stub(3)=2.
+        stub(4)=2.
       else
 *      calculate chi2
-*     remember one power of sigma is in sstubcoef
+*     remember one power of sigma is in hstubcoef
         chi2=0.
         stub(1)=dstub(1)
         stub(2)=dstub(2)
         stub(3)=dstub(3)
         stub(4)=0.
         do ihit=1,numhits
-         chi2=chi2+((position(ihit)-hpsi0(pl(ihit)))/hdc_sigma(pl(ihit))
+          chi2=chi2+((position(ihit)-hpsi0(pl(ihit)))/hdc_sigma(pl(ihit))
      &         -hstubcoef(pl(ihit),1)*stub(1)
      &         -hstubcoef(pl(ihit),2)*stub(2)
      &         -hstubcoef(pl(ihit),3)*stub(3) )**2

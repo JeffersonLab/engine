@@ -7,6 +7,9 @@
 *     
 *     d. f. geesaman
 * $Log$
+* Revision 1.4  1995/10/10 13:39:56  cdaq
+* (JRA) Cleanup
+*
 * Revision 1.3  1995/05/22 19:45:39  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -31,7 +34,7 @@
       real*4 plusminus(*)
 *
 *     output quantitites
-      real*8 dstub(4)               !, x, xp , y, yp of local line fit
+      real*8 dstub(3)               ! x, xp , y of local line fit
       real*4 stub(4)
       real*4 chi2                  ! chi2 of fit      
 *
@@ -42,31 +45,30 @@
       real*8 TT(3)
       integer*4 ihit,ierr
       integer*4 i
-*
-      chi2=10000.
+
 *     calculate trail hit position
       do ihit=1,numhits
-         position(ihit)=SDC_WIRE_CENTER(hits(ihit)) +
-     &          plusminus(ihit)*SDC_DRIFT_DIS(hits(ihit))
+        position(ihit)=SDC_WIRE_CENTER(hits(ihit)) +
+     &       plusminus(ihit)*SDC_DRIFT_DIS(hits(ihit))
       enddo
 *     calculate least squares matrix coefficients
       do i=1,3
         TT(i)=0.
-          do ihit=1,numhits
-           TT(i)=TT(i)+((position(ihit)-spsi0(pl(ihit)))*
-     &          sstubcoef(pl(ihit),i)) /sdc_sigma(pl(ihit))
-
-         enddo
+        do ihit=1,numhits
+          TT(i)=TT(i)+((position(ihit)-spsi0(pl(ihit)))*
+     &         sstubcoef(pl(ihit),i)) /sdc_sigma(pl(ihit))
+        enddo
       enddo
 *
 *     solve four by four equations
       call s_solve_3by3(TT,pindex,dstub,ierr)
 *
       if(ierr.ne.0) then
-         stub(1)=10000.
-         stub(2)=10000.
-         stub(3)=2.
-         stub(4)=2.
+        chi2=10000.
+        stub(1)=10000.
+        stub(2)=10000.
+        stub(3)=2.
+        stub(4)=2.
       else
 *      calculate chi2
 *     remember one power of sigma is in sstubcoef
