@@ -1,6 +1,9 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
+* Revision 1.14.2.2  2003/08/14 00:40:09  cdaq
+* Modify so "beam on" scalers for both bcm1 and bcm2 (mkj)
+*
 * Revision 1.14.2.1  2003/04/11 13:25:11  cdaq
 * Remove old hardwire check on run number
 *
@@ -224,9 +227,13 @@ c
 *     if needed. I'm only using bcm2 (the current "best" bcm) right
 *     now. This could be changed or added to.
 
-          if (ave_current_bcm2 .ge. g_beam_on_thresh_cur) then
-             g_beam_on_run_time = g_beam_on_run_time + delta_time
-             g_beam_on_bcm_charge = g_beam_on_bcm_charge + ave_current_bcm2*delta_time
+          if (ave_current_bcm2 .ge. g_beam_on_thresh_cur(2)) then
+             g_beam_on_run_time(2) = g_beam_on_run_time(2) + delta_time
+             g_beam_on_bcm_charge(2) = g_beam_on_bcm_charge(2) + ave_current_bcm2*delta_time
+          endif
+          if (ave_current_bcm1 .ge. g_beam_on_thresh_cur(1)) then
+             g_beam_on_run_time(1) = g_beam_on_run_time(1) + delta_time
+             g_beam_on_bcm_charge(1) = g_beam_on_bcm_charge(1) + ave_current_bcm1*delta_time
           endif
 
           gscaler_event_num = gscaler_event_num + 1

@@ -15,6 +15,9 @@
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 *
 * $Log$
+* Revision 1.4.2.1  2003/08/14 00:40:09  cdaq
+* Modify so "beam on" scalers for both bcm1 and bcm2 (mkj)
+*
 * Revision 1.4  1999/02/10 18:17:57  csa
 * Added beam-on variable initialization (D. McKee)
 *
@@ -62,9 +65,13 @@
       gbcm3_charge = 0.
       gunser_charge = 0.
 *
-      g_beam_on_run_time = 0.    ! Have to do this, because I have to accumlate
+      g_run_time = 0.
+      g_beam_on_run_time(1) = 0.    ! Have to do this, because I have to accumlate
                                  ! this value (unlike g_run_time)
-      g_beam_on_bcm_charge = 0.
+      g_beam_on_bcm_charge(1) = 0.
+      g_beam_on_run_time(2) = 0.    ! Have to do this, because I have to accumlate
+                                 ! this value (unlike g_run_time)
+      g_beam_on_bcm_charge(2) = 0.
 *
       ABORT= .FALSE.
       err= ' '

@@ -1,6 +1,9 @@
       subroutine g_analyze_scaler_bank(event,ABORT,err)
 *     
 *     $Log$
+*     Revision 1.2.2.2  2003/08/14 00:40:09  cdaq
+*     Modify so "beam on" scalers for both bcm1 and bcm2 (mkj)
+*
 *     Revision 1.2.2.1  2003/04/14 18:05:37  jones
 *     Modified to skip first scaler event. gscaler is sum from first scaler event.
 *
@@ -85,7 +88,6 @@ c     endif
       evlen = event(1) + 1
       update_bcms = .false.
       update_helicity_bcms = .false.
-
       if(evlen.gt.3) then       ! We have a scaler bank
          pointer = 3
 *     
@@ -209,14 +211,13 @@ c
       endif
 *     
 *     calculate time of run (must not be zero to avoid div. by zero).
-      g_run_time = max(0.001D00,gscaler(gclock_index)/gclock_rate)
+c      g_run_time = max(0.001D00,gscaler_change(gclock_index)/gclock_rate)
+       g_run_time = g_run_time + max(0.001D00,gscaler_change(gclock_index)/gclock_rate)
+      delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001D00)
 
 *     Calculate beam current and charge between scaler events
 
-      if ( analyzed_events(0) .eq. 1) update_bcms = .false.
-      if (update_bcms) then     ! can't assume in hms crate, moved for some runs
-
-         delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001D00)
+      if (update_bcms .and. analyzed_events(0) .gt. 1) then   
 
 c     djm        ave_current_bcm1 = gbcm1_gain*sqrt(max(0.0D00,
 c     &       (gscaler_change(gbcm1_index)/delta_time)-gbcm1_offset))
@@ -242,10 +243,16 @@ c     &       (gscaler_change(gbcm1_index)/delta_time)-gbcm1_offset))
 *     We'll use bcm1 for now as it's zero seems more stable.  This could change.
 *     
 *     write(6,*) "Checking threshold..."
-            if (ave_current_bcm1 .ge. g_beam_on_thresh_cur) then
-               g_beam_on_run_time = g_beam_on_run_time + delta_time
-               g_beam_on_bcm_charge = g_beam_on_bcm_charge
+            if (ave_current_bcm1 .ge. g_beam_on_thresh_cur(1)) then
+               g_beam_on_run_time(1) = g_beam_on_run_time(1) + delta_time
+               g_beam_on_bcm_charge(1) = g_beam_on_bcm_charge(1)
      $              + ave_current_bcm1*delta_time
+*     write(6,*) "above threshold (",ave_current_bcm1,")"
+            endif
+            if (ave_current_bcm2 .ge. g_beam_on_thresh_cur(2)) then
+               g_beam_on_run_time(2) = g_beam_on_run_time(2) + delta_time
+               g_beam_on_bcm_charge(2) = g_beam_on_bcm_charge(2)
+     $              + ave_current_bcm2*delta_time
 *     write(6,*) "above threshold (",ave_current_bcm1,")"
             endif
 *     
@@ -261,10 +268,10 @@ c     &       (gscaler_change(gbcm1_index)/delta_time)-gbcm1_offset))
      &              gscaler_change(gbcm3_index)/delta_time, !scaler rate(Hz)
      &              delta_time  !time since last scaler event (sec)
             endif
-            
          endif
 
       endif
+
 
 
 *     
