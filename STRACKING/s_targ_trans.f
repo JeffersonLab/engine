@@ -19,7 +19,10 @@
 *-Modified 21-JAN-94  D.F.Geesaman
 *-            Add ABORT and err
 * $Log$
-* Revision 1.3  1994/06/07 01:58:56  cdaq
+* Revision 1.4  1994/06/14 04:33:22  cdaq
+* (DFG) Add fill SLINK_TAR_FP 1 to 1
+*
+* Revision 1.3  1994/06/07  01:58:56  cdaq
 * (DFG) Protect against asin argument > 1.0
 *
 * Revision 1.2  1994/05/13  03:45:52  cdaq
@@ -81,7 +84,10 @@
 
       sntracks_tar = sntracks_fp
       do itrk = 1,sntracks_fp
-         
+*
+*     set link between target and focal plane track. Currenty 1 to 1
+         SLINK_TAR_FP(itrk) = itrk
+*         
 * Reset COSY sums.
 
          do i = 1,4
@@ -106,8 +112,8 @@
             term = 1.
             do j = 1,4
                temp = 1.0
-               if (s_recon_expon(j,i).ne.0.) temp = hut(j)**s_recon_expon(j
-     $              ,i)
+               if (s_recon_expon(j,i).ne.0.)
+     $              temp = hut(j)**s_recon_expon(j,i)
                term = term*temp
             enddo
             sum(1) = sum(1) + term*s_recon_coeff(1,i)
