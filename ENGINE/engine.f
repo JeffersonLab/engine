@@ -8,6 +8,10 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.38  2004/05/11 18:29:27  jones
+* Add ability when using syncfilter to skip events if "skip_event"
+* is set to true in g_analyze_scaler_bank.f
+*
 * Revision 1.37  2003/12/19 17:45:31  jones
 * a) Fill gscaler_skipped and gscaler_saved only when using syncfilter
 * b) Fixed bug with skipping events for low beam current. Make sure it
@@ -583,17 +587,17 @@ c
 	    if (gen_event_type.eq.0) then          !scaler event.
               analyzed_events(gen_event_type)=analyzed_events(gen_event_type)+1
                call g_analyze_scalers_by_banks(CRAW,ABORT,err)
-            if (g_writeout_scaler_filename.ne.' ' ) then
-               delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001D00)
-               write(G_LUN_WRITEOUT_SCALER,'(i10,10g12.5)') analyzed_events(0),delta_time,
+             if (g_writeout_scaler_filename.ne.' ' .and. analyzed_events(0) .gt. 1) then
+               delta_time = max(gscaler_change(gclock_index)/gclock_rate,.000D00)
+               write(G_LUN_WRITEOUT_SCALER,'(i10,10g12.5)') gen_event_ID_number,delta_time,
      >       (gscaler_change(INDEX_WRITEOUT_SCALERS(tindex))/delta_time
      >          ,tindex=1,NUM_WRITEOUT_SCALERS)
-            endif            
+             endif            
 c
                if (syncfilter_on) then 
-                 if (insync .eq. 1) write(*,*) ' Skipping out-of-sync events'
+                 if (  insync .eq. 1 .or.  skip_events ) write(*,*) ' Skipping out-of-sync events'
                  if ( ave_current_bcm(bcm_for_threshold_cut)  .le. g_beam_on_thresh_cur(bcm_for_threshold_cut)
-     >  .or. insync .eq. 1) then
+     >  .or. insync .eq. 1 .or. skip_events ) then
                   do ii=1,MAX_NUM_SCALERS
                    gscaler_skipped(ii) = gscaler_skipped(ii) +  gscaler_change(ii)
                   enddo
@@ -643,7 +647,12 @@ c
               if(gen_event_type.le.gen_MAX_trigger_types .and.
      $           gen_run_enable(gen_event_type-1).ne.0) then
 c
-               if ( insync .eq. 1  .and. gen_event_type .le. 3 .and. syncfilter_on) then
+               if ( insync .eq. 1 .and. gen_event_type .le. 3 .and. syncfilter_on ) then
+                  skipped_badsync_events(gen_event_type)=skipped_badsync_events(gen_event_type) + 1
+                  sum_analyzed_skipped = sum_analyzed_skipped + 1
+                   goto 868
+               endif
+               if ( skip_events .and. gen_event_type .le. 3 .and. syncfilter_on ) then
                   skipped_badsync_events(gen_event_type)=skipped_badsync_events(gen_event_type) + 1
                   sum_analyzed_skipped = sum_analyzed_skipped + 1
                   goto 868
