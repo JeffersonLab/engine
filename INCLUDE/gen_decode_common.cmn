@@ -3,8 +3,11 @@
 *     to logical detector identification.
 *
 *     $Log$
-*     Revision 1.2  1994/04/05 14:31:10  cdaq
-*     Add g_decode_subaddbit for location in FB word of sub address
+*     Revision 1.3  1994/10/20 12:26:44  cdaq
+*     (JRA) Increate G_DECODE_MAXROCS from 8 to 9
+*
+* Revision 1.2  1994/04/05  14:31:10  cdaq
+* Add g_decode_subaddbit for location in FB word of sub address
 *
 * Revision 1.1  1994/02/07  19:36:23  cdaq
 * Initial revision
@@ -13,7 +16,7 @@
       integer G_DECODE_MAXWORDS                 ! Must exceed number of
       parameter (G_DECODE_MAXWORDS=5000)        ! installed FB channels
       integer G_DECODE_MAXROCS
-      parameter (G_DECODE_MAXROCS=8)            ! Largest ROC # + 1
+      parameter (G_DECODE_MAXROCS=9)            ! Largest ROC # + 1
       integer G_DECODE_MAXSLOTS
       parameter (G_DECODE_MAXSLOTS=25)          ! # slots in a FB crate
       integer*4 g_decode_slotpointer            ! Pointer into map arrays
