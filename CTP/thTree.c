@@ -15,6 +15,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.1.16.3  2005/02/22 16:52:52  saw
+ *   Clean up some diagnostic printfs
+ *
  *   Revision 1.1.16.2  2004/07/09 20:41:50  saw
  *   Can now put a test on a tree block
  *
@@ -175,8 +178,7 @@ thStatus thBookTree(daVarStruct *var)
 	    strncpy(varname,p,len);
 	    varname[len] = '\0';
 	    if(thVarResolve(varname,&varp,&index,1,0)==S_SUCCESS) {
-	      printf("%s,type=%d, size=%d\n",varp->name,varp->type,varp->size);
-	      printf("%s\n",(char *) varp->varptr);
+	      /*printf("%s,type=%d, size=%d\n",varp->name,varp->type,varp->size);*/
 	      if(varp->type == DAVARSTRING) {
 		fname = malloc(strlen((char *)varp->varptr)+1);
 		strcpy(fname,(char *)varp->varptr);
@@ -188,6 +190,7 @@ thStatus thBookTree(daVarStruct *var)
 		while(*p && !isspace(*p)) p++;
 		*p = '\0';	/* Null terminate at first blank */
 	      }
+	      /*printf("|%s|\n", fname);*/
 	    }
 	    if(!fname) {
 	      fname = malloc(len+1);
@@ -223,7 +226,7 @@ thStatus thBookTree(daVarStruct *var)
       }
       
       if(fname) {
-	/*printf("Opening Root file %s\n",fname);*/
+	printf("Opening Root file %s\n",fname);
 	treedef->file = (void *) thRoot_TFile(fname);
 	free(fname);
       } else {
