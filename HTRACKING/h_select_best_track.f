@@ -12,9 +12,12 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log$
-*- Revision 1.3  1995/05/22 19:39:27  cdaq
-*- (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*- Revision 1.4  1995/07/19 19:12:22  cdaq
+*- (CC) Fix bug in best chisq finding
 *-
+* Revision 1.3  1995/05/22  19:39:27  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
 * Revision 1.2  1995/02/23  13:31:01  cdaq
 * (JRA) Adjust include file ordering
 *
@@ -66,6 +69,7 @@
      &             ( HTRACK_ET(track) .gt. hsel_etmin)   .and.
      &             ( HTRACK_ET(track) .lt. hsel_etmax)) then
                 goodtrack = track
+                chi2min = chi2perdeg
               endif                     ! end test on track id
             endif                       ! end test on lower chisq
           endif                         ! end test on minimum number of degrees of freedom
