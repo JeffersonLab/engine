@@ -21,9 +21,12 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton Univ.; rewrote parsing
 *-    $Log$
-*-    Revision 1.4  1994/06/21 20:42:37  cdaq
-*-    (SAW) Fix a bug interpreting comment lines
+*-    Revision 1.5  1995/07/27 19:07:53  cdaq
+*-    (SAW) Remove unused variables, change type to status in open statement (f2c)
 *-
+* Revision 1.4  1994/06/21  20:42:37  cdaq
+* (SAW) Fix a bug interpreting comment lines
+*
 * Revision 1.3  1994/06/18  02:47:38  cdaq
 * (SAW) Add code for miscleaneous data and uninstrumented channels
 *
@@ -55,9 +58,7 @@
       parameter (MAXLINE=300)
 *
       character*(MAXLINE) line    
-      logical OK,echo,debug,override,text
-      data echo/.FALSE./
-      data debug,override/2*.FALSE./
+      logical OK,text
 *
       integer llen,lp,lpcom, lpeq, m                          ! Line pointers
       character*1 tab
@@ -66,7 +67,10 @@
       integer*4 lastroc, lastslot
       integer N_lines_read
 *
+      logical echo,debug,override
       character*26 lo,HI
+      data echo/.FALSE./
+      data debug,override/2*.FALSE./
       data lo/'abcdefghijklmnopqrstuvwxyz'/
       data HI/'ABCDEFGHIJKLMNOPQRSTUVWXYZ'/
 *********************************************************************************
@@ -82,7 +86,7 @@
 *********************************************************************************
       ABORT= .TRUE.
 *     Need to pass this file name as an argument or through a common block.
-      open(unit=SPAREID,type='OLD',READONLY,file=fname,err=999)
+      open(unit=SPAREID,status='OLD',READONLY,file=fname,err=999)
 *
       tab = char(9)
       roc = -1
