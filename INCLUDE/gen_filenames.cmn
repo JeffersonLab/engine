@@ -2,6 +2,9 @@
 *
 *-Common block with filenames
 *     $Log$
+*     Revision 1.9  1996/01/17 15:41:50  cdaq
+*     (JRA) Add filename/ctp names for tcl statistics screen
+*
 *     Revision 1.8  1995/09/01 13:01:16  cdaq
 *     (JRA) Add a file for run number based CTP parameter (kinematics) settings
 *
@@ -48,6 +51,9 @@
       character*80 g_label              ! A string that can label reports, etc
       character*80 g_ctp_database_filename ! Run number dependent variables
       character*80 g_ctp_kinematics_filename ! Run number dependent variables
+      character*80 g_stats_template_filename   !online statistics report
+      character*80 g_stats_output_filename
+      character*80 g_stats_blockname
 *
       common /gen_filenames/
      $     g_config_filename,
@@ -63,7 +69,10 @@
      $     g_report_blockname,
      $     g_label,
      $     g_ctp_database_filename,
-     $     g_ctp_kinematics_filename
+     $     g_ctp_kinematics_filename,
+     $     g_stats_template_filename,
+     $     g_stats_output_filename,
+     $     g_stats_blockname
 *
       logical*4 g_hist_rebook
       logical*4 g_test_rebook
