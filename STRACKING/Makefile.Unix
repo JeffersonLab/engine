@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.23  1999/03/04 19:07:33  saw
+# Fix typo
+#
 # Revision 1.22  1999/02/23 18:53:46  csa
 # Add s_satcorr
 #
@@ -149,7 +152,7 @@ endif
 %.cmn ../%.cmn:: ../../INCLUDE/%.cmn
 	$(CP) $< $@
 
-%.dec ../%.cmn:: ../../INCLUDE/%.dec
+%.dec ../%.dec:: ../../INCLUDE/%.dec
 	$(CP) $< ../$@
 
 %.par ../%.par:: ../../INCLUDE/%.par
