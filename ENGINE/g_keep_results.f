@@ -10,10 +10,13 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard, HU
 *-    $Log$
-*-    Revision 1.6  1995/01/13 18:15:39  cdaq
-*-    (SAW) Put in a missing else that conspired with a broken thgethit (CTP) so that
-*-    things actually worked on HPUX.  (But not Ultrix)
+*-    Revision 1.7  1995/04/01 19:49:49  cdaq
+*-    (SAW) Fix mistake in error reporting
 *-
+* Revision 1.6  1995/01/13  18:15:39  cdaq
+* (SAW) Put in a missing else that conspired with a broken thgethit (CTP) so that
+* things actually worked on HPUX.  (But not Ultrix)
+*
 * Revision 1.5  1994/08/30  14:48:50  cdaq
 * (SAW) Add call to increment scalers
 *
@@ -95,7 +98,7 @@
       ABORT= ABORT .or. FAIL
 *
 *-COIN
-      call C_keep_results(ABORT,err)
+      call C_keep_results(FAIL,why)
       IF(err.NE.' ' .and. why.NE.' ') THEN
         call G_append(err,' & '//why)
       ELSEIF(why.NE.' ') THEN
