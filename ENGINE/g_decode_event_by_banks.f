@@ -1,13 +1,13 @@
-      subroutine g_decode_event_by_banks(ABORT, err)
+      subroutine g_decode_event_by_banks(event,ABORT, err)
 *-----------------------------------------------------------------------
 *-     Purpose and Methods: Pull out individual Fastbus banks from event
-*-                          for subsequent decoding from commoned CRAW
+*-                          for subsequent decoding
 *-
 *-     Find the beginning of each ROC bank and send it off to 
 *-    "g_decode_fb_bank".
 *-
 *-     Inputs:
-*-         bank       Pointer to the first word (length) of a data bank.
+*-         event      Pointer to the first word (length) of an event data bank.
 *-
 *-     Outputs:
 *-        ABORT       success or failure
@@ -15,21 +15,23 @@
 *-
 *-     Created   3-Dec-1993   Kevin Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.3  1994/02/17 21:30:37  cdaq
-*-    Move ABORT, err args to end of g_decode_fb_bank call
+*-    Revision 1.4  1994/04/15 20:34:42  cdaq
+*-    ???
 *-
+* Revision 1.3  1994/02/17  21:30:37  cdaq
+* Move ABORT, err args to end of g_decode_fb_bank call
+*
 * Revision 1.2  1994/02/02  19:59:16  cdaq
 * Rewrite without using fbgen routines
 *
-c Revision 1.1  1994/02/01  20:38:58  cdaq
-c Initial revision
-c
-c Revision 1.1  1994/02/01  18:36:51  cdaq
-c New version from Kevin Beard
-c
+* Revision 1.1  1994/02/01  20:38:58  cdaq
+* Initial revision
+*
 *-----------------------------------------------------------------------
       IMPLICIT NONE
       SAVE
+*
+      integer*4 event(*)
 *
       character*30 here
       parameter (here= 'g_decode_event_by_banks')
@@ -53,22 +55,22 @@ c
 *     probably be put in an include file.
 *
 
-      ABORT = iand(CRAW(2),'FFFF'x).ne.'10CC'x
+      ABORT = iand(event(2),'FFFF'x).ne.'10CC'x
       if(ABORT) then
-         err = here//'Event header does not standard physics event'
+         err = here//'Event header not standard physics event'
          return
       endif
 
-      evlength = CRAW(1)
+      evlength = event(1)
       bankpointer = 3
 
-      ABORT = CRAW(bankpointer+1).ne.'C0000100'x
+      ABORT = event(bankpointer+1).ne.'C0000100'x
       if(ABORT) then
          err = here//'First bank is not an Event ID bank'
          return
       endif
       
-      bankpointer = bankpointer + CRAW(bankpointer) + 1
+      bankpointer = bankpointer + event(bankpointer) + 1
 
       WARN = (bankpointer.gt.evlength)           ! No ROC's in event
       IF(WARN) THEN
@@ -78,8 +80,8 @@ c
 
       do while(bankpointer.lt.evlength)
          
-         call g_decode_fb_bank(CRAW(bankpointer), ABORT, err)
-         bankpointer = bankpointer + CRAW(bankpointer) + 1
+         call g_decode_fb_bank(event(bankpointer), ABORT, err)
+         bankpointer = bankpointer + event(bankpointer) + 1
 
       enddo
 
