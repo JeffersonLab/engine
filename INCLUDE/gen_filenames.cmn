@@ -2,8 +2,11 @@
 *
 *-Common block with filenames
 *     $Log$
-*     Revision 1.2  1994/03/24 16:49:57  cdaq
-*     (SAW) Make logical's logical*4 so they can be registered to CTP
+*     Revision 1.3  1994/06/15 18:12:17  cdaq
+*     (SAW) Add variables for report generator
+*
+* Revision 1.2  1994/03/24  16:49:57  cdaq
+* (SAW) Make logical's logical*4 so they can be registered to CTP
 *
 * Revision 1.1  1994/02/07  19:38:11  cdaq
 * Initial revision
@@ -22,7 +25,10 @@
       character*80 g_data_source_filename	! Coda/other input file
       character*80 g_alias_filename		! PAW histogram name aliases
       character*80 g_histout_filename		! File to write histograms to
-      character*80 g_decode_map_filename        ! File containing unpack map
+      character*80 g_decode_map_filename ! File containing unpack map
+      character*80 g_report_template_filename
+      character*80 g_report_output_filename
+      character*80 g_report_blockname
 *
       common /gen_filenames/
      $     g_config_filename,
@@ -32,7 +38,10 @@
      $     g_data_source_filename,
      $     g_alias_filename,
      $     g_histout_filename,
-     $     g_decode_map_filename
+     $     g_decode_map_filename,
+     $     g_report_template_filename,
+     $     g_report_output_filename,
+     $     g_report_blockname
 *
       logical*4 g_hist_rebook
       logical*4 g_test_rebook
