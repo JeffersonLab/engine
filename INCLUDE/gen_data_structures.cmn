@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.28  1996/09/04 15:45:04  saw
+* (JRA) Increase # of possible targets.  Add fast raster variables.
+*
 * Revision 1.27  1996/04/30 13:34:25  saw
 * (JRA) Swap index order in GBPM_ADC_PED, GBPM_RAW_ADC
 *
@@ -131,7 +134,7 @@
 *    BASIC TARGET PARAMETERS
 *
       integer   gmax_targets
-      parameter(gmax_targets=16)
+      parameter(gmax_targets=30)
       integer   gtarg_num       !position in target ladder
       REAL*4    gtarg_mass      !target mass
       REAL*4    gtarg_z         !target Z
@@ -283,6 +286,11 @@
 *     CTPTYPE=parm
 *
       integer*4 gmisc_min_peds
+      integer*4 gusefr, guse_frdefault, guse_frphase
+      real*4    gfry_defcalib, gfry_vperch
+      real*4    gfry_adcmax, gfry_maxsize
+      real*4    gfry_dphase, gfry_synccut
+      real*4    gbeam_yoff
 *
       common/gen_misc_pedestals/
      &   gmisc_ped,
@@ -297,7 +305,17 @@
      &   gmisc_changed_tube,   !list of changed tubes
      &   gmisc_ped_change,     !change in pedestal
      &   gmisc_new_adc_threshold,
-     &   gmisc_dum_adc_threshold
+     &   gmisc_dum_adc_threshold,
+     &   gusefr,
+     &   guse_frdefault,
+     &   guse_frphase,
+     &   gfry_defcalib,
+     &   gfry_vperch,
+     &   gfry_adcmax,
+     &   gfry_maxsize,
+     &   gfry_dphase,
+     &   gfry_synccut,
+     &   gbeam_yoff
 *
 *                                          
 *******************end: gen_data_structures.cmn*************************
@@ -306,4 +324,5 @@
 *     fortran-continuation-string: "&"
 *     comment-column: 35
 *     End:
+
 
