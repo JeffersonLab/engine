@@ -1,5 +1,8 @@
 *    This include file contains all the variables required for s_physics
 * $Log$
+* Revision 1.7  1999/02/23 19:21:59  csa
+* Add some physics vars
+*
 * Revision 1.6  1996/09/04 16:30:39  saw
 * (JRA,DD) Add some egamma variables and some angle/momentum offset
 *          variables
@@ -153,3 +156,16 @@ c D.Dutta, 24th-Apr-1996
      &     stheta_offset,
      &     sphi_offset,
      &     smomentum_factor
+*
+*     CTPTYPE=event
+*
+      real*4 ss_qvec(4)   
+      real*4 ss_kpvec(4) 
+      real*4 ss_kvec(4)  
+      real*4 ss_tvec(4)
+
+      COMMON/ss_vectors/
+     &     ss_qvec,
+     &     ss_kpvec,
+     &     ss_kvec,
+     &     ss_tvec
