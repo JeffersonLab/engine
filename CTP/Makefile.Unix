@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.19  2004/02/26 14:58:29  jones
+# For now , comment out parts dealing with ROOT.
+#
 # Revision 1.18  2003/02/21 20:53:34  saw
 # Force rebuilding of files derived from daVarRpc.x more often.
 #
@@ -71,13 +74,13 @@ sources = $(ctpclient_sources) $(ctp_sources) makereg.c
 lib_targets := $(patsubst %.c, libctp.a(%.o), $(ctp_sources)) \
 	$(patsubst %.c, libctpclient.a(%.o), $(ctpclient_sources))
 
-ifdef ROOTSYS
-cxxsources = thRootStuff.cpp
-sources := $(sources) thTree.c
-lib_targets := $(patsubst %.c, libctp_root.a(%.o), $(ctp_sources)) \
-	$(patsubst %.c, libctpclient_root.a(%.o), $(ctpclient_sources)) \
-	$(patsubst %.cpp, libctp_root.a(%.o), $(cxxsources))
-endif
+#ifdef ROOTSYS
+#cxxsources = thRootStuff.cpp
+#sources := $(sources) thTree.c
+#lib_targets := $(patsubst %.c, libctp_root.a(%.o), $(ctp_sources)) \
+#	$(patsubst %.c, libctpclient_root.a(%.o), $(ctpclient_sources)) \
+#	$(patsubst %.cpp, libctp_root.a(%.o), $(cxxsources))
+#endif
 
 
 bin_targets = makereg
@@ -153,10 +156,10 @@ ifeq ($(ARCH),AIX)
   OSTYPE=AIX
 endif
 
-ifdef ROOTSYS
-  CFLAGS := $(CFLAGS) -DROOTTREE
-  CXXFLAGS := $(CXXFLAGS) -I$(ROOTSYS)/include
-endif
+#ifdef ROOTSYS
+#  CFLAGS := $(CFLAGS) -DROOTTREE
+#  CXXFLAGS := $(CXXFLAGS) -I$(ROOTSYS)/include
+#endif
 
 ##library: libctp.a
 
@@ -179,8 +182,8 @@ endif
 makereg: makereg.o
 
 #ifdef ROOTSYS
-thRootStuff.o: ../thRootStuff.cpp
-	$(CXX) -o$@ -c $(CXXFLAGS) $<
+#thRootStuff.o: ../thRootStuff.cpp
+#	$(CXX) -o$@ -c $(CXXFLAGS) $<
 #endif
 
 RPCDEPENDS_RULE = echo "$(subst .d,.o,$@): \
@@ -223,6 +226,6 @@ daVarRpc.d: ../daVarRpc.h
 
 include $(sources:.c=.d)
 
-ifdef ROOTSYS
-include $(cxxsources:.cpp=.d)
-endif
+#ifdef ROOTSYS
+#include $(cxxsources:.cpp=.d)
+#endif
