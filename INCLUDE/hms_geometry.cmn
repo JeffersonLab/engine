@@ -17,7 +17,10 @@
 *                add     hdc_xcenter
 *                        hdc_ycenter
 * $Log$
-* Revision 1.8  1994/11/22 18:43:10  cdaq
+* Revision 1.9  1995/01/27 20:21:00  cdaq
+* (JRA) Remove no longer used drift time->distance parameters
+*
+* Revision 1.8  1994/11/22  18:43:10  cdaq
 * (SAW) Cleaned up ?DC_NUM_CHAMBERS and ?MAX_NUM_CHAMBERS stuff
 *
 * Revision 1.7  1994/09/13  19:19:37  cdaq
@@ -127,23 +130,23 @@
 *     at the end
 *     REAL*4
 *
-      real*4 hdrift_velocity        ! hms drift velocity in cm/ns
+*      real*4 hdrift_velocity        ! hms drift velocity in cm/ns
       real*4 hdc_tdc_time_per_channel ! hms drift chamber tdc calibration
       real*4 hdc_1_zpos
       real*4 hdc_2_zpos
       real*4 dummy
       real*4 hdc_plane_time_zero        ! zero time for drift chamber planes
-      real*4 hdrift_t0_break            ! start of linear drift region in t
-      real*4 hdrift_x0_break            ! start of linear drift region in x
+*      real*4 hdrift_t0_break            ! start of linear drift region in t
+*      real*4 hdrift_x0_break            ! start of linear drift region in x
       common/HMS_CHAMBER_READOUT_REAL/
-     &     hdrift_velocity,
+*     &     hdrift_velocity,
      &     hdc_tdc_time_per_channel,
      &     hdc_1_zpos,
      &     hdc_2_zpos,
      &     dummy,
-     &     hdc_plane_time_zero(HMAX_NUM_DC_PLANES),
-     &     hdrift_t0_break(HMAX_NUM_DC_PLANES),
-     &     hdrift_x0_break(HMAX_NUM_DC_PLANES)
+     &     hdc_plane_time_zero(HMAX_NUM_DC_PLANES)
+*     &     hdrift_t0_break(HMAX_NUM_DC_PLANES),
+*     &     hdrift_x0_break(HMAX_NUM_DC_PLANES)
 *
 *    INTEGER*4
       integer*4 hdc_wire_counting     ! readout numbering order
