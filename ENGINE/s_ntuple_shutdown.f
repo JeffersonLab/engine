@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, HU: added Ntuples
 * $Log$
+* Revision 1.4  1996/01/16 16:38:45  cdaq
+* (SAW) Comment out an info message
+*
 * Revision 1.3  1994/06/29 03:30:25  cdaq
 * (KBB) Remove HDELET call
 *
@@ -86,7 +89,7 @@
       pat= 'closing ID#$ IO#$ "'//s_Ntuple_file//'"'
       call G_build_note(pat,'$',iv,' ',0.,' ',msg)
       call G_add_path(here,msg)
-      call G_log_message('INFO: '//msg)
+c      call G_log_message('INFO: '//msg)
 *
       cycle= 0                                !dummy for HROUT
       call HROUT(id,cycle,' ')                !flush CERNLIB buffers
