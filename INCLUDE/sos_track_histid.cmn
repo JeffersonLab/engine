@@ -1,0 +1,45 @@
+*_______________________________________________________________________
+*      sos_tracking_histid.cmn
+*
+*      This common block contains the HBOOK histogram id numbers
+*      for all sos histograms in which direct hfill calls are made.
+*
+*      It also contains the paramter flags to turn on and off histograming
+*      of each of the hard coded blocks.
+*
+*      Created 9 April 1994	D. F. Geesaman
+*
+* $Log$
+* Revision 1.1  1994/04/12 21:13:42  cdaq
+* Initial revision
+*
+*
+      integer*4 siddcwiremap(smax_num_dc_planes)
+      integer*4 siddcdrifttime(smax_num_dc_planes)
+      integer*4 siddcdriftdis(smax_num_dc_planes)
+      integer*4 siddcwirecent(smax_num_dc_planes)
+      integer*4 sidsx_fp,sidsy_fp,sidsxp_fp,sidsyp_fp,sidslogchi2_fp,
+     &     sidsnfree_fp,sidschi2perdeg_fp
+
+      
+      common/sos_tracking_histid/
+     &     siddcwiremap,
+     &     siddcdrifttime,
+     &     siddcdriftdis,
+     &     siddcwirecent,
+     &     sidsx_fp,
+     &     sidsy_fp,
+     &     sidsxp_fp,
+     &     sidsyp_fp,
+     &     sidslogchi2_fp,
+     &     sidsnfree_fp,
+     &     sidschi2perdeg_fp
+
+
+
+
+      integer*4 sturnon_decoded_dc_hist
+      integer*4 sturnon_focal_plane_hist
+      common/sos_hist_flags/
+     &     sturnon_decoded_dc_hist,
+     &     sturnon_focal_plane_hist

@@ -1,0 +1,118 @@
+* hms_scin_parms.cmn -  two common blocks:
+*
+*    hms_scin_parms - variables from the hms_positions.parm file
+*    hms_tof_parms  - tof correction parameters and position parameters
+*                     converted to arrays over plane,counter by h_init_scin.
+*
+*    NOTE:  Variables whose names start with hHODO are arrays over
+*           plane and counter.  hSCIN is used for parameters from the
+*           .parm files and for arrays over hits.
+*
+*       Modified 23 March 1994   DFG
+*           Add definition of hnum_scin_elements and set parameter value
+* $Log$
+* Revision 1.1  1994/04/12 21:10:43  cdaq
+* Initial revision
+*
+*  
+      integer*4 hnum_scin_elements
+      parameter (hnum_scin_elements=20)
+*
+* from parameter file
+      integer*4 hscin_1x_nr
+      integer*4 hscin_1y_nr
+      integer*4 hscin_2x_nr
+      integer*4 hscin_2y_nr
+      integer*4 hscin_num_counters(HNUM_SCIN_PLANES)
+      integer*4 hdebugprintscinraw
+      integer*4 hdebugprintscindec
+      integer*4 hdebugprinttoftracks
+      integer*4 hdebugprinttracktests
+      real*4 hscin_1x_zpos
+      real*4 hscin_1y_zpos
+      real*4 hscin_2x_zpos
+      real*4 hscin_2y_zpos
+      real*4 hscin_1x_left
+      real*4 hscin_1y_top
+      real*4 hscin_2x_left
+      real*4 hscin_2y_top
+      real*4 hscin_1x_right
+      real*4 hscin_1y_bot
+      real*4 hscin_2x_right
+      real*4 hscin_2y_bot
+      real*4 hscin_1x_top(hnum_scin_elements)
+      real*4 hscin_1y_left(hnum_scin_elements)
+      real*4 hscin_2x_top(hnum_scin_elements)
+      real*4 hscin_2y_left(hnum_scin_elements)
+      real*4 hscin_1x_size
+      real*4 hscin_1y_size
+      real*4 hscin_2x_size
+      real*4 hscin_2y_size
+
+      common/hms_scin_parms/            !variables from h_positions.parm
+     &     hscin_1x_nr, hscin_1y_nr,    !Elements per plane
+     &     hscin_2x_nr, hscin_2y_nr,
+     &     hscin_1x_zpos, hscin_1y_zpos, !z position of plane.
+     &     hscin_2x_zpos, hscin_2y_zpos,
+     &     hscin_1x_left, hscin_1y_top, !position of 'negative'(??) end.
+     &     hscin_2x_left, hscin_2y_top,
+     &     hscin_1x_right, hscin_1y_bot, !position of 'positive'(??) end.
+     &     hscin_2x_right, hscin_2y_bot,
+     &     hscin_1x_top, hscin_1y_left, !position of edges of elements.
+     &     hscin_2x_top, hscin_2y_left,
+     &     hscin_1x_size, hscin_1y_size, !width of elements.
+     &     hscin_2x_size, hscin_2y_size,
+     &     hscin_num_counters,
+     &     hdebugprintscinraw,
+     &     hdebugprintscindec,
+     &     hdebugprinttoftracks,
+     &     hdebugprinttracktests
+
+*     Physical paramteres of counters.  Use hhodo_* for arrays that include
+*     the entire hodoscope,  hscin_* for arrays that loop over hits.
+      real*4 hnum_scin_counters(hnum_scin_planes)
+      real*4 hhodo_zpos(hnum_scin_planes)
+      real*4 hhodo_center_coord(hnum_scin_planes,hnum_scin_elements)
+      real*4 hhodo_width(hnum_scin_planes,hnum_scin_elements)
+      real*4 hhodo_pos_coord(hnum_scin_planes,hnum_scin_elements)
+      real*4 hhodo_neg_coord(hnum_scin_planes,hnum_scin_elements)
+
+*     callibration type variables.
+      real*4 hhodo_slop(hnum_scin_planes)
+      real*4 hhodo_vel_light(hnum_scin_planes,hnum_scin_elements)
+      real*4 hhodo_pos_sigma(hnum_scin_planes,hnum_scin_elements)
+      real*4 hhodo_neg_sigma(hnum_scin_planes,hnum_scin_elements)
+      real*4 hhodo_pos_phc_coeff(hnum_scin_planes,hnum_scin_elements)
+      real*4 hhodo_neg_phc_coeff(hnum_scin_planes,hnum_scin_elements)
+      real*4 hhodo_pos_time_offset(hnum_scin_planes,hnum_scin_elements)
+      real*4 hhodo_neg_time_offset(hnum_scin_planes,hnum_scin_elements)
+
+
+*     correction parameters and position information converted to arryas
+*     over plane and counter
+
+      common/hms_tof_parms/
+     &     hnum_scin_counters,
+     &     hhodo_zpos,
+     &     hhodo_center_coord,
+     &     hhodo_width,
+     &     hhodo_pos_coord,
+     &     hhodo_neg_coord,
+     &     hhodo_slop,
+     &     hhodo_vel_light,
+     &     hhodo_pos_sigma,
+     &     hhodo_neg_sigma,
+     &     hhodo_pos_phc_coeff,
+     &     hhodo_neg_phc_coeff,
+     &     hhodo_pos_time_offset,
+     &     hhodo_neg_time_offset
+
+
+
+
+
+
+
+
+
+

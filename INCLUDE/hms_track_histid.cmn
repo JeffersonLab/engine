@@ -1,0 +1,42 @@
+*_______________________________________________________________________
+*      hms_tracking_histid.cmn
+*
+*      This common block contains the HBOOK histogram id numbers
+*      for all hms histograms in which direct hfill calls are made.
+*
+*      It also contains the paramter flags to turn on and off histograming
+*      of each of the hard coded blocks.
+*
+*      Created 9 April 1994	D. F. Geesaman
+* $Log$
+* Revision 1.1  1994/04/12 21:08:57  cdaq
+* Initial revision
+*
+      integer*4 hiddcwiremap(hmax_num_dc_planes)
+      integer*4 hiddcdrifttime(hmax_num_dc_planes)
+      integer*4 hiddcdriftdis(hmax_num_dc_planes)
+      integer*4 hiddcwirecent(hmax_num_dc_planes)
+      integer*4 hidhx_fp,hidhy_fp,hidhxp_fp,hidhyp_fp,hidhlogchi2_fp,
+     &     hidhnfree_fp,hidhchi2perdeg_fp
+
+
+      common/hms_tracking_histid/
+     &     hiddcwiremap,
+     &     hiddcdrifttime,
+     &     hiddcdriftdis,
+     &     hiddcwirecent,
+     &     hidhx_fp,
+     &     hidhy_fp,
+     &     hidhxp_fp,
+     &     hidhyp_fp,
+     &     hidhlogchi2_fp,
+     &     hidhnfree_fp,
+     &     hidhchi2perdeg_fp
+
+      integer*4 hturnon_decoded_dc_hist
+      integer*4 hturnon_focal_plane_hist
+      common/hms_hist_flags/
+     &     hturnon_decoded_dc_hist,
+     &     hturnon_focal_plane_hist
+
+

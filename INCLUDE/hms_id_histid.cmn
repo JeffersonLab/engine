@@ -1,0 +1,40 @@
+*_______________________________________________________________________
+*      hms_id_histid.cmn
+*
+*      This common block contains the HBOOK histogram id numbers
+*      for all hms particle id histograms in which direct hfill 
+*      calls are made.
+*
+*      It also contains the paramter flags to turn on and off histograming
+*      of each of the hard coded blocks.
+*
+*      Created 9 April 1994	D. F. Geesaman
+*
+* $Log$
+* Revision 1.1  1994/04/12 21:11:59  cdaq
+* Initial revision
+*
+*
+      integer*4 hidscinrawtothits
+      integer*4 hidscinplane
+      integer*4 hidscincounters(HNUM_SCIN_PLANES)
+      integer*4 hidscinposadc(HNUM_SCIN_PLANES,hnum_scin_elements)
+      integer*4 hidscinnegadc(HNUM_SCIN_PLANES,hnum_scin_elements)
+      integer*4 hidscinpostdc(HNUM_SCIN_PLANES,hnum_scin_elements)
+      integer*4 hidscinnegtdc(HNUM_SCIN_PLANES,hnum_scin_elements)
+*
+      common/hms_id_histid/
+     &     hidscinrawtothits,
+     &     hidscinplane,
+     &     hidscincounters,
+     &     hidscinposadc,
+     &     hidscinnegadc,
+     &     hidscinpostdc,
+     &     hidscinnegtdc
+
+*
+*      flags to turn on (.eq.1) or off (.eq. 0) hard coded histograms
+       integer*4 hturnon_scin_raw_hist
+*
+       common/hms_id_hist_flags/
+     &      hturnon_scin_raw_hist
