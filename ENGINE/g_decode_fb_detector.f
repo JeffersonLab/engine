@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.17  1996/09/04 14:34:19  saw
+* (JRA) More error reporting of error codes in FB data stream
+*
 * Revision 1.16  1996/04/29 19:46:19  saw
 * (JRA) Tweak diagnostic messages
 *
@@ -90,9 +93,15 @@
       firsttime = .true.
       do while(pointer.le.length .and. did.eq.newdid)
 *
-        if(jiand(evfrag(pointer),'FF000000'x).eq.'DC000000'x) then ! Catch arrington's headers
-          write(6,*) 'no gate or too much data from DCs.'
-          write(6,*) 'Turn off parallel link if this persists'
+        if(jiand(evfrag(pointer),'FFFFFFFF'x).eq.'DCAA0000'x) then ! VME/FB event length mismatch
+          write(6,'(a,i10)') 'ERROR: VME/Fastbus event length mismatch for event #',gen_event_id_number
+          write(6,'(a,z9,a,z9,a)') '   Fastbus event length:',evfrag(pointer+1),
+     &        ' VME event length:',evfrag(pointer+2),' (or vice-versa).'
+          pointer = pointer + 3
+          goto 987
+        else if(jiand(evfrag(pointer),'FF000000'x).eq.'DC000000'x) then ! Catch arrington's headers
+          write(6,'(a,i10,a,z10)') 'ERROR: no gate or too much data from DCs, event=',
+     &        gen_event_id_number,' error dataword=',evfrag(pointer)
           pointer = pointer + 1
           goto 987
         endif
@@ -110,8 +119,15 @@
 *        endif
 
         if(evfrag(pointer).le.1.and.evfrag(pointer).ge.0) then
-          write(6,'(" BAD FB value evfrag(",i4,")=",z10," ROC=",i2)')
-     $         pointer,evfrag(pointer),roc
+
+! on sync events, get zeros at end of event.
+          if (gen_event_id_number .eq. 1000*int(gen_event_id_number/1000)) then
+            if (evfrag(pointer).ne.0) then
+
+              write(6,'(" ERROR: BAD FB value evfrag(",i4,")=",z10," ROC=",i2,"event=",i7)')
+     $         pointer,evfrag(pointer),roc,gen_event_id_number
+            endif
+          endif
           pointer = pointer + 1
           goto 987
         endif
