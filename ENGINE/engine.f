@@ -8,6 +8,10 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.33  2003/03/24 22:49:41  jones
+* Changes for HMS calo calibration. Include hms_calorimeter.cmn and add call
+* to h_cal_calib at end of run if hdbg_tracks_cal .lt. 0
+*
 * Revision 1.32  2003/02/21 14:51:13  jones
 * Added line to call s_fieldcorr subroutine
 *
@@ -134,6 +138,7 @@ c
       include 'gen_data_structures.cmn'
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
+      include 'hms_calorimeter.cmn' !for HMS calorimeter calibration
 
       logical problems, finished_extracting
       integer total_event_count
@@ -169,7 +174,7 @@ c
 *--------------------------------------------------------
 *
       print *
-      print *,'  Hall C Proudly Presents: PHYSICS Analysis Engine'
+      print *,'  test Hall C Proudly Presents: PHYSICS Analysis Engine'
 
       print *
 
@@ -238,6 +243,7 @@ c
          If(ABORT) STOP
          err= ' '
       endif
+c
 *
 * if preprocessor on, open event file
 *
@@ -286,7 +292,7 @@ c
 * Check if this is a physics event or a CODA control event.
 *
         if(.not.problems) then
-          gen_event_type = jishft(craw(2),-16)
+           gen_event_type = jishft(craw(2),-16)
           if(gen_event_type.le.gen_MAX_trigger_types) then
             recorded_events(gen_event_type)=recorded_events(gen_event_type)+1
             if (gen_event_type.ne.0) sum_recorded=sum_recorded+1
@@ -677,6 +683,12 @@ c
 *- from another process for CTP to interpret
 *
       ENDDO                             !found a problem or end of run
+
+c...  Calibrate HMS calorimeter.
+
+      if(hdbg_tracks_cal.lt.0) call h_cal_calib(1)
+
+c...
 
       print *,'    -------------------------------------'
 
