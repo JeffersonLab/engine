@@ -12,9 +12,12 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 *-    $Log$
-*-    Revision 1.5  1994/11/22 20:14:23  cdaq
-*-    (SPB) Bring up to date with h_clear_event
+*-    Revision 1.6  1995/04/01 20:10:55  cdaq
+*-    (SAW) Add missing SSCIN_ALL_TOT_HITS = 0
 *-
+* Revision 1.5  1994/11/22  20:14:23  cdaq
+* (SPB) Bring up to date with h_clear_event
+*
 * Revision 1.4  1994/06/22  20:53:59  cdaq
 * (SAW) zero the miscleaneous hits counter
 *
@@ -60,6 +63,7 @@
          SDC_HITS_PER_PLANE(plane)= 0
       ENDDO
 *     
+      SSCIN_ALL_TOT_HITS = 0
       SSCIN_TOT_HITS = 0
 *
       DO plane= 1,SNUM_SCIN_PLANES
