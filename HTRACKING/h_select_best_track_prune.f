@@ -12,12 +12,13 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log$
+*- Revision 1.1.2.1  2005/03/23 16:59:09  jones
+*-  new code HTRACKING/h_select_best_track_prune.f
+*-
 *- Revision 1.1  2005/03/23 16:33:32  jones
 *- Add new code s_select_best_track_prune.f (P Bosted)
 *-
 *
-* Revision 1.1  2005/03/08 bosted
-* Initial revision
 *-
 *--------------------------------------------------------
       IMPLICIT NONE
