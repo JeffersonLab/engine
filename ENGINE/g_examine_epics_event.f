@@ -1,5 +1,8 @@
       subroutine g_examine_epics_event
 * $Log$
+* Revision 1.3  1998/12/01 15:55:40  saw
+* (SAW) Print out error when event has no data
+*
 * Revision 1.2  1996/11/05 21:40:32  saw
 * (JRA) Print out just first epics event
 *
@@ -33,8 +36,19 @@
       endif
 
       if (dump_event) write (G_LUN_EPICS_OUTPUT,*) 'epics event #',numevent
+
+      if (craw(3)-1.le.0) then
+        write (6,*)
+     1  '**g_examine_epics_event: bad record length; numevent=',
+     1  numevent,', craw3=',craw(3)
+        return
+      endif
+
+cccc      write (6,*) 'epics,evlen',evlen,numevent,craw(3)
+
       evlen=g_important_length(buffer(1:4*(craw(3)-1)))
       i = 1
+cccc      write (6,*) 'epics,evlen',evlen,numevent,craw(3)
       do while (i.le.evlen)
         j = find_char (buffer, i, 10)   ! 10 = NewLine character
         if (i.eq.j) goto 20
