@@ -5,6 +5,9 @@
 *     Author:   D. F. Geesaman          1 September 1993
 *
 * $Log$
+* Revision 1.12.12.1  2004/06/28 17:33:40  cdaq
+* new variables like x_si, etc.
+*
 * Revision 1.12  2003/09/05 20:39:18  jones
 * Merge in online03 changes (mkj)
 *
@@ -595,6 +598,12 @@
       real*4 hsy                   ! fraction of lepton''s E lost in lab
       real*4 hsw                   ! Invariant mass of recoil system
       real*4 hsw2                  ! Invariant mass**2 of recoil system
+      real*4 hsnu                  ! Ebeam-HSenergy
+      real*4 hsx_bj		   ! Bjorken x
+      real*4 y_scale		   ! scaling variable y
+      real*4 yscale		   ! real function that calculates Y
+      real*4 xsi_scale	           ! nachtmann variable (=x at Q2=1)
+      real*4 yscale_eps	           ! separation energy
 *
       INTEGER*4 HSNUM_FPTRACK    ! Index of focal plane track chosen
       INTEGER*4 HSNUM_TARTRACK   ! Index of target track chosen
@@ -642,7 +651,11 @@
      & hsw,
      & hsw2,
      & hscorrp,
-     & hscorre
+     & hscorre,
+     & hsnu,
+     & hsx_bj,
+     & y_scale,
+     & xsi_scale
 *     & hsthetaq,hsphiq
 *
       COMMON/HMS_PHYSICS_I4/
