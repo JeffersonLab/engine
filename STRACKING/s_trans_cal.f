@@ -16,6 +16,9 @@
 *-
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 * $Log$
+* Revision 1.6  1999/02/04 18:18:30  saw
+* Fix calculation of energy for blocks with two tubes
+*
 * Revision 1.5  1999/02/03 21:13:45  saw
 * Code for new Shower counter tubes
 *
@@ -78,28 +81,28 @@
         sblock_xc(nh)=scal_block_xc(nb)
         sblock_zc(nh)=scal_block_zc(nb)
         if(col.le.scal_num_neg_columns) then ! Blocks with two tubes
-          sblock_de(nh)=adc_pos*scal_pos_cal_const(nb)*scal_pos_gain_cor(nb)
-     $         +adc_neg*scal_neg_cal_const(nb)*scal_neg_gain_cor(nb)
+          sblock_de_pos(nh)=adc_pos*scal_pos_cal_const(nb)
+     $         *scal_pos_gain_cor(nb)
+          sblock_de_neg(nh)=adc_neg*scal_neg_cal_const(nb)
+     $         *scal_neg_gain_cor(nb)
+          sblock_de(nh)=sblock_de_pos(nh)+sblock_de_neg(nh)
         else                            ! Blocks with single tube
           sblock_de(nh)=adc_pos*scal_pos_cal_const(nb)*scal_pos_gain_cor(nb)
+          sblock_de_pos(nh)=sblock_de(nh)
         endif
 *
 *------Accumulate the integral energy depositions
         if(col.eq.1) then
+          scal_e1=scal_e1+sblock_de(nh)
           if(scal_num_neg_columns.ge.1) then
             scal_e1_pos=scal_e1_pos+sblock_de_pos(nh)
             scal_e1_neg=scal_e1_neg+sblock_de_neg(nh)
-            scal_e1=scal_e1_pos+scal_e1_neg
-          else
-            scal_e1=scal_e1+sblock_de(nh)
           endif
         else if (col.eq.2) then
+          scal_e2=scal_e2+sblock_de(nh)
           if(scal_num_neg_columns.ge.2) then
             scal_e2_pos=scal_e2_pos+sblock_de_pos(nh)
             scal_e2_neg=scal_e2_neg+sblock_de_neg(nh)
-            scal_e2=scal_e2_pos+scal_e2_neg
-          else
-            scal_e2=scal_e2+sblock_de(nh)
           endif
         else if(col.eq.3) then
           scal_e3=scal_e3+sblock_de(nh)

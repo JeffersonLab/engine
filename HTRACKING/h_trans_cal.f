@@ -16,6 +16,9 @@
 *-
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 * $Log$
+* Revision 1.7  1999/02/04 18:18:14  saw
+* Fix calculation of energy for blocks with two tubes
+*
 * Revision 1.6  1999/02/03 21:13:24  saw
 * Code for new Shower counter tubes
 *
@@ -88,28 +91,28 @@
         hblock_xc(nh)=hcal_block_xc(nb)
         hblock_zc(nh)=hcal_block_zc(nb)
         if(col.le.hcal_num_neg_columns) then ! Blocks with two tubes
-          hblock_de(nh)=adc_pos*hcal_pos_cal_const(nb)*hcal_pos_gain_cor(nb)
-     $         +adc_neg*hcal_neg_cal_const(nb)*hcal_neg_gain_cor(nb)
+          hblock_de_pos(nh)=adc_pos*hcal_pos_cal_const(nb)
+     $         *hcal_pos_gain_cor(nb)
+          hblock_de_neg(nh)=adc_neg*hcal_neg_cal_const(nb)
+     $         *hcal_neg_gain_cor(nb)
+          hblock_de(nh)=hblock_de_pos(nh)+hblock_de_neg(nh)
         else                            ! Blocks with single tube
           hblock_de(nh)=adc_pos*hcal_pos_cal_const(nb)*hcal_pos_gain_cor(nb)
+          hblock_de_pos(nh)=hblock_de(nh)
         endif
 *
 *------Accumulate the integral energy depositions
         if(col.eq.1) then
+          hcal_e1=hcal_e1+hblock_de(nh)
           if(hcal_num_neg_columns.ge.1) then
             hcal_e1_pos=hcal_e1_pos+hblock_de_pos(nh)
             hcal_e1_neg=hcal_e1_neg+hblock_de_neg(nh)
-            hcal_e1=hcal_e1_pos+hcal_e1_neg
-          else
-            hcal_e1=hcal_e1+hblock_de(nh)
           endif
         else if (col.eq.2) then
+          hcal_e2=hcal_e2+hblock_de(nh)
           if(hcal_num_neg_columns.ge.2) then
             hcal_e2_pos=hcal_e2_pos+hblock_de_pos(nh)
             hcal_e2_neg=hcal_e2_neg+hblock_de_neg(nh)
-            hcal_e2=hcal_e2_pos+hcal_e2_neg
-          else
-            hcal_e2=hcal_e2+hblock_de(nh)
           endif
         else if(col.eq.3) then
           hcal_e3=hcal_e3+hblock_de(nh)
