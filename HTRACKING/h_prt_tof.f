@@ -8,6 +8,9 @@
 *
 * modifications:
 * $Log$
+* Revision 1.5  1996/01/24 15:59:22  saw
+* (JRA) Add scin.center column to output
+*
 * Revision 1.4  1995/05/22 19:39:24  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -41,12 +44,13 @@
       write(hluno,'(''        TRACK NUMBER'',i3)') itrk
       write(hluno,'(''POSITION/CALIBRATION VARIABLES:'')')
       write(hluno,'(''  +coord  -coord '',
-     &     '' pos_dt  neg_dt  +sigma  +sigma'')')
+     &     '' pos_dt  neg_dt  +sigma  -sigma  scin.center'')')
       do ihit=1,hscin_tot_hits
-        write(hluno,'(f8.3,f8.3,2f8.3,2f8.3)')
+        write(hluno,'(f8.3,f8.3,2f8.3,2f8.3,f10.2)')
      &       hscin_pos_coord(ihit), hscin_neg_coord(ihit),
      &       hscin_pos_time_offset(ihit), hscin_neg_time_offset(ihit),
-     &       hscin_pos_sigma(ihit), hscin_neg_sigma(ihit)
+     &       hscin_pos_sigma(ihit), hscin_neg_sigma(ihit),
+     &       hscin_center_coord(ihit)
       enddo
       write(hluno,'(''HIT POSITION AND OTHER CALCULATED VARIABLES:'')')
       write(hluno,'(''  long_coord trans_coord    +time    -time'',
