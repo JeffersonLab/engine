@@ -16,24 +16,35 @@
  *
  * Revision History:
  *  $Log$
- *  Revision 1.1  1998/12/07 22:11:09  saw
- *  Initial setup
+ *  Revision 1.2  1999/11/04 20:34:04  saw
+ *  Alpha compatibility.
+ *  New RPC call needed for root event display.
+ *  Start of code to write ROOT trees (ntuples) from new "tree" block
  *
- *	  Revision 1.3  1994/11/07  14:31:34  saw
- *	  Add pending callback requests structure definition
+ *  Revision 1.4  1999/08/25 13:16:05  saw
+ *  *** empty log message ***
+ *
+ *  Revision 1.3  1994/11/07 14:31:34  saw
+ *  Add pending callback requests structure definition
  *
  *	  Revision 1.2  1993/05/11  17:34:58  saw
  *	  Fix $Log$
- *	  Fix Revision 1.1  1998/12/07 22:11:09  saw
- *	  Fix Initial setup
+ *	  Fix Revision 1.2  1999/11/04 20:34:04  saw
+ *	  Fix Alpha compatibility.
+ *	  Fix New RPC call needed for root event display.
+ *	  Fix Start of code to write ROOT trees (ntuples) from new "tree" block
  *	  Fix
- *	  Revision 1.3  1994/11/07  14:31:34  saw
- *	  Add pending callback requests structure definition
- *
+ *	  Fix Revision 1.4  1999/08/25 13:16:05  saw
+ *	  Fix *** empty log message ***
+ *	  Fix
+ *	  Fix Revision 1.3  1994/11/07 14:31:34  saw
+ *	  Fix Add pending callback requests structure definition
+ *	  Fix
  *
  */
 
 void daVarReadVar(char *name, any *retval);
+daVarStatus daVarWriteVar(char *name, any *retval);
 daVarStatus daVarRegRatr(daVarStruct *varp, char *attribute
 			 ,int index, any *retval);
 daVarStatus daVarRegWatr(daVarStruct *varp, char *attribute

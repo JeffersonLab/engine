@@ -16,11 +16,19 @@
  *
  * Revision History:
  *   $Log$
- *   Revision 1.1  1998/12/07 22:11:12  saw
- *   Initial setup
+ *   Revision 1.2  1999/11/04 20:34:06  saw
+ *   Alpha compatibility.
+ *   New RPC call needed for root event display.
+ *   Start of code to write ROOT trees (ntuples) from new "tree" block
  *
- *	  Revision 1.5  1996/08/01  01:31:56  saw
- *	  Have thRHandler return a status
+ *   Revision 1.7  1999/08/25 13:16:06  saw
+ *   *** empty log message ***
+ *
+ *   Revision 1.6  1999/07/07 13:43:58  saw
+ *   Move thTestRHandler() into thTestParse.c
+ *
+ *   Revision 1.5  1996/08/01 01:31:56  saw
+ *   Have thRHandler return a status
  *
  *	  Revision 1.4  1995/01/09  15:41:11  saw
  *	  Change "linux" ifdef's to NOHBOOK.
@@ -96,49 +104,6 @@ daVarStatus thRHandler(char *name, daVarStruct *varclass, any *retval)
   return(status);
 }
 
-void thTestRHandler(char *name, daVarStruct *varclass, any *retval)
-/* The default Read handler */
-{
-  daVarStruct *varp;
-  char *attribute;
-  daVarStatus status;
-  int index;
-
-  status = daVarAttributeFind(name, varclass, &varp, &attribute, &index);
-  status = daVarRegRatr(varp, attribute, index, retval);
-  if(status == S_SUCCESS) {
-    if(strcasecmp(attribute,DAVAR_RATR) == 0){
-      retval->any_u.s = realloc(retval->any_u.s,strlen(retval->any_u.s)
-				+strlen(TH_SCALER) + 2);
-      strcat(retval->any_u.s,TH_SCALER);
-      strcat(retval->any_u.s,"\n");
-    }
-  } else {
-    if(strcasecmp(attribute,TH_SCALER) == 0){
-      int i;
-      if(varp->opaque){
-	retval->valtype = DAVARINT_RPC;
-	if(index == DAVAR_NOINDEX) {
-	  retval->any_u.i.i_len = varp->size;
-	  retval->any_u.i.i_val = (int *) malloc(varp->size*sizeof(int));
-	  for(i=0;i<varp->size;i++) {
-	    retval->any_u.i.i_val[i] = ((DAINT *)varp->opaque)[i];
-	  }
-	} else {
-	  retval->any_u.i.i_len = 1;
-	  retval->any_u.i.i_val = (int *) malloc(sizeof(int));
-	  retval->any_u.i.i_val[0] = ((DAINT *)varp->opaque)[index];
-	}
-      } else {
-	retval->valtype = DAVARERROR_RPC;
-	retval->any_u.error = S_SUCCESS;
-      }
-    }
-  }
-  /* A special handler would check more attributes if status != SUCCESS */
-  return;
-}
-
 #ifndef NOHBOOK
 void thHistZeroLastId()
 {
@@ -146,7 +111,7 @@ void thHistZeroLastId()
   return;
 }
 void thHistRHandler(char *name, daVarStruct *varclass, any *retval)
-/* The default Read handler */
+     /* Read Handler for Histograms */
 {
   daVarStruct *varp;
   char *attribute;
@@ -229,5 +194,12 @@ void thHistRHandler(char *name, daVarStruct *varclass, any *retval)
     }
   }
   return;
+}
+#endif
+#ifdef ROOTTREE
+void thTreeRHandler(char *name, daVarStruct *varclass, any *retval)
+/* The default Read handler */
+{
+  return(thRHandler(name, varclass, retval));
 }
 #endif

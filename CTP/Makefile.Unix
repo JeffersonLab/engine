@@ -1,5 +1,10 @@
 #
 # $Log$
+# Revision 1.17  1999/11/04 20:34:03  saw
+# Alpha compatibility.
+# New RPC call needed for root event display.
+# Start of code to write ROOT trees (ntuples) from new "tree" block
+#
 # Revision 1.16  1998/12/08 15:40:45  saw
 # Force daVarRpc.h to be built.
 #
@@ -63,6 +68,15 @@ sources = $(ctpclient_sources) $(ctp_sources) makereg.c
 lib_targets := $(patsubst %.c, libctp.a(%.o), $(ctp_sources)) \
 	$(patsubst %.c, libctpclient.a(%.o), $(ctpclient_sources))
 
+ifdef ROOTSYS
+cxxsources = thRootStuff.cpp
+sources := $(sources) thTree.c
+lib_targets := $(patsubst %.c, libctp_root.a(%.o), $(ctp_sources)) \
+	$(patsubst %.c, libctpclient_root.a(%.o), $(ctpclient_sources)) \
+	$(patsubst %.cpp, libctp_root.a(%.o), $(cxxsources))
+endif
+
+
 bin_targets = makereg
 
 install-dirs := lib bin
@@ -114,6 +128,8 @@ endif
 endif
   RPCCOM=rpcgen -b -k
   OSTYPE=Linux
+  CXX=g++
+  CXXFLAGS =  -g -O -Wall -fno-rtti -fno-exceptions -fPIC
 endif
 
 ifeq ($(ARCH),SunOS)
@@ -132,6 +148,11 @@ ifeq ($(ARCH),AIX)
   CFLAGS = -O -Dextname
   RPCCOM = rpcgen
   OSTYPE=AIX
+endif
+
+ifdef ROOTSYS
+  CFLAGS := $(CFLAGS) -DROOTTREE
+  CXXFLAGS := $(CXXFLAGS) -I$(ROOTSYS)/include
 endif
 
 ##library: libctp.a
@@ -154,6 +175,11 @@ endif
 
 makereg: makereg.o
 
+#ifdef ROOTSYS
+thRootStuff.o: ../thRootStuff.cpp
+	$(CXX) -o$@ -c $(CXXFLAGS) $<
+#endif
+
 RPCDEPENDS_RULE = echo "$(subst .d,.o,$@): \
 	../$(subst .d,.c,$@) ../daVarRpc.h" >$@
 
@@ -172,20 +198,24 @@ daVarRpc_svc.d: ../daVarRpc.h
 	echo remaking $@
 	$(RPCDEPENDS_RULE)
 
-../daVarRpc_xdr.c: ../daVarRpc.x
+../daVarRpc_xdr.c: ../daVarRpc.x ../daVar.h
 	rm -f $@
 	(cd .. ; $(RPCCOM) -o $(@F) -c daVarRpc.x)
 
-../daVarRpc_svc.c: ../daVarRpc.x
+../daVarRpc_svc.c: ../daVarRpc.x ../daVar.h
 	rm -f $@
 	(cd .. ; $(RPCCOM) -o $(@F) -m daVarRpc.x)
 
-../daVarRpc_clnt.c: ../daVarRpc.x
+../daVarRpc_clnt.c: ../daVarRpc.x ../daVar.h
 	rm -f $@
 	(cd .. ; $(RPCCOM) -o $(@F) -l daVarRpc.x)
 
-../daVarRpc.h: ../daVarRpc.x
+../daVarRpc.h: ../daVarRpc.x ../daVar.h
 	rm -f $
 	(cd .. ; $(RPCCOM) -o $(@F) -h daVarRpc.x)
 
 include $(sources:.c=.d)
+
+ifdef ROOTSYS
+include $(cxxsources:.cpp=.d)
+endif

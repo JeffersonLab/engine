@@ -16,11 +16,13 @@
  *
  * Revision History:
  *   $Log$
- *   Revision 1.1  1998/12/07 22:11:11  saw
- *   Initial setup
+ *   Revision 1.2  1999/11/04 20:34:05  saw
+ *   Alpha compatibility.
+ *   New RPC call needed for root event display.
+ *   Start of code to write ROOT trees (ntuples) from new "tree" block
  *
- * Revision 1.6  1996/08/01  01:31:14  saw
- * Change argument of thExecuteaGethitBlock from block pointer to a var
+ *   Revision 1.6  1996/08/01 01:31:14  saw
+ *   Change argument of thExecuteaGethitBlock from block pointer to a var
  *
  * Revision 1.5  1995/04/10  15:52:52  saw
  * No defined gethit blocks is not an error in thExecuteGethits
@@ -497,15 +499,15 @@ thStatus thExecuteaGethitBlock(daVarStruct *var)
   }
   return(S_SUCCESS);
 }
-long thgethit_()
+int thgethit_()
 {
-  long A0;
+  int A0;
   A0 = thExecuteGethits(0);
   return A0;
 }
-long thgethitb_(char *A1,unsigned C1)
+int thgethitb_(char *A1,unsigned C1)
 {
-  long A0;
+  int A0;
   char *B1;
   A0 = thExecuteGethits((!*(int *)A1)?0:memchr(A1,'\0',C1)?A1:
 		      (memcpy(B1=malloc(C1+1),A1,C1),B1[C1]='\0'

@@ -1,3 +1,6 @@
+#ifdef __osf__
+#define BIT64
+#endif
 /*-----------------------------------------------------------------------------
  * Copyright (c) 1994 Southeastern Universities Research Association,
  *                    Continuous Electron Beam Accelerator Facility
@@ -16,14 +19,16 @@
  *
  * Revision History:
  *  $Log$
- *  Revision 1.3  1999/08/20 15:28:32  saw
- *  Commented out some comments that were not commented out
+ *  Revision 1.4  1999/11/04 20:34:05  saw
+ *  Alpha compatibility.
+ *  New RPC call needed for root event display.
+ *  Start of code to write ROOT trees (ntuples) from new "tree" block
  *
- *  Revision 1.2  1999/06/30 16:15:40  saw
- *  Fix OSF clnt_create underscore problem
+ *  Revision 1.6  1999/08/25 13:16:06  saw
+ *  *** empty log message ***
  *
- *  Revision 1.1  1998/12/07 22:11:11  saw
- *  Initial setup
+ *  Revision 1.5  1999/03/01 19:53:05  saw
+ *  Add OSF stuff
  *
  * Revision 1.4  1995/08/03  13:50:52  saw
  * Add SGI compatibility
@@ -45,39 +50,41 @@
 #include "daVarRpc.h"
 #include "cfortran.h"
 
-long thCreateList();        /* Move to some  include file */
-long thAddToList(long handle, char *pattern);
-long thRemoveFromList(long handle, char *pattern);
-long thGetList(long handle, CLIENT *clnt);
-long thGetList_test(long handle, CLIENT *clnt, char *test_condition,
+int thCreateList();        /* Move to some  include file */
+int thAddToList(int handle, char *pattern);
+int thRemoveFromList(int handle, char *pattern);
+#ifdef BIT64
+int thGetList(int handle, int client);
+int thGetList_test(int handle, int client, char *test_condition,
 		    int max_time_wait, int max_event_wait);
-long thPrintList(long handle);
-
-FCALLSCFUN0(LONG,thCreateList,THCRLIST,thcrlist);
-FCALLSCFUN2(LONG,thAddToList,THADDLIST,thaddlist,LONG,STRING);
-FCALLSCFUN2(LONG,thRemoveFromList,THREMLIST,thremlist,LONG,STRING);
-#ifdef __osf__
-FCALLSCFUN2(LONG,thGetList,THGETLIST,thgetlist,LONG,PVOID);
-FCALLSCFUN5(LONG,thGetList_test,THCGETLIST,thcgetlist,LONG,PVOID,STRING,INT,INT);
+int thImportVars(char *pattern, int client);
 #else
-FCALLSCFUN2(LONG,thGetList,THGETLIST,thgetlist,LONG,LONG);
-FCALLSCFUN5(LONG,thGetList_test,THCGETLIST,thcgetlist,LONG,LONG,STRING,INT,INT);
+int thGetList(int handle, CLIENT *clnt);
+int thGetList_test(int handle, CLIENT *clnt, char *test_condition,
+		    int max_time_wait, int max_event_wait);
+int thImportVars(char *pattern, CLIENT *clnt);
 #endif
-FCALLSCFUN1(LONG,thPrintList,THPRTLIST,thprtlist,LONG);
-/* Don't really understand the following.  What about ultrix */
+int thPrintList(int handle);
+#ifdef BIT64
+int myClntCreate(char *host, int prog, int vers, char *proto);
+#endif
 
-/*
-linux   _
-osf
-sun
-hp    
-ultrix  _
-*/
-
-#if !defined(__ultrix__) && !defined(linux)
-FCALLSCFUN4(LONG,clnt_create,CLNT_CREATE,clnt_create,STRING,LONG,LONG,STRING);
+FCALLSCFUN0(INT,thCreateList,THCRLIST,thcrlist);
+FCALLSCFUN2(INT,thAddToList,THADDLIST,thaddlist,INT,STRING);
+FCALLSCFUN2(INT,thRemoveFromList,THREMLIST,thremlist,INT,STRING);
+FCALLSCFUN2(INT,thGetList,THGETLIST,thgetlist,INT,INT);
+FCALLSCFUN5(INT,thGetList_test,THCGETLIST,thcgetlist,INT,INT,STRING,INT,INT);
+FCALLSCFUN1(INT,thPrintList,THPRTLIST,thprtlist,INT);
+/* Don't really understand the following.  What about ultrix?
+   This is probably because of the _ in clnt_create */
+#ifndef __osf__
+FCALLSCFUN4(INT,clnt_create,CLNT_CREATE,clnt_create,STRING,INT,INT,STRING);
 #else
-FCALLSCFUN4(LONG,clnt_create,CLNT_CREATE_,clnt_create_,STRING,LONG,LONG,STRING);
+#ifdef BIT64
+FCALLSCFUN4(INT,myClntCreate,CLNT_CREATE,clnt_create,STRING,INT,INT,STRING);
+#else
+FCALLSCFUN4(INT,clnt_create,CLNT_CREATE_,clnt_create_,STRING,INT,INT,STRING);
+#endif
 #endif
 
 struct thNameNode {
@@ -98,9 +105,38 @@ TESTNAMELIST *pending_arg=0;
 int pending_flag=0;
 int callback_result;
 
-long thCreateList(){
+#ifdef BIT64
+#define MAXHANDLES 10
+static thNameList *handle_list[MAXHANDLES]={0,0,0,0,0,0,0,0,0,0};
+static CLIENT *clnt_list[MAXHANDLES]={0,0,0,0,0,0,0,0,0,0};
+#endif
+
+#ifdef BIT64
+/* Keep client pointers in an array so that we can return a 32 bit "handle"
+   instead of 64 bit.  We probably won't need more than one, but we have an
+   array to hold 10 client pointers just for the heck of it.
+*/
+int myClntCreate(char *host, int prog, int vers, char *proto)
+{
+  CLIENT *clnt;
+  int client;
+
+  clnt = clnt_create(host, prog, vers, proto);
+  for(client=0;client<MAXHANDLES;client++){
+    if(clnt_list[client]==0) {
+      clnt_list[client] = clnt;
+      return(client+1);
+    }
+  }
+  return(0);
+}
+#endif
+int thCreateList(){
   /* Create a handle for a list of variables */
   thNameList *list;
+#ifdef BIT64
+  int ihandle;
+#endif
 
   list = (thNameList *) malloc(sizeof(thNameList));;
   list->namehead = 0;
@@ -108,9 +144,21 @@ long thCreateList(){
   list->rpc_made = 0;
   list->rpc.NAMELIST_len = 0;
   list->rpc.NAMELIST_val = 0;
-  return((long) list);
+#ifdef BIT64
+  for(ihandle=0;ihandle<MAXHANDLES;ihandle++){
+    if(handle_list[ihandle]==0) {
+      handle_list[ihandle] = list;
+      printf("cr: handle_list[%d]=%x\n",ihandle,handle_list[ihandle]);
+      return(ihandle+1);
+    }
+  }
+  free(list);
+  return(0);
+#else
+  return((int) list);
+#endif
 }
-long thAddToList(long handle, char *pattern)
+int thAddToList(int handle, char *pattern)
 /* Add registered variables to a list of variables to get from a server
    Return the number of variables added
    Should we check for duplicates?  Not now.  No harm in duplicates.
@@ -122,7 +170,11 @@ long thAddToList(long handle, char *pattern)
   int count;			/* Number of variables being added */
   int i;
 
+#ifdef BIT64
+  list = (thNameList *) handle_list[handle-1];
+#else
   list = (thNameList *) handle;
+#endif
   daVarList(pattern,&vlist,&count);
   for(i=0;i<count;i++) {
     next = list->namehead;		/* The current list */
@@ -135,7 +187,7 @@ long thAddToList(long handle, char *pattern)
   list->rpc_made = 0;		/* RPC format list now out of date. */
   return(list->nnames);
 }
-long thRemoveFromList(long handle, char *pattern)
+int thRemoveFromList(int handle, char *pattern)
 {
   thNameList *list;
   thNameNode *this,**thisp;
@@ -144,7 +196,11 @@ long thRemoveFromList(long handle, char *pattern)
   int nremove;
   int i;
 
+#ifdef BIT64
+  list = (thNameList *) handle_list[handle-1];
+#else
   list = (thNameList *) handle;
+#endif
   daVarList(pattern,&vlist,&count);
   nremove = 0;
   for(i=0;i<count;i++) {
@@ -166,14 +222,18 @@ long thRemoveFromList(long handle, char *pattern)
   list->nnames -= nremove;	/* Perhaps I should just count when needed ? */
   return(list->nnames);
 }
-long thPrintList(long handle)
+int thPrintList(int handle)
      /* For debugging */
 {
   thNameList *list;
   thNameNode *next,*this;
   int count;
 
+#ifdef BIT64
+  list = (thNameList *) handle_list[handle-1];
+#else
   list = (thNameList *) handle;
+#endif
   this = list->namehead;
   printf("Variables attached to handle %d\n",handle);
   count++;
@@ -184,7 +244,11 @@ long thPrintList(long handle)
   }
   return(count);
 }
-long thGetList(long handle, CLIENT *clnt)
+#ifdef BIT64
+int thGetList(int handle, int client)
+#else
+int thGetList(int handle, CLIENT *clnt)
+#endif
      /* Returns 0 for total success, -1 for total failure, a positive number
 	for the number of variables that didn't work */
 {
@@ -193,8 +257,23 @@ long thGetList(long handle, CLIENT *clnt)
   int i;
   RVALLIST *vals;
   int nerrors;
+#ifdef BIT64
+  CLIENT *clnt;
 
+  clnt = clnt_list[client-1];
+#endif
+
+/*
+  printf("sizeof(handle)=%d\n",sizeof(handle));
+  printf("thGetLIst: handle=%d\n",handle);
+  printf("thGhandle_list[0]=%x\n",handle_list[0]);
+  printf("handle_list[%d-1]=%x\n",handle,handle_list[handle-1]);
+*/
+#ifdef BIT64
+  list = (thNameList *) handle_list[handle-1];
+#else
   list = (thNameList *) handle;
+#endif
 /*  printf("list->nnames=%d\n",list->nnames);*/
   if(!list->rpc_made) {
     if(list->rpc.NAMELIST_len == 0) {
@@ -232,7 +311,11 @@ long thGetList(long handle, CLIENT *clnt)
   return(nerrors);
 }
 #if 0
-long thPutList(long handle, CLIENT *clnt)
+#ifdef BIT64
+int thPutList(int handle, int client)
+#else
+int thPutList(int handle, CLIENT *clnt)
+#endif
      /* Returns 0 for total success, -1 for total failure, a positive number
 	for the number of variables that didn't work */
 {
@@ -241,9 +324,18 @@ long thPutList(long handle, CLIENT *clnt)
   int i;
   WVALLIST vals;
   int nerrors;
+#ifdef BIT64
+  CLIENT *clnt;
+
+  clnt = clnt_list[client-1];
+#endif
 
   /* Create the write structure */
+#ifdef BIT64
+  list = (thNameList *) handle_list[handle-1];
+#else
   list = (thNameList *) handle;
+#endif
 /*  printf("list->nnames=%d\n",list->nnames);*/
   if(!list->rpc_made) {
     if(list->rpc.NAMELIST_len == 0) {
@@ -284,7 +376,7 @@ long thPutList(long handle, CLIENT *clnt)
 #if 0
 int tsize=0;
 struct timeval timeout;
-long servone(int wait)
+int servone(int wait)
 /* Need to move something that does this into CTP proper */
 {
   fd_set readfdset;
@@ -314,21 +406,34 @@ long servone(int wait)
   }
 }
 #endif
-long thGetList_test(long handle, CLIENT *clnt, char *test_condition,
+#ifdef BIT64
+int thGetList_test(int handle, int client, char *test_condition,
 		    int max_time_wait, int max_event_wait)
+#else
+int thGetList_test(int handle, CLIENT *clnt, char *test_condition,
+		    int max_time_wait, int max_event_wait)
+#endif
      /* Returns 0 for total success, -1 for total failure, a positive number
 	for the number of variables that didn't work */
 {
   thNameList *list;
   thNameNode *next,*this;
   int i;
-  RVALLIST *vals;
   int *status;
   TESTNAMELIST *arg;
-  long servret;
+  int servret;
+#ifdef BIT64
+  CLIENT *clnt;
+
+  clnt = clnt_list[client-1];
+#endif
 
   /* Can return some kind of error if pending_arg is not zero */
+#ifdef BIT64
+  list = (thNameList *) handle_list[handle-1];
+#else
   list = (thNameList *) handle;
+#endif
 /*  printf("list->nnames=%d\n",list->nnames);*/
   if(!list->rpc_made) {
     if(list->rpc.NAMELIST_len == 0) {
@@ -373,6 +478,90 @@ long thGetList_test(long handle, CLIENT *clnt, char *test_condition,
   pending_arg = 0;
 
   return(callback_result);
+}
+#ifdef BIT64
+int thImportVars(char *pattern, int client)
+#else
+int thImportVars(char *pattern, CLIENT *clnt)
+#endif
+     /* Returns 0 for total success, -1 for total failure, a positive number
+	for the number of variables that didn't work */
+{
+  WVALLIST *vals;
+  int count;
+
+  thNameList *list;
+  thNameNode *next,*this;
+  int i;
+  int nerrors;
+#ifdef BIT64
+  CLIENT *clnt;
+
+  clnt = clnt_list[client-1];
+#endif
+
+  /* need to initialize the hash tables */
+
+  if(!(vals = davar_readpatternmatch_1(&pattern,clnt))) {
+    return(-1);			/* Failed */
+  }
+
+  count = vals->WVALLIST_len;
+  /*printf("daVarImportVars got %d variables matching %s\n",count,pattern);*/
+  nerrors = 0;
+  for(i=0;i<count;i++) {
+    char *name;
+    int valtype;
+    daVarStruct var;
+
+    name = vals->WVALLIST_val[i].name;
+    /*printf("%d: %s\n",i,name);*/
+    /* Don't do anything if it already exists */
+    if(daVarWriteVar(name,vals->WVALLIST_val[i].val) == S_SUCCESS) continue;
+    var.type = vals->WVALLIST_val[i].val->valtype;
+    if(var.type == DAVARERROR_RPC){
+      printf("Error getting %s\n",name);
+      nerrors++;
+      continue;
+    }
+    var.name = name;
+    /*printf("Vartype = %d\n",var.type);*/
+    switch(var.type)
+      {
+      case DAVARINT_RPC:
+	var.size = vals->WVALLIST_val[i].val->any_u.i.i_len;
+	/*printf("size=%d\n",var.size);*/
+	var.varptr = (void *) malloc(var.size*sizeof(DAINT));
+	break;
+      case DAVARFLOAT_RPC:
+	var.size = vals->WVALLIST_val[i].val->any_u.r.r_len;
+	/*printf("size=%d\n",var.size);*/
+	var.varptr = (void *) malloc(var.size*sizeof(DAFLOAT));
+	break;
+      case DAVARDOUBLE_RPC:
+	var.size = vals->WVALLIST_val[i].val->any_u.d.d_len;
+	/*printf("size=%d\n",var.size);*/
+	var.varptr = (void *) malloc(var.size*sizeof(DADOUBLE));
+	break;
+      case DAVARSTRING_RPC:
+	var.size = strlen(vals->WVALLIST_val[i].val->any_u.s) + 1;
+	/*printf("size=%d\n",var.size);*/
+	var.varptr = malloc(var.size);
+	break;
+      }
+    var.opaque = 0;
+    var.rhook = var.whook = 0;
+    var.flag = DAVAR_REPOINTOK | DAVAR_DYNAMIC_PAR;
+    var.flag = DAVAR_REPOINTOK | DAVAR_DYNAMIC_PAR;
+    var.title = 0;
+    daVarRegister((int) 0, &var);
+    /*    free(var.name);*/
+    if(daVarWriteVar(name,vals->WVALLIST_val[i].val) != S_SUCCESS) {
+      printf("daVarWriteVar of %s should have worked\n",name);
+      nerrors++;
+    }
+  }
+  return(nerrors);
 }
 int *davar_readmultiple_test_cb_1(RVALLIST *vals, CLIENT *clnt)
 {

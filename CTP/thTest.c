@@ -16,6 +16,11 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.2  1999/11/04 20:34:07  saw
+ *   Alpha compatibility.
+ *   New RPC call needed for root event display.
+ *   Start of code to write ROOT trees (ntuples) from new "tree" block
+ *
  *   Revision 1.1  1998/12/07 22:11:13  saw
  *   Initial setup
  *
@@ -391,23 +396,23 @@ thStatus thWalkTree(char *block_name, WALKOP walkop)
 /* Fortran callable versions of the various test walk routines */
 
 #ifdef NOF77extname
-long thtstexe()
+int thtstexe()
 #else
-long thtstexe_()
+int thtstexe_()
 #endif
 {
-  long A0;
+  int A0;
   A0 = thWalkTree(0,WALK_EXECUTE);
   return A0;
 }
 #ifdef NOF77extname
-long thtstexeb
+int thtstexeb
 #else
-long thtstexeb_
+int thtstexeb_
 #endif
 (char *A1,unsigned C1)
 {
-  long A0;
+  int A0;
   char *B1;
   A0 = thWalkTree((!*(int *)A1)?0:memchr(A1,'\0',C1)?A1:
                   (memcpy(B1=malloc(C1+1),A1,C1),B1[C1]='\0'
@@ -416,23 +421,23 @@ long thtstexeb_
   return A0;
 }
 #ifdef NOF77extname
-long thtstdis()
+int thtstdis()
 #else
-long thtstdis_()
+int thtstdis_()
 #endif
 {
-  long A0;
+  int A0;
   A0 = thWalkTree(0,WALK_DISPLAY);
   return A0;
 }
 #ifdef NOF77extname
-long thtstdisb
+int thtstdisb
 #else
-long thtstdisb_
+int thtstdisb_
 #endif
 (char *A1,unsigned C1)
 {
-  long A0;
+  int A0;
   char *B1;
   A0 = thWalkTree((!*(int *)A1)?0:memchr(A1,'\0',C1)?A1:
                   (memcpy(B1=malloc(C1+1),A1,C1),B1[C1]='\0'
@@ -441,23 +446,23 @@ long thtstdisb_
   return A0;
 }
 #ifdef NOF77extname
-long thtstclr()
+int thtstclr()
 #else
-long thtstclr_()
+int thtstclr_()
 #endif
 {
-  long A0;
+  int A0;
   A0 = thWalkTree(0,WALK_CLEAR_FLAGS);
   return A0;
 }
 #ifdef NOF77extname
-long thtstclrb
+int thtstclrb
 #else
-long thtstclrb_
+int thtstclrb_
 #endif
 (char *A1,unsigned C1)
 {
-  long A0;
+  int A0;
   char *B1;
   A0 = thWalkTree((!*(int *)A1)?0:memchr(A1,'\0',C1)?A1:
                   (memcpy(B1=malloc(C1+1),A1,C1),B1[C1]='\0'
@@ -466,23 +471,23 @@ long thtstclrb_
   return A0;
 }
 #ifdef NOF77extname
-long thtstins()
+int thtstins()
 #else
-long thtstins_()
+int thtstins_()
 #endif
 {
-  long A0;
+  int A0;
   A0 = thWalkTree(0,WALK_INCREMENT_SCALERS);
   return A0;
 }
 #ifdef NOF77extname
-long thtstinsb
+int thtstinsb
 #else
-long thtstinsb_
+int thtstinsb_
 #endif
 (char *A1,unsigned C1)
 {
-  long A0;
+  int A0;
   char *B1;
   A0 = thWalkTree((!*(int *)A1)?0:memchr(A1,'\0',C1)?A1:
                   (memcpy(B1=malloc(C1+1),A1,C1),B1[C1]='\0'
@@ -491,23 +496,23 @@ long thtstinsb_
   return A0;
 }
 #ifdef NOF77extname
-long thtstcls()
+int thtstcls()
 #else
-long thtstcls_()
+int thtstcls_()
 #endif
 {
-  long A0;
+  int A0;
   A0 = thWalkTree(0,WALK_CLEAR_SCALERS);
   return A0;
 }
 #ifdef NOF77extname
-long thtstclsb
+int thtstclsb
 #else
-long thtstclsb_
+int thtstclsb_
 #endif
 (char *A1,unsigned C1)
 {
-  long A0;
+  int A0;
   char *B1;
   A0 = thWalkTree((!*(int *)A1)?0:memchr(A1,'\0',C1)?A1:
                   (memcpy(B1=malloc(C1+1),A1,C1),B1[C1]='\0'

@@ -16,11 +16,16 @@
  *
  * Revision History:
  *   $Log$
- *   Revision 1.1  1998/12/07 22:11:09  saw
- *   Initial setup
+ *   Revision 1.2  1999/11/04 20:34:03  saw
+ *   Alpha compatibility.
+ *   New RPC call needed for root event display.
+ *   Start of code to write ROOT trees (ntuples) from new "tree" block
  *
- *	  Revision 1.6  1994/07/21  20:49:34  saw
- *	  Add NOEOL error code and TRUE/FALSE definitions
+ *   Revision 1.7  1999/08/25 13:16:04  saw
+ *   *** empty log message ***
+ *
+ *   Revision 1.6  1994/07/21 20:49:34  saw
+ *   Add NOEOL error code and TRUE/FALSE definitions
  *
  *	  Revision 1.5  1994/06/13  13:39:41  saw
  *	  Change values of some constants
@@ -68,7 +73,7 @@
 
 #ifndef RPCGEN
 /* Make sure this stuff is not seen by rpcgen */
-typedef long daVarStatus;
+typedef int daVarStatus;
 
 typedef struct {
   char *name;			/* Name of the object */
@@ -85,9 +90,9 @@ typedef struct {
    (The actual length can be smaller since the strings are null terminated.)
 */
 
-long daVarRegister(int flag, daVarStruct *args);
-long daVarLookup(char *name, daVarStruct *result);
-long daVarList(char *pattern, char ***listp, int *count);
+int daVarRegister(int flag, daVarStruct *args);
+int daVarLookup(char *name, daVarStruct *result);
+int daVarList(char *pattern, char ***listp, int *count);
 
 typedef int DAINT;
 typedef float DAFLOAT;
@@ -107,7 +112,7 @@ typedef double DADOUBLE;
 #define S_DAVAR_NOEOL -10 /* Line in a block doesn't have a newline */
 #define S_DAVAR_NOINDEX -101 /* Status return from thGetIndex */
 
-#define floatToLong(x) (long) ((x)>0.0 ? (x)+0.5 : (x)-0.5)
+#define floatToLong(x) (int) ((x)>0.0 ? (x)+0.5 : (x)-0.5)
 #endif
 
 #define STDERR stdout

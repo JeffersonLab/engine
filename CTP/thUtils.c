@@ -16,6 +16,11 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.2  1999/11/04 20:34:07  saw
+ *   Alpha compatibility.
+ *   New RPC call needed for root event display.
+ *   Start of code to write ROOT trees (ntuples) from new "tree" block
+ *
  *   Revision 1.1  1998/12/07 22:11:14  saw
  *   Initial setup
  *
@@ -45,6 +50,7 @@
 */
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "daVar.h"
 #include "th.h"
 #include "thInternal.h"
@@ -136,7 +142,6 @@ int thCommas(char *s,char **args){
   p = s;
   instring = 0;
   while(*p != 0) {
-    /*    if(i<2) printf("%d;%s\n",instring,p);*/
     if(instring && *p == quotechar) {
       if(*(p+1) == quotechar) p++;
       else instring = 0;
@@ -204,12 +209,12 @@ Allows hex constants as INT's */
   thTokenType typ;
   int nume;			/* Number of E characters */
 
-/*  printf("Token = %s\n",s);*/
+  /*  printf("TYPE(%s)=",s);*/
   nume = 0;
   p = s;
   typ = TOKINT;
   while(*p != '\0'){
-    if(strchr("()[]",*p)) return(TOKARRAY);
+    if(strchr("()[]",*p)) {/*  printf("%d\n",TOKARRAY); */ return(TOKARRAY);}
     if(typ != TOKVAR){
       switch(*p)
 	{
@@ -238,7 +243,7 @@ Allows hex constants as INT's */
     }
     p++;
   }
-/*  printf("Type = %d\n",typ);*/
+  /*printf("%d\n",typ);*/
   return(typ);
 }
 
@@ -283,7 +288,7 @@ int thSpecial(char *line, char *default_class)
   p = s+1;
   while(!isspace(*p) && *p) p++; /* Skip to end of command */
   if(!*p) return(1);		/* No argument */
-  command = (char *) malloc(p-s+1);
+  command = malloc(p-s+1);
   strncpy(command,s,p-s); command[p-s] = '\0';
   s = p;
   while(isspace(*s) && *s) s++;	/* Skip to argument */
@@ -291,7 +296,7 @@ int thSpecial(char *line, char *default_class)
     free(command);
     return(1);
   }
-  arg = (char *) malloc(strlen(s)+1);
+  arg = malloc(strlen(s)+1);
   strcpy(arg,s);
   nargs = thCommas(arg,arglist);
   
@@ -383,10 +388,10 @@ thVarCreate(char *s, int vartype, char **classlist, daVarStruct **varpp)
   if(daVarLookupPWithClass(s,classlist,varpp) != S_SUCCESS){
     /* Doesn't exist, we can create it as we want it */
     if(strchr(s,'.')) {	/* Don't prepend a class */
-      var.name = (char *) malloc(strlen(s)+1);
+      var.name = malloc(strlen(s)+1);
       strcpy(var.name,s);
     } else {
-      var.name = (char *) malloc(strlen(classlist[0])
+      var.name = malloc(strlen(classlist[0])
 				 +strlen(s)+2);
       strcpy(var.name,classlist[0]);
       strcat(var.name,".");
@@ -398,16 +403,16 @@ thVarCreate(char *s, int vartype, char **classlist, daVarStruct **varpp)
     switch(vartype)
       {
       case DAVARINT:		/* How should we initialize the variables */
-	var.varptr = (void *) malloc(var.size*sizeof(DAINT));
+	var.varptr = malloc(var.size*sizeof(DAINT));
 	break;
       case DAVARFLOAT:
-	var.varptr = (void *) malloc(var.size*sizeof(DAFLOAT));
+	var.varptr = malloc(var.size*sizeof(DAFLOAT));
 	break;
       case DAVARDOUBLE:
-	var.varptr = (void *) malloc(var.size*sizeof(DADOUBLE));
+	var.varptr = malloc(var.size*sizeof(DADOUBLE));
 	break;
       case DAVARSTRING:
-	var.varptr = (void *) malloc(var.size*sizeof(char *));
+	var.varptr = malloc(var.size*sizeof(char *));
 	*((char *)var.varptr) = '\0';
 	break;
       }
@@ -541,8 +546,8 @@ int thTokToPtr(char *token, int create, int intonly, daVarStruct *varp)
 	{
 	case TOKINT:
 	  {
-	    register long *longp;
-	    longp = (long *) malloc(sizeof(long));
+	    register DAINT *longp;
+	    longp = malloc(sizeof(DAINT));
 	    *longp = atol(token);
 	    var.varptr = longp;
 	    var.type = DAVARINT;
@@ -553,8 +558,8 @@ int thTokToPtr(char *token, int create, int intonly, daVarStruct *varp)
 	  break;
 	case TOKFLOAT:
 	  {
-	    register float *floatp;
-	    floatp = (float *) malloc(sizeof(float));
+	    register DAFLOAT *floatp;
+	    floatp = malloc(sizeof(DAFLOAT));
 	    *floatp = atof(token);
 	    var.varptr = floatp;
 	    var.type = DAVARFLOAT;
@@ -565,8 +570,8 @@ int thTokToPtr(char *token, int create, int intonly, daVarStruct *varp)
 	  break;
 	case TOKVAR:
 	  {
-	    register long *longp;
-	    longp = (long *) malloc(sizeof(long));
+	    register DAINT *longp;
+	    longp = malloc(sizeof(DAINT));
 	    var.varptr = longp;
 	    var.type = DAVARINT;
 	    var.size = 1;
@@ -655,39 +660,39 @@ int thCleanLine(char *s)
   switch(x->type)
     {
     case DAVARINT:
-      d = *(long *) x->varptr;
+      d = *(DAINT *) x->varptr;
       break;
     case DAVARFLOAT:
-      d = *(float *) x->varptr;
+      d = *(DAFLOAT *) x->varptr;
       break;
     case DAVARINTP:
-      d = **(long **) x->varptr;
+      d = **(DAINT **) x->varptr;
       break;
     case DAVARFLOATP:
-      d = **(float **) x->varptr;
+      d = **(DAFLOAT **) x->varptr;
       break;
     }
   return(d);
 }*/
 int argtoInt(daVarStruct *x)
 {
-  long l;
-  float d;
+  DAINT l;
+  DAFLOAT d;
 
   switch(x->type)
     {
     case DAVARINT:
-      l = *(long *) x->varptr;
+      l = *(DAINT *) x->varptr;
       break;
     case DAVARFLOAT:
-      d = *(float *) x->varptr;
+      d = *(DAFLOAT *) x->varptr;
       l = floatToLong(d);
       break;
     case DAVARINTP:
-      l = **(long **) x->varptr;
+      l = **(DAINT **) x->varptr;
       break;
     case DAVARFLOATP:
-      d = **(float **) x->varptr;
+      d = **(DAFLOAT **) x->varptr;
       l = floatToLong(d);
       break;
     }
@@ -729,7 +734,10 @@ int argtoInt(daVarStruct *x)
 
 #ifdef ZAP
 typedef void	*pointer;
+/* Not clear why we need to do this at all */
+#ifndef linux
 extern pointer	memset( pointer, int, size_t );
+#endif
 #endif
 
 #if defined(ultrix)
@@ -844,7 +852,7 @@ void thAddVarToList(daVarStructList **head, daVarStruct *varp)
     head = &(nextptr->next);
     nextptr = nextptr->next;
   }
-  *head = (daVarStructList *) malloc(sizeof(daVarStructList));
+  *head = malloc(sizeof(daVarStructList));
   (*head)->next = 0;
   (*head)->varp = varp;
   return;

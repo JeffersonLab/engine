@@ -18,13 +18,21 @@
  *
  * Revision History:
  *   $Log$
- *   Revision 1.1  1998/12/07 22:11:10  saw
- *   Initial setup
+ *   Revision 1.2  1999/11/04 20:34:04  saw
+ *   Alpha compatibility.
+ *   New RPC call needed for root event display.
+ *   Start of code to write ROOT trees (ntuples) from new "tree" block
  *
- *	  Revision 1.3  1994/11/07  14:15:46  saw
- *	  Add davar_readmultiple_test_1
- *	  Add Callback routine
- *	  On HP, replace broken xdr_free's with my own freeing
+ *   Revision 1.5  1999/08/25 13:16:05  saw
+ *   *** empty log message ***
+ *
+ *   Revision 1.4  1999/03/01 19:52:30  saw
+ *   Need svc_soc.h on sun
+ *
+ *   Revision 1.3  1994/11/07 14:15:46  saw
+ *   Add davar_readmultiple_test_1
+ *   Add Callback routine
+ *   On HP, replace broken xdr_free's with my own freeing
  *
  *	  Revision 1.2  1993/12/03  19:30:58  saw
  *	  Remove some miscelaneous print statements
@@ -54,8 +62,8 @@
 #define xdr_on_hp_is_broken
 #endif
 
-long daVarCallBack();
-FCALLSCFUN0(LONG,daVarCallBack,THCALLBACK,thcallback);
+int daVarCallBack();
+FCALLSCFUN0(INT,daVarCallBack,THCALLBACK,thcallback);
 
 
 static struct timeval TIMEOUT = { 5, 0}; /* Allow 5 seconds for timeout */
@@ -239,7 +247,50 @@ davar_readmultiple_test_cb_1(argp, clnt)
 	}
 	return (&clnt_res);
 }
-long daVarCallBack()
+WVALLIST *davar_readpatternmatch_1(char **argp, CLIENT *clnt)
+{
+  static WVALLIST result;
+  int i;
+  static int need_to_free=0;
+  char *pattern;
+  char **vlist;
+  int count;
+
+/*  minfo = mallinfo();
+  printf("AA:%d %d\n",minfo.arena,minfo.ordblks);*/
+  /*  printf("In davar_readpatternmatch_1 doing pattern '%s'\n",*argp);*/
+  if(need_to_free) {
+#ifdef xdr_on_hp_is_broken
+    for(i=0; i<result.WVALLIST_len; i++){
+      free(result.WVALLIST_val[i].val->any_u.i.i_val);
+      free(result.WVALLIST_val[i].name);
+    }
+    free(result.WVALLIST_val);
+#else
+    xdr_free(xdr_WVALLIST, (void *) &result);
+#endif
+  } else need_to_free = 1;
+/*  minfo = mallinfo();
+  printf("BB:%d %d\n",minfo.arena,minfo.ordblks);*/
+
+  daVarList(*argp,&vlist,&count);
+
+  result.WVALLIST_len = count;
+  result.WVALLIST_val = (wany *) malloc(count*sizeof(wany));
+
+  for(i=0; i<count; i++){
+    /*    printf("%d: %s\n",i,vlist[i]);*/
+    result.WVALLIST_val[i].name = (char *) malloc(strlen(vlist[i])+1);
+    strcpy(result.WVALLIST_val[i].name,vlist[i]);
+    /*    daVarReadVar(vlist[i],&(result.WVALLIST_val[i].val));*/
+    result.WVALLIST_val[i].val = malloc(sizeof(any));
+    daVarReadVar(vlist[i],result.WVALLIST_val[i].val);
+  }
+  /*  daVarFreeList(vlist);*/
+  return(&result);
+}    
+
+int daVarCallBack()
 /* Scan the list of pending readmultiple requests.  Make a call back for
    each request for which the test is true or blank.  Ignore the time
    out stuff for now. */
@@ -290,11 +341,30 @@ long daVarCallBack()
         rpc.RVALLIST_len = 0;
         rpc.RVALLIST_val = 0;
       }
-      clnt = clnt_create(hp->h_name, argp->prog, argp->vers, "tcp");
-      if(clnt) {
-        status = davar_readmultiple_test_cb_1(&rpc, clnt);
-        clnt_destroy(clnt);
-        /* We don't care what the status was. */
+      {
+	/* This is really weird.  clnt_create only works if we copy the hostname*/
+	char *host;
+	host = malloc(strlen(hp->h_name)+1);
+	strcpy(host,hp->h_name);
+	clnt = clnt_create(host, argp->prog, argp->vers, "tcp");
+	free(host);
+      }
+      {
+	/* This is really weird.  On the alpha it seems we need to copy the
+	   host name to a separate variable.  Maybe clnt_create calls some
+	   function that mucks with the hp structure. */
+	char *host;
+	host = malloc(strlen(hp->h_name)+1);
+	strcpy(host,hp->h_name);
+	clnt = clnt_create(host, argp->prog, argp->vers, "tcp");
+	if(clnt) {
+	  status = davar_readmultiple_test_cb_1(&rpc, clnt);
+	  clnt_destroy(clnt);
+	  /* We don't care what the status was. */
+	} else {
+	  fprintf(stderr,"Callback to %s failed\n",host);
+	}
+	free(host);
       }
 #ifdef xdr_on_hp_is_broken
       if(testresult) {

@@ -16,8 +16,13 @@
  *
  * Revision History:
  * $Log$
- * Revision 1.1  1998/12/07 22:11:13  saw
- * Initial setup
+ * Revision 1.2  1999/11/04 20:34:06  saw
+ * Alpha compatibility.
+ * New RPC call needed for root event display.
+ * Start of code to write ROOT trees (ntuples) from new "tree" block
+ *
+ * Revision 1.11  1999/03/01 19:56:52  saw
+ * Add Absoft Fortran stuff
  *
  * Revision 1.10  1997/05/30 14:06:17  saw
  * Fix some memory leaks
@@ -55,13 +60,13 @@ extern thStatus thReportFd(char *varname, FILE *output);
 thStatus thReportFromVar(daVarStruct *bvar,FILE *output);
 
 #ifdef AbsoftUNIXFortran
-long threp
+int threp
 #else
-long threp_
+int threp_
 #endif
 (char *repname, char *filename
 	    ,unsigned l_repname, unsigned l_filename){
-  long A0;
+  int A0;
   char *BR=0;
   char *BF=0;
   FILE *fd;
@@ -83,13 +88,13 @@ long threp_
   return(A0);
 }
 #ifdef AbsoftUNIXFortran
-long threpa
+int threpa
 #else
-long threpa_
+int threpa_
 #endif
 (char *repname, char *filename
 	    ,unsigned l_repname, unsigned l_filename){
-  long A0;
+  int A0;
   char *BR=0;
   char *BF=0;
   FILE *fd;
@@ -143,7 +148,7 @@ thStatus thReportFromVar(daVarStruct *bvar,FILE *output)
   char *lines,*eol,*s;
   int line_count;
   double dval;	char *dfmt="%f";
-  long lval; char *lfmt="%d";
+  int lval; char *lfmt="%d";
   char *sval; char *sfmt="%s";
   daVarStruct *varp;
   int dtype;

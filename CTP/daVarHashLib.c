@@ -16,15 +16,19 @@
  *
  * Revision History:
  * $Log$
- * Revision 1.1  1998/12/07 22:11:09  saw
- * Initial setup
+ * Revision 1.2  1999/11/04 20:34:04  saw
+ * Alpha compatibility.
+ * New RPC call needed for root event display.
+ * Start of code to write ROOT trees (ntuples) from new "tree" block
  *
  * Revision 1.1  1996/07/31 20:33:15  saw
  * Initial revision
  *
  *   $Log$
- *   Revision 1.1  1998/12/07 22:11:09  saw
- *   Initial setup
+ *   Revision 1.2  1999/11/04 20:34:04  saw
+ *   Alpha compatibility.
+ *   New RPC call needed for root event display.
+ *   Start of code to write ROOT trees (ntuples) from new "tree" block
  *
  *   Revision 1.1  1996/07/31 20:33:15  saw
  *   Initial revision
@@ -37,6 +41,7 @@
 #define CASE_INSENSITIVE
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "daVarHash.h"
 #include "daVar.h"
 

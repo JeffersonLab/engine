@@ -16,11 +16,13 @@
  *
  * Revision History:
  *   $Log$
- *   Revision 1.2  1999/03/25 22:11:47  saw
- *   Don't allow octal integer constants via the 0nnn syntax.  Keep 0xnnn hex.
+ *   Revision 1.3  1999/11/04 20:34:06  saw
+ *   Alpha compatibility.
+ *   New RPC call needed for root event display.
+ *   Start of code to write ROOT trees (ntuples) from new "tree" block
  *
- *   Revision 1.1  1998/12/07 22:11:13  saw
- *   Initial setup
+ *   Revision 1.16  1999/08/16 16:31:10  saw
+ *   Treat numbers that start with "0x" as hex.
  *
  *   Revision 1.15  1998/09/29 18:28:47  saw
  *   We shouldn't use thIDToken to identify whether the RHS of a parameter
@@ -102,7 +104,7 @@ int thParmVarDynamic;
 char *classlist[]={PARMSTR,0};	/* Class list for parameter names */
 
 thStatus thParmLineSet(char *line);
-/*FCALLSCFUN1(LONG,thLoadParameters,LOADPARM,loadparm,STRING)*/
+/*FCALLSCFUN1(INT,thLoadParameters,LOADPARM,loadparm,STRING)*/
 
 thStatus thLoadParameters(daVarStruct *var)
 /* Set the parameters as specified on the title line.
@@ -425,13 +427,13 @@ e */
 }
 /* Fortran routine to evaluate a line of the form parm = value */  
 #ifdef NOF77extname
-long thpset
+int thpset
 #else
-long thpset_
+int thpset_
 #endif
 (char *A1,unsigned C1)
 {
-  long A0;
+  int A0;
   char *B1;
   thStatus status;
 

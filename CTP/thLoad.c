@@ -17,8 +17,16 @@
  *
  * Revision History:
  *   $Log$
- *   Revision 1.1  1998/12/07 22:11:12  saw
- *   Initial setup
+ *   Revision 1.2  1999/11/04 20:34:06  saw
+ *   Alpha compatibility.
+ *   New RPC call needed for root event display.
+ *   Start of code to write ROOT trees (ntuples) from new "tree" block
+ *
+ *   Revision 1.17  1999/08/25 13:16:06  saw
+ *   *** empty log message ***
+ *
+ *   Revision 1.16  1999/03/01 19:56:12  saw
+ *   Work on INPUT_FILE open/close problem
  *
  *   Revision 1.15  1996/07/31 20:35:19  saw
  *   Book all groups instead of default groups.  (Forces booking order to
@@ -102,9 +110,17 @@ extern thStatus thBookGroup(daVarStruct *var);
 extern daVarStatus thWHandler();
 extern daVarStatus thRHandler();*/
 
-char *types[]={PARMSTR, GETHITSTR, TESTSTR, HISTSTR, UHISTSTR, REPORTSTR, 0};
-thStatus (*hooks[])()={thLoadParameters, thBookGethits, thBookTests
-			 ,thBookHists, thBookHists, thBookReports, 0};
+char *types[]={PARMSTR, GETHITSTR, TESTSTR, HISTSTR, UHISTSTR,
+#ifdef ROOTTREE
+               TREESTR,
+#endif
+               REPORTSTR, 0};
+thStatus (*hooks[])()={thLoadParameters, thBookGethits, thBookTests,
+		       thBookHists, thBookHists,
+#ifdef ROOTTREE
+                       thBookTree,
+#endif
+                       thBookReports, 0};
 
 char *qualifiers[]={"obey", "read", "write", 0};
 int qualflags[]={DAVAR_OBEYMF, DAVAR_READONLY, DAVAR_READWRITE, DAVAR_OBEYMF};
@@ -120,8 +136,8 @@ thBookList *thBookListP=NULL;
 thStatus thSetBlockClasses();
 
 /* Fortran Interface */
-FCALLSCFUN0(LONG,thOBook,THOBOOK,thobook)
-FCALLSCFUN1(LONG,thLoad,THLOAD,thload,STRING)
+FCALLSCFUN0(INT,thOBook,THOBOOK,thobook)
+FCALLSCFUN1(INT,thLoad,THLOAD,thload,STRING)
 
 struct thFdList {
   FILE *fd;
@@ -314,7 +330,9 @@ thStatus thLoad(char *fname)
 /*      printf("X %s\n",grouplist[ig]);*/
     }
   }
-  if(INPUT_FILE) fclose(INPUT_FILE);
+  /* Are we covering up something.  Should we be able to get to here with
+     a null value for INPUT_FILE?  Does it mean we have left a file open? */
+  if(INPUT_FILE) fclose(INPUT_FILE); 
 
 #if 0
   {

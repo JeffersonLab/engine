@@ -16,10 +16,15 @@
  *
  * Revision History:
  *   $Log$
- *   Revision 1.1  1998/12/07 22:11:10  saw
- *   Initial setup
+ *   Revision 1.2  1999/11/04 20:34:04  saw
+ *   Alpha compatibility.
+ *   New RPC call needed for root event display.
+ *   Start of code to write ROOT trees (ntuples) from new "tree" block
  *
- *   Revision 1.3  1994/11/07  14:33:12  saw
+ *   Revision 1.4  1999/08/25 13:16:05  saw
+ *   *** empty log message ***
+ *
+ *   Revision 1.3  1994/11/07 14:33:12  saw
  *   Add testnamelist structure and readmultiple_test and family rpc's
  *
  *   Revision 1.2  1993/11/24  22:01:35  saw
@@ -31,6 +36,8 @@
  */
 
 %#include <time.h>
+%#define _xdr_result xdr_result
+%#define _xdr_argument xdr_argument
 
 #if defined(RPC_HDR) || defined(RPC_XDR) || defined(RPC_SVC) || \
   defined(RPC_CLNT) || defined(RPC_TBL)
@@ -95,6 +102,7 @@ program DAVARSVR {
 #if defined(RPC_HDR) || defined(RPC_XDR) || defined(RPC_SVC)
     int DAVAR_READMULTIPLE_TEST_CB(RVALLIST) = 106; /* Call Back */
 #endif
+    WVALLIST DAVAR_READPATTERNMATCH(string) = 107;
 /*    double HACK(int) = 201;*/
   } = 1;
 } = 0x2c0daFF8;

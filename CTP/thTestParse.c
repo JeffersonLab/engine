@@ -16,11 +16,18 @@
  *
  * Revision History:
  *   $Log$
- *   Revision 1.2  1999/03/25 22:11:47  saw
- *   Don't allow octal integer constants via the 0nnn syntax.  Keep 0xnnn hex.
+ *   Revision 1.3  1999/11/04 20:34:07  saw
+ *   Alpha compatibility.
+ *   New RPC call needed for root event display.
+ *   Start of code to write ROOT trees (ntuples) from new "tree" block
  *
- *   Revision 1.1  1998/12/07 22:11:13  saw
- *   Initial setup
+ *   Revision 1.19  1999/08/25 13:16:07  saw
+ *   *** empty log message ***
+ *
+ *   Revision 1.18  1999/07/07 13:43:51  saw
+ *   Don't make numbers starting with "0" be octal.  Accept 0x as hex.
+ *
+ *   Move thTestRHandler() into thTestParse.c
  *
  *   Revision 1.17  1999/03/01 20:00:50  saw
  *   Fix bug where a series of numbers added or subtracted in a parameter line
@@ -107,14 +114,17 @@ in the test package.)*/
 #include <string.h>
 #include <math.h>
 #include <values.h>
+#include <rpc/rpc.h>
 #include "daVar.h"
+#include "daVarRpc.h"
+#include "daVarHandlers.h"
 #include "th.h"
 #include "thUtils.h"
 #include "thTestParse.h"
 #include "thInternal.h"
 #include "cfortran.h"
 
-extern daVarStatus thTestRHandler();
+void thTestRHandler(char *name, daVarStruct *varclass, any *retval);
 
 CODE opstack[100];		/* Operator stack */
 CODE typstack[100];		/* Result type stack */
@@ -373,6 +383,8 @@ char *thGetTok(char *linep, int *tokenid, char **tokstr,
 
 	  optype = thGetOperandType(string,linep,lastop,0);
 	  classlist = thGetClassList(optype);
+	  /* Probably should consistently use the same class list of
+	     TEST,EVENT,PARM here */
 /* If token is a result variable (and we are in non-immediate mode), and the
    variable is an integer type, then we need to add this variable to a list
    of variables for the current block.   (Probably add real  variable to
@@ -500,6 +512,10 @@ char **thGetClassList(thOperandType optype)
   static char *numlist[]={EVENTSTR,PARMSTR,TESTSTR,0}; /* Operand is a value */
   static char *resultlistp[]={TESTSTR,EVENTSTR,PARMSTR,0}; /* Operand is a result */
 
+#define ALWAYSTESTFIRST
+#ifdef ALWAYSTESTFIRST
+  return(resultlistp);
+#else
   switch(optype)
     {
     case otIMMED:
@@ -511,6 +527,7 @@ char **thGetClassList(thOperandType optype)
     case otRESULT:
       return(resultlistp);
     }
+#endif
 }
 
 thOperandType thGetOperandType(char *soperand, char *rest, CODE lastop,
@@ -582,7 +599,7 @@ CODE thGetResultType(CODE operator, CODE leftoptype, CODE rightoptype)
   return(0);
 }
 
-thStatus thEvalImed(char *line, double *d, DAINT *i)
+thStatus thEvalImed(char *line, DADOUBLE *d, DAINT *i)
 /* ImmedOBiately evaluate the expression in line.  Will internally evaluate to
    a float, and then pass back both the float and interized values. */
 {
@@ -1014,10 +1031,10 @@ thStatus thBookaTest(char *line, CODEPTR *codeheadp, CODEPTR *codenextp,
   return(status);
   
 }
-long thevalchk_(char *A1,unsigned C1)
+int thevalchk_(char *A1,unsigned C1)
 /* Check if an expression is valid.  Return's zero if valid */
 {
-  long A0;
+  int A0;
   char *B1;
   thStatus status;
 
@@ -1028,9 +1045,9 @@ long thevalchk_(char *A1,unsigned C1)
   return(status);
 }
 
-long itheval_(char *A1,unsigned C1)
+int itheval_(char *A1,unsigned C1)
 {
-  long A0;
+  int A0;
   char *B1;
   DAINT i;
   double d;
@@ -1044,7 +1061,6 @@ long itheval_(char *A1,unsigned C1)
 }
 double dtheval_(char *A1,unsigned C1)
 {
-  long A0;
   char *B1;
   double d;
   thStatus status;
@@ -1057,7 +1073,6 @@ double dtheval_(char *A1,unsigned C1)
 }
 float ftheval_(char *A1,unsigned C1)
 {
-  long A0;
   char *B1;
   DAINT i;
   double d;
@@ -1070,4 +1085,47 @@ float ftheval_(char *A1,unsigned C1)
   if(B1) free(B1);
   f = d;
   return f;
+}
+
+void thTestRHandler(char *name, daVarStruct *varclass, any *retval)
+/* The default Read handler */
+{
+  daVarStruct *varp;
+  char *attribute;
+  daVarStatus status;
+  int index;
+
+  status = daVarAttributeFind(name, varclass, &varp, &attribute, &index);
+  status = daVarRegRatr(varp, attribute, index, retval);
+  if(status == S_SUCCESS) {
+    if(strcasecmp(attribute,DAVAR_RATR) == 0){
+      retval->any_u.s = realloc(retval->any_u.s,strlen(retval->any_u.s)
+				+strlen(TH_SCALER) + 2);
+      strcat(retval->any_u.s,TH_SCALER);
+      strcat(retval->any_u.s,"\n");
+    }
+  } else {
+    if(strcasecmp(attribute,TH_SCALER) == 0){
+      int i;
+      if(varp->opaque){
+	retval->valtype = DAVARINT_RPC;
+	if(index == DAVAR_NOINDEX) {
+	  retval->any_u.i.i_len = varp->size;
+	  retval->any_u.i.i_val = (int *) malloc(varp->size*sizeof(int));
+	  for(i=0;i<varp->size;i++) {
+	    retval->any_u.i.i_val[i] = ((DAINT *)varp->opaque)[i];
+	  }
+	} else {
+	  retval->any_u.i.i_len = 1;
+	  retval->any_u.i.i_val = (int *) malloc(sizeof(int));
+	  retval->any_u.i.i_val[0] = ((DAINT *)varp->opaque)[index];
+	}
+      } else {
+	retval->valtype = DAVARERROR_RPC;
+	retval->any_u.error = S_SUCCESS;
+      }
+    }
+  }
+  /* A special handler would check more attributes if status != SUCCESS */
+  return;
 }

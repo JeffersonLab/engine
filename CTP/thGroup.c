@@ -16,6 +16,11 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.2  1999/11/04 20:34:05  saw
+ *   Alpha compatibility.
+ *   New RPC call needed for root event display.
+ *   Start of code to write ROOT trees (ntuples) from new "tree" block
+ *
  *   Revision 1.1  1998/12/07 22:11:12  saw
  *   Initial setup
  *
@@ -36,12 +41,12 @@
 
 thStatus thBookGroup(char *name);
 /* Fortran Interface */
-FCALLSCFUN0(LONG,thBook,THBOOK,thbook)
-FCALLSCFUN1(LONG,thBookGroup,THGBOOK,thgbook,STRING)
-FCALLSCFUN1(LONG,thExecuteGroup,THGEXE,thgexe,STRING)
-FCALLSCFUN1(LONG,thClearGroup,THGCLR,thgclr,STRING)
-FCALLSCFUN1(LONG,thClearScalersGroup,THGCLS,thgcls,STRING)
-FCALLSCFUN1(LONG,thIncrementScalersGroup,THGINS,thgins,STRING)
+FCALLSCFUN0(INT,thBook,THBOOK,thbook)
+FCALLSCFUN1(INT,thBookGroup,THGBOOK,thgbook,STRING)
+FCALLSCFUN1(INT,thExecuteGroup,THGEXE,thgexe,STRING)
+FCALLSCFUN1(INT,thClearGroup,THGCLR,thgclr,STRING)
+FCALLSCFUN1(INT,thClearScalersGroup,THGCLS,thgcls,STRING)
+FCALLSCFUN1(INT,thIncrementScalersGroup,THGINS,thgins,STRING)
 
 struct thHook {
   char *type;
@@ -50,20 +55,25 @@ struct thHook {
   thStatus (*clear)();
   thStatus (*clearScalers)();
   thStatus (*incrementScalers)();
+  thStatus (*ctpwrite)();
+  thStatus (*ctpclose)();
 };
 typedef struct thHook thHook;
 /* V indicates these calls take a variable pointer, not a name */
 /* Eventually calls without V may go away, and these will all be renamed */
 /* How many of these c routines are "advertised */
 thHook thHooks[] = {
-  {PARMSTR   ,thLoadParameters,0,0,0,0},
-  {GETHITSTR ,thBookGethits,thExecuteaGethitBlock,0,0,0},
+  {PARMSTR   ,thLoadParameters,0,0,0,0,0,0},
+  {GETHITSTR ,thBookGethits,thExecuteaGethitBlock,0,0,0,0,0},
   {TESTSTR   ,thBookTests,thExecuteTestsV,thClearTestFlagsV,thClearTestScalersV
-     ,thIncTestScalersV},
-  {HISTSTR,thBookHists,thExecuteHistsV,thClearHistsV,0,0},
-  {UHISTSTR,thBookHists,0,0,0,0},
-  {REPORTSTR,thBookReports,0,0,0,0},
-  {0,0,0,0,0,0}};
+     ,thIncTestScalersV,0,0},
+  {HISTSTR,thBookHists,thExecuteHistsV,thClearHistsV,0,0,0,0},
+  {UHISTSTR,thBookHists,0,0,0,0,0,0},
+#ifdef ROOTTREE
+  {TREESTR,thBookTree,thFillTreeV,thClearTreeV,0,0,thWriteTreeV,thCloseTreeV},
+#endif
+  {REPORTSTR,thBookReports,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0}};
 
 int thGroupClassesSet=0;
 
@@ -88,6 +98,8 @@ void thInitGroupOpaque(char *name, thGroupOpaque *opqptr)
   opqptr->clear = classopqptr->clear;
   opqptr->clearScalers = classopqptr->clearScalers;
   opqptr->incrementScalers = classopqptr->incrementScalers;
+  opqptr->ctpwrite = classopqptr->ctpwrite;
+  opqptr->ctpclose = classopqptr->ctpclose;
   /* Find out what group type we are copy the information out of it's
      opaque block */
 }
@@ -127,6 +139,8 @@ thStatus thSetGroupClasses()
     opqptr->clear = thHooks[i].clear;
     opqptr->clearScalers = thHooks[i].clearScalers;
     opqptr->incrementScalers = thHooks[i].incrementScalers;
+    opqptr->ctpwrite = thHooks[i].ctpwrite;
+    opqptr->ctpclose = thHooks[i].ctpclose;
     if(daVarRegister((int) 0, &var) == S_FAILURE){
       fprintf(STDERR,"Failed to register %s\n",var.name);
       return(S_FAILURE);
@@ -192,6 +206,8 @@ MAKEGSUB(thExecuteGroup,"thExecuteGroup",execute)
 MAKEGSUB(thClearGroup,"thClearGroup",clear)
 MAKEGSUB(thClearScalersGroup,"thClearScalersGroup",clearScalers)
 MAKEGSUB(thIncrementScalersGroup,"thIncrementScalersGroup",incrementScalers)
+MAKEGSUB(thWriteGroup,"thWriteGroup",ctpwrite)
+MAKEGSUB(thCloseGroup,"thCloseGroup",ctpclose)
 
 thStatus thBook()
 /* Book all the parameter, tests and histograms and anything else that is
@@ -251,9 +267,9 @@ booking order will be precisely as appears in the CTP files.
 }
 
 #define MAKEFSUB(SUBNAME,TYPESTR,CSUBNAME) \
-long SUBNAME(char *A1,unsigned C1)\
+int SUBNAME(char *A1,unsigned C1)\
 {\
-  long A0;\
+  int A0;\
   char *B1=0;\
   int newsize;\
   static char *full_name=0;\
@@ -287,6 +303,11 @@ MAKEFSUB(thtstclsg,TESTSTR,thClearScalersGroup)
 MAKEFSUB(thtstinsg,TESTSTR,thIncrementScalersGroup)
 MAKEFSUB(thhstexeg,HISTSTR,thExecuteGroup)
 MAKEFSUB(thgethitg,GETHITSTR,thExecuteGroup)
+#ifdef ROOTTREE
+MAKEFSUB(thtreexeg,TREESTR,thExecuteGroup)
+MAKEFSUB(thtrecloseg,TREESTR,thCloseGroup)
+MAKEFSUB(thtrewriteg,TREESTR,thWriteGroup)
+#endif
 #else
 MAKEFSUB(thtstexeg_,TESTSTR,thExecuteGroup)
 MAKEFSUB(thtstclrg_,TESTSTR,thClearGroup)
@@ -294,6 +315,11 @@ MAKEFSUB(thtstclsg_,TESTSTR,thClearScalersGroup)
 MAKEFSUB(thtstinsg_,TESTSTR,thIncrementScalersGroup)
 MAKEFSUB(thhstexeg_,HISTSTR,thExecuteGroup)
 MAKEFSUB(thgethitg_,GETHITSTR,thExecuteGroup)
+#ifdef ROOTTREE
+MAKEFSUB(thtreexeg_,TREESTR,thExecuteGroup)
+MAKEFSUB(thtreecloseg_,TREESTR,thCloseGroup)
+MAKEFSUB(thtreewriteg_,TREESTR,thWriteGroup)
+#endif
 #endif
 
 /*

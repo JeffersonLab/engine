@@ -16,11 +16,13 @@
  *
  * Revision History:
  *  $Log$
- *  Revision 1.1  1998/12/07 22:11:10  saw
- *  Initial setup
+ *  Revision 1.2  1999/11/04 20:34:05  saw
+ *  Alpha compatibility.
+ *  New RPC call needed for root event display.
+ *  Start of code to write ROOT trees (ntuples) from new "tree" block
  *
- * Revision 1.2  1995/01/09  16:03:50  saw
- * include errno.h
+ *  Revision 1.2  1995/01/09 16:03:50  saw
+ *  include errno.h
  *
  * Revision 1.1  1994/11/07  14:19:57  saw
  * Initial revision
@@ -44,22 +46,22 @@
 
 void davarsvr_1(struct svc_req *rqstp, register SVCXPRT *transp);
 
-long daVarServSet(long prog, long version);
-long daVarServUnSet(long prog, long version);
-long daVarServOnce(long wait);
-FCALLSCFUN2(LONG,daVarServSet,THSERVSET,thservset,LONG,LONG);
-FCALLSCFUN2(LONG,daVarServUnSet,THSERVUNSET,thservunset,LONG,LONG);
-FCALLSCFUN1(LONG,daVarServOnce,THSERVONE,thservone,LONG);
+int daVarServSet(int prog, int version);
+int daVarServUnSet(int prog, int version);
+int daVarServOnce(int wait);
+FCALLSCFUN2(INT,daVarServSet,THSERVSET,thservset,INT,INT);
+FCALLSCFUN2(INT,daVarServUnSet,THSERVUNSET,thservunset,INT,INT);
+FCALLSCFUN1(INT,daVarServOnce,THSERVONE,thservone,INT);
 
-long last_program,last_version;	/* Save these for daVarServUnSet */
+int last_program,last_version;	/* Save these for daVarServUnSet */
 SVCXPRT *udp_transp,*tcp_transp; /* Descriptors that go with above */
 
-long daVarGetProgVers(long *prog, long *version)
+int daVarGetProgVers(int *prog, int *version)
 {
   *prog = last_program;
   *version = last_version;
 }
-long daVarServSet(long prog, long version)
+int daVarServSet(int prog, int version)
 {
    
   if(prog==0) prog = DAVARSVR;
@@ -90,7 +92,7 @@ long daVarServSet(long prog, long version)
   
 }
   
-long daVarServUnSet(long prog, long version)
+int daVarServUnSet(int prog, int version)
 {
   register SVCXPRT *transp;
   
@@ -104,11 +106,11 @@ long daVarServUnSet(long prog, long version)
   return(0);
 }
   
-long daVarServOnce(long wait)
+int daVarServOnce(int wait)
 {
   fd_set readfdset;
   extern int errno;
-  long status;
+  int status;
   struct timeval timeout;
   struct timeval *timeoutp;
   static int tsize=0;

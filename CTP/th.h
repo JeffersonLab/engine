@@ -16,8 +16,16 @@
  *
  * Revision History:
  *   $Log$
- *   Revision 1.1  1998/12/07 22:11:11  saw
- *   Initial setup
+ *   Revision 1.2  1999/11/04 20:34:05  saw
+ *   Alpha compatibility.
+ *   New RPC call needed for root event display.
+ *   Start of code to write ROOT trees (ntuples) from new "tree" block
+ *
+ *   Revision 1.6  1999/08/25 13:16:05  saw
+ *   *** empty log message ***
+ *
+ *   Revision 1.5  1996/01/30 15:39:45  saw
+ *   Add new prototypes: group calls, class calls used by groups
  *
  *	  Revision 1.4  1995/08/03  13:47:48  saw
  *	  Add Error code for integer overflow
@@ -37,7 +45,7 @@
 #define _TH_H
 /* Variable registration */
 
-typedef long thStatus;		/* Return status type */
+typedef int thStatus;		/* Return status type */
 
 /* General booking routines */
 thStatus thLoad(char *fname);
@@ -68,6 +76,8 @@ thStatus thExecuteGroup(char *group_name);
 thStatus thClearGroup(char *group_name);
 thStatus thClearScalersGroup(char *group_name);
 thStatus thIncrementScalersGroup(char *group_name);
+thStatus thWriteGroup(char *group_name);
+thStatus thCloseGroup(char *group_name);
 
 /* Histogram package routines */
 thStatus thExecuteHists(char *block_name);

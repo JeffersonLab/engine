@@ -17,6 +17,11 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.2  1999/11/04 20:34:06  saw
+ *   Alpha compatibility.
+ *   New RPC call needed for root event display.
+ *   Start of code to write ROOT trees (ntuples) from new "tree" block
+ *
  *   Revision 1.1  1998/12/07 22:11:12  saw
  *   Initial setup
  *
@@ -117,7 +122,7 @@ void HREND(){};
 
 extern daVarStatus thHistRHandler();
 
-struct thHistSpecList {
+struct thHistSpecList {		/* Opaque structure for blocks */
   daVarStruct *varname;		/* name is "hist.xxx", varptr points to ID
 				   title is optional title
 				   opaque points nd, and x,y,test vars */
@@ -132,6 +137,7 @@ struct thHistOpaque {		/* Opaque structure for histogram definition */
   daVarStruct *x; int xindex;
   daVarStruct *y; int yindex;
   daVarStruct *test; int testindex;
+  daVarStruct *weight; int weightindex;
   /* Include here the limits? */
   /* Include the pointer to the variable of how much to fill by. */
 };
@@ -147,11 +153,7 @@ struct thHBlockList {
 };
 typedef struct thHBlockList thHBlockList;
 
-thHistSpecList *thHistListP;	/* Pointer to list of cut specifications */
 thHBlockList *thHBlockListP;	/* Pointer to list of hist blocks */
-
-/*Read in the test file, get the pointer to each object referred to.  The test
-result flags will be registered if they are not registered.*/
 
 thStatus thBookaHist(char *line, thHistSpecList **thHistNext);
 thStatus thExecuteaHist(thHistSpecList *Hist);
@@ -159,13 +161,13 @@ thStatus thRemoveHists(char *block_name);
 thStatus thVarResolve(char *s, daVarStruct **var,int *index,int datatest,int newvartype);
 
 FCALLSCFUN1(INT,thGetHistID,THGETID,thgetid,STRING)
-FCALLSCFUN1(LONG,thHistAliasWrite,THWHALIAS,thwhalias,STRING)
+FCALLSCFUN1(INT,thHistAliasWrite,THWHALIAS,thwhalias,STRING)
      
 /*
 enum attribute_value {HNAME, XSOURCE, YSOURCE, NBINS, NBINX, NBINY, XLOW,XHIGH
-, YLOW, YHIGH, TEST, TITLE};
+, YLOW, YHIGH, TEST, TITLE, WEIGHT};
 char *attribute_string[] = {"name","xsource","ysource","nbins","nbinx","nbiny"
-,"xlow","xhigh","ylow","yhigh","title","test"};
+,"xlow","xhigh","ylow","yhigh","title","test","weight"};
 */
 int thMaxID=0;			/* Maximum Hbook ID used so far */
 char *datasourcelist[]={EVENTSTR,TESTSTR,0}; /* Immediate expressions */
@@ -187,7 +189,7 @@ thStatus thBookHists(daVarStruct *var)
   {
     int i;
 /*    printf("In bookhists\n");*/
-    /* Get the name without the block.test on it */
+    /* Get the name without the block.hist on it */
     blockname = var->name;	/* If name doesn't fit pattern, use whole */
     if(strcasestr(var->name,BLOCKSTR)==var->name){
       i = strlen(BLOCKSTR) + 1;
@@ -240,9 +242,8 @@ thStatus thBookHists(daVarStruct *var)
     lcopy = (char *) malloc(eol-lines+1);
     strncpy(lcopy,lines,(eol-lines));
     *(lcopy + (eol-lines)) = '\0';
-    /*    printf("Passing|%s|\n",lcopy);*/
+/*    printf("Passing|%s|\n",lcopy);*/
     if(!thCleanLine(lcopy)){
-      /*    printf("Passing|%s|\n",lcopy);*/
       if(thBookaHist(lcopy,thHistNext)==S_SUCCESS){
 	thHistNext = &((*thHistNext)->next);
       } else {
@@ -286,10 +287,9 @@ thStatus thBookHists(daVarStruct *var)
 thStatus thBookaHist(char *line, thHistSpecList **thHistNext)
 {
   int nargs, nd, n, id;
-  int i;
   char *long_title;
-  daVarStruct *(varp[2]),*testp;
-  int vind[2],tind;
+  daVarStruct *(varp[2]),*testp,*weightp;
+  int vind[2],tind,wind;
   thHistOpaque *histpars;
   char *args[20];
   /*  int type;
@@ -298,7 +298,6 @@ thStatus thBookaHist(char *line, thHistSpecList **thHistNext)
       */
   int userflag;			/* 0 for normal hist, 1 for user hist */
   
-  /* Must catch comment lines and return success */
   {
     char *s;
     s = line;
@@ -316,11 +315,23 @@ thStatus thBookaHist(char *line, thHistSpecList **thHistNext)
     long_title = (char *) malloc(strlen(line)+1);
     strcpy(long_title,line);
   }
+  /* All between # and title char, comment char, or EOL is the weight */
+  {
+    char *s;
+    if((s=strchr(line,WEIGHTCHAR))) {
+      *s++=0;
+      s = thSpaceStrip(s);
+      if(thVarResolve(s,&weightp,&wind,0,0) != S_SUCCESS) {
+	free(long_title);
+	return(S_FAILURE);
+      }
+    } else {
+      weightp = 0;
+      wind = 0;
+    }
+  }
   
   nargs = thCommas(line,args);
-  /*  for(i=0;i<nargs;i++){
-    printf("%d:%s\n",i,args[i]);
-  }*/
   args[0] = thSpaceStrip(args[0]);
   
   userflag = 0;
@@ -345,7 +356,6 @@ thStatus thBookaHist(char *line, thHistSpecList **thHistNext)
   } else {
     for(n=0;n<nd;n++){		/* Interpret the data sources */
       args[n+1] = thSpaceStrip(args[n+1]);
-      /*      printf("n=%d,nd=%d\n",n,nd);*/
       if(thVarResolve(args[n+1],&varp[n],&vind[n],0,0) != S_SUCCESS) {
 	free(long_title);
 	return(S_FAILURE);
@@ -422,6 +432,8 @@ thStatus thBookaHist(char *line, thHistSpecList **thHistNext)
     histpars->yindex = vind[1];
     histpars->test = testp;
     histpars->testindex = tind;
+    histpars->weight = weightp;
+    histpars->weightindex = wind;
   }
 
   /* Data sources and test result now interpreted */
@@ -543,7 +555,6 @@ datatest values
       free(var.name);
     } else {
       fprintf(stderr,"Variable %s must be registered\n",s);
-      abort();
       if(leftp) *leftp = cleft;
       return(S_FAILURE);
     }
@@ -665,6 +676,7 @@ thStatus thExecuteaHist(thHistSpecList *Hist)
   daVarStruct *(varp[2]);
   int indxy[2];
   thHistOpaque *opqptr;
+  double weight;
 
 /*  nd = Hist->nd;*/
   opqptr = Hist->varname->opaque;
@@ -688,13 +700,29 @@ thStatus thExecuteaHist(thHistSpecList *Hist)
 	break;
       }
   }
+  if(opqptr->weight) {
+    switch(opqptr->weight->type)
+      {
+      case DAVARINT:
+	weight = *((DAINT *) opqptr->weight->varptr + opqptr->weightindex);
+	break;
+      case DAVARFLOAT:
+	weight = *((DAFLOAT *) opqptr->weight->varptr + opqptr->weightindex);
+	break;
+      case DAVARDOUBLE:
+	weight = *((DADOUBLE *) opqptr->weight->varptr + opqptr->weightindex);
+	break;
+      }
+  } else {
+    weight = 1.0;
+  }
   if((opqptr->test ? *((DAINT *) opqptr->test->varptr + opqptr->testindex) : 1)) {
     if(nd==1){
-      HF1(*(DAINT *) Hist->varname->varptr,vals[0],1.0);
+      HF1(*(DAINT *) Hist->varname->varptr,vals[0],weight);
 /*      printf("Filling %s at %f\n",Hist->varname->name,vals[0]);*/
     }
     else
-      HF2(*(int *) Hist->varname->varptr,vals[0],vals[1],1.0);
+      HF2(*(int *) Hist->varname->varptr,vals[0],vals[1],weight);
   }
   return(S_SUCCESS);
 }
@@ -829,18 +857,18 @@ thStatus thHistAliasWrite(char *fname)
   return(S_SUCCESS);
 }
       
-long thhstexe_()
+int thhstexe_()
 {
-  long A0;
+  int A0;
   A0 = thExecuteHists(0);
   return A0;
 }
 /* This routine needs to append block.hist in front.  Ultimately it
 should probably only put this in front if there isn't a block. in the
 name already??  */
-long thhstexeb_(char *A1,unsigned C1)
+int thhstexeb_(char *A1,unsigned C1)
 {
-  long A0;
+  int A0;
   char *B1;
   A0 = thExecuteHists((!*(int *)A1)?0:memchr(A1,'\0',C1)?A1:
                       (memcpy(B1=malloc(C1+1),A1,C1),B1[C1]='\0'

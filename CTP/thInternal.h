@@ -16,11 +16,19 @@
  *
  * Revision History:
  *   $Log$
- *   Revision 1.1  1998/12/07 22:11:12  saw
- *   Initial setup
+ *   Revision 1.2  1999/11/04 20:34:06  saw
+ *   Alpha compatibility.
+ *   New RPC call needed for root event display.
+ *   Start of code to write ROOT trees (ntuples) from new "tree" block
  *
- *   Revision 1.6  1996/01/30 15:44:49  saw
- *   Add prototypes of calls needed by groups, add DEFAULTGRPSTR and ALLGRPSTR
+ *   Revision 1.8  1999/08/25 13:16:06  saw
+ *   *** empty log message ***
+ *
+ *   Revision 1.7  1999/03/01 19:54:48  saw
+ *   Add weighted histograms
+ *
+ *	  Revision 1.6  1996/01/30  15:44:49  saw
+ *	  Add prototypes of calls needed by groups, add DEFAULTGRPSTR and ALLGRPSTR
  *
  *	  Revision 1.5  1995/08/03  13:53:43  saw
  *	  Add parameters for #, real, integer, double
@@ -58,6 +66,13 @@ thStatus thIncTestScalersV(daVarStruct *var);
 thStatus thExecuteHistsV(daVarStruct *var);
 thStatus thClearHistsV(daVarStruct *var);
 thStatus thExecuteaGethitBlock(daVarStruct *var);
+#ifdef ROOTTREE
+thStatus thBookTree(daVarStruct *var);
+thStatus thFillTreeV(daVarStruct *var);
+thStatus thClearTreeV(daVarStruct *var);
+thStatus thWriteTreeV(daVarStruct *var);
+thStatus thCloseTreeV(daVarStruct *var);
+#endif
 
 extern daVarStatus thWHandler();
 extern daVarStatus thRHandler();
@@ -82,12 +97,14 @@ extern daVarStatus thRHandler();
 #define EVENTSTR "event"
 #define GETHITSTR "gethit"
 #define REPORTSTR "report"
+#define TREESTR "tree"
 #define SCALERSTR "scaler"
 #define REAL "real"
 #define INTEGER "integer"
 #define DOUBLE "double"
 
 #define HTITLECHAR '$'
+#define WEIGHTCHAR '#'
 
 #define TH_SCALER "scaler"
 #define TH_ND "nd"

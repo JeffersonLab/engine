@@ -17,8 +17,19 @@
  *
  * Revision History:
  *   $Log$
- *   Revision 1.1  1998/12/07 22:11:10  saw
- *   Initial setup
+ *   Revision 1.2  1999/11/04 20:34:04  saw
+ *   Alpha compatibility.
+ *   New RPC call needed for root event display.
+ *   Start of code to write ROOT trees (ntuples) from new "tree" block
+ *
+ *   Revision 1.13  1999/08/25 13:16:05  saw
+ *   *** empty log message ***
+ *
+ *   Revision 1.12  1999/03/01 19:51:32  saw
+ *   Add Absoft Fortran stuff
+ *
+ *   Revision 1.11  1997/05/29 18:56:25  saw
+ *   Lock changes before adding Absoft(Linux) compatibility
  *
  *	  Revision 1.10  1996/07/31  20:37:53  saw
  *	  Use hash table for name storage.
@@ -121,7 +132,7 @@ int daVarListPattern_length;
 int daVarComp(daVarStruct *item1, daVarStruct *item2);
 
 /* Code */
-long daVarRegister(int flag, daVarStruct *args)
+int daVarRegister(int flag, daVarStruct *args)
 /* Should accept a title arg of zero and create a null string in that
    case.
 */
@@ -203,7 +214,7 @@ long daVarRegister(int flag, daVarStruct *args)
 }
 
 
-long daVarLookup(char *name, daVarStruct *result)
+int daVarLookup(char *name, daVarStruct *result)
 {
   daVarStruct search, **searchresult;
   static char *namel=0;		/* Pointers to  static space for copies of */
@@ -247,7 +258,7 @@ long daVarLookup(char *name, daVarStruct *result)
   } else
     return(S_DAVAR_UNKNOWN);
 }
-long daVarStrcmp(register char *s1, register char *s2)
+int daVarStrcmp(register char *s1, register char *s2)
 {
   while(toupper(*s1) == toupper(*s2++))
     if(*s1++ == '\0')
@@ -272,7 +283,7 @@ int daVarComp(daVarStruct *item1, daVarStruct *item2)
   return(daVarStrcmp(item1->name,item2->name));
 }
 
-long daVarLookupP(char *name, daVarStruct **varstructptr)
+int daVarLookupP(char *name, daVarStruct **varstructptr)
 {
   daVarStruct search, **searchresult;
 
@@ -317,7 +328,7 @@ daVarLookupPWithClass(char *name, char **prefixlist, daVarStruct **varp)
   return(S_DAVAR_UNKNOWN);	/* Variable not registered */
 }
 
-daVarCount_node
+void daVarCount_node
 #ifdef USEHASH
 (void *entry)
 {
@@ -349,7 +360,7 @@ daVarList_node
 }
 
 
-long daVarList(char *pattern, char ***listp, int *count)
+int daVarList(char *pattern, char ***listp, int *count)
 /* User is not allowed to muck with the strings pointed to in the list
    because they are the actual strings in the tables. */
 {
@@ -396,13 +407,13 @@ daVarPrint_node(node *nd,VISIT order, int level)
   }
 }
 
-long daVarPrint()
+int daVarPrint()
 {
   mytwalk(daVarRoot,daVarPrint_node);
   return(S_SUCCESS);
 }
 #endif
-long daVarFreeList(char **list)
+int daVarFreeList(char **list)
 /* Free's up the list of variables in listp */
 {
   int i;
@@ -419,10 +430,10 @@ long daVarFreeList(char **list)
 #define LENARGSCALER 1
 
 #define MAKEFSUB(SUBNAME,CLASS,TYPENAME,DATYPE,ARRAY) \
-long SUBNAME(char *name, TYPENAME *vptr, LENDEF##ARRAY char *title\
+int SUBNAME(char *name, TYPENAME *vptr, LENDEF##ARRAY char *title\
 	      ,unsigned l_name, unsigned l_title)\
 {\
-  long A0;\
+  int A0;\
   daVarStruct args;\
   char *BN=0;\
   char *BT=0;\
@@ -448,8 +459,9 @@ long SUBNAME(char *name, TYPENAME *vptr, LENDEF##ARRAY char *title\
   if(BT) free(BT);\
   return(A0);\
 }
-		     
-#ifdef NOF77extname
+
+/* Can't figure out a more clever way */
+#ifdef AbsoftUNIXFortran
 MAKEFSUB(regreal,"",float,DAVARFLOAT,SCALER)
 MAKEFSUB(regdouble,"",double,DAVARDOUBLE,SCALER)
 MAKEFSUB(regint,"",int,DAVARINT,SCALER)
@@ -499,15 +511,15 @@ MAKEFSUB(regtestintarray_,"test.",int,DAVARINT,ARRAY)
 
 /* Entry points for String registration.  Do entry points for anything other
 than parmameters make sense? */
-#ifdef NOF77extname
-long regparmstring
+#ifdef AbsoftUNIXFortran
+int regparmstring
 #else
-long regparmstring_
+int regparmstring_
 #endif
 (char *name, char *sptr, char *title
 		    ,unsigned l_name, unsigned l_sptr, unsigned l_title)
 {
-  long A0;
+  int A0;
   daVarStruct args;
   char *BN=0;
 
