@@ -5,7 +5,10 @@
 *                              change name to sos_tracking.cmn
 *                              put sluno and debugflags from parameters to CTP
 * $Log$
-* Revision 1.2  1994/03/24 18:40:37  cdaq
+* Revision 1.3  1994/06/06 17:06:05  cdaq
+* (DFG) add ssingle_stub
+*
+* Revision 1.2  1994/03/24  18:40:37  cdaq
 * (DFG) Additional parameters
 *
 * Revision 1.1  1994/02/22  14:47:57  cdaq
@@ -73,6 +76,7 @@
       integer*4 sdebugstubchisq
       integer*4 sdebugtartrackprint       ! call s_print_tar_track
       integer*4 sdebug_mc_start_time      ! Kludge for Monte Carlo start time
+      integer*4 ssingle_stub              ! switch to make tracks of all stubs
       common/SOS_TRACKFLAGS/
      &     sluno,
      &     sdebugflagpsi,
@@ -85,7 +89,8 @@
      &     sdebugtartrackprint,
      &     sdebugprintrawdc,
      &     sdebugprintdecodeddc,
-     &     sdebug_mc_start_time
+     &     sdebug_mc_start_time,
+     &     ssingle_stub
 *
 *     array to hold multiple hits per wire
       integer*4 sdc_max_wires_per_plane   ! maximum number of wires per plane
