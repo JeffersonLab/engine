@@ -1,6 +1,9 @@
       subroutine h_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.9  1996/08/30 19:53:01  saw
+* (JRA) Up thresholds from 10 channels to 15 chans above pedestal
+*
 * Revision 1.8  1996/01/24 15:56:28  saw
 * (JRA) Cleanup
 *
@@ -73,7 +76,7 @@ c	write(6,*) pln,cnt,'+',num
           hhodo_new_sig_pos(pln,cnt) = sqrt(max(0.,sig2))
 c          hhodo_new_threshold_pos(pln,cnt)=hhodo_new_ped_pos(pln,cnt)+
 c     &           2.*hhodo_new_sig_pos(pln,cnt)
-          hhodo_new_threshold_pos(pln,cnt)=hhodo_new_ped_pos(pln,cnt)+10.
+          hhodo_new_threshold_pos(pln,cnt)=hhodo_new_ped_pos(pln,cnt)+15.
 
 *note channels with 2 sigma difference from paramter file values.
           if (abs(hscin_all_ped_pos(pln,cnt)-hhodo_new_ped_pos(pln,cnt))
@@ -100,7 +103,7 @@ c	write(6,*) pln,cnt,'-',num
           hhodo_new_sig_neg(pln,cnt) = sqrt(max(0.,sig2))
 c          hhodo_new_threshold_neg(pln,cnt)=hhodo_new_ped_neg(pln,cnt)+
 c     &           2.*hhodo_new_sig_neg(pln,cnt)
-          hhodo_new_threshold_neg(pln,cnt)=hhodo_new_ped_neg(pln,cnt)+10.
+          hhodo_new_threshold_neg(pln,cnt)=hhodo_new_ped_neg(pln,cnt)+15.
 
           if (abs(hscin_all_ped_neg(pln,cnt)-hhodo_new_ped_neg(pln,cnt))
      &            .ge.(2.*hhodo_new_sig_neg(pln,cnt))) then
@@ -131,7 +134,7 @@ c      write(6,*) blk,num
         sig2 = float(hcal_ped_sum2(blk))/num - hcal_new_ped(blk)**2
         hcal_new_rms(blk) = sqrt(max(0.,sig2))
 c        hcal_new_adc_threshold(blk)=hcal_new_ped(blk)+2.*hcal_new_rms(blk)
-        hcal_new_adc_threshold(blk)=hcal_new_ped(blk)+10.
+        hcal_new_adc_threshold(blk)=hcal_new_ped(blk)+15.
         if (abs(hcal_ped_mean(blk)-hcal_new_ped(blk))
      &                 .ge.(2.*hcal_new_rms(blk))) then
           ind = ind + 1
@@ -159,7 +162,7 @@ c	write(6,*) 'pmt,num'
         sig2 = float(hcer_ped_sum2(pmt))/ num - hcer_new_ped(pmt)**2
         hcer_new_rms(pmt) = sqrt(max(0.,sig2))
 c        hcer_new_adc_threshold(pmt)=hcer_new_ped(pmt)+2.*hcer_new_rms(pmt)
-        hcer_new_adc_threshold(pmt)=hcer_new_ped(pmt)+10.
+        hcer_new_adc_threshold(pmt)=hcer_new_ped(pmt)+15.
         if (abs(hcer_ped(pmt)-hcer_new_ped(pmt))
      &                 .ge.(2.*hcer_new_rms(pmt))) then
           ind = ind + 1
@@ -184,7 +187,7 @@ c        hcer_new_adc_threshold(pmt)=hcer_new_ped(pmt)+2.*hcer_new_rms(pmt)
           hmisc_new_ped(imisc) = float(hmisc_ped_sum(imisc)) / num
           sig2 = float(hmisc_ped_sum2(imisc))/ num - hmisc_new_ped(imisc)**2
           hmisc_new_rms(imisc) = sqrt(max(0.,sig2))
-          hmisc_new_adc_threshold(imisc)=hmisc_new_ped(imisc)+10.
+          hmisc_new_adc_threshold(imisc)=hmisc_new_ped(imisc)+15.
           if (abs(hmisc_ped(imisc)-hmisc_new_ped(imisc))
      &                 .ge.(2.*hmisc_new_rms(imisc))) then
             ind = ind + 1
