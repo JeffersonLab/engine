@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.26  2002/09/24 20:21:18  jones
+# add g_apply_offsets.f,h_apply_offsets.f,s_apply_offsets.f,h_fieldcorr.f
+#
 # Revision 1.25  1999/11/04 20:35:14  saw
 # Linux/G77 compatibility fixes
 #
@@ -99,13 +102,13 @@ general_source = $(decode_source) g_clear_event.f \
 	g_target_initialize.f g_trans_misc.f g_dump_peds.f g_get_next_event.f \
 	g_preproc_event.f g_preproc_open.f g_write_event.f \
 	g_examine_epics_event.f \
-	g_analyze_scaler_bank.f g_analyze_scalers_by_banks.f
+	g_analyze_scaler_bank.f g_analyze_scalers_by_banks.f g_apply_offsets.f 
 hms_source = h_clear_event.f h_initialize.f h_keep_results.f \
 	h_proper_shutdown.f h_reset_event.f \
-	h_register_variables.f
+	h_register_variables.f h_apply_offsets.f h_fieldcorr.f
 sos_source = s_clear_event.f s_initialize.f s_keep_results.f \
 	s_proper_shutdown.f s_reset_event.f \
-	s_register_variables.f
+	s_register_variables.f s_apply_offsets.f
 coin_source = c_register_variables.f c_clear_event.f c_initialize.f \
 	c_keep_results.f c_proper_shutdown.f c_reconstruction.f \
 	c_reset_event.f c_physics.f
