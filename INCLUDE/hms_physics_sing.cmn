@@ -1,5 +1,12 @@
 *    This include file contains all the variables required for h_physics
 * $Log$
+* Revision 1.10  2004/02/26 22:14:53  jones
+* Add parameter  hsel_using_scin. When hsel_using_scin= 1 then new code
+* HTRACKING/h_select_track_using_scin.f which selects track
+* base on which hits closest to the scintillator hits.
+* When hsel_using_scin= 0 then previous way of selecting best
+* track based on chi-squared is used.
+*
 * Revision 1.9  2003/09/08 21:03:03  jones
 * Change h_phicentral_offset to h_oopcentral_offset (mkj)
 *
@@ -68,6 +75,8 @@
       REAL*4 hsel_etmax                 ! Maximum track et
 
       INTEGER*4 hsel_ndegreesmin        ! Minimum number of degrees of freedom
+      INTEGER*4 hsel_using_scin       ! =1 select best track using scin info
+                                      ! = 0 select best track suing just chi2
 *
       COMMON/hms_chose_one_track_r4/
      &     hsel_chi2_fpperdegmax,
@@ -79,7 +88,7 @@
      &     hsel_etmax
 *
       COMMON/hms_chose_one_track_i4/
-     &     hsel_ndegreesmin      
+     &     hsel_ndegreesmin,hsel_using_scin    
 
 *
 *     CTPTYPE=event
