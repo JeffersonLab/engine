@@ -8,7 +8,10 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change SPLANE_PARAM to individual arrays
 * $Log$
-* Revision 1.2  1994/11/22 20:19:22  cdaq
+* Revision 1.3  1995/04/01 20:42:06  cdaq
+* (SAW) Use sdc_planes_per_chamber instead of (sdc_num_planes/sdc_num_chambers)
+*
+* Revision 1.2  1994/11/22  20:19:22  cdaq
 * (SPB) Recopied from hms file and modified names for SOS
 * (SAW) Remove hardwired plane and chamber counts.
 *
@@ -37,10 +40,10 @@
 *     sdc_central_wire(iplane) = Location of center of wire 1
 *     sdc_sigma(iplane)       = sigma
 *
-*
+      sdc_planes_per_chamber = sdc_num_planes / sdc_num_chambers
 *
 *     loop over all planes
-
+*
       do iplane=1,sdc_num_planes
         sdc_plane_num(iplane)=iplane
         z0=sdc_zpos(iplane)
@@ -97,10 +100,10 @@
 *     check these   I don't think they are correct
         denom = stubxpsi*stubychi 
      &          - stubxchi*stubypsi
-       sstubcoef(iplane,1)= stubychi/(sdc_sigma(iplane)*denom)
-       sstubcoef(iplane,2)= -stubxchi/(sdc_sigma(iplane)*denom)
-       sstubcoef(iplane,3)= sphi0(iplane)*sstubcoef(iplane,1)
-       sstubcoef(iplane,4)= sphi0(iplane)*sstubcoef(iplane,2)
+        sstubcoef(iplane,1)= stubychi/(sdc_sigma(iplane)*denom)
+        sstubcoef(iplane,2)= -stubxchi/(sdc_sigma(iplane)*denom)
+        sstubcoef(iplane,3)= sphi0(iplane)*sstubcoef(iplane,1)
+        sstubcoef(iplane,4)= sphi0(iplane)*sstubcoef(iplane,2)
 *
 *     xsp and ysp used in space point pattern recognition
 *
@@ -144,54 +147,60 @@
       do pindex=1,SDC_NUM_PLANES+SDC_NUM_CHAMBERS
 
 * generate the matrix SAA3 for an sdc missing a particular plane
-      do i=1,3
-        do j=1,3
-        SAA3(i,j)=0.
-         if(j.lt.i)then      ! SAA3 is symmetric so only calculate 6 terms
-          SAA3(i,j)=SAA3(j,i)
-          else
-            if(pindex.le.SDC_NUM_PLANES) then
-              ich = (pindex-1)/(SDC_NUM_PLANES/SDC_NUM_CHAMBERS)+1
-              do k=(ich-1)*(SDC_NUM_PLANES/SDC_NUM_CHAMBERS)+1
-     $             ,ich*(SDC_NUM_PLANES/SDC_NUM_CHAMBERS)
-                if(pindex.eq.k) then
-                  SAA3(i,j)=SAA3(i,j) + sstubcoef(k,i)*sstubcoef(k,j)
-                endif
-              enddo
+        do i=1,3
+          do j=1,3
+            SAA3(i,j)=0.
+            if(j.lt.i)then              ! SAA3 is symmetric so only calculate 6 terms
+              SAA3(i,j)=SAA3(j,i)
             else
-              ich = pindex - SDC_NUM_PLANES
-              do k=(ich-1)*(SDC_NUM_PLANES/SDC_NUM_CHAMBERS)+1
-     $             ,ich*(SDC_NUM_PLANES/SDC_NUM_CHAMBERS)
-                SAA3(i,j)=SAA3(i,j) + sstubcoef(k,i)*sstubcoef(k,j)
-              enddo
-            endif
-          endif                         !end test j lt i
-        enddo                           !end j loop
-      enddo                             !end i loop
+              if(pindex.le.SDC_NUM_PLANES) then
+                ich = (pindex-1)/(SDC_PLANES_PER_CHAMBER)+1
+                do k=(ich-1)*(SDC_PLANES_PER_CHAMBER)+1
+     $               ,ich*(SDC_PLANES_PER_CHAMBER)
+                  if(pindex.ne.k) then
+                    SAA3(i,j)=SAA3(i,j) + sstubcoef(k,i)*sstubcoef(k,j)
+                  endif
+                enddo
+              else
+                ich = pindex - SDC_NUM_PLANES
+                do k=(ich-1)*(SDC_PLANES_PER_CHAMBER)+1
+     $               ,ich*(SDC_PLANES_PER_CHAMBER)
+                  SAA3(i,j)=SAA3(i,j) + sstubcoef(k,i)*sstubcoef(k,j)
+                enddo
+              endif
+            endif                       !end test j lt i
+          enddo                         !end j loop
+        enddo                           !end i loop
 
 * form the inverse matrix SAAINV3 for each configuration
-      SAAINV3(1,1,pindex)=(SAA3(2,2)*SAA3(3,3)-SAA3(2,3)**2)
-      SAAINV3(1,2,pindex)=-(SAA3(1,2)*SAA3(3,3)-SAA3(1,3)*SAA3(2,3))
-      SAAINV3(1,3,pindex)=(SAA3(1,2)*SAA3(2,3)-SAA3(1,3)*SAA3(2,2))
-      SDET3(pindex)=SAA3(1,1)*SAAINV3(1,1,pindex)+SAA3(1,2)*SAAINV3(1,2,pindex)
-     &            +SAA3(1,3)*SAAINV3(1,3,pindex)
-       if(abs(sdet3(pindex)).le.1e-20)then
-        write(6,*)'******************************************************'
-        write(6,*)'Warning! Determinate of matrix SAA3(i,j) is nearly zero.'
-        write(6,*)'All tracks using pindex=',pindex,' will be zerfucked.'
-        write(6,*)'Fix problem in h_generate_geometry.f or else!'
-        write(6,*)'******************************************************'
-        sdet3(pindex)=1.
-       endif
-      SAAINV3(1,1,pindex)=SAAINV3(1,1,pindex)/SDET3(pindex)
-      SAAINV3(1,2,pindex)=SAAINV3(1,2,pindex)/SDET3(pindex)
-      SAAINV3(1,3,pindex)=SAAINV3(1,3,pindex)/SDET3(pindex)
-      SAAINV3(2,2,pindex)=(SAA3(1,1)*SAA3(3,3)-SAA3(1,3)**2)/SDET3(pindex)
-      SAAINV3(2,3,pindex)= -(SAA3(1,1)*SAA3(2,3)-SAA3(1,2)*SAA3(3,1))/SDET3(pindex)
-      SAAINV3(3,3,pindex)=(SAA3(1,1)*SAA3(2,2)-SAA3(1,2)**2)/SDET3(pindex)
+        SAAINV3(1,1,pindex)=(SAA3(2,2)*SAA3(3,3)-SAA3(2,3)**2)
+        SAAINV3(1,2,pindex)=-(SAA3(1,2)*SAA3(3,3)-SAA3(1,3)*SAA3(2,3))
+        SAAINV3(1,3,pindex)=(SAA3(1,2)*SAA3(2,3)-SAA3(1,3)*SAA3(2,2))
+        SDET3(pindex)=SAA3(1,1)*SAAINV3(1,1,pindex)+SAA3(1,2)*SAAINV3(1,2
+     $       ,pindex)+SAA3(1,3)*SAAINV3(1,3,pindex)
+        if(abs(sdet3(pindex)).le.1e-20)then
+          write(6,*
+     $         )'******************************************************'
+          write(6,*
+     $         )'Warning! Determinate of matrix SAA3(i,j) is nearly zero.'
+          write(6,*)'All tracks using pindex=',pindex,' will be zerfucked.'
+          write(6,*)'Fix problem in h_generate_geometry.f or else!'
+          write(6,*
+     $         )'******************************************************'
+          sdet3(pindex)=1.
+        endif
+        SAAINV3(1,1,pindex)=SAAINV3(1,1,pindex)/SDET3(pindex)
+        SAAINV3(1,2,pindex)=SAAINV3(1,2,pindex)/SDET3(pindex)
+        SAAINV3(1,3,pindex)=SAAINV3(1,3,pindex)/SDET3(pindex)
+        SAAINV3(2,2,pindex)=(SAA3(1,1)*SAA3(3,3)-SAA3(1,3)**2)/SDET3(pindex
+     $       )
+        SAAINV3(2,3,pindex)= -(SAA3(1,1)*SAA3(2,3)-SAA3(1,2)*SAA3(3,1))
+     $       /SDET3(pindex)
+        SAAINV3(3,3,pindex)=(SAA3(1,1)*SAA3(2,2)-SAA3(1,2)**2)/SDET3(pindex
+     $       )
 
-      enddo  !end pindex loop
-     
+      enddo                             !end pindex loop
+      
 *     for debug write out all parameters
       if(sdebugflaggeometry.ne.0) then
         write(sluno,'(''    SOS PLANE PARAMETERS: '')')
@@ -226,9 +235,9 @@
         write(sluno,'(''                 splane_coeff'')')
         write(sluno,'('' plane     1        2       3        4        5'',
      &   ''      6       7       8        9'')')
-          do j=1,sdc_num_planes
-            write(sluno,1004) j,(splane_coeff(i,j),i=1,9) 
-          enddo                           ! end of print over planes loop
+        do j=1,sdc_num_planes
+          write(sluno,1004) j,(splane_coeff(i,j),i=1,9) 
+        enddo                           ! end of print over planes loop
 1004  format(1x,i3,f10.5,2f8.3,f9.3,4f8.3,f9.3)
 *
       endif                               !   end if on debug print out
