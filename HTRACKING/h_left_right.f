@@ -5,6 +5,9 @@
 *     space point.
 *     d. f. geesaman           17 January 1994
 * $Log$
+* Revision 1.10  1995/10/10 15:56:36  cdaq
+* (JRA) Cleanup massive nested if's.  Remove hdc_sing_wcoord stuff.
+*
 * Revision 1.9  1995/07/19 20:12:46  cdaq
 * (SAW) Declear jibset for f2c compatibility
 *
@@ -45,8 +48,8 @@
 *
 *     local variables
 *
-      character*50 here
-      parameter (here= 'H_LEFT_RIGHT')
+      character*12 here
+      parameter (here= 'h_left_right')
 *
       logical ABORT
       character*(*) err
@@ -66,13 +69,9 @@
       logical smallAngOK
 *
       ABORT= .FALSE.
-      err=':'
-* initialize hdc_sing_wcoord (or else!)
-      do plane=1,HDC_NUM_PLANES
-        hdc_sing_wcoord(plane) = -100.
-      enddo
+      err=' '
 
-*d    jm 10/2/94 added initialization/setting of gplanehdc1(isp)/2 pattern
+*     djm 10/2/94 added initialization/setting of gplanehdc1(isp)/2 pattern
 *     units. Presently we are accepting 5/6 or 6/6 planes per chamber. 
       do isp=1,hnspace_points_tot             ! loop over all space points
           gplanehdc1(isp) = 0
@@ -105,70 +104,45 @@
          
           if(gplanehdc1(isp).eq.63)then
           pindex=13                      !first 6 bits set, so 6 planes hit
-          else
-           if(gplanehdc1(isp).eq.62)then
-           pindex=1                     !missing lowest order bit, missing x1
-           else
-            if(gplanehdc1(isp).eq.61)then
+          else if(gplanehdc1(isp).eq.62)then
+            pindex=1                    !missing lowest order bit, missing x1
+          else if(gplanehdc1(isp).eq.61)then
             pindex=2
-            else
-             if(gplanehdc1(isp).eq.59)then
-             pindex=3
-             else
-              if(gplanehdc1(isp).eq.55)then
-              pindex=4
-              else
-               if(gplanehdc1(isp).eq.47)then
-               pindex=5
-               else
-                if(gplanehdc1(isp).eq.31)then
-                pindex=6
-                else
-                pindex=-1              !multiple missing planes or other problem
-                end if
-               end if
-              end if
-             end if
-            end if
-           end if
+          else if(gplanehdc1(isp).eq.59)then
+            pindex=3
+          else if(gplanehdc1(isp).eq.55)then
+            pindex=4
+          else if(gplanehdc1(isp).eq.47)then
+            pindex=5
+          else if(gplanehdc1(isp).eq.31)then
+            pindex=6
+          else
+            pindex=-1                   !multiple missing planes or other problem
           end if
 
         else                            !must be hdc2
 
           if(gplanehdc2(isp).eq.63)then
-          pindex=14                      !first 6 bits set, so 6 planes hit
-          else
-           if(gplanehdc2(isp).eq.62)then
-           pindex=7                     !missing lowest order bit, missing x1
-           else
-            if(gplanehdc2(isp).eq.61)then
+            pindex=14                   !first 6 bits set, so 6 planes hit
+          else if(gplanehdc2(isp).eq.62)then
+            pindex=7                    !missing lowest order bit, missing x1
+          else if(gplanehdc2(isp).eq.61)then
             pindex=8
-            else
-             if(gplanehdc2(isp).eq.59)then
-             pindex=9
-             else
-              if(gplanehdc2(isp).eq.55)then
-              pindex=10
-              else
-               if(gplanehdc2(isp).eq.47)then
-               pindex=11
-               else
-                if(gplanehdc2(isp).eq.31)then
-                pindex=12
-                else
-                pindex=-2              !multiple missing planes or other problem
-                end if
-               end if
-              end if
-             end if
-            end if
-           end if
+          else if(gplanehdc2(isp).eq.59)then
+            pindex=9
+          else if(gplanehdc2(isp).eq.55)then
+            pindex=10
+          else if(gplanehdc2(isp).eq.47)then
+            pindex=11
+          else if(gplanehdc2(isp).eq.31)then
+            pindex=12
+          else
+            pindex=-2                   !multiple missing planes or other problem
           end if
-          
-         endif  !end test whether hdc1 or hdc2
+        endif                           !end test whether hdc1 or hdc2
 
 *     check if small angle L/R determination of Y and Y' planes is possible
-          if(isa_y1.gt.0 .AND. isa_y2.gt.0) smallAngOK = .TRUE.
+        if(isa_y1.gt.0 .AND. isa_y2.gt.0) smallAngOK = .TRUE.
           if((hSmallAngleApprox.ne.0) .AND. (smallAngOK)) then
              if(wc(isa_y2).le.wc(isa_y1)) then
                 plusminusknown(isa_y1) = -1
@@ -196,10 +170,8 @@
               enddo
 * now passign pl(ihit) so it doesn't have to be recalculated every iteration
               call h_find_best_stub(numhits,hits,pl,pindex,plusminus,stub,chi2)
-              if(hdebugstubchisq.ne.0) then
-                 write(hluno,'(''hms  pmloop='',i4,''   chi2='',e14.6)')
-     &                     pmloop,chi2
-              endif
+              if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
+     $             ''   chi2='',e14.6)') pmloop,chi2
               if (chi2.lt.minchi2)  then
                   minchi2=chi2
                   do idummy=1,numhits
@@ -217,10 +189,6 @@
             HDC_WIRE_COORD(hspace_point_hits(isp,ihit+2))=
      &      HDC_WIRE_CENTER(hspace_point_hits(isp,ihit+2)) +
      &      plusminusbest(ihit)*HDC_DRIFT_DIS(hspace_point_hits(isp,ihit+2))
-
-            hdc_sing_wcoord(pl(ihit)) =
-     $           HDC_WIRE_COORD(hspace_point_hits(isp,ihit+2))
-
           enddo
 *
 *     stubs are calculated in rotated coordinate system
