@@ -9,9 +9,13 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 *-    $Log$
-*-    Revision 1.15  1995/05/11 19:02:23  cdaq
-*-    (SAW) Add ability to set CTP variables from the command line
+*-    Revision 1.16  1995/07/27 19:45:40  cdaq
+*-    (SAW) f2c compatibility changes.  Only shutdown ntuples at very end.
+*-          ctp command line variables override at every oportunity
 *-
+* Revision 1.15  1995/05/11  19:02:23  cdaq
+* (SAW) Add ability to set CTP variables from the command line
+*
 * Revision 1.14  1995/04/01  20:12:58  cdaq
 * (SAW) Call g_proper_shutdown instead of dump_hists for periodic hist dumps
 *
@@ -89,14 +93,16 @@
       character*80 g_config_environmental_var
       parameter (g_config_environmental_var= 'ENGINE_CONFIG_FILE')
 *
+      integer*4 iargc,jishft,jiand
+*
 *--------------------------------------------------------
 *
-      type *
-      type *,'                hall C analysis engine March 1995'
-      type *
+      print *
+      print *,'                hall C analysis engine Summer 1995'
+      print *
 *
       err= ' '
-      type *
+      print *
 *
       nargs = iargc()
       nextarg = 1
@@ -266,11 +272,12 @@ c      if (itmp.ne.0) gen_run_hist_dump_interval=itmp
 *     Check if this is a physics event or a CODA control event.
 *
         if(.not.problems) then
-          evtype = ishft(craw(2),-16)
+          evtype = jishft(craw(2),-16)
           gen_event_type= evtype        ! reassigned later? 
-          if(iand(CRAW(2),'FFFF'x).eq.'10CC'x) then ! Physics event
+          if(jiand(CRAW(2),'FFFF'x).eq.'10CC'x) then ! Physics event
 *     
-            if(evtype.le.gen_MAX_trigger_types) then
+            if(evtype.le.gen_MAX_trigger_types .and.
+     $           gen_run_enable(evtype-1).ne.0) then
                   
               call g_examine_physics_event(CRAW,ABORT,err)
               problems = problems .or.ABORT
@@ -336,8 +343,8 @@ c      if (itmp.ne.0) gen_run_hist_dump_interval=itmp
           EndIf
           if(gen_run_hist_dump_interval.gt.0) then
             if((total_event_count/gen_run_hist_dump_interval)
-     $           *gen_run_hist_dump_interval.eq.
-     $           (total_event_count-gen_run_starting_event)) then
+     $           *gen_run_hist_dump_interval.eq.total_event_count) then
+ccc     $           (total_event_count-gen_run_starting_event)) then
               print *,"Dumping histograms at event ",total_event_count
 *
 *     Dump scaler report as well
@@ -356,7 +363,7 @@ cc              endif
 *
         since_cnt= since_cnt+1
         if(since_cnt.GE.1000) then
-          type *,' event#',total_event_count,'  ',ABORT
+          print *,' event#',total_event_count,'  ',ABORT
           since_cnt= 0
         endif
 *
@@ -377,7 +384,7 @@ cc              endif
 *
       ENDDO                             !found a problem or end of run
 *
-      type *,'    -------------------------------------'
+      print *,'    -------------------------------------'
 *
       IF(ABORT .or. mss.NE.' ') THEN
         call G_rep_err(ABORT,mss)       !report any errors or warnings
@@ -386,7 +393,7 @@ cc              endif
 *
       if(rpc_on.ne.0) call thservunset(0,0)
 *
-      type *,'    -------------------------------------'
+      print *,'    -------------------------------------'
 *
       call G_proper_shutdown(ABORT,err) !save files, etc.
       If(ABORT .or. err.NE.' ') Then
@@ -395,11 +402,18 @@ cc              endif
         err= ' '
       EndIf
 *
-      type *
-      type *,'      total number of events=',total_event_count
-      type *
+      call g_ntuple_shutdown(ABORT,err)
+      If(ABORT .or. err.NE.' ') Then
+        call G_add_path(here,err)       !report any errors or warnings
+        call G_rep_err(ABORT,err)
+        err= ' '
+      EndIf
 *
-      type *,' Processed:'
+      print *
+      print *,'      total number of events=',total_event_count
+      print *
+*
+      print *,' Processed:'
       DO i=0,gen_MAX_trigger_types
         If(gen_run_triggered(i).GT.0) Then
           write(mss,'(i10," events of type",i3)') gen_run_triggered(i),i
