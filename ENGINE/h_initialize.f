@@ -11,6 +11,9 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 * $Log$
+* Revision 1.15  1996/09/04 14:40:46  saw
+* (JRA) Reorder some calls
+*
 * Revision 1.14  1995/10/09 18:46:28  cdaq
 * (SAW) Move ntuple initialization into g_ntuple_init
 *
@@ -72,6 +75,16 @@
       err= ' '
       ABORT = .FALSE.
 *
+*-calculate physics singles constants
+      call h_init_physics(FAIL,why)
+      if(err.NE.' ' .and. why.NE.' ') then  !keep warnings
+        call G_append(err,' & '//why)
+      elseif(why.NE.' ') then
+        err= why
+      endif
+      ABORT= ABORT .or. FAIL
+*
+*
       call h_generate_geometry          ! Tracking routine
 *
 *-calculate secondary scintillator and time of flight parameters
@@ -108,15 +121,6 @@
          call g_build_note(';istat=@','@',istat,' ',1.,'(I3)',mss)
          call G_append(why,mss)
       endif
-      if(err.NE.' ' .and. why.NE.' ') then  !keep warnings
-        call G_append(err,' & '//why)
-      elseif(why.NE.' ') then
-        err= why
-      endif
-      ABORT= ABORT .or. FAIL
-*
-*-calculate physics singles constants
-      call h_init_physics(FAIL,why)
       if(err.NE.' ' .and. why.NE.' ') then  !keep warnings
         call G_append(err,' & '//why)
       elseif(why.NE.' ') then
