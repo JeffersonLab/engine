@@ -18,6 +18,20 @@
 *-                                cut.  The default for this is now no cut.
 *-                                K.G. Vansyoc
 * $Log$
+* Revision 1.9.12.1  2005/03/15 20:13:34  jones
+* Modify the criterion for matching track and calorimeter cluster. As before,
+* the track must hit within (0.5*scal_block_xsize + scal_slop) of the cluster
+* position. Previously if more than one cluster was within (0.5*scal_block_xsize + scal_slop) then the last cluster in the loop was associated with the track.
+* Now, if more than one cluster meets that condition then cluster which has a position
+* closest to the track is associated with the track. ( T. Horn)
+*
+* Revision 1.10  2005/03/15 20:08:23  jones
+* Modify the criterion for matching track and calorimeter cluster. As before,
+* the track must hit within (0.5*scal_block_xsize + scal_slop) of the cluster
+* position. Previously if more than one cluster was within (0.5*scal_block_xsize + scal_slop) then the last cluster in the loop was associated with the track.
+* Now, if more than one cluster meets that condition then cluster which has a position
+* closest to the track is associated with the track.
+*
 * Revision 1.9  2003/04/03 00:45:01  jones
 * Update to calorimeter calibration (V. Tadevosyan)
 *
@@ -67,6 +81,9 @@
       real*4 delta_x    !Distance between track & cluster in X projection
       logical*4 track_in_fv
 
+      integer*4 t_nt, t_nc
+      real*4 t_minx, temp_x
+
       include 'sos_data_structures.cmn'
       include 'sos_calorimeter.cmn'
       include 'sos_tracking.cmn'
@@ -94,6 +111,8 @@
      &                 yf.le.scal_fv_ymax  .and.  yf.ge.scal_fv_ymin  .and.
      &                 yb.le.scal_fv_ymax  .and.  yb.ge.scal_fv_ymin)
 
+
+
 * Initialize scluster_track(nt)
         if(scal_fv_test.eq.0) then         !not using fv test
           scluster_track(nt)=-1
@@ -111,15 +130,31 @@
         if((scal_fv_test.ne.0.and.track_in_fv) .or. scal_fv_test.eq.0) then
 
           if(snclusters_cal.gt.0) then
+             t_minx = 99999
+             t_nt = 1
+             t_nc = 1
             do nc=1,snclusters_cal
               delta_x=abs(xf-scluster_xc(nc))
               if(delta_x.le.(0.5*scal_block_xsize + scal_slop)) then
-                scluster_track(nt)=nc   !Track matches cluster #nc
-                sntracks_cal      =sntracks_cal+1
+
+!! TH - Check the deviation distance for each track for each cluster. If 
+!!      distance smaller assign to t_minx. Eventually want to associate 
+!!      the track with the smallest deviation to the cluster. Increment 
+!!      tracks for calorimeter though whenever condition above is passed
+
+                 temp_x = delta_x
+                 if(temp_x.lt.t_minx) then
+                    t_minx = temp_x
+                    t_nt = nt
+                    t_nc = nc
+                 endif
+                 sntracks_cal      =sntracks_cal+1
               endif                     !End ... if matched
             enddo                       !End loop over clusters
+
+            scluster_track(t_nt)=t_nc   !Track matches cluster #nc with min deviation
           endif                         !End ... if number of clusters > 0
-        endif                           
+        endif                           !End ... if inside fiducial volume
       enddo                             !End loop over detector tracks
 
   100 continue
