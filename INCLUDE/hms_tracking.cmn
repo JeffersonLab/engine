@@ -8,7 +8,10 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.2  1994/03/24 18:39:05  cdaq
+* Revision 1.3  1994/06/06 16:40:04  cdaq
+* (DFG) add hsingle_stub
+*
+* Revision 1.2  1994/03/24  18:39:05  cdaq
 * (DFG) Additional parameters
 *
 * Revision 1.1  1994/02/22  14:46:44  cdaq
@@ -76,6 +79,7 @@
       integer*4 hdebugstubchisq
       integer*4 hdebugtartrackprint       ! call h_print_tar_track
       integer*4 hdebug_mc_start_time      ! kludge for monte carlo drift calc
+      integer*4 hsingle_stub              ! switch to make tracks of all stubs
       common/HMS_TRACKFLAGS/
      &     hluno,
      &     hdebugflagpsi,
@@ -88,7 +92,9 @@
      &     hdebugtartrackprint,
      &     hdebugprintrawdc,
      &     hdebugprintdecodeddc,
-     &     hdebug_mc_start_time
+     &     hdebug_mc_start_time,
+     &     hsingle_stub
+
 *
 *     array to hold multiple hits per wire
       integer*4 hdc_max_wires_per_plane   ! maximum number of wires per plane
