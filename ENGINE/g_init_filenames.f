@@ -23,9 +23,12 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 *-    $Log$
-*-    Revision 1.10  1995/05/11 19:01:29  cdaq
-*-    (SAW) Check 0 in g_config_filename in case user doesn't update engine.f
+*-    Revision 1.11  1995/07/27 19:35:15  cdaq
+*-    (SAW) Add call to g_ctp_database to set ctp vars by run number
 *-
+* Revision 1.10  1995/05/11  19:01:29  cdaq
+* (SAW) Check 0 in g_config_filename in case user doesn't update engine.f
+*
 * Revision 1.9  1995/05/11  16:16:11  cdaq
 * (SAW) Don't get g_config_filename from environment if it is already set
 *       from the command line and allow %d run number substitution in it.
@@ -88,6 +91,7 @@
       g_alias_filename = ' '
       g_histout_filename = ' '
       g_decode_map_filename = ' '
+      g_ctp_database_filename = ' '
 *
       s_recon_coeff_filename = ' '
       h_recon_coeff_filename = ' '
@@ -132,12 +136,22 @@
 
       ABORT= .NOT.g_config_loaded
       IF(ABORT) THEN
-        error= ':opened OK, but thload command failed from "'//file//'"'
+        error= ':opened OK, but thbook command failed from "'//file//'"'
         call G_add_path(here,error)
       ELSE
         error= ' '
       ENDIF
-*      IF(echo) type *,' ......exiting '//here//'........'
+*
+*     Now if there is a g_ctp_database_filename set, pass the run number
+*     to it to set CTP variables
+*
+      if(.not.ABORT.and.g_ctp_database_filename.ne.' ') then
+        call g_ctp_database(ABORT, error
+     $       ,gen_run_number, g_ctp_database_filename)
+        IF(ABORT) THEN
+          call G_add_path(here,error)
+        endif
+      ENDIF
       return
 *
 999   g_config_loaded= .FALSE.
@@ -147,3 +161,5 @@
       return
 *
       end
+
+
