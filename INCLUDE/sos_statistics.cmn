@@ -1,7 +1,11 @@
 *      sos_statistics.cmn
 *      common blocks containing event statistics for s_reconstruction
 * $Log$
-* Revision 1.6  1995/04/06 20:21:08  cdaq
+* Revision 1.7  1995/05/22 19:02:13  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
+* Fix a conflicting common block name
+*
+* Revision 1.6  1995/04/06  20:21:08  cdaq
 * (SAW) Remove hms isms and hardwired array sizes
 *
 * Revision 1.5  1995/03/13  19:15:42  cdaq
@@ -25,7 +29,7 @@
 *     directive to makereg to tell it to include the code in the program
 *     that it generates.
 *
-*%%   include 'gen_data_structures.cmn'
+*%%   include 'sos_data_structures.cmn'
 *
 *     CTPTYPE=parm
 *
@@ -119,7 +123,7 @@
       integer*4 sstat_cal_hitsum(smax_cal_columns)
       real*4 sstat_cal_eff(smax_cal_columns)
 
-      common/sscin_statistics/
+      common/scal_statistics/
      &  sstat_cal_numevents,
      &  sstat_cal_trk,         !# of times track points near center of block.
      &  sstat_cal_hit,         !# of times the tube on block was over threshold.
