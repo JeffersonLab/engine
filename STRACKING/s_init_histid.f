@@ -7,6 +7,9 @@
 *     Date:      9 April 1994
 *
 * $Log$
+* Revision 1.4  1996/01/17 19:02:45  cdaq
+* (JRA) Add sidcuttdc, sidscinalltimes, and sidscintimes
+*
 * Revision 1.3  1995/08/31 18:43:01  cdaq
 * (JRA) Add dpos (pos. track - pos. hit) histograms
 *
@@ -120,6 +123,7 @@ c
       sidschi2perdeg_fp = thgetid('schi2perdeg_fp')
 *     histogram block sos_decoded_dc
       sidrawtdc = thgetid('sdcrawtdc')
+      sidcuttdc = thgetid('sdccuttdc')
       do plane = 1, sdc_num_planes
         histname = sdcplanename(plane)//wiremap
         siddcwiremap(plane) = thgetid(histname)
@@ -139,7 +143,9 @@ c
 
       sidscinrawtothits = thgetid('sscintothits')
       sidscinplane = thgetid('sscinplane')
-      sidscinalltimes = thgetid('sscintimes')
+      sidscinalltimes = thgetid('sscinalltimes')
+      sidscintimes = thgetid('sscintimes')
+
       snum_scin_counters(1) = sscin_1x_nr
       snum_scin_counters(2) = sscin_1y_nr
       snum_scin_counters(3) = sscin_2x_nr
