@@ -13,7 +13,10 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
-* Revision 1.5  1994/06/15 20:35:59  cdaq
+* Revision 1.6  1994/08/16 13:24:58  cdaq
+* (DJA) Move call to h_fill_dc_dec_hist to h_pattern_recognition
+*
+* Revision 1.5  1994/06/15  20:35:59  cdaq
 * (DFG) Add upper and lower limit for valid TDC
 *
 * Revision 1.4  1994/04/13  17:59:46  cdaq
@@ -112,9 +115,6 @@
 *     set total number of good hits
 *     
         HDC_TOT_HITS = goodhit
-         
-*     Histogram HDC_DECODED_DC
-        call h_fill_dc_dec_hist(ABORT,err)
          
       endif                             !  end test on HDC_RAW_TOT_HITS.gt.0
 *     
