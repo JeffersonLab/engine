@@ -122,6 +122,10 @@ engine_replay: engine_replay_$(MYOS)
 #	ln -s $< $@
 	cp engine_replay_$(MYOS) ../../$(MYOS)/bin/engine_replay
 	$(RM) engine_replay_$(MYOS)
+	echo ************** READ this ***********
+	echo **** Please remember to compile code *****
+	echo **** on Sun and Linux machines **********
+	echo ********** READ THIS ***************
 engine.o:
 	cp ../ENGINE/O.$(MYOS)/engine.o engine.o
 
