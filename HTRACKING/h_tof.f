@@ -23,7 +23,10 @@
 * the correction parameters.
 *
 * $Log$
-* Revision 1.2  1994/04/13 16:28:53  cdaq
+* Revision 1.3  1994/05/13 02:36:30  cdaq
+* (DFG) remove h_prt_track_tests call
+*
+* Revision 1.2  1994/04/13  16:28:53  cdaq
 * (DFG) Add check for zero track
 *
 * Revision 1.1  1994/02/21  16:06:29  cdaq
@@ -184,10 +187,6 @@
                call h_prt_tof(trk)
             endif
 *
-*     Dump HMS_TRACK_TESTS if hdebugprinttracktests is set
-            if( hdebugprinttracktests .ne. 0 ) then
-               call h_prt_track_tests
-            endif
 *
          enddo                          !end of loop over tracks
 *
