@@ -1,0 +1,35 @@
+#
+# $Log$
+# Revision 1.1  1994/04/15 20:27:51  cdaq
+# Initial revision
+#
+include $(Csoft)/etc/Makefile
+
+sources = find_space_points.f select_space_points.f solve_four_by_four.f \
+	solve_three_by_three.f g_init_histid.f
+
+libsources = $(sources) $(newstuff)
+
+lib_targets := $(patsubst %.f, libtracking.a(%.o), $(libsources))
+
+install-dirs := lib
+ifeq ($(ARCH),HPUX)
+##  lib_targets = libutils.a
+  bin_targets =
+endif
+
+ifeq ($(ARCH),ULTRIX)
+##  lib_targets = libutils.a
+  bin_targets =
+endif
+
+default:
+	@echo "nothing to make"
+
+#
+# Get include files from ENGINE directory
+#
+%.cmn : ../INCLUDE/RCS/%.cmn,v
+	$(CO) $(COFLAGS) $<
+
+include $(sources:.f=.d)

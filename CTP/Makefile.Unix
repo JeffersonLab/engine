@@ -1,0 +1,55 @@
+#
+# $Log$
+# Revision 1.1  1994/04/15 20:28:27  cdaq
+# Initial revision
+#
+include $(Csoft)/etc/Makefile
+
+ctp_sources = thTest.c thTestParse.c thTestExecute.c thHandlers.c thParm.c \
+	thUtils.c thLoad.c thHist.c daVarRegister.c daVarRpcProc.c \
+	daVarServ.c
+derived_sources = daVarRpc_svc.c daVarRpc_xdr.c
+
+libsources = $(ctp_sources) $(derived_sources)
+sources = $(ctp_sources)
+
+lib_targets := $(patsubst %.c, libctp.a(%.o), $(libsources))
+
+install-dirs := lib
+
+ifeq ($(ARCH),HPUX)
+  CC = gcc
+  CFLAGS = -D_HPUX_SOURCE -Dextname
+  ARFLAGS = frv
+  RPCCOM=rpcgen
+  OSTYPE=HPUX
+endif
+
+ifeq ($(ARCH),ULTRIX)
+  CC = gcc
+  CFLAGS =
+  RPCCOM=/usr/site1/rpc/rpcgen
+  OSTYPE=ULTRIX
+endif
+
+##library: libctp.a
+
+##$(LIBROOT)/libctp.a: $(libctp_members)
+
+daVarRpc_xdr.c: daVarRpc.x
+	rm -f $@
+	$(RPCCOM) -o $@ -c daVarRpc.x
+
+daVarRpc_svc.c: daVarRpc.x
+	rm -f $@
+	$(RPCCOM) -o $@ -m daVarRpc.x
+
+daVarRpc.h: daVarRpc.x
+	rm -f $@
+	$(RPCCOM) -o $@ -h daVarRpc.x
+
+daVarRpc_xdr.d: daVarRpc_xdr.c
+
+daVarRpc_svc.d: daVarRpc_svc.c
+
+include $(sources:.c=.d)

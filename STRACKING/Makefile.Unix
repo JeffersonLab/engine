@@ -1,0 +1,56 @@
+#
+# $Log$
+# Revision 1.1  1994/04/15 20:28:07  cdaq
+# Initial revision
+#
+include $(Csoft)/etc/Makefile
+
+sources = s_cal.f s_cer.f s_chamnum.f s_dpsifun.f s_drift_dist_calc.f \
+	s_drift_time_calc.f s_fcnchisq.f s_find_best_stub.f \
+	s_generate_geometry.f s_initialize_fitting.f s_left_right.f \
+	s_link_stubs.f s_pattern_recognition.f s_physics.f s_print_links.f \
+	s_print_pr.f s_print_stubs.f s_print_tar_tracks.f s_print_tracks.f \
+	s_psifun.f s_register_param.f s_reconstruction.f s_targ_trans.f \
+	s_tdc_time_per_channel.f s_tdc_zero.f s_tof.f s_track.f s_track_fit.f \
+	s_trans_cal.f s_trans_dc.f s_trans_scin.f s_wire_center_calc.f \
+	s_print_decoded_dc.f s_print_raw_dc.f s_register_id_param.f \
+	s_register_track_param.f
+newstuff = s_cal.f s_clusters_cal.f s_correct_cal.f s_fill_dc_dec_hist.f \
+	s_fill_dc_fp_hist.f s_init_cal.f s_init_scin.f s_prt_cal_clusters.f \
+	s_prt_cal_decoded.f s_prt_cal_raw.f s_prt_cal_sparsified.f \
+	s_prt_cal_tests.f s_prt_cal_tracks.f s_prt_dec_scin.f \
+	s_prt_raw_scin.f s_prt_tof.f s_prt_track_tests.f s_raw_dump_all.f \
+	s_sparsify_cal.f s_tof.f s_tof_init.f s_tof_fit.f s_tracks_cal.f \
+	s_trans_cal.f s_trans_scin.f s_fill_scin_raw_hist.f
+
+libsources = $(sources) $(newstuff)
+
+lib_targets := $(patsubst %.f, libstracking.a(%.o), $(libsources))
+
+install-dirs := lib
+ifeq ($(ARCH),HPUX)
+##  lib_targets = libutils.a
+  bin_targets =
+endif
+
+ifeq ($(ARCH),ULTRIX)
+##  lib_targets = libutils.a
+  bin_targets =
+endif
+
+default:
+	@echo "nothing to make"
+
+#
+# Get include files from INCLUDE directory
+#
+%.cmn : ../INCLUDE/RCS/%.cmn,v
+	$(CO) $(COFLAGS) $<
+
+%.dec : ../INCLUDE/RCS/%.dec,v
+	$(CO) $(COFLAGS) $<
+
+%.par : ../INCLUDE/RCS/%.par,v
+	$(CO) $(COFLAGS) $<
+	
+include $(sources:.f=.d)

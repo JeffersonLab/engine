@@ -1,0 +1,57 @@
+#
+# $Log$
+# Revision 1.1  1994/04/15 20:30:16  cdaq
+# Initial revision
+#
+include $(Csoft)/etc/Makefile
+
+sources = h_cal.f h_cer.f h_chamnum.f h_dpsifun.f \
+	h_drift_dist_calc.f h_drift_time_calc.f h_fcnchisq.f \
+	h_find_best_stub.f h_generate_geometry.f h_left_right.f \
+	h_link_stubs.f h_pattern_recognition.f h_physics.f h_print_links.f \
+	h_print_pr.f h_print_stubs.f h_print_tar_tracks.f h_print_tracks.f \
+	h_psifun.f h_register_param.f h_reconstruction.f h_targ_trans.f \
+	h_tdc_time_per_channel.f h_tdc_zero.f h_tof.f h_track.f h_track_fit.f \
+	h_trans_cal.f h_trans_dc.f h_trans_scin.f h_wire_center_calc.f \
+	h_print_decoded_dc.f h_print_raw_dc.f h_register_id_param.f \
+	h_register_track_param.f
+newstuff = h_clusters_cal.f h_correct_cal.f \
+	h_fill_dc_dec_hist.f h_fill_dc_fp_hist.f h_init_cal.f \
+	h_init_scin.f h_prt_cal_clusters.f h_prt_cal_decoded.f \
+	h_prt_cal_raw.f h_prt_cal_sparsified.f h_prt_cal_tests.f \
+	h_prt_cal_tracks.f h_prt_dec_scin.f h_prt_raw_scin.f h_prt_tof.f \
+	h_prt_track_tests.f h_raw_dump_all.f h_sparsify_cal.f h_tof_fit.f \
+	h_tof_init.f h_tracks_cal.f h_fill_scin_raw_hist.f
+
+libsources = $(sources) $(newstuff)
+
+lib_targets := $(patsubst %.f, libhtracking.a(%.o), $(libsources))
+
+install-dirs := lib
+ifeq ($(ARCH),HPUX)
+##  lib_targets = libutils.a
+  bin_targets =
+endif
+
+ifeq ($(ARCH),ULTRIX)
+##  lib_targets = libutils.a
+  bin_targets =
+endif
+
+default:
+	@echo "nothing to make"
+
+#
+# Get include files from INCLUDE directory
+#
+%.cmn : ../INCLUDE/RCS/%.cmn,v
+	$(CO) $(COFLAGS) $<
+
+%.dec : ../INCLUDE/RCS/%.dec,v
+	$(CO) $(COFLAGS) $<
+
+%.par : ../INCLUDE/RCS/%.par,v
+	$(CO) $(COFLAGS) $<
+
+include $(sources:.f=.d)
+
