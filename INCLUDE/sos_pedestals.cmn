@@ -2,6 +2,9 @@
 *                      of pedestal events at the beginning of each run.
 *
 * $Log$
+* Revision 1.9  1999/02/23 19:21:23  csa
+* (JRA) Add vars for improved pedestal calcs
+*
 * Revision 1.8  1999/01/29 17:34:23  saw
 * Add variables for second tubes on shower counter
 *
@@ -61,6 +64,8 @@
 *     CTPTYPE=parm
 *
       integer*4 shodo_min_peds
+      integer*4 shodo_pos_ped_limit(snum_scin_planes,snum_scin_elements)
+      integer*4 shodo_neg_ped_limit(snum_scin_planes,snum_scin_elements)
 *
       common/sos_scin_pedestals/
      &   shodo_pos_ped_sum2,  !sum of squares
@@ -69,6 +74,8 @@
      &   shodo_neg_ped_sum,   !sum of peds
      &   shodo_pos_ped_num,   !number of peds
      &   shodo_neg_ped_num,   !number of peds
+     &   shodo_pos_ped_limit, !max. allowed ped (reject hits during ped trig)
+     &   shodo_neg_ped_limit, !max. allowed ped
      &   shodo_min_peds,      !# of peds required to override default pedestals
      &   shodo_new_sig_pos,
      &   shodo_new_sig_neg,
@@ -110,6 +117,8 @@
 *     CTPTYPE=parm
 *
       integer*4 scal_min_peds
+      integer*4 scal_pos_ped_limit(smax_cal_blocks)
+      integer*4 scal_neg_ped_limit(smax_cal_blocks)
 *
       common/sos_cal_ped_stats/
      &   scal_pos_ped_sum2,       !sum of squares
@@ -118,6 +127,8 @@
      &   scal_neg_ped_sum,        !sum of peds
      &   scal_pos_ped_num,        !number of peds
      &   scal_neg_ped_num,        !number of peds
+     &   scal_pos_ped_limit,      !max. allowed ped (reject hits during ped trig)
+     &   scal_neg_ped_limit,      !max. allowed ped
      &   scal_min_peds,       !# of peds required to override default pedestals
      &   scal_new_ped_pos,        !(new) calculated pedestals.
      &   scal_new_ped_neg,        !(new) calculated pedestals.
@@ -148,11 +159,13 @@
 *     CTPTYPE=parm
 *
       integer*4 scer_min_peds
+      integer*4 scer_ped_limit(smax_cer_hits)
 *
       common/sos_cer_pedestals/
      &   scer_ped_sum2,       !sum of squares
      &   scer_ped_sum,        !sum of peds
      &   scer_ped_num,        !number of peds
+     &   scer_ped_limit,      !max. allowed ped (reject hits during ped trig)
      &   scer_min_peds,       !# of peds required to override default pedestals
      &   scer_new_ped,
      &   scer_new_rms,
@@ -189,6 +202,8 @@
       real*4 saer_neg_threshold(smax_aer_hits)
       integer*4 saer_pos_adc_threshold(smax_aer_hits)
       integer*4 saer_neg_adc_threshold(smax_aer_hits)
+      integer*4 saer_pos_ped_limit(smax_aer_hits)
+      integer*4 saer_neg_ped_limit(smax_aer_hits)
 *
       common/sos_aero_pedestals/
      &   saer_pos_ped_sum2,       !sum of squares
@@ -197,6 +212,8 @@
      &   saer_neg_ped_sum,        !sum of peds
      &   saer_pos_ped_num,        !number of peds
      &   saer_neg_ped_num,        !number of peds
+     &   saer_pos_ped_limit,      !max. allowed ped (reject hits during ped trig)
+     &   saer_neg_ped_limit,      !max. allowed ped
      &   saer_min_peds,           !# of peds required to override default pedestals
      &   saer_pos_ped_mean,       !calculated pedestal value
      &   saer_neg_ped_mean,
@@ -233,6 +250,8 @@
 *      real*4 sluc_neg_threshold(smax_luc_hits)
       integer*4 sluc_pos_adc_threshold(smax_luc_hits)
       integer*4 sluc_neg_adc_threshold(smax_luc_hits)
+      integer*4 sluc_pos_ped_limit(smax_luc_hits)
+      integer*4 sluc_neg_ped_limit(smax_luc_hits)
 *
       common/sos_luci_pedestals/
      &   sluc_pos_ped_sum2,       !sum of squares
@@ -241,6 +260,8 @@
      &   sluc_neg_ped_sum,        !sum of peds
      &   sluc_pos_ped_num,        !number of peds
      &   sluc_neg_ped_num,        !number of peds
+     &   sluc_pos_ped_limit,      !max. allowed ped (reject hits during ped trig)
+     &   sluc_neg_ped_limit,      !max. allowed ped
      &   sluc_min_peds,           !# of peds required to override default pedestals
      &   sluc_pos_ped_mean,       !calculated pedestal value
      &   sluc_neg_ped_mean,
