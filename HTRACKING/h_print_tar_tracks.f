@@ -1,5 +1,5 @@
-        subroutine h_print_tar_tracks
-*+______________________________________________________________________________
+      subroutine h_print_tar_tracks
+*______________________________________________________________________________
 *
 * Facility: CEBAF Hall-C software.
 *
@@ -14,49 +14,53 @@
 *            changed name from h_target_dump to h_print_tar_tracks
 *            made outpu lun hluno
 * $Log$
-* Revision 1.1  1994/02/19 06:17:16  cdaq
+* Revision 1.2  1994/05/12 20:12:56  cdaq
+* (DFG) check for more than 0 tracks
+* (SAW) cosmetic formatting changes to source code
+*
+* Revision 1.1  1994/02/19  06:17:16  cdaq
 * Initial revision
 *
-*-______________________________________________________________________________
+*______________________________________________________________________________
 
-        implicit none
+      implicit none
 
-! Include files.
+*     Include files.
+      
+      include 'gen_data_structures.cmn'
+      include 'hms_tracking.cmn'
 
-        include 'gen_data_structures.cmn'
-        include 'hms_tracking.cmn'
-! Misc. variables.
+*     Misc. variables.
 
-        integer*4        i,j,k,l,m,n,
-     >                   itrk
+      integer*4        i,j,k,l,m,n,itrk
 
-! ============================= Executable Code ================================
+*=============================Executable Code =============================
+      if(hntracks_tar .gt. 0 ) then
+*     Write out header.
+         write (hluno,1001)   'HMS TARGET TRACKS'
+         write (hluno,1002)
+         
+*     Loop over tracks.
 
-! Write out header.
-        write (hluno,1001)   'HMS TARGET TRACKS'
-	write (hluno,1002)
+         do itrk = 1,hntracks_tar
 
-! Loop over tracks.
+*     Write out data lines.
 
-        do itrk = 1,hntracks_tar
+            write (hluno,1003) itrk,
+     $           hx_tar(itrk),hxp_tar(itrk),
+     $           hy_tar(itrk),hyp_tar(itrk),
+     $           hz_tar(itrk),
+     $           hdelta_tar(itrk),
+     $           hp_tar(itrk)
+         enddo
+      endif
+      return
+      
+*============================Format Statements ============================
 
-! Write out data lines.
+ 1001 format(a)
+ 1002 format(/,1x,'TRK',t10,'HX_TAR',t20,'HXP_TAR',t30,'HY_TAR',t40
+     $     ,'HYP_TAR',t50,'HZ_TAR',t60,'HDELTA_TAR',t72,'HP_TAR')
+ 1003 format(1x,i2,t8,3(f10.6,f10.5),f10.5)
 
-	   write (hluno,1003) itrk,
-     >        hx_tar(itrk),hxp_tar(itrk),
-     >        hy_tar(itrk),hyp_tar(itrk),
-     >        hz_tar(itrk),
-     >        hdelta_tar(itrk)
-
-	enddo
-
-	return
-
-! ============================ Format Statements ===============================
-
-1001    format(a)
-1002	format(/,1x,'TRK',t8,'HX_TAR',t20,'HXP_TAR',t32,'HY_TAR',t44,'HYP_TAR',
-     >         t56,'HZ_TAR',t68,'HDELTA_TAR')
-1003	format(1x,i4,t8,6(f12.6))
-
-	end
+      end
