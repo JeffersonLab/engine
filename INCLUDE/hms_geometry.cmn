@@ -17,6 +17,9 @@
 *                add     hdc_xcenter
 *                        hdc_ycenter
 * $Log$
+* Revision 1.11  1996/09/04 15:49:59  saw
+* (JRA) Make hdc_nrwire integer
+*
 * Revision 1.10  1995/05/22 19:07:02  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
 *
@@ -100,7 +103,7 @@
       real*4    hdc_beta_angle
       real*4    hdc_gamma_angle
       real*4    hdc_pitch
-      real*4    hdc_nrwire
+      integer*4 hdc_nrwire
       real*4    hdc_central_wire
       real*4    hdc_sigma
       real*4    hdc_xcenter
