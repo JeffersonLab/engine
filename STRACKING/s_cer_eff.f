@@ -14,6 +14,9 @@
 * author: Chris Cothran
 * created: 5/25/95
 * $Log$
+* Revision 1.4  1999/02/10 18:20:29  csa
+* Changed sscer_et test to use momentum-normalized variable
+*
 * Revision 1.3  1999/02/03 21:13:44  saw
 * Code for new Shower counter tubes
 *
@@ -36,18 +39,20 @@
       include 'sos_data_structures.cmn'
       include 'sos_cer_parms.cmn'
       include 'sos_physics_sing.cmn'
+      include 'sos_calorimeter.cmn'
 
       integer*4 nr
 *
-* test for a good electron
+*     test for a good electron. Use normalized, tracked shower counter
+*     variable (hsshtrk).
 *
       if (sntracks_fp .eq. 1
      &  .and. sschi2perdeg .gt. 0. 
      &  .and. sschi2perdeg .lt. scer_chi2max
      &  .and. ssbeta .gt. scer_beta_min
      &  .and. ssbeta .lt. scer_beta_max
-     &  .and. sstrack_et .gt. scer_et_min
-     &  .and. sstrack_et .lt. scer_et_max) then ! Some use ssshtrk instead
+     &  .and. ssshtrk .gt. scer_et_min
+     &  .and. ssshtrk .lt. scer_et_max) then
 
         do nr = 1, scer_num_regions
 *
