@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.21  1996/01/16 20:49:40  cdaq
+* (SAW) Handle banks containing two parallel link ROC banks
+*
 * Revision 1.20  1995/12/06 19:04:24  cdaq
 * (SAW) What is this version?  Two bank banks processing lost.
 *
@@ -107,12 +110,14 @@
       integer*4 slotp                   ! temp variable
       integer*4 did                     ! Detector ID
       integer*4 g_decode_fb_detector    ! Detector unpacking routine
+      integer*4 last_first              ! Last word of first bank in || bank
 *
       integer*4 jiand, jishft           ! Declare to help f2c
 
 
 
       banklength = bank(1) + 1          ! Bank length including count
+      last_first = banklength
 
       stat_roc = jishft(bank(2),-16)
       roc = jiand(stat_roc,'1F'X)                ! Get ROC from header
@@ -148,12 +153,19 @@
 *     fbch1 and fbch2.  But it should work for runs up through
 *     at least 5/31/95.
 *
-        pointer=pointer+2               !using parallel link, so next
-        stat_roc = jishft(bank(pointer-1),-16)!2 words are fb roc header.
+        last_first = pointer + bank(pointer) ! Last word in sub bank
+        stat_roc = jishft(bank(pointer+1),-16)!2 words are fb roc header.
         roc = jiand(stat_roc,'1F'X)
+        pointer=pointer+2               !using parallel link, so next
       endif
+
       lastslot = -1
       do while (pointer .le. banklength)
+        if(pointer.eq.(last_first+1)) then ! Second bank in a two bank bank
+          last_first = banklength       ! Reset to end of second bank
+          stat_roc = jishft(bank(pointer+1),-16) !2 words are fb roc header
+          roc = jiand(stat_roc,'1F'X)  ! New roc
+        endif
 *
 *     Look for and report empty ROCs.
 *
@@ -186,7 +198,7 @@
             did = UNINST_ID
           endif
 
-          maxwords = banklength - pointer + 1
+          maxwords = last_first - pointer + 1
 *
 *        1         2         3         4         5         6         7
 *23456789012345678901234567890123456789012345678901234567890123456789012
