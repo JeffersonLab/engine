@@ -16,6 +16,9 @@
 *-
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 * $Log$
+* Revision 1.7  2003/04/03 00:45:01  jones
+* Update to calorimeter calibration (V. Tadevosyan)
+*
 * Revision 1.6  1999/02/04 18:18:30  saw
 * Fix calculation of energy for blocks with two tubes
 *
@@ -66,6 +69,13 @@
       scal_e3    =0.
       scal_e4    =0.
       scal_et    =0.
+*
+      scal_e1_pos    =0.
+      scal_e1_neg    =0.
+*
+      scal_e2_pos    =0.
+      scal_e2_neg    =0.
+
       if(scal_num_hits.le.0) go to 100   !Return
 *
 *      Loop over hits

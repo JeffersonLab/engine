@@ -18,6 +18,9 @@
 *-                                cut.  The default for this is now no cut.
 *-                                K.G. Vansyoc
 * $Log$
+* Revision 1.9  2003/04/03 00:45:01  jones
+* Update to calorimeter calibration (V. Tadevosyan)
+*
 * Revision 1.8  1999/02/23 19:01:45  csa
 * (JRA) Clean up logical structure, remove sdebugcalcpeds stuff
 *
@@ -121,6 +124,9 @@
 
   100 continue
       if(sdbg_tracks_cal.gt.0) call s_prt_cal_tracks
+
+c     Collect data for SOS calorimeter calibration.
+      if(sdbg_tracks_cal.lt.0) call s_cal_calib(0)
 
       return
       end

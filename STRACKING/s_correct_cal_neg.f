@@ -13,6 +13,9 @@
 *-      Created 27 January 1999      SAW
 *
 * $Log$
+* Revision 1.4  2003/04/03 00:45:01  jones
+* Update to calorimeter calibration (V. Tadevosyan)
+*
 * Revision 1.3  2003/03/21 22:58:02  jones
 * Subroutines had arguments with abort,errmsg . But these arguments were not
 * used when the subroutine was called. Also abort ,errmsg were not used in the
@@ -35,32 +38,22 @@
 *      character*(*) errmsg
       character*17 here
       parameter (here='S_CORRECT_CAL_NEG')
-      real*4 a,b,c	! Fit parameters.
-      parameter (a=2.3926,b=-0.371375,c=-0.25401)
 *
 *
-      real*4 x,y         !Impact point coordinates
+      real*4 x,y                ! Impact point coordinates
       real*4 s_correct_cal_neg
-      real*4 d,al	! Auxiliary variables.
 *
       include 'sos_data_structures.cmn'
       include 'sos_calorimeter.cmn'
 *
-*     Fit to MC data in the range of y [-30,+30].
-*
-      if(y.lt.-35.0) then
-	write(*,*)'******** Problem in s_correct_cal_neg ***********'
-	write(*,*)'******** y should be in the range [-30,30] ******'
-	write(*,*)'******** but has the value ',y,' ***'
-	write(*,*)'******** Setting it to -33.0 and continuing ****'
-	y=-33.0
-      endif
-      d=y+35.
-      al=alog(d)
-      s_correct_cal_neg=1./(a+b*al+c/al)
 
-ccc      s_correct_cal_neg=exp(-y/200.)      !200 cm atten length. 
-ccc      s_correct_cal_neg=s_correct_cal_neg*(1. + y*y/8000.) 
-*   
-      return
+c     Check calorimeter boundaries.
+
+      if(y.lt.scal_ymin) y=scal_ymin
+      if(y.gt.scal_ymax) y=scal_ymax
+
+c     Tuned to straight through pions of run #23121. Works well for |Y|<20.
+
+      s_correct_cal_neg=(100.+y)/(100.+y/3.)
+
       end
