@@ -8,6 +8,12 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.37  2003/12/19 17:45:31  jones
+* a) Fill gscaler_skipped and gscaler_saved only when using syncfilter
+* b) Fixed bug with skipping events for low beam current. Make sure it
+*     only works when using syncfilter
+* c) Clean up output about syncfilter effects
+*
 * Revision 1.36  2003/12/17 15:10:56  jones
 *  fix problem in sync filter part
 *
@@ -216,7 +222,7 @@ c
 *--------------------------------------------------------
 *
       print *
-      print *,'  test Hall C Proudly Presents: PHYSICS Analysis Engine'
+      print *,' Hall C Proudly Presents: PHYSICS Analysis Engine'
 
       print *
 
@@ -584,23 +590,18 @@ c
      >          ,tindex=1,NUM_WRITEOUT_SCALERS)
             endif            
 c
-               if (insync .eq. 1) write(*,*) ' Skipping out-of-sync events'
-               if ( ave_current_bcm(bcm_for_threshold_cut)  .le. g_beam_on_thresh_cur(bcm_for_threshold_cut)
+               if (syncfilter_on) then 
+                 if (insync .eq. 1) write(*,*) ' Skipping out-of-sync events'
+                 if ( ave_current_bcm(bcm_for_threshold_cut)  .le. g_beam_on_thresh_cur(bcm_for_threshold_cut)
      >  .or. insync .eq. 1) then
-               do ii=1,MAX_NUM_SCALERS
-                  gscaler_skipped(ii) = gscaler_skipped(ii) +  gscaler_change(ii)
-               enddo
-               else
-               do ii=1,MAX_NUM_SCALERS
-                  gscaler_saved(ii) = gscaler_saved(ii) +  gscaler_change(ii)
-               enddo
-               endif
-c
-               if ( insync .eq. 1) then
-                  skipped_badsync_events(gen_event_type)=skipped_badsync_events(gen_event_type) + 1
-              endif
-               if ( ave_current_bcm(bcm_for_threshold_cut)  .le. g_beam_on_thresh_cur(bcm_for_threshold_cut)) then
-                  skipped_lowbcm_events(gen_event_type)=skipped_lowbcm_events(gen_event_type) + 1
+                  do ii=1,MAX_NUM_SCALERS
+                   gscaler_skipped(ii) = gscaler_skipped(ii) +  gscaler_change(ii)
+                  enddo
+                 else
+                  do ii=1,MAX_NUM_SCALERS
+                   gscaler_saved(ii) = gscaler_saved(ii) +  gscaler_change(ii)
+                  enddo
+                 endif
                endif
 c
                if (analyzed_events(0) .le. 1 ) then
@@ -630,7 +631,7 @@ c
                if (analyzed_events(0) .le. 1 .and. gen_event_type .le. 3) then
                   if (skipped_events_scal .eq. 0 ) then
                   write(*,*) '************'
-                  write(*,*) ' Kludge, will not analyze SOS,HMS or coin events until after first scaler read'
+                  write(*,*) ' Will not analyze SOS,HMS or coin events until after first scaler read'
                   write(*,*) ' Analyzed events :',(analyzed_events(mkj),mkj=1,4)
                   write(*,*) '************'
                   endif
@@ -642,12 +643,12 @@ c
               if(gen_event_type.le.gen_MAX_trigger_types .and.
      $           gen_run_enable(gen_event_type-1).ne.0) then
 c
-               if ( insync .eq. 1 .and. syncfilter_on) then
+               if ( insync .eq. 1  .and. gen_event_type .le. 3 .and. syncfilter_on) then
                   skipped_badsync_events(gen_event_type)=skipped_badsync_events(gen_event_type) + 1
                   sum_analyzed_skipped = sum_analyzed_skipped + 1
                   goto 868
                endif
-               if ( ave_current_bcm(bcm_for_threshold_cut)  .le. g_beam_on_thresh_cur(bcm_for_threshold_cut)
+               if ( ave_current_bcm(bcm_for_threshold_cut)  .lt. g_beam_on_thresh_cur(bcm_for_threshold_cut)
      >               .and. gen_event_type .le. 3 .and. syncfilter_on) then
                   skipped_lowbcm_events(gen_event_type)=skipped_lowbcm_events(gen_event_type) + 1
                   sum_analyzed_skipped = sum_analyzed_skipped + 1
@@ -867,7 +868,6 @@ c...
       call g_dump_peds
       call h_dump_peds
       call s_dump_peds
-
       print *
       print *,'Processed:'
       DO i=0,gen_MAX_trigger_types
@@ -883,12 +883,17 @@ c...
       if ( syncfilter_on) then
       write(mss,'(i12," number of analyzed skipped ")') sum_analyzed_skipped
       call G_log_message(mss)
-      write(mss,'(a)') " Skipped events bad sync / low ave beam current"
-      call G_log_message(mss)
-      DO i=0,gen_MAX_trigger_types
+      DO i=1,gen_MAX_trigger_types
         If(recorded_events(i).GT.0) Then
-          write(mss,'(4x,i12," / ",i8," events of type",i3)')
-     &             skipped_badsync_events(i),skipped_lowbcm_events(i),i
+          write(mss,'(" events of type:",i3," # skipped for bad sync:",i12)')
+     &             i,skipped_badsync_events(i)
+          call G_log_message(mss)
+        ENDIF
+      ENDDO
+      DO i=1,gen_MAX_trigger_types
+        If(recorded_events(i).GT.0) Then
+          write(mss,'("  events of type:",i3," # skipped for low current:",i12)')
+     &             i,skipped_lowbcm_events(i)
           call G_log_message(mss)
         ENDIF
       ENDDO
