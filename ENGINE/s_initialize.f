@@ -11,6 +11,9 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 * $Log$
+* Revision 1.16  1996/09/04 15:17:01  saw
+* (JRA) Reorder calls
+*
 * Revision 1.15  1996/01/16 16:12:41  cdaq
 * (JRA) Comment out SOS minuit initialization
 *
@@ -81,6 +84,16 @@
       ABORT = .FALSE.
       err= ' '
 *
+*-calculate physics singles constants
+      call s_init_physics(FAIL,why)
+      if(err.NE.' ' .and. why.NE.' ') then
+        call G_append(err,' & '//why)
+      elseif(why.NE.' ') then
+        err= why
+      endif
+      ABORT= ABORT .or. FAIL
+*
+*
       call s_generate_geometry          ! Tracking routine
 *
 c      call s_initialize_fitting         ! Minuit initialization
@@ -120,16 +133,6 @@ c      call s_initialize_fitting         ! Minuit initialization
         call G_prepend(err1,why)
       endif
       if(err.NE.' ' .and. why.NE.' ') then   !keep warnings
-        call G_append(err,' & '//why)
-      elseif(why.NE.' ') then
-        err= why
-      endif
-      ABORT= ABORT .or. FAIL
-*
-*
-*-calculate physics singles constants
-      call s_init_physics(FAIL,why)
-      if(err.NE.' ' .and. why.NE.' ') then
         call G_append(err,' & '//why)
       elseif(why.NE.' ') then
         err= why
