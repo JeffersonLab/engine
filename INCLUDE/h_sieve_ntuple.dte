@@ -1,0 +1,22 @@
+**************************begin: h_ntuple.dte ***********************
+*- 
+*-   Created    1-Nov-1994   
+*........................................................................
+*- leave clean field for HMS sieve slit Ntuple
+* $Log$
+* Revision 1.1  1994/12/17 22:21:16  cdaq
+* Initial revision
+*
+*
+      data h_sieve_Ntuple_exists/.FALSE./
+      data h_sieve_Ntuple_ID/0/
+      data h_sieve_Ntuple_file/' '/
+      data h_sieve_Ntuple_name/' '/
+      data h_sieve_Ntuple_title/' '/
+      data h_sieve_Ntuple_directory/' '/
+      data h_sieve_Ntuple_IOchannel/0/
+      data h_sieve_Ntuple_size/0/
+      data h_sieve_Ntuple_tag/HMAX_Ntuple_size*' '/
+      data h_sieve_Ntuple_contents/HMAX_Ntuple_size*0/
+*
+****************************end: h_sieve_Ntuple.dte ***********************
