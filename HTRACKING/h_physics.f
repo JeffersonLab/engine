@@ -19,7 +19,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.8  1995/02/23 13:37:31  cdaq
+* Revision 1.9  1995/03/22 16:23:27  cdaq
+* (SAW) Target track data is now slopes.
+*
+* Revision 1.8  1995/02/23  13:37:31  cdaq
 * (SAW) Reformat and cleanup
 *
 * Revision 1.7  1995/02/10  18:44:47  cdaq
@@ -127,12 +130,12 @@ c     ?????
         HSCHI2PERDEG  = HCHI2_FP(HSNUM_FPTRACK)
      $       /FLOAT(HNFREE_FP(HSNUM_FPTRACK))
         HSNFREE_FP = HNFREE_FP(HSNUM_FPTRACK)
-        cosgamma = 1.0/sqrt(1.0 + tan(hsxp_tar)**2 + tan(hsyp_tar)**2)
-        coshstheta = cosgamma*(sinhthetas * tan(hsyp_tar) + coshthetas)
+        cosgamma = 1.0/sqrt(1.0 + hsxp_tar**2 + hsyp_tar**2)
+        coshstheta = cosgamma*(sinhthetas * hsyp_tar + coshthetas)
         HSTHETA = ACOS(COSHSTHETA)
         SINHSTHETA = SIN(HSTHETA)
-        tandelphi = tan(hsxp_tar) /
-     &       ( sinhthetas - coshthetas*tan(hsyp_tar) )
+        tandelphi = hsxp_tar /
+     &       ( sinhthetas - coshthetas*hsyp_tar)
         HSPHI = HPHI_LAB + TANDELPHI    ! HPHI_LAB must be multiple of
         SINHPHI = SIN(HSPHI)            ! pi/2, or above is crap
 *     Calculate elastic scattering kinematics
