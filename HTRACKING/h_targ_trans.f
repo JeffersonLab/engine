@@ -16,6 +16,9 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
+* Revision 1.14  1996/09/04 13:32:36  saw
+* (JRA) Apply offsets to reconstruction
+*
 * Revision 1.13  1996/01/17 18:15:53  cdaq
 * (JRA)
 *
@@ -87,12 +90,14 @@
       character*(*) err
       integer*4   istat
 *
+      include 'gen_data_structures.cmn'
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       include 'hms_tracking.cmn'
       include 'hms_recon_elements.cmn'
       include 'hms_track_histid.cmn'
+      include 'hms_physics_sing.cmn'
 *
 *--------------------------------------------------------
 *
@@ -100,8 +105,7 @@
 
       integer*4        i,j,itrk
 
-      real*8           sum(4),hut(4),term,hut_rot(4)
-
+      real*8           sum(4),hut(5),term,hut_rot(5)
 *=============================Executable Code =============================
       ABORT= .FALSE.
       err= ' '
@@ -121,10 +125,10 @@
          hlink_tar_fp(itrk) = itrk
 
 * Reset COSY sums.
-
          do i = 1,4
             sum(i) = 0.
          enddo
+
 
 * Load track data into local array, Converting to COSY units.
 * It is assumed that the track coordinates are reported at
@@ -144,6 +148,7 @@
 
          hut(4) = hyp_fp(itrk) + h_ang_offset_y           !radians
 
+         hut(5)= gbeam_y/1000. ! spectrometer target X in meter!
 
 ! now transform 
 *         hx_fp_rot(itrk)=  hut(1) + h_det_offset_x    ! include detector offset
@@ -160,11 +165,11 @@
          hut_rot(2) = hut(2) + hut(1)*h_ang_slope_x
          hut_rot(3) = hut(3)
          hut_rot(4) = hut(4) + hut(3)*h_ang_slope_y
-
+         hut_rot(5) = hut(5)
 * Compute COSY sums.
          do i = 1,h_num_recon_terms
             term = 1.
-            do j = 1,4
+            do j = 1,5
                if (h_recon_expon(j,i).ne.0.)
      $             term = term*hut_rot(j)**h_recon_expon(j,i)
             enddo
@@ -189,7 +194,13 @@ c         if(sum(3).lt. -1.0) sum(3)= -.99
 
          hz_tar(itrk) = 0.0             !Track is at origin
          hdelta_tar(itrk) = sum(4)*100. !percent.
-         HP_TAR(itrk)  = HPCENTRAL*(1.0 + sum(4)) !Momentum in GeV
+
+* Apply offsets to reconstruction.
+         hdelta_tar(itrk) = hdelta_tar(itrk) + hdelta_offset
+         hyp_tar(itrk) = hyp_tar(itrk) + htheta_offset
+         hxp_tar(itrk) = hxp_tar(itrk) + hphi_offset
+
+         hp_tar(itrk)  = hpcentral*(1.0 + hdelta_tar(itrk)/100.) !Momentum in GeV
 
 * The above coordinates are in the spectrometer reference frame in which the
 * Z axis is along the central ray. Do we need to rotate to the lab frame?
