@@ -11,6 +11,9 @@
 *       Modified 23 March 1994   DFG
 *           Add definition of hnum_scin_elements and set parameter value
 * $Log$
+* Revision 1.11  1996/09/04 16:24:13  saw
+* (JRA) Add misc scaler
+*
 * Revision 1.10  1996/01/24 16:19:42  saw
 * (JRA) Cosmetic change
 *
@@ -177,9 +180,11 @@
 *     CTPTYPE=event
 *
       integer*4 hmisc_dec_data(hmax_misc_hits,hnum_misc_planes)
+      integer*4 hmisc_scaler(hmax_misc_hits,hnum_misc_planes)
 
       common/hms_misc_parms/
-     &   hmisc_dec_data
+     &   hmisc_dec_data,
+     &   hmisc_scaler
 
 
       integer*4 hscin_zero_pos(hnum_scin_planes,hnum_scin_elements)
