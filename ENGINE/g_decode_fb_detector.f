@@ -5,9 +5,12 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.11  1995/01/31 15:55:52  cdaq
-*-    (SAW) Make sure mappointer and subaddbit are set on program entry.
+*-    Revision 1.12  1995/07/27 19:10:02  cdaq
+*-    (SAW) Use specific bit manipulation routines for f2c compatibility
 *-
+* Revision 1.11  1995/01/31  15:55:52  cdaq
+* (SAW) Make sure mappointer and subaddbit are set on program entry.
+*
 * Revision 1.10  1995/01/27  20:14:04  cdaq
 * (SAW) Add assorted diagnostic printouts.  Add hack to look for the headers
 *       on new 1881M/1877 modules while maintaining backward compatibility.
@@ -63,6 +66,8 @@
       integer subaddbit
       logical printerr  !flag to turn off printing of error after 1 time.
       logical firsttime
+*
+      integer*4 jishft, jiand
 *     
       printerr = .true.
       pointer = 1
@@ -71,7 +76,7 @@
       firsttime = .true.
       do while(pointer.le.length .and. did.eq.newdid)
 *
-        if(iand(evfrag(pointer),'FF000000'x).eq.'DC000000'x) then ! Catch arrington's headers
+        if(jiand(evfrag(pointer),'FF000000'x).eq.'DC000000'x) then ! Catch arrington's headers
           write(6,*) 'no gate or too much data from DCs.'
           write(6,*) 'Turn off parallel link if this persists'
           pointer = pointer + 1
@@ -80,8 +85,8 @@
 *
 *     Check for event by event scalers thrown in by the scaler hack.
 *
-*        if(iand(evfrag(pointer),'FF000000'x).eq.'DA000000'x) then ! Magic header
-*          nscalers = iand(evfrag(pointer),'FF'x)
+*        if(jiand(evfrag(pointer),'FF000000'x).eq.'DA000000'x) then ! Magic header
+*          nscalers = jiand(evfrag(pointer),'FF'x)
 *          do iscaler=1,nscalers
 **            type *,iscaler,evfrag(pointer+iscaler)
 *            evscalers(iscaler) = evfrag(pointer+iscaler)
@@ -95,7 +100,7 @@
           pointer = pointer + 1
           goto 987
         endif
-        slot = iand(ISHFT(evfrag(pointer),-27),'1F'X)
+        slot = jiand(JISHFT(evfrag(pointer),-27),'1F'X)
         if(slot.ne.oslot.or.firsttime) then
           if (slot.le.0 .or. slot.ge.26 .or. roc.le.0 .or. roc.ge.9) then
             write (6,*) 'roc,slot=',roc,slot
@@ -118,8 +123,8 @@ c     be discarded.  If it is an 1881 or 1876, then the the first word of a
 c     new slot will have a subaddress of '7F' and later be discarded.
 c
           if(subaddbit.eq.17) then      ! Is not an 1872A (which has not headers)
-            if(iand(evfrag(pointer),'00FE0000'X).eq.0) then ! probably a header
-              if(iand(evfrag(pointer),'07FF0000'X).ne.0) then
+            if(jiand(evfrag(pointer),'00FE0000'X).eq.0) then ! probably a header
+              if(jiand(evfrag(pointer),'07FF0000'X).ne.0) then
                 print *,
      $               "SHIT: we misidentified a real data word as a header
      $               "
@@ -134,7 +139,7 @@ c
           endif
         endif
 *
-        subadd = iand(ISHFT(evfrag(pointer),-subaddbit),'7F'X)
+        subadd = jiand(JISHFT(evfrag(pointer),-subaddbit),'7F'X)
 *
 *     If an module that uses a shift of 17 for the subaddress is in a slot
 *     that we havn't told the map file about, it's data will end up in the
@@ -157,9 +162,9 @@ c
             if(did.ne.UNINST_ID) then
               plane = g_decode_planemap(mappointer+subadd)
               counter = g_decode_countermap(mappointer+subadd)
-              signal =iand(evfrag(pointer),g_decode_slotmask(roc+1,slot))
+              signal =jiand(evfrag(pointer),g_decode_slotmask(roc+1,slot))
             else
-              plane = ishft(roc,16) + slot
+              plane = jishft(roc,16) + slot
               counter = subadd
               signal = evfrag(pointer)
             endif
@@ -234,7 +239,7 @@ c
                 endif
               endif
             else if(hitcount.eq.maxhits .and. printerr) then ! Only print this message once
-              type *,'g_decode_fb_detector: Max exceeded, did=',
+              print *,'g_decode_fb_detector: Max exceeded, did=',
      $             did,', max=',maxhits
               printerr = .false.
 *     

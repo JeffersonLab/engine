@@ -15,9 +15,12 @@
 *-
 *-     Created   3-Dec-1993   Kevin Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.4  1994/04/15 20:34:42  cdaq
-*-    ???
+*-    Revision 1.5  1995/07/27 19:09:10  cdaq
+*-    (SAW) Use specific bit manipulation routines for f2c compatibility
 *-
+* Revision 1.4  1994/04/15  20:34:42  cdaq
+* ???
+*
 * Revision 1.3  1994/02/17  21:30:37  cdaq
 * Move ABORT, err args to end of g_decode_fb_bank call
 *
@@ -40,6 +43,7 @@
       character*(*) err
       integer*4 evlength                        ! Total length of the event
       integer*4 bankpointer                     ! Pointer to next bank
+      integer*4 jiand
 *
       include 'gen_data_structures.cmn'
 *
@@ -55,7 +59,7 @@
 *     probably be put in an include file.
 *
 
-      ABORT = iand(event(2),'FFFF'x).ne.'10CC'x
+      ABORT = jiand(event(2),'FFFF'x).ne.'10CC'x
       if(ABORT) then
          err = here//'Event header not standard physics event'
          return

@@ -1,7 +1,10 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
-* Revision 1.4  1995/04/06 20:04:33  cdaq
+* Revision 1.5  1995/07/27 19:04:54  cdaq
+* (SAW) Use specific bit manipulation routines for f2c compatibility
+*
+* Revision 1.4  1995/04/06  20:04:33  cdaq
 * (JRA) Handle overflows and save them in real variables
 *
 * Revision 1.3  1994/07/07  15:24:24  cdaq
@@ -30,6 +33,8 @@ c
       integer index
       real*4 realscal
 *
+      integer*4 jiand, jishft           ! Declare to help f2c
+*
 *     Scaler events have a header in from of each scaler.  High 16 bits
 *     will contain the address (the switch settings).  Address for hall C
 *     will be of the form DANN, where NN is the scaler number.  The low 16
@@ -46,7 +51,7 @@ c
       integer scalid, countinmod, address, counter
       
 *
-      evtype = ishft(event(2),-16)
+      evtype = jishft(event(2),-16)
 *
 *     Should check against list of known scaler events
 *
@@ -56,8 +61,8 @@ c
 *
          do while(pointer.lt.evlen)
 *
-            scalid = iand(ishft(event(pointer),-16),'FF'x)
-            countinmod = iand(event(pointer),'FFFF'x)
+            scalid = jiand(jishft(event(pointer),-16),'FF'x)
+            countinmod = jiand(event(pointer),'FFFF'x)
 *
 *     Might want to check that count is not to big.
 *
