@@ -5,6 +5,9 @@
 *
 *     Created:     D.F.Geesaman         22 May 1994
 * $Log$
+* Revision 1.4  1996/01/17 15:59:03  cdaq
+* (JRA) Add bypass switches for efficiency calculations
+*
 * Revision 1.3  1995/08/08 18:22:27  cdaq
 * (JRA) Add hbypass_trans_cer
 *
@@ -26,6 +29,10 @@
       integer*4 hbypass_cal
       integer*4 hbypass_cer
       integer*4 hbypass_physics
+      integer*4 hbypass_dc_eff
+      integer*4 hbypass_scin_eff
+      integer*4 hbypass_cal_eff
+      integer*4 hbypass_cer_eff
 *     
       common/hms_bypass_switches/
      &     hbypass_trans_scin,
@@ -37,4 +44,8 @@
      &     hbypass_tof,
      &     hbypass_cal,
      &     hbypass_cer,
-     &     hbypass_physics
+     &     hbypass_physics,
+     &     hbypass_dc_eff,
+     &     hbypass_scin_eff,
+     &     hbypass_cal_eff,
+     &     hbypass_cer_eff
