@@ -13,6 +13,9 @@
 *-   Modified 11-Apr-1994   KBB; added FREE, removed CLOSE, 
 *-                               more efficient parsing
 * $Log$
+* Revision 1.4  1996/11/22 17:07:02  saw
+* (SAW) Change .eq. to .eqv. for AIX compatibility
+*
 * Revision 1.3  1996/09/05 21:05:48  saw
 * (SAW) Reduce max lun from 100 to 99 for linux compatibility
 *
@@ -94,7 +97,7 @@
             pat= ':FORTRAN IO channel#$ special; cannot be freed'
             call G_build_note(pat,'$',IO,' ',rv,' ',err)
           else
-            ABORT= LUN_channel(IO).EQ.IDLE  !already idle
+            ABORT= LUN_channel(IO).EQV.IDLE  !already idle
             IF(ABORT) THEN
               pat= ':FORTRAN IO channel#$ already IDLE'
               call G_build_note(pat,'$',IO,' ',rv,' ',err)
@@ -106,7 +109,7 @@
       ELSEIF(cmd.EQ.'A') Then            !get ANY channel
 *
         DO IO=gMAX_IO_channels_allowed,1,-1    !for max compat.; start at top
-          If(LUN_channel(IO) .eq. IDLE) Then
+          If(LUN_channel(IO) .eqv. IDLE) Then
             LUN_channel(IO)= .NOT.IDLE
             ABORT= .FALSE.
             RETURN
@@ -126,7 +129,7 @@
           call G_build_note(pat,'$',IO,' ',rv,' ',err)
           call G_add_path(here,err)
         Else
-          ABORT= LUN_channel(IO) .ne. IDLE
+          ABORT= LUN_channel(IO) .neqv. IDLE
           if(ABORT) then
             pat= ':FORTRAN IO channel#$ not IDLE-'//
      &                                   'cannot be reserved'
