@@ -16,6 +16,9 @@
  *
  * Revision History:
  *  $Log$
+ *  Revision 1.3  2003/02/21 20:55:24  saw
+ *  Clean up some types and casts to reduce compiler warnings.
+ *
  *  Revision 1.2  1999/11/04 20:34:05  saw
  *  Alpha compatibility.
  *  New RPC call needed for root event display.
@@ -70,7 +73,7 @@ int daVarServSet(int prog, int version)
   last_program = prog;
   last_version = version;
   
-  udp_transp = svcudp_create(RPC_ANYSOCK);
+  udp_transp = (SVCXPRT *) svcudp_create(RPC_ANYSOCK);
   if (udp_transp == NULL) {
     fprintf(stderr, "cannot create udp service.");
     exit(1);
@@ -80,7 +83,7 @@ int daVarServSet(int prog, int version)
     exit(1);
   }
   
-  tcp_transp = svctcp_create(RPC_ANYSOCK, 0, 0);
+  tcp_transp = (SVCXPRT *) svctcp_create(RPC_ANYSOCK, 0, 0);
   if (tcp_transp == NULL) {
     fprintf(stderr, "cannot create tcp service.\n");
     exit(1);

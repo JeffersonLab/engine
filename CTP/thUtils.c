@@ -16,6 +16,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.3  2003/02/21 20:55:25  saw
+ *   Clean up some types and casts to reduce compiler warnings.
+ *
  *   Revision 1.2  1999/11/04 20:34:07  saw
  *   Alpha compatibility.
  *   New RPC call needed for root event display.
@@ -417,7 +420,8 @@ thVarCreate(char *s, int vartype, char **classlist, daVarStruct **varpp)
 	break;
       }
     var.opaque = 0;
-    var.rhook = var.whook = 0;
+    var.rhook = 0;
+    var.whook = 0;
     var.flag = DAVAR_REPOINTOK | DAVAR_READONLY | DAVAR_DYNAMIC_PAR;
     var.flag = DAVAR_REPOINTOK | DAVAR_READONLY | DAVAR_DYNAMIC_PAR;
     var.title = 0;
@@ -540,7 +544,8 @@ int thTokToPtr(char *token, int create, int intonly, daVarStruct *varp)
       var.name = token;
       var.title = 0;
       var.flag = DAVAR_READONLY;
-      var.rhook = var.whook = 0;
+      var.rhook = 0;
+      var.whook = 0;
       var.opaque = 0;
       switch(toktyp)
 	{

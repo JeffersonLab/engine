@@ -16,6 +16,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.3  2003/02/21 20:55:24  saw
+ *   Clean up some types and casts to reduce compiler warnings.
+ *
  *   Revision 1.2  1999/11/04 20:34:03  saw
  *   Alpha compatibility.
  *   New RPC call needed for root event display.
@@ -83,7 +86,8 @@ typedef struct {
   int size;			/* Size or length of object */
   int flag;			/* Read Only and other flags */
   void *opaque;			/* Pointer to arbitrary structure */
-  daVarStatus (*rhook)(),(*whook)();
+  daVarStatus (*rhook)();
+  daVarStatus (*whook)();
 } daVarStruct;
 /* Size is number of array elements for int for float.  For strings it
    is the maximum number of characters that space has been allocated for.

@@ -19,6 +19,9 @@
  *
  * Revision History:
  *  $Log$
+ *  Revision 1.5  2003/02/21 20:55:24  saw
+ *  Clean up some types and casts to reduce compiler warnings.
+ *
  *  Revision 1.4  1999/11/04 20:34:05  saw
  *  Alpha compatibility.
  *  New RPC call needed for root event display.
@@ -550,7 +553,8 @@ int thImportVars(char *pattern, CLIENT *clnt)
 	break;
       }
     var.opaque = 0;
-    var.rhook = var.whook = 0;
+    var.rhook = 0;
+    var.whook = 0;
     var.flag = DAVAR_REPOINTOK | DAVAR_DYNAMIC_PAR;
     var.flag = DAVAR_REPOINTOK | DAVAR_DYNAMIC_PAR;
     var.title = 0;

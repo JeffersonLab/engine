@@ -16,6 +16,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.4  2003/02/21 20:55:25  saw
+ *   Clean up some types and casts to reduce compiler warnings.
+ *
  *   Revision 1.3  1999/11/04 20:34:07  saw
  *   Alpha compatibility.
  *   New RPC call needed for root event display.
@@ -124,7 +127,7 @@ in the test package.)*/
 #include "thInternal.h"
 #include "cfortran.h"
 
-void thTestRHandler(char *name, daVarStruct *varclass, any *retval);
+daVarStatus thTestRHandler(char *name, daVarStruct *varclass, any *retval);
 
 CODE opstack[100];		/* Operator stack */
 CODE typstack[100];		/* Result type stack */
@@ -440,7 +443,8 @@ char *thGetTok(char *linep, int *tokenid, char **tokstr,
 	    var.varptr = (void *) malloc(sizeof(DAINT));
 	    var.size = 1;
 	    var.opaque = 0;
-	    var.rhook = var.whook = 0;
+	    var.rhook = 0;
+	    var.whook = 0;
 	    var.type = DAVARINT;
 	    var.flag = DAVAR_READONLY | DAVAR_REPOINTOK;
 	    var.title = savelinep;
@@ -472,7 +476,8 @@ printf("Created test result %s\n",varp->name);
 		  daVarStruct svar;
 		  svar.name = testscalervarname;
 		  svar.opaque = 0;
-		  svar.rhook = svar.whook = 0;
+		  svar.rhook = 0;
+		  svar.whook = 0;
 		  svar.type = DAVARINT;
 		  svar.flag = DAVAR_READONLY | DAVAR_REPOINTOK;
 		  svar.varptr = (void *) malloc(varp->size*sizeof(DAINT));
@@ -1013,7 +1018,8 @@ thStatus thBookaTest(char *line, CODEPTR *codeheadp, CODEPTR *codenextp,
 	  var.name = token;
 	  var.varptr = (void *) malloc(sizeof(DAINT));
 	  var.opaque = 0;
-	  var.rhook = var.whook = 0;
+	  var.rhook = 0;
+	  var.whook = 0;
 	  var.type = DAVARINT;
 	  var.flag = DAVAR_READONLY | DAVAR_REPOINTOK;
 /* Do I need to set the size to 1 here??? */
@@ -1087,7 +1093,7 @@ float ftheval_(char *A1,unsigned C1)
   return f;
 }
 
-void thTestRHandler(char *name, daVarStruct *varclass, any *retval)
+daVarStatus thTestRHandler(char *name, daVarStruct *varclass, any *retval)
 /* The default Read handler */
 {
   daVarStruct *varp;
@@ -1127,5 +1133,5 @@ void thTestRHandler(char *name, daVarStruct *varclass, any *retval)
     }
   }
   /* A special handler would check more attributes if status != SUCCESS */
-  return;
+  return(status);
 }

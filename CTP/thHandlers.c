@@ -16,6 +16,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.3  2003/02/21 20:55:24  saw
+ *   Clean up some types and casts to reduce compiler warnings.
+ *
  *   Revision 1.2  1999/11/04 20:34:06  saw
  *   Alpha compatibility.
  *   New RPC call needed for root event display.
@@ -110,7 +113,7 @@ void thHistZeroLastId()
   thLastIdRhandled = 9999999;
   return;
 }
-void thHistRHandler(char *name, daVarStruct *varclass, any *retval)
+daVarStatus thHistRHandler(char *name, daVarStruct *varclass, any *retval)
      /* Read Handler for Histograms */
 {
   daVarStruct *varp;
@@ -190,14 +193,15 @@ void thHistRHandler(char *name, daVarStruct *varclass, any *retval)
       if(NY != 0) size *= NY;
       retval->any_u.r.r_len = size;
       retval->any_u.r.r_val = (float *)malloc(size*sizeof(float));
+      /* Next line gives warning "assignment of read-only location */
       HUNPAK(thLastIdRhandled,retval->any_u.r.r_val,"HIST",(int) 1);
     }
   }
-  return;
+  return(status);
 }
 #endif
 #ifdef ROOTTREE
-void thTreeRHandler(char *name, daVarStruct *varclass, any *retval)
+daVarStatus thTreeRHandler(char *name, daVarStruct *varclass, any *retval)
 /* The default Read handler */
 {
   return(thRHandler(name, varclass, retval));

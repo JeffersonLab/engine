@@ -17,6 +17,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.3  2003/02/21 20:55:24  saw
+ *   Clean up some types and casts to reduce compiler warnings.
+ *
  *   Revision 1.2  1999/11/04 20:34:06  saw
  *   Alpha compatibility.
  *   New RPC call needed for root event display.
@@ -282,7 +285,8 @@ thStatus thLoad(char *fname)
       var.varptr = 0;		/* Null pointer means not yet booked */
       var.size = 1;
       var.opaque = 0;		/* Booking routine may add opaque data */
-      var.rhook = var.whook = 0;
+      var.rhook = 0;
+      var.whook = 0;
       var.flag = DAVAR_READONLY | DAVAR_REPOINTOK;
     }
     var.title = vartitle;	/* The lines to book test, hists, pars etc. */
@@ -312,7 +316,8 @@ thStatus thLoad(char *fname)
 	varg.opaque = (void *) malloc(sizeof(thGroupOpaque));
 	opqptr = (thGroupOpaque *) varg.opaque;
 	thInitGroupOpaque(varg.name,opqptr); /* Fill the elelments of the structure */
-	varg.rhook = var.whook = 0; /* Can put something neat here */
+	varg.rhook = 0;
+	varg.whook = 0; /* Can put something neat here */
 	varg.flag = DAVAR_READONLY | DAVAR_REPOINTOK;
 	varg.title = 0;	/* Would be nice to put group descriptions here */
       } else

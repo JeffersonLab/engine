@@ -16,6 +16,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.4  2003/02/21 20:55:24  saw
+ *   Clean up some types and casts to reduce compiler warnings.
+ *
  *   Revision 1.3  1999/11/04 20:34:06  saw
  *   Alpha compatibility.
  *   New RPC call needed for root event display.
@@ -262,7 +265,8 @@ thStatus thParmLineSet(char *line)
       var.size = thParmVarIndex + nargs;
       var.varptr = (void *) malloc(var.size*sizeof(DAINT));
       var.opaque = 0;
-      var.rhook = var.whook = 0;
+      var.rhook = 0;
+      var.whook = 0;
       var.type = DAVARINT;
       var.flag = DAVAR_REPOINTOK | DAVAR_READONLY | DAVAR_DYNAMIC_PAR;
       var.title = 0;

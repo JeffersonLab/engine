@@ -16,6 +16,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.2  2003/02/21 20:55:25  saw
+ *   Clean up some types and casts to reduce compiler warnings.
+ *
  *   Revision 1.1  1998/12/07 22:11:13  saw
  *   Initial setup
  *
@@ -170,7 +173,7 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
   CODE rawopcode,opcode,ltype,rtype,lrtypes;
   DAINT nargs,result;
   register DAINT *sp;
-  register DAINT i,il,ir,*pi;
+  DAINT i,il,ir,*pi;
   DAFLOAT f,fl,fr,*pf;
   DADOUBLE d,dl,dr,*pd;
   DAINT index;

@@ -17,6 +17,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.3  2003/02/21 20:55:24  saw
+ *   Clean up some types and casts to reduce compiler warnings.
+ *
  *   Revision 1.2  1999/11/04 20:34:04  saw
  *   Alpha compatibility.
  *   New RPC call needed for root event display.
@@ -340,7 +343,7 @@ void daVarCount_node
   daVarCount++;
 }
 
-daVarList_node
+void daVarList_node
 #ifdef USEHASH
 (void *entry)
 {
@@ -452,7 +455,8 @@ int SUBNAME(char *name, TYPENAME *vptr, LENDEF##ARRAY char *title\
   args.flag = DAVAR_READWRITE;\
   args.type = DATYPE;\
   args.opaque = 0;\
-  args.rhook = args.whook = 0;\
+  args.rhook = 0;\
+  args.whook = 0;\
   A0 = daVarRegister((int) 0, &args);\
   if(BF) free(BF);\
   if(BN) free(BN);\
@@ -539,7 +543,8 @@ int regparmstring_
   args.flag = DAVAR_READWRITE;
   args.type = DAVARFSTRING;
   args.opaque = 0;
-  args.rhook = args.whook = 0;
+  args.rhook = 0;
+  args.whook = 0;
   A0 = daVarRegister((int) 0, &args);
   if(BF) free(BF);
   if(BN) free(BN);
