@@ -61,12 +61,14 @@ endif
 ifeq ($(OSTYPE),Linux)
 GCC = cc
 CP=cp -f
-NOFORT77:=$(filter no,$(shell which fort77))
 G77:=$(filter no,$(shell which g77))
 ifneq ($(G77),no)
 F77=g77
-FFLAGS=-I. -ffixed-line-length-132
+f77 = g77
+FC = g77
+FFLAGS=-I. -ffixed-line-length-132 
 else
+NOFORT77:=$(filter no,$(shell which fort77))
 ifneq ($(NOFORT77),no)
 F77=fort77
 FFLAGS=-Wf,-f -Nn1604
@@ -118,4 +120,6 @@ RM = rm -f
 endif
 
 ARCH = $(OSTYPE)
-MAKEREG=/group/hallc/saw/$(OSTYPE)$(OSEXT)/bin/makereg
+PW := $(shell pwd)
+#MAKEREG=/group/hallc/saw/$(OSTYPE)$(OSEXT)/bin/makereg
+MAKEREG=$(PW)/../../../$(OSTYPE)$(OSEXT)/bin/makereg
