@@ -5,7 +5,10 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
-* Revision 1.7  1994/04/12 20:42:22  cdaq
+* Revision 1.8  1994/04/14 16:25:43  cdaq
+* (SAW) Fix typo
+*
+* Revision 1.7  1994/04/12  20:42:22  cdaq
 * (SAW) Put column first in shower commons (column == plane)
 *       Add a structure for hits on uninstrumented channels
 *       Correct "FILLED BY" comment
@@ -796,8 +799,8 @@
       INTEGER*4 GUNINST_RAW_SUBADD      ! Fastbus channel
       INTEGER*4 GUNINST_RAW_DATAWORD    ! Full fastbus dataword
       COMMON/G_RAW_UNINST/
-     &     GUNINST_RAW_ROCSLOT(GMAX_UNINST_HITS)
-     &     GUNINST_RAW_SUBADD(GMAX_UNINST_HITS)
+     &     GUNINST_RAW_ROCSLOT(GMAX_UNINST_HITS),
+     &     GUNINST_RAW_SUBADD(GMAX_UNINST_HITS),
      &     GUNINST_RAW_DATAWORD(GMAX_UNINST_HITS)
 *                                          
 *******************end: gen_data_structures.cmn*************************
