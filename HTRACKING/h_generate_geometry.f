@@ -8,6 +8,9 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change HPLANE_PARAM to individual arrays
 * $Log$
+* Revision 1.7  1996/04/30 12:43:54  saw
+* (JRA) Set up card drift time delay structures
+*
 * Revision 1.6  1995/10/10 13:49:33  cdaq
 * (JRA) Cosmetics and comments
 *
@@ -33,6 +36,7 @@
       include "hms_geometry.cmn"
 *
 *     local variables
+      logical missing_card_no
       integer*4 pln,i,j,k,pindex,ich
       real*4 cosalpha,sinalpha,cosbeta,sinbeta,cosgamma,singamma,z0
       real*4 stubxchi,stubxpsi,stubychi,stubypsi
@@ -49,6 +53,18 @@
 *     hdc_sigma(pln)       = sigma
 *
       hdc_planes_per_chamber = hdc_num_planes / hdc_num_chambers
+
+      missing_card_no = .false.
+      do j=1,hmax_num_dc_planes
+        do i=1,hdc_max_wires_per_plane
+          if (hdc_card_no(i,j).eq.0) then
+            missing_card_no = .true.
+            hdc_card_no(i,j)=1        !avoid 0 in array index
+            hdc_card_delay(1)=0.      !no delay for wires
+          endif
+        enddo
+      enddo
+      if (missing_card_no) write(6,*) 'missing hdc_card_no, blame JRA'
 *
 *     loop over all planes
 
