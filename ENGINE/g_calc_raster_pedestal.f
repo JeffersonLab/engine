@@ -1,6 +1,9 @@
       subroutine g_calc_raster_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.3  1999/02/23 16:56:46  csa
+* (JRA) Remove slow raster stuff
+*
 * Revision 1.2  1999/02/10 17:38:43  csa
 * Cleanup
 *
@@ -22,13 +25,8 @@
 *
       gfrx_adc_ped=gmisc_ped(14,2)     !2 is for ADCs
       gfry_adc_ped=gmisc_ped(16,2)
-      gsrx_adc_ped=0.
-      gsry_adc_ped=0.
       gfrx_sync_mean=gmisc_ped(13,2)
       gfry_sync_mean=gmisc_ped(15,2)
-      gsrx_sync_mean=0.
-      gsry_sync_mean=0.
-
 
       return
       end
