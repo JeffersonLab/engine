@@ -1,7 +1,10 @@
       subroutine s_analyze_pedestal(ABORT,err)
 *
 * $Log$
-* Revision 1.3  1995/05/22 19:45:30  cdaq
+* Revision 1.4  1995/07/20 14:45:42  cdaq
+* (???) Fix typo in Gas Cerenkov Pedestals section
+*
+* Revision 1.3  1995/05/22  19:45:30  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.2  1995/05/17  16:41:08  cdaq
@@ -63,7 +66,7 @@
 * GAS CERENKOV PEDESTALS
 *
       do ihit = 1 , scer_tot_hits
-        pmt=scer_tube_num(pmt)       ! no sparsification yet - NEED TO FIX!!!!
+        pmt=scer_tube_num(ihit)       ! no sparsification yet - NEED TO FIX!!!!
         scer_ped_sum2(pmt) = scer_ped_sum2(pmt) + scer_adc(ihit)*scer_adc(ihit)
         scer_ped_sum(pmt) = scer_ped_sum(pmt) + scer_adc(ihit)
         scer_ped_num(pmt) = scer_ped_num(pmt) + 1
