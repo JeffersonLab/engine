@@ -13,8 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.3  1994/06/14 03:19:03  cdaq
-*     (DFG) register target and beam variables
+*     Revision 1.4  1994/06/16 03:41:41  cdaq
+*     (SAW) Register filenames for reports
+*
+* Revision 1.3  1994/06/14  03:19:03  cdaq
+* (DFG) register target and beam variables
 *
 * Revision 1.2  1994/04/12  17:13:37  cdaq
 * (KBB) Add ntuple call
@@ -25,6 +28,7 @@
 *----------------------------------------------------------------------
       implicit none
       include 'gen_data_structures.cmn'
+      include 'coin_filenames.cmn'
       include 'gen_routines.dec'
       save
 *
@@ -69,6 +73,16 @@
       ierr= regparmreal('TRAD_LENGTH',TRAD_LENGTH,0)
       IF(ierr.NE.0) err= 'unable to register "TRAD_LENGTH"'
       ABORT= ierr.ne.0 .or. ABORT
+*
+      ierr = regparmstring('c_report_template_filename'
+     $     ,c_report_template_filename,0)
+      if(ierr.ne.0) call g_append(err,',"c_report_template_filename"')
+      ABORT = ierr.ne.0.or.ABORT
+*
+      ierr = regparmstring('c_report_blockname'
+     $     ,c_report_blockname,0)
+      if(ierr.ne.0) call g_append(err,',"c_report_blockname"')
+      ABORT = ierr.ne.0.or.ABORT
 *
       if(.not.ABORT) call c_ntuple_register(ABORT,err)
 *

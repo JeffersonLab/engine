@@ -13,8 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.4  1994/04/12 17:26:00  cdaq
-*     (KBB) Add ntuple call
+*     Revision 1.5  1994/06/16 03:45:21  cdaq
+*     (SAW) Register filenames for reports
+*
+* Revision 1.4  1994/04/12  17:26:00  cdaq
+* (KBB) Add ntuple call
 *
 * Revision 1.3  1994/02/22  19:39:19  cdaq
 * (SAW) Remove CTP register calls to fortran PARAMETER's
@@ -37,6 +40,7 @@
       character*(*) err
 *
       INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'sos_filenames.cmn'
       INCLUDE 'gen_routines.dec'
 *
       integer ierr
@@ -44,7 +48,22 @@
       err= ' '
       ABORT = .FALSE.
 *
-      call s_register_param(ABORT,err)          ! TRACKING ROUTINE
+      ierr = regparmstring('s_recon_coeff_filename'
+     $     ,s_recon_coeff_filename,0)
+      if(ierr.ne.0) call g_append(err,',"s_recon_coeff_filename"')
+      ABORT = ierr.ne.0.or.ABORT
+*
+      ierr = regparmstring('s_report_template_filename'
+     $     ,s_report_template_filename,0)
+      if(ierr.ne.0) call g_append(err,',"s_report_template_filename"')
+      ABORT = ierr.ne.0.or.ABORT
+*
+      ierr = regparmstring('s_report_blockname'
+     $     ,s_report_blockname,0)
+      if(ierr.ne.0) call g_append(err,',"s_report_blockname"')
+      ABORT = ierr.ne.0.or.ABORT
+*
+      if(.not.ABORT) call s_register_param(ABORT,err) ! TRACKING ROUTINE
 *
       if(.not.ABORT) call s_ntuple_register(ABORT,err)
 *
