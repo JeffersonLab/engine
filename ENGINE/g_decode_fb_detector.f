@@ -5,9 +5,12 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.4  1994/06/18 02:48:04  cdaq
-*-    (SAW) Add code for miscleaneous data and uninstrumented channels
+*-    Revision 1.5  1994/06/21 16:02:54  cdaq
+*-    (SAW) Ignore DCFF0000 headers from Arrington's CRL's
 *-
+* Revision 1.4  1994/06/18  02:48:04  cdaq
+* (SAW) Add code for miscleaneous data and uninstrumented channels
+*
 * Revision 1.3  1994/04/06  18:03:38  cdaq
 * (SAW) # of bits to get channel number is now configurable (g_decode_subaddbit).
 * Changed range of signal types from 1:4 to 0:3 to agree with documentation.
@@ -43,6 +46,10 @@
 
       do while(pointer.le.length .and. did.eq.newdid)
 *
+        if(evfrag(pointer).eq.'DCFF0000'x) then ! Catch arrington's headers
+          pointer = pointer + 1
+          goto 987
+        endif
         slot = iand(ISHFT(evfrag(pointer),-27),'1F'X)
         if(slot.ne.oslot) then
           mappointer = g_decode_slotpointer(roc+1,slot)
@@ -147,6 +154,7 @@
         else
           pointer = pointer + 1
         endif
+ 987    continue
       enddo
 
       g_decode_fb_detector = pointer - 1 ! Number of words processed
