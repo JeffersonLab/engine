@@ -5,7 +5,10 @@
 *     space point.
 *     d. f. geesaman           17 January 1994
 * $Log$
-* Revision 1.5  1994/10/11 18:59:15  cdaq
+* Revision 1.6  1994/10/12 18:30:52  cdaq
+* (DJM) Fill hit pattern arrays
+*
+* Revision 1.5  1994/10/11  18:59:15  cdaq
 * (DJM) Fill hdc_sing_wcoord for histogramming
 *
 * Revision 1.4  1994/08/16  13:26:50  cdaq
@@ -15,7 +18,7 @@
 * (DA) Change Y' in chamber 1 from plane 4 (wrong) to plane 5 (correct)
 *
 * Revision 1.2  1994/08/04  15:03:46  cdaq
-* (DA) Incorporate small angle approximageion of L/R for YY' planes
+* (DA) Incorporate small angle approximation of L/R for YY' planes
 *
 * Revision 1.1  1994/02/19  06:15:15  cdaq
 * Initial revision
@@ -41,6 +44,7 @@
       integer*4 nplusminus
       integer*4 numhits
       integer*4 hits(hmax_hits_per_point),pl(hmax_hits_per_point)
+      integer*4 pindex
       real*4 wc(hmax_hits_per_point)
       integer*4 plane, isa_y1, isa_y2
       integer*4 plusminusknown(hmax_hits_per_point)
@@ -58,7 +62,11 @@
         hdc_sing_wcoord(plane) = -100.
       enddo
 
+*d    jm 10/2/94 added initialization/setting of gplanehdc1(isp)/2 pattern
+*     units. Presently we are accepting 5/6 or 6/6 planes per chamber. 
       do isp=1,hnspace_points_tot             ! loop over all space points
+          gplanehdc1(isp) = 0
+          gplanehdc2(isp) = 0
           minchi2=1e10
           smallAngOK = .FALSE.
           isa_y1 = 0
@@ -68,11 +76,87 @@
           do ihit=1,numhits
              hits(ihit)=hspace_point_hits(isp,2+ihit)
              pl(ihit)=HDC_PLANE_NUM(hits(ihit))
+
+             if(pl(ihit).ge.1 .and. pl(ihit).le.6)then
+               gplanehdc1(isp)=jibset(gplanehdc1(isp),pl(ihit)-1)
+             else
+               gplanehdc2(isp)=jibset(gplanehdc2(isp),pl(ihit)-7)
+             endif
+
              wc(ihit)=HDC_WIRE_CENTER(hits(ihit))
              plusminusknown(ihit) = 0
              if(pl(ihit).eq.2 .OR. pl(ihit).eq.8)  isa_y1 = ihit
              if(pl(ihit).eq.5 .OR. pl(ihit).eq.11) isa_y2 = ihit
           enddo
+
+* djm 10/2/94 check bad hdc pattern units to set the index for the inverse
+* matrix AAINV(i,j,pindex).  
+         if(pl(1).ge.1 .and. pl(1).le.6)then   !use first hit to test if hdc1
+         
+          if(gplanehdc1(isp).eq.63)then
+          pindex=13                      !first 6 bits set, so 6 planes hit
+          else
+           if(gplanehdc1(isp).eq.62)then
+           pindex=1                     !missing lowest order bit, missing x1
+           else
+            if(gplanehdc1(isp).eq.61)then
+            pindex=2
+            else
+             if(gplanehdc1(isp).eq.59)then
+             pindex=3
+             else
+              if(gplanehdc1(isp).eq.55)then
+              pindex=4
+              else
+               if(gplanehdc1(isp).eq.47)then
+               pindex=5
+               else
+                if(gplanehdc1(isp).eq.31)then
+                pindex=6
+                else
+                pindex=-1              !multiple missing planes or other problem
+                end if
+               end if
+              end if
+             end if
+            end if
+           end if
+          end if
+
+        else                            !must be hdc2
+
+          if(gplanehdc2(isp).eq.63)then
+          pindex=14                      !first 6 bits set, so 6 planes hit
+          else
+           if(gplanehdc2(isp).eq.62)then
+           pindex=7                     !missing lowest order bit, missing x1
+           else
+            if(gplanehdc2(isp).eq.61)then
+            pindex=8
+            else
+             if(gplanehdc2(isp).eq.59)then
+             pindex=9
+             else
+              if(gplanehdc2(isp).eq.55)then
+              pindex=10
+              else
+               if(gplanehdc2(isp).eq.47)then
+               pindex=11
+               else
+                if(gplanehdc2(isp).eq.31)then
+                pindex=12
+                else
+                pindex=-2              !multiple missing planes or other problem
+                end if
+               end if
+              end if
+             end if
+            end if
+           end if
+          end if
+          
+         endif  !end test whether hdc1 or hdc2
+
 *     check if small angle L/R determination of Y and Y' planes is possible
           if(isa_y1.gt.0 .AND. isa_y2.gt.0) smallAngOK = .TRUE.
           if((hSmallAngleApprox.ne.0) .AND. (smallAngOK)) then
@@ -100,7 +184,8 @@
                     iswhit = iswhit + 1
                  endif
               enddo
-              call h_find_best_stub(numhits,hits,plusminus,stub,chi2)
+* now passign pl(ihit) so it doesn't have to be recalculated every iteration
+              call h_find_best_stub(numhits,hits,pl,pindex,plusminus,stub,chi2)
               if(hdebugstubchisq.ne.0) then
                  write(hluno,'(''hms  pmloop='',i4,''   chi2='',e14.6)')
      &                     pmloop,chi2
