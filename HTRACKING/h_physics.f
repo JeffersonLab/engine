@@ -20,6 +20,9 @@
 *-                           Dummy Shell routine
 *
 * $Log$
+* Revision 1.21.2.1  2003/04/10 12:39:03  cdaq
+* add  e_nonzero and modify p_nonzero.  These are used in calculating E_cal/p and beta.
+*
 * Revision 1.21  2002/12/27 22:07:04  jones
 *    a. Ioana Niculescu modified total_eloss call
 *    b. CSA 4/15/99 -- changed hsbeta to hsbeta_p in total_eloss call
@@ -121,14 +124,13 @@
       integer*4 i,ip,ihit
       integer*4 itrkfp
       real*4 coshstheta,sinhstheta
-      real*4 p_nonzero
+      real*4 p_nonzero,e_nonzero
       real*4 xdist,ydist,dist(12),res(12)
       real*4 tmp,W2
       real*4 hsp_z
       real*4 Wvec(4)
       real*4 hstheta_1st
       real*4 scalar,mink
-      real*4 denom
 *
 *--------------------------------------------------------
 *
@@ -164,7 +166,12 @@
 
       hstrack_et   = htrack_et(itrkfp)
       hstrack_preshower_e = htrack_preshower_e(itrkfp)
-      p_nonzero    = max(.0001,hsp)      !momentum (used to normalize calorim.)
+      p_nonzero    = hsp !reconstructed momentum with 'reasonable' limits.
+                         !Used to calc. E_cal/p and beta.
+      p_nonzero    = max(0.8*hpcentral,p_nonzero)
+      p_nonzero    = min(1.2*hpcentral,p_nonzero)
+      e_nonzero    = sqrt(p_nonzero**2+hpartmass**2)
+
       hscal_suma   = hcal_e1/p_nonzero  !normalized cal. plane sums
       hscal_sumb   = hcal_e2/p_nonzero
       hscal_sumc   = hcal_e3/p_nonzero
@@ -207,7 +214,12 @@
       hsx_cal = hsx_fp  +  hsxp_fp * hcal_1pr_zpos
       hsy_cal = hsy_fp  +  hsyp_fp * hcal_1pr_zpos
 
-      hsbeta_p = hsp/max(hsenergy,.00001)
+c Used to use hsp, replace with p_nonzero, to give reasonable limits
+C (+/-20%) to avoid unreasonable hsbeta_p values
+c      hsbeta_p = hsp/max(hsenergy,.00001)
+
+      hsbeta_p = p_nonzero/e_nonzero
+
 
 C old 'fit' value for pathlen correction
 C        hspathlength = -1.47e-2*hsx_fp + 11.6*hsxp_fp - 36*hsxp_fp**2
