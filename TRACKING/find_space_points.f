@@ -4,7 +4,10 @@
      &  nspace_points,space_points,space_point_hits)
 *       Created D.F. Geesaman     Sept 1993       
 * $Log$
-* Revision 1.4  1994/10/11 20:00:44  cdaq
+* Revision 1.5  1995/07/28 15:18:35  cdaq
+* (SAW) Change print to type for f2c
+*
+* Revision 1.4  1994/10/11  20:00:44  cdaq
 * (JRA) Remove bug that allowed double counting of hits
 *
 * Revision 1.3  1994/04/12  20:23:53  cdaq
@@ -59,7 +62,7 @@
       integer*4 ncombo
       integer*4 combos(max_number_comb,2)   ! pair1 and pair2 of each combo
       real*4 sqdistance_test
-      integer*4 j,k,itmp
+      integer*4 j,k
 *                           
       nspace_points=0
       ntest_points=0
@@ -215,7 +218,7 @@
        do j=3,(space_point_hits(i,1)+1)
         do k=j+1,(space_point_hits(i,1)+2)
          if (space_point_hits(i,j).eq.space_point_hits(i,k)) then
-           type *,'Space point ',i,' has hit ',space_point_hits(i,k),
+           print *,'Space point ',i,' has hit ',space_point_hits(i,k),
      &        'as hits',j,k
          endif
         enddo
