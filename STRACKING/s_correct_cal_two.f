@@ -1,5 +1,5 @@
 *=======================================================================
-      function s_correct_cal_two(x,y,abort,errmsg)
+      function s_correct_cal_two(x,y)
 *=======================================================================
 *-
 *-  Purpose: Returns the impact point correction factor. This
@@ -12,6 +12,11 @@
 *-      Created 27 September 1999      SAW
 *
 * $Log$
+* Revision 1.2  2003/03/21 22:58:02  jones
+* Subroutines had arguments with abort,errmsg . But these arguments were not
+* used when the subroutine was called. Also abort ,errmsg were not used in the
+* subroutines. So eliminate abort,errmsg. (E. Brash)
+*
 * Revision 1.1  1999/01/29 17:34:57  saw
 * Add variables for second tubes on shower counter
 *
@@ -22,8 +27,8 @@
       implicit none
       save
 *
-      logical abort
-      character*(*) errmsg
+*      logical abort
+*      character*(*) errmsg
       character*17 here
       parameter (here='S_CORRECT_CAL_TWO')
 *

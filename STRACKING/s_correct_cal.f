@@ -1,5 +1,5 @@
 *=======================================================================
-      function s_correct_cal(x,y,abort,errmsg)
+      function s_correct_cal(x,y)
 *=======================================================================
 *-
 *-      Purpose: Returns the impact point correction factor. This
@@ -9,6 +9,11 @@
 *-
 *-      Created 15 Mar 1994      Tsolak A. Amatuni
 * $Log$
+* Revision 1.6  2003/03/21 22:58:02  jones
+* Subroutines had arguments with abort,errmsg . But these arguments were not
+* used when the subroutine was called. Also abort ,errmsg were not used in the
+* subroutines. So eliminate abort,errmsg. (E. Brash)
+*
 * Revision 1.5  1999/01/29 17:34:57  saw
 * Add variables for second tubes on shower counter
 *
@@ -29,8 +34,8 @@
       implicit none
       save
 *
-      logical abort
-      character*(*) errmsg
+*      logical abort
+*      character*(*) errmsg
       character*13 here
       parameter (here='S_CORRECT_CAL')
 *
