@@ -6,7 +6,10 @@
 *-
 *-      Created: 20 Mar 1994      Tsolak A. Amatuni
 * $Log$
-* Revision 1.1  1994/04/13 15:39:11  cdaq
+* Revision 1.2  1994/06/14 03:12:22  cdaq
+* (DFG) make all parameters CTP, not hard wired
+*
+* Revision 1.1  1994/04/13  15:39:11  cdaq
 * Initial revision
 *
 *-----------------------------------------------------------------------
@@ -53,51 +56,22 @@
             endif
          enddo   !End loop over rows
       enddo   !End loop over columns
-******Temporary Section
-      do block=1,hmax_cal_blocks
-         hcal_ped_mean(block) =0.
-         hcal_ped_rms(block)  =0.
-         hcal_threshold(block)=0.
 *
-         hcal_cal_const(block)=1.
-*
-         hcal_gain_ini(block)=1.
-         hcal_gain_cur(block)=1.
-         hcal_gain_cor(block)=1.
-      enddo
-*
-*      set by CTP
-*      hlun_dbg_cal=20
-*      open(hlun_dbg_cal,file='hms_calorimeter.dbg',status='new')
-*
-      hcal_block_xsize=10.
-      hcal_block_ysize=70.
-      hcal_block_zsize=10.
-      hcal_xmax=+60.
-      hcal_xmin=-60.
-      hcal_ymax=+35
-      hcal_ymin=-35.
-      hcal_zmin=325.
-      hcal_zmax=365.
+      hcal_block_xsize= hcal_4ta_top(2) - hcal_4ta_top(1)
+      hcal_block_ysize= hcal_4ta_left - hcal_4ta_right
+      hcal_block_zsize= hcal_4ta_thick
+      hcal_xmax= hcal_4ta_top(hcal_4ta_nr) + hcal_block_xsize
+      hcal_xmin= hcal_4ta_top(1)
+      hcal_ymax= hcal_4ta_left
+      hcal_ymin= hcal_4ta_right
+      hcal_zmin= hcal_1pr_zpos
+      hcal_zmax= hcal_4ta_zpos
       hcal_fv_xmin=hcal_xmin+5.
       hcal_fv_xmax=hcal_xmax-5.
       hcal_fv_ymin=hcal_ymin+5.
       hcal_fv_ymax=hcal_ymax-5.
       hcal_fv_zmin=hcal_zmin
       hcal_fv_zmax=hcal_zmax
-*
-      do row=1,hmax_cal_rows
-      do column=1,hmax_cal_columns
-         block=row+hmax_cal_rows*(column-1)
-         xi   =hcal_block_xsize*(float(row)-0.5)
-         zi   =hcal_block_zsize*(float(column)-0.5)
-         hcal_block_xc(block)=hcal_xmin+xi
-         hcal_block_yc(block)=0.
-         hcal_block_zc(block)=hcal_zmin+zi
-      enddo
-      enddo
-******Temporary Section
-*      write(6,'('' Completed h_init_cal'')')
 *
       return
       end
