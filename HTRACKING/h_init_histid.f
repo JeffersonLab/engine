@@ -7,6 +7,9 @@
 *     Date:      9 April 1994
 *
 * $Log$
+* Revision 1.5  1996/08/30 19:55:09  saw
+* (JRA) Get id for misc. TDC's
+*
 * Revision 1.4  1996/01/16 21:52:05  cdaq
 * (JRA) Add hidcuttdc, hidscinalltimes, and hidscintimes
 *
@@ -216,6 +219,8 @@ c
       hidcalhits(3) = thgetid('hcalchits')
       hidcalhits(4) = thgetid('hcaldhits')
       hidcalsumadc = thgetid('hcalsumadc')
+
+      hidmisctdcs = thgetid('hmisctdcs')
 
       RETURN
       END
