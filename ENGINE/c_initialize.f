@@ -10,6 +10,9 @@
 *- 
 *-   Created  8-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.8  1999/02/10 17:39:36  csa
+* Changed celoss to geloss
+*
 * Revision 1.7  1996/01/22 15:04:19  saw
 * (JRA) Change cebeam and cpbeam to gebeam and gpbeam
 *
@@ -53,7 +56,7 @@
 *
 
 *
-      REAL*4 celoss
+      REAL*4 geloss
 *
 *--------------------------------------------------------
 *
@@ -64,11 +67,12 @@
         call total_eloss(0,.true.,gtarg_z(gtarg_num),
      $       gtarg_a(gtarg_num),gtarg_thick(gtarg_num),
      $       gtarg_dens(gtarg_num),
-     $       0.0,gtarg_theta,1.0,celoss)
+     $       0.0,gtarg_theta,1.0,geloss)
       else
-        celoss=0.
+        geloss=0.
       endif
-      gebeam = gebeam - celoss
+      gebeam = gebeam - geloss
+      gpbeam = sqrt(gebeam**2 - mass_electron**2)
       g_beam_target_s = (gtarg_mass(gtarg_num) + gebeam)**2 - gpbeam**2
 *
       IF(ABORT) THEN
