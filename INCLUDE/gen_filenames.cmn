@@ -2,8 +2,11 @@
 *
 *-Common block with filenames
 *     $Log$
-*     Revision 1.7  1995/07/28 14:25:59  cdaq
-*     (SAW) Add g_ctp_database_filename
+*     Revision 1.8  1995/09/01 13:01:16  cdaq
+*     (JRA) Add a file for run number based CTP parameter (kinematics) settings
+*
+* Revision 1.7  1995/07/28  14:25:59  cdaq
+* (SAW) Add g_ctp_database_filename
 *
 * Revision 1.6  1994/10/19  19:52:22  cdaq
 * (SAW) Add g_label variable for labels on reports
@@ -44,6 +47,7 @@
       character*80 g_report_blockname
       character*80 g_label              ! A string that can label reports, etc
       character*80 g_ctp_database_filename ! Run number dependent variables
+      character*80 g_ctp_kinematics_filename ! Run number dependent variables
 *
       common /gen_filenames/
      $     g_config_filename,
@@ -58,7 +62,8 @@
      $     g_report_output_filename,
      $     g_report_blockname,
      $     g_label,
-     $     g_ctp_database_filename
+     $     g_ctp_database_filename,
+     $     g_ctp_kinematics_filename
 *
       logical*4 g_hist_rebook
       logical*4 g_test_rebook
