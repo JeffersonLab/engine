@@ -12,9 +12,12 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-      $Log$
-*-      Revision 1.4  1994/03/24 22:01:43  cdaq
-*-      Reflect changes in gen_data_structures.cmn
+*-      Revision 1.5  1994/06/22 20:51:22  cdaq
+*-      (SAW) Zero out the miscleaneous hits array
 *-
+* Revision 1.4  1994/03/24  22:01:43  cdaq
+* Reflect changes in gen_data_structures.cmn
+*
 * Revision 1.3  1994/02/22  19:43:15  cdaq
 * (SAW) SNUM_DC_PLANES  --> SMAX_NUM_DC_PLANES
 *
@@ -104,6 +107,15 @@
          SCER_PLANE(hit) = 0
       ENDDO
       SCER_TOT_HITS= 0
+*     
+*     SOS Miscleaneous hits
+*
+      do hit=1,SMAX_MISC_HITS
+         SMISC_RAW_ADDR1(hit) = 0
+         SMISC_RAW_ADDR2(hit) = 0
+         SMISC_RAW_DATA(hit) = 0
+      enddo
+      smisc_tot_hits = 0
 *     
 *     SOS DETECTOR TRACK QUANTITIES
 *     

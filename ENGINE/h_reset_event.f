@@ -87,6 +87,14 @@
       ENDDO
       HCER_TOT_HITS= 0
 *     
+*     HMS Miscleaneous hits
+*
+      do hit=1,HMAX_MISC_HITS
+         HMISC_RAW_ADDR1(hit) = 0
+         HMISC_RAW_ADDR2(hit) = 0
+         HMISC_RAW_DATA(hit) = 0
+      enddo
+      hmisc_tot_hits = 0
 *     
 *     HMS DETECTOR TRACK QUANTITIES
 *     
