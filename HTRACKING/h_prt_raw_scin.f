@@ -10,7 +10,10 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
-* Revision 1.5  1995/05/22 19:39:23  cdaq
+* Revision 1.6  1995/07/20 19:08:41  cdaq
+* (SAW) Fix format
+*
+* Revision 1.5  1995/05/22  19:39:23  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.4  1994/09/13  21:45:46  cdaq
@@ -48,9 +51,9 @@
       write(hluno,'(''        HMS_RAW_SCIN BANKS'')')
       write(hluno,'(''     HSCIN_ALL_TOT_HITS='',I4)') HSCIN_ALL_TOT_HITS
       if(HSCIN_ALL_TOT_HITS.GT.0) then
-        write(hluno,'('' Num  Plane    Counter        ADC_POS''
+        write(hluno,'('' Num  Plane    Counter      ADC_POS  ''
      &       '' ADC_NEG  TDC_POS  TDC_NEG'')')
-        write(hluno,'(1x,i2,2x,i3,7x,i4,8x,4i8)')
+        write(hluno,'(1x,i2,2x,i3,7x,i4,8x,2f8.1,2i8)')
      &       (j,HSCIN_ALL_PLANE_NUM(j),HSCIN_ALL_COUNTER_NUM(j),
      &       (HSCIN_ALL_ADC_POS(j)
      $       -HSCIN_ALL_PED_POS(hscin_all_plane_num(j)
