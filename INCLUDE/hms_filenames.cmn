@@ -2,6 +2,9 @@
 *
 *-Common block with filenames
 * $Log$
+* Revision 1.4  1996/01/17 16:00:24  cdaq
+* (JRA) Add threshold and pedestal output filenames
+*
 * Revision 1.3  1995/04/06 20:17:07  cdaq
 * (SAW) Add report output filename
 *
@@ -17,10 +20,14 @@
       character*80 h_report_template_filename    ! CTP file with hms report
       character*80 h_report_blockname
       character*80 h_report_output_filename
+      character*80 h_threshold_output_filename
+      character*80 h_pedestal_output_filename
 *
       common /hms_filenames/
      $     h_recon_coeff_filename,
      $     h_report_template_filename,
      $     h_report_blockname,
-     $     h_report_output_filename
+     $     h_report_output_filename,
+     $     h_threshold_output_filename,
+     $     h_pedestal_output_filename
 *
