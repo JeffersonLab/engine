@@ -2,7 +2,10 @@
 *     gen_data_structures.cmn or be separate.
 *
 * $Log$
-* Revision 1.5  1995/05/11 15:13:43  cdaq
+* Revision 1.6  1995/09/01 13:02:09  cdaq
+* (JRA) Add time into run variable
+*
+* Revision 1.5  1995/05/11  15:13:43  cdaq
 * (SAW) Change scalers and evscalers to be real*8
 *
 * Revision 1.4  1995/04/06  20:16:52  cdaq
@@ -23,10 +26,16 @@
       parameter (MAX_NUM_SCALERS=500)
       integer*4 MAX_NUM_EVSCALERS
       parameter (MAX_NUM_EVSCALERS=16)
+
+      integer*4 g_clock_index      !index of hardware scaler clock.
+      real*4 g_clock_rate          ! rate of hardware scaler clock.
+*
+*     CTPTYPE=event
 *
       real*8 scalers(MAX_NUM_SCALERS)
+      real*4 g_time                    !time of run at most recent scaler event
 *
-      common /SCALERS/ scalers
+      common /SCALERS/ scalers, g_clock_index, g_clock_rate, g_time
 *
       real*8 evscalers(MAX_NUM_EVSCALERS)
 *
