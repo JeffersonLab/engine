@@ -11,10 +11,13 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 *-    $Log$
-*-    Revision 1.4  1994/04/13 16:06:00  cdaq
-*-    (DFG) Add consolidated call to h_raw_dump_all
-*-          Commented out returns after ABORT's
+*-    Revision 1.5  1994/05/12 21:18:13  cdaq
+*-    (DFG) Put h_prt_track_tests here. Remove from h_tof
 *-
+* Revision 1.4  1994/04/13  16:06:00  cdaq
+* (DFG) Add consolidated call to h_raw_dump_all
+*       Commented out returns after ABORT's
+*
 * Revision 1.3  1994/02/22  15:51:33  cdaq
 * (DFG) Replace with real version
 * (SAW) Move to TRACKING directory
@@ -42,6 +45,7 @@
       INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
+      include 'hms_scin_parms.cmn'
 *
 *     Local variables
       integer*4 istat
@@ -130,6 +134,12 @@
             call G_add_path(here,err)
 *            return
          endif                          ! end test of H_CER ABORT
+*
+
+*     Dump HMS_TRACK_TESTS if hdebugprinttracktests is set
+          if( hdebugprinttracktests .ne. 0 ) then
+            call h_prt_track_tests
+          endif
 *
 *     Combine results in HMS physics analysis
 *     HMS_TARGET + HMS_TRACK_TESTS ====>  HMS_PHYSICS
