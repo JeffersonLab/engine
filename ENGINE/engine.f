@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.30  2003/02/12 20:30:59  jones
+* Initialize variable 'problems' to false ( E. Brash)
+*
 * Revision 1.29  2002/12/20 21:55:23  jones
 * Modified by Hamlet for new HMS aerogel
 *
@@ -246,6 +249,7 @@ c
       endif
 
       finished_extracting = .false.
+      problems = .false.
       DO WHILE(.NOT.problems .and. .NOT.ABORT .and. .NOT.EoF .and.
      &         .NOT.finished_extracting)
         mss= ' '
