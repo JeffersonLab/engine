@@ -4,29 +4,33 @@
 *........................................................................
 *- Misc. info. required for SOS Ntuple
 * $Log$
-* Revision 1.1  1994/04/14 16:05:24  cdaq
+* Revision 1.2  1994/06/17 03:14:40  cdaq
+* (KBB) Fix typos, change variable names, reorder common
+*
+* Revision 1.1  1994/04/14  16:05:24  cdaq
 * Initial revision
 *
 *
-      integer HMAX_Ntuple_size
-      parameter (HMAX_Ntuple_size= 100)
+      integer SMAX_Ntuple_size
+      parameter (SMAX_Ntuple_size= 100)
       integer default_s_Ntuple_ID
-      parameter (default_s_Ntuple_ID= 9002)
+      parameter (default_s_Ntuple_ID= 9020)
 *
       logical s_Ntuple_exists
       integer s_Ntuple_ID
-      character*80 s_Ntuple_filename
+      integer s_Ntuple_size
+      integer s_Ntuple_IOchannel
       character*80 s_Ntuple_name
       character*80 s_Ntuple_title
-      character*80 s_Ntuple_directory
-      integer s_Ntuple_IOchannel,s_Ntuple_size
-      character*8 s_Ntuple_tag(HMAX_Ntuple_size)
-      real s_Ntuple_contents(HMAX_Ntuple_size)
+      character*132 s_Ntuple_directory
+      character*256 s_Ntuple_file
+      character*8 s_Ntuple_tag(SMAX_Ntuple_size)
+      real s_Ntuple_contents(SMAX_Ntuple_size)
 *
       COMMON /SOS_Ntuple/ s_Ntuple_exists,s_Ntuple_ID,
-     &                     s_Ntuple_IOchannel,s_Ntuple_size, 
-     &                      s_Ntuple_tag,s_Ntuple_contents,
-     &                       s_Ntuple_filename,s_Ntuple_name,
-     &                        s_Ntuple_title,s_Ntuple_directory
- 
-****************************end: s_Ntuple.cmn ***********************
+     &                     s_Ntuple_size,s_Ntuple_IOchannel,
+     &                      s_Ntuple_name,s_Ntuple_title,
+     &                       s_Ntuple_directory,s_Ntuple_file,
+     &                        s_Ntuple_tag,s_Ntuple_contents
+*
+****************************end: s_ntuple.cmn ***********************
