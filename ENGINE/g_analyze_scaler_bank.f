@@ -1,6 +1,9 @@
       subroutine g_analyze_scaler_bank(event,ABORT,err)
 *     
 *     $Log$
+*     Revision 1.4.6.1  2004/09/27 03:14:11  cdaq
+*     added g_beam_on_bcm_charge and gscaler(160) to the charge scaler output file
+*
 *     Revision 1.4  2004/05/11 18:31:22  jones
 *     If using syncfilter and time between scaler reads is larger than 2.5 seconds
 *     then set "skip_event" to true so that g_beam_on_run_time and g_beam_on_bcm_charge are not updated and events are skipped
@@ -266,7 +269,6 @@ c
                g_beam_on_bcm_charge(2) = g_beam_on_bcm_charge(2)
      $              + ave_current_bcm(2)*delta_time
             endif
-*     
             gscaler_event_num = gscaler_event_num + 1
 
 *     Write out pertinent charge scaler rates for each scaler event.
@@ -276,7 +278,10 @@ c
      &              gscaler_change(gunser_index)/delta_time, !scaler rate(Hz)
      &              gscaler_change(gbcm1_index)/delta_time, !scaler rate(Hz)
      &              gscaler_change(gbcm2_index)/delta_time, !scaler rate(Hz)
-     &              gscaler_change(gbcm3_index)/delta_time, !scaler rate(Hz)
+     &              gscaler_change(gbcm3_index)/delta_time,!scaler rate(Hz)
+     &              ave_current_bcm(1)*delta_time,
+     &              ave_current_bcm(2)*delta_time,
+     &		    gscaler_change(160), 
      &              delta_time  !time since last scaler event (sec)
             endif
          endif
@@ -286,7 +291,7 @@ c
 
 
 *     
- 1001 format(i6,4f13.2,f12.6)
+ 1001 format(i6,7f13.2,f12.6)
 
       return
       end
