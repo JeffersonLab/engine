@@ -1,6 +1,9 @@
       subroutine s_analyze_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.7  1996/11/07 19:49:10  saw
+* (WH) Add pedestal analysis for lucite cerenkov
+*
 * Revision 1.6  1996/04/30 17:00:53  saw
 * (JRA) Change some aerogel variable names
 *
@@ -91,6 +94,19 @@
         saer_pos_ped_num(blk) = saer_pos_ped_num(blk) + 1
         saer_neg_ped_num(blk) = saer_neg_ped_num(blk) + 1
       enddo
-
+*
+*
+* LUCITE CERENKOV PEDESTALS
+*
+      do ihit = 1 , sluc_tot_hits
+        blk = sluc_pair_num(ihit)
+        sluc_pos_ped_sum2(blk) = sluc_pos_ped_sum2(blk) + sluc_adc_pos(ihit)*sluc_adc_pos(ihit)
+        sluc_neg_ped_sum2(blk) = sluc_neg_ped_sum2(blk) + sluc_adc_neg(ihit)*sluc_adc_neg(ihit)
+        sluc_pos_ped_sum(blk) = sluc_pos_ped_sum(blk) + sluc_adc_pos(ihit)
+        sluc_neg_ped_sum(blk) = sluc_neg_ped_sum(blk) + sluc_adc_neg(ihit)
+        sluc_pos_ped_num(blk) = sluc_pos_ped_num(blk) + 1
+        sluc_neg_ped_num(blk) = sluc_neg_ped_num(blk) + 1
+      enddo
+ 
       return
       end
