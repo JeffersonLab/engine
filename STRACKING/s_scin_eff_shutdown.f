@@ -16,6 +16,9 @@
 * s_scin_eff_shutdown does some final manipulation of the numbers.
 *
 * $Log$
+* Revision 1.7  1996/01/17 18:58:53  cdaq
+* (JRA) Add debug control flag around write statements
+*
 * Revision 1.6  1995/08/31 15:08:52  cdaq
 * (JRA) Dump bad counter infomation
 *
@@ -49,6 +52,7 @@
       include 'sos_scin_parms.cmn'
       include 'sos_scin_tof.cmn'
       include 'sos_statistics.cmn'
+      include 'sos_tracking.cmn'
 
       logical written_header
       integer pln,cnt
@@ -134,15 +138,17 @@
       seff_3_of_4=p1234+p123+p124+p134+p234
       seff_4_of_4=p1234
 
-      write(39,*) 'sscin_all_ped_pos ='
-      do cnt=1,snum_scin_elements
-        write(39,111) (sscin_zero_pave(pln,cnt),pln=1,snum_scin_planes)
-      enddo
+      if (sdebugcalcpeds.ne.0) then
+        write(39,*) 'sscin_all_ped_pos ='
+        do cnt=1,snum_scin_elements
+          write(39,111) (sscin_zero_pave(pln,cnt),pln=1,snum_scin_planes)
+        enddo
 
-      write(39,*) 'sscin_all_ped_neg ='
-      do cnt=1,snum_scin_elements
-        write(39,111) (sscin_zero_nave(pln,cnt),pln=1,snum_scin_planes)
-      enddo
+        write(39,*) 'sscin_all_ped_neg ='
+        do cnt=1,snum_scin_elements
+          write(39,111) (sscin_zero_nave(pln,cnt),pln=1,snum_scin_planes)
+        enddo
+      endif
 111   format (10x,3(f6.1,','),f6.1)
 
       return
