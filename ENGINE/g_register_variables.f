@@ -19,8 +19,11 @@
 *     Modified: 24-May-1994 K.B.Beard
 *
 *     $Log$
-*     Revision 1.6  1994/06/21 16:40:20  cdaq
-*     (SAW) Register g_report_rebook and scalers
+*     Revision 1.7  1994/08/04 03:47:05  cdaq
+*     (SAW) Add call to Breuer's hack_register_variables
+*
+* Revision 1.6  1994/06/21  16:40:20  cdaq
+* (SAW) Register g_report_rebook and scalers
 *
 * Revision 1.5  1994/06/17  03:30:35  cdaq
 * (KBB) Execute all code despite registration errors
@@ -174,11 +177,11 @@
       ABORT= ierr.ne.0 .or. ABORT
 *
       Do m=0,gen_MAX_trigger_types
-        call G_build_note('enable_EvType$','$',m,' ',rv,' ',msg)
-        call squeeze(msg,i)
-        ierr= regparmint(msg(1:i),gen_run_enable(m),0)
-        if(ierr.ne.0) call G_append(err,',"'//msg(1:i)//'"')
-        ABORT= ierr.ne.0 .or. ABORT
+         call G_build_note('enable_EvType$','$',m,' ',rv,' ',msg)
+         call squeeze(msg,i)
+         ierr= regparmint(msg(1:i),gen_run_enable(m),0)
+         if(ierr.ne.0) call G_append(err,',"'//msg(1:i)//'"')
+         ABORT= ierr.ne.0 .or. ABORT
       EndDo
 *
       Do m=0,gen_MAX_trigger_types
@@ -228,28 +231,36 @@
 *
       call h_register_variables(FAIL,why) ! HMS
       IF(err.NE.' ' .and. why.NE.' ') THEN
-        call G_append(err,' & '//why)
+         call G_append(err,' & '//why)
       ELSEIF(why.NE.' ') THEN
-        err= why
+         err= why
       ENDIF
       ABORT= ABORT .or. FAIL 
 *     
       call s_register_variables(FAIL,why) ! SOS
       IF(err.NE.' ' .and. why.NE.' ') THEN
-        call G_append(err,' & '//why)
+         call G_append(err,' & '//why)
       ELSEIF(why.NE.' ') THEN
-        err= why
+         err= why
       ENDIF
       ABORT= ABORT .or. FAIL 
 *
       call c_register_variables(FAIL,why)
       IF(err.NE.' ' .and. why.NE.' ') THEN
-        call G_append(err,' & '//why)
+         call G_append(err,' & '//why)
       ELSEIF(why.NE.' ') THEN
-        err= why
+         err= why
       ENDIF
       ABORT= ABORT .or. FAIL 
 *
+      call hack_register_variables(FAIL,why)
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+         call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+         err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL 
+
       if(ABORT .or. err.NE.' ') call g_add_path(here,err)
 *
       return
