@@ -21,14 +21,8 @@
 *
 *
 * $Log$
-* Revision 1.21  2003/11/28 14:57:30  jones
-* Added variable ssxp_tar_temp = ssxp_tar + s_oopcentral_offset  (MKJ)
-*
-* Revision 1.20  2003/09/05 19:52:01  jones
-* Merge in online03 changes (mkj)
-*
-* Revision 1.19.2.4  2003/09/05 14:32:57  jones
-* Use s_oopcentral_offset (mkj)
+* Revision 1.21.4.1  2004/02/26 14:34:22  jones
+* Starting code for mduality
 *
 * Revision 1.19.2.3  2003/08/12 17:36:21  cdaq
 * Add variables for e00-108 (hamlet)
@@ -116,6 +110,7 @@
 *
       include 'gen_data_structures.cmn'
       INCLUDE 'sos_data_structures.cmn'
+      INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'gen_routines.dec'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
@@ -142,7 +137,13 @@
       real*4 Wvec(4)
       real*4 sstheta_1st
       real*4 scalar,mink
+      real*4 targmass
       real*4 ssxp_tar_temp
+c
+      real*4 mp,mn,mpi,m_hadron,sign_hadron
+      parameter (mp   = 0.93827231)           ! all masses in GeV/c^2
+      parameter (mn   = 0.93956563)
+      parameter (mpi = 0.13956995)
 *
 *--------------------------------------------------------
 *
@@ -159,7 +160,7 @@
       ssx_tar      = sx_tar(ssnum_tartrack)
       ssy_tar      = sy_tar(ssnum_tartrack)
       ssxp_tar     = sxp_tar(ssnum_tartrack) ! This is an angle (radians)
-      ssxp_tar_temp = ssxp_tar + s_oopcentral_offset
+      ssxp_tar_temp = ssxp_tar_temp + s_oopcentral_offset
       ssyp_tar     = syp_tar(ssnum_tartrack) ! This is an angle (radians)
       ssbeta       = sbeta(itrkfp)
       ssbeta_chisq = sbeta_chisq(itrkfp)
@@ -298,9 +299,9 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 
 *     Do energy loss, which is particle specific
 
-      sstheta_1st = stheta_lab*TT/180. + atan(ssyp_tar) ! rough scat angle
-c
-      ssinplane = stheta_lab*TT/180. + atan(ssyp_tar) ! In plane scat angle (rad)
+      sstheta_1st = stheta_lab*TT/180. + atan(ssyp_tar) ! rough scat
+                                                        ! angle
+      ssinplane = stheta_lab*TT/180. + atan(ssyp_tar) ! rough scat angle
 
       if (spartmass .lt. 2.*mass_electron) then ! for electron
         if (gtarg_z(gtarg_num).gt.0.) then
@@ -367,7 +368,7 @@ c
       cossstheta = cos(sstheta)
 
       ssphi = sphi_lab + ssphi
-c      if (ssphi .lt. 0.) ssphi = ssphi + tt
+      if (ssphi .lt. 0.) ssphi = ssphi + tt
 
 *     sszbeam is the intersection of the beam ray with the
 *     spectrometer as measured along the z axis.
@@ -381,7 +382,26 @@ c      if (ssphi .lt. 0.) ssphi = ssphi + tt
 
 *     Target particle 4-momentum
 
-      ss_tvec(1) = gtarg_mass(gtarg_num)*m_amu
+      m_hadron = hpartmass
+      sign_hadron = 1.0
+      if(abs(m_hadron-mpi).lt.0.01) then
+         m_hadron = mpi
+         if (sign_hadron.ge.0.) then
+            targmass=mp
+         else if (sign_hadron.le.0.) then
+            targmass=mn
+         else
+            write(6,*) 'c_physics: return at prod/elast'
+            return
+         endif
+      endif                                
+      if (abs(m_hadron-mp) .lt. 0.01) then
+        m_hadron = mp
+        targmass = mp
+      endif
+
+
+      ss_tvec(1) = targmass
       ss_tvec(2) = 0.
       ss_tvec(3) = 0.
       ss_tvec(4) = 0.
@@ -451,7 +471,7 @@ c      if (ssphi .lt. 0.) ssphi = ssphi + tt
          write(6,*)' s_phys: stheta_lab, sphi_lab =',stheta_lab,sphi_lab
          write(6,*)' s_phys: ssdelta            =',ssdelta
          write(6,*)' s_phys: ssx_tar, ssy_tar   =',ssx_tar,ssy_tar
-         write(6,*)' s_phys: ssxp_tar, ssyp_tar =',ssxp_tar,ssyp_tar
+         write(6,*)' s_phys: ssxp_tar_temp, ssyp_tar =',ssxp_tar_temp,ssyp_tar
          write(6,*)' s_phys: ssbeta, ssbeta_p   =',ssbeta,ssbeta_p
          write(6,*)' s_phys: ssenergy, ssp      =',ssenergy,ssp
          write(6,*)' s_phys: sseloss            =',sseloss

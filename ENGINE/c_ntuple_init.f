@@ -1,4 +1,74 @@
       subroutine c_Ntuple_init(ABORT,err)
+*  xucc comments begin
+*  In this file, only some new names of NTUPLE contents
+*  The actual meaning of these contents should be found 
+*  It will never be wrong to put it in common blocks
+*  Only beware that these new parameters may only make sense
+*  for FPI events. For other events, it may be like the eyes
+*  of a blind person
+* 
+*  So thge Users himself (herself) 
+*  should be responsible for usage of these new things
+*  These new things are
+*  
+*
+*      c_Ntuple_tag(m)= 'hsztar'        !  added by volmer
+*      c_Ntuple_tag(m)= 'ssztar'        ! SOS Target
+*      c_Ntuple_tag(m)= 'Eexc'
+*      c_Ntuple_tag(m)= 'Emx'
+*      c_Ntuple_tag(m)= 'mmx'
+*      c_Ntuple_tag(m)= 'Eexcx'
+*      c_Ntuple_tag(m)= 'Q2'
+*      c_Ntuple_tag(m)= 'W'
+*      c_Ntuple_tag(m)= 't'
+*      c_Ntuple_tag(m)= 'epsilon'
+*      c_ntuple_tag(m)= 'gamma_v'
+
+* on June 21,2003, xucc added following for online purpose
+
+*      c_Ntuple_tag(m)= 'scal_x'
+*      c_ntuple_tag(m)= 'scal_y'
+*      c_ntuple_tag(m)= 'hsmass2'
+* end of xucc adding on June 21,2003
+
+
+*  Of course, we will also see the correct order of new quantities
+*  filled as follows 
+*      c_Ntuple_contents(m)= ztar_dummy
+*      c_Ntuple_contents(m)= ztar_dummy
+*      c_Ntuple_contents(m)= ce_exc ! Excitation Energy
+*      c_Ntuple_contents(m)= cmex  ! missing energy
+*      c_Ntuple_contents(m)= cmmx ! missing mass
+*      c_Ntuple_contents(m)= ce_excx ! Excitation Energy
+*      c_Ntuple_contents(m)= c_bigq2  ! q2?
+*      c_Ntuple_contents(m)= c_invmass
+*      c_Ntuple_contents(m)= cmin_t
+*      c_Ntuple_contents(m)= c_epsilon
+*      c_Ntuple_contents(m)= c_gamma_v
+*  
+
+* on June 21,2003, xucc added following for online purpose
+
+c       c_Ntuple_contents(m)= ssx_cal
+c       c_Ntuple_contents(m)= ssy_cal
+c       c_ntuple_contents(m)= hsmass2
+* end of xucc adding on June 21,2003
+
+
+*    
+*   Another one which puzzled me is the quantity cphipq
+*   there is only one line like
+*c        cphipq=asin(p_rot_y/p_rot_mag_check)/deg_rad
+*   to tell us what it could be.
+*   I find that Volmer's cphipi:
+*   phipi = acos(p_new_x/sqrt(p_new_x**2+p_new_y**2))
+*   could be more useful for us. So I used this instead.
+*   although maybe this could be
+*   phipi = acos(p_new_x/sqrt(p_new_x**2+p_new_y**2))/deg_rad
+*   Of course, I also changed the tag phi_pq to phi_pi accordingly
+*  
+*  xucc comment end
+
 *----------------------------------------------------------------------
 *
 *     Creates an COIN Ntuple
@@ -10,8 +80,17 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
-* Revision 1.10  2004/02/17 17:26:34  jones
-* Changes to enable possiblity of segmenting rzdat files
+* Revision 1.10.2.1  2004/02/26 14:33:37  jones
+* Starting code for mduality
+*
+* Revision 1.9.2.3  2003/08/12 17:35:33  cdaq
+* Add variables for e00-108 (hamlet)
+*
+* Revision 1.9.2.2  2003/07/03 14:06:09  cdaq
+* update for fpi-2 (xu)
+*
+* Revision 1.9.4.1  2003/03/05 22:51:31  xu
+* new variables
 *
 * Revision 1.9  1999/02/23 16:40:37  csa
 * Variable changes
@@ -57,18 +136,16 @@
 *
       character*80 default_name
       parameter (default_name= 'COINntuple')
-
+c
       character*80 file
       character*80 name
       character*1000 pat,msg
       integer ilo,fn_len,m
       character*1 ifile
-*
-      logical HEXIST           !CERNLIB function
+
 *
       INCLUDE 'c_ntuple.dte'
 *
-*--------------------------------------------------------
 *--------------------------------------------------------
       err= ' '
       ABORT = .FALSE.
@@ -159,6 +236,12 @@
       m= m+1
       c_Ntuple_tag(m)= 'hsytar'        ! HMS Target
       m= m+1
+*  xucc added begin     
+      c_Ntuple_tag(m)= 'hsztar'        !  added by volmer
+      m= m+1
+*  it's not very hard to accept this 
+*  xucc added end
+
       c_Ntuple_tag(m)= 'hsxptar'       !
       m= m+1
       c_Ntuple_tag(m)= 'hsyptar'       ! 
@@ -167,6 +250,12 @@
       m= m+1
       c_Ntuple_tag(m)= 'ssytar'        ! SOS Target
       m= m+1
+*  xucc added begin 
+      c_Ntuple_tag(m)= 'ssztar'        ! SOS Target
+      m= m+1
+*   again add new infor on Z
+* xucc added end
+
       c_Ntuple_tag(m)= 'ssxptar'       ! 
       m= m+1
       c_Ntuple_tag(m)= 'ssyptar'       ! 
@@ -207,10 +296,20 @@ c      m= m+1
       m=m+1
       c_Ntuple_tag(m)= 'eventID' ! CODA event ID#
       m=m+1
+      c_Ntuple_tag(m)= 'evtype' 
+      m=m+1
       c_Ntuple_tag(m)= 'Em'
       m=m+1
       c_Ntuple_tag(m)= 'missmass'
       m=m+1
+* 
+      c_Ntuple_tag(m)= 'Emx'
+      m=m+1
+      c_Ntuple_tag(m)= 'mmx'
+      m=m+1
+*  seems to add some new infor about excitation energy
+*     xucc added end
+
       c_Ntuple_tag(m)= 'Pm'
       m=m+1
       c_Ntuple_tag(m)= 'PmPar'
@@ -219,9 +318,63 @@ c      m= m+1
       m=m+1
       c_Ntuple_tag(m)= 'PmOop'
       m=m+1
+      c_Ntuple_tag(m)= 'omega'
+      m=m+1
+      c_Ntuple_tag(m)= 'Q2'
+      m=m+1
+      c_Ntuple_tag(m)= 'W2'
+      m=m+1
+      c_Ntuple_tag(m)= 'Xbj'
+      m=m+1
+      c_Ntuple_tag(m)= 'qabs'
+      m=m+1
+      c_Ntuple_tag(m)= 'Zm'
+      m=m+1
+      c_Ntuple_tag(m)= 'Pt2'
+
+      m=m+1
+      c_Ntuple_tag(m)= 't'
+      m=m+1
+*    seems to add more infor on Q2, (Q the four momentum of virtual gamma from*    electrons)etc 
+*    xucc added end
+
+
       c_Ntuple_tag(m)= 'th_pq'
       m=m+1
       c_ntuple_tag(m)= 'phi_pq'
+
+* added more thing for fpi analysis
+*     xucc added end
+
+* on June 21,2003, xucc added following for online purpose
+      m=m+1
+      c_Ntuple_tag(m)= 'scal_x'
+      m=m+1
+      c_ntuple_tag(m)= 'scal_y'
+      m=m+1
+      c_ntuple_tag(m)= 'hsmass2'
+      m=m+1
+      c_ntuple_tag(m)= 'haero_pos_npe_sum'
+      m=m+1
+      c_ntuple_tag(m)= 'haero_neg_npe_sum'
+      m=m+1
+      c_ntuple_tag(m)= 'hceradc1'
+      m=m+1
+      c_ntuple_tag(m)= 'hceradc2'
+      m=m+1
+      c_ntuple_tag(m)= 'hcersx'
+      m=m+1
+      c_ntuple_tag(m)= 'coinpathcor'
+      m=m+1
+      c_ntuple_tag(m)= 'sszbeam'
+      m=m+1
+      c_ntuple_tag(m)= 'hszbeam'
+      m=m+1
+      c_ntuple_tag(m)= 'ctphix'
+      m=m+1
+      c_ntuple_tag(m)= 'ctphiy'
+
+* end of xucc adding on June 21,2003
 
 *      m=m+1
 *      c_Ntuple_tag(m)= 'HmsCorsi'
@@ -230,6 +383,7 @@ c      m= m+1
       c_Ntuple_size= m
 ***********end insert description of contents of COIN tuple********
 *
+
 * Open ntuple
 
       call c_Ntuple_open(file,ABORT,err)      

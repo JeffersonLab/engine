@@ -8,8 +8,8 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
-* Revision 1.10  2004/02/17 17:26:34  jones
-* Changes to enable possiblity of segmenting rzdat files
+* Revision 1.10.2.1  2004/02/26 14:33:51  jones
+* Starting code for mduality
 *
 * Revision 1.8.2.1  2003/04/04 12:55:11  cdaq
 * add beam quantities to ntuple (MKJ)
@@ -129,8 +129,6 @@ c                                ! track with spectrometer ray
       h_Ntuple_contents(m)= hstart_time
       m= m+1
       h_Ntuple_contents(m)= float(gen_event_ID_number)
-      m= m+1
-      h_Ntuple_contents(m)= float(gen_event_type)
 c
       m= m+1
       h_Ntuple_contents(m)= gfrx_raw_adc

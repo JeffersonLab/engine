@@ -1,4 +1,7 @@
       subroutine c_Ntuple_keep(ABORT,err)
+
+* xucc comments see c_Ntuple_init.f
+
 *----------------------------------------------------------------------
 *
 *     Purpose : Add entry to the COIN Ntuple
@@ -8,8 +11,17 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
-* Revision 1.10  2004/02/17 17:26:34  jones
-* Changes to enable possiblity of segmenting rzdat files
+* Revision 1.10.2.1  2004/02/26 14:33:51  jones
+* Starting code for mduality
+*
+* Revision 1.9.2.3  2003/08/12 17:35:33  cdaq
+* Add variables for e00-108 (hamlet)
+*
+* Revision 1.9.2.2  2003/07/03 14:06:08  cdaq
+* update for fpi-2 (xu)
+*
+* Revision 1.9.4.1  2003/03/05 22:51:44  xu
+* new variables
 *
 * Revision 1.9  1999/02/23 16:41:08  csa
 * Variable changes
@@ -68,10 +80,19 @@
       INCLUDE 'sos_calorimeter.cmn'
       INCLUDE 'hms_scin_tof.cmn'
       INCLUDE 'sos_scin_tof.cmn'
+      INCLUDE 'sos_physics_sing.cmn'  ! for online purpose xucc june 20,2003
+      INCLUDE 'hms_aero_parms.cmn'    ! for online purpose xucc june 21,2003
+
+
 *
       logical HEXIST    !CERNLIB function
 *
       integer m
+*     xucc added begin 
+      real*4 ztar_dummy,ztard1,ztard2,ddegrad
+      parameter (ddegrad=0.0174533)  ! Z target information
+*     xucc added end
+
 *
 *--------------------------------------------------------
       err= ' '
@@ -128,6 +149,14 @@ c
       m= m+1
       c_Ntuple_contents(m)= HSY_TAR     ! HMS Target
       m= m+1
+*    xucc added begin
+      ztard1=abs(htheta_lab)*ddegrad
+      ztard2=ztard1-HSYP_TAR
+      ztar_dummy=HSY_TAR*(sin(ztard1)+cos(ztard1)/tan(ztard2))
+      c_Ntuple_contents(m)= ztar_dummy   
+      m= m+1
+*     xucc added end
+
       c_Ntuple_contents(m)= HSXP_TAR    ! 
       m= m+1
       c_Ntuple_contents(m)= HSYP_TAR    ! 
@@ -136,6 +165,16 @@ c
       m= m+1
       c_Ntuple_contents(m)= SSY_TAR     ! SOS Target
       m= m+1
+
+*     xucc added begin
+      ztard1=abs(stheta_lab)*ddegrad
+      ztard2=ztard1+SSYP_TAR
+      ztar_dummy=SSY_TAR*(sin(ztard1)+cos(ztard1)/tan(ztard2))
+      c_Ntuple_contents(m)= ztar_dummy   
+      m= m+1
+*     xucc added end 
+
+
       c_Ntuple_contents(m)= SSXP_TAR    ! 
       m= m+1
       c_Ntuple_contents(m)= SSYP_TAR    ! 
@@ -144,7 +183,7 @@ c
       m= m+1
       c_Ntuple_contents(m)= HCER_NPE_SUM ! HMS Particle Id.
       m= m+1
-      c_Ntuple_contents(m)= HSSHSUM  !
+      c_Ntuple_contents(m)= HSSHSUM  !  xucc what's wrong with this?
       m= m+1
       c_Ntuple_contents(m)= HSSHTRK  !
       m= m+1
@@ -158,7 +197,7 @@ c
       m= m+1
       c_Ntuple_contents(m)= SCER_NPE_SUM ! SOS Particle Id.
       m= m+1
-      c_Ntuple_contents(m)= SSSHSUM  !
+      c_Ntuple_contents(m)= SSSHSUM  ! xucc what's wrong with this again?
       m= m+1
       c_Ntuple_contents(m)= SSSHTRK  !
       m= m+1
@@ -174,10 +213,19 @@ c
       m= m+1
       c_Ntuple_contents(m)= FLOAT(gen_event_ID_number)
       m= m+1
+      c_Ntuple_contents(m)= FLOAT(gen_event_type)
+      m= m+1
       c_Ntuple_contents(m)= cmissing_e  ! missing energy
       m= m+1
       c_Ntuple_contents(m)= cmissing_mass ! missing mass
       m= m+1
+* 
+      c_Ntuple_contents(m)= cmex  ! missing energy
+      m= m+1
+      c_Ntuple_contents(m)= cmmx ! missing mass
+      m= m+1
+* 
+ 
       c_Ntuple_contents(m)= cmissing_mom ! Missing Momentum
       m= m+1
       c_Ntuple_contents(m)= cmissing_mom_par ! pm parallel to q
@@ -186,9 +234,69 @@ c
       m= m+1
       c_Ntuple_contents(m)= cmissing_mom_oop ! pm out of plane
       m= m+1
-      c_Ntuple_contents(m)= cthetapq
+      c_Ntuple_contents(m)= c_omega 
       m= m+1
-      c_Ntuple_contents(m)= cphipq
+      c_Ntuple_contents(m)= c_bigq2  ! q2?
+      m= m+1
+      c_Ntuple_contents(m)= c_w2
+      m= m+1
+      c_Ntuple_contents(m)= X_bj
+      m= m+1
+      c_Ntuple_contents(m)= qabs
+      m= m+1
+      c_Ntuple_contents(m)= z_m
+      m= m+1
+      c_Ntuple_contents(m)= pt2
+
+
+      m= m+1
+      c_Ntuple_contents(m)= cmin_t
+      m= m+1
+      c_Ntuple_contents(m)= cthetapq 
+      m= m+1
+      c_Ntuple_contents(m)= cphipi ! originally cphipq 
+
+*    ! cphipq=asin(p_rot_y/p_rot_mag_check)/deg_rad
+*    ! Azimuthal angle of hadron about q, but in original code it never calculate it 
+*    ! anywhere so I change it to be cphipi
+*    !         cphipi = acos(p_new_x/sqrt(p_new_x**2+p_new_y**2))
+*    !         It is an angel about pi particle
+*    !         why is it p_new_x? p_new_y? not yet know. 
+
+
+* on June 21,2003, xucc added following for online purpose
+      m=m+1
+      c_Ntuple_contents(m)=  ssx_cal
+      m=m+1
+      c_ntuple_contents(m)=  ssy_cal
+      m=m+1
+      c_ntuple_contents(m)=  hsmass2
+      m=m+1
+      c_ntuple_contents(m)=  haero_pos_npe_sum
+      m=m+1
+      c_ntuple_contents(m)=  haero_neg_npe_sum
+      m=m+1
+      c_ntuple_contents(m)=  hcer_adc(1)
+      m=m+1
+      c_ntuple_contents(m)=  hcer_adc(2)
+      m=m+1
+      c_ntuple_contents(m)=  hsx_cer
+      m=m+1
+      c_ntuple_contents(m)=  (sspath_cor - hspath_cor)
+      m=m+1
+      c_ntuple_contents(m)=   sszbeam
+      m=m+1
+      c_ntuple_contents(m)=   hszbeam      
+      m=m+1
+      c_ntuple_contents(m)=   ctphix
+      m=m+1
+      c_ntuple_contents(m)=   ctphiy
+
+c       write(6,*)'ssz_beam =',sszbeam
+c       write(6,*)'hsmass2 =',hsmass2
+* end of xucc adding on June 21,2003
+
+
 
 *      m= m+1
 *      c_Ntuple_contents(m)= P_HMS_CORR  ! Corrected hms singles
@@ -207,3 +315,10 @@ c
 *
       RETURN
       END      
+
+
+
+
+
+
+

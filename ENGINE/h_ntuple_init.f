@@ -10,8 +10,8 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
-* Revision 1.11  2004/02/17 17:26:34  jones
-* Changes to enable possiblity of segmenting rzdat files
+* Revision 1.11.2.1  2004/02/26 14:33:51  jones
+* Starting code for mduality
 *
 * Revision 1.9.2.1  2003/04/04 12:54:42  cdaq
 * add beam parameters to ntuple
@@ -167,8 +167,6 @@ c
       h_Ntuple_tag(m)= 'hstart'
       m= m+1
       h_Ntuple_tag(m)= 'eventID'
-      m= m+1
-      h_Ntuple_tag(m)= 'ev_type'
 
 * Experiment dependent entries start here.
 c
