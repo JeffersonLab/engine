@@ -16,6 +16,9 @@
 #
 #  Revision History:
 #    $Log$
+#    Revision 1.2  1998/12/03 22:01:10  saw
+#    (SAW) New style
+#
 #    Revision 1.1  1996/02/02 14:14:46  saw
 #    Initial revision
 #
@@ -24,45 +27,22 @@
 #
 #----------------------------------------------------------------------------
 # Generic Makefile add more directories here
-#ifndef OSTYPE  # New tcsh sets this, let's force it.
+ifndef OSTYPE  # New tcsh sets this, let's force it.
   OSTYPE := $(subst -,,$(shell uname))
-#endif
+endif
+ifeq ($(OSTYPE),linux-gnu)
+  OSTYPE=Linux
+endif
 
-RM        = rm -f 
 SHELL     = /bin/sh
 
-ifeq ($(OSTYPE),HPUX)
-EXTRA = -D_HPUX_SOURCE -Dhpux
-FFLAGS=+ppu -C +es -O +Obb1000 +FPVZOU
-#FFLAGS=+ppu -C +es -O -G +Obb1000 +FPVZOU
-ARFLAGS=frv
-endif
-
-ifeq ($(OSTYPE),ULTRIX)
-EXTRA = 
-FFLAGS=-check_bounds -extend_source -g2
-endif
-
-ifeq ($(OSTYPE),Linux)
-EXTRA =
-FFLAGS=-g -f
-endif
-
-ifeq ($(OSTYPE),IRIX)
-EXTRA =
-FFLAGS=-check_bounds -extend_source -g2
-LDFLAGS=
-endif
-ARCH = $(OSTYPE)
-
-include $(Csoft)/etc/makefile.csoft.in
 include $(Csoft)/etc/makefile.site.in
 include $(sources:.f=.d) 
 include $(sources:.c=.d) 
 
-EVGENLIB   = $(Csoft)/$(OSTYPE)/lib/libevgen.a
-LIBROOT   = $(Csoft)/$(OSTYPE)/lib
-INCROOT   = $(Csoft)/$(OSTYPE)/include
+EVGENLIB   = $(Csoft)/$(OSTYPE)$(OSEXT)/lib/libevgen.a
+LIBROOT   = $(Csoft)/$(OSTYPE)$(OSEXT)/lib
+#INCROOT   = $(Csoft)/$(OSTYPE)/include
 OS     := $(shell echo $(OSTYPE) | tr "[A-Z]" "[a-z]")
 
 parent := $(shell pwd)
@@ -79,43 +59,63 @@ CFLAGS    = $(INCS) $(DEFS) $(EXTRA) -D$(OSTYPE) -DOSTYPE="\"$(OSTYPE)\"" -DVERS
 .PRECIOUS: *.d
 .PHONY : CSOFT csoft clean
 
-ifdef DEPMETHOD
-## .o files don't depend on Makefile or .os$(OSTYPE) to make switching between
-## os's faster
-%.d: %.c .os$(OSTYPE) Makefile $(Csoft)/etc/Makefile
-	echo remaking $@
-	$(GCC) -MM $(CFLAGS) $<  > $@
-
-%.d: %.f .os$(OSTYPE) Makefile $(Csoft)/etc/Makefile
-	echo remaking $@
-##	grep -i "[ \t]*include[ \t]*'" $< | sed -e "s/^[\t ]*[iI][nN][cC][lL][uU][dD][eE][ \t]*'/$<: /" | sed -e "s/'.*$$//" | sed -e 's/.f:/.o:/' > $@
-	cat $< | sed -n -e \
-	"s/^[ \t]*[Ii][Nn][Cc][Ll][Uu][Dd][Ee][ \t]*'/$<: /p" | \
-	sed -e "s/'.*$$//" | sed -e 's/.f:/.o:/' | sed -e \
-	's/$*.o/& $@/g' -e 's/:/: .os$(OSTYPE) Makefile /' > $@
-
+ifdef NFSDIRECTORY
+DEPENDS_RULE.c =  $(GCC) -MM $(CFLAGS) $< |\
+	(sed -e 's|$*.o|& $@|g' -e 's|:|: .os$(OSTYPE) Makefile |' ;\
+	cat $< | sed -n -e \ "s|\#include \"|$@: ../|p" |\
+	sed -e "s|\".*$$||" | sed -e 's|.d:|.o:|') >$@
 else
-%.d: %.c .os$(OSTYPE) Makefile $(Csoft)/etc/Makefile
-	echo remaking $@
-	$(GCC) -MM $(CFLAGS) $< | sed -e 's/$*.o/& $@/g' -e 's/:/: .os$(OSTYPE) Makefile /' > $@
-
-#%.d: %.f .os$(OSTYPE) Makefile $(Csoft)/etc/Makefile
-%.d: %.f .os$(OSTYPE)
-	echo remaking $@
-	( cat $< | sed -n -e \
-	"s/^[ 	]*[Ii][Nn][Cc][Ll][Uu][Dd][Ee][ 	]*['\"]/$<: /p" | \
-	sed -e "s/['\"].*$$//" | sed -e 's/.f:/.o:/' ; \
+DEPENDS_RULE.c =  $(GCC) -MM $(CFLAGS) $< |\
+	 sed -e 's|$*.o|& $@|g' -e 's|:|: .os$(OSTYPE) Makefile |' > $@
+endif
+DEPENDS_RULE.f = 	( cat $< | sed -n -e \
+	"s|^[ 	]*[Ii][Nn][Cc][Ll][Uu][Dd][Ee][ 	]*['\"]|$@: |p" | \
+	sed -e "s|['\"].*$$||" | sed -e 's|.d:|.o:|' ; \
 	echo $*.o: .os$(OSTYPE) ) > $@
+COMPILE_RULE.f = $(F77) $(FFLAGS) -c $< -o $@ 
+COMPILE_RULE.c = $(CC) $(CFLAGS) -c $< -o $@
 # Don't "Makefile" to .d files anymore
+
+ifdef NEWSTYLE
+%.d: ../%.c
+	echo remaking $@
+	$(DEPENDS_RULE.c)
+
+%.d: ../%.f
+	echo remaking $@
+	$(DEPENDS_RULE.f)
+
+%.o: ../%.f
+	$(COMPILE_RULE.f)
+
+%.o: ../%.c
+	$(COMPILE_RULE.c)
+else
+#%.d: %.c .os$(OSTYPE) Makefile $(Csoft)/etc/Makefile
+%.d: %.c
+	echo remaking $@
+	$(DEPENDS_RULE.c)
+
+#%.d: %.f .os$(OSTYPE)
+%.d: %.f
+	echo remaking $@
+	$(DEPENDS_RULE.f)
+#	( cat $< | sed -n -e \
+#	"s/^[ 	]*[Ii][Nn][Cc][Ll][Uu][Dd][Ee][ 	]*['\"]/$<: /p" | \
+#	sed -e "s/['\"].*$$//" | sed -e 's/.f:/.o:/' ; \
+#	echo $*.o: .os$(OSTYPE) ) > $@
+
+%.o: %.f
+	$(COMPILE_RULE.f)
 endif
 
-%.f : %.F
-	$(F77) -F $<
+#%.f : %.F
+#	$(F77) -F $<
 
 (%.o): %.o
 	@echo Adding $*.o to $@
 	$(AR) $(ARFLAGS) $@ $*.o
-ifeq ($(ARCH),ULTRIX)
+ifdef RANLIB
 	$(RANLIB) $@
 endif
 
@@ -131,11 +131,7 @@ $(TARGET_PATH)%: %
 endif
 
 .os$(OSTYPE):
-ifdef DEPMETHOD
-	rm -f *.d .os* *.o
-else
 	rm -f *.d .os*
-endif
 	@echo $(OSTYPE) > .os$(OSTYPE)
 	@echo remade marker .os$(OSTYPE)
 
@@ -170,14 +166,14 @@ directory:
 	$(MAKE) SUBDIR=$(SUBDIR) OSPREFIX=$(OSPREFIX) $(FILES)
 
 CSOFT csoft: 
-	@echo "CSOFT - Arch. $(ARCH) sys.vers $(OSTYPE)"
+	@echo "CSOFT - Arch. $(ARCH) sys.vers $(OSTYPE)$(OSEXT)"
 	@echo "Considering $(shell pwd) ... "
 	@if test -z "$(install-dirs)"; then \
-	  echo Nothing to do for $(OSTYPE); \
+	  echo Nothing to do for $(OSTYPE)$(OSEXT); \
 	else \
 	for subdir in $(install-dirs) dummy; do \
             if test $$subdir != dummy; then \
-	    $(MAKE) SUBDIR=$$subdir OSPREFIX=$(OSTYPE)/ directory ; \
+	    $(MAKE) SUBDIR=$$subdir OSPREFIX=$(OSTYPE)$(OSEXT)/ directory ; \
             fi \
 	done \
 	fi;true
@@ -189,14 +185,3 @@ ALL_CSOFT all_csoft:
 	  $(MAKE) -C `dirname $$makefile` csoft ; \
         done
 	@ echo Made csoft for $(OS)
-
-
-
-
-
-
-
-
-
-
-
