@@ -12,6 +12,11 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log$
+*- Revision 1.5  2004/02/26 22:23:17  jones
+*- Add if statement to use subroutine h_select_best_track_using_scin.f
+*- when hsel_using_scin .eq. 1 . Otherwise picks the best track the old
+*- way.
+*-
 *- Revision 1.4  1995/07/19 19:12:22  cdaq
 *- (CC) Fix bug in best chisq finding
 *-
@@ -42,10 +47,16 @@
       INCLUDE 'hms_calorimeter.cmn'
       INCLUDE 'hms_scin_parms.cmn'
       INCLUDE 'hms_scin_tof.cmn'
+      INCLUDE 'hms_tracking.cmn'
+c
 *
 *     local variables 
       integer*4 goodtrack,track
+      logical first
       real*4 chi2perdeg,chi2min
+c
+      integer*4 i,j
+      data first /.true./
 *--------------------------------------------------------
 *
       ABORT= .FALSE.
@@ -53,7 +64,17 @@
 *     Need to test to chose the best track
       HSNUM_FPTRACK = 0
       HSNUM_TARTRACK = 0
+        
+c
+      if ( hsel_using_scin .eq. 1) then
+         if (first) write(*,*) ' HMS track selection using scintillators'
+         first = .false.
+         call H_SELECT_BEST_TRACK_USING_SCIN(ABORT,err)
+      else
+c
       if( HNTRACKS_FP.GT. 0) then
+         if (first) write(*,*) ' HMS track selection using chi-squared'
+         first = .false.
         chi2min= 1e10
         goodtrack = 0
         do track = 1, HNTRACKS_FP
@@ -78,6 +99,8 @@
         HSNUM_FPTRACK  = goodtrack
         if(goodtrack.eq.0) return       ! return if no valid tracks
       endif
-
+c
+      endif
+c
       return
       end
