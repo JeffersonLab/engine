@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.9.6.1  2003/12/17 22:54:53  jones
+*  update e01004
+*
 * Revision 1.9  1999/02/23 16:40:37  csa
 * Variable changes
 *
@@ -140,18 +143,6 @@
       m=m+1
       c_Ntuple_tag(m)= 'cointime'      ! Corrected Coincidence Time
       m= m+1
-      c_Ntuple_tag(m)= 'bpmxmean'         ! Mean Beam X Position
-      m= m+1
-      c_Ntuple_tag(m)= 'bpmymean'         ! Mean Beam Y Position
-      m= m+1
-      c_Ntuple_tag(m)= 'bpmx'         ! Beam X Position
-      m= m+1
-      c_Ntuple_tag(m)= 'bpmy'         ! Beam Y Position
-      m= m+1
-      c_Ntuple_tag(m)= 'frx'           ! Fast Raster X
-      m= m+1
-      c_Ntuple_tag(m)= 'fry'           ! Fast Raster Y
-      m= m+1
       c_Ntuple_tag(m)= 'gbeam_x'           ! Fast Raster X
       m= m+1
       c_Ntuple_tag(m)= 'gbeam_y'           ! Fast Raster Y
@@ -194,54 +185,85 @@
       m= m+1
       c_Ntuple_tag(m)= 'hsshtrk'        ! 
       m= m+1
-      c_Ntuple_tag(m)= 'hsprtrk'        ! 
-      m= m+1
-      c_Ntuple_tag(m)= 'hsbeta_notrk'   ! 
-      m= m+1
-      c_Ntuple_tag(m)= 'hsbeta'         ! 
-      m= m+1
-      c_Ntuple_tag(m)= 'hsdedx1'        ! 
-      m= m+1
       c_Ntuple_tag(m)= 'scer_npe'       ! SOS Particle Id.
       m= m+1
-c      c_Ntuple_tag(m)= 'saer_npe'       ! 
-c      m= m+1
       c_Ntuple_tag(m)= 'ssshsum'        ! 
       m= m+1
       c_Ntuple_tag(m)= 'ssshtrk'        ! 
-      m= m+1
-      c_Ntuple_tag(m)= 'ssprtrk'        ! 
-      m= m+1
-      c_Ntuple_tag(m)= 'ssbeta_notrk'   ! 
-      m= m+1
-      c_Ntuple_tag(m)= 'ssbeta'         ! 
-      m= m+1
-      c_Ntuple_tag(m)= 'ssdedx1'        ! 
       m= m+1
       c_Ntuple_tag(m)= 'charge'         ! Charge of last Scaler Event
       m=m+1
       c_Ntuple_tag(m)= 'eventID' ! CODA event ID#
       m=m+1
-      c_Ntuple_tag(m)= 'Em'
+      c_Ntuple_tag(m)= 'mmass2'
       m=m+1
-      c_Ntuple_tag(m)= 'missmass'
+      c_Ntuple_tag(m)= 'hpvec0'
       m=m+1
-      c_Ntuple_tag(m)= 'Pm'
+      c_Ntuple_tag(m)= 'hpvecx'
       m=m+1
-      c_Ntuple_tag(m)= 'PmPar'
+      c_Ntuple_tag(m)= 'hpvecy'
       m=m+1
-      c_Ntuple_tag(m)= 'PmPer'
+      c_Ntuple_tag(m)= 'hpvecz'
       m=m+1
-      c_Ntuple_tag(m)= 'PmOop'
+      c_Ntuple_tag(m)= 'spvec0'
       m=m+1
-      c_Ntuple_tag(m)= 'th_pq'
+      c_Ntuple_tag(m)= 'spvecx'
       m=m+1
-      c_ntuple_tag(m)= 'phi_pq'
+      c_Ntuple_tag(m)= 'spvecy'
+      m=m+1
+      c_Ntuple_tag(m)= 'spvecz'
+      m=m+1
+      c_Ntuple_tag(m)= 'W'
+      m=m+1
+      c_Ntuple_tag(m)= 'Q2'
+      m=m+1
+      c_Ntuple_tag(m)= 'cos_thet'
+      m=m+1
+      c_Ntuple_tag(m)= 'phicm'
+      m=m+1
+      c_Ntuple_tag(m)= 'ebeam'
+      m=m+1
+      c_Ntuple_tag(m)= 'hsp'
+      m=m+1
+      c_Ntuple_tag(m)= 'ssp'
+      m=m+1
+      c_Ntuple_tag(m)= 'haeronpe'
+      m= m+1
+      c_Ntuple_tag(m)= 'tdcmu_ym'
+      m= m+1
+      c_Ntuple_tag(m)= 'adcmu_yp'
+      m= m+1
+      c_Ntuple_tag(m)= 'adcmu_ym'
+      m= m+1
+      c_Ntuple_tag(m)= 'sceradc1'
+      m= m+1
+      c_Ntuple_tag(m)= 'sceradc2'
+      m= m+1
+      c_Ntuple_tag(m)= 'sceradc3'
+      m= m+1
+      c_Ntuple_tag(m)= 'sceradc4'
+      m= m+1
+      c_Ntuple_tag(m)= 'sshl1e'
+      m= m+1
+      c_Ntuple_tag(m)= 'sshl2e'
+      m= m+1
+      c_Ntuple_tag(m)= 'sshl3e'
+      m= m+1
+      c_Ntuple_tag(m)= 'sshl4e'
+      m= m+1
+      c_Ntuple_tag(m)= 'hshl1e'
+      m= m+1
+      c_Ntuple_tag(m)= 'hshl2e'
+      m= m+1
+      c_Ntuple_tag(m)= 'hshl3e'
+      m= m+1
+      c_Ntuple_tag(m)= 'hshl4e'
+      m= m+1
+      c_Ntuple_tag(m)= 'ssphi'
+      m= m+1
+      c_Ntuple_tag(m)= 'hsphi'
 
-*      m=m+1
-*      c_Ntuple_tag(m)= 'HmsCorsi'
-*      m=m+1
-*      c_Ntuple_tag(m)= 'SosCorsi'
+c
       c_Ntuple_size= m
 ***********end insert description of contents of COIN tuple********
 *

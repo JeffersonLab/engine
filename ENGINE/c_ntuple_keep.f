@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.9.6.1  2003/12/17 22:54:44  jones
+*  update e01004
+*
 * Revision 1.9  1999/02/23 16:41:08  csa
 * Variable changes
 *
@@ -82,18 +85,6 @@
       m= m+1
       c_Ntuple_contents(m)= ccointime_hms ! Corrected Coincidence time
       m= m+1
-      c_Ntuple_contents(m)= gbpm_beam_x   ! Mean Beam X Position
-      m= m+1
-      c_Ntuple_contents(m)= gbpm_beam_y   ! Mean Beam Y Position
-      m= m+1
-      c_Ntuple_contents(m)= gbpm_x(2)   ! Beam X Position bei BPM 2 (gut=1.8)
-      m= m+1
-      c_Ntuple_contents(m)= gbpm_y(2)   ! Beam Y Position bei BPM 2 (gut=0.0)
-      m= m+1
-      c_Ntuple_contents(m)= gfrx_raw_adc ! Fast Raster X
-      m= m+1
-      c_Ntuple_contents(m)= gfry_raw_adc ! Fast Raster Y
-      m= m+1
       c_Ntuple_contents(m)= gbeam_x ! Berechnete StrahlpositionX
       m= m+1
       c_Ntuple_contents(m)= gbeam_y ! Berechnete StrahlpositionY
@@ -136,47 +127,85 @@
       m= m+1
       c_Ntuple_contents(m)= HSSHTRK  !
       m= m+1
-      c_Ntuple_contents(m)= HSPRTRK !
-      m= m+1
-      c_Ntuple_contents(m)= HBETA_NOTRK !
-      m= m+1
-      c_Ntuple_contents(m)= HSBETA      !
-      m= m+1
-      c_Ntuple_contents(m)= HSDEDX(1)   !
-      m= m+1
       c_Ntuple_contents(m)= SCER_NPE_SUM ! SOS Particle Id.
       m= m+1
       c_Ntuple_contents(m)= SSSHSUM  !
       m= m+1
       c_Ntuple_contents(m)= SSSHTRK  !
       m= m+1
-      c_Ntuple_contents(m)= SSPRTRK !
-      m= m+1
-      c_Ntuple_contents(m)= SBETA_NOTRK      !
-      m= m+1
-      c_Ntuple_contents(m)= SSBETA      !
-      m= m+1
-      c_Ntuple_contents(m)= SSDEDX(1)   !
-      m= m+1
       c_Ntuple_contents(m)= gbcm1_charge ! Charge of last scaler event
       m= m+1
       c_Ntuple_contents(m)= FLOAT(gen_event_ID_number)
       m= m+1
-      c_Ntuple_contents(m)= cmissing_e  ! missing energy
-      m= m+1
       c_Ntuple_contents(m)= cmissing_mass ! missing mass
       m= m+1
-      c_Ntuple_contents(m)= cmissing_mom ! Missing Momentum
+      c_Ntuple_contents(m)= hs_kpvec(1)
       m= m+1
-      c_Ntuple_contents(m)= cmissing_mom_par ! pm parallel to q
+      c_Ntuple_contents(m)= hs_kpvec(2)
       m= m+1
-      c_Ntuple_contents(m)= cmissing_mom_perp ! pm perp tp q
+      c_Ntuple_contents(m)= hs_kpvec(3)
       m= m+1
-      c_Ntuple_contents(m)= cmissing_mom_oop ! pm out of plane
+      c_Ntuple_contents(m)= hs_kpvec(4)
       m= m+1
-      c_Ntuple_contents(m)= cthetapq
+      c_Ntuple_contents(m)= ss_kpvec(1)
       m= m+1
-      c_Ntuple_contents(m)= cphipq
+      c_Ntuple_contents(m)= ss_kpvec(2)
+      m= m+1
+      c_Ntuple_contents(m)= ss_kpvec(3)
+      m= m+1
+      c_Ntuple_contents(m)= ss_kpvec(4)
+      m= m+1
+      c_Ntuple_contents(m)= c_invmass
+      m= m+1
+      c_Ntuple_contents(m)= c_bigq2
+      m= m+1
+      c_Ntuple_contents(m)= c_costhcm
+      m= m+1
+      c_Ntuple_contents(m)= c_phicm
+      m= m+1
+      c_Ntuple_contents(m)= gebeam
+      m= m+1
+      c_Ntuple_contents(m)= hsp
+      m= m+1
+      c_Ntuple_contents(m)= ssp
+      m= m+1
+      c_Ntuple_contents(m)= haero_npe_sum
+      m= m+1
+      c_Ntuple_contents(m)= smisc_dec_data(7,1) 
+      m= m+1
+      c_Ntuple_contents(m)= smisc_dec_data(8,1) 
+      m= m+1
+      c_Ntuple_contents(m)= smisc_dec_data(5,2) 
+      m= m+1
+      c_Ntuple_contents(m)= smisc_dec_data(6,2) 
+      m= m+1
+       c_Ntuple_contents(m)= scer_adc(1)
+      m= m+1
+       c_Ntuple_contents(m)= scer_adc(2)
+      m= m+1
+       c_Ntuple_contents(m)= scer_adc(3)
+      m= m+1
+       c_Ntuple_contents(m)= scer_adc(4)
+      m= m+1
+       c_Ntuple_contents(m)= strack_e1(ssnum_fptrack)
+      m= m+1
+       c_Ntuple_contents(m)= strack_e2(ssnum_fptrack)
+      m= m+1
+       c_Ntuple_contents(m)= strack_e3(ssnum_fptrack)
+      m= m+1
+       c_Ntuple_contents(m)= strack_e4(ssnum_fptrack)
+      m= m+1
+       c_Ntuple_contents(m)= htrack_e1(hsnum_fptrack)
+      m= m+1
+       c_Ntuple_contents(m)= htrack_e2(hsnum_fptrack)
+      m= m+1
+       c_Ntuple_contents(m)= htrack_e3(hsnum_fptrack)
+      m= m+1
+       c_Ntuple_contents(m)= htrack_e4(hsnum_fptrack)
+      m= m+1
+       c_Ntuple_contents(m)= ssphi
+      m= m+1
+       c_Ntuple_contents(m)= hsphi
 
 *      m= m+1
 *      c_Ntuple_contents(m)= P_HMS_CORR  ! Corrected hms singles

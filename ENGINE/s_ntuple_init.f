@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.7.6.1  2003/12/17 22:55:01  jones
+*  update e01004
+*
 * Revision 1.7  1996/09/04 15:18:02  saw
 * (JRA) Modify ntuple contents
 *
@@ -173,6 +176,28 @@
       s_Ntuple_tag(m)= 'sstart'
       m= m+1
       s_Ntuple_tag(m)= 'SAER_NPE' 
+      m= m+1
+      s_Ntuple_tag(m)= 'gbeam_x'
+      m= m+1
+      s_Ntuple_tag(m)= 'gbeam_y'
+      m= m+1
+      s_Ntuple_tag(m)= 'MPSclock'
+      m= m+1
+      s_Ntuple_tag(m)= 'hplus'
+      m= m+1
+      s_Ntuple_tag(m)= 'hminus'
+      m= m+1
+      s_Ntuple_tag(m)= 'sceradc1'
+      m= m+1
+      s_Ntuple_tag(m)= 'sceradc2'
+      m= m+1
+      s_Ntuple_tag(m)= 'sceradc3'
+      m= m+1
+      s_Ntuple_tag(m)= 'sceradc4'
+      m= m+1
+      s_Ntuple_tag(m)= 'ssc1xpd'
+      m= m+1
+      s_Ntuple_tag(m)= 'ssc2xpd'
 
 
 * Experiment dependent entries start here.

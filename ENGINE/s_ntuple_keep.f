@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.7.6.1  2003/12/17 22:55:06  jones
+*  update e01004
+*
 * Revision 1.7  1996/09/04 15:18:21  saw
 * (JRA) Modify ntuple contents
 *
@@ -108,6 +111,39 @@
       s_Ntuple_contents(m)= sstart_time
       m= m+1
       s_Ntuple_contents(m)= saer_npe_sum
+      m= m+1
+      s_Ntuple_contents(m)= gbeam_x
+      m= m+1
+      s_Ntuple_contents(m)= gbeam_y
+      m= m+1
+      s_Ntuple_contents(m)= smisc_dec_data(2,2)
+      m= m+1
+      s_Ntuple_contents(m)= smisc_dec_data(3,2) 
+      m= m+1
+      s_Ntuple_contents(m)= smisc_dec_data(4,2) 
+      m= m+1
+c      s_Ntuple_contents(m)= smisc_dec_data(7,1) 
+       s_Ntuple_contents(m)= scer_adc(1)
+      m= m+1
+c      s_Ntuple_contents(m)= smisc_dec_data(8,1) 
+       s_Ntuple_contents(m)= scer_adc(2)
+      m= m+1
+c      s_Ntuple_contents(m)= smisc_dec_data(5,2) 
+       s_Ntuple_contents(m)= scer_adc(3)
+      m= m+1
+c      s_Ntuple_contents(m)= smisc_dec_data(6,2) 
+       s_Ntuple_contents(m)= scer_adc(4)
+        do ihit=1,sscin_all_tot_hits
+          if ( sscin_all_plane_num(ihit) .eq. 1 ) then
+             s_Ntuple_contents(m)=sscin_all_counter_num(ihit)  
+          endif
+        enddo
+      m=m+1
+        do ihit=1,sscin_all_tot_hits
+          if ( sscin_all_plane_num(ihit) .eq. 3 ) then
+             s_Ntuple_contents(m)=sscin_all_counter_num(ihit)  
+          endif
+        enddo
 
 
 * Experiment dependent entries start here.
