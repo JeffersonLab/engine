@@ -9,7 +9,7 @@
 *
 *     Method: 1. Register variables needed to use CTP to get various
 *     filenames.  And register other common variables.
-*             2. Call Register routines for HMS, SOS and coincidence.
+*             2. Call Register routines for HMS, Polder and coincidence.
 *
 *     Output: ABORT      - success or failure
 *           : err        - reason for failure, if any
@@ -19,6 +19,9 @@
 *     Modified: 24-May-1994 K.B.Beard
 *
 * $Log$
+* Revision 1.2  1997/05/23 19:48:43  saw
+* (t20) Call r_gen_misc
+*
 * Revision 1.1  1997/05/23 19:47:04  saw
 * Initial revision
 *
@@ -63,7 +66,9 @@
 
       call r_gen_run_pref
 
-      call r_gen_data_structures        ! Contains both HMS and SOS stuff
+      call r_gen_data_structures        ! Contains both HMS and Polder stuff
+
+      call r_gen_misc      !(3/21/97) the t20 hms/polder coin timing/scaler cmn
 
 *HDISPLAY      call r_one_ev_io
 *
@@ -128,7 +133,7 @@
       ENDIF
       ABORT= ABORT .or. FAIL 
 *     
-      call t_register_variables(FAIL,why) ! SOS
+      call t_register_variables(FAIL,why) ! Polder
       IF(err.NE.' ' .and. why.NE.' ') THEN
          call G_append(err,' & '//why)
       ELSEIF(why.NE.' ') THEN
