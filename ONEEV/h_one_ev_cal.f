@@ -1,6 +1,9 @@
       subroutine h_one_ev_cal
 *
 * $Log$
+* Revision 1.3  1996/11/22 15:36:14  saw
+* (SAW) Fix some error messages at startup, some code cleanup
+*
 * Revision 1.2  1996/06/13 13:03:49  saw
 * (SAW) Replace huge list of gsdet/gsdeth calls with do loops over the
 * detector geometry.
@@ -10,6 +13,8 @@
 *
       implicit none
 
+      include 'hms_data_structures.cmn'
+      include 'hms_calorimeter.cmn'
       include 'hms_one_ev.par'
 
       integer iset, idet
@@ -22,10 +27,8 @@
 
       character*4 specname
       character*4 calname(2)
-      integer nlayers,nblocks
 
       data specname /'HMS '/
-      data nlayers,nblocks /4,13/
 
       data varinames /'x', 'y', 'z'/
       data varibits /32, 32, 32/
@@ -34,13 +37,13 @@
       data factor /1e3, 1e3, 1e3/
 
 
-      do ilayer=1,nlayers
+      do ilayer=1,hmax_cal_columns
         write (calname(1),'("LAY",i1)') ilayer
-        do iblock=1,nblocks
+        do iblock=1,hmax_cal_rows
           write (calname(2),'("BL",i1,a1)') ilayer, char(ichar('A')+iblock-1)
-          call gsdet(specname,calname(1),2,calname,calbits,
+          call gsdet(specname,calname(2),2,calname,calbits,
      $         2,100,100,iset,idet)
-          call gsdeth(specname,calname(1),3,varinames,varibits,origin,factor)
+          call gsdeth(specname,calname(2),3,varinames,varibits,origin,factor)
         enddo
       enddo
 
