@@ -1,6 +1,9 @@
 * hms_aero_parms.cmn
 *
 * $Log$
+* Revision 1.1.2.2  2003/07/18 21:13:37  cdaq
+* Comment out aero_pos, aero_neg, aero_tot  which are not used anymore (Vardan)
+*
 * Revision 1.1.2.1  2003/04/06 06:19:49  cdaq
 * updated variables for haero
 *
@@ -45,9 +48,9 @@
       real*4 haero_pos_npe_sum
       real*4 haero_npe_sum
      
-      real*4 aero_pos
-      real*4 aero_neg
-      real*4 aero_tot
+***      real*4 aero_pos            !not in use any more
+***      real*4 aero_neg            !not in use any more
+***      real*4 aero_tot            !not in use any more
 
       common /aeroi_calib/
      &  haero_tot_good_hits,
@@ -63,9 +66,9 @@
      &  haero_pos_npe_sum,
      &  haero_npe_sum,
      &  haero_sum,
-     &  aero_pos,
-     &  aero_neg,     
-     &  aero_tot,
+***     &  aero_pos,            !not in use any more
+***     &  aero_neg,            !not in use any more
+***     &  aero_tot,            !not in use any more
      &  haero_rawadc_neg,
      &  haero_rawadc_pos,
      &  haero_rawtdc_neg,
