@@ -8,6 +8,9 @@
 * Version:  0.1 (In development)
 *
 * $Log$
+* Revision 1.4  1996/09/04 20:57:23  saw
+* (JRA) Add target x to track definition
+*
 * Revision 1.3  1996/01/17 18:56:58  cdaq
 * (JRA)
 *
@@ -44,11 +47,11 @@
 ! Include files.
 
       include 'sos_recon_elements.cmn'  !Recon coefficients.
+      include 'gen_filenames.cmn'
  
 ! Misc. variables.
 
-      integer*4       i,j,k,l,m,n,chan
-      logical*4       opened
+      integer*4       i,j,chan
 
       character*132   line
 
@@ -63,6 +66,7 @@
           s_recon_coeff(i,j) = 0.
           s_recon_expon(i,j) = 0.
         enddo
+        s_recon_expon(5,j) = 0.
       enddo
 
       s_ang_slope_x=0.0
@@ -75,7 +79,8 @@
  
       istat = 1                         !Assume success.
 ! Get an I/O unit to open datafiles.
-      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
+c      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
+      chan = G_LUN_TEMP
 
 ! Open and read in coefficients.
 
@@ -108,7 +113,7 @@
         s_num_recon_terms = s_num_recon_terms + 1
         if (s_num_recon_terms.gt.smax_recon_elements) goto 96
         read (line,1200,err=94) (s_recon_coeff(i,s_num_recon_terms),i=1,4),
-     >       (s_recon_expon(j,s_num_recon_terms),j=1,4)
+     >       (s_recon_expon(j,s_num_recon_terms),j=1,5)
         read (chan,1001,err=94) line
       enddo
 
@@ -121,31 +126,31 @@
 
  92   istat = 2                         !Error opening file.
 * If file does not exist, report err and then continue for development
-      err = 'error opening file sos_recon_elements.dat'
+      err = 'error opening file sos_recon_coeff.dat'
       call g_rep_err(ABORT,err)
       goto 100
 
  94   istat = 4                         !Error reading or processing data.
       ABORT=.true.
-      err = 'error processing file sos_recon_elements.dat'
+      err = 'error processing file sos_recon_coeff.dat'
       goto 100
 
  96   istat = 6                         !Too much data in file for arrays.
       ABORT=.true.
-      err = 'too much data in file sos_recon_elements.dat'
+      err = 'too much data in file sos_recon_coeff.dat'
       goto 100
 
 ! Done with open file.
 
  100  close (unit=chan)
 *     free lun
-      call G_IO_control(chan,'FREE',ABORT,err) !"FINISH"="FREE"
+c      call G_IO_control(chan,'FREE',ABORT,err) !"FINISH"="FREE"
       return
 
 ! ============================ Format Statements ===============================
 
  1001 format(a)
- 1200 format(1x,4g16.9,1x,4i1)
+ 1200 format(1x,4g16.9,1x,5i1)
  1201 format(17x,g16.9)
 
       end
