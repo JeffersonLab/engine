@@ -1,6 +1,9 @@
       SUBROUTINE G_klugeup_kinematics(ABORT,err)
 *--------------------------------------------------------
 * $Log$
+* Revision 1.3  1996/09/04 14:38:32  saw
+* (JRA) Initialize problems logical
+*
 * Revision 1.2  1996/01/22 15:11:46  saw
 * (JRA) Change cpbeam to gpbeam
 *
@@ -44,6 +47,7 @@
 *
 *-attempt to open FASTBUS-CODA file
 *
+      problems = .false.
       g_data_source_in_hndl= 0
       g_data_source_opened = .false.
       call g_open_source(ABORT,err)
