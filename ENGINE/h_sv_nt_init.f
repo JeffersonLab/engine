@@ -10,7 +10,10 @@
 *
 *     Created: 1-Nov-1994  
 * $Log$
-* Revision 1.1  1995/01/27 20:05:15  cdaq
+* Revision 1.2  1995/05/11 18:58:55  cdaq
+* (SAW) Allow %d for run number in filenames
+*
+* Revision 1.1  1995/01/27  20:05:15  cdaq
 * Initial revision
 *
 *
@@ -27,6 +30,7 @@
       INCLUDE 'h_sieve_ntuple.cmn'
       INCLUDE 'h_sieve_ntuple.dte'
       INCLUDE 'gen_routines.dec'
+      include 'gen_run_info.cmn'
 *
       character*80 default_name
       parameter (default_name= 'sieventuple')
@@ -95,7 +99,10 @@
 *
       id= h_sieve_Ntuple_ID
       name= h_sieve_Ntuple_name
+
       file= h_sieve_Ntuple_file
+      call g_sub_run_number(file,gen_run_number)
+
       recL= default_recL
       io= h_sieve_Ntuple_IOchannel
 *

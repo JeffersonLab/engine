@@ -10,7 +10,10 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
-* Revision 1.2  1994/06/17 02:36:00  cdaq
+* Revision 1.3  1995/05/11 19:00:02  cdaq
+* (SAW) Allow %d for run number in filenames
+*
+* Revision 1.2  1994/06/17  02:36:00  cdaq
 * (KBB) Upgrade
 *
 * Revision 1.1  1994/04/12  16:16:18  cdaq
@@ -30,6 +33,7 @@
       INCLUDE 's_ntuple.cmn'
       INCLUDE 's_ntuple.dte'
       INCLUDE 'gen_routines.dec'
+      include 'gen_run_info.cmn'
 *
       character*80 default_name
       parameter (default_name= 'SOSntuple')
@@ -90,7 +94,10 @@
 *
       id= s_Ntuple_ID
       name= s_Ntuple_name
+
       file= s_Ntuple_file
+      call g_sub_run_number(file,gen_run_number)
+
       recL= default_recL
 *
 *-open New *.rzdat file-
