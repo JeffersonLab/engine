@@ -15,6 +15,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.1.16.2  2004/07/09 20:41:50  saw
+ *   Can now put a test on a tree block
+ *
  *   Revision 1.1.16.1  2004/07/09 14:12:11  saw
  *   Add ability for CTP to make ROOT Trees
  *
@@ -192,6 +195,30 @@ thStatus thBookTree(daVarStruct *var)
 	      fname[len] = '\0';
 	    }
 	  }
+	}
+	if(p = strcasestr(lines,"test=")) {
+	  /* RHS must be a variable */
+	  char *varname=0; char *s; int len, testindex;
+	  daVarStruct *testp;
+	  p += 5;
+	  s = p;
+	  while(*s && !isspace(*s) && *s !='\n') s++;
+	  len = (s-p);
+	  varname = (char *) malloc(len+1);
+	  strncpy(varname,p,len);
+	  varname[len] = '\0';
+	  if(thVarResolve(varname,&testp,&testindex,1,0) != S_SUCCESS) {
+	    return(S_FAILURE); /* Test flag not registered */
+      /* ASAP we must change this to register variables as they are needed */
+      /* If the variable exists, then we also must check to make sure that
+	 the requested index does not exceed the size of the array.
+	 a new thVarResolve should also increase the size of the array if
+	 it was created by CTP */
+	  }
+	  treedef->test = testp;
+	  treedef->testindex = testindex;
+	} else {
+	  treedef->test = 0; /* No test, always true */
 	}
       }
       
@@ -433,6 +460,10 @@ thStatus thFillTreeV(daVarStruct *var){
   /* printf("Executing Tree %s\n",var->name);*/
   treedef = ((thTreeOpaque *)(var->opaque));
   thisbranch = treedef->branchlistP;
+  if(! (treedef->test ? *((DAINT *) treedef->test->varptr
+			  + treedef->testindex) : 1)) {
+    return(S_SUCCESS);  /* Test was false */
+  }
   while(thisbranch) {
     structp = thisbranch->evstruct;
     /*    printf("Filling branch %s at %x\n",thisbranch->branchname,structp);*/
