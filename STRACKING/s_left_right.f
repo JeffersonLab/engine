@@ -9,6 +9,9 @@
 *     space point.
 *     d. f. geesaman           31 August 1993
 * $Log$
+* Revision 1.12  1999/11/04 20:36:47  saw
+* Linux/G77 compatibility fixes
+*
 * Revision 1.11  1996/09/05 19:54:51  saw
 * (JRA) Cosmetic
 *
@@ -55,6 +58,7 @@
       external jbit                     ! cernlib bit routine
       integer*4 jbit
       integer*4 jibset                  ! Declare to help f2c
+      integer*4 jieor                   ! Declare to help f2c
 *
 *     local variables
 *
@@ -121,19 +125,19 @@ c          endif
 * djm 10/2/94 check bad sdc pattern units to set the index for the inverse
 * matrix SAAINV(i,j,pindex).
 *
-        if(gplanesdc(isp,ich).eq.'3F'x) then
+        if(jieor(gplanesdc(isp,ich),'3F'x).eq.0) then
           pindex=sdc_num_planes+ich
-        else if (gplanesdc(isp,ich).eq.'3E'x) then
+        else if (jieor(gplanesdc(isp,ich),'3E'x).eq.0) then
           pindex=(ich-1)*(sdc_planes_per_chamber) + 1
-        else if (gplanesdc(isp,ich).eq.'3D'x) then
+        else if (jieor(gplanesdc(isp,ich),'3D'x).eq.0) then
           pindex=(ich-1)*(sdc_planes_per_chamber) + 2
-        else if (gplanesdc(isp,ich).eq.'3B'x) then
+        else if (jieor(gplanesdc(isp,ich),'3B'x).eq.0) then
           pindex=(ich-1)*(sdc_planes_per_chamber) + 3
-        else if (gplanesdc(isp,ich).eq.'37'x) then
+        else if (jieor(gplanesdc(isp,ich),'37'x).eq.0) then
           pindex=(ich-1)*(sdc_planes_per_chamber) + 4
-        else if (gplanesdc(isp,ich).eq.'2F'x) then
+        else if (jieor(gplanesdc(isp,ich),'2F'x).eq.0) then
           pindex=(ich-1)*(sdc_planes_per_chamber) + 5
-        else if (gplanesdc(isp,ich).eq.'1F'x) then
+        else if (jieor(gplanesdc(isp,ich),'1F'x).eq.0) then
           pindex=(ich-1)*(sdc_planes_per_chamber) + 6
         else
           pindex=-1

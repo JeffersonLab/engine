@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.21  1999/11/04 20:35:16  saw
+* Linux/G77 compatibility fixes
+*
 * Revision 1.20  1998/12/17 21:50:31  saw
 * Support extra set of tubes on HMS shower counter
 *
@@ -94,7 +97,7 @@
       logical printerr  !flag to turn off printing of error after 1 time.
       logical firsttime
 *
-      integer*4 jishft, jiand
+      integer*4 jishft, jiand, jieor
 *     
       printerr = .true.
       pointer = 1
@@ -103,21 +106,21 @@
       firsttime = .true.
       do while(pointer.le.length .and. did.eq.newdid)
 *
-        if(jiand(evfrag(pointer),'FFFFFFFF'x).eq.'DCAA0000'x) then ! VME/FB event length mismatch
+        if(jieor(jiand(evfrag(pointer),'FFFFFFFF'x),'DCAA0000'x).eq.0) then ! VME/FB event length mismatch
           write(6,'(a,i10)') 'ERROR: VME/Fastbus event length mismatch for event #',gen_event_id_number
           write(6,'(a,z9,a,z9,a)') '   Fastbus event length:',evfrag(pointer+1),
      &        ' VME event length:',evfrag(pointer+2),' (or vice-versa).'
           pointer = pointer + 3
           goto 987
 ! Check for extra events in FB modules on sync events
-        else if(jiand(evfrag(pointer),'FFFF0000'x).eq.'DCFE0000'x) then
+        else if(jieor(jiand(evfrag(pointer),'FFFF0000'x),'DCFE0000'x).eq.0) then
           write(6,'(a,i2,a,i3,a,i3,a,i10)') 'ROC',roc,': Slot'
      $         ,jiand(jishft(evfrag(pointer),-11),'1F'x),': '
      $         ,jiand(evfrag(pointer),'7FF'x),' extra events, event=',
      &         gen_event_id_number
           pointer = pointer + 1
           goto 987
-        else if(jiand(evfrag(pointer),'FF000000'x).eq.'DC000000'x) then ! Catch arrington's headers
+        else if(jieor(jiand(evfrag(pointer),'FF000000'x),'DC000000'x).eq.0) then ! Catch arrington's headers
           write(6,'(a,i2,a,i10,a,z10)') 'ROC',roc,': no gate or too much data, event=',
      &         gen_event_id_number,' error dataword=',evfrag(pointer)
           pointer = pointer + 1
@@ -216,7 +219,8 @@ c          endif
 *     in a single entry for it with a detector id of UNINST_ID (zero) and
 *     the proper BSUB value.
 *
-        if (subadd .lt. '7F'X) then     ! Only valid subaddresses
+c        if (subadd .lt. '7F'X) then     ! Only valid subaddresses
+        if (subadd .lt. 255) then       ! Only valid subaddresses
                                         ! Skips headers for 1881 and 1876
           if(mappointer.gt.0) then
             newdid = g_decode_didmap(mappointer+subadd)

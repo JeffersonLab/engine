@@ -10,6 +10,9 @@
 *- 
 *-   Created  17-May-1994   Kevin B. Beard, Hampton U.
 * $Log$
+* Revision 1.7  1999/11/04 20:35:16  saw
+* Linux/G77 compatibility fixes
+*
 * Revision 1.6  1995/07/27 19:37:29  cdaq
 * (SAW) Use specific bit manipulation routines for f2c compatibility
 *
@@ -47,7 +50,7 @@
       integer dy,mth,yr,hr,minute,sec,m,EvType,status,nth
       logical control,bad_sync
       character*160 msg,note
-      integer*4 jiand,jishft
+      integer*4 jiand,jishft,jieor
       logical*4 bjtest
 *
       integer SYNC_EvType,PRESTART_EvType,GO_EvType,END_EvType
@@ -63,7 +66,7 @@
 *
       gen_event_sequence_N= gen_event_sequence_N+1  !from beginning
 *
-      if(jiand(buffer(2),'FFFF'x).ne.'01CC'x) then
+      if(jieor(jiand(buffer(2),'FFFF'x),'01CC'x).ne.0) then
          err = 'Event is not a control event'
          ABORT = .true.
          call g_add_path(here,err)

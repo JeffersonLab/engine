@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.30  1999/11/04 20:35:15  saw
+* Linux/G77 compatibility fixes
+*
 * Revision 1.29  1999/02/23 16:58:58  csa
 * (JRA) Add roc 20 handling
 *
@@ -136,7 +139,7 @@
       integer*4 g_decode_fb_detector    ! Detector unpacking routine
       integer*4 last_first              ! Last word of first bank in || bank
 *
-      integer*4 jiand, jishft           ! Declare to help f2c
+      integer*4 jiand, jishft, jieor    ! Declare to help f2c
 
 
 
@@ -196,7 +199,7 @@
 *
 *     Look for and report empty ROCs.
 *
-      if (bank(pointer).eq.'DCFF0000'X) then
+      if (jieor(bank(pointer),'DCFF0000'X).eq.0) then
 	if (roc.eq.1 .or. roc.eq.2) then    !missing hms data
           if (gen_event_type.ne.2) then     !event type 2 is sos only event.
             write(6,'(a,i3,a,i8,a,z8,a,i2)') 'roc',roc,' has no data for event'
@@ -219,7 +222,8 @@ c      write(6,*) 'pointer,roc,slot=',pointer,roc,slot
         subadd = jiand(jishft(bank(pointer),
      $       -g_decode_subaddbit(roc,slot)),'7F'X)
 
-        if (subadd .lt. '7F'X) then     ! Only valid subaddress
+c        if (subadd .lt. '7F'X) then     ! Only valid subaddress
+        if (subadd .lt. 255) then     ! Only valid subaddress
                                         ! This skips module headers
 
           slotp = g_decode_slotpointer(roc,slot)

@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.12  1999/11/04 20:36:11  saw
+# Linux/G77 compatibility fixes
+#
 # Revision 1.11  1999/03/19 15:23:16  saw
 # Fix CTP library ordering so that event display links on SunOS.
 #
@@ -56,7 +59,8 @@ libsources = $(sources)
 
 lib_targets := $(patsubst %.f, liboneev.a(%.o), $(libsources))
 
-install-dirs := lib bin
+#install-dirs := lib bin
+install-dirs := lib
 
 bin_targets = evdisplay
 

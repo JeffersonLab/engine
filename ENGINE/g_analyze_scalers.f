@@ -1,6 +1,9 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
+* Revision 1.14  1999/11/04 20:35:14  saw
+* Linux/G77 compatibility fixes
+*
 * Revision 1.13  1999/02/10 18:17:21  csa
 * Added beam-on calculations (D. McKee)
 *
@@ -61,7 +64,7 @@ c
       real*8 realscal
       logical update_bcms
 *
-      integer*4 jiand, jishft           ! Declare to help f2c
+      integer*4 jiand, jishft, jieor           ! Declare to help f2c
 *
 *     Scaler events have a header in from of each scaler.  High 16 bits
 *     will contain the address (the switch settings).  Address for hall C
@@ -85,7 +88,7 @@ c
       real*8 delta_time
 *
 * Find if hms or sos scaler event (assumes first HMS scaler is DA01).
-      if (jiand(jishft(event(3),-16),'FFFF'X).eq.'DA01'X) then !first scaler
+      if (jieor(jiand(jishft(event(3),-16),'FFFF'X),'DA01'X).eq.0) then !first scaler
         cratenum=1     !hms
       else
         cratenum=2     !sos
@@ -117,7 +120,7 @@ c
 *
           scalid = jiand(jishft(event(pointer),-16),'FF'x)
           countinmod = jiand(event(pointer),'FFFF'x)
-          if(jiand(event(pointer),'FF000000'x).eq.'DA000000'x) then
+          if(jieor(jiand(event(pointer),'FF000000'x),'DA000000'x).eq.0) then
 c     Old style header with scaler ID @ 00FF0000
             scalid = jiand(jishft(event(pointer),-16),'FF'x)
             address = scalid*16

@@ -7,6 +7,9 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.7  1999/11/04 20:35:14  saw
+* Linux/G77 compatibility fixes
+*
 * Revision 1.6  1999/06/10 14:38:25  csa
 * (CSA) Commented out debugging output
 *
@@ -34,7 +37,7 @@
       include 'gen_constants.par'
 
       logical abort
-      character*1024 errmsg
+      character*(*) errmsg
       character*20 here
       parameter (here = 'g_analyze_misc')
 

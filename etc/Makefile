@@ -16,6 +16,9 @@
 #
 #  Revision History:
 #    $Log$
+#    Revision 1.4  1999/11/04 20:37:27  saw
+#    Linux/G77 compatibility fixes
+#
 #    Revision 1.3  1998/12/07 22:09:50  saw
 #    Remove dependency on $Csoft
 #
@@ -82,6 +85,10 @@ ifdef NEWSTYLE
 	echo remaking $@
 	$(DEPENDS_RULE.c)
 
+%.d: ../%.cpp
+	echo remaking $@
+	$(DEPENDS_RULE.c)
+
 #r_%.d:
 #	echo r_$*.o: r_$*.f > $@
 
@@ -97,6 +104,10 @@ ifdef NEWSTYLE
 
 else
 %.d: %.c
+	echo remaking $@
+	$(DEPENDS_RULE.c)
+
+%.d: %.cpp
 	echo remaking $@
 	$(DEPENDS_RULE.c)
 

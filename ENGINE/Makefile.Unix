@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.25  1999/11/04 20:35:14  saw
+# Linux/G77 compatibility fixes
+#
 # Revision 1.24  1999/08/20 14:52:17  saw
 # Put in warning if Xscin_tdc_max is bigger than 4094
 #
@@ -150,7 +153,8 @@ sources = $(libsources) $(replay_source)
 lib_targets := $(patsubst %.f, libengine.a(%.o), $(sources))
 bin_targets = engine
 
-install-dirs := lib bin
+#install-dirs := lib bin
+install-dirs := lib
 
 DEPLIBS = $(LIBROOT)/libengine.a \
 	$(LIBROOT)/libhtracking.a $(LIBROOT)/libstracking.a \

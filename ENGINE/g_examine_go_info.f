@@ -11,6 +11,9 @@
 *-   Created  30-Nov-1995   John Arrington, Caltech.
 *-
 * $Log$
+* Revision 1.3  1999/11/04 20:35:16  saw
+* Linux/G77 compatibility fixes
+*
 * Revision 1.2  1996/09/04 14:35:16  saw
 * (JRA) Extract prescale factors
 *
@@ -35,7 +38,7 @@
       integer*4 pointer,subpntr,ind
       integer*4 evlen,sublen,subheader,slotheader,numvals
       integer*4 roc,slot
-      integer*4 jiand,jishft
+      integer*4 jiand,jishft,jieor
       logical*4 found_thresholds,found_prescale
       character*80 prescale_string
       character*4 tmpstring
@@ -71,7 +74,7 @@ c	write(6,*) '  sublen=',sublen
         subheader=buffer(pointer+1)
 c	write(6,'(a,z10)') '  subheader=',subheader
 
-        if (jishft(jiand(subheader,'FF0000'x),-16) .eq. '10'x) then !thresholds
+        if (jieor(jishft(jiand(subheader,'FF0000'x),-16),'10'x).eq.0) then !thresholds
           found_thresholds = .true.
 c	  write(6,*) '  THRESHOLDS!'
           subpntr=2                            !skip past main subheader.
@@ -92,7 +95,7 @@ c	    write(6,*) 'subpntr=',subpntr
           enddo   !NEED CHECK FOR NEXT HEADER.
           pointer=pointer+subpntr
         else if (roc.eq.0 .and.
-     &           jishft(jiand(subheader,'FF0000'x),-16).eq.'02'x) then
+     &           jieor(jishft(jiand(subheader,'FF0000'x),-16),'02'x).eq.0) then
 c        write(6,*) 'PRESCALE FACTORS'
           found_prescale=.true.
           do ind=2,sublen

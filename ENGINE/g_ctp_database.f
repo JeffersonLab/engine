@@ -31,6 +31,9 @@
 *                        don't print out stuff following the ';').
 *
 * $Log$
+* Revision 1.7  1999/11/04 20:35:15  saw
+* Linux/G77 compatibility fixes
+*
 * Revision 1.6  1996/11/05 20:47:06  saw
 * (SAW) Change in open statement for porting compatibility
 *
@@ -268,6 +271,6 @@ c     write(6,*)'g_ctp_database is setting the following CTP parameters'
 *============================ Format Statements ===============================
 
  1001 format(a)
- 1002 format(i)
+ 1002 format(i10)
 
       end

@@ -11,6 +11,9 @@
 *- 
 *-   Created  17-May-1994   Kevin B. Beard, Hampton U.
 * $Log$
+* Revision 1.4  1999/11/04 20:35:16  saw
+* Linux/G77 compatibility fixes
+*
 * Revision 1.3  1996/01/16 20:57:18  cdaq
 * no change
 *
@@ -44,14 +47,14 @@ ccc      LOGICAL process
       logical eventidbank, nontrivial
       integer EventIDbank_size,EventIDbank_desc
 *
-      integer*4 jiand,jishft
+      integer*4 jiand,jishft,jieor
 *
       parameter (EventIDbank_size= 4)
       parameter (EventIDbank_desc= 'C0000100'x)  !from CODA manual
 *
       gen_event_sequence_N= gen_event_sequence_N+1  !from beginning
 *
-      if(jiand(buffer(2),'FFFF'x).ne.'10CC'x) then
+      if(jieor(jiand(buffer(2),'FFFF'x),'10CC'x).ne.0) then
          err = 'Event is not a physics event'
          ABORT = .true.
          call g_add_path(here,err)

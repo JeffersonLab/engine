@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.27  1999/11/04 20:35:14  saw
+* Linux/G77 compatibility fixes
+*
 * Revision 1.26  1999/06/10 14:30:35  csa
 * (JRA) Cleanup, handling of go_info event
 *
@@ -129,7 +132,7 @@
       character*80 g_config_environmental_var
       parameter (g_config_environmental_var= 'ENGINE_CONFIG_FILE')
 
-      integer*4 jishft,jiand
+      integer*4 jishft,jiand,jieor
 
       integer ierr
       integer*4 status
@@ -479,7 +482,7 @@ c      endif
  	    stop
           endif
 
-          if(jiand(CRAW(2),'FFFF'x).eq.'10CC'x) then ! Physics event
+          if(jieor(jiand(CRAW(2),'FFFF'x),'10CC'x).eq.0) then ! Physics event
 
 	    if (gen_event_type.eq.0) then          !scaler event.
               call g_analyze_scalers_by_banks(CRAW,ABORT,err)

@@ -62,6 +62,11 @@ ifeq ($(OSTYPE),Linux)
 GCC = cc
 CP=cp -f
 NOFORT77:=$(filter no,$(shell which fort77))
+G77:=$(filter no,$(shell which g77))
+ifneq ($(G77),no)
+F77=g77
+FFLAGS=-I. -ffixed-line-length-132
+else
 ifneq ($(NOFORT77),no)
 F77=fort77
 FFLAGS=-Wf,-f -Nn1604
@@ -85,6 +90,7 @@ ifeq ($(OSEXT),TEST)
 FFLAGS=-Nn1604 -O -f -g -pg
 else
 FFLAGS=-Nn1604 -O -f -g
+endif
 endif
 endif
 endif

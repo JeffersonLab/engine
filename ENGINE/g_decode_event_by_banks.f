@@ -15,6 +15,9 @@
 *-
 *-     Created   3-Dec-1993   Kevin Beard, Hampton U.
 *-    $Log$
+*-    Revision 1.6  1999/11/04 20:35:15  saw
+*-    Linux/G77 compatibility fixes
+*-
 *-    Revision 1.5  1995/07/27 19:09:10  cdaq
 *-    (SAW) Use specific bit manipulation routines for f2c compatibility
 *-
@@ -43,7 +46,7 @@
       character*(*) err
       integer*4 evlength                        ! Total length of the event
       integer*4 bankpointer                     ! Pointer to next bank
-      integer*4 jiand
+      integer*4 jiand, jieor
 *
       include 'gen_data_structures.cmn'
 *
@@ -59,7 +62,7 @@
 *     probably be put in an include file.
 *
 
-      ABORT = jiand(event(2),'FFFF'x).ne.'10CC'x
+      ABORT = jieor(jiand(event(2),'FFFF'x),'10CC'x).ne.0
       if(ABORT) then
          err = here//'Event header not standard physics event'
          return
@@ -68,7 +71,7 @@
       evlength = event(1)
       bankpointer = 3
 
-      ABORT = event(bankpointer+1).ne.'C0000100'x
+      ABORT = jieor(event(bankpointer+1),'C0000100'x).ne.0
       if(ABORT) then
          err = here//'First bank is not an Event ID bank'
          return
