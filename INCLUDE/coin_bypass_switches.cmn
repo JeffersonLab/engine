@@ -1,0 +1,17 @@
+*     coin_bypass_switches.cmn
+*     
+*     common blocks of CTP switches to bypass reconstruction code
+*     elements.
+*
+*     Created:     S.A. Wood         3 May 1995
+* $Log$
+* Revision 1.1  1995/05/11 15:21:44  cdaq
+* Initial revision
+*
+*
+*     CTPTYPE=parm
+*
+      integer*4 cbypass_physics
+*
+      common/coin_bypass_switches/
+     $     cbypass_physics
