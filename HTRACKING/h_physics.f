@@ -19,6 +19,9 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.17  1996/04/30 12:46:06  saw
+* (JRA) Add pathlength and rf calculations
+*
 * Revision 1.16  1996/01/24 15:58:38  saw
 * (JRA) Change cpbeam/cebeam to gpbeam/gebeam
 *
@@ -94,6 +97,7 @@
       INCLUDE 'hms_id_histid.cmn'
       INCLUDE 'hms_track_histid.cmn'
       include 'gen_event_info.cmn'
+      include 'hms_scin_tof.cmn'
 *
 *     local variables 
       integer*4 i,ip,ihit
@@ -105,6 +109,7 @@
       real*4 p_nonzero
       real*4 xdist,ydist,dist(12),res(12)
       real*4 tmp,W2
+      real*4 denom
 *
 *--------------------------------------------------------
 *
@@ -168,6 +173,13 @@
         hsx_cal = hsx_fp + hsxp_fp * hcal_1pr_zpos
         hsy_cal = hsy_fp + hsyp_fp * hcal_1pr_zpos
 
+        hsbeta_p = hsp/max(hsenergy,.00001)
+        hspathlength = -1.47e-2*hsx_fp + 11.6*hsxp_fp - 36*hsxp_fp**2
+        hspath_cor = hspathlength/hsbeta_p -
+     &      hpathlength_central/speed_of_light*(1/max(.01,hsbeta_p) - 1)
+
+        hsrftime = hmisc_dec_data(8,1)/9.46
+     &           - (hstime_at_fp-hstart_time_center) - hspath_cor
         do ip=1,4
           hsscin_elem_hit(ip)=0
         enddo
@@ -325,14 +337,17 @@ ccc   SAW 1/17/95.  Add the stuff after the or.
           hsw = 0.0
         endif
 
-*     execute physics singles tests.
-***   ierr=thtstexeb('hms_physics_sing') ! This is going to get executed twice
-*     
-*
-c     if (hmisc_dec_data(8,1).ge.1000 .and. hmisc_dec_data(8,1).le.1100) then
-c        write(37,*) hsx_fp,hsxp_fp,hsy_fp,hsyp_fp,
-c     $       hmisc_dec_data(8,1)/9.69-hstart_time
-c      endif
+*     Calculate photon energy in GeV (E89-012):
+        denom = hphoto_mtarget - hsenergy + hsp*cos(hstheta)
+        if (abs(denom).le.1.e-10) then
+           hsegamma = -1000.0
+        else
+           hsegamma = ( hsenergy * hphoto_mtarget
+     &       - 0.5*(hphoto_mtarget**2 + hphoto_mparticle**2
+     &       - hphoto_mrecoil**2) ) / denom
+        end if
+c------------------------------------------------------------------------
+
 *
 *     Write raw timing information for fitting.
         if(hdebugdumptof.ne.0) call h_dump_tof
