@@ -11,6 +11,9 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 * $Log$
+* Revision 1.12  1996/08/30 20:33:42  saw
+* (DVW?) Add hbypass_track_eff
+*
 * Revision 1.11  1995/10/10 17:33:45  cdaq
 * (JRA) Don't make an error just because no track is found
 *
@@ -143,7 +146,10 @@ c      h_recon_num= h_recon_num + 1
             call G_add_path(here,err)
             return
          endif                          ! end test on H_TRACK ABORT
-      endif                             ! end test on hbypass_track
+         if(hbypass_track_eff.eq.0) then
+            call h_track_tests
+         endif                  ! end test on hbypass_trackeff
+      endif                     ! end test on hbypass_track
 *     only proceed if the number of tracks is greater than one
 *     
       if(HNTRACKS_FP .lt. 1) then
