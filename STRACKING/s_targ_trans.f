@@ -19,6 +19,9 @@
 *-Modified 21-JAN-94  D.F.Geesaman
 *-            Add ABORT and err
 * $Log$
+* Revision 1.12  1996/01/17 18:10:27  cdaq
+* (JRA)
+*
 * Revision 1.11  1995/10/10 17:52:40  cdaq
 * (JRA) Cleanup
 *
@@ -123,19 +126,21 @@
 * COSY transport matrices.
 * It is assumed that the track coordinates are reported at
 * the same focal plane as the COSY matrix elements were calculated.
-         hut(1) = sx_fp(itrk)/100.+ s_z_true_focus*sxp_fp(itrk) !m
+         hut(1) = sx_fp(itrk)/100.+ s_z_true_focus*sxp_fp(itrk)
+     $        + s_det_offset_x !m + detector offset
 ! includes transformation to actual focus if not at Z=0.
 
          hut(2) = sxp_fp(itrk) + s_ang_offset_x         !COSY wants slopes
 
-         hut(3) = sy_fp(itrk)/100. + s_z_true_focus*syp_fp(itrk)     !m
+         hut(3) = sy_fp(itrk)/100. + s_z_true_focus*syp_fp(itrk)
+     $        + s_det_offset_y     !m + detector offset
 ! again icludes transformation to true focus.
 
          hut(4) = syp_fp(itrk) + s_ang_offset_y         !COSY wants slopes
          
 ! now transform
-         hut_rot(1) = hut(1) + s_det_offset_x     ! include detector offset
-         hut_rot(3) = hut(3) + s_det_offset_y
+         hut_rot(1) = hut(1)
+         hut_rot(3) = hut(3)
          hut_rot(2) = hut(2) + hut(1)*s_ang_slope_x
          hut_rot(4) = hut(4) + hut(3)*s_ang_slope_y
 
