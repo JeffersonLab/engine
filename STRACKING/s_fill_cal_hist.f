@@ -8,7 +8,10 @@
 *
 *
 * $Log$
-* Revision 1.3  1995/07/20 14:49:57  cdaq
+* Revision 1.4  1995/08/31 18:07:29  cdaq
+* (JRA) Move sidcalsumadc filling to s_sparsify_cal
+*
+* Revision 1.3  1995/07/20  14:49:57  cdaq
 * (JRA) Add calorimeter adc sum per hit histogram
 *
 * Revision 1.2  1995/05/22  19:45:37  cdaq
@@ -47,8 +50,6 @@
           call hf1(sidcalplane,histval,1.)
           histval=float(row)
           call hf1(sidcalhits(col),histval,1.)
-          histval=scal_realadc(ihit)
-          call hf1(sidcalsumadc,histval,1.)
         enddo
       endif
 
