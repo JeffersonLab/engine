@@ -1,5 +1,5 @@
 *=======================================================================
-      function s_correct_cal_pos(x,y,abort,errmsg)
+      function s_correct_cal_pos(x,y)
 *=======================================================================
 *-
 *-      Purpose: Returns the impact point correction factor. This
@@ -11,6 +11,14 @@
 *-      Created 15 Mar 1994      Tsolak A. Amatuni
 *
 * $Log$
+* Revision 1.3.2.1  2003/03/25 03:04:35  cdaq
+*  match main brach mar-24-2003
+*
+* Revision 1.4  2003/03/21 22:58:02  jones
+* Subroutines had arguments with abort,errmsg . But these arguments were not
+* used when the subroutine was called. Also abort ,errmsg were not used in the
+* subroutines. So eliminate abort,errmsg. (E. Brash)
+*
 * Revision 1.3  1999/06/10 17:04:19  csa
 * (JRA) Changed s_correct_cal_pos calculation
 *
@@ -26,8 +34,8 @@
       implicit none
       save
 *
-      logical abort
-      character*(*) errmsg
+*      logical abort
+*      character*(*) errmsg
       character*17 here
       parameter (here='S_CORRECT_CAL_POS')
       real a,b,c	! Fit parameters.

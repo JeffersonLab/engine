@@ -1,5 +1,11 @@
 #
 # $Log$
+# Revision 1.24.2.1  2003/03/25 03:04:09  cdaq
+#  match main brach mar-24-2003
+#
+# Revision 1.25  2003/03/21 22:21:51  jones
+# Modified and rearrange routines to calibrate the HMS calorimeter (V. Tadevosyan)
+#
 # Revision 1.24  2002/12/20 21:53:32  jones
 # Modified by Hamlet for new HMS aerogel
 #
@@ -104,9 +110,9 @@ newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f \
 	h_dc_eff.f h_dc_eff_shutdown.f h_dump_peds.f h_dump_cal.f \
 	h_report_bad_data.f h_dc_trk_eff.f h_dc_trk_eff_shutdown.f \
 	h_find_easy_space_point.f h_track_tests.f \
-	h_correct_cal_pos.f h_correct_cal_neg.f h_correct_cal_two.f \
+	h_correct_cal_pos.f h_correct_cal_neg.f \
 	h_satcorr.f \
-        hcal_clb_det.f hcal_raw_thr.f h_aero.f h_fill_aero_raw_hist.f
+        h_cal_calib.f h_aero.f h_fill_aero_raw_hist.f
 makeregstuff =	r_hms_filenames.f r_hms_scin_parms.f r_hms_scin_tof.f \
 	r_hms_calorimeter.f r_hms_id_histid.f r_hms_tracking.f \
 	r_hms_geometry.f r_hms_track_histid.f r_hms_recon_elements.f \

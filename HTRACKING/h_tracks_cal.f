@@ -18,6 +18,12 @@
 *-                                cut.  The default for this is now no cut.
 *-                                K.G. Vansyoc
 * $Log$
+* Revision 1.8.2.1  2003/03/25 03:04:11  cdaq
+*  match main brach mar-24-2003
+*
+* Revision 1.9  2003/03/21 22:21:51  jones
+* Modified and rearrange routines to calibrate the HMS calorimeter (V. Tadevosyan)
+*
 * Revision 1.8  1999/02/23 18:52:07  csa
 * (JRA) Clean up logical structure, remove hdebugcalcpeds stuff
 *
@@ -119,7 +125,11 @@
       enddo                             !End loop over detector tracks
 
   100 continue
+
       if(hdbg_tracks_cal.gt.0) call h_prt_cal_tracks
+
+c     Collect data for HMS calorimeter calibration.
+      if(hdbg_tracks_cal.lt.0) call h_cal_calib(0)
 
       return
       end

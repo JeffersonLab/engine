@@ -1,5 +1,5 @@
 *=======================================================================
-      function s_correct_cal_neg(x,y,abort,errmsg)
+      function s_correct_cal_neg(x,y)
 *=======================================================================
 *-
 *-      Purpose: Returns the impact point correction factor. This
@@ -13,6 +13,14 @@
 *-      Created 27 January 1999      SAW
 *
 * $Log$
+* Revision 1.2.2.1  2003/03/25 03:04:35  cdaq
+*  match main brach mar-24-2003
+*
+* Revision 1.3  2003/03/21 22:58:02  jones
+* Subroutines had arguments with abort,errmsg . But these arguments were not
+* used when the subroutine was called. Also abort ,errmsg were not used in the
+* subroutines. So eliminate abort,errmsg. (E. Brash)
+*
 * Revision 1.2  1999/02/25 20:18:40  saw
 * Vardan Tadevosyan shower code updates
 *
@@ -26,8 +34,8 @@
       implicit none
       save
 *
-      logical abort
-      character*(*) errmsg
+*      logical abort
+*      character*(*) errmsg
       character*17 here
       parameter (here='S_CORRECT_CAL_NEG')
       real*4 a,b,c	! Fit parameters.
@@ -43,6 +51,13 @@
 *
 *     Fit to MC data in the range of y [-30,+30].
 *
+      if(y.lt.-35.0) then
+	write(*,*)'******** Problem in s_correct_cal_neg ***********'
+	write(*,*)'******** y should be in the range [-30,30] ******'
+	write(*,*)'******** but has the value ',y,' ***'
+	write(*,*)'******** Setting it to -33.0 and continuing ****'
+	y=-33.0
+      endif
       d=y+35.
       al=alog(d)
       s_correct_cal_neg=1./(a+b*al+c/al)
