@@ -1,6 +1,9 @@
 *     hms_statistics.cmn
 *     common blocks containing event statistics for h_reconstruction
 * $Log$
+* Revision 1.11  1996/09/04 16:24:34  saw
+* (SAW) Change ' to '' in comments
+*
 * Revision 1.10  1996/01/17 16:03:53  cdaq
 * (JRA) Remove some obsolete common blocks
 *
@@ -145,7 +148,7 @@
 *
 *     CTPTYPE=parm
 *
-      real*4 hdc_min_eff(hmax_num_dc_planes)   !'warning' value for plane eff.
+      real*4 hdc_min_eff(hmax_num_dc_planes)   !''warning'' value for plane eff.
 *
 *     CTPTYPE=event
 *
