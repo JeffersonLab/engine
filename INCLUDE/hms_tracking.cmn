@@ -8,6 +8,10 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
+* Revision 1.22  1996/01/17 15:18:42  cdaq
+* (JRA) Change name of various correction variables.
+*       Add some efficiency accumulator variables.
+*
 * Revision 1.21  1995/05/22 19:01:32  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
 *
@@ -90,6 +94,7 @@
 *     Parameters for drift time to distance calculation
 *
       integer*4 hdriftbins_max          ! maximum number of bins for drift time
+* change to 150
       parameter (hdriftbins_max=200)    ! lookup table
       real*4    hdriftbins         ! number of bins for drift time lookup table
       real*4    hdriftbinsz         ! drift bin size in nsec of lookup table
@@ -158,9 +163,10 @@
 
       real*4 hxt_track_criterion   ! stub link criterion on x_t
       real*4 hyt_track_criterion   ! stub link criterion on y_t
-      real*4 hxpt_track_criterion   ! stub link criterion on xp_t
+      real*4 hxpt_track_criterion  ! stub link criterion on xp_t
       real*4 hypt_track_criterion  ! stub link criterion on yp_t
 
+      real*4 hstub_max_xpdiff      ! cut on xp for best left/right determination.
 *
 *     CTPTYPE=event
 *
@@ -175,20 +181,18 @@
       integer*4 hdc_tdc_max_win   ! drfit chamber tdc max value for good hit
       integer*4 hmax_pr_hits      ! max number of hits in each plane for
                                   ! pattern recognition to be done in that pla
+      logical hdc_readout_x(hmax_num_dc_planes)
+                                 !true = read out from side (like x plane)
+      real*4 hdc_readout_corr(hmax_num_dc_planes)
+                                 !wire path length/dist. to readout side
       real*4 hdc_wire_velocity    ! propogation velocity of signal on wire (cm--M/ns)
-      real*4 hdc_x_central_time   ! time (ns) for signal to reach disc. card o--Mn XUVX' planes
-      real*4 hdc_y_central_time   ! time (ns) for signal to reach disc. card o--Mn YY' planes
-                                  ! (both times are from center of the chamber--M)
-*      real*4 hz_wild,hdelta_z_wild
-*      integer*4 hmax_num_zslice,hnum_zslice,hz_slice_enable
-*      parameter (hmax_num_zslice = 50)
-
+      real*4 hdc_central_time(hmax_num_dc_planes) !ave. time (ns) for signal to reach disc. card.
+                                   ! (both times are from center of the chamber--M)
+      real*4 hdc_drifttime_sign(hmax_num_dc_planes) !sign of correction term.
 *
 *     CTPTYPE=event
 *
       INTEGER*4 HDC_HITS_PER_PLANE
-      REAL*4 HDC_SING_WCENTER
-      REAL*4 HDC_SING_WCOORD
 *
       common/HMS_TRACKING/
      &     hbeststub(hmax_space_points,hnum_fpray_param),
@@ -205,21 +209,17 @@
      &     hdc_tdc_min_win(HMAX_NUM_DC_PLANES), 
      &     hdc_tdc_max_win(HMAX_NUM_DC_PLANES),
      &     hmax_pr_hits(hmax_num_chambers),
-     &     hdc_wire_velocity,hdc_x_central_time,hdc_y_central_time,
+     &     hdc_wire_velocity,
      &     hdc_sing_drifttime(HMAX_NUM_DC_PLANES),
      &     hdc_sing_driftdis(HMAX_NUM_DC_PLANES),
      &     HDC_HITS_PER_PLANE(HMAX_NUM_DC_PLANES),
-     &     HDC_SING_WCENTER(HMAX_NUM_DC_PLANES),
-     &     HDC_SING_WCOORD(HMAX_NUM_DC_PLANES),
-     &     gplanehdc1(hmax_space_points),gplanehdc2(hmax_space_points)
-
-*      real*4 hx_fp_wild,hy_fp_wild
-*      common/HMS_SLICES/
-*     &     hz_slice_enable,
-*     &     hz_wild,hdelta_z_wild,
-*     &     hnum_zslice,
-*     &     hx_fp_wild(hmax_num_zslice),hy_fp_wild(hmax_num_zslice)
-
+     &     gplanehdc1(hmax_space_points),
+     &     gplanehdc2(hmax_space_points),
+     &     hdc_central_time,
+     &     hdc_drifttime_sign,
+     &     hdc_readout_corr,
+     &     hdc_readout_x,
+     &     hstub_max_xpdiff
 *
 *
 *     CTPTYPE=parm
@@ -243,11 +243,12 @@
       integer*4 hdebugtrackprint
       integer*4 hdebugstubchisq
       integer*4 hdebugtartrackprint     ! call h_print_tar_track
-      integer*4 hdebug_mc_start_time    ! kludge for monte carlo drift calc
+*      integer*4 hdebug_mc_start_time    ! kludge for monte carlo drift calc
       integer*4 hdebugdumptof           ! dumps tof fitting data
+      integer*4 hdebugdumpcal           ! dumps cal fitting data
+      integer*4 hdebugcalcpeds          ! calc peds from physics events.
       integer*4 hsingle_stub            ! switch to make tracks of all stubs
       integer*4 hSmallAngleApprox       ! switch for alternate L/R determ. of Y,Yprime planes
-      integer*4 h_wire_vel_correction   ! switch to correct drift times for wi--Mre propogation
       common/HMS_TRACKFLAGS/
      &     hluno,
      &     hdebugflagpsi,
@@ -260,12 +261,12 @@
      &     hdebugtartrackprint,
      &     hdebugprintrawdc,
      &     hdebugprintdecodeddc,
-     &     hdebug_mc_start_time,
      &     hdebugdumptof,
+     &     hdebugdumpcal,
+     &     hdebugcalcpeds,
      &     hsingle_stub,
-     &     hSmallAngleApprox,
-     &     h_wire_vel_correction
-
+     &     hSmallAngleApprox
+*     &     hdebug_mc_start_time,
 
 *
 *     CTPTYPE=parm
@@ -274,6 +275,7 @@
 *
 *     array to hold multiple hits per wire
       integer*4 hdc_max_wires_per_plane   ! maximum number of wires per plane
+* change to 120
       parameter (hdc_max_wires_per_plane = 200)
       integer*4 hwire_mult(hdc_max_wires_per_plane,HMAX_NUM_DC_PLANES)
       integer*4 hwire_early_mult(hdc_max_wires_per_plane,HMAX_NUM_DC_PLANES)
@@ -295,12 +297,56 @@
 *     djm 8/26/94 arrays containing single and double residual arrays which can be
 *     histogrammed in the normal fashion (ie, not hardwired histograms).
 
-       real*4 hdc_sing_res(HMAX_NUM_DC_PLANES)
-       real*4 hdc_dbl_res(HMAX_NUM_DC_PLANES)
+      real*4 hdc_sing_res(HMAX_NUM_DC_PLANES)
+      real*4 hdc_dbl_res(HMAX_NUM_DC_PLANES)
+      real*4 hdc_plane_wirecoord(HNTRACKS_MAX,HMAX_NUM_DC_PLANES)
+      real*4 hdc_plane_wirecenter(HNTRACKS_MAX,HMAX_NUM_DC_PLANES)
 
+      common/HMS_RESIDUAL/
+     &     hdc_single_residual,
+     &     hdc_double_residual,
+     &     hdc_sing_res,
+     &     hdc_dbl_res,
+     &     hdc_plane_wirecoord,
+     &     hdc_plane_wirecenter
 
-       common/HMS_RESIDUAL/
-     &   hdc_single_residual,
-     &   hdc_double_residual,
-     &   hdc_sing_res,
-     &   hdc_dbl_res
+*
+*     CTPTYPE=parm
+*
+      real*4 hdc_min_plane_eff(HMAX_NUM_DC_PLANES)
+      real*4 hdc_min_wire_eff
+*
+*     CTPTYPE=event
+*
+      real*4 hdc_track_coord(HNTRACKS_MAX,HMAX_NUM_DC_PLANES)
+      real*4 hsdc_track_coord(HMAX_NUM_DC_PLANES)
+      integer*4 hdc_shouldhit(HMAX_NUM_DC_PLANES,HDC_MAX_WIRES_PER_PLANE)
+      integer*4 hdc_didhit(HMAX_NUM_DC_PLANES,HDC_MAX_WIRES_PER_PLANE)
+      integer*4 hdc_shouldsum(HMAX_NUM_DC_PLANES)
+      integer*4 hdc_didsum(HMAX_NUM_DC_PLANES)
+      integer*4 hdc_eff(HMAX_NUM_DC_PLANES)
+
+      common/hms_dc_track_efficiency/
+     &   hdc_track_coord,  !track position per plane, in x,y,u,v directions.
+     &   hsdc_track_coord, !track position in x,y,,u,v directions-final track.
+     &   hdc_shouldhit,    !times a wire should have fired.
+     &   hdc_didhit,       !times a wire did fire.
+     &   hdc_shouldsum,    !sum over plane.
+     &   hdc_didsum,       !sum over plane.
+     &   hdc_eff,          !effic. per plane.
+     &   hdc_min_wire_eff, !warning level for wire effic.
+     &   hdc_min_plane_eff !warning level for plane effic.
+
+*
+*     CTPTYPE=parm
+*
+      integer*4 hmax_num_deadwires
+      parameter (hmax_num_deadwires=60)
+      integer*4 hdc_num_deadwires
+      integer*4 hdc_deadwire_plane(hmax_num_deadwires)
+      integer*4 hdc_deadwire_num(hmax_num_deadwires)
+
+      common/hms_dead_wires/
+     &   hdc_num_deadwires,  !number of dead wires.
+     &   hdc_deadwire_plane, !list of plane numbers.
+     &   hdc_deadwire_num    !list of wire numbers.
