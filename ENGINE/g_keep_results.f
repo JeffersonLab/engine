@@ -11,6 +11,10 @@
 *-   Created  20-Nov-1993   Kevin B. Beard, HU
 *
 * $Log$
+* Revision 1.9  2002/09/25 14:38:21  jones
+*    a. character*20 groupname changed to character*(*) groupname
+*    b. remove declaration  character*80 msg
+*
 * Revision 1.8  1996/01/16 18:18:33  cdaq
 * (JRA) Add group name to CTP calls
 *
@@ -55,8 +59,7 @@
 *
       logical FAIL
       character*1024 why
-      character*80 msg
-      character*20 groupname
+      character*(*) groupname
       integer ierr
 *
 *--------------------------------------------------------
