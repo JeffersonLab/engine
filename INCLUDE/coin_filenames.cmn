@@ -2,7 +2,10 @@
 *
 *-Common block with filenames
 * $Log$
-* Revision 1.1  1994/06/15 18:15:45  cdaq
+* Revision 1.2  1994/06/15 18:46:26  cdaq
+* (SAW) Fix typo
+*
+* Revision 1.1  1994/06/15  18:15:45  cdaq
 * Initial revision
 *
 *
@@ -10,6 +13,6 @@
       character*80 c_report_blockname
 *
       common /hms_filenames/
-     $     c_report_template_filename
+     $     c_report_template_filename,
      $     c_report_blockname
 *
