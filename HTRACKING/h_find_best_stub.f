@@ -7,7 +7,10 @@
 *     
 *     d. f. geesaman
 * $Log$
-* Revision 1.2  1994/10/12 18:38:46  cdaq
+* Revision 1.3  1994/11/22 20:04:56  cdaq
+* (SAW) Matrix solver routine now called h_solve_3by3
+*
+* Revision 1.2  1994/10/12  18:38:46  cdaq
 * (DJM) Don't recalculate plane array, remove repetitive calc of AA matrix
 *
 * Revision 1.1  1994/02/19  06:14:29  cdaq
@@ -36,7 +39,7 @@
 *     local variables
       real*4 position(hmax_hits_per_point)
       integer*4 pl(hmax_hits_per_point) !keep name same as in h_left_right.f
-      integer*4 pindex                  ! passed from h_left_right to solve_3by3_hdc
+      integer*4 pindex                  ! passed from h_left_right to h_solve_3by3
       real*8 TT(3)
       integer*4 ihit,ierr
       integer*4 i
@@ -63,7 +66,7 @@
 * at initialization. (See h_generate_geometry.f)
  
 * solve three by three equations using stored inverse matrix 
-      call solve_3by3_hdc(TT,pindex,dstub,ierr)
+      call h_solve_3by3(TT,pindex,dstub,ierr)
 *
       if(ierr.ne.0) then
          stub(1)=10000.
