@@ -1,0 +1,19 @@
+**************** begin: GEN_routines.DEC ***************************
+* $Log$
+* Revision 1.1  1994/02/22 18:18:24  cdaq
+* Initial revision
+*
+*-
+*-commonly used functions....
+*-
+	INTEGER G_important_length	!FUNCTION 
+	INTEGER G_shift_len		!FUNCTION 
+*-
+*-CTP package
+        INTEGER regparmint              !function
+        INTEGER regparmstring           !function
+	INTEGER thload                  !function
+        INTEGER thbook                  !function
+	INTEGER thwhalias		!function
+*-
+****************** end: GEN_routines.DEC ***************************
