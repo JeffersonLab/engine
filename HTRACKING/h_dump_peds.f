@@ -1,6 +1,9 @@
       subroutine h_dump_peds(ABORT,err)
 *
 * $Log$
+* Revision 1.5  1996/04/30 12:35:35  saw
+* (JRA) Cleanup
+*
 * Revision 1.4  1996/01/24 15:57:06  saw
 * (JRA) Remove MISC pedestals
 *
@@ -17,8 +20,8 @@
       implicit none
       save
 *
-      character*18 here
-      parameter (here='h_calc_pedestal')
+      character*11 here
+      parameter (here='h_dump_peds')
 *
       logical ABORT
       character*(*) err
