@@ -13,7 +13,10 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
-* Revision 1.9  1995/05/17 13:57:20  cdaq
+* Revision 1.10  1995/08/31 14:45:31  cdaq
+* (JRA) Register Cerenkov variables
+*
+* Revision 1.9  1995/05/17  13:57:20  cdaq
 * (JRA) Register pedestal variables
 *
 * Revision 1.8  1994/08/18  03:52:45  cdaq
@@ -69,6 +72,7 @@
 
       call r_hms_scin_parms
       call r_hms_scin_tof
+      call r_hms_cer_parms
       call r_hms_calorimeter
       call r_hms_id_histid
 *
