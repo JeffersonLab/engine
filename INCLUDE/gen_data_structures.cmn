@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.31  1999/02/23 19:05:55  csa
+* (JRA) Remove slow raster stuff
+*
 * Revision 1.30  1999/02/10 17:50:04  csa
 * Added target eloss variables (D. Mack, K. Vansyoc, J. Volmer),
 * bpm variables (P. Gueye), and raster variables (J. Reinhold)
@@ -275,12 +278,6 @@
       REAL*4 GFRX_SYNC_MEAN,GFRY_SYNC_MEAN
       REAL*4 GFRX,GFRY
       REAL*4 GFRXP,GFRYP
-      REAL*4 GSRX_ADC_PED,GSRY_ADC_PED
-      REAL*4 GSRX_RAW_ADC,GSRY_RAW_ADC
-      REAL*4 GSRX_ADC,GSRY_ADC
-      REAL*4 GSRX_SYNC,GSRY_SYNC
-      REAL*4 GSRX_SYNC_MEAN,GSRY_SYNC_MEAN
-      REAL*4 GSRX,GSRY
 *
 *     CTPTYPE=parm
 *
@@ -305,12 +302,6 @@
      &     GFRX,GFRY,
      &     GFRX_SYNC,GFRY_SYNC,
      &     GFRX_SYNC_MEAN,GFRY_SYNC_MEAN,
-     &     GSRX_ADC_PED,GSRY_ADC_PED,
-     &     GSRX_RAW_ADC,GSRY_RAW_ADC,
-     &     GSRX_ADC,GSRY_ADC,
-     &     GSRX,GSRY,
-     &     GSRX_SYNC,GSRY_SYNC,
-     &     GSRX_SYNC_MEAN,GSRY_SYNC_MEAN,
      &     GFRXP,GFRYP,
      &     GUSEFR,GUSE_FRDEFAULT,
      &     GFR_CAL_MOM,
