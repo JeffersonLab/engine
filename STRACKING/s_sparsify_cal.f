@@ -13,6 +13,9 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to s_raw_dump_all
 * $Log$
+* Revision 1.10  1999/02/23 19:00:04  csa
+* (JRA) Add neg cal hf1 call
+*
 * Revision 1.9  1999/02/03 21:13:45  saw
 * Code for new Shower counter tubes
 *
@@ -77,7 +80,6 @@
         scal_realadc_pos(nb)=-100
         scal_realadc_neg(nb)=-100
       enddo
-*
       if(scal_tot_hits.le.0) return
 *
 *      Loop over raw hits
@@ -113,20 +115,19 @@ c         endif
 *------Sparsify the raw data
          nb =row+smax_cal_rows*(col-1)
 
-         scal_realadc_pos(nb) = 1.0
-         scal_realadc_neg(nb) = 1.0
-*     Need to do this right
          scal_realadc_pos(nb) = float(adc_pos) - scal_pos_ped_mean(nb)
          scal_realadc_neg(nb) = float(adc_neg) - scal_neg_ped_mean(nb)
-         if (scal_realadc_pos(nb).le.200)
-     $        call hf1(sidcalsumadc,scal_realadc_pos(nb),1.)
-* ??
+         if (scal_realadc_pos(nb).le.200 .and. adc_pos.gt.0)
+     &        call hf1(sidcalsumadc,scal_realadc_pos(nb),1.)
+         if (scal_realadc_neg(nb).le.200 .and. adc_neg.gt.0)
+     &        call hf1(sidcalsumadc,scal_realadc_neg(nb),1.)
+
          if(scal_realadc_pos(nb).gt.scal_pos_threshold(nb) .or.
-     $        scal_realadc_neg(nb).gt.scal_neg_threshold(nb)) then
+     &        scal_realadc_neg(nb).gt.scal_neg_threshold(nb)) then
             scal_num_hits           =scal_num_hits+1
             scal_rows(scal_num_hits)=row
             scal_cols(scal_num_hits)=col
-            if(adc_pos.lt.0) then
+            if(adc_pos.lt.0) then	!initialized to -1 if no hit.
                scal_adcs_pos(scal_num_hits)= 0.0
             else
                scal_adcs_pos(scal_num_hits)=scal_realadc_pos(nb)
