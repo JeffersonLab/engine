@@ -1,8 +1,8 @@
       SUBROUTINE G_examine_go_info(buffer,ABORT,err)
-*--------------------------------------------------------
+*-----------------------------------------------------
 *-
-*-    Purpose and Methods : examine a control event and gather various
-*-                          information from it.
+*-    Purpose and Methods : examine the go information and gather various
+*-                          quantities
 *- 
 *-    Input: buffer             - raw data buffer
 *-         : ABORT              - success or failure
@@ -11,6 +11,9 @@
 *-   Created  30-Nov-1995   John Arrington, Caltech.
 *-
 * $Log$
+* Revision 1.2  1996/09/04 14:35:16  saw
+* (JRA) Extract prescale factors
+*
 * Revision 1.1  1995/12/08 20:07:54  cdaq
 * Initial revision
 *
@@ -26,24 +29,23 @@
       CHARACTER*(*) err
 *
       include 'gen_decode_common.cmn'
+      include 'gen_run_info.cmn'
 *
       integer EvType
       integer*4 pointer,subpntr,ind
       integer*4 evlen,sublen,subheader,slotheader,numvals
       integer*4 roc,slot
       integer*4 jiand,jishft
-      logical*4 found_thresholds
+      logical*4 found_thresholds,found_prescale
+      character*80 prescale_string
+      character*4 tmpstring
+      integer*4 ilo,prescale_len
+*     functions
+      integer g_important_length
 *
 *----------------------------------------------------------------------
       err= ' '
 *
-c        write(6,'(a,z10)') 'buffer(2)=',buffer(2)
-c      if(jiand(buffer(2),'FFFF'x).ne.'01CC'x) then
-c         err = 'Event is not a control event'
-c         ABORT = .true.
-c         call g_add_path(here,err)
-c         return
-c      endif
       EvType = jISHFT(buffer(2),-16)
       if (evtype.ne.133) then
          err = 'Event is not a control event'
@@ -53,6 +55,8 @@ c      endif
       endif
 *     
       found_thresholds = .false.
+      found_prescale = .false.
+      prescale_string = ' '
       evlen = buffer(1)
 
 
@@ -81,18 +85,43 @@ c	    write(6,*) '    slot#',slot,' has ',numvals,' thresholds'
             do ind=1,numvals
               subpntr=subpntr+1
               g_threshold_readback(ind,roc,slot)=buffer(pointer+subpntr)
-ccc              write(6,*) 'g_threshold_readback(',ind,roc,slot,')=',g_threshold_readback(ind,roc,slot)
-c	      write(6,*) '      threshold#',ind,'=',TMPTHRESHOLD
+c            write(6,*) 'g_threshold_readback(',ind,roc,slot,')=',g_threshold_readback(ind,roc,slot)
             enddo
             subpntr=subpntr+1                  !skip to next slotheader
 c	    write(6,*) 'subpntr=',subpntr
           enddo   !NEED CHECK FOR NEXT HEADER.
           pointer=pointer+subpntr
+        else if (roc.eq.0 .and.
+     &           jishft(jiand(subheader,'FF0000'x),-16).eq.'02'x) then
+c        write(6,*) 'PRESCALE FACTORS'
+          found_prescale=.true.
+          do ind=2,sublen
+c          write(6,'(3x,a,i4,2x,a4) ') 'ind=',ind,buffer(pointer+ind)
+            write(tmpstring,'(a4)') buffer(pointer+ind)
+            prescale_string(4*(ind-2)+1:4*(ind-1)) = tmpstring
+          enddo
+          prescale_len=4*(sublen-1)
+          pointer=pointer+sublen+1
         else
-c	  write(6,*) '  NOT THRESHOLDS.  WHO CARES'
+c        write(6,*) '  NOT THRESHOLDS,NOT PS FACTORS.  WHO CARES.'
           pointer=pointer+sublen+1
         endif
       enddo
 *
+      if (found_prescale .and. prescale_len.ne.0) then
+        prescale_len = g_important_length(prescale_string(1:prescale_len))
+        ilo=index(prescale_string(1:prescale_len),'=')+1
+        read(prescale_string(ilo:prescale_len),*,err=998) gps1
+        ilo=index(prescale_string(ilo+1:prescale_len),'=')+ilo+1
+        read(prescale_string(ilo:prescale_len),*,err=998) gps2
+        ilo=index(prescale_string(ilo+1:prescale_len),'=')+ilo+1
+        read(prescale_string(ilo:prescale_len),*,err=998) gps3
+
+c      write(6,*) 'gps1=',gps1,'gps2=',gps2,'gps3=',gps3
+      endif
+*
+      goto 999
+998   write(6,*) 'WARNING: g_examine_go_info.f >>> error extracting prescale factors, giving up'
+999   continue
       RETURN
       END
