@@ -16,6 +16,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.3  2004/07/02 20:11:07  saw
+ *   Make fortran tree group function names sane
+ *
  *   Revision 1.2  1999/11/04 20:34:05  saw
  *   Alpha compatibility.
  *   New RPC call needed for root event display.
@@ -304,9 +307,9 @@ MAKEFSUB(thtstinsg,TESTSTR,thIncrementScalersGroup)
 MAKEFSUB(thhstexeg,HISTSTR,thExecuteGroup)
 MAKEFSUB(thgethitg,GETHITSTR,thExecuteGroup)
 #ifdef ROOTTREE
-MAKEFSUB(thtreexeg,TREESTR,thExecuteGroup)
-MAKEFSUB(thtrecloseg,TREESTR,thCloseGroup)
-MAKEFSUB(thtrewriteg,TREESTR,thWriteGroup)
+MAKEFSUB(thtreeexeg,TREESTR,thExecuteGroup)
+MAKEFSUB(thtreecloseg,TREESTR,thCloseGroup)
+MAKEFSUB(thtreewriteg,TREESTR,thWriteGroup)
 #endif
 #else
 MAKEFSUB(thtstexeg_,TESTSTR,thExecuteGroup)
