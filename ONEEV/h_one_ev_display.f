@@ -6,6 +6,9 @@
 * August, 1994, Pat Welch, Oregon State University, tpw@physics.orst.edu
 * Modified by Derek van Westrum (vanwestr@cebaf.gov) Jul 1995
 * $Log$
+* Revision 1.4  1995/09/18 14:43:05  cdaq
+* (DVW) Improvements
+*
 * Revision 1.3  1995/09/14 15:18:55  cdaq
 * (??) Updates
 *
@@ -24,33 +27,26 @@
       include 'hms_calorimeter.cmn'
       include 'gen_event_info.cmn'
       include 'hms_one_ev.par'
-      include 'gctrak.inc'
-      include 'gckine.inc'
-      include 'gcvolu.inc'
+      include 'gen_one_ev_gctrak.cmn'
+      include 'gen_one_ev_gckine.cmn'
+      include 'gen_one_ev_gcvolu.cmn'
 
-      integer ihit                      ! hit number
       character*4 lnames(0:3)		! volume names
       integer lnums(0:3)               ! volume numbers or copies
       real xd(3), xm(3)			! coordinates
-      real track_x, track_y, track_z    ! a point on the track
-      real track_x_slope, track_y_slope ! slope of the track
       integer error_code                ! error return code
-      real x, y, z                      ! coordinates
-      real z_distance                   ! z distance to end of hut
-      integer track,chamhit,scinhit,showhit ! index variables
+      integer chamhit,scinhit,showhit   ! index variables
       integer wirenum                   ! indicates GEANT wirenumber
 
       character*5 wire          !define names and indicies to loop over...
       character*5 scinname
-      integer iscin
       character*4 blockname
       character*5 layername
-      character*1 blockletter
-      integer blockidet
-      integer ilayer
-      integer irow
       
       character*1 viewopt
+      character*1 oldviewopt
+      data oldviewopt/'b'/
+
 
 *
 * Reset the detector hit indicators...
@@ -66,50 +62,9 @@
       call iscr(1,1,.5,.5,.5)           !make the detectors grey
       call iscr(1,15,1.,0.7,0.2)        !define an "orange"
       call iscr(1,13,0.,0.65,0.)        !define a dark green
+      call iscr(1,14,0.,0.,1.)       !define a dark blue
       call iscr(1,16,0.65,0.,0.65)      !define a dark purple
       call gdopt ('SHAD','ON')
-*
-* Take care of creating the reconstructed tracks
-*
-      vect(4) =  0.0
-      vect(5) =  0.0
-      vect(6) =  1.
-      vect(7) =  1.
-      ipart = 3                         !this makes the track red (electron)
-*      ipart = 13              !this makes the track black (neutron)
-      tofg  = 1e-5
-      itra  = 1
-      amass = 0.511e-3
-*      amass = 0.93957
-      sleng = 200.
-      step  = 200.
-
-      if (HNTRACKS_FP .GT. 0) then
-        do track = 1, HNTRACKS_FP
-          track_x       = -hx_fp(track)	! x position on track
-          track_y       = hy_fp(track)	! y position on track
-          track_z       = 0             ! z position on track
-          track_x_slope = -hxp_fp(track) ! track slope in x
-          track_y_slope = hyp_fp(track)	! track slope in y
-
-          z		= -HHUT_HEIGHT / 2. ! bottom of hut
-          z_distance	= track_z - z   ! distance from point to floor
-          x		= track_x - z_distance * sin(track_x_slope) ! x loci
-          y		= track_y - z_distance * sin(track_y_slope) ! y loci
-          vect(1) = x
-          vect(2) = y
-          vect(3) = z
-          call gsxyz
-          z		= HHUT_HEIGHT / 2. ! bottom of hut
-          z_distance	= z - track_z   ! distance from point to roof
-          x		= track_x + z_distance * sin(track_x_slope) ! x loci
-          y		= track_y + z_distance * sin(track_y_slope) ! y loci
-          vect(1) = x
-          vect(2) = y
-          vect(3) = z
-          call gsxyz
-        enddo
-      endif
 *
 * Now loop over all the detector elements "lighting" each one if it has been hit 
 *
@@ -236,7 +191,7 @@
             call glvolu (4, lnames, lnums, error_code)
             call gdtom (xd, xm, 1)      ! transform from detector to MARS
 	    call gsatt (wire,'SEEN',1)
-	    call gsatt (wire,'COLO',4)
+	    call gsatt (wire,'COLO',14)
 *            call gsahit (1, 7, 1, lnums(1), xm, ihit) ! store the hit
 *************************************************************************
 *YYY
@@ -258,7 +213,7 @@
             call glvolu (4, lnames, lnums, error_code)
             call gdtom (xd, xm, 1)      ! transform from detector to MARS
 	    call gsatt (wire,'SEEN',1)
-	    call gsatt (wire,'COLO',6)
+	    call gsatt (wire,'COLO',16)
 *            call gsahit (1, 5, 1, lnums(1), xm, ihit) ! store the hit
 *************************************************************************
 *XXX
@@ -288,7 +243,7 @@
             call glvolu (4, lnames, lnums, error_code)
             call gdtom (xd, xm, 1)      ! transform from detector to MARS
 	    call gsatt (wire,'SEEN',1)
-	    call gsatt (wire,'COLO',3)
+	    call gsatt (wire,'COLO',13)
 *            call gsahit (1, 4, 1, lnums(1), xm, ihit) ! store the hit
 *************************************************************************
 *************************************************************************
@@ -319,7 +274,7 @@
             call glvolu (4, lnames, lnums, error_code)
             call gdtom (xd, xm, 1)      ! transform from detector to MARS
 	    call gsatt (wire,'SEEN',1)
-	    call gsatt (wire,'COLO',13)
+	    call gsatt (wire,'COLO',3)
 *            call gsahit (1, 4, 1, lnums(1), xm, ihit) ! store the hit
 *************************************************************************
 *YYY
@@ -341,7 +296,7 @@
             call glvolu (4, lnames, lnums, error_code)
             call gdtom (xd, xm, 1)      ! transform from detector to MARS
 	    call gsatt (wire,'SEEN',1)
-	    call gsatt (wire,'COLO',16)
+	    call gsatt (wire,'COLO',6)
 *            call gsahit (1, 5, 1, lnums(1), xm, ihit) ! store the hit
 *************************************************************************
 *UUU
@@ -371,7 +326,7 @@
             call glvolu (4, lnames, lnums, error_code)
             call gdtom (xd, xm, 1)      ! transform from detector to MARS
 	    call gsatt (wire,'SEEN',1)
-	    call gsatt (wire,'COLO',15)
+	    call gsatt (wire,'COLO',5)
 *            call gsahit (1, 6, 1, lnums(1), xm, ihit) ! store the hit
 *************************************************************************
 *YYY
@@ -401,7 +356,7 @@
             call glvolu (4, lnames, lnums, error_code)
             call gdtom (xd, xm, 1)      ! transform from detector to MARS
 	    call gsatt (wire,'SEEN',1)
-	    call gsatt (wire,'COLO',4)
+	    call gsatt (wire,'COLO',7)
 *            call gsahit (1, 7, 1, lnums(1), xm, ihit) ! store the hit
 *************************************************************************
           elseif (HDC_PLANE_NUM(chamhit) .EQ. 11) then
@@ -574,174 +529,37 @@
 *******************************************************************************
 *******************************************************************************
 
-      viewopt = 'a'
+      if (oldviewopt .eq. 'a') then
+        call h_one_ev_persp_view        !draw the perspective view
+      elseif (oldviewopt .eq. 'b') then
+        call h_one_ev_topside_view      !draw the two side views
+      elseif (oldviewopt .eq. 'c') then
+        call h_one_ev_head_view         !draw the head on view
+      endif
       do while (viewopt .ne. 'p')
 
  100    print*, 'enter a for 3D view with wc blow up'
         print*, 'enter b for top and side views'
         print*, 'enter c for a head on view of the wc''s'
-        print*, 'enter p to go back to the CTP prompt'
-        read*, viewopt
+        print*, 'hit return to go back to the CTP prompt.'
+        read(5,'(a1)') viewopt
+        if (viewopt.eq.'') viewopt='p'
         if ((viewopt .ne. 'a') .and. (viewopt .ne. 'b') .and. (viewopt .ne.
      $       'c').and. (viewopt .ne. 'p')) then
-          print *, 'Invalid option.  Please type a, b, c, or p.'
+          print *, 'Invalid option.  Please type a, b, c, or return.'
           goto 100
         endif
         call ixclrwi
-*     Do the 3d View
-*     
-        if (viewopt .eq. 'a') then
-          call gdopen (8)
-          call gdrawt (5.,2.,'PERSPECTIVE VIEW',.5,0.,2,0)
-          call gdraw ('HHUT', 45., 115., 90., 3.5, 9.0, 0.05, 0.05)
-          call gdxyz (0)                ! draw the tracks
-          call gdhits ('*   ', '*   ', 0, 850, 0.1)
-          call gdclos (8)
-*     
-*     blow up the wire chambers, and make the hodoscopes invisible
-*     
-          call gdopen (9)
-          call gsatt ('HDX1','SEEN',0)
-          call gsatt ('HDY1','SEEN',0)
-          do iscin=1,LOWER_HODO_X_PADDLES
-            write(scinname,'(a,a)') 'H1X',char(64 + iscin)
-            call gsatt (scinname,'SEEN',0)
-          enddo
-          do iscin=1,LOWER_HODO_Y_PADDLES
-            write(scinname,'(a,a)') 'H1Y',char(64 + iscin)
-            call gsatt (scinname,'SEEN',0)
-          enddo
-          call gdraw ('HHUT', 45., 115., 90., 14.0, 6.1, 0.08, 0.08)
-          call gdxyz (0)                ! draw the tracks
-          call gdhits ('*   ', '*   ', 0, 850, 0.3)
-          call gdclos (9)
-          call gsatt ('HDX1','SEEN',1)
-          call gsatt ('HDY1','SEEN',1)
-          call gdclos (9)
-*     Now make them visible again for the next pass...
-          do iscin=1,LOWER_HODO_X_PADDLES
-            write(scinname,'(a,a)') 'H1X',char(64 + iscin)
-            call gsatt (scinname,'SEEN',1)
-          enddo
-          do iscin=1,LOWER_HODO_Y_PADDLES
-            write(scinname,'(a,a)') 'H1Y',char(64 + iscin)
-            call gsatt (scinname,'SEEN',1)
-          enddo
-          call gdshow (9)
-          call gdshow (8)
-          call gdshow (9)
-          call gdelet (8)
-          call gdelet (9)
-***   
-        elseif (viewopt .eq. 'c') then
-*     
-*     Head On view
-*     
-          call gdopen (5)
-*     first, get all the background junk out of the picture...
-          call gsatt ('HDX1','SEEN',0)
-          call gsatt ('HDX2','SEEN',0)
-          call gsatt ('HDY1','SEEN',0)
-          call gsatt ('HDY2','SEEN',0)
-          call gsatt ('SHOW','SEEN',0)
-          do iscin=1,LOWER_HODO_X_PADDLES
-            write(scinname,'(a,a)') 'H1X',char(64 + iscin)
-            call gsatt (scinname,'SEEN',0)
-          enddo
-          do iscin=1,LOWER_HODO_Y_PADDLES
-            write(scinname,'(a,a)') 'H1Y',char(64 + iscin)
-            call gsatt (scinname,'SEEN',0)
-          enddo
-          do iscin=1,UPPER_HODO_X_PADDLES
-            write(scinname,'(a,a)') 'H2X',char(64 + iscin)
-            call gsatt (scinname,'SEEN',0)
-          enddo
-          do iscin=1,UPPER_HODO_Y_PADDLES
-            write(scinname,'(a,a)') 'H2Y',char(64 + iscin)
-            call gsatt (scinname,'SEEN',0)
-          enddo
-          do ilayer =1,HMAX_CAL_COLUMNS
-            write(layername,'(a,i1)') 'LAY',ilayer
-            call gsatt (layername,'SEEN',0)
-            do irow = 1,HMAX_CAL_ROWS
-              write(blockname,'(a,i1,a)') 'BL',ilayer,char(64 + irow)
-              call gsatt (blockname,'SEEN',0)
-            enddo
-          enddo         
-          call gdhits ('*   ', '*   ', 0, 850, 0.3)
-          call gdrawt (3.,2.,'HEAD ON VIEW',.5,0.,2,0)
-          call gdraw ('HHUT', 0., 0., 90., 10.0, 10.5,0.14,0.14)
-          call gdxyz (0)                ! draw the tracks
-          call gdclos (5)
-          call gdshow (5)
-          call gdshow (5)
 
-*     It's already been stored, so now make everything visible again for
-*     the next pass
-*     
-          call gsatt ('HDX1','SEEN',1)
-          call gsatt ('HDY1','SEEN',1)
-          call gsatt ('HDX2','SEEN',1)
-          call gsatt ('HDY2','SEEN',1)
-          do iscin=1,LOWER_HODO_X_PADDLES
-            write(scinname,'(a,a)') 'H1X',char(64 + iscin)
-            call gsatt (scinname,'SEEN',1)
-          enddo
-          do iscin=1,LOWER_HODO_Y_PADDLES
-            write(scinname,'(a,a)') 'H1Y',char(64 + iscin)
-            call gsatt (scinname,'SEEN',1)
-          enddo
-          do iscin=1,UPPER_HODO_X_PADDLES
-            write(scinname,'(a,a)') 'H2X',char(64 + iscin)
-            call gsatt (scinname,'SEEN',1)
-          enddo
-          do iscin=1,UPPER_HODO_Y_PADDLES
-            write(scinname,'(a,a)') 'H2Y',char(64 + iscin)
-            call gsatt (scinname,'SEEN',1)
-          enddo
-          do ilayer =1,HMAX_CAL_COLUMNS
-            write(layername,'(a,i1)') 'LAY',ilayer
-            call gsatt (layername,'SEEN',1)
-            do irow = 1,HMAX_CAL_ROWS
-              write(blockname,'(a,i1,a)') 'BL',ilayer,char(64 + irow)
-              call gsatt (blockname,'SEEN',1)
-            enddo
-          enddo
-          call gdelet (5)
-*     
-        elseif (viewopt .eq. 'b') then  !draw the two side views
-*     
-*     Top view
-*     
-*     
-          call gdopen (7)
-          call gsatt ('HDX1','SEEN',0)
-          call gsatt ('HDX2','SEEN',0)
-          call gdrawt (4.4,2.,'TOP VIEW',.5,0.,2,0)
-          call gdraw ('HHUT', 270., 0., 90., 4.4,5.5, 0.035, 0.035)
-          call gdxyz (0)                ! draw the tracks
-          call gdhits ('*   ', '*   ', 0, 850, 0.1)
-          call gdhits ('HOD1', 'HDY1', 0, 850, 0.1)
-          call gdhits ('HOD2', 'HDY2', 0, 850, 0.1)
-          call gdclos (7)
-*     
-*     
-*     Other side view
-*     
-          call gdopen (6)
-          call gsatt ('HDY1','SEEN',0)
-          call gsatt ('HDY2','SEEN',0)
-          call gdrawt (14.75,2.,'SIDE VIEW',.5,0.,2,0)
-          call gdraw ('HHUT', 90., 90., 90., 14.75,5.5,0.035, 0.035)
-          call gdxyz (0)                ! draw the tracks
-          call gdhits ('*   ', '*   ', 0, 850, 0.1)
-          call gdclos (6)
-          call gdshow (7)
-          call gdshow (6)
-          call gdshow (7)
-          call gdelet (6)
-          call gdelet (7)
-*     
+        if (viewopt .eq. 'a') then
+          call h_one_ev_persp_view      !draw the perspective view
+          oldviewopt = viewopt
+        elseif (viewopt .eq. 'b') then
+          call h_one_ev_topside_view    !draw the two side views
+          oldviewopt = viewopt
+        elseif (viewopt .eq. 'c') then
+          call h_one_ev_head_view       !draw the head on view
+          oldviewopt = viewopt
         endif
 *     
       enddo
