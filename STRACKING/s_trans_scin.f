@@ -8,7 +8,10 @@
 * needed for the drift chamber and tof analysis.
 *
 * $Log$
-* Revision 1.5  1995/01/18 21:00:24  cdaq
+* Revision 1.6  1995/02/23 13:25:28  cdaq
+* (JRA) Add a calculation of beta without finding a track
+*
+* Revision 1.5  1995/01/18  21:00:24  cdaq
 * (SAW) Catch negative ADC values in argument of square root
 *
 * Revision 1.4  1994/11/23  15:08:24  cdaq
@@ -42,7 +45,9 @@
       character*20 here
       parameter (here = 's_trans_scin')
 
-      integer*4 ihit
+      integer*4 dumtrk
+      parameter (dumtrk=1)
+      integer*4 ihit, plane
       integer*4 time_num
       real*4 time_sum
       real*4 fptime
@@ -54,6 +59,7 @@
       real*4 neg_ph(smax_scin_hits)
       real*4 postime(smax_scin_hits)
       real*4 negtime(smax_scin_hits)
+      logical goodtime(snum_scin_planes)
 
       save
  
@@ -92,15 +98,13 @@
 
 ** Check for two good TDC values.
         do ihit = 1 , sscin_tot_hits
-            if ((sscin_tdc_pos(ihit) .ge. sscin_tdc_min) .and.
-     1      (sscin_tdc_pos(ihit) .le. sscin_tdc_max) .and.
-     2      (sscin_tdc_neg(ihit) .ge. sscin_tdc_min) .and.
-     3      (sscin_tdc_neg(ihit) .le. sscin_tdc_max)) then
-              stwo_good_times(ihit) = .true.
-            endif
-
-        enddo                       !end of loop that finds tube setting time.
-
+          if ((sscin_tdc_pos(ihit) .ge. sscin_tdc_min) .and.
+     1         (sscin_tdc_pos(ihit) .le. sscin_tdc_max) .and.
+     2         (sscin_tdc_neg(ihit) .ge. sscin_tdc_min) .and.
+     3         (sscin_tdc_neg(ihit) .le. sscin_tdc_max)) then
+            stwo_good_times(ihit) = .true.
+          endif
+        enddo                           !end of loop that finds tube setting time.
 
 ** Get corrected time/adc for each scintillator hit
         do ihit = 1 , sscin_tot_hits
@@ -108,16 +112,16 @@
 
 *  Correct time for everything except veloc. correction in order to
 *  find hit location from difference in tdc.
-            pos_ph(ihit) = float(sscin_adc_pos(ihit))
+            pos_ph(ihit) = sscin_adc_pos(ihit)
             postime(ihit) = sscin_tdc_pos(ihit) * sscin_tdc_to_time
             postime(ihit) = postime(ihit) - sscin_pos_phc_coeff(ihit) * 
-     1           sqrt(max(0.,(pos_ph(ihit)/sscin_minph-1.)))
+     1           sqrt(max(0.,(pos_ph(ihit)/sscin_pos_minph(ihit)-1.)))
             postime(ihit) = postime(ihit) - sscin_pos_time_offset(ihit)
             
-            neg_ph(ihit) = float(sscin_adc_neg(ihit))
+            neg_ph(ihit) = sscin_adc_neg(ihit)
             negtime(ihit) = sscin_tdc_neg(ihit) * sscin_tdc_to_time
             negtime(ihit) = negtime(ihit) - sscin_neg_phc_coeff(ihit) * 
-     1           sqrt(max(0.,(neg_ph(ihit)/sscin_minph-1.)))
+     1           sqrt(max(0.,(neg_ph(ihit)/sscin_neg_minph(ihit)-1.)))
             negtime(ihit) = negtime(ihit) - sscin_neg_time_offset(ihit)
 
 *  Find hit position.  If postime larger, then hit was nearer negative side.
@@ -144,8 +148,8 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
             else
               sscin_cor_adc(ihit) = 0.0
             endif
-
           else                          !only 1 tube fired
+            sscin_dec_hit_coord(ihit) = 0.
             sscin_cor_adc(ihit) = 0.
             sscin_cor_time(ihit) = 0.   !not a very good 'flag', but there is
                                         ! the logical stwo_good_hits.
@@ -159,7 +163,7 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
         do ihit = 1 , sscin_tot_hits
           if (stwo_good_times(ihit)) then
             fptime  = sscin_cor_time(ihit) - sscin_zpos(ihit)/29.989
-            if (abs(fptime-67.).le.10) then
+            if (abs(fptime-17.).le.15) then
               time_sum = time_sum + fptime
               time_num = time_num + 1
             endif
@@ -176,6 +180,50 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
 
 
 *     Dump decoded bank if sdebugprintscindec is set
-      if( sdebugprintscindec .ne. 0) call s_prt_dec_scin(ABORT,errmsg)
+        if( sdebugprintscindec .ne. 0) call s_prt_dec_scin(ABORT,errmsg)
+
+
+*    Calculate beta without finding track (to reject cosmics for efficiencies)
+*    using tube only if both pmts fired since the velocity correction is
+*    position (track) dependant.
+*    Fitting routine fills variables assuming track=1.
+
+      do plane = 1 , snum_scin_planes
+        goodtime(plane)=.false.
+      enddo
+
+      do ihit = 1 , sscin_tot_hits
+        sgood_scin_time(dumtrk,ihit)=.false.
+        if (htwo_good_times(ihit)) then !require 2 tubes to be track indep.
+          if (abs(fptime-17.).le.25) then !throw out outliers.
+            sgood_scin_time(dumtrk,ihit)=.true.
+            sscin_time(ihit)=sscin_cor_time(ihit)
+            sscin_sigma(ihit)=sqrt(sscin_neg_sigma(ihit)**2 +
+     &           sscin_pos_sigma(ihit)**2)/2.
+            goodtime(sscin_plane_num(ihit))=.true.
+          endif
+        endif
+      enddo
+
+
+*    Fit beta if there are enough time measurements (one upper, one lower)
+      if ((goodtime(1) .or. goodtime(2)) .and.
+     1     (goodtime(3) .or. goodtime(4))) then
+
+        sxp_fp(dumtrk)=1.0
+        syp_fp(dumtrk)=1.0
+        call s_tof_fit(abort,errmsg,dumtrk) !fit velocity of particle
+        if (abort) then
+          call g_prepend(here,errmsg)
+          return
+        endif
+        sbeta_notrk = sbeta(dumtrk)
+        sbeta_chisq_notrk = sbeta_chisq(dumtrk)
+      else
+        sbeta_notrk = 0.
+        sbeta_chisq_notrk = -1.
+      endif
+
       return
       end
+
