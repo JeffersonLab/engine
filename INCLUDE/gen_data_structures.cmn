@@ -5,7 +5,10 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
-* Revision 1.22  1995/03/13 18:54:22  cdaq
+* Revision 1.23  1995/04/06 20:16:28  cdaq
+* (SAW) Add ddutta's pre cosy rotation stuff.  Add arrays for BPM data
+*
+* Revision 1.22  1995/03/13  18:54:22  cdaq
 * (JRA) ?SCIN_ADC_??? now real, add several element max's for array sizes, add
 *       ?NUM_PMT_HIT, ?SNUM_SCIN_HIT, ?SNUM_PMT_HIT
 *
@@ -448,6 +451,11 @@
       INTEGER*4 HNFREE_FP          ! NUMBER OF DEGREES OF FREEDOM IN FIT
       INTEGER*4 HNTRACK_HITS      ! LIST OF HITS ON EACH TRACK
       REAL*4  HDEL_FP              !  FOCAL PLANE ERROR MATRIX
+      REAL*4  HX_FP_rot            ! x in rotated focal plane
+      REAL*4  HY_FP_rot            ! y in rotated f plane
+      REAL*4  HXP_FP_rot           ! x slope in rotated f plane
+      REAL*4  HYP_FP_rot           ! y slope in rot f plane
+
 * THE FOCAL PLANE ERROR MATRIX IS A 4 BY 4 BY HNTRACK_MAX ARRAY
 * THE FOUR INDECIES FOR EACH TRACK ARE X, XP, Y,  YP
 * THE ERROR MATRIX FOR EACH TRACK IS SYMMETRIC ABOUT THE DIAGONAL
@@ -465,7 +473,12 @@
      7     HDEL_FP(4,4,HNTRACKS_MAX),
      8     HNTRACK_HITS(HNTRACKS_MAX,HNTRACKHITS_MAX+1),
      9     HNFREE_FP(HNTRACKS_MAX),
-     A     HNTRACKS_FP,HCHI2PERDOF_FP(HNTRACKS_MAX)
+     A     HNTRACKS_FP,HCHI2PERDOF_FP(HNTRACKS_MAX),
+     >     HX_FP_rot(HNTRACKS_MAX),
+     >     HY_FP_rot(HNTRACKS_MAX), 
+     >     HXP_FP_rot(HNTRACKS_MAX),
+     >     HYP_FP_rot(HNTRACKS_MAX)
+
  
 *     HMS TARGET QUANTITIES
 *     ASSUME THE SAME NUMBER OF MAXIMUM TRACKS AS IN THE FOCAL PLANE
@@ -911,6 +924,10 @@
       INTEGER*4 SNFREE_FP          ! NUMBER OF DEGREES OF FREEDOM IN FIT
       INTEGER*4 SNTRACK_HITS       ! LIST OF HITS ON EACH TRACK
       REAL*4  SDEL_FP              !  FOCAL PLANE ERROR MATRIX
+      REAL*4  SX_FP_rot            ! x in rotated focal plane
+      REAL*4  SY_FP_rot            ! y in rotated f plane
+      REAL*4  SXP_FP_rot           ! x slope in rotated f plane
+      REAL*4  SYP_FP_rot           ! y slope in rot f plane
 * THE FOCAL PLANE ERROR MATRIX IS A 4 BY 4 BY SNTRACK_MAX ARRAY
 * THE FOUR INDECIES FOR EACH TRACK ARE X, XP, Y,  YP
 * THE ERROR MATRIX FOR EACH TRACK IS SYMMETRIC ABOUT THE DIAGONAL
@@ -928,7 +945,11 @@
      7     SDEL_FP(4,4,SNTRACKS_MAX),
      8     SNTRACK_HITS(SNTRACKS_MAX,SNTRACKHITS_MAX+1),
      9     SNFREE_FP(SNTRACKS_MAX),
-     A     SNTRACKS_FP,SCHI2PERDOF_FP(SNTRACKS_MAX)
+     A     SNTRACKS_FP,SCHI2PERDOF_FP(SNTRACKS_MAX),
+     >     SX_FP_rot(SNTRACKS_MAX),
+     >     SY_FP_rot(SNTRACKS_MAX), 
+     >     SXP_FP_rot(SNTRACKS_MAX),
+     >     SYP_FP_rot(SNTRACKS_MAX)
  
 *     SOS TARGET QUANTITIES
 *     ASSUME THE SAME NUMBER OF MAXIMUM TRACKS AS IN THE FOCAL PLANE
@@ -989,7 +1010,7 @@
       INTEGER*4 SSCIN_HIT(SNTRACKS_MAX,SMAX_SCIN_HITS)
       INTEGER*4 SNUM_SCIN_HIT(SNTRACKS_MAX)
       INTEGER*4 SNUM_PMT_HIT(SNTRACKS_MAX)
-      REAL*4 SDEDX(SNTRACKS_MAX,SNUM_SCIN_PLANES)        
+      REAL*4 SDEDX(SNTRACKS_MAX,SMAX_SCIN_HITS)        
       REAL*4 SBETA(SNTRACKS_MAX)
       REAL*4 SBETA_CHISQ(SNTRACKS_MAX)
       REAL*4 STIME_AT_FP(SNTRACKS_MAX)
@@ -1158,6 +1179,22 @@
      &     GUNINST_RAW_DATAWORD(GMAX_UNINST_HITS),
      &     GUNINST_TOT_HITS
 *
+*
+*     Raw data from ADC's encoding beam position and raster position.
+*     Each distinct beam line device (BPM, Raster magnet) will get a
+*     different DEVICE (plane) value in the MAP file.
+*
+      INTEGER CMAX_BPM_HITS
+      PARAMETER(CMAX_BPM_HITS=10)
+      INTEGER*4 CBPM_TOT_HITS
+      INTEGER*4 CBPM_ADCNUM
+      INTEGER*4 CBPM_ADCVAL
+      INTEGER*4 CBPM_DEVICE        ! eg 1 for BPM, 2 for 
+      COMMON/COIN_RAW_BPM/
+     &     CBPM_ADCNUM(CMAX_BPM_HITS),
+     &     CBPM_ADCVAL(CMAX_BPM_HITS),
+     &     CBPM_DEVICE(CMAX_BPM_HITS),
+     &     CBPM_TOT_HITS
 
 *
 *                                          
