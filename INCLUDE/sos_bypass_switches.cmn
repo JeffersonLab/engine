@@ -5,6 +5,9 @@
 *
 *      Created:     D.F.Geesaman         22 May 1994
 * $Log$
+* Revision 1.7  1996/11/19 18:48:39  saw
+* (WH) Add bypass switch for lucite counter
+*
 * Revision 1.6  1996/09/04 16:25:51  saw
 * (JRA) Add bypass of tracking efficiency flags
 *
@@ -35,6 +38,7 @@
       integer*4 sbypass_cal
       integer*4 sbypass_cer
       integer*4 sbypass_aero
+      integer*4 sbypass_lucite
       integer*4 sbypass_physics
       integer*4 sbypass_dc_eff
       integer*4 sbypass_scin_eff
@@ -59,5 +63,6 @@
      &     sbypass_cal_eff,
      &     sbypass_cer_eff,
      &     sbypass_aero,
+     &     sbypass_lucite,
      &     sbypass_track_eff,
      &     sbypass_track_eff_files
