@@ -22,6 +22,9 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 * $Log$
+* Revision 1.5.4.2  2003/08/22 14:47:48  xu
+* change cointime cut
+*
 * Revision 1.5.4.1  2003/03/05 22:50:51  xu
 * new variables
 *
@@ -50,6 +53,7 @@
 *--------------------------------------------------------
       IMPLICIT NONE
       SAVE
+
 *
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
@@ -78,8 +82,15 @@
 *
 
 *    xucc added begin 
-      if((HSNUM_FPTRACK .gt. 0 .AND. SSNUM_FPTRACK .gt. 0) .AND.   ! check for tracks
-     > ccointime_hms .gt. -5.0)  ! check for tracks 
+c      if((HSNUM_FPTRACK .gt. 0 .AND. SSNUM_FPTRACK .gt. 0) .AND.   ! check forc tracks
+c     > ccointime_hms .gt. -5.0)  ! check for tracks 
+c     >  call c_ntuple_keep(ABORT,err)
+
+c     On June 19, Xucc changhed back to remove the cut on ccointime_hms
+c     for online purpose.
+
+       if(HSNUM_FPTRACK .gt. 0 .AND. SSNUM_FPTRACK .gt. 0
+     > .and. scer_npe_sum.gt.0.2)! check for tracks 
      >  call c_ntuple_keep(ABORT,err)
 
 *   the line "ccointime_hms .gt. -5.0" is added for extra conditions of good
