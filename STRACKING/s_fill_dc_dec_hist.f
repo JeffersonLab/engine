@@ -8,7 +8,10 @@
 *                                 Put id's in sos_tracking_histid
 *                                 implement flag to turn block off
 * $Log$
-* Revision 1.3  1995/05/22 19:45:38  cdaq
+* Revision 1.4  1995/08/31 18:42:28  cdaq
+* (JRA) Comment out filling of siddcwirecent (wire center) histogram
+*
+* Revision 1.3  1995/05/22  19:45:38  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.2  1994/08/18  04:33:13  cdaq
@@ -49,7 +52,7 @@
 * Is plane number valid
             if( (planeoff .gt. 0) .and. (planeoff.le. sdc_num_planes)) then
               call hf1(siddcwiremap(planeoff),histval,1.)
-              call hf1(siddcwirecent(planeoff),SDC_WIRE_CENTER(ihit),1.)
+c              call hf1(siddcwirecent(planeoff),SDC_WIRE_CENTER(ihit),1.)
               call hf1(siddcdriftdis(planeoff),SDC_DRIFT_DIS(ihit),1.)
               call hf1(siddcdrifttime(planeoff),SDC_DRIFT_TIME(ihit),1.)
             endif                       ! end test on valid plane number
