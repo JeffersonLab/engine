@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.4  1995/01/27 20:15:11  cdaq
-*-    (SAW) Add call to sieve slit ntuple shutdown routine
+*-    Revision 1.5  1995/03/13 18:13:19  cdaq
+*-    (JRA) Add calls to h_scin_eff_shutdown and h_cal_eff_shutdown.
 *-
+* Revision 1.4  1995/01/27  20:15:11  cdaq
+* (SAW) Add call to sieve slit ntuple shutdown routine
+*
 * Revision 1.3  1994/10/11  18:40:32  cdaq
 * (SAW) Protect agains blank blocknames
 *
@@ -51,6 +54,10 @@
       call h_ntuple_shutdown(ABORT,err)
 *
       call h_sv_nt_shutdown(ABORT,err)
+*
+      call h_scin_eff_shutdown(ABORT,err)
+*
+      call h_cal_eff_shutdown(ABORT,err)
 *
       if(h_report_blockname .ne. ' ') then
         ierr = threpa(h_report_blockname, g_report_output_filename)
