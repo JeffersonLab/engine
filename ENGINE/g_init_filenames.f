@@ -23,6 +23,9 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
+* Revision 1.19  2005/02/16 22:38:41  saw
+* Initialize root tree filenames
+*
 * Revision 1.18  2003/09/05 15:44:44  jones
 * Merge in online03 changes (mkj)
 *
@@ -142,6 +145,10 @@
       g_report_blockname = ' '
       c_report_blockname = ' '
       g_stats_blockname = ' '
+*
+      h_tree_filename = ' '
+      s_tree_filename = ' '
+      c_tree_filename = ' '
 *
       h_threshold_output_filename = ' '
       s_threshold_output_filename = ' '
