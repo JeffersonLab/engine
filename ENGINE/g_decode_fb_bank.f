@@ -26,6 +26,10 @@
 *
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
+* $Log$
+* Revision 1.7  1994/04/13 18:49:10  cdaq
+* (KBB Fix length argument on gmc_mc_deocde call
+*
 *
       implicit none
       SAVE
@@ -66,7 +70,7 @@
 *     First look for special Monte Carlo Banks
 *
       if(stat_roc.eq.mc_status_and_ROC) then
-         call gmc_mc_decode(banklength-2,bank(3),ABORT,error)
+         call gmc_mc_decode(banklength-1,bank(3),ABORT,error)
          if(ABORT) then
             call g_add_path(here,error)
          endif
@@ -107,8 +111,8 @@
                pointer = pointer +
      $              g_decode_fb_detector(roc, bank(pointer), 
      &              maxwords, did,
-     $              HMAX_CAL_BLOCKS, HCAL_TOT_HITS, HCAL_ROW,
-     $              HCAL_COLUMN, 1, HCAL_ADC, 0, 0, 0)
+     $              HMAX_CAL_BLOCKS, HCAL_TOT_HITS, HCAL_COLUMN,
+     $              HCAL_ROW, 1, HCAL_ADC, 0, 0, 0)
 
             else if (did.eq.HCER_ID) then
 *
@@ -145,8 +149,8 @@
                pointer = pointer +
      $              g_decode_fb_detector(roc, bank(pointer), 
      &              maxwords, did, 
-     $              SMAX_CAL_BLOCKS, SCAL_TOT_HITS, SCAL_ROW, 
-     $              SCAL_COLUMN, 1, SCAL_ADC, 0, 0, 0)
+     $              SMAX_CAL_BLOCKS, SCAL_TOT_HITS, SCAL_COLUMN, 
+     $              SCAL_ROW, 1, SCAL_ADC, 0, 0, 0)
 
             else if (did.eq.SCER_ID) then
 *
