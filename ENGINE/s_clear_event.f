@@ -12,6 +12,9 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 * $Log$
+* Revision 1.12  1999/02/23 18:27:50  csa
+* Add call to s_ntuple_clear
+*
 * Revision 1.11  1996/11/05 21:42:56  saw
 * (WH) Add lucite counter
 *
@@ -124,6 +127,9 @@
 *     
       SSNUM_FPTRACK = 0
       SSNUM_TARTRACK = 0
+*
+
+      call s_ntuple_clear
 
       ABORT= .FALSE.
       err= ' '
