@@ -1,6 +1,9 @@
 *     hms_statistics.cmn
 *     common blocks containing event statistics for h_reconstruction
 * $Log$
+* Revision 1.11.2.1  2003/04/02 22:26:20  cdaq
+* added some variables for scint. effic tests (from oct 1999 online) - JRA
+*
 * Revision 1.11  1996/09/04 16:24:34  saw
 * (SAW) Change ' to '' in comments
 *
@@ -165,3 +168,19 @@
      &   hdc_plane_eff,
      &   hdc_cham_hits,
      &   hdc_cham_eff
+
+
+* The logical variables just record if that particular event passed the test
+* for 'plane should have fired' and 'plane did fire'.  In CTP tests, we'll
+* apply additional cuts and check the efficiency.
+* 'Should' = event where other 3 hodoscope planes fired.
+* 'Did' = 'Should' && plane in question did fire.
+
+*
+*     CTPTYPE=event
+*
+      logical*4 htrig_hodoshouldflag(hnum_scin_planes)
+      logical*4 htrig_hododidflag(hnum_scin_planes)
+      common/htrig_hodostatistics/
+     &   htrig_hodoshouldflag,
+     &   htrig_hododidflag
