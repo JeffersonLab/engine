@@ -10,6 +10,9 @@
 *
 *     Created: 1-Nov-1994   added Ntuples
 * $Log$
+* Revision 1.2  2003/02/13 15:08:20  jones
+* subroutine call G_build_note had 6 instead needed 7 arguments
+*
 * Revision 1.1  1995/01/27 20:06:10  cdaq
 * Initial revision
 *
@@ -47,7 +50,7 @@
       ABORT= .NOT.HEXIST(id)
       IF(ABORT) THEN
         pat= ': Ntuple ID#$ does not exist'
-        call G_build_note(pat,'$',id,' ',0.,err)
+        call G_build_note(pat,'$',id,' ',0.,' ',err)
         call G_add_path(here,err)
         If(io.GT.0) Then
           call G_IO_control(io,'FREE',FAIL,why) !free up
