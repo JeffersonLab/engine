@@ -1,6 +1,9 @@
 **************** begin: GEN_routines.DEC ***************************
 * $Log$
-* Revision 1.5  1994/06/22 21:03:51  cdaq
+* Revision 1.6  1994/07/21 19:49:27  cdaq
+* (SAW) Add thgethit and thgethitb
+*
+* Revision 1.5  1994/06/22  21:03:51  cdaq
 * (SAW) Add CTP report routines
 *
 * Revision 1.4  1994/06/14  02:45:53  cdaq
@@ -90,6 +93,8 @@
       EXTERNAL thtstclsb
       INTEGER threp, threpa
       EXTERNAL threp, threpa
+      INTEGER thgethit, thgethitb
+      EXTERNAL thgethit, thgethitb
 *-
 ****************** end: GEN_routines.DEC ***************************
 *     Local Variables:
