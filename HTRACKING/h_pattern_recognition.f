@@ -14,6 +14,9 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
+* Revision 1.12  1996/04/30 12:45:36  saw
+* (JRA) Histogram the card id.
+*
 * Revision 1.11  1996/01/16 21:53:24  cdaq
 * (JRA) Add code for easy space points
 *
@@ -196,6 +199,8 @@
 * In the case of two separated hits per plane, the last one will be histogrammed.
             hdc_sing_drifttime(pln) = hdc_drift_time(hit)
             hdc_sing_driftdis(pln) = hdc_drift_dis(hit)
+            hdc_sing_cardid(pln) =
+     &           hdc_card_no(hdc_wire_num(hit),hdc_plane_num(hit))
           enddo
         enddo
       endif
