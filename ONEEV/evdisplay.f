@@ -3,6 +3,9 @@
 *- standalone DISPLAY for hall C
 *
 * $Log$
+* Revision 1.4  1996/01/24 16:28:28  saw
+* (DVW) Add code for automatic redisplay mode
+*
 * Revision 1.3  1996/01/17 16:30:02  cdaq
 * (SAW) Adjust RPC nums for new online analyzer (DD system).
 *       Add menu for view selection
@@ -36,6 +39,7 @@
       character*800 err
       integer i,j
 *
+      integer*4 dispmode                ! to display every 10 seconds or not
       character*1 spect
       integer*4 view, newview
       integer*4 revdis_ask
@@ -55,12 +59,6 @@
       PRINT *,'*                                                  *'
       PRINT *,'****************************************************'
       PRINT *
-*      PRINT *,' You need to specify the process and the machine you'
-*      PRINT *,' with which you want to connect this display process.'
-*      PRINT *,' Also, if you are using an Xwindow display'
-*      PRINT *,' you may need to run PAW once/session to get things to '
-*      PRINT *,' work correctly.'
-*
       PRINT *,' 0: Connect to offline replay'
       PRINT *,' 1: Connect online analyzer'
       PRINT *,' Other: A non-default RPC Program ID and version'
@@ -81,6 +79,12 @@ c        gen_display_server_RPCprgmID = '2c0da005'x   !default online
       endif
 *
       PRINT *
+      PRINT *,' 0: to choose events manually (default)'
+      PRINT *,' 1:  to display every 10 seconds'
+      READ(5,'(i)'), dispmode
+      IF (dispmode.NE.1) dispmode=0
+
+      PRINT *
       PRINT *,' Enter the name of the machine running "engine" or CODA:'
       i=index(gen_display_server_machine,' ')
       if(i.gt.1) i = i-1
@@ -96,6 +100,16 @@ c        gen_display_server_RPCprgmID = '2c0da005'x   !default online
         call NO_comments(line)
         gen_display_server_machine= line
       ENDIF
+*
+ 100  print *
+      print *, 'Type "h" for the HMS, or "s" for the SOS:'
+      read *, spect
+      if(spect.eq.'S') spect='s'
+      if(spect.eq.'H') spect='h'
+      if ((spect .ne. 's') .and. (spect .ne. 'h')) then
+        print*, 'Invalid option.  Please type "h" or "s".'
+        goto 100
+      endif
 *
       print *,"Server Program #=",gen_display_server_RPCprgmID
 *
@@ -116,15 +130,6 @@ c        gen_display_server_RPCprgmID = '2c0da005'x   !default online
 
 *
 *
- 100  print *
-      print *, 'Type "h" for the HMS, or "s" for the SOS:'
-      read *, spect
-      if(spect.eq.'S') spect='s'
-      if(spect.eq.'H') spect='h'
-      if ((spect .ne. 's') .and. (spect .ne. 'h')) then
-        print*, 'Invalid option.  Please type "h" or "s".'
-        goto 100
-      endif
 *
 *
       call revdis_init(FAIL,why)  ! Build lists of variables to get
@@ -151,7 +156,7 @@ c        gen_display_server_RPCprgmID = '2c0da005'x   !default online
       elseif (spect .eq. 's') then
         call s_initialize(ABORT,err)
       endif
-      call c_initialize(ABORT,err)
+*      call c_initialize(ABORT,err)
       call g_reset_event(ABORT,err)
 *     
       if(graph_io_dev .ne. 0) call hplint(graph_io_dev)
@@ -181,20 +186,20 @@ c        gen_display_server_RPCprgmID = '2c0da005'x   !default online
       view = 1
       isdata = .false.
 
-      DO WHILE (.NOT.QUIT)
+      if(dispmode.ne.1) then
+        DO WHILE (.NOT.QUIT)
 *
-        PRINT *,'Run Number = ',gen_run_number,
-     $        '  Event Number = ',gen_event_ID_number
-        PRINT *,' Enter a CTP condition for the next event (?=help,1=any).'
-        newview = revdis_ask(view)
-        if(newview.lt.0) then
-          QUIT = .TRUE.
-          isdata = .false.              ! Don't try to view
-        else if(newview.eq.0) then            ! Get a new event
-          call revdis_getev(FAIL,why)
-          If(FAIL) Then
-            call G_rep_err(FAIL,why)
-*          Else
+          PRINT *,'Run Number = ',gen_run_number,
+     $         '  Event Number = ',gen_event_ID_number
+          PRINT *,' Enter a CTP condition for the next event (?=help,1=any).'
+          newview = revdis_ask(view)
+          if(newview.lt.0) then
+            QUIT = .TRUE.
+            isdata = .false.            ! Don't try to view
+          else if(newview.eq.0) then    ! Get a new event
+            call revdis_getev(FAIL,why)
+            If(FAIL) Then
+              call G_rep_err(FAIL,why)
             Endif
             write(6,'("Run",i6,", event ID",i7," sequence",i7)')
      $           gen_run_number,gen_event_ID_number, gen_event_sequence_N
@@ -203,20 +208,57 @@ c        gen_display_server_RPCprgmID = '2c0da005'x   !default online
             else if(spect.eq.'s') then
               call s_one_ev_generate
             endif
-*          EndIf
-          isdata = .true.
-        else
-          view = newview
-        endif
-        if(isdata) then              ! There is an event to display
-          if(spect.eq.'h') then
-            call h_one_ev_display(view)
-          else if(spect.eq.'s') then
-            call s_one_ev_display(view)
+            isdata = .true.
+          else
+            view = newview
           endif
-        endif
+          if(isdata) then               ! There is an event to display
+            if(spect.eq.'h') then
+              call h_one_ev_display(view)
+            else if(spect.eq.'s') then
+              call s_one_ev_display(view)
+            endif
+          endif
 *     
-      ENDDO
+        ENDDO
+      elseif (dispmode.EQ.1) then
+        DO WHILE (.NOT.QUIT)
+          call system('sleep 5')
+*
+          PRINT *,'Run Number = ',gen_run_number,
+     $         '  Event Number = ',gen_event_ID_number
+          PRINT *,' Enter a CTP condition for the next event (?=help,1=any).'
+*            newview = revdis_ask(view)
+          newview = 0
+          if(newview.lt.0) then
+            QUIT = .TRUE.
+            isdata = .false.            ! Don't try to view
+          else if(newview.eq.0) then    ! Get a new event
+            call revdis_getev(FAIL,why)
+            If(FAIL) Then
+              call G_rep_err(FAIL,why)
+            Endif
+            write(6,'("Run",i6,", event ID",i7," sequence",i7)')
+     $           gen_run_number,gen_event_ID_number, gen_event_sequence_N
+            if(spect.eq.'h') then
+              call h_one_ev_generate
+            else if(spect.eq.'s') then
+              call s_one_ev_generate
+            endif
+            isdata = .true.
+          else
+            view = newview
+          endif
+          if(isdata) then               ! There is an event to display
+            if(spect.eq.'h') then
+              call h_one_ev_display(view)
+            else if(spect.eq.'s') then
+              call s_one_ev_display(view)
+            endif
+          endif
+*
+        ENDDO
+      endif
 *
  99   continue
       call IGEND                        !properly terminate HIGZ and any&all metafiles
