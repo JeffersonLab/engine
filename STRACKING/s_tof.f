@@ -15,6 +15,9 @@
 *-   Created 22-FEB-1994   John Arrington
 *
 * $Log$
+* Revision 1.10  1996/01/17 18:56:31  cdaq
+* (JRA)
+*
 * Revision 1.9  1995/05/22 19:45:58  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -94,7 +97,7 @@
           snum_scin_hit(trk) = 0
           snum_pmt_hit(trk) = 0
           sbeta(trk) = 0
-          sbeta_chisq(trk) = -2
+          sbeta_chisq(trk) = -3
           stime_at_fp(trk) = 0
         enddo
         goto 666
@@ -213,9 +216,8 @@
 c     Get time at focal plane
             if (sgood_scin_time(trk,hit)) then
 * for electrons:
-              sscin_time_fp(hit) = sscin_time(hit) -
-     &             (sscin_zpos(hit)/30.) * sqrt(1. + sxp_fp(trk)
-     $             *sxp_fp(trk) +syp_fp(trk)*syp_fp(trk))
+              sscin_time_fp(hit) = sscin_time(hit) - sscin_zpos(hit)/30. *
+     $             sqrt(1.+sxp_fp(trk)*sxp_fp(trk)+syp_fp(trk)*syp_fp(trk))
               sum_fp_time = sum_fp_time + sscin_time_fp(hit)
               num_fp_time = num_fp_time + 1
               sum_plane_time(plane)=sum_plane_time(plane)
@@ -223,6 +225,8 @@ c     Get time at focal plane
               num_plane_time(plane)=num_plane_time(plane)+1
               snum_scin_hit(trk) = snum_scin_hit(trk) + 1
               sscin_hit(trk,snum_scin_hit(trk)) = hit
+              sscin_fptime(trk,snum_scin_hit(trk)) = sscin_time_fp(hit)
+
               if (sgood_tdc_pos(trk,hit) .and. sgood_tdc_neg(trk,hit)) then
                 snum_pmt_hit(trk) = snum_pmt_hit(trk) + 2
               else

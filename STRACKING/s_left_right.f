@@ -9,6 +9,9 @@
 *     space point.
 *     d. f. geesaman           31 August 1993
 * $Log$
+* Revision 1.10  1996/01/17 19:01:59  cdaq
+* (JRA)
+*
 * Revision 1.9  1995/10/10 15:59:06  cdaq
 * (JRA) Remove sdc_sing_wcoord stuff
 *
@@ -190,22 +193,25 @@ c          endif
               iswhit = iswhit + 1
             endif
           enddo
-*     now passign pl(ihit) so it doesn't have to be recalculated every iteration
 
-          call s_find_best_stub(numhits,hits,pl,pindex,plusminus,stub,chi2)
-          if(sdebugstubchisq.ne.0) then
-            write(sluno,'('' sos pmloop='',i4,''   chi2='',e14.6)')
-     &           pmloop,chi2
+          if (pindex.ge.0 .and. pindex.le.14) then
+            call s_find_best_stub(numhits,hits,pl,pindex,plusminus,stub,chi2)
+            if(sdebugstubchisq.ne.0) then
+              write(sluno,'('' sos pmloop='',i4,''   chi2='',e14.6)')
+     &             pmloop,chi2
+            endif
+            if (chi2.lt.minchi2)  then
+              minchi2=chi2
+              do idummy=1,numhits
+                plusminusbest(idummy)=plusminus(idummy)
+              enddo
+              do idummy=1,4
+                sbeststub(isp,idummy)=stub(idummy)
+              enddo
+            endif                       ! end if on lower chi2
+          else                          ! if pindex<0 or >14
+            write(6,*) 'pindex=',pindex,' in s_left_right'
           endif
-          if (chi2.lt.minchi2)  then
-            minchi2=chi2
-            do idummy=1,numhits
-              plusminusbest(idummy)=plusminus(idummy)
-            enddo
-            do idummy=1,4
-              sbeststub(isp,idummy)=stub(idummy)
-            enddo
-          endif                         ! end if on lower chi2
         enddo                           ! end loop on possible left-right
 *
 *     calculate final coordinate based on plusminusbest
@@ -224,7 +230,7 @@ c          endif
      &       /(1.0 + sbeststub(isp,3)*stanbeta(plane))
         stub(4)=sbeststub(isp,4)
      &       /(sbeststub(isp,3)*ssinbeta(plane)+scosbeta(plane))
-
+        
         stub(1)=sbeststub(isp,1)*scosbeta(plane) 
      &       - sbeststub(isp,1)*stub(3)*ssinbeta(plane)
         stub(2)=sbeststub(isp,2) 

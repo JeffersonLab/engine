@@ -9,6 +9,9 @@
 *                                Add CTP flag to turn on histogramming
 *                                id's in sos_id_histid
 * $Log$
+* Revision 1.7  1996/01/17 19:04:54  cdaq
+* (JRA)
+*
 * Revision 1.6  1995/10/10 13:27:45  cdaq
 * (JRA) Remove some unneeded validity tests
 *
@@ -51,8 +54,6 @@
       err= ' '
 * Do we want to histogram raw scintillators
  
-      histval = sscin_all_tot_hits
-      call hf1(sidscinrawtothits,histval,1.)
 * Make sure there is at least 1 hit
       if(sscin_all_tot_hits .gt. 0 ) then
 * Loop over all hits
@@ -61,43 +62,45 @@
           cnt=sscin_all_counter_num(ihit)
           rcnt=float(cnt)
 * Fill plane map                  
-          histval = float(pln)
-          call hf1(sidscinplane,histval,1.)
+c          histval = float(pln)
+c          call hf1(sidscinplane,histval,1.)
 * Fill counter map
           histval = rcnt
           call hf1(sidscincounters(pln),histval,1.)
-* Fill ADC and TDC histograms
-          if (sscin_all_tdc_pos(ihit).ne.-1) then
+* Fill ADC and TDC histograms for positive tubes.
+          if (sscin_all_tdc_pos(ihit).ne.-1) then   !tube was hit.
             histval = rcnt
             call hf1(sidscinallpostdc(pln),histval,1.)
+            histval = float(sscin_all_tdc_pos(ihit))
+            call hf1(sidsumpostdc(pln),histval,1.)
+          else                                          !tube was NOT hit.
+            histval = sscin_all_adc_pos(ihit)-sscin_all_ped_pos(pln,cnt)
+            call hf1(sidsumposadc(pln),histval,1.)
           endif
-          if (sscin_all_tdc_neg(ihit).ne.-1) then
-            histval = rcnt
-            call hf1(sidscinallnegtdc(pln),histval,1.)
-          endif
+
           if ((sscin_all_adc_pos(ihit)-sscin_all_ped_pos(pln,cnt))
      $         .ge.50) then
             histval = rcnt
             call hf1(sidscinallposadc(pln),histval,1.)
           endif
+
+* Fill ADC and TDC histograms for negative tubes.
+          if (sscin_all_tdc_neg(ihit).ne.-1) then       !tube was hit.
+            histval = rcnt
+            call hf1(sidscinallnegtdc(pln),histval,1.)
+            histval = float(sscin_all_tdc_neg(ihit))
+            call hf1(sidsumnegtdc(pln),histval,1.)
+          else                                          !tube was NOT hit.
+            histval = sscin_all_adc_neg(ihit)-sscin_all_ped_neg(pln,cnt)
+            call hf1(sidsumnegadc(pln),histval,1.)
+          endif
+
           if ((sscin_all_adc_neg(ihit)-sscin_all_ped_neg(pln,cnt))
      $         .ge.50) then
             histval = rcnt
             call hf1(sidscinallnegadc(pln),histval,1.)
           endif
 
-          if (sscin_all_tdc_pos(ihit).eq.-1) then
-            histval = sscin_all_adc_pos(ihit)-sscin_all_ped_pos(pln,cnt)
-            call hf1(sidsumposadc(pln),histval,1.)
-          endif
-          if (sscin_all_tdc_neg(ihit).eq.-1) then
-            histval = sscin_all_adc_neg(ihit)-sscin_all_ped_neg(pln,cnt)
-            call hf1(sidsumnegadc(pln),histval,1.)
-          endif
-          histval = float(sscin_all_tdc_pos(ihit))
-          call hf1(sidsumpostdc(pln),histval,1.)
-          histval = float(sscin_all_tdc_neg(ihit))
-          call hf1(sidsumnegtdc(pln),histval,1.)
 
           if(sturnon_scin_raw_hist .ne. 0 ) then
             histval = sscin_all_adc_pos(ihit)-sscin_all_ped_pos(pln,cnt)

@@ -10,6 +10,9 @@
 *
 *     d.f. geesaman           7-September 1993
 * $Log$
+* Revision 1.6  1996/01/17 19:01:38  cdaq
+* (JRA)
+*
 * Revision 1.5  1995/08/31 18:44:51  cdaq
 * (JRA) Calculate dpos (pos. track - pos. hit) variables
 *
@@ -38,10 +41,11 @@
 *                     stubs.
 *
       implicit none
-      include "sos_data_structures.cmn"
-      include "sos_tracking.cmn"
-      include "sos_id_histid.cmn"
-      include "sos_geometry.cmn"
+      include 'sos_data_structures.cmn'
+      include 'sos_tracking.cmn'
+      include 'sos_id_histid.cmn'
+      include 'sos_geometry.cmn'
+      INCLUDE 'sos_track_histid.cmn'    ! TEMP. JUNK
       external s_chamnum
       integer*4 s_chamnum
       
@@ -66,7 +70,7 @@
       real*4 y1,y2
 *
       ABORT= .FALSE.
-      err=':'
+      err=' '
       SNTRACKS_FP=0
       if(ssingle_stub.eq.0 ) then
 *     loop over all pairs of space points
@@ -96,22 +100,19 @@
 *     since single chamber angular resolution is ~50mr, and the maximum y'
 *     angle is about 30mr, use difference between y AT CHAMBERS, rather than
 *     at focal plane.  (project back to chamber, to take out y' uncertainty).
-            dposx = sbeststub(isp1,1)-sbeststub(isp2,1)
-            call hf1(siddcdposx,dposx,1.)
+            dposx = sbeststub(isp2,1)-sbeststub(isp1,1)
             y1=sbeststub(isp1,2)+sdc_1_zpos*sbeststub(isp1,4)
             y2=sbeststub(isp2,2)+sdc_2_zpos*sbeststub(isp2,4)
-            dposy=y1-y2
-            call hf1(siddcdposy,dposy,1.)
-            dposxp= sbeststub(isp1,3)-sbeststub(isp2,3)
-            call hf1(siddcdposxp,dposxp,1.)
-            dposyp= sbeststub(isp1,4)-sbeststub(isp2,4)
-            call hf1(siddcdposyp,dposyp,1.)
+            dposy=y2-y1
+            dposxp= sbeststub(isp2,3)-sbeststub(isp1,3)
+            dposyp= sbeststub(isp2,4)-sbeststub(isp1,4)
 
             if      (abs(dposx) .lt. sxt_track_criterion
      $         .and. abs(dposy) .lt. syt_track_criterion
      $         .and. abs(dposxp).lt. sxpt_track_criterion
      $         .and. abs(dposyp).lt. sypt_track_criterion) then
-             if(newtrack.eq.1) then         
+             if(newtrack.eq.1) then
+
 *     make a new track
               if(SNTRACKS_FP.lt.SNTRACKS_MAX) then ! are there too many 
                SNTRACKS_FP=SNTRACKS_FP+1 ! increment the number of tracks
@@ -120,6 +121,12 @@
                track_space_points(SNTRACKS_FP,1)=2
                track_space_points(SNTRACKS_FP,2)=isp1
                track_space_points(SNTRACKS_FP,3)=isp2
+               sx_sp1(sntracks_fp)=sbeststub(isp1,1)
+               sx_sp2(sntracks_fp)=sbeststub(isp2,1)
+               sy_sp1(sntracks_fp)=sbeststub(isp1,2)
+               sy_sp2(sntracks_fp)=sbeststub(isp2,2)
+               sxp_sp1(sntracks_fp)=sbeststub(isp1,3)
+               sxp_sp2(sntracks_fp)=sbeststub(isp2,3)
                newtrack=0               ! make no more track in this loop
               endif                     ! end test on too many tracks
              else

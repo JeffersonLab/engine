@@ -7,6 +7,9 @@
 *     
 *     d. f. geesaman
 * $Log$
+* Revision 1.5  1996/01/17 19:05:23  cdaq
+* (JRA)
+*
 * Revision 1.4  1995/10/10 13:39:56  cdaq
 * (JRA) Cleanup
 *
@@ -39,50 +42,49 @@
       real*4 chi2                  ! chi2 of fit      
 *
 *     local variables
-      real*4 position(smax_hits_per_point)
+      real*4 dpos(smax_hits_per_point)
       integer*4 pl(smax_hits_per_point)
       integer*4 pindex
       real*8 TT(3)
-      integer*4 ihit,ierr
+      integer*4 hit
       integer*4 i
 
-*     calculate trail hit position
-      do ihit=1,numhits
-        position(ihit)=SDC_WIRE_CENTER(hits(ihit)) +
-     &       plusminus(ihit)*SDC_DRIFT_DIS(hits(ihit))
-      enddo
-*     calculate least squares matrix coefficients
-      do i=1,3
-        TT(i)=0.
-        do ihit=1,numhits
-          TT(i)=TT(i)+((position(ihit)-spsi0(pl(ihit)))*
-     &         sstubcoef(pl(ihit),i)) /sdc_sigma(pl(ihit))
+      TT(1)=0.
+      TT(2)=0.
+      TT(3)=0.
+
+* calculate trail hit position and least squares matrix coefficients.
+      do hit=1,numhits
+        dpos(hit)=SDC_WIRE_CENTER(hits(hit)) +
+     &       plusminus(hit)*SDC_DRIFT_DIS(hits(hit)) -
+     &       spsi0(pl(hit))
+        do i=1,3
+          TT(i)=TT(i)+(dpos(hit)*sstubcoef(pl(hit),i))/sdc_sigma(pl(hit))
         enddo
       enddo
 *
-*     solve four by four equations
-      call s_solve_3by3(TT,pindex,dstub,ierr)
+*     solve three by three equations
+ccc      call s_solve_3by3(TT,pindex,dstub,ierr)
+
+      dstub(1)=SAAINV3(1,1,pindex)*TT(1) + SAAINV3(1,2,pindex)*TT(2) +
+     &     SAAINV3(1,3,pindex)*TT(3)
+      dstub(2)=SAAINV3(1,2,pindex)*TT(1) + SAAINV3(2,2,pindex)*TT(2) +
+     &     SAAINV3(2,3,pindex)*TT(3)
+      dstub(3)=SAAINV3(1,3,pindex)*TT(1) + SAAINV3(2,3,pindex)*TT(2) +
+     &     SAAINV3(3,3,pindex)*TT(3)
+
 *
-      if(ierr.ne.0) then
-        chi2=10000.
-        stub(1)=10000.
-        stub(2)=10000.
-        stub(3)=2.
-        stub(4)=2.
-      else
-*      calculate chi2
-*     remember one power of sigma is in sstubcoef
-        chi2=0.
-        stub(1)=dstub(1)
-        stub(2)=dstub(2)
-        stub(3)=dstub(3)
-        stub(4)=0.
-        do ihit=1,numhits
-          chi2=chi2+((position(ihit)-spsi0(pl(ihit)))/sdc_sigma(pl(ihit))
-     &         -sstubcoef(pl(ihit),1)*stub(1)
-     &         -sstubcoef(pl(ihit),2)*stub(2)
-     &         -sstubcoef(pl(ihit),3)*stub(3) )**2
-        enddo
-      endif
+* calculate chi2.  Remember one power of sigma is in sstubcoef
+      chi2=0.
+      stub(1)=dstub(1)
+      stub(2)=dstub(2)
+      stub(3)=dstub(3)
+      stub(4)=0.
+      do hit=1,numhits
+        chi2=chi2+(dpos(hit)/sdc_sigma(pl(hit))
+     &       -sstubcoef(pl(hit),1)*stub(1)
+     &       -sstubcoef(pl(hit),2)*stub(2)
+     &       -sstubcoef(pl(hit),3)*stub(3) )**2
+      enddo
       return
       end

@@ -10,6 +10,9 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
+* Revision 1.7  1996/01/17 19:00:09  cdaq
+* (JRA)
+*
 * Revision 1.6  1995/05/22 19:45:50  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -55,8 +58,8 @@
       write(sluno,'(''     SSCIN_TOT_HITS='',I4)') SSCIN_TOT_HITS
       if(SSCIN_TOT_HITS.GT.0) then
         write(sluno,'('' Num  Plane    Counter        ADC_POS'',
-     &       '' ADC_NEG  TDC_POS  TDC_NEG'')')
-        write(sluno,'(1x,i2,2x,i3,7x,i4,8x,2f8.2,2i8)')
+     &       ''ADC_NEG  TDC_POS  TDC_NEG'')')
+        write(sluno,'(1x,i2,2x,i3,5x,i4,8x,2f8.2,2i8)')
      &       (j,SSCIN_PLANE_NUM(j),SSCIN_COUNTER_NUM(j),
      &       SSCIN_ADC_POS(j),SSCIN_ADC_NEG(j),
      &       SSCIN_TDC_POS(j),SSCIN_TDC_NEG(j),
@@ -69,12 +72,12 @@
          write(sluno,'('' Plane  '',10i4)') (j,j=1,SNUM_SCIN_PLANES)   
          write(sluno,'('' Number '',10i4)') 
      &        (SSCIN_HITS_PER_PLANE(j),j=1,SNUM_SCIN_PLANES)
-         write(sluno,'('' Num    ZPOS   CENTER  HIT_COORD WIDTH  SLOP'',
-     &        ''   COR_ADC  COR_TDC  TWO_GOOD'')')
-         write(sluno,'(1x,i2,2x,4f9.3,2f10.3,4x,l2)')
+         write(sluno,'('' Num     ZPOS    CENTER  HIT_COORD  SLOP'',
+     &        ''   COR_TDC  TWO_GOOD'')')
+         write(sluno,'(1x,i2,2x,4f9.3,f10.3,4x,l2)')
      &        (j,SSCIN_ZPOS(j),SSCIN_CENTER_COORD(j),
      &        SSCIN_DEC_HIT_COORD(j),
-     &        SSCIN_SLOP(j),SSCIN_COR_ADC(j),SSCIN_COR_TIME(j),
+     &        SSCIN_SLOP(j),SSCIN_COR_TIME(j),
      &        STWO_GOOD_TIMES(j), 
      &        j=1,SSCIN_TOT_HITS)    
          write(sluno,'('' SGOOD_START_TIME='', l2)')
