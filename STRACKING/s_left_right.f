@@ -9,7 +9,10 @@
 *     space point.
 *     d. f. geesaman           31 August 1993
 * $Log$
-* Revision 1.3  1994/12/01 21:55:08  cdaq
+* Revision 1.4  1995/04/01 20:42:35  cdaq
+* (SAW) Fix typos
+*
+* Revision 1.3  1994/12/01  21:55:08  cdaq
 * (SAW) Generalize for variable # of chambers.
 *       Add Small Ang approx for Brookhaven chambers
 *
@@ -57,7 +60,7 @@
       err=':'
 
 * initialize sdc_sing_wcoord (or else!)
-      do plane=1,SMAX_NUM_DC_PLANES
+      do plane=1,SDC_NUM_PLANES
         sdc_sing_wcoord(plane) = -100.
 
       enddo
@@ -155,8 +158,8 @@ c          endif
                     plusminusknown(ihit) = 1
                     plusminusknown(ihit2) = 1
                   endif
+                  npaired = npaired + 2
                 endif
-                npaired = npaired + 2
               enddo
             endif
           enddo

@@ -10,7 +10,10 @@
 *
 *     d.f. geesaman           7-September 1993
 * $Log$
-* Revision 1.2  1994/06/07 04:41:19  cdaq
+* Revision 1.3  1995/04/01 20:42:57  cdaq
+* (SAW) Fix typos
+*
+* Revision 1.2  1994/06/07  04:41:19  cdaq
 * (DFG) Add switch to include single stub tracks
 *
 * Revision 1.1  1994/02/21  16:14:56  cdaq
@@ -86,7 +89,7 @@
      $           .and. abs(sbeststub(isp1,3)-sbeststub(isp2,3))
      $           .lt.sxpt_track_criterion
      $           .and. abs(sbeststub(isp1,4)-sbeststub(isp2,4))
-     $           .lt.sxpt_track_criterion) then
+     $           .lt.sypt_track_criterion) then
              if(newtrack.eq.1) then         
 *     make a new track
               if(SNTRACKS_FP.lt.SNTRACKS_MAX) then ! are there too many 
