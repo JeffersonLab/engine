@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.6  1996/09/04 16:29:41  saw
+* (JRA) Add energies for layers of shower counter
+*
 * Revision 1.5  1996/04/30 13:54:42  saw
 * (JRA) Change array sizes to two chambers instead of 3
 *
@@ -159,7 +162,7 @@
       INTEGER*4 SSCIN_TDC_POS
       INTEGER*4 SSCIN_TDC_NEG
       INTEGER*4 SSCIN_TOT_HITS 
-      INTEGER*4 SSCIN_SING_COUNTER  !DJM'S registered hit counter
+      INTEGER*4 SSCIN_SING_COUNTER  !DJM''S registered hit counter
 
 *
       COMMON/SOS_REAL_SCIN/
@@ -309,7 +312,7 @@
 *
       INTEGER*4 SCER_NUM_HITS      ! NUMBER OF CERENKOV HITS ABOVE THRESHOLD
       REAL*4 SCER_NPE              ! ADC CONVERTED TO NUMBER OF PHOTOELECTRONS
-      REAL*4 SCER_NPE_SUM          ! SUM OVER TUBES OF NPE'S
+      REAL*4 SCER_NPE_SUM          ! SUM OVER TUBES OF NPE''S
       REAL*4 SCER_ADC              ! PED SUBTRACTED ADC FOR EACH *TUBE*
       COMMON/SCER_DECODED_CER/
      &     SCER_NUM_HITS,
@@ -501,6 +504,10 @@
       REAL*4 SSBETA                ! BETA of chosen track
       REAL*4 SSTRACK_ET            ! Total shower energy of chosen track
       REAL*4 SSTRACK_PRESHOWER_E   ! preshower of chosen track
+      REAL*4 SSTRACK_E1            ! layer 1 shower energy of chosen track
+      REAL*4 SSTRACK_E2            ! layer 2 shower energy of chosen track
+      REAL*4 SSTRACK_E3            ! layer 3 shower energy of chosen track
+      REAL*4 SSTRACK_E4            ! layer 4 shower energy of chosen track
       REAL*4 SSTIME_AT_FP 
       REAL*4 SSX_FP                ! X focal plane position 
       REAL*4 SSY_FP 
@@ -521,7 +528,7 @@
       real*4 ssthetaq, ssphiq      ! Direction of q3
       real*4 ssbigq2               ! Q**2
       real*4 ssx                   ! fraction of nucleon p carried by quark
-      real*4 ssy                   ! fraction of lepton's E lost in lab
+      real*4 ssy                   ! fraction of lepton''s E lost in lab
       real*4 ssw                   ! Invariant mass of recoil system
       real*4 ssw2                  ! Invariant mass**2 of recoil system
 *
@@ -555,17 +562,21 @@
      & SSXP_TAR ,
      & SSYP_TAR ,
      & SSBETA_CHISQ,
-     &     ssmass2,
-     &     sst,
-     &     ssu,
-     &     sseloss,
-     &     ssq3,
-     &     ssthetaq, ssphiq,
-     &     ssbigq2,
-     &     ssx,
-     &     ssy,
-     &     ssw,
-     &     ssw2
+     & SSMASS2,
+     & SST,
+     & SSU,
+     & SSELOSS,
+     & SSQ3,
+     & SSTHETAQ, SSPHIQ,
+     & SSBIGQ2,
+     & SSX,
+     & SSY,
+     & SSW,
+     & SSW2,
+     & SSTRACK_E1,
+     & SSTRACK_E2,
+     & SSTRACK_E3,
+     & SSTRACK_E4
 *
       COMMON/SOS_PHYSICS_I4/
      & SSNUM_FPTRACK,
