@@ -7,6 +7,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.7.4.2  2003/08/20 16:56:55  xu
+* t sign modification
+*
 * Revision 1.7.4.1  2003/03/05 21:01:27  xu
 *  new fpi version
 *
@@ -102,14 +105,20 @@
       real*4 phi_e,phi_h,xp_e_tar,xp_h_tar,m_hadron,sign_hadron
       real*4 cqxzabs,phx,phy,phz
       logical deuterium
+  
 *     xucc added end
 
       ABORT = .FALSE.
       err = ' '
 
-      if(HSNUM_FPTRACK.le.0.or.SSNUM_FPTRACK.le.0) then
+      if(HSNUM_FPTRACK.le.0.or.SSNUM_FPTRACK.le.0
+     ^.or.scer_npe_sum.lt.0.2) then
         return
       endif
+
+
+
+
 
 *   xucc added begin
 *   the following is the great works of Mr. Volmer
@@ -190,6 +199,10 @@ c      write(6,*)'c_phys: at 2'
          return
       endif
 
+c        if(m_hadron.lt.0.8) then
+c        write(6,*) "hadron mass=",m_hadron       
+c        endif
+
 * CHECK FOR PION PRODUCTION OR ELASTIC SCATTERING. IF PION PRODUCTION, SET
 * RECOIL PARTICLE MASS TO NEUTRON AS DEFAULT, OPTIONAL CHANGING PION
 CHARGE
@@ -217,8 +230,13 @@ c         else if ((sign_hadron.lt.0.).and.deuterium) then
       if (abs(m_hadron-mp) .lt. 0.01) then
         m_hadron = mp
         targmass = mp
-        m_rec=mp
+        m_rec=mp   ! ???? should it be 0.0? xucc June 22, 2003
+c         m_rec=mpi
       endif
+
+c       if(m_hadron.lt.1.8) then
+c       write(6,*) "hadron mass=",m_hadron  
+c       endif
 
 * CALCULATE q, Pm, omega, Em, Q^2, W, epsilon, Gamma_v 
 * MOMENTA ARE IN THE LAB SYSTEM WITH
@@ -264,6 +282,9 @@ c        write(6,*)'c_phys: at 3'
 
       c_bigq2 = cqabs*cqabs - c_omega*c_omega             !Q^2
       c_w2 = targmass**2 + 2*targmass*c_omega - c_bigq2
+
+c      write(6,*)'p_e=',p_e
+
       if (c_W2.gt.0.) then
          c_invmass = sqrt(c_w2)                             !W = inv mass
       elseif (c_W2.eq.0.) then
@@ -282,7 +303,7 @@ c      write(6,*) 'c_physics: at 4'
       c_epsilon=1./(1.+2.*cqabs**2/c_bigq2*(tan(theta_e/2.))**2)
       c_epsilon=min(c_epsilon,0.99)
 
-c_gamma_v=alpha/2./c_pi**2*(c_W2-targmass**2)/c_bigq2*energy_e/gebeam
+       c_gamma_v=alpha/2./c_pi**2*(c_W2-targmass**2)/c_bigq2*energy_e/gebeam
      >      /(1.-c_epsilon)
 
 c      e_pion_lab = sqrt(p_h**2 + mpi2)                    ! Pion Energy
@@ -342,6 +363,9 @@ c      write(6,*) 'c_physics: at 6'
       
 c  Mm = sqrt(Em^2 - Pm^2)
 
+c      write(6,*) 'missine, missing_mom=', cmissing_e,cmissing_mom
+
+      
       missingmass2 = cmissing_e**2 - cmissing_mom**2
 
 
@@ -361,12 +385,12 @@ c  Mm = sqrt(Em^2 - Pm^2)
             endif
          endif
 
-         ce_exc = cmissing_mass-m_rec-c_e_bind
-         if (deuterium) ce_excx = cmmx-2.*m_rec
+         ce_exc = cmissing_mass-m_rec-c_e_bind    !??? c_e_bind here?, yes!!
+         if (deuterium) ce_excx = cmmx-2.*m_rec   ! ??? c_e_bind not here?
 
       elseif ((m_hadron.eq.mp).and.(missingmass2.ne.0.)) then
 
-cmissing_mass=abs(missingmass2)/missingmass2*sqrt(abs(missingmass2))
+      cmissing_mass=abs(missingmass2)/missingmass2*sqrt(abs(missingmass2))
         ce_exc = cmissing_mass
 
       else
@@ -381,14 +405,15 @@ c      write(6,*)'c_phys: at 7',cmissing_mass
         
 c        cmin_t = c_bigq2 - m_hadron**2 + 
 c     >           2*c_omega*sqrt(p_h**2+m_hadron**2) - 2*dot
+c        write(6,*)'t1=',cmin_t
 
-
-cmin_t=-(mp-mn)**2+2*targmass*(sqrt(m_rec**2+cmissing_mom**2)-m_rec)
+       cmin_t=-(mp-mn)**2+2*targmass*(sqrt(m_rec**2+cmissing_mom**2)-m_rec)
+c       write(6,*)'t2=',cmin_t
 
 c        t = (c_bigq2 - hsp*cos(theta_gp_lab))**2 +
 c     >      (hsp*sin(theta_gp_lab))**2 - (omega-e_pion_lab)**2 
 
-        ctphix= - cmin_t * cos(cphipi)
+        ctphix=   cmin_t * cos(cphipi)
         ctphiy=   cmin_t * sin(cphipi)
       
 c        write(6,*)'c_phys: at 8'
@@ -479,18 +504,39 @@ cdjm I subtracted the oct97 raw ctime tdc offsets
 cjv  added coincidence timing shifts from replay_1, and added 0.14881 ns
 * for replay_3,
 cjv  due to changed TOF calibrations
-      ccointime_hms = (hmisc_dec_data(10,1)-1960)/9.46 + offset_ctime
+      ccointime_hms = (hmisc_dec_data(10,1)-1888)/9.46 + offset_ctime
      &                - ccointime_hms_shift + 0.14881
-      ccointime_sos = (smisc_dec_data(9,1)-2062.5)/9.68 - offset_ctime
+      ccointime_sos = (smisc_dec_data(9,1)-1980)/9.68 - offset_ctime
      &                - ccointime_sos_shift
 cdjm      ccointime_hms = (hmisc_dec_data(10,1)-2450)/9.46 + offset_ctime
 cdjm      ccointime_sos = (smisc_dec_data(9,1)-1570)/9.68 - offset_ctime
 *      
-c      write(6,*) 'Did it, for this time'
+
+c       write(6,*) 'ccointime_hms_shift=',ccointime_hms_shift
+c       write(6,*) 'ccointime_sos_shift=',ccointime_sos_shift
+
 *  xucc added end
+
+* the following is for heep check events
+
+      if(abs(spartmass).lt.0.01.and.abs(hpartmass-mp).lt.0.01)then
+      offset_ctime = - (hstime_at_fp-hstart_time_center)
+     &               + (sstime_at_fp-sstart_time_center)
+     &               - hspath_cor + sspath_cor +42 
+      ccointime_hms = (hmisc_dec_data(10,1)-2472)/9.46 + offset_ctime
+      ccointime_sos = (smisc_dec_data(9,1)-1572)/9.68 - offset_ctime
+      endif
+
+
   
       return
       end
+
+
+
+
+
+
 
 
 
