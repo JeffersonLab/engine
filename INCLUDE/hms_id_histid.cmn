@@ -11,7 +11,10 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
-* Revision 1.6  1995/07/28 14:26:52  cdaq
+* Revision 1.7  1995/08/11 16:30:58  cdaq
+* (JRA) Add dpos (track pos - hit pos) histograms
+*
+* Revision 1.6  1995/07/28  14:26:52  cdaq
 * (JRA) Add hidsum histogram id holders
 *
 * Revision 1.5  1995/05/22  19:07:28  cdaq
@@ -58,6 +61,8 @@
       integer*4 hidsumpostdc(HNUM_SCIN_PLANES)
       integer*4 hidsumnegtdc(HNUM_SCIN_PLANES)
       integer*4 hidcalsumadc
+      integer*4 hidscindpos(HNUM_SCIN_PLANES)
+      integer*4 hidcaldpos
 *
       common/hms_id_histid/
      &     hidscinrawtothits,
@@ -78,7 +83,9 @@
      &     hidsumnegadc,
      &     hidsumpostdc,
      &     hidsumnegtdc,
-     &     hidcalsumadc
+     &     hidcalsumadc,
+     &     hidscindpos,
+     &     hidcaldpos
 
 *
 *     CTPTYPE=parm
