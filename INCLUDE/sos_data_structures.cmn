@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.4  1996/01/24 16:19:27  saw
+* (JRA) Double size of misc hits data structures
+*
 * Revision 1.3  1996/01/17 15:12:27  cdaq
 * (JRA) ADD SCER_RAW_ADC and SSCIN_FPTIME
 *
@@ -572,9 +575,9 @@
 *     (Energy SUMS, logic timing,...)
 *
       INTEGER SMAX_MISC_HITS
-      PARAMETER(SMAX_MISC_HITS=50)
+      PARAMETER(SMAX_MISC_HITS=100)
       INTEGER*4 SMISC_TOT_HITS
-      INTEGER*4 SMISC_RAW_ADDR1    ! "Plane"
+      INTEGER*4 SMISC_RAW_ADDR1    ! "Plane" (1=TDC,2=ADC)
       INTEGER*4 SMISC_RAW_ADDR2    ! "Counter"
       INTEGER*4 SMISC_RAW_DATA
       COMMON/S_RAW_MISC/
