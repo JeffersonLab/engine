@@ -38,11 +38,10 @@
 * csa 8/31/99 -- We really should be filling *new* variables
 * here!
 
-      if (sphicentral_offset .ne. 0 ) then
+      if (s_oopcentral_offset .ne. 0 ) then
         write(*,*) ' ******'
-       write(6,*)' s_apply_offs: before:   sphi_lab =',sphi_lab
-       sphi_lab = sphi_lab + sphicentral_offset/degree
-       write(6,*)' s_apply_offs:  after:   sphi_lab =',sphi_lab
+       write(6,*)' s_apply_offs: s_oopcentral_offset =',s_oopcentral_offset,' rad'
+       write(6,*)'  Used to offset ssxp_tar in s_physics.f '
       endif
 c
       if (spcentral_offset .ne. 0 ) then
