@@ -9,7 +9,11 @@
 *
 * modifications: 31 Mar 1994    DFG  Check for 0 hits
 * $Log$
-* Revision 1.3  1994/11/23 14:23:05  cdaq
+* Revision 1.4  1995/02/23 15:58:54  cdaq
+* (JRA)  Change shodo_center_coord to shodo_center.
+*        Make minph variables into per pmt constants.
+*
+* Revision 1.3  1994/11/23  14:23:05  cdaq
 * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.2  1994/06/01  15:40:08  cdaq
@@ -43,12 +47,14 @@
           sscin_slop(ihit) = shodo_slop(plane)
           sscin_pos_sigma(ihit) = shodo_pos_sigma(plane,counter)
           sscin_neg_sigma(ihit) = shodo_neg_sigma(plane,counter)
-          sscin_center_coord(ihit) = shodo_center_coord(plane,counter)
+          sscin_center_coord(ihit) = shodo_center(plane,counter)
           sscin_vel_light(ihit) = shodo_vel_light(plane,counter)
           sscin_pos_phc_coeff(ihit) = shodo_pos_phc_coeff(plane,counter)
           sscin_neg_phc_coeff(ihit) = shodo_neg_phc_coeff(plane,counter)
           sscin_pos_time_offset(ihit) = shodo_pos_time_offset(plane,counter)
           sscin_neg_time_offset(ihit) = shodo_neg_time_offset(plane,counter)
+          sscin_pos_minph(ihit) = shodo_pos_minph(plane,counter)
+          sscin_neg_minph(ihit) = shodo_neg_minph(plane,counter)
 
           if (plane .eq. 1) then        !1x
             sscin_zpos(ihit) = sscin_1x_zpos
