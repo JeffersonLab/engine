@@ -5,6 +5,10 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.22  2002/09/25 14:40:03  jones
+*    Eliminate commented out diagnostic messages and the variables
+*      buffer,iscaler,nscalers associated with them.
+*
 * Revision 1.21  1999/11/04 20:35:16  saw
 * Linux/G77 compatibility fixes
 *
@@ -80,7 +84,6 @@
 
 *     The following arguments get modified.
       integer*4 oslot
-      integer*4 buffer
       integer*4 hitcount,planelist(*),counterlist(*)
       integer*4 signal0(*),signal1(*),signal2(*),signal3(*)
       integer pointer,newdid,subadd,slot,mappointer,plane
@@ -90,7 +93,6 @@
       include 'gen_detectorids.par'
       include 'gen_scalers.cmn'
       include 'gen_event_info.cmn'
-      integer iscaler,nscalers
 *
       integer h,hshift
       integer subaddbit
@@ -127,17 +129,6 @@
           goto 987
         endif
 
-*
-*     Check for event by event scalers thrown in by the scaler hack.
-*
-*        if(jiand(evfrag(pointer),'FF000000'x).eq.'DA000000'x) then ! Magic header
-*          nscalers = jiand(evfrag(pointer),'FF'x)
-*          do iscaler=1,nscalers
-*            evscalers(iscaler) = evfrag(pointer+iscaler)
-*          enddo
-*          pointer = pointer + nscalers + 1
-*          goto 987
-*        endif
 
         if(evfrag(pointer).le.1.and.evfrag(pointer).ge.0) then
 
@@ -192,21 +183,6 @@ c
           endif
         endif
 *
-***********************
-cc     write(6,*) buffer
-c          buffer = jiand(JISHFT(evfrag(pointer),-24),'03'X)
-c          if (g_decode_bufnum .ne. buffer) then
-c            if (g_decode_bufnum.eq.-1) then 
-c              g_decode_bufnum=buffer
-c            else
-c            write (6,*) 'g_decode_fb_detector: roc,slot,buffer='
-c     &             ,roc,slot,buffer,'but previous data was buffer=',
-c     &             g_decode_bufnum
-c              write (6,*) 'gen_event_id_number=',gen_event_id_number
-cc              stop
-c            endif
-c          endif
-*************************
         subadd = jiand(JISHFT(evfrag(pointer),-subaddbit),'7F'X)
 *
 *     If a module that uses a shift of 17 for the subaddress is in a slot
