@@ -1,6 +1,9 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
+* Revision 1.11  1996/09/04 14:31:53  saw
+* (JRA) Update BCM calculations
+*
 * Revision 1.10  1996/04/29 19:41:57  saw
 * (JRA) Deal with out of order scaler events
 *
@@ -44,11 +47,13 @@ c
       character*(*) err
 *
       INCLUDE 'gen_scalers.cmn'
+      INCLUDE 'gen_run_info.cmn'
+      INCLUDE 'gen_filenames.cmn'
 *
       integer ind
       integer*4 cratenum                ! 1=hms,2=sos
       real*8 realscal
-
+      logical update_bcms
 *
       integer*4 jiand, jishft           ! Declare to help f2c
 *
@@ -70,6 +75,7 @@ c
 *     Temporary variables for beam current and charge calculations
 *
       real*8 ave_current_bcm1, ave_current_bcm2, ave_current_bcm3
+      real*8 ave_current_unser
       real*8 delta_time
 *
 * Find if hms or sos scaler event (assumes first HMS scaler is DA01).
@@ -86,7 +92,9 @@ c
       if (evnum.eq.0 .and. gscal_lastevnum(cratenum).gt.200) then
         gscal_lastevnum(cratenum)=0
       else if (evnum.le.gscal_lastevnum(cratenum)) then
-        write(6,*) 'skipping outoforder scaler event',cratenum,gscal_lastevnum(cratenum),evnum
+        write(6,*) 'STATUS: skipping outoforder scaler event:',
+     &             ' crate,oldevnum,newevnum=',cratenum,
+     &             gscal_lastevnum(cratenum),evnum
         return
       endif
 *
@@ -95,6 +103,7 @@ c
 *     Should check against list of known scaler events
 *
       evlen = event(1) + 1
+      update_bcms = .false.
       if(evlen.gt.3) then           ! We have a scaler bank
         pointer = 3
 *
@@ -137,6 +146,7 @@ c
           do counter = 1,countinmod
             ind=address+counter
             realscal=dfloat(event(pointer+counter))
+            if (ind.eq.gbcm1_index) update_bcms=.true. !assume bcms in same crate
 
 * Save scaler value from previous scaler event:
             gscaler_old(ind) = gscaler(ind)
@@ -145,7 +155,7 @@ c
               realscal=realscal+4294967296.
             endif
             if ( (realscal+dfloat(gscaler_nroll(ind))*4294967296.) .ge.
-     &           gscaler(ind) ) then  ! 2**32 = 4.295e+9
+     &           gscaler(ind) ) then    ! 2**32 = 4.295e+9
               gscaler(ind) = realscal + gscaler_nroll(ind)*4294967296.
             else                        !32 bit scaler rolled over.
               gscaler_nroll(ind)=gscaler_nroll(ind)+1
@@ -164,25 +174,51 @@ c
       endif
 
 * calculate time of run (must not be zero to avoid div. by zero).
-      g_run_time = max(0.001,gscaler(gclock_index)/gclock_rate)
+      g_run_time = max(0.001D00,gscaler(gclock_index)/gclock_rate)
 
 * Calculate beam current and charge between scaler events
 
-      if (cratenum.eq.1) then        ! time and bcms are in hms crate
-        delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001)
+      if (update_bcms) then             ! can't assume in hms crate, moved for some runs
 
-        ave_current_bcm1 = gbcm1_gain*sqrt(max(0,
-     &        (gscaler_change(gbcm1_index)/delta_time)-gbcm1_offset))
-        ave_current_bcm2 = gbcm2_gain*sqrt(max(0,
-     &        (gscaler_change(gbcm2_index)/delta_time)-gbcm2_offset))
+        delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001D00)
+
+        ave_current_bcm1 = gbcm1_gain*sqrt(max(0.0D00,
+     &       (gscaler_change(gbcm1_index)/delta_time)-gbcm1_offset))
         ave_current_bcm3 = gbcm3_gain*((gscaler_change(gbcm3_index)
-     &        /delta_time) - gbcm3_offset)
+     &       /delta_time) - gbcm3_offset)
+        ave_current_unser = gunser_gain*((gscaler_change(gunser_index)
+     &       /delta_time) - gunser_offset)
 
-        gbcm1_charge = gbcm1_charge + ave_current_bcm1*delta_time
-        gbcm2_charge = gbcm2_charge + ave_current_bcm2*delta_time
-        gbcm3_charge = gbcm3_charge + ave_current_bcm3*delta_time
+        if (gen_run_number.le.6268) then
+          ave_current_bcm2 = gbcm2_gain*sqrt(max(0.0D00,
+     &         (gscaler_change(gbcm2_index)/delta_time)-gbcm2_offset))
+        else
+          ave_current_bcm2 = gbcm2_gain*((gscaler_change(gbcm2_index)
+     &         /delta_time) - gbcm2_offset)
+        endif
 
+        if (delta_time.gt.0.0001) then
+          gbcm1_charge = gbcm1_charge + ave_current_bcm1*delta_time
+          gbcm2_charge = gbcm2_charge + ave_current_bcm2*delta_time
+          gbcm3_charge = gbcm3_charge + ave_current_bcm3*delta_time
+          gunser_charge = gunser_charge + ave_current_unser*delta_time
+
+          gscaler_event_num = gscaler_event_num + 1
+
+*         Write out pertinent charge scaler rates for each scaler event.
+
+          if (g_charge_scaler_filename.ne.' ') then
+            write(217,1001) gscaler_event_num, !scaler event num
+     &           gscaler_change(gunser_index)/delta_time, !scaler rate(Hz)
+     &           gscaler_change(gbcm1_index)/delta_time, !scaler rate(Hz)
+     &           gscaler_change(gbcm2_index)/delta_time, !scaler rate(Hz)
+     &           gscaler_change(gbcm3_index)/delta_time, !scaler rate(Hz)
+     &           delta_time             !time since last scaler event (sec)
+          endif
+        endif
       endif
+
+ 1001 format(i6,4f13.2,f12.6)
 
       return
       end
