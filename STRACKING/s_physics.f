@@ -21,6 +21,9 @@
 *
 *
 * $Log$
+* Revision 1.19.2.4  2003/09/05 14:32:57  jones
+* Use s_oopcentral_offset (mkj)
+*
 * Revision 1.19.2.3  2003/08/12 17:36:21  cdaq
 * Add variables for e00-108 (hamlet)
 *
@@ -149,6 +152,7 @@
       ssx_tar      = sx_tar(ssnum_tartrack)
       ssy_tar      = sy_tar(ssnum_tartrack)
       ssxp_tar     = sxp_tar(ssnum_tartrack) ! This is an angle (radians)
+      ssxp_tar = ssxp_tar + s_oopcentral_offset
       ssyp_tar     = syp_tar(ssnum_tartrack) ! This is an angle (radians)
       ssbeta       = sbeta(itrkfp)
       ssbeta_chisq = sbeta_chisq(itrkfp)
@@ -287,9 +291,9 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 
 *     Do energy loss, which is particle specific
 
-      sstheta_1st = stheta_lab*TT/180. + atan(ssyp_tar) ! rough scat
-                                                        ! angle
-      ssinplane = stheta_lab*TT/180. + atan(ssyp_tar) ! rough scat angle
+      sstheta_1st = stheta_lab*TT/180. + atan(ssyp_tar) ! rough scat angle
+c
+      ssinplane = stheta_lab*TT/180. + atan(ssyp_tar) ! In plane scat angle (rad)
 
       if (spartmass .lt. 2.*mass_electron) then ! for electron
         if (gtarg_z(gtarg_num).gt.0.) then
@@ -356,7 +360,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
       cossstheta = cos(sstheta)
 
       ssphi = sphi_lab + ssphi
-      if (ssphi .lt. 0.) ssphi = ssphi + tt
+c      if (ssphi .lt. 0.) ssphi = ssphi + tt
 
 *     sszbeam is the intersection of the beam ray with the
 *     spectrometer as measured along the z axis.
