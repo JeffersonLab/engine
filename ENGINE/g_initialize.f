@@ -10,6 +10,10 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.17  1996/01/16 18:24:47  cdaq
+* (JRA) Get kinematics for runinfo event, create a tcl stats screen.  Groupify
+*       CTP calls
+*
 * Revision 1.16  1995/10/09 18:42:57  cdaq
 * (SAW) Move loading of ctp_kinematics database to before CTP loading.  Take
 * ntuple inialization out of spec specific init routines into a all ntuple
@@ -128,7 +132,7 @@
 *
 *
 *     Now if there is a g_ctp_kinematics_filename set, pass the run number
-*     to it to set CTP variables.  Parameters placed in this file will NOT
+*     to it to set CTP variables.  Parameters placed in this file will
 *     override values defined in the CTP input files.
 *
       if(.not.ABORT.and.g_ctp_kinematics_filename.ne.' ') then
@@ -138,6 +142,10 @@
           call G_add_path(here,err)
         endif
       ENDIF
+*
+      call g_klugeup_kinematics(ABORT,err)
+*
+      call engine_command_line
 *
       if((first_time.or.g_test_rebook).and.g_ctp_test_filename.ne.' ') then
         file = g_ctp_test_filename
@@ -180,6 +188,13 @@
       endif
 *
       if((first_time.or.g_report_rebook)
+     $     .and.g_stats_template_filename.ne.' ') then
+        file = g_stats_template_filename
+        call g_sub_run_number(file,gen_run_number)
+        call thload(file)
+      endif
+*
+      if((first_time.or.g_report_rebook)
      $     .and.s_report_template_filename.ne.' ') then
         file = s_report_template_filename
         call g_sub_run_number(file,gen_run_number)
@@ -215,12 +230,12 @@
           file = g_alias_filename
           call g_sub_run_number(file,gen_run_number)
           ierr = thwhalias(file)
-          print *,'called haliaswrite',ierr
+          if (ierr.ne.0) print *,'called haliaswrite',ierr
         endif
       endif
 *
-      call thtstclr                     ! Clear test flags
-      call thtstcls                     ! Clear test scalers
+      call thtstclrg("default")                     ! Clear test flags
+      call thtstclsg("default")                     ! Clear test scalers
 *
 *-HMS initialize
       call H_initialize(HMS_ABORT,HMS_err)
