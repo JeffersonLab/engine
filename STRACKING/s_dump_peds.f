@@ -1,6 +1,9 @@
       subroutine s_dump_peds(ABORT,err)
 *
 * $Log$
+* Revision 1.4  1996/04/30 17:11:20  saw
+* (JRA) Cleanup
+*
 * Revision 1.3  1996/01/17 19:04:27  cdaq
 * (JRA)
 *
@@ -14,8 +17,8 @@
       implicit none
       save
 *
-      character*18 here
-      parameter (here='s_calc_pedestal')
+      character*11 here
+      parameter (here='s_dump_peds')
 *
       logical ABORT
       character*(*) err

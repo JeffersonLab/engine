@@ -8,6 +8,9 @@
 * needed for the drift chamber and tof analysis.
 *
 * $Log$
+* Revision 1.12  1996/04/30 17:15:39  saw
+* (JRA) Cleanup
+*
 * Revision 1.11  1996/01/17 18:21:56  cdaq
 * (JRA) Misc. fixes.
 *
@@ -172,7 +175,8 @@
         time_sum = 0.
         do ihit = 1 , sscin_tot_hits
           if (stwo_good_times(ihit)) then
-            fptime  = sscin_cor_time(ihit) - sscin_zpos(ihit)/29.989
+            fptime  = sscin_cor_time(ihit)
+     $           - sscin_zpos(ihit)/(sbeta_pcent*29.989)
             call hf1(sidscinalltimes,fptime,1.)
             if (abs(fptime-sstart_time_center).le.sstart_time_slop) then
               time_sum = time_sum + fptime
