@@ -7,6 +7,9 @@
 *     Date:      9 April 1994
 *
 * $Log$
+* Revision 1.7  1999/02/23 18:58:40  csa
+* (JRA) Add pos/neg cal stuff
+*
 * Revision 1.6  1999/02/03 21:13:45  saw
 * Code for new Shower counter tubes
 *
@@ -186,6 +189,9 @@ c
         histname = "sscindpos"//sscinplanenum(plane)
         sidscindpos(plane) = thgetid(histname)
 
+        histname = "sscindpos_pid"//sscinplanenum(plane)
+        sidscindpos_pid(plane) = thgetid(histname)
+
         do counter = 1,snum_scin_counters(plane)
 *     this is probably very awkward character manipulation
 *     
@@ -217,27 +223,15 @@ c
       enddo                             ! end loop over scintillator plane
 
       sidcalplane = thgetid('scalplane')
-      sidcalhits(1) = thgetid('scalahits')
-      sidcalhits(2) = thgetid('scalbhits')
-      sidcalhits(3) = thgetid('scalchits')
-      sidcalhits(4) = thgetid('scaldhits')
+      sidcalposhits(1) = thgetid('scalaposhits')
+      sidcalposhits(2) = thgetid('scalbposhits')
+      sidcalposhits(3) = thgetid('scalcposhits')
+      sidcalposhits(4) = thgetid('scaldposhits')
+      sidcalneghits(1) = thgetid('scalaneghits')
+      sidcalneghits(2) = thgetid('scalbneghits')
+      sidcalneghits(3) = thgetid('scalcneghits')
+      sidcalneghits(4) = thgetid('scaldneghits')
       sidcalsumadc = thgetid('scalsumadc')
-
-      sidcalposhits(1)= thgetid('scala_pos_hits')  
-      sidcalposhits(2)= thgetid('scalb_pos_hits')   
-      sidcalposhits(3)= thgetid('scalc_pos_hits')   
-      sidcalposhits(4)= thgetid('scald_pos_hits')   
-*
-      sidcalneghits(1)= thgetid('scala_neg_hits')  
-      sidcalneghits(2)= thgetid('scalb_neg_hits')  
-      sidcalneghits(3)= thgetid('scalc_neg_hits')  
-      sidcalneghits(4)= thgetid('scald_neg_hits')   
-*
-c      sidcalsuma_pos = thgetid('scalsuma_pos')   
-c      sidcalsuma_neg = thgetid('scalsuma_neg')
-*
-c      sidcalsumb_pos = thgetid('scalsumb_pos')   
-c      sidcalsumb_neg = thgetid('scalsumb_neg')   
 
       sidmisctdcs = thgetid('smisctdcs')
 
