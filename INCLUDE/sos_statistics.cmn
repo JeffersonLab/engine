@@ -1,7 +1,10 @@
 *      sos_statistics.cmn
 *      common blocks containing event statistics for s_reconstruction
 * $Log$
-* Revision 1.5  1995/03/13 19:15:42  cdaq
+* Revision 1.6  1995/04/06 20:21:08  cdaq
+* (SAW) Remove hms isms and hardwired array sizes
+*
+* Revision 1.5  1995/03/13  19:15:42  cdaq
 * (JRA) Add many new statistics
 *
 * Revision 1.4  1994/11/21  18:02:39  cdaq
@@ -56,27 +59,27 @@
 *     CTPTYPE=event
 *
       integer*4 sstat_numevents
-      integer*4 sstat_trk(hnum_scin_planes,16)
-      integer*4 sstat_poshit(hnum_scin_planes,16)
-      integer*4 sstat_neghit(hnum_scin_planes,16)
-      integer*4 sstat_orhit(hnum_scin_planes,16)
-      integer*4 sstat_andhit(hnum_scin_planes,16)
-      integer*4 sstat_trksum(hnum_scin_planes)
-      integer*4 sstat_possum(hnum_scin_planes)
-      integer*4 sstat_negsum(hnum_scin_planes)
-      integer*4 sstat_orsum(hnum_scin_planes)
-      integer*4 sstat_andsum(hnum_scin_planes)
-      real*4 sstat_poseff(hnum_scin_planes)
-      real*4 sstat_negeff(hnum_scin_planes)
-      real*4 sstat_oreff(hnum_scin_planes)
-      real*4 sstat_andeff(hnum_scin_planes)
+      integer*4 sstat_trk(snum_scin_planes,snum_scin_elements)
+      integer*4 sstat_poshit(snum_scin_planes,snum_scin_elements)
+      integer*4 sstat_neghit(snum_scin_planes,snum_scin_elements)
+      integer*4 sstat_orhit(snum_scin_planes,snum_scin_elements)
+      integer*4 sstat_andhit(snum_scin_planes,snum_scin_elements)
+      integer*4 sstat_trksum(snum_scin_planes)
+      integer*4 sstat_possum(snum_scin_planes)
+      integer*4 sstat_negsum(snum_scin_planes)
+      integer*4 sstat_orsum(snum_scin_planes)
+      integer*4 sstat_andsum(snum_scin_planes)
+      real*4 sstat_poseff(snum_scin_planes)
+      real*4 sstat_negeff(snum_scin_planes)
+      real*4 sstat_oreff(snum_scin_planes)
+      real*4 sstat_andeff(snum_scin_planes)
       real*4 seff_s1
       real*4 seff_s2
       real*4 seff_stof
       real*4 seff_4_of_4
       real*4 seff_3_of_4
 
-      common/hscin_statistics/
+      common/sscin_statistics/
      &  sstat_numevents,
      &  sstat_trk,         !# of times track points near center of scin.
      &  sstat_poshit,      !# of times the pos tube on scintillator fired
