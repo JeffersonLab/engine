@@ -9,6 +9,9 @@
 *
 * modifications:
 * $Log$
+* Revision 1.20  2002/10/02 13:42:43  saw
+* Check that user hists are defined before filling
+*
 * Revision 1.19  1999/06/10 16:53:04  csa
 * (JRA) Cosmetic changes
 *
@@ -194,7 +197,7 @@
       do ihit = 1 , hscin_tot_hits
         if (htwo_good_times(ihit)) then
           fptime  = hscin_cor_time(ihit) - hscin_zpos(ihit)/(29.979*hbeta_pcent)
-          call hf1(hidscinalltimes,fptime,1.)
+          if(hidscinalltimes.gt.0) call hf1(hidscinalltimes,fptime,1.)
           if (abs(fptime-hstart_time_center).le.hstart_time_slop) then
             time_sum = time_sum + fptime
             time_num = time_num + 1

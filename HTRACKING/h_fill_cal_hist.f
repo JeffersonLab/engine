@@ -8,6 +8,9 @@
 *
 *
 * $Log$
+* Revision 1.9  2002/10/02 13:42:43  saw
+* Check that user hists are defined before filling
+*
 * Revision 1.8  1999/02/23 18:37:20  csa
 * (JRA) Remove obsolete hf1 call
 *
@@ -63,8 +66,10 @@
           histval=float(col)
           if(hidcalplane.gt.0) call hf1(hidcalplane,histval,1.)
           histval=float(row)
-          if(hcal_adcs_pos(ihit).gt.0.1) call hf1(hidcalposhits(col),histval,1.)
-          if(hcal_adcs_neg(ihit).gt.0.1) call hf1(hidcalneghits(col),histval,1.)
+          if(hcal_adcs_pos(ihit).gt.0.1.and.hidcalposhits(col).gt.0)
+     $         call hf1(hidcalposhits(col),histval,1.)
+          if(hcal_adcs_neg(ihit).gt.0.1.and.hidcalneghits(col).gt.0)
+     $         call hf1(hidcalneghits(col),histval,1.)
         enddo
       endif
 

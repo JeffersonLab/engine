@@ -15,6 +15,9 @@
 * h_cal_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
+* Revision 1.8  2002/10/02 13:42:42  saw
+* Check that user hists are defined before filling
+*
 * Revision 1.7  1999/02/03 21:13:23  saw
 * Code for new Shower counter tubes
 *
@@ -112,7 +115,7 @@
 * fill the dpos histograms.
         if (col .eq. 1) then
           histval=(hcal_block_xc(1)+hcal_block_xsize*(row-1))-hit_pos(1)
-          call hf1(hidcaldpos,histval,1.)
+          if(hidcaldpos.gt.0) call hf1(hidcaldpos,histval,1.)
         endif
 
 *  Record the hits if track is near center of block and the chisquared of the 

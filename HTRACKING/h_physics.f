@@ -19,6 +19,9 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.20  2002/10/02 13:42:43  saw
+* Check that user hists are defined before filling
+*
 * Revision 1.19  1999/02/10 17:45:41  csa
 * Cleanup and bugfixes (mostly G. Warren)
 *
@@ -169,14 +172,18 @@
       hsy_sp2      = hy_sp2(itrkfp)
       hsxp_sp2     = hxp_sp2(itrkfp)
 
-      do ihit=1,hnum_scin_hit(itrkfp)
-        call hf1(hidscintimes,hscin_fptime(itrkfp,ihit),1.)
-      enddo
+      if(hidscintimes.gt.0) then
+        do ihit=1,hnum_scin_hit(itrkfp)
+          call hf1(hidscintimes,hscin_fptime(itrkfp,ihit),1.)
+        enddo
+      endif
 
-      do ihit=1,hntrack_hits(itrkfp,1)
-        call hf1(hidcuttdc,
-     &       float(hdc_tdc(hntrack_hits(itrkfp,ihit+1))),1.)
-      enddo
+      if(hidcuttdc.gt.0) then
+        do ihit=1,hntrack_hits(itrkfp,1)
+          call hf1(hidcuttdc,
+     &         float(hdc_tdc(hntrack_hits(itrkfp,ihit+1))),1.)
+        enddo
+      endif
 
       hsx_dc1 = hsx_fp  +  hsxp_fp * hdc_1_zpos
       hsy_dc1 = hsy_fp  +  hsyp_fp * hdc_1_zpos

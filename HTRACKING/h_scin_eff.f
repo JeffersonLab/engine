@@ -15,6 +15,9 @@
 * h_scin_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
+* Revision 1.7  2002/10/02 13:42:43  saw
+* Check that user hists are defined before filling
+*
 * Revision 1.6  1996/01/16 21:56:40  cdaq
 * (JRA) Fix typos
 *
@@ -86,7 +89,7 @@
       do nhit=1,hscin_tot_hits
         pln=hscin_plane_num(nhit)
         histval = hhodo_center(pln,hscin_counter_num(nhit))-hit_pos(pln)
-        call hf1(hidscindpos(pln),histval,1.)
+        if(hidscindpos(pln).gt.0) call hf1(hidscindpos(pln),histval,1.)
       enddo
 
 *   Record position differences between track and center of scin. and

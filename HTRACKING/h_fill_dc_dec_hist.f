@@ -9,6 +9,9 @@
 *                                 Put id's in hms_tracking_histid
 *                                 implement flag to turn block off
 * $Log$
+* Revision 1.6  2002/10/02 13:42:43  saw
+* Check that user hists are defined before filling
+*
 * Revision 1.5  1996/04/30 12:36:43  saw
 * (JRA) Comment out HDC_DRIFT_DIS and HDC_DRIFT_TIME histograms
 *
@@ -48,7 +51,7 @@
       err= ' '
 *
 * Is histogramming flag set
-      if(hturnon_decoded_dc_hist.ne.0 ) then
+      if(hturnon_decoded_dc_hist.ne.0) then
 * Make sure there is at least 1 hit
         if(HDC_TOT_HITS .gt. 0 ) then
 * Loop over all hits
@@ -56,7 +59,8 @@
             planeoff=HDC_PLANE_NUM(ihit)
             histval=HDC_WIRE_NUM(ihit)
 * Is plane number valid
-            if( (planeoff .gt. 0) .and. (planeoff.le. hdc_num_planes)) then
+            if( (planeoff .gt. 0) .and. (planeoff.le. hdc_num_planes)
+     $           .and. hiddcwiremap(planeoff).gt.0) then
               call hf1(hiddcwiremap(planeoff),histval,1.)
 c              call hf1(hiddcwirecent(planeoff),HDC_WIRE_CENTER(ihit),1.)
 c              call hf1(hiddcdriftdis(planeoff),HDC_DRIFT_DIS(ihit),1.)
