@@ -13,6 +13,9 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to s_raw_dump_all
 * $Log$
+* Revision 1.7  1996/01/17 18:58:19  cdaq
+* (JRA) Only histogram ADC's that are not 200 above pedestal
+*
 * Revision 1.6  1995/08/31 18:08:04  cdaq
 * (JRA) Add a hist of all adc's into one spectrum
 *
@@ -56,10 +59,9 @@
 *
 *
       errmsg=' '
-      abort=scal_tot_hits.lt.0.or.scal_tot_hits.gt.smax_cal_blocks
-      if(abort) then
-         write(errmsg,*) ':scal_tot_hits = ',scal_tot_hits
-         call g_prepend(here,errmsg)
+
+      if(scal_tot_hits.lt.0.or.scal_tot_hits.gt.smax_cal_blocks) then
+         write(6,*) here,':scal_tot_hits = ',scal_tot_hits
          return
       endif
 *
@@ -78,32 +80,33 @@
          adc=scal_adc(nh)
 *
 *------Check the validity of raw data
-         abort=row.le.0.or.row.gt.smax_cal_rows
-         if(abort) then
-            write(errmsg,*) ':scal_row(',nh,') = ',row
-            call g_prepend(here,errmsg)
-            return
-         endif
+c         abort=row.le.0.or.row.gt.smax_cal_rows
+c         if(abort) then
+c            write(errmsg,*) ':scal_row(',nh,') = ',row
+c            call g_prepend(here,errmsg)
+c            return
+c         endif
 *
-         abort=col.le.0.or.col.gt.smax_cal_columns
-         if(abort) then
-            write(errmsg,*) ':scal_column(',nh,') = ',col
-            call g_prepend(here,errmsg)
-            return
-         endif
+c         abort=col.le.0.or.col.gt.smax_cal_columns
+c         if(abort) then
+c            write(errmsg,*) ':scal_column(',nh,') = ',col
+c            call g_prepend(here,errmsg)
+c            return
+c         endif
 *
-         abort=adc.le.0.or.adc.gt.adc_max
-         if(abort) then
-            write(errmsg,*) ':scal_adc(',nh,') = ',adc
-            call g_prepend(here,errmsg)
-            return
-         endif
+c         abort=adc.le.0.or.adc.gt.adc_max
+c         if(abort) then
+c            write(errmsg,*) ':scal_adc(',nh,') = ',adc
+c            call g_prepend(here,errmsg)
+c            return
+c         endif
 *
 *------Sparsify the raw data
          nb =row+smax_cal_rows*(col-1)
 
          scal_realadc(nb) = float(adc)-scal_ped_mean(nb)
-         call hf1(sidcalsumadc,scal_realadc(nb),1.)
+         if (scal_realadc(nb).le.200)
+     $        call hf1(sidcalsumadc,scal_realadc(nb),1.)
          if(scal_realadc(nb).gt.scal_threshold(nb)) then
             scal_num_hits           =scal_num_hits+1
             scal_rows(scal_num_hits)=row
