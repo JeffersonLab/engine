@@ -14,6 +14,10 @@
 *-
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
+* $Log$
+* Revision 1.6  1994/06/28 20:07:00  cdaq
+* (SAW) Add clearing of HSCIN_ALL arrays
+*
 *-
 *--------------------------------------------------------
       IMPLICIT NONE
@@ -60,11 +64,18 @@
          HSCIN_ADC_NEG(hit)= 0
          HSCIN_TDC_POS(hit)= 0
          HSCIN_TDC_NEG(hit)= 0
+         HSCIN_ALL_PLANE_NUM(hit)= 0
+         HSCIN_ALL_COUNTER_NUM(hit)= 0
+         HSCIN_ALL_ADC_POS(hit)= 0
+         HSCIN_ALL_ADC_NEG(hit)= 0
+         HSCIN_ALL_TDC_POS(hit)= 0
+         HSCIN_ALL_TDC_NEG(hit)= 0
       ENDDO
       DO plane= 1,HNUM_SCIN_PLANES
          HSCIN_HITS_PER_PLANE(plane)= 0
       ENDDO
       HSCIN_TOT_HITS= 0
+      HSCIN_ALL_TOT_HITS= 0
 *     
 *     HMS CALORIMETER HITS
 *
