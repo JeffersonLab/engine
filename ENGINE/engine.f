@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.24  1998/12/01 16:01:48  saw
+* (SAW) Close preproc output file at end of run
+*
 * Revision 1.23  1996/11/08 15:40:09  saw
 * (JRA) Add analysis of epics events.
 *
@@ -123,6 +126,8 @@
       integer*4 jishft,jiand
 *
       integer ierr
+      integer*4 status
+      integer*4 evclose
       character*132 file
       character*20 groupname
       character*132 system_string
@@ -540,7 +545,7 @@ c            endif
 
               endif
             else if (gen_event_type.eq.131) then ! EPICS event
-              call g_examine_epics_event(CRAW,ABORT,err)
+              call g_examine_epics_event
             endif
 
           Else
@@ -639,6 +644,11 @@ c            endif
 *
 * close epics output file.
       if (g_epics_output_filename.ne.' ') close(unit=G_LUN_EPICS_OUTPUT)
+*
+      if (g_preproc_opened) then
+        status= evclose(g_preproc_in_hndl)
+        if (status.ne.0) write(6,*) 'status for evclose=',status
+      endif
 *
       call g_dump_peds
       call h_dump_peds
