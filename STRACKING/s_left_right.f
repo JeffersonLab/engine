@@ -1,4 +1,4 @@
-      subroutine S_LEFT_RIGHT(ABORT,err)
+      subroutine s_left_right(ABORT,err)
 * Warning: This routine contains lots of gobbledeguk that won't work if the
 *     number of chambers is changed to 3.
 *
@@ -9,6 +9,9 @@
 *     space point.
 *     d. f. geesaman           31 August 1993
 * $Log$
+* Revision 1.11  1996/09/05 19:54:51  saw
+* (JRA) Cosmetic
+*
 * Revision 1.10  1996/01/17 19:01:59  cdaq
 * (JRA)
 *
