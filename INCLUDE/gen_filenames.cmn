@@ -2,8 +2,11 @@
 *
 *-Common block with filenames
 *     $Log$
-*     Revision 1.3  1994/06/15 18:12:17  cdaq
-*     (SAW) Add variables for report generator
+*     Revision 1.4  1994/06/21 15:05:11  cdaq
+*     (SAW) Add g_report_rebook flag
+*
+* Revision 1.3  1994/06/15  18:12:17  cdaq
+* (SAW) Add variables for report generator
 *
 * Revision 1.2  1994/03/24  16:49:57  cdaq
 * (SAW) Make logical's logical*4 so they can be registered to CTP
@@ -46,13 +49,16 @@
       logical*4 g_hist_rebook
       logical*4 g_test_rebook
       logical*4 g_parm_rebook
+      logical*4 g_report_rebook
+*
       logical*4 g_config_loaded                 !Make sure this is false first time
       logical*4 g_data_source_opened            !whether FASTBUS CODA file opened OK
       integer g_data_source_in_hndl             !IO channel assigned by CODA library
       integer g_max_events                      !quit after this number events
 *
       common /gen_config_flags/
-     $     g_hist_rebook, g_test_rebook, g_parm_rebook, 
+     $     g_hist_rebook, g_test_rebook, g_parm_rebook,
+     $     g_report_rebook,
      $     g_config_loaded,
      $     g_data_source_opened, g_data_source_in_hndl,
      $     g_max_events
