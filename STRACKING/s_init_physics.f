@@ -9,7 +9,10 @@
 *- 
 *-   Created 6-6-94          D. F. Geesaman
 * $Log$
-* Revision 1.1  1994/06/14 04:09:12  cdaq
+* Revision 1.2  1995/05/11 17:07:14  cdaq
+* (SAW) Fix SOS to be in plane, beam left
+*
+* Revision 1.1  1994/06/14  04:09:12  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -32,7 +35,11 @@
 *
       ABORT= .FALSE.
       err= ' '
-* 
+*
+*     Fix SOS to be in plane, beam left
+*
+      SPHI_LAB = TT/2
+*
       COSSTHETAS = COS(STHETA_LAB)
       SINSTHETAS = SIN(STHETA_LAB)
 *     Constants for elastic kinematics calcultion
