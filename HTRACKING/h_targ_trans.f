@@ -16,6 +16,9 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
+* Revision 1.12  1995/10/10 17:49:31  cdaq
+* (JRA) Cleanup
+*
 * Revision 1.11  1995/08/08 16:01:17  cdaq
 * (DD) Add detector and angular offsets
 *
@@ -74,8 +77,8 @@
       IMPLICIT NONE
       SAVE
 *
-      character*50 here
-      parameter (here= 'H_TARG_TRANS')
+      character*12 here
+      parameter (here= 'h_targ_trans')
 *
       logical ABORT
       character*(*) err
@@ -92,10 +95,9 @@
 *
 * Misc. variables.
 
-      integer*4        i,j,k,l,m,n,
-     $     itrk
+      integer*4        i,j,itrk
 
-      real*8           sum(4),hut(4),term,temp,hut_rot(4)
+      real*8           sum(4),hut(4),term,hut_rot(4)
 
 *=============================Executable Code =============================
       ABORT= .FALSE.
@@ -113,7 +115,7 @@
       hntracks_tar = hntracks_fp
       do itrk = 1,hntracks_fp
 *     set link between target and focal plane track. Currently 1 to 1
-         HLINK_TAR_FP(itrk) = itrk
+         hlink_tar_fp(itrk) = itrk
 
 * Reset COSY sums.
 
@@ -139,23 +141,27 @@
 
 
 ! now transform 
-         hx_fp_rot(itrk)=  hut(1) + h_det_offset_x    ! include detector offset
-         hy_fp_rot(itrk)=  hut(3) + h_det_offset_y 
-         hxp_fp_rot(itrk)= hut(2) + hut(1)*h_ang_slope_x
-         hyp_fp_rot(itrk)= hut(4) + hut(3)*h_ang_slope_y
-         hut_rot(1)= hx_fp_rot(itrk)
-         hut_rot(2)= hxp_fp_rot(itrk)
-         hut_rot(3)= hy_fp_rot(itrk)
-         hut_rot(4)= hyp_fp_rot(itrk)
-* Compute COSY sums.
+*         hx_fp_rot(itrk)=  hut(1) + h_det_offset_x    ! include detector offset
+*         hy_fp_rot(itrk)=  hut(3) + h_det_offset_y 
+*         hxp_fp_rot(itrk)= hut(2) + hut(1)*h_ang_slope_x
+*         hyp_fp_rot(itrk)= hut(4) + hut(3)*h_ang_slope_y
+*         hut_rot(1)= hx_fp_rot(itrk)
+*         hut_rot(2)= hxp_fp_rot(itrk)
+*         hut_rot(3)= hy_fp_rot(itrk)
+*         hut_rot(4)= hyp_fp_rot(itrk)
+*        h*_fp_rot never used except here, so remove the intermediate step.
 
+         hut_rot(1) = hut(1) + h_det_offset_x    ! include detector offset
+         hut_rot(2) = hut(2) + hut(1)*h_ang_slope_x
+         hut_rot(3) = hut(3) + h_det_offset_y
+         hut_rot(4) = hut(4) + hut(3)*h_ang_slope_y
+
+* Compute COSY sums.
          do i = 1,h_num_recon_terms
             term = 1.
             do j = 1,4
-               temp = 1.0
-               if (h_recon_expon(j,i).ne.0.) temp = hut_rot(j)
-     $              **h_recon_expon(j,i)
-               term = term*temp
+               if (h_recon_expon(j,i).ne.0.)
+     $             term = term*hut_rot(j)**h_recon_expon(j,i)
             enddo
             sum(1) = sum(1) + term*h_recon_coeff(1,i)
             sum(2) = sum(2) + term*h_recon_coeff(2,i)

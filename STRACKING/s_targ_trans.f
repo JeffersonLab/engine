@@ -19,6 +19,9 @@
 *-Modified 21-JAN-94  D.F.Geesaman
 *-            Add ABORT and err
 * $Log$
+* Revision 1.11  1995/10/10 17:52:40  cdaq
+* (JRA) Cleanup
+*
 * Revision 1.10  1995/08/08 16:01:57  cdaq
 * (DD) Add detector and angular offsets
 *
@@ -68,8 +71,8 @@
       IMPLICIT NONE
       SAVE
 *
-      character*50 here
-      parameter (here= 'S_TARG_TRANS')
+      character*12 here
+      parameter (here= 's_targ_trans')
 *
       logical ABORT
       character*(*) err
@@ -86,7 +89,7 @@
 
       integer*4        i,j,itrk
       
-      real*8           sum(4),hut(4),term,temp
+      real*8           sum(4),hut(4),term,hut_rot(4)
 
 *============================= Executable Code ================================
       ABORT= .FALSE.
@@ -106,7 +109,7 @@
       do itrk = 1,sntracks_fp
 *
 *     set link between target and focal plane track. Currenty 1 to 1
-         SLINK_TAR_FP(itrk) = itrk
+         slink_tar_fp(itrk) = itrk
 *         
 * Reset COSY sums.
 
@@ -120,33 +123,51 @@
 * COSY transport matrices.
 * It is assumed that the track coordinates are reported at
 * the same focal plane as the COSY matrix elements were calculated.
+         hut(1) = sx_fp(itrk)/100.+ s_z_true_focus*sxp_fp(itrk) !m
+! includes transformation to actual focus if not at Z=0.
 
-         hut(1) = sx_fp(itrk)/100.      !Meters.
-         hut(2) = sxp_fp(itrk)          !COSY wants slopes
-         hut(3) = sy_fp(itrk)/100.      !Meters.
-         hut(4) = syp_fp(itrk)          !COSY wants slopes
+         hut(2) = sxp_fp(itrk) + s_ang_offset_x         !COSY wants slopes
+
+         hut(3) = sy_fp(itrk)/100. + s_z_true_focus*syp_fp(itrk)     !m
+! again icludes transformation to true focus.
+
+         hut(4) = syp_fp(itrk) + s_ang_offset_y         !COSY wants slopes
          
+! now transform
+         hut_rot(1) = hut(1) + s_det_offset_x     ! include detector offset
+         hut_rot(3) = hut(3) + s_det_offset_y
+         hut_rot(2) = hut(2) + hut(1)*s_ang_slope_x
+         hut_rot(4) = hut(4) + hut(3)*s_ang_slope_y
 
 * Compute COSY sums.
 
          do i = 1,s_num_recon_terms
             term = 1.
             do j = 1,4
-               temp = 1.0
                if (s_recon_expon(j,i).ne.0.)
-     $              temp = hut(j)**s_recon_expon(j,i)
-               term = term*temp
+     $              term = term*hut(j)**s_recon_expon(j,i)
             enddo
             sum(1) = sum(1) + term*s_recon_coeff(1,i)
             sum(2) = sum(2) + term*s_recon_coeff(2,i)
             sum(3) = sum(3) + term*s_recon_coeff(3,i)
+         enddo
+
+! For the SOS only the delta needs the transformation
+
+         do i = 1,s_num_recon_terms
+            term = 1.
+            do j = 1,4
+               if (s_recon_expon(j,i).ne.0.)
+     $              term = term*hut_rot(j)**s_recon_expon(j,i)
+            enddo
             sum(4) = sum(4) + term*s_recon_coeff(4,i)
          enddo
+
 * Protect against asin argument > 1.
-         if(sum(1).gt. 1.0)  sum(1)= 0.99
-         if(sum(1).lt. -1.0) sum(1)= -.99
-         if(sum(3).gt. 1.0) sum(3)=  0.99
-         if(sum(3).lt. -1.0) sum(3)= -.99
+c         if(sum(1).gt. 1.0)  sum(1)= 0.99
+c         if(sum(1).lt. -1.0) sum(1)= -.99
+c         if(sum(3).gt. 1.0) sum(3)=  0.99
+c         if(sum(3).lt. -1.0) sum(3)= -.99
    
 * Load output values.
          sx_tar(itrk) = 0               ! ** No beam raster **
