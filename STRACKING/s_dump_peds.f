@@ -1,6 +1,9 @@
       subroutine s_dump_peds(ABORT,err)
 *
 * $Log$
+* Revision 1.5  1996/11/07 19:50:44  saw
+* (JRA) ??
+*
 * Revision 1.4  1996/04/30 17:11:20  saw
 * (JRA) Cleanup
 *
@@ -58,6 +61,14 @@
       do cnt = 1 , snum_scin_elements
           write(SPAREID,111) (sscin_all_ped_pos(pln,cnt),pln=1,4)
       enddo
+      write(SPAREID,*) 'shodo_new_ped_pos ='
+      do cnt = 1 , snum_scin_elements
+        write(SPAREID,111) (shodo_new_ped_pos(pln,cnt),pln=1,4)
+      enddo
+      write(SPAREID,*) 'shodo_new_sig_pos ='
+      do cnt = 1 , snum_scin_elements
+        write(SPAREID,111) (shodo_new_sig_pos(pln,cnt),pln=1,4)
+      enddo
       write(SPAREID,*) 'shodo_new_threshold_pos ='
       do cnt = 1 , snum_scin_elements
           write(SPAREID,111) (shodo_new_threshold_pos(pln,cnt),pln=1,4)
@@ -65,6 +76,14 @@
       write(SPAREID,*) 'sscin_all_ped_neg ='
       do cnt = 1 , snum_scin_elements
           write(SPAREID,111) (sscin_all_ped_neg(pln,cnt),pln=1,4)
+      enddo
+      write(SPAREID,*) 'shodo_new_ped_neg ='
+      do cnt = 1 , snum_scin_elements
+        write(SPAREID,111) (shodo_new_ped_neg(pln,cnt),pln=1,4)
+      enddo
+      write(SPAREID,*) 'shodo_new_sig_neg ='
+      do cnt = 1 , snum_scin_elements
+        write(SPAREID,111) (shodo_new_sig_neg(pln,cnt),pln=1,4)
       enddo
       write(SPAREID,*) 'shodo_new_threshold_neg ='
       do cnt = 1 , snum_scin_elements
