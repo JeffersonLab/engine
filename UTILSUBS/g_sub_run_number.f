@@ -1,7 +1,10 @@
       subroutine g_sub_run_number(string,number)
 *
 * $Log$
-* Revision 1.1  1995/07/14 16:31:30  cdaq
+* Revision 1.2  1995/07/20 19:08:00  cdaq
+* (SAW) Build result into temporary string, then copy back to string.
+*
+* Revision 1.1  1995/07/14  16:31:30  cdaq
 * Initial revision
 *
       implicit none
@@ -21,6 +24,7 @@
 *
       integer iper
       character*10 snum                 ! String to hold the run number
+      character*132 stemp
       integer inum,reallen
       
       iper = index(string,'%')
@@ -42,8 +46,9 @@
       reallen = reallen-1
       
       if(reallen+(10-inum+1)-2.gt.len(string)) return ! Would be too long
-      write(string,'(3a)') string(1:iper-1),snum(inum:10),
-     $     string(iper+2:reallen)
+      if(reallen+(10-inum+1)-2.gt.len(stemp)) return ! Would be too long
+      stemp = string(1:iper-1)//snum(inum:10)//string(iper+2:reallen)
+      string = stemp
 
 c      print *,number
 c      print *,snum
