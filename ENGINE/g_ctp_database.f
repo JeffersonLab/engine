@@ -31,6 +31,9 @@
 *                        don't print out stuff following the ';').
 *
 * $Log$
+* Revision 1.4  1996/01/16 18:42:07  cdaq
+* (JRA) Minor bug fixes
+*
 * Revision 1.3  1995/10/11 12:14:49  cdaq
 * (JWP) Fix single run number at end of line bug.
 *       Don't pass blank lines to thpset.
@@ -58,7 +61,7 @@
 
       integer i
       integer index, number
-      logical found_run, printed_header
+      logical looking_for_run, found_run, printed_header
       character*132 line, newline
       integer*4 chan
 *      integer*4 err
@@ -74,6 +77,7 @@ c      endif
          
       if(debug) write(6,*) 'looking for run ',run
       found_run = .FALSE.
+      looking_for_run = .TRUE.
       printed_header = .FALSE.
 
 * Again, I don't make mistakes.
@@ -86,7 +90,7 @@ c      endif
       read (chan, 1001, end=9999) line
       index = 1
       if (debug) write (6,*) line
-      do while (.not. found_run)
+ 111  do while (looking_for_run)
 
         do while (line(1:1) .eq. ';')
           read (chan, 1001, end=9999) line
@@ -141,12 +145,14 @@ c      endif
             parsing_run_list = .false.
             if (number .eq. run) then
               found_run = .true.
+              looking_for_run = .false.
             end if
             
           else if (line(index:index) .eq. ',') then
             if (debug) write (6,*) 'NOT last number in list!'
             if (number .eq. run) then
               found_run = .true.
+              looking_for_run = .false.
               parsing_run_list = .false.
             end if
             index = index + 1
@@ -170,6 +176,7 @@ c      endif
             end if
             if ((lo_limit .le. run) .and. (hi_limit .ge. run)) then
               found_run = .true.
+              looking_for_run = .false.
               parsing_run_list = .false.
             end if
           else
@@ -178,7 +185,7 @@ c      endif
           end if
             
         end do
-        if (.not. found_run) then
+        if (looking_for_run) then
           if (debug) write (6,*)
      $         'Didn''t find run -- skipping to next run list!'
           read (chan, 1001, end=9999) line
@@ -238,11 +245,14 @@ c     write(6,*)'g_ctp_database is setting the following CTP parameters'
         if (debug) write (6,*) line
       end do
       
+      looking_for_run = .true.
+      parsing_run_list = .true.
+      goto 111
 * Done with open file.
 
  9999 close (unit=chan)
       if (.not. found_run) then
-        write(6,*) 'cant find run ',run,' in "'//filename//'"'
+        write(6,*) 'cant find run ',run,' in "',filename,'"'
       end if
 
       return
