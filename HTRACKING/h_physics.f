@@ -19,6 +19,9 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.18  1996/08/30 19:59:36  saw
+* (JRA) Improved track length calculation.  Photon E calc. for (gamma,p)
+*
 * Revision 1.17  1996/04/30 12:46:06  saw
 * (JRA) Add pathlength and rf calculations
 *
@@ -113,6 +116,7 @@
 *
 *--------------------------------------------------------
 *
+      ierr=0
       hphi_lab=0.0
       if(hsnum_fptrack.gt.0) then       ! Good track has been selected
         itrkfp=hsnum_fptrack
@@ -174,7 +178,13 @@
         hsy_cal = hsy_fp + hsyp_fp * hcal_1pr_zpos
 
         hsbeta_p = hsp/max(hsenergy,.00001)
-        hspathlength = -1.47e-2*hsx_fp + 11.6*hsxp_fp - 36*hsxp_fp**2
+C old 'fit' value for pathlen correction
+C        hspathlength = -1.47e-2*hsx_fp + 11.6*hsxp_fp - 36*hsxp_fp**2
+C new 'modeled' value.
+        hspathlength = 12.462*hsxp_fp + 0.1138*hsxp_fp*hsx_fp
+     &                -0.0154*hsx_fp - 72.292*hsxp_fp**2
+     &                -0.0000544*hsx_fp**2 - 116.52*hsyp_fp**2
+
         hspath_cor = hspathlength/hsbeta_p -
      &      hpathlength_central/speed_of_light*(1/max(.01,hsbeta_p) - 1)
 
@@ -229,13 +239,10 @@ c           write(37,'(12f7.2,12f8.3,12f8.5)') (hsdc_track_coord(ip),ip=1,12),
 c     &    (dist(ip),ip=1,12),(res(ip),ip=1,12)
         endif
 
-c        cosgamma = 1.0/sqrt(1.0 + hsxp_tar**2 + hsyp_tar**2)
-c        coshstheta = cosgamma*(sinhthetas * hsyp_tar + coshthetas)
-c        hstheta = acos(coshstheta)
-c        write(*,*)hstheta
         hstheta =htheta_lab*TT/180. - hsyp_tar
         HSP = hpcentral*(1 + hsdelta/100.)
         sinhstheta = sin(hstheta)
+        coshstheta = cos(hstheta)
         tandelphi = hsxp_tar /
      &       ( sinhthetas - coshthetas*hsyp_tar)
         hsphi = hphi_lab + atan(tandelphi) ! hphi_lab MUST BE MULTIPLE OF
@@ -246,21 +253,21 @@ c        write(*,*)hstheta
      $           gtarg_a(gtarg_num),gtarg_thick(gtarg_num),
      $           gtarg_dens(gtarg_num),
      $           hstheta,gtarg_theta,1.0,hseloss)
-            HSENERGY=HSENERGY- hseloss
+            hsenergy=hsenergy- hseloss
           else
             hseloss=0.
           endif
-          hqx = -HSP*cos(HSxp_tar)*sin(HSTHETA)
+          hqx = -HSP*cos(HSxp_tar)*sinhstheta
           hqy = -HSP*sin(Hsxp_tar)
-          hqz = gpbeam - HSP*cos(HSxp_tar)*cos(HSTHETA)
+          hqz = gpbeam - HSP*cos(HSxp_tar)*coshstheta
           hqabs= sqrt(hqx**2+hqy**2+hqz**2)
           W2 = gtarg_mass(gtarg_num)**2 +
      $         2.*gtarg_mass(gtarg_num)*(gpbeam-hsp) - hqabs**2 +
      $         (gpbeam-hsp)**2
           if(W2.ge.0 ) then
-            HINVMASS = SQRT(W2)
+            hinvmass = SQRT(W2)
           else
-            HINVMASS = 0.
+            hinvmass = 0.
           endif
         else
           if(gtarg_z(gtarg_num).gt.0.)then
@@ -268,7 +275,7 @@ c        write(*,*)hstheta
      $           gtarg_a(gtarg_num),
      $           gtarg_thick(gtarg_num),gtarg_dens(gtarg_num),
      $           hstheta,gtarg_theta,hsbeta,hseloss)
-            HSENERGY = HSENERGY - hseloss
+            hsenergy = hsenergy - hseloss
           else
             hseloss=0.
           endif
@@ -307,7 +314,7 @@ ccc   SAW 1/17/95.  Add the stuff after the or.
 *     More kinematics
 *
         if(hsbeta.gt.0) then
-          hsmass2 = (1/hsbeta*2 - 1)*hsp**2
+          hsmass2 = (1/hsbeta**2 - 1)*hsp**2
         else
           hsmass2 = 1.0e10
         endif
@@ -338,14 +345,24 @@ ccc   SAW 1/17/95.  Add the stuff after the or.
         endif
 
 *     Calculate photon energy in GeV (E89-012):
-        denom = hphoto_mtarget - hsenergy + hsp*cos(hstheta)
+        denom = hphoto_mtarget - hsenergy + hsp*coshstheta
         if (abs(denom).le.1.e-10) then
            hsegamma = -1000.0
         else
            hsegamma = ( hsenergy * hphoto_mtarget
-     &       - 0.5*(hphoto_mtarget**2 + hphoto_mparticle**2
+     &       - 0.5*(hphoto_mtarget**2 + hpartmass**2
      &       - hphoto_mrecoil**2) ) / denom
-        end if
+        endif
+
+*     Photon energy (assuming D2 target, Proton or Deut. detected).
+        denom = 1.87561 - sqrt(hsp**2 + 0.93827**2) + hsp*coshstheta
+        hsegamma_p= ( sqrt(hsp**2+0.93827**2) * 1.87561
+     &       - 0.5*(1.87561**2 + 0.93827**2 - 0.93957**2) )/denom
+
+        denom = 1.87561 - sqrt(hsp**2 + 1.87561**2) + hsp*coshstheta
+        hsegamma_d= ( sqrt(hsp**2+1.87561**2) * 1.87561
+     &       - 0.5*(1.87561**2 + 1.87561**2 - 0.13497**2) )/denom
+
 c------------------------------------------------------------------------
 
 *
