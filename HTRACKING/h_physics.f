@@ -19,7 +19,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.5  1995/01/27 20:24:14  cdaq
+* Revision 1.6  1995/02/02 13:05:40  cdaq
+* (SAW) Moved best track selection code into H_SELECT_BEST_TRACK (new)
+*
+* Revision 1.5  1995/01/27  20:24:14  cdaq
 * (JRA) Add some useful physics quantities
 *
 * Revision 1.4  1995/01/18  16:29:26  cdaq
@@ -45,7 +48,7 @@
 *
       logical ABORT
       character*(*) err
-      integer*4 ierr
+      integer ierr
 *
       INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_routines.dec'
@@ -58,39 +61,13 @@
       INCLUDE 'hms_scin_parms.cmn'
 *
 *     local variables 
-      integer*4 goodtrack,track,i,ip
-      real*4    COSGAMMA,COSHSTHETA,SINHSTHETA,TANDELPHI,SINHPHI
-      real*4    p3, t1,ta,t3,hminv2,chi2min,chi2perdeg
+      integer*4 i,ip
+      real*4 cosgamma,tandelphi,sinhphi,coshstheta,sinhstheta
+      real*4 t1,ta,p3,t3,hminv2
+*
 *--------------------------------------------------------
 *
-      ABORT= .FALSE.
-      err= ' '
-*     Need to test to chose the best track
-      if( HNTRACKS_FP.GT. 0) then
-         chi2min= 1e10
-         goodtrack = 0
-         do track = 1, HNTRACKS_FP
-
-            if( HNFREE_FP(track).ge. hsel_ndegreesmin) then
-               chi2perdeg = HCHI2_FP(track)/FLOAT(HNFREE_FP(track))
-               if(chi2perdeg .lt. chi2min) then
-*     simple particle id tests
-                  if( ( HDEDX(track,1) .gt. hsel_dedx1min)  .and.
-     &                 ( HDEDX(track,1) .lt. hsel_dedx1max)  .and.
-     &                 ( HBETA(track)   .gt. hsel_betamin)   .and.
-     &                 ( HBETA(track)   .lt. hsel_betamax)   .and.
-     &                 ( HTRACK_ET(track) .gt. hsel_etmin)   .and.
-     &                 ( HTRACK_ET(track) .lt. hsel_etmax)) then
-                     goodtrack = track
-                  endif                 ! end test on track id
-               endif                    ! end test on lower chisq
-            endif                       ! end test on minimum number of degrees of freedom
-         enddo                          ! end loop on track
-         HSNUM_TARTRACK = goodtrack
-         HSNUM_FPTRACK  = goodtrack
-         if(goodtrack.eq.0) return      ! return if no valid tracks
-
-*     ! with zero set in HSNUM_...
+       if(HSNUM_FPTRACK.gt.0) then      ! Good track has been selected
          HSP = HP_TAR(HSNUM_TARTRACK)
          HSENERGY = SQRT(HSP*HSP+HPARTMASS*HPARTMASS)
 *     Copy variables for ntuple so we can test on them
@@ -137,10 +114,13 @@ c         hsy_dc2 = hsy_fp + hsyp_fp * hdc_zpos(2)
            endif
          enddo                             
 
+         hsnum_scin_hit = hnum_scin_hit(hsnum_fptrack)
+         hsnum_pmt_hit = hnum_pmt_hit(hsnum_fptrack)
+
          HSCHI2PERDEG  = HCHI2_FP(HSNUM_FPTRACK)
      $        /FLOAT(HNFREE_FP(HSNUM_FPTRACK))
          HSNFREE_FP = HNFREE_FP(HSNUM_FPTRACK)
-         cosgamma = 1.0/sqrt(1.0 + hsxp_tar**2 - hsyp_tar**2)
+         cosgamma = 1.0/sqrt(1.0 + hsxp_tar**2 + hsyp_tar**2)
          coshstheta = cosgamma*(sinhthetas * hsyp_tar + coshthetas)
 ccc         if( ABS(COSHSTHETA) .LT. 1.) then
             HSTHETA = ACOS(COSHSTHETA)
@@ -184,10 +164,11 @@ ccc SAW 1/17/95.  Add the stuff after the or.
          endif                          ! end test on SINHSTHETA=0
 *     
          
-*     execute physics singles tests
-         ierr=thtstexeb('hms_physics_sing')     
+*     execute physics singles tests.
+***         ierr=thtstexeb('hms_physics_sing') ! This is going to get executed twice!!!
 *
 *     calculate physics statistics and wire chamber efficencies
+*     call h_dump_tof   ! Turn on to write raw timing information for fitting
          call h_physics_stat(ABORT,err)
          ABORT= ierr.ne.0 .or. ABORT
          IF(ABORT) THEN
