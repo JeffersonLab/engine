@@ -15,7 +15,10 @@
 *-      Modified 25 Mar 1994      DFG
 *-                                Change name of print routine
 * $Log$
-* Revision 1.1  1994/04/13 17:33:38  cdaq
+* Revision 1.2  1994/10/11 19:24:54  cdaq
+* (SAW) Formatting changes
+*
+* Revision 1.1  1994/04/13  17:33:38  cdaq
 * Initial revision
 *
 *-----------------------------------------------------------------------
@@ -49,39 +52,39 @@
 *-----Compute impact point coordinates on the 
 *-----calorimeter front and back surfaces
       do nt=1,hntracks_fp
-         dz_f=hcal_zmin-hz_fp(nt)
-         dz_b=hcal_zmax-hz_fp(nt)
+        dz_f=hcal_zmin-hz_fp(nt)
+        dz_b=hcal_zmax-hz_fp(nt)
 *
-         xf=hx_fp(nt)+hxp_fp(nt)*dz_f
-         xb=hx_fp(nt)+hxp_fp(nt)*dz_b
+        xf=hx_fp(nt)+hxp_fp(nt)*dz_f
+        xb=hx_fp(nt)+hxp_fp(nt)*dz_b
 *
-         yf=hy_fp(nt)+hyp_fp(nt)*dz_f
-         yb=hy_fp(nt)+hyp_fp(nt)*dz_b
+        yf=hy_fp(nt)+hyp_fp(nt)*dz_f
+        yb=hy_fp(nt)+hyp_fp(nt)*dz_b
 *
-         hcluster_track(nt)   =-1   !Track is outside the fiducial volume
-         htrack_xc(nt)        = xf
-         htrack_yc(nt)        = yf
+        hcluster_track(nt)   =-1        !Track is outside the fiducial volume
+        htrack_xc(nt)        = xf
+        htrack_yc(nt)        = yf
 *
-*--------Is the track inside the fiducial volume?
-         if(xf.le.hcal_fv_xmax  .and.  xf.ge.hcal_fv_xmin  .and.
-     &      xb.le.hcal_fv_xmax  .and.  xf.ge.hcal_fv_xmin  .and.
-     &      yf.le.hcal_fv_ymax  .and.  yf.ge.hcal_fv_ymin  .and.
-     &      yb.le.hcal_fv_ymax  .and.  yb.ge.hcal_fv_ymin) then
+*-------Is the track inside the fiducial volume?
+        if(xf.le.hcal_fv_xmax  .and.  xf.ge.hcal_fv_xmin  .and.
+     &       xb.le.hcal_fv_xmax  .and.  xf.ge.hcal_fv_xmin  .and.
+     &       yf.le.hcal_fv_ymax  .and.  yf.ge.hcal_fv_ymin  .and.
+     &       yb.le.hcal_fv_ymax  .and.  yb.ge.hcal_fv_ymin) then
 *
-            hcluster_track(nt)=0   !Track is inside the fiducial volume
-            if(hnclusters_cal.gt.0) then
+          hcluster_track(nt)=0          !Track is inside the fiducial volume
+          if(hnclusters_cal.gt.0) then
 *
-*--------------Search for a cluster matching this track
-               do nc=1,hnclusters_cal
-                  delta_x=abs(xf-hcluster_xc(nc))
-                  if(delta_x.le.0.5*hcal_block_xsize) then
-                     hcluster_track(nt)=nc   !Track matches cluster #nc
-                     hntracks_cal      =hntracks_cal+1
-                  endif   !End ... if matched
-               enddo   !End loop over clusters
-            endif   !End ... if inside fiducial volume
-         endif   !End ... if number of clusters > 0
-      enddo   !End loop over detector tracks
+*------------Search for a cluster matching this track
+            do nc=1,hnclusters_cal
+              delta_x=abs(xf-hcluster_xc(nc))
+              if(delta_x.le.(0.5*hcal_block_xsize + hcal_slop)) then
+                hcluster_track(nt)=nc   !Track matches cluster #nc
+                hntracks_cal      =hntracks_cal+1
+              endif                     !End ... if matched
+            enddo                       !End loop over clusters
+          endif                         !End ... if inside fiducial volume
+        endif                           !End ... if number of clusters > 0
+      enddo                             !End loop over detector tracks
 *
   100 continue
       if(hdbg_tracks_cal.gt.0) call h_prt_cal_tracks
