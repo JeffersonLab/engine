@@ -1,5 +1,4 @@
-       subroutine total_eloss(arm,prt,z,a,tgthick,dens,angle,tgangle,
-     &                          beta,e_loss)
+       subroutine total_eloss(arm,prt,angle,beta,e_loss)
 
 *------------------------------------------------------------------------------
 *-         Prototype C routine
@@ -17,6 +16,24 @@
 *-    Created   1-Dec-1995  Rolf Ent
 *
 * $Log$
+* Revision 1.7  2002/12/27 22:21:55  jones
+*    a. Ioana Niculescu made major changes in the subroutine call variables.
+*    b. Code now expects to get target info from parameter files.
+*    c. include gen_run_info.cmn
+*    d. Many more checks that nonzero parameter values are present.
+*       Corrects problem with checking variable 'angle' instead of 'tgangle'
+*    e. Has either beer can or tuna can.
+*    f. Use gtarg_type = 1 tuna can,2 beer can, >=21 solid and assume
+*        gtarg_type <=20 is liquid rather than based on target z.
+* 
+*
+* Wed Aug 16 14:25:55 EDT 2000
+* replaced switch old_tgeom with with run number check  B.Z
+* 
+* Revision 1.6  1999/09/03 13:22:51  meod
+* Added tuna-can geometry.  Added switch, old_tgeom, to enable 
+* old beer can geometry
+*
 * Revision 1.6  1999/09/03 13:22:51  saw
 * Explicitely type 0.1 constand in max as double
 *
@@ -87,7 +104,9 @@
       include 'gen_data_structures.cmn'
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
+      include 'gen_run_info.cmn'
       include 'gen_constants.par'
+
 *
 
 *
@@ -120,85 +139,74 @@
       s_win_loss     = 0.0
       liquid =.FALSE.
 *********************ENABLE SWITCH***********************************
-      if(gen_eloss_enable.eq.0.) goto 100  !if 0 don't do eloss correction.
+      if (gen_eloss_enable.eq.0.) goto 100  !if 0 don't do eloss correction.
 ***********************SETUP OF PARAMETERS****************************
-
-*******DEFAULT SETTINGS********************************** 
+* Parameters should be accessed via the various common blocks
+* No more hardwired #s in the code!!! (I.N. 2001)
 *
-*     These default settings are the original values from the first
-*     total_eloss.f program.
-*********************************************************    
-*target cell****************
-      if(gcell_radius.eq.0.0) gcell_radius = 1.325*2.54
-      if(gz_cell.eq.0.0) gz_cell = 13.0
-      if(ga_cell.eq.0.0) ga_cell = 27.0
-      if(gcell_den.eq.0.0) gcell_den = 2.70
-      if(gwall_thk.eq.0.0) gwall_thk = 0.005*2.54*gcell_den
-      if(gend_thk.eq.0.0) gend_thk = 0.005*2.54*gcell_den
-      if(gfront_thk.eq.0.0) gfront_thk = 0.003*2.54*gcell_den ! aluminum front window
-
-*HMS********
-*    HMS scattering chamber window specs.********** 
-      if(hscat_win_den.eq.0.0) hscat_win_den = 2.70
-      if(hscat_win_thk.eq.0.0) hscat_win_thk = 0.016*2.54*hscat_win_den
-      if(hscat_win_z.eq.0.0) hscat_win_z = 13.0
-      if(hscat_win_a.eq.0.0) hscat_win_a = 27.0
-*    HMS entrance window specs.********************
-      if(hdet_ent_thk.eq.0.0) hdet_ent_thk = 0.005*2.54*1.35
-     &      + 0.017*2.54*0.74
-      if(hdet_ent_den.eq.0.0) hdet_ent_den = (5.0*1.35
-     &      + 17.0*0.74)/22.
-*    HMS scattering chamber window specs.********** 
-      if(hdet_ent_z.eq.0.0) hdet_ent_z = 2.67
-      if(hdet_ent_a.eq.0.0) hdet_ent_a = 4.67
-*SOS********
-*    SOS scattering chamber window specs.**********
-      if(sscat_win_den.eq.0.0) sscat_win_den = 2.70
-      if(sscat_win_thk.eq.0.0) sscat_win_thk = 0.008*2.54*sscat_win_den
-      if(sscat_win_z.eq.0.0) sscat_win_z = 13.0
-      if(sscat_win_a.eq.0.0) sscat_win_a = 27.0
-*    SOS entrance window specs.********************
-      if(sdet_ent_thk.eq.0.0) sdet_ent_thk = 0.0015*2.54*1.35
-     &      + 0.006*2.54*0.74
-      if(sdet_ent_den.eq.0.0) sdet_ent_den = (1.5*1.35
-     &      + 6.0*0.74)/7.5
-      if(sdet_ent_z.eq.0.0) sdet_ent_z = 2.67
-      if(sdet_ent_a.eq.0.0) sdet_ent_a = 4.67
-***********END OF DEFAULT SETTINGS***********************
-
-
+*     
+* z,a,tgthick,dens come via a common block
+*
+      z=gtarg_z(gtarg_num)
+      a=gtarg_a(gtarg_num)
+      tgthick=gtarg_thick(gtarg_num)
+      dens=gtarg_dens(gtarg_num)
+      tgangle=gtarg_theta  
 *******DIVIDE BY ZERO CHECK**************************************
-      if (z.eq.0.0) then
-         write(6,*) 'total_eloss: gtarg_z = 0.0, return immediately'
-         goto 100
+      if ((gcell_radius.eq.0.0).or.(gz_cell.eq.0.0).or.(ga_cell.eq.0.0)
+     & .or.(gcell_den.eq.0.0).or.(gwall_thk.eq.0.0).or.(gend_thk.eq.0.0)
+     & .or.(gfront_thk.eq.0.0)) then
+         write(6,*)'Total_eloss: Uninitialized target variable(s)!!!'
+         write(6,*)'gcell_radius = ',gcell_radius
+         write(6,*)'gz_cell      = ',gz_cell
+         write(6,*)'ga_cell      = ',ga_cell
+         write(6,*)'gcell_den    = ',gcell_den
+         write(6,*)'gwall_thk    = ',gwall_thk
+         write(6,*)'gend_thk     = ',gend_thk
+         write(6,*)'gfront_thk   = ',gfront_thk
+         stop
+      elseif ((arm.eq.1).and.((hscat_win_den.eq.0.0).or.
+     & (hscat_win_thk.eq.0.0).or.(hscat_win_z.eq.0.0).or.
+     & (hscat_win_a.eq.0.0).or.(hdet_ent_z.eq.0.0).or.
+     & (hdet_ent_a.eq.0.0))) then
+            write(6,*)'Total_eloss: Uninitialized HMS window specs!!!'
+            stop
+      elseif ((arm.eq.2).and.((sscat_win_den.eq.0.0).or.
+     & (sscat_win_thk.eq.0.0).or.(sscat_win_z.eq.0.0).or.
+     & (sscat_win_a.eq.0.0).or.(sdet_ent_z.eq.0.0).or.
+     & (sdet_ent_a.eq.0.0))) then
+            write(6,*)'Total_eloss: Uninitialized SOS window specs!!!'
+            stop
+      else
       endif
-      if (a.eq.0.0) then
-         write(6,*) 'total_eloss: gtarg_a = 0.0, return immediately'
-         goto 100
+
+      if ((z*a*tgthick*dens*tgangle).eq.0.0) then
+         write(6,*)'Total_eloss: Uninitialized target material!!!'
+         write(6,*)
+         write(6,*)'target angle = ',gtarg_theta
+         write(6,*)'target type  = ',gtarg_type
+         write(6,*)'thickness    = ',tgthick
+         write(6,*)'Z            = ',z
+         write(6,*)'A            = ',A
+         write(6,*)'density      = ',dens
+
+         stop
+      else
       endif
-      if(tgthick.eq.0.0) then
-         write(6,*)'total_eloss: gtarg_thick = 0.0, return immediately'
-         goto 100
-      endif
-      if(dens.eq.0.0) then
-         write(6,*)'total_eloss: gtarg_dens = 0.0, return immediately'
-         goto 100
-      endif
+*
+* If an angle is provided, use it, otherwise use the central
+* spectrometer angle
+*
       if((angle.eq.0.0).and.(arm.ne.0)) then 
-         write(6,*)'total_eloss: angle = 0.0, using centr spectr angle'
+         write(6,*)'total_eloss: angle = 0.0, using centr spectr angle (VT)'
          if (arm.eq.1) angle=htheta_lab*3.14159/180.
          if (arm.eq.2) angle=stheta_lab*3.14159/180.
       endif
       if((arm.ne.0).and.(abs(angle-3.14159/2.).lt.0.0001)) then
-         write(6,*) 'total_eloss: angle = 90 degrees, using centr spectr angle'
+         write(6,*) 'total_eloss: angle = 90 degrees, using centr spectr angle(VT)'
          if (arm.eq.1) angle=htheta_lab*3.14159/180.
          if (arm.eq.2) angle=stheta_lab*3.14159/180.
       endif
-      if((z.eq.0.0).or.(a.eq.0.0).or.(tgthick.eq.0.0).or.(dens.eq.0.0)
-     &     .or.((arm.ne.0).and.((angle.eq.0).or.(angle.eq.3.14159/2.)))) THEN
-          write(6,*)'total_eloss: divide by zero error' 
-          GOTO 100
-      ENDIF  
 
  10            format(7(2x,A10))
  20            format(12x,6(2x,f10.9))
@@ -237,13 +245,14 @@
          p_temp=max(p_temp,.1D0)
          frac_temp=mass_electron/p_temp
 
-         if(gelossdebug.ne.0) write(6,*) 'total_eloss: p_temp=',p_temp
-         if(gelossdebug.ne.0) write(6,*) 'total_eloss: frac_temp=',frac_temp
-
+         if(gelossdebug.ne.0) then
+            write(6,*) 'total_eloss: p_temp=',p_temp
+            write(6,*) 'total_eloss: frac_temp=',frac_temp
+         endif
+         
          beta_temp=1./sqrt(1.+frac_temp**2)
          gamma_temp=sqrt(1.+frac_temp**2)/frac_temp
-         X_temp=log(beta_temp*gamma_temp)/log(10.)
-         
+         X_temp=log(beta_temp*gamma_temp)/log(10.)   
          velocity=X_temp
       else
          velocity=beta
@@ -254,7 +263,7 @@
 * target cell rather than the end.
 **************************************************************************
 
-       if ((tgthick.ne.0.).and.(dens.ne.0.)) then
+       if ((gtarg_type.eq.2).and.(tgthick.ne.0.).and.(dens.ne.0.)) then
           crit_angle= atan(gcell_radius/(tgthick/dens/2))
        else
           crit_angle= 0.45
@@ -264,7 +273,7 @@
 * Define hydrogen, deuterium and 3,4He as liquid targets: z<=2
 **************************************************************************
 
-       if (z.le.2.4) liquid =.TRUE. 
+       if (gtarg_type.le.20) liquid =.TRUE. 
 
 **************************************************************************
 * For debugging purposes, print out the variables that have been given
@@ -284,17 +293,28 @@
 * Calculate the electron beam energy loss before the target center. 
 ********************************************************************
 
-      if(arm.eq.0) then
-
-         if(liquid) then			! cryo target
-            call loss(.true.,gz_cell,ga_cell,gfront_thk,gcell_den,velocity,
-     &                 targ_win_loss)	!aluminum
+      if(arm.eq.0) then      
+         if (liquid) then			! cryo target !
+            call loss(.true.,gz_cell,ga_cell,gfront_thk,gcell_den !aluminum
+     >           ,velocity,targ_win_loss)	
             total_loss = total_loss + targ_win_loss
-            thick = tgthick/2.
+
+            if(gtarg_type.eq.2) then
+               thick = tgthick/2. !!! beer-can !!! 
+            else if (gtarg_type.eq.1) then
+               thick = gcell_radius*dens !!! tuna-can !!!
+            else
+               write(6,*)'Unknown liquid target specified ',gtarg_type
+               stop
+            endif
             call loss(.true.,z,a,thick,dens,velocity,front_loss) !liquid
             total_loss = total_loss + front_loss
          else
-            if (abs(sin(angle)).ge.0.01) then
+*
+*     Assume that tgangle = 90 deg 
+*     corresponds to a target normal to the beam direction
+*
+            if (abs(sin(tgangle)).ge.0.01) then
                thick = tgthick/2./abs(sin(tgangle))
             else
                thick = tgthick/2./0.01
@@ -315,49 +335,56 @@
 *********************************************************************
 *Calculate the energy loss of ejectile after the target center.
 *********************************************************************
-
-*Liquid target*********
-         if (liquid .and. arm.ne.0) then
-            thick_front = 0.0
-            if (cos(angle).ge.0.01) then
-               thick_front= abs(tgthick/2./cos(angle))
-            else
-               thick_front= abs(tgthick/2./0.01)
-            endif
-            if (abs(sin(angle)).ge.0.01) then
-               thick_side  = abs(gcell_radius*dens/abs(sin(angle)))
-            else
-               thick_side  = abs(gcell_radius*dens/0.01)
-            endif
-
-*Through the end of the cell.
-            if (angle.le.crit_angle)then        
-               call loss(prt,z,a,thick_front,dens,velocity,back_loss)  !liquid
-               total_loss = total_loss + back_loss
+      if (liquid .and. arm.ne.0) then
+*     Liquid target*********
+         if (gtarg_type.eq.1) then   
+            call loss(prt,z,a,thick,dens,velocity,back_loss) !liquid
+            total_loss = total_loss + back_loss
+            call loss(prt,gz_cell,ga_cell,gfront_thk,gcell_den !aluminum 
+     >           ,velocity,cell_wall_loss)                          
+            total_loss = total_loss + cell_wall_loss
+            
+         else
+*     write(6,*)'********************I am HERE*****************(VT)'
+            thick=0.0
+            thick_front=0.0
+            thick_side=0.0
+*     Through the end of the cell.
+            if (angle.le.crit_angle) then        
                if (cos(angle).ge.0.01) then
                   thick = abs(gend_thk/cos(angle))
+                  thick_front= abs(tgthick/2./cos(angle))
                else
                   thick = abs(gend_thk/0.01)
+                  thick_front= abs(tgthick/2./0.01)
                endif
-               call loss(prt,gz_cell,ga_cell,thick,gcell_den,velocity,
-     &                   cell_wall_loss)                          !aluminum
+               call loss(prt,z,a,thick_front,dens,velocity,back_loss) !liquid
+               total_loss = total_loss + back_loss
+               call loss(prt,gz_cell,ga_cell,thick,gcell_den,velocity !aluminum
+     >              ,cell_wall_loss)                          
                total_loss = total_loss + cell_wall_loss
-*Through the side of the cell. 
-             else					
-                call loss(prt,z,a,thick_side,dens,velocity,back_loss)  !liquid
-                total_loss = total_loss + back_loss
-                if (abs(sin(angle)).ge.0.01) then
-                   thick = abs(gwall_thk/abs(sin(angle)))
-                else
-                   thick = abs(gwall_thk/0.01)
-                endif
-                call loss(prt,gz_cell,ga_cell,thick,gcell_den,velocity,
-     &                     cell_wall_loss)                        !aluminum
-                total_loss = total_loss + cell_wall_loss
-             endif
-
+*     Through the side of the cell. 
+            else					
+               if (abs(sin(angle)).ge.0.01) then
+                  thick = abs(gwall_thk/abs(sin(angle)))
+                  thick_side  = abs(gcell_radius*dens/abs(sin(angle)))
+               else
+                  thick = abs(gwall_thk/0.01)
+                  thick_side  = abs(gcell_radius*dens/0.01)
+               endif
+               call loss(prt,z,a,thick_side,dens,velocity,back_loss) !liquid
+               total_loss = total_loss + back_loss
+               call loss(prt,gz_cell,ga_cell,thick,gcell_den,velocity !aluminum
+     >              ,cell_wall_loss)                        
+               total_loss = total_loss + cell_wall_loss
+            endif
+            if(total_loss.GE.1e-2)
+     &           write(*,*) arm, velocity, 
+     &           "total_loss ", total_loss, " back_loss ",back_loss
+            
+         endif
 *Solid target************
-         else    
+      else    
 
 *     In any ordinary case, the solid target has angle of 90 degrees
 *     with respect to the beam direction: tgangle=90.*degrad
@@ -365,31 +392,31 @@
 *     csa 1/5/99 -- Here I define tgangle > 90 deg to mean that the
 *     solid target is facing the SOS.
 
-            if (arm.eq.1) then  ! HMS
-               tg_spect_angle = angle + tgangle
-            elseif (arm.eq.2) then ! SOS
-               tg_spect_angle = angle - tgangle
-            else
-               write(6,*)' '
-               write(6,*)' bad ''arm'' in total_eloss.f'
-               write(6,*)' '
-            endif
-
-            if (abs(sin(tg_spect_angle)).ge.0.01) then
-               thick = abs((tgthick/2.)/abs(sin(tg_spect_angle)))
-            else
-               thick = abs((tgthick/2.)/0.01)
-            endif
-            call loss(prt,z,a,thick,dens,velocity,back_loss) !generic solid target
-
-            total_loss = total_loss + back_loss
+         if (arm.eq.1) then     ! HMS
+            tg_spect_angle = angle + tgangle
+         elseif (arm.eq.2) then ! SOS
+            tg_spect_angle = angle - tgangle
+         else
+            write(6,*)' '
+            write(6,*)' bad ''arm'' in total_eloss.f'
+            write(6,*)' '
          endif
+         if (abs(sin(tg_spect_angle)).ge.0.01) then
+            thick = abs((tgthick/2.)/abs(sin(tg_spect_angle)))
+         else
+            thick = abs((tgthick/2.)/0.01)
+         endif
+         call loss(prt,z,a,thick,dens,velocity,back_loss) !generic solid target
+         total_loss = total_loss + back_loss
+      endif
 
 ************************************
 * Now calculate the HMS energy loss.  
 ************************************
 
       if (arm.eq.1) then			! HMS
+
+c       write(*,*) "In HMS"
 
 * 16 mil aluminum scattering chamber window on HMS side
          call loss(prt,hscat_win_z,hscat_win_a,hscat_win_thk,
