@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.14  1995/05/11 19:11:45  cdaq
+* Revision 1.15  1995/05/17 14:12:13  cdaq
+* (JRA) Add hscintimes user histogram
+*
+* Revision 1.14  1995/05/11  19:11:45  cdaq
 * (JRA) Replace hardwired TDC offsets with ctp variables.
 *
 * Revision 1.13  1995/02/23  13:23:49  cdaq
@@ -65,6 +68,7 @@
       include 'gen_data_structures.cmn'
       include 'hms_scin_parms.cmn'
       include 'hms_scin_tof.cmn'
+      include 'hms_id_histid.cmn'
 
       logical abort
       character*1024 errmsg
@@ -190,6 +194,7 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
       do ihit = 1 , hscin_tot_hits
         if (htwo_good_times(ihit)) then
           fptime  = hscin_cor_time(ihit) - hscin_zpos(ihit)/29.989
+          call hf1(hidscinalltimes,fptime,1.)
           if (abs(fptime-hstart_time_center).le.hstart_time_slop) then
             time_sum = time_sum + fptime
             time_num = time_num + 1
