@@ -5,6 +5,12 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.33  2002/12/27 21:43:14  jones
+*    add variable geloss to common gen_beam
+*    add gtarg_type to common gen_target
+*    change GMAX_NUM_BPMS=3
+*    change GBPM_KAPPA to array  GBPM_KAPPA(GMAX_NUM_BPMS)
+*
 * Revision 1.32  2002/09/24 20:30:17  jones
 *   a. Add genable_hms_fieldcorr to common/gen_satcorr/
 *   b. Move array definitions from COMMON block to REAL statement
@@ -137,13 +143,15 @@
 *
       REAL*4 GBEAM_X,GBEAM_Y    !final beam position from bpm & raster info
       REAL*4 GBEAM_XP,GBEAM_YP  !final beam angles from bpm & raster info
+      REAL*4 geloss
 
       COMMON/GEN_BEAM/
      &     GEBEAM,
      &     GPBEAM,
      &     G_BEAM_TARGET_S,
      &     GBEAM_X,GBEAM_Y,
-     &     GBEAM_XP,GBEAM_YP
+     &     GBEAM_XP,GBEAM_YP,
+     &     geloss
 *
 *     CTPTYPE=parm
 *
@@ -169,7 +177,8 @@
      &     gtarg_a,
      &     gtarg_lrad,
      &     gtarg_thick,
-     &     gtarg_dens
+     &     gtarg_dens,
+     &     gtarg_type
 *
 *     Energy loss parameters for the targets. Vansyoc, March 98
 *
@@ -221,7 +230,7 @@
 *
 
       INTEGER*4 GMAX_NUM_BPMS
-      PARAMETER(GMAX_NUM_BPMS=4)      
+      PARAMETER(GMAX_NUM_BPMS=3)      
       INTEGER*4 GNUM_BPM_SIGNALS
       PARAMETER(GNUM_BPM_SIGNALS=4)   !1=X+,2=X-,3=Y+,4=Y-
 
@@ -239,7 +248,7 @@
 *
 *     CTPTYPE=parm
 *
-      real*4 GBPM_KAPPA
+      real*4 GBPM_KAPPA(GMAX_NUM_BPMS)
       real*4 GBPM_ALPHA_X(GMAX_NUM_BPMS),GBPM_ALPHA_Y(GMAX_NUM_BPMS)
       real*4 GBPM_X_OFF(GMAX_NUM_BPMS),GBPM_Y_OFF(GMAX_NUM_BPMS)
       real*4 GBPM_XP_PED(GMAX_NUM_BPMS),GBPM_XM_PED(GMAX_NUM_BPMS)
