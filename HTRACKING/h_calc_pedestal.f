@@ -1,6 +1,9 @@
       subroutine h_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.13.2.6  2003/07/28 17:59:01  cdaq
+* Force h_aero_new_threshold_neg and pos  to be 400. (mkj)
+*
 * Revision 1.13.2.5  2003/07/18 18:24:49  cdaq
 * Eliminate forced setting of  haero_new_threshold_pos(pmt) = 400. and
 * use haero_new_ped_pos(pmt)+15.   (Vardan)
@@ -241,7 +244,7 @@
         haero_new_rms_pos(pmt) = sqrt(max(0.,sig2))
         haero_new_threshold_pos(pmt) = haero_new_ped_pos(pmt)+15.
 c
-***        haero_new_threshold_pos(pmt) = 400. ! mkj 4/9/03 force to 400 
+        haero_new_threshold_pos(pmt) = 400. ! mkj 4/9/03 force to 400 
 c
 *note channels with 2 sigma difference from parameter file values.
 * JRA - don't have the necessary variables (e.g. haero_all_ped_pos),
@@ -262,7 +265,7 @@ c
         haero_new_rms_neg(pmt) = sqrt(max(0.,sig2))
         haero_new_threshold_neg(pmt) = haero_new_ped_neg(pmt)+15.
 c
-***        haero_new_threshold_neg(pmt) = 400. ! mkj 4/9/03 force to 400 
+        haero_new_threshold_neg(pmt) = 400. ! mkj 4/9/03 force to 400 
  
         if (num.gt.haero_min_peds .and. haero_min_peds.ne.0) then
           haero_neg_ped_mean(pmt) = haero_new_ped_neg(pmt)
