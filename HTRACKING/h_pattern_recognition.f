@@ -14,6 +14,9 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
+* Revision 1.13  1996/11/05 21:51:08  saw
+* (JRA) Initialize hdc_sing_drifttime elements to -100
+*
 * Revision 1.12  1996/04/30 12:45:36  saw
 * (JRA) Histogram the card id.
 *
@@ -94,6 +97,10 @@
       err=' '
 *
 *   
+      do pln=1,12
+        hdc_sing_drifttime(pln)=-100
+      enddo
+
       ihit = 0
       hnspace_points_tot = 0
       do ich=1,hdc_num_chambers
