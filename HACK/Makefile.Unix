@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.6  1996/04/30 12:30:51  saw
+# (SAW) New makefile style
+#
 # Revision 1.5  1996/01/16 21:29:41  cdaq
 # (SAW) Use $(CP) instead of cp
 #
@@ -15,6 +18,7 @@
 # Revision 1.1  1994/07/25  18:03:10  cdaq
 # Initial revision
 #
+NEWSTYLE = 1
 include $(Csoft)/etc/Makefile
 
 hack_source = hack_register_variables.f hack_initialize.f hack_anal.f \
@@ -27,6 +31,7 @@ sources = $(libsources)
 lib_targets := $(patsubst %.f, libhack.a(%.o), $(sources))
 
 install-dirs := lib
+bin_targets =
 
 #default:
 #	@echo "nothing to make"
@@ -35,7 +40,7 @@ install-dirs := lib
 # Rule for making the register subroutines
 #
 r_%.f : %.cmn $(MAKEREG)
-	$(MAKEREG) $< -o $@ -e /dev/null
+	(cd .. ; $(MAKEREG) $(<F) -o $(@F) -e /dev/null)
 
 .PRECIOUS: r_%.f
 ifdef NFSDIRECTORY
@@ -45,7 +50,8 @@ ifdef NFSDIRECTORY
 .PRECIOUS: %.f
 endif
 
-%.cmn :: ../INCLUDE/%.cmn
+%.cmn :: ../../INCLUDE/%.cmn
 	$(CP) $< $@
+	$(CP) $< ../$@
 
 include $(sources:.f=.d)
