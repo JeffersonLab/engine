@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.7.2.3  2003/08/12 17:35:34  cdaq
+* Add variables for e00-108 (hamlet)
+*
 * Revision 1.7.2.2  2003/06/26 12:39:55  cdaq
 * changes for e01-001  (mkj)
 *
@@ -64,6 +67,8 @@
 
       real proton_mass
       parameter ( proton_mass = 0.93827247 ) ! [GeV/c^2]
+      
+      real Wsq
 *
 *--------------------------------------------------------
       err= ' '
@@ -72,6 +77,20 @@
       IF(.NOT.s_Ntuple_exists) RETURN       !nothing to do
 *
       m= 0
+      m= m+1
+      s_Ntuple_contents(m)= SSOMEGA !
+      m= m+1
+      s_Ntuple_contents(m)= SSBIGQ2 !
+      m= m+1
+      s_Ntuple_contents(m)= SSX_bj !
+      m= m+1
+      s_Ntuple_contents(m)= SSQ3 !
+      Wsq=SINVMASS*SINVMASS
+      m= m+1
+      s_Ntuple_contents(m)= Wsq !
+      m= m+1
+      s_Ntuple_contents(m)= SSTHET_GAMMA !
+
       m= m+1
       s_Ntuple_contents(m)= SCER_NPE_SUM ! cerenkov photoelectron spectrum
       m= m+1

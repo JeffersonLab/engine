@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.7.2.3  2003/08/12 17:35:32  cdaq
+* Add variables for e00-108 (hamlet)
+*
 * Revision 1.7.2.2  2003/06/26 12:39:52  cdaq
 * changes for e01-001  (mkj)
 *
@@ -134,6 +137,19 @@
       ENDIF
 *
       m= 0
+      m= m+1
+      s_Ntuple_tag(m)= 'omega' ! 
+      m= m+1
+      s_Ntuple_tag(m)= 'q2' ! 
+      m= m+1
+      s_Ntuple_tag(m)= 'xbj' ! 
+      m= m+1
+      s_Ntuple_tag(m)= 'qabs' ! 
+      m= m+1
+      s_Ntuple_tag(m)= 'W2' ! 
+      m= m+1
+      s_Ntuple_tag(m)= 'ssthet_g' ! 
+
       m= m+1
       s_Ntuple_tag(m)= 'scer_npe' ! cerenkov photoelectron spectrum
       m= m+1

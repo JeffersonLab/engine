@@ -22,6 +22,9 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 * $Log$
+* Revision 1.5.2.2  2003/08/12 17:35:34  cdaq
+* Add variables for e00-108 (hamlet)
+*
 * Revision 1.5.2.1  2003/07/03 14:06:09  cdaq
 * update for fpi-2 (xu)
 *
@@ -89,7 +92,7 @@ c     On June 19, Xucc changhed back to remove the cut on ccointime_hms
 c     for online purpose.
 
        if(HSNUM_FPTRACK .gt. 0 .AND. SSNUM_FPTRACK .gt. 0
-     > .and. scer_npe_sum.gt.0.2)! check for tracks 
+     > .and. scer_npe_sum.gt.0.2 )
      >  call c_ntuple_keep(ABORT,err)
 c       write(6,*)'scer_npe=',scer_npe
 

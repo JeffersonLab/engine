@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.9.2.2  2003/08/12 17:35:57  cdaq
+* Add variables for e00-108 (hamlet)
+*
 * Revision 1.9.2.1  2003/07/15 19:04:15  cdaq
 * add ssinplane
 *
@@ -614,6 +617,10 @@
       REAL*4 SSY                   ! fraction of lepton''s E lost in lab
       REAL*4 SSW                   ! Invariant mass of recoil system
       REAL*4 SSW2                  ! Invariant mass**2 of recoil system
+
+      REAL*4 SSOMEGA
+      REAL*4 SSTHET_GAMMA
+      REAL*4 SSX_bj
 *
       INTEGER*4 SSNUM_FPTRACK      ! Index of focal plane track chosen
       INTEGER*4 SSNUM_TARTRACK     ! Index of target track chosen
@@ -661,7 +668,10 @@
      & SSTRACK_E3,
      & SSTRACK_E4,
      & SSCORRP,
-     & SSCORRE
+     & SSCORRE,
+     & SSOMEGA,
+     & SSTHET_GAMMA,
+     & SSX_bj
 *     & SSTHETAQ, SSPHIQ,
 *
       COMMON/SOS_PHYSICS_I4/

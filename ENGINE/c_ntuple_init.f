@@ -80,6 +80,9 @@ c       c_ntuple_contents(m)= hsmass2
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.9.2.3  2003/08/12 17:35:33  cdaq
+* Add variables for e00-108 (hamlet)
+*
 * Revision 1.9.2.2  2003/07/03 14:06:09  cdaq
 * update for fpi-2 (xu)
 *
@@ -314,15 +317,10 @@ c      m= m+1
       m=m+1
       c_Ntuple_tag(m)= 'missmass'
       m=m+1
-
-*    xucc added begin
-      c_Ntuple_tag(m)= 'Eexc'
-      m=m+1
+* 
       c_Ntuple_tag(m)= 'Emx'
       m=m+1
       c_Ntuple_tag(m)= 'mmx'
-      m=m+1
-      c_Ntuple_tag(m)= 'Eexcx'
       m=m+1
 *  seems to add some new infor about excitation energy
 *     xucc added end
@@ -335,11 +333,20 @@ c      m= m+1
       m=m+1
       c_Ntuple_tag(m)= 'PmOop'
       m=m+1
-
-*     xucc added begin
+      c_Ntuple_tag(m)= 'omega'
+      m=m+1
       c_Ntuple_tag(m)= 'Q2'
       m=m+1
-      c_Ntuple_tag(m)= 'W'
+      c_Ntuple_tag(m)= 'W2'
+      m=m+1
+      c_Ntuple_tag(m)= 'Xbj'
+      m=m+1
+      c_Ntuple_tag(m)= 'qabs'
+      m=m+1
+      c_Ntuple_tag(m)= 'Zm'
+      m=m+1
+      c_Ntuple_tag(m)= 'Pt2'
+
       m=m+1
       c_Ntuple_tag(m)= 't'
       m=m+1
@@ -351,11 +358,6 @@ c      m= m+1
       m=m+1
       c_ntuple_tag(m)= 'phi_pq'
 
-*     xucc added begin
-      m=m+1
-      c_Ntuple_tag(m)= 'epsilon'
-      m=m+1
-      c_ntuple_tag(m)= 'gamma_v'
 * added more thing for fpi analysis
 *     xucc added end
 

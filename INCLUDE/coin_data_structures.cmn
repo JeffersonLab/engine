@@ -22,6 +22,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.3.2.3  2003/08/12 17:35:57  cdaq
+* Add variables for e00-108 (hamlet)
+*
 * Revision 1.3.2.2  2003/07/03 14:05:33  cdaq
 * update for fpi-2 (xu)
 *
@@ -57,11 +60,11 @@
       REAL*4 CS                    ! s computed from spectrometers only
       REAL*4 CTHETAPQ              ! Angle between q and hadron
 
-*     xucc change begin
 *     REAL*4 CPHIPQ                ! Azimuthal angle of hadron about q
       real*4 CPHIPI                ! Azimuthal angle of pion and e- scat plane
       REAL*4 C_W2,C_BIGQ2,C_INVMASS,C_OMEGA
-*    xucc change end
+
+      REAL*4 X_bj,qabs,z_m,pt2
 
 *     REAL*4 P_SOS_CORR,P_HMS_CORR   ! remove this line by xucc
 
@@ -85,7 +88,7 @@
 *    xucc change begin
      &     cs, cthetapq, cphipi,
      &     c_w2,c_bigq2,c_invmass,
-     &     c_omega,
+     &     c_omega,x_bj,qabs,z_m,pt2,
      &     cmissing_mom_par,cmissing_mom_perp,cmissing_mom_oop,
      &     cmin_t,c_epsilon,c_gamma_v,c_e_bind,ce_exc,ctphix,ctphiy,
      &     cmmx,cmex,ce_excx

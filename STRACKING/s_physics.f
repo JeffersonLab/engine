@@ -21,6 +21,9 @@
 *
 *
 * $Log$
+* Revision 1.19.2.3  2003/08/12 17:36:21  cdaq
+* Add variables for e00-108 (hamlet)
+*
 * Revision 1.19.2.2  2003/07/15 19:04:40  cdaq
 * add calculation of ssinplane
 *
@@ -399,6 +402,11 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
          ssq3    = sqrt(scalar(ss_qvec,ss_qvec))
          ssbigq2 = -mink(ss_qvec,ss_qvec) 
          W2      = mink(Wvec,Wvec)
+
+         ssomega = gebeam-ssenergy
+         ssthet_gamma = asin((ssenergy*sin(sstheta))/ssq3)
+         ssx_bj = ssbigq2/(2.0*mass_nucleon*ssomega)
+
          if(W2.ge.0 ) then
             sinvmass = SQRT(W2)
          else

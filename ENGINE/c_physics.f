@@ -7,8 +7,8 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
-* Revision 1.7.2.5  2003/08/12 13:27:38  cdaq
-* *** empty log message ***
+* Revision 1.7.2.6  2003/08/12 17:35:33  cdaq
+* Add variables for e00-108 (hamlet)
 *
 * Revision 1.7.2.4  2003/07/15 19:05:20  cdaq
 * use h(s)inplane in physics calcs
@@ -205,7 +205,7 @@ c      write(6,*)'c_phys: at 2'
 
       else
 c         write(6,*) 'c_physics: no electron arm'
-         return
+c         return
       endif
 
 c        if(m_hadron.lt.0.8) then
@@ -290,6 +290,12 @@ c      ekinrec = sqrt(cmissing_mom**2 + m_rec**2)-m_rec
 c        write(6,*)'c_phys: at 3'
 
       c_bigq2 = cqabs*cqabs - c_omega*c_omega             !Q^2
+      
+      X_bj = c_bigq2/(2.0*mp*c_omega)
+      qabs = sqrt(c_bigq2+c_omega*c_omega)
+      z_m = hsenergy/c_omega 
+      pt2 = cmissing_mom_perp*cmissing_mom_perp
+
       c_w2 = targmass**2 + 2*targmass*c_omega - c_bigq2
 
 c      write(6,*)'p_e=',p_e
@@ -320,8 +326,7 @@ c      e_pion_lab = sqrt(p_h**2 + mpi2)                    ! Pion Energy
 * INNER PRODUCT OF q AND THE LAB HADRON MOMENTUM YIELDS ANGLE theta_pq
    
       dot = phx*cqx + phy*cqy + phz*cqz
-      if((cqabs*p_h).eq.0.) write(6,*) 
-     >  'c_physics: dot problem',cqabs,p_h,abs(dot/(cqabs*p_h))
+      if((cqabs*p_h).eq.0.) write(6,*) 'c_physics: dot problem'
       if(abs(dot/(cqabs*p_h)).le.1.0) then
         cthetapq = acos(dot/(cqabs*p_h))
       else

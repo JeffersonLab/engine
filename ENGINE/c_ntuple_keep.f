@@ -11,6 +11,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.9.2.3  2003/08/12 17:35:33  cdaq
+* Add variables for e00-108 (hamlet)
+*
 * Revision 1.9.2.2  2003/07/03 14:06:08  cdaq
 * update for fpi-2 (xu)
 *
@@ -202,16 +205,12 @@
       m= m+1
       c_Ntuple_contents(m)= cmissing_mass ! missing mass
       m= m+1
-*    xucc added begin
-      c_Ntuple_contents(m)= ce_exc ! Excitation Energy
-      m= m+1
+* 
       c_Ntuple_contents(m)= cmex  ! missing energy
       m= m+1
       c_Ntuple_contents(m)= cmmx ! missing mass
       m= m+1
-      c_Ntuple_contents(m)= ce_excx ! Excitation Energy
-      m= m+1
-*     xucc added end
+* 
  
       c_Ntuple_contents(m)= cmissing_mom ! Missing Momentum
       m= m+1
@@ -221,18 +220,26 @@
       m= m+1
       c_Ntuple_contents(m)= cmissing_mom_oop ! pm out of plane
       m= m+1
-*    xucc added begin
+      c_Ntuple_contents(m)= c_omega 
+      m= m+1
       c_Ntuple_contents(m)= c_bigq2  ! q2?
       m= m+1
-      c_Ntuple_contents(m)= c_invmass
+      c_Ntuple_contents(m)= c_w2
+      m= m+1
+      c_Ntuple_contents(m)= X_bj
+      m= m+1
+      c_Ntuple_contents(m)= qabs
+      m= m+1
+      c_Ntuple_contents(m)= z_m
+      m= m+1
+      c_Ntuple_contents(m)= pt2
+
+
       m= m+1
       c_Ntuple_contents(m)= cmin_t
       m= m+1
-*    xucc added end
-
       c_Ntuple_contents(m)= cthetapq 
       m= m+1
-*     xucc added begin
       c_Ntuple_contents(m)= cphipi ! originally cphipq 
 
 *    ! cphipq=asin(p_rot_y/p_rot_mag_check)/deg_rad
@@ -242,11 +249,6 @@
 *    !         It is an angel about pi particle
 *    !         why is it p_new_x? p_new_y? not yet know. 
 
-      m= m+1
-      c_Ntuple_contents(m)= c_epsilon
-      m= m+1
-      c_Ntuple_contents(m)= c_gamma_v
-*    xucc added end
 
 * on June 21,2003, xucc added following for online purpose
       m=m+1
