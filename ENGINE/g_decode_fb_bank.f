@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.22  1996/01/22 15:13:56  saw
+* (JRA) Put BPM/Raster data into MISC data structures
+*
 * Revision 1.21  1996/01/16 20:49:40  cdaq
 * (SAW) Handle banks containing two parallel link ROC banks
 *
@@ -184,7 +187,9 @@
       endif
 *
       slot = jiand(jishft(bank(pointer),-27),'1F'X)
-      if(slot.gt.0.and.slot.le.G_DECODE_MAXSLOTS) then
+      if(slot.gt.0.and.slot.le.G_DECODE_MAXSLOTS .and.
+     $     roc.gt.0 .and. roc.le.g_decode_maxrocs) then
+c      write(6,*) 'pointer,roc,slot=',pointer,roc,slot
         subadd = jiand(jishft(bank(pointer),
      $       -g_decode_subaddbit(roc,slot)),'7F'X)
 
@@ -317,12 +322,12 @@
 *
 *     BPM/Raster ADC values. 
 *
-          else if (did.eq.CBPM_ID) then
+          else if (did.eq.GMISC_ID) then
             pointer = pointer +
      $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &           maxwords, did,
-     $           CMAX_BPM_HITS, CBPM_TOT_HITS, CBPM_DEVICE,
-     $           CBPM_ADCNUM, 1, CBPM_ADCVAL, 0, 0, 0)
+     $           GMAX_MISC_HITS, GMISC_TOT_HITS, GMISC_RAW_ADDR1,
+     $           GMISC_RAW_ADDR2, 1, GMISC_RAW_DATA, 0, 0, 0)
               
 *
 *     Data from Uninstrumented channels and slots go into a special array

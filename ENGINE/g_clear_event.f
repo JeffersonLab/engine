@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard, Hampton U.
 *-   Modified 19-Nov-1993   Kevin B. Beard for new error standards
 *-      $Log$
+*-      Revision 1.9  1996/01/22 15:14:48  saw
+*-      (JRA) Put BPM/Raster data into MISC data structures
+*-
 *-      Revision 1.8  1996/01/16 18:41:36  cdaq
 *-      (JRA) Explain that routine runs at start of each event
 *-
@@ -64,7 +67,7 @@
       gmc_err= ' '
 *
       GUNINST_TOT_HITS = 0              ! Unistrumented hit counter
-      CBPM_TOT_HITS = 0
+      GMISC_TOT_HITS = 0
 *
       call H_clear_event(HMS_ABORT,HMS_err)
 *

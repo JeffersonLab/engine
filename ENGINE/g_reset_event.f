@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
 * $Log$
+* Revision 1.11  1996/01/22 15:15:01  saw
+* (JRA) Put BPM/Raster data into MISC data structures
+*
 * Revision 1.10  1996/01/16 17:07:55  cdaq
 * (JRA) Zero out ADC threshold readback array
 *
@@ -81,12 +84,12 @@
       enddo
       GUNINST_TOT_HITS = 0
 *
-      do hit=1,CMAX_BPM_HITS
-        CBPM_DEVICE(hit) = 0
-        CBPM_ADCNUM(hit) = 0
-        CBPM_ADCVAL(hit) = 0
+      do hit=1,GMAX_MISC_HITS
+        GMISC_RAW_ADDR1(hit) = 0
+        GMISC_RAW_ADDR2(hit) = 0
+        GMISC_RAW_DATA(hit) = 0
       enddo
-      CBPM_TOT_HITS = 0
+      GMISC_TOT_HITS = 0
 *
       do slot=1,gmax_slot_with_adc
         do roc=1,gmax_roc_with_adc
