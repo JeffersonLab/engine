@@ -16,6 +16,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.2  1999/03/25 22:11:47  saw
+ *   Don't allow octal integer constants via the 0nnn syntax.  Keep 0xnnn hex.
+ *
  *   Revision 1.1  1998/12/07 22:11:13  saw
  *   Initial setup
  *
@@ -341,7 +344,11 @@ thStatus thParmLineSet(char *line)
       switch(toktyp)
 	{
 	case TOKINT:
-	  sscanf(args[i],"%li",&lval);
+	  if(args[i][0] == '0' && (args[i][1] == 'x' || args[i][1] == 'X')) {
+	    sscanf(args[i],"%li",&lval); /* Treat as Hex */
+	  } else {
+	    sscanf(args[i],"%ld",&lval); /* Treat as decimal */
+	  }
 	  dval = lval;
 	  break;
 	case TOKFLOAT:

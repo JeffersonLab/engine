@@ -16,8 +16,16 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.2  1999/03/25 22:11:47  saw
+ *   Don't allow octal integer constants via the 0nnn syntax.  Keep 0xnnn hex.
+ *
  *   Revision 1.1  1998/12/07 22:11:13  saw
  *   Initial setup
+ *
+ *   Revision 1.17  1999/03/01 20:00:50  saw
+ *   Fix bug where a series of numbers added or subtracted in a parameter line
+ *   got evaluated to be just the first number.  Improve the scientific
+ *   number detection to do this.
  *
  *   Revision 1.16  1996/07/31 20:36:56  saw
  *   Support floating point for mod command.  Add trig functions.
@@ -346,7 +354,11 @@ char *thGetTok(char *linep, int *tokenid, char **tokstr,
     switch(thIDToken(string))
       {
       case TOKINT:
-	sscanf(string,"%li",tokval);
+	if(string[0] == '0' && (string[1] == 'x' || string[1] == 'X')) {
+	  sscanf(string,"%li",tokval); /* Treat as Hex */
+	} else {
+	  sscanf(string,"%ld",tokval); /* Treat as decimal */
+	}
 	*tokenid = OPPUSHINT;
 	break;
       case TOKFLOAT:
@@ -868,7 +880,11 @@ thStatus thBookaTest(char *line, CODEPTR *codeheadp, CODEPTR *codenextp,
 	    *codenext++ = *(DAINT *)&f;
 	  } else {
 	    DAINT i;
-	    sscanf(token,"%li",&i);
+	    if(token[0] == '0' && (token[1] == 'x' || token[1] == 'X')) {
+	      sscanf(token,"%li",&i); /* Treat as Hex */
+	    } else {
+	      sscanf(token,"%ld",&i); /* Treat as decimal */
+	    }
 	    *codenext++ = i;
 	  }
 	  break;
@@ -991,9 +1007,8 @@ thStatus thBookaTest(char *line, CODEPTR *codeheadp, CODEPTR *codenextp,
     daVarRegister((int) 0, &var);	/* Create or replace variable */
     *((void **)codenext)++ = ((DAINT *) var.varptr);
     /* Save the token string for future reference */
-    *((void **)codenext) =  ((void *) malloc(strlen(token)+1));
+    *((void **)codenext) = ((void *) malloc(strlen(token)+1));
     strcpy((char *) *((void **)codenext)++,token);
-    
   }
   *codenextp = codenext;
   return(status);
