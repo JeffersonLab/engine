@@ -1,0 +1,32 @@
+**************************begin: c_Ntuple.cmn ***********************
+*- 
+*-   Created    8-Apr-1994   Kevin B. Beard, Hampton Univ.
+*........................................................................
+*- Misc. info. required for COIN Ntuple
+* $Log$
+* Revision 1.1  1994/04/14 16:05:45  cdaq
+* Initial revision
+*
+*
+      integer HMAX_Ntuple_size
+      parameter (HMAX_Ntuple_size= 100)
+      integer default_c_Ntuple_ID
+      parameter (default_c_Ntuple_ID= 9010)
+*
+      logical c_Ntuple_exists
+      integer c_Ntuple_ID
+      character*80 c_Ntuple_filename
+      character*80 c_Ntuple_name
+      character*80 c_Ntuple_title
+      character*80 c_Ntuple_directory
+      integer c_Ntuple_IOchannel,c_Ntuple_size
+      character*8 c_Ntuple_tag(HMAX_Ntuple_size)
+      real c_Ntuple_contents(HMAX_Ntuple_size)
+*
+      COMMON /COIN_Ntuple/ c_Ntuple_exists,c_Ntuple_ID,
+     &                     c_Ntuple_IOchannel,c_Ntuple_size, 
+     &                      c_Ntuple_tag,c_Ntuple_contents,
+     &                       c_Ntuple_filename,c_Ntuple_name,
+     &                        c_Ntuple_title,c_Ntuple_directory
+ 
+****************************end: c_Ntuple.cmn ***********************
