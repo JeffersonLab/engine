@@ -8,6 +8,9 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change HPLANE_PARAM to individual arrays
 * $Log$
+* Revision 1.6  1995/10/10 13:49:33  cdaq
+* (JRA) Cosmetics and comments
+*
 * Revision 1.5  1995/05/22 19:39:13  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -30,107 +33,109 @@
       include "hms_geometry.cmn"
 *
 *     local variables
-      integer*4 iplane,i,j,k,pindex,ich
+      integer*4 pln,i,j,k,pindex,ich
       real*4 cosalpha,sinalpha,cosbeta,sinbeta,cosgamma,singamma,z0
       real*4 stubxchi,stubxpsi,stubychi,stubypsi
       real*4 sumsqupsi,sumsquchi,sumcross,denom
 *
 *     read basic parameters from CTP input file
-*     hdc_zpos(iplane) = Z0
-*     hdc_alpha_angle(iplane) = ALPHA
-*     hdc_beta_angle(iplane)  = BETA
-*     hdc_gamma_angle(iplane) = GAMMA
-*     hdc_pitch(iplane)       = Wire spacing
-*     hdc_nrwire(iplane)      = Number of wires
-*     hdc_central_wire(iplane) = Location of center of wire 1
-*     hdc_sigma(iplane)       = sigma
+*     hdc_zpos(pln) = Z0
+*     hdc_alpha_angle(pln) = ALPHA
+*     hdc_beta_angle(pln)  = BETA
+*     hdc_gamma_angle(pln) = GAMMA
+*     hdc_pitch(pln)       = Wire spacing
+*     hdc_nrwire(pln)      = Number of wires
+*     hdc_central_wire(pln) = Location of center of wire 1
+*     hdc_sigma(pln)       = sigma
 *
       hdc_planes_per_chamber = hdc_num_planes / hdc_num_chambers
 *
 *     loop over all planes
 
-      do iplane=1,hdc_num_planes
-        hdc_plane_num(iplane)=iplane
-        z0=hdc_zpos(iplane)
-        cosalpha = cos(hdc_alpha_angle(iplane))
-        sinalpha = sin(hdc_alpha_angle(iplane))
-        cosbeta  = cos(hdc_beta_angle(iplane))
-        sinbeta  = sin(hdc_beta_angle(iplane))
-        cosgamma = cos(hdc_gamma_angle(iplane))
-        singamma = sin(hdc_gamma_angle(iplane))
+      do pln=1,hdc_num_planes
+        hdc_plane_num(pln)=pln
+        z0=hdc_zpos(pln)
+        cosalpha = cos(hdc_alpha_angle(pln))
+        sinalpha = sin(hdc_alpha_angle(pln))
+        cosbeta  = cos(hdc_beta_angle(pln))
+        sinbeta  = sin(hdc_beta_angle(pln))
+        cosgamma = cos(hdc_gamma_angle(pln))
+        singamma = sin(hdc_gamma_angle(pln))
 *
-        hsinbeta(iplane) = sinbeta
-        hcosbeta(iplane) = cosbeta
+        hsinbeta(pln) = sinbeta
+        hcosbeta(pln) = cosbeta
 *     make sure cosbeta is not zero
         if(abs(cosbeta).lt.1e-10) then
           write(hluno,'('' unphysical beta rotation in hms plane'',i4,
-     &      ''    beta='',f10.5)') iplane,hdc_beta_angle(iplane)
+     &      ''    beta='',f10.5)') pln,hdc_beta_angle(pln)
         endif
-        htanbeta(iplane) = sinbeta / cosbeta
+        htanbeta(pln) = sinbeta / cosbeta
 *
-*     compute chi,psi to x,y,z transformation coefficient
-        hzchi(iplane) = -cosalpha*sinbeta + sinalpha*cosbeta*singamma
-        hzpsi(iplane) =  sinalpha*sinbeta + cosalpha*cosbeta*singamma
-        hxchi(iplane) = -cosalpha*cosbeta - sinalpha*sinbeta*singamma
-        hxpsi(iplane) =  sinalpha*cosbeta - cosalpha*sinbeta*singamma
-        hychi(iplane) =  sinalpha*cosgamma
-        hypsi(iplane) =  cosalpha*cosgamma
+* compute chi,psi to x,y,z transformation coefficient(comments are beta=gamma=0)
+        hzchi(pln) = -cosalpha*sinbeta + sinalpha*cosbeta*singamma  !  =0.
+        hzpsi(pln) =  sinalpha*sinbeta + cosalpha*cosbeta*singamma  !  =0.
+        hxchi(pln) = -cosalpha*cosbeta - sinalpha*sinbeta*singamma  !-cos(a)
+        hxpsi(pln) =  sinalpha*cosbeta - cosalpha*sinbeta*singamma  ! sin(a)
+        hychi(pln) =  sinalpha*cosgamma ! sin(a)
+        hypsi(pln) =  cosalpha*cosgamma ! cos(a)
 *
 *     stub transfromations are done in beta=gamma=0 system
-        stubxchi = -cosalpha
-        stubxpsi =  sinalpha
-        stubychi =  sinalpha
-        stubypsi =  cosalpha
-*
+        stubxchi = -cosalpha                                   !-cos(a)
+        stubxpsi =  sinalpha                                   ! sin(a)
+        stubychi =  sinalpha                                   ! sin(a)
+        stubypsi =  cosalpha                                   ! cos(a)
+
+* parameters for wire propogation correction. dt=distance from centerline of
+* chamber = ( xcoeff*x + ycoeff*y )*corr / veloc.
+        if (cosalpha .le. 0.707) then  !x-like wire, need dist. from x=0 line
+          hdc_readout_x(pln) = .true.
+          hdc_readout_corr(pln) = 1./sinalpha
+        else                           !y-like wire, need dist. from y=0 line
+          hdc_readout_x(pln) = .false.
+          hdc_readout_corr(pln) = 1./cosalpha
+        endif
 *
 *     fill hpsi0,hchi0,hz0  used in stub fit
 *
-        sumsqupsi = hzpsi(iplane)**2 + hxpsi(iplane)**2 + hypsi(iplane)**2
-        sumsquchi = hzchi(iplane)**2 + hxchi(iplane)**2 + hychi(iplane)**2
-        sumcross =   hzpsi(iplane)*hzchi(iplane) + hxpsi(iplane)*hxchi(iplane)
-     &             + hypsi(iplane)*hychi(iplane)
-        denom = sumsqupsi*sumsquchi-sumcross**2 
-        hpsi0(iplane) = (-z0*hzpsi(iplane)*sumsquchi
-     &                   +z0*hzchi(iplane)*sumcross) / denom
-        hchi0(iplane) = (-z0*hzchi(iplane)*sumsqupsi
-     &                   +z0*hzpsi(iplane)*sumcross) / denom
-*     calculate magnitude of hphi0
-        hphi0(iplane) = sqrt(
-     &         (z0+hzpsi(iplane)*hpsi0(iplane)+hzchi(iplane)*hchi0(iplane))**2
-     &          + (hxpsi(iplane)*hpsi0(iplane)+hxchi(iplane)*hchi0(iplane))**2
-     &          + (hypsi(iplane)*hpsi0(iplane)+hychi(iplane)*hchi0(iplane))**2 )
-        if(z0.lt.0) hphi0(iplane)=-hphi0(iplane)        
+        sumsqupsi = hzpsi(pln)**2 + hxpsi(pln)**2 + hypsi(pln)**2 ! =1.
+        sumsquchi = hzchi(pln)**2 + hxchi(pln)**2 + hychi(pln)**2 ! =1.
+        sumcross =   hzpsi(pln)*hzchi(pln) + hxpsi(pln)*hxchi(pln)
+     &             + hypsi(pln)*hychi(pln)                       ! =0.
+        denom = sumsqupsi*sumsquchi-sumcross**2                        ! =1.
+        hpsi0(pln) = (-z0*hzpsi(pln)*sumsquchi                   !  =0.
+     &                   +z0*hzchi(pln)*sumcross) / denom
+        hchi0(pln) = (-z0*hzchi(pln)*sumsqupsi                   !  =0.
+     &                   +z0*hzpsi(pln)*sumcross) / denom
+*     calculate magnitude of hphi0                               !  =z0
+        hphi0(pln) = sqrt(
+     &         (z0+hzpsi(pln)*hpsi0(pln)+hzchi(pln)*hchi0(pln))**2
+     &          + (hxpsi(pln)*hpsi0(pln)+hxchi(pln)*hchi0(pln))**2
+     &          + (hypsi(pln)*hpsi0(pln)+hychi(pln)*hchi0(pln))**2 )
+        if(z0.lt.0) hphi0(pln)=-hphi0(pln)        
 *
-*     hstubcoef used in stub fits
-*     check these   I don't think they are correct
-        denom = stubxpsi*stubychi 
-     &          - stubxchi*stubypsi
-        hstubcoef(iplane,1)= stubychi/(hdc_sigma(iplane)*denom)
-        hstubcoef(iplane,2)= -stubxchi/(hdc_sigma(iplane)*denom)
-        hstubcoef(iplane,3)= hphi0(iplane)*hstubcoef(iplane,1)
-        hstubcoef(iplane,4)= hphi0(iplane)*hstubcoef(iplane,2)
+* hstubcoef used in stub fits. check these. I don't think they are correct.
+        denom = stubxpsi*stubychi - stubxchi*stubypsi     !  =1.
+        hstubcoef(pln,1)= stubychi/(hdc_sigma(pln)*denom)  !sin(a)/sigma
+        hstubcoef(pln,2)= -stubxchi/(hdc_sigma(pln)*denom) !cos(a)/sigma
+        hstubcoef(pln,3)= hphi0(pln)*hstubcoef(pln,1)     !z0*sin(a)/sig
+        hstubcoef(pln,4)= hphi0(pln)*hstubcoef(pln,2)     !z0*cos(a)/sig
 *
 *     xsp and ysp used in space point pattern recognition
 *
-        hxsp(iplane) = hychi(iplane) / denom
-        hysp(iplane) = -hxchi(iplane) / denom
+        hxsp(pln) = hychi(pln) / denom                 !sin(a)
+        hysp(pln) = -hxchi(pln) / denom                        !cos(a)
 *
 *     compute track fitting coefficients
 *
-        hplane_coeff(1,iplane) =  hzchi(iplane)
-        hplane_coeff(2,iplane) = -hzchi(iplane)
-        hplane_coeff(3,iplane) =  hychi(iplane)*
-     &                            (hdc_zpos(iplane)-hlocrayzt)
-        hplane_coeff(4,iplane) =  hxchi(iplane)*
-     &                            (hlocrayzt-hdc_zpos(iplane))
-        hplane_coeff(5,iplane) =  hychi(iplane)
-        hplane_coeff(6,iplane) = -hxchi(iplane)
-        hplane_coeff(7,iplane) =  hzchi(iplane)*hypsi(iplane)
-     &                          - hychi(iplane)*hzpsi(iplane)
-        hplane_coeff(8,iplane) = -hzchi(iplane)*hxpsi(iplane)
-     &                          + hxchi(iplane)*hzpsi(iplane)
-        hplane_coeff(9,iplane) =  hychi(iplane)*hxpsi(iplane)
-     &                          - hxchi(iplane)*hypsi(iplane)
+        hplane_coeff(1,pln)= hzchi(pln)                                  ! =0.
+        hplane_coeff(2,pln)=-hzchi(pln)                                  ! =0.
+        hplane_coeff(3,pln)= hychi(pln)*(hdc_zpos(pln)-hlocrayzt) !sin(a)*(z-hlocrayzt)
+        hplane_coeff(4,pln)= hxchi(pln)*(hlocrayzt-hdc_zpos(pln)) !cos(a)*(z-hlocrayzt)
+        hplane_coeff(5,pln)= hychi(pln)                                  !sin(a)
+        hplane_coeff(6,pln)=-hxchi(pln)                                  !cos(a)
+        hplane_coeff(7,pln)= hzchi(pln)*hypsi(pln) - hychi(pln)*hzpsi(pln) !0.
+        hplane_coeff(8,pln)=-hzchi(pln)*hxpsi(pln) + hxchi(pln)*hzpsi(pln) !0.
+        hplane_coeff(9,pln)= hychi(pln)*hxpsi(pln) - hxchi(pln)*hypsi(pln) !1.
 *
       enddo                  !  end hdc_num_planes
 
