@@ -16,6 +16,12 @@
 *-    Created   1-Dec-1995  Rolf Ent
 *
 * $Log$
+* Revision 1.8  2003/09/05 20:06:07  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.7.2.1  2003/04/09 02:59:10  cdaq
+* Changed gtarg_type from a scaler to an array: gtarg_type(gtarg_num)
+*
 * Revision 1.7  2002/12/27 22:21:55  jones
 *    a. Ioana Niculescu made major changes in the subroutine call variables.
 *    b. Code now expects to get target info from parameter files.
@@ -118,7 +124,7 @@
       LOGICAL liquid
 
       REAL*4 crit_angle,tg_spect_angle
-      REAL*4 z,a,tgthick,dens,angle,tgangle,beta
+      REAL*4 z,a,tgthick,dens,angle,tgangle,beta,type
       REAL*4 thick,thick_side,thick_front,e_loss,total_loss
       REAL*4 targ_win_loss,front_loss,back_loss,cell_wall_loss
       REAL*4 scat_win_loss,air_loss,h_win_loss,s_win_loss
@@ -152,6 +158,7 @@
       tgthick=gtarg_thick(gtarg_num)
       dens=gtarg_dens(gtarg_num)
       tgangle=gtarg_theta  
+      type=gtarg_type(gtarg_num)
 *******DIVIDE BY ZERO CHECK**************************************
       if ((gcell_radius.eq.0.0).or.(gz_cell.eq.0.0).or.(ga_cell.eq.0.0)
      & .or.(gcell_den.eq.0.0).or.(gwall_thk.eq.0.0).or.(gend_thk.eq.0.0)
@@ -184,7 +191,7 @@
          write(6,*)'Total_eloss: Uninitialized target material!!!'
          write(6,*)
          write(6,*)'target angle = ',gtarg_theta
-         write(6,*)'target type  = ',gtarg_type
+         write(6,*)'target type  = ',type
          write(6,*)'thickness    = ',tgthick
          write(6,*)'Z            = ',z
          write(6,*)'A            = ',A
@@ -263,7 +270,7 @@
 * target cell rather than the end.
 **************************************************************************
 
-       if ((gtarg_type.eq.2).and.(tgthick.ne.0.).and.(dens.ne.0.)) then
+       if ((type.eq.2).and.(tgthick.ne.0.).and.(dens.ne.0.)) then
           crit_angle= atan(gcell_radius/(tgthick/dens/2))
        else
           crit_angle= 0.45
@@ -273,7 +280,7 @@
 * Define hydrogen, deuterium and 3,4He as liquid targets: z<=2
 **************************************************************************
 
-       if (gtarg_type.le.20) liquid =.TRUE. 
+       if (type.le.20) liquid =.TRUE. 
 
 **************************************************************************
 * For debugging purposes, print out the variables that have been given
@@ -299,12 +306,12 @@
      >           ,velocity,targ_win_loss)	
             total_loss = total_loss + targ_win_loss
 
-            if(gtarg_type.eq.2) then
+            if(type.eq.2) then
                thick = tgthick/2. !!! beer-can !!! 
-            else if (gtarg_type.eq.1) then
+            else if (type.eq.1) then
                thick = gcell_radius*dens !!! tuna-can !!!
             else
-               write(6,*)'Unknown liquid target specified ',gtarg_type
+               write(6,*)'Unknown liquid target specified ',type
                stop
             endif
             call loss(.true.,z,a,thick,dens,velocity,front_loss) !liquid
@@ -337,7 +344,7 @@
 *********************************************************************
       if (liquid .and. arm.ne.0) then
 *     Liquid target*********
-         if (gtarg_type.eq.1) then   
+         if (type.eq.1) then   
             call loss(prt,z,a,thick,dens,velocity,back_loss) !liquid
             total_loss = total_loss + back_loss
             call loss(prt,gz_cell,ga_cell,gfront_thk,gcell_den !aluminum 
