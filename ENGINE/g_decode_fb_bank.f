@@ -27,7 +27,10 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
-* Revision 1.12  1995/01/27 20:12:48  cdaq
+* Revision 1.13  1995/04/01 19:44:50  cdaq
+* (SAW) Add BPM hitlist
+*
+* Revision 1.12  1995/01/27  20:12:48  cdaq
 * (SAW) Add hacks to deal with parallel link data.  Pass lastslot variable to
 *       g_decode_fb_detector so it can find 1881M/1877 headers.
 *
@@ -227,6 +230,16 @@
      $             SMAX_MISC_HITS, SMISC_TOT_HITS, SMISC_RAW_ADDR1,
      $             SMISC_RAW_ADDR2, 1, SMISC_RAW_DATA, 0, 0, 0)
 
+*
+*     BPM/Raster ADC values. 
+*
+            else if (did.eq.CBPM_ID) then
+              pointer = pointer +
+     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &             maxwords, did,
+     $             CMAX_BPM_HITS, CBPM_TOT_HITS, CBPM_DEVICE,
+     $             CBPM_ADCNUM, 1, CBPM_ADCVAL, 0, 0, 0)
+              
 *
 *     Data from Uninstrumented channels and slots go into a special array
 *
