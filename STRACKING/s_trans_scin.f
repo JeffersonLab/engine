@@ -8,7 +8,10 @@
 * needed for the drift chamber and tof analysis.
 *
 * $Log$
-* Revision 1.7  1995/04/06 19:52:59  cdaq
+* Revision 1.8  1995/05/11 15:10:59  cdaq
+* (JRA) Replace hardwired TDC offsets with ctp variables.  Fix latent hmsism.
+*
+* Revision 1.7  1995/04/06  19:52:59  cdaq
 * (JRA) Change hardwired TDC offset to 100
 *
 * Revision 1.6  1995/02/23  13:25:28  cdaq
@@ -166,7 +169,7 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
         do ihit = 1 , sscin_tot_hits
           if (stwo_good_times(ihit)) then
             fptime  = sscin_cor_time(ihit) - sscin_zpos(ihit)/29.989
-            if (abs(fptime-100.).le.100) then
+            if (abs(fptime-sstart_time_center).le.sstart_time_slop) then
               time_sum = time_sum + fptime
               time_num = time_num + 1
             endif
@@ -174,8 +177,7 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
         enddo
         if (time_num.eq.0) then
           sgood_start_time = .false.
-          sstart_time = 150.		!150 ns is a rough average of time dif between trig
-                                        ! and wire firing.
+          sstart_time = sstart_time_center
         else
           sgood_start_time = .true.
           sstart_time = time_sum / float(time_num)
@@ -197,8 +199,8 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
 
       do ihit = 1 , sscin_tot_hits
         sgood_scin_time(dumtrk,ihit)=.false.
-        if (htwo_good_times(ihit)) then !require 2 tubes to be track indep.
-          if (abs(fptime-17.).le.25) then !throw out outliers.
+        if (stwo_good_times(ihit)) then !require 2 tubes to be track indep.
+          if (abs(fptime-sstart_time_center).le.sstart_time_slop) then !throw out outliers.
             sgood_scin_time(dumtrk,ihit)=.true.
             sscin_time(ihit)=sscin_cor_time(ihit)
             sscin_sigma(ihit)=sqrt(sscin_neg_sigma(ihit)**2 +
@@ -213,8 +215,8 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
       if ((goodtime(1) .or. goodtime(2)) .and.
      1     (goodtime(3) .or. goodtime(4))) then
 
-        sxp_fp(dumtrk)=1.0
-        syp_fp(dumtrk)=1.0
+        sxp_fp(dumtrk)=0.0
+        syp_fp(dumtrk)=0.0
         call s_tof_fit(abort,errmsg,dumtrk) !fit velocity of particle
         if (abort) then
           call g_prepend(here,errmsg)
