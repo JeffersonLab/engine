@@ -1,5 +1,10 @@
 #
 # $Log$
+# Revision 1.16  1996/01/22 15:56:58  saw
+# (JRA) Add g_analyze_beam_pedestal, g_analyze_misc,
+#       g_calc_beam_pedestal, g_calc_bpm_pedestal,
+#       g_calc_raster_pedestal, g_target_initialize, g_trans_misc
+#
 # Revision 1.15  1996/01/16 16:03:10  cdaq
 # (SAW) Add g_scaler_reset_event, g_extract_kinematics, g_output_thresholds,
 #       g_examine_go_info, g_kludgeup_kinematics, s_sv_nt_init, s_sv_nt_keep,
@@ -63,7 +68,10 @@ general_source = $(decode_source) g_clear_event.f \
 	g_examine_physics_event.f g_dump_histograms.f g_analyze_pedestal.f \
 	g_calc_pedestal.f g_ctp_database.f g_scaler_reset_event.f \
 	g_extract_kinematics.f g_output_thresholds.f \
-	g_examine_go_info.f g_kludgeup_kinematics.f
+	g_examine_go_info.f g_kludgeup_kinematics.f \
+	g_analyze_beam_pedestal.f g_analyze_misc.f \
+	g_calc_beam_pedestal.f g_calc_bpm_pedestal.f g_calc_raster_pedestal.f \
+	g_target_initialize.f g_trans_misc.f
 hms_source = h_clear_event.f h_initialize.f h_keep_results.f \
 	h_proper_shutdown.f h_reset_event.f \
 	h_register_variables.f
