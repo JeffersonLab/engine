@@ -10,9 +10,13 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard, HU
 *-    $Log$
-*-    Revision 1.5  1994/08/30 14:48:50  cdaq
-*-    (SAW) Add call to increment scalers
+*-    Revision 1.6  1995/01/13 18:15:39  cdaq
+*-    (SAW) Put in a missing else that conspired with a broken thgethit (CTP) so that
+*-    things actually worked on HPUX.  (But not Ultrix)
 *-
+* Revision 1.5  1994/08/30  14:48:50  cdaq
+* (SAW) Add call to increment scalers
+*
 * Revision 1.4  1994/07/21  19:51:14  cdaq
 * (SAW) Add call to thgethit
 *
@@ -54,21 +58,22 @@
       ierr= thgethit()
       ABORT= ierr.NE.0
       IF(ABORT) THEN
-         call G_build_note(':failure#$ in thgethit',
-     &                                 '$',ierr,' ',0.,' ',err)
-         ierr= thtstexe()
-         call thtstins                  ! Increment scalers
+        call G_build_note(':failure#$ in thgethit',
+     &       '$',ierr,' ',0.,' ',err)
+      else
+        ierr= thtstexe()
+        call thtstins                   ! Increment scalers
 *
-         ABORT= ierr.NE.0
-         IF(ABORT) THEN
-            call G_build_note(':failure#$ in thtstexe',
-     &           '$',ierr,' ',0.,' ',err)
-         ELSE
-            ierr= thhstexe()
-            ABORT= ierr.NE.0
-            If(ABORT) call G_build_note(':failure#$ in thhstexe',
-     &           '$',ierr,' ',0.,' ',err)
-         ENDIF
+        ABORT= ierr.NE.0
+        IF(ABORT) THEN
+          call G_build_note(':failure#$ in thtstexe',
+     &         '$',ierr,' ',0.,' ',err)
+        ELSE
+          ierr= thhstexe()
+          ABORT= ierr.NE.0
+          If(ABORT) call G_build_note(':failure#$ in thhstexe',
+     &         '$',ierr,' ',0.,' ',err)
+        ENDIF
       ENDIF
 *
 *-HMS 
