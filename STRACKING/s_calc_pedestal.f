@@ -1,6 +1,9 @@
       subroutine s_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.13  1999/02/23 18:57:19  csa
+* (JRA) Sparsify aerogel/lucite channels, cleanup
+*
 * Revision 1.12  1999/02/03 21:13:44  saw
 * Code for new Shower counter tubes
 *
@@ -133,13 +136,9 @@
       
 * calculate new pedestal values, positive tubes first.      
        num=max(1.,float(scal_pos_ped_num(blk)))
-c      write(6,*) blk,'+',num     
         scal_new_ped_pos(blk)=scal_pos_ped_sum(blk)/num
         sig2 = float(scal_pos_ped_sum2(blk))/num - scal_new_ped_pos(blk)**2
         scal_new_rms_pos(blk)=sqrt(max(0.,sig2))
-*        scal_new_adc_threshold_pos(blk)=scal_new_ped_pos(blk)+
-*     &                  2.*scal_new_rms_pos(blk)
-c        type *,blk,smax_cal_blocks,scal_new_adc_threshold_pos(blk),scal_new_ped_pos(blk)
         scal_new_adc_threshold_pos(blk)=scal_new_ped_pos(blk)+15.
         if (abs(scal_pos_ped_mean(blk)-scal_new_ped_pos(blk))
      &                 .ge.(2.*scal_new_rms_pos(blk))) then
@@ -159,14 +158,10 @@ c        type *,blk,smax_cal_blocks,scal_new_adc_threshold_pos(blk),scal_new_ped
         
 *do it all again for negative tubes.
        num=max(1.,float(scal_neg_ped_num(blk)))
-c      write(6,*) blk,'-',num     
         scal_new_ped_neg(blk)=scal_neg_ped_sum(blk)/num
         sig2 = float(scal_neg_ped_sum2(blk))/num-scal_new_ped_neg(blk)**2
         scal_new_rms_neg(blk)=sqrt(max(0.,sig2))
-*        scal_new_adc_threshold_neg(blk)=scal_new_ped_neg(blk)+
-*     &                  2.*scal_new_rms_neg(blk)
         scal_new_adc_threshold_neg(blk)=scal_new_ped_neg(blk)+15.
-c        type *,blk,smax_cal_blocks,scal_new_adc_threshold_neg(blk),scal_new_ped_neg(blk)
         if (abs(scal_neg_ped_mean(blk)-scal_new_ped_neg(blk))
      &                 .ge.(2.*scal_new_rms_neg(blk))) then
           ind = ind + 1
@@ -294,32 +289,46 @@ c        write(SPAREID,*) 'slot=',slot
 c        call g_output_thresholds(SPAREID,roc,slot,signalcount,smax_cer_hits,
 c     &      scer_new_adc_threshold,0,scer_new_rms,0)
 c
+
+*
+* JRA - 2/18/99 - sparsify all aerogel/lucite channels for early '99
+* running.
+*
         slot=3
         write(SPAREID,*) 'slot=',slot
         do ind=1,4
           write(SPAREID,*) int(scer_new_adc_threshold(ind))
         enddo
-        do ind=5,15
-          write(SPAREID,*) '4000'
-        enddo
-* Lucite
-        do pmt=1,8
-          write(SPAREID,*) sluc_pos_adc_threshold(pmt)
-          write(SPAREID,*) sluc_neg_adc_threshold(pmt)  
+        do ind=5,64
+          write(SPAREID,'(a6)') '  4000'
         enddo
 
-        do ind=32,34
-          write(SPAREID,*) '4000'
-        enddo
-        do pmt=1,7
-          write(SPAREID,*) saer_pos_adc_threshold(pmt)
-        enddo
-        do pmt=1,7
-          write(SPAREID,*) saer_neg_adc_threshold(pmt)
-        enddo
-        do ind=49,64
-          write(SPAREID,*) '4000'
-        enddo
+c        slot=3
+c        write(SPAREID,*) 'slot=',slot
+c        do ind=1,4
+c          write(SPAREID,'(i6)') int(scer_new_adc_threshold(ind))
+c        enddo
+c        do ind=5,15
+c          write(SPAREID,'(a6)') '4000'
+c        enddo
+c* Lucite
+c        do pmt=1,8
+c          write(SPAREID,'(i6)') sluc_pos_adc_threshold(pmt)
+c          write(SPAREID,'(i6)') sluc_neg_adc_threshold(pmt)  
+c        enddo
+c
+c        do ind=32,34
+c          write(SPAREID,'(a6)') '4000'
+c        enddo
+c        do pmt=1,7
+c          write(SPAREID,'(i6)') saer_pos_adc_threshold(pmt)
+c        enddo
+c        do pmt=1,7
+c          write(SPAREID,'(i6)') saer_neg_adc_threshold(pmt)
+c        enddo
+c        do ind=49,64
+c          write(SPAREID,'(a6)') '4000'
+c        enddo
 
         slot=5
         signalcount=2
