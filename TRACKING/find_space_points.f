@@ -4,6 +4,9 @@
      &  nspace_points,space_points,space_point_hits)
 *       Created D.F. Geesaman     Sept 1993       
 * $Log$
+* Revision 1.6  1996/01/17 19:20:25  cdaq
+* (JRA) Misc. fixes, reindent
+*
 * Revision 1.5  1995/07/28 15:18:35  cdaq
 * (SAW) Change print to type for f2c
 *
@@ -47,7 +50,7 @@
 *
 *
 *     internal variables
-      integer*4 ipair1,ipair2,icombo,i   ! do loop variables
+      integer*4 ipair1,ipair2,icombo,i,j   ! do loop variables
       integer*4 loopsp,loop,hit(4),hit_point
       integer*4 add_flag,iflag(4)
       integer*4 max_number_pairs            ! max number of pairs of points
@@ -62,7 +65,6 @@
       integer*4 ncombo
       integer*4 combos(max_number_comb,2)   ! pair1 and pair2 of each combo
       real*4 sqdistance_test
-      integer*4 j,k
 *                           
       nspace_points=0
       ntest_points=0
@@ -70,24 +72,24 @@
 *     loop over all pairs of intersecting wires and calculate position
       do ipair1=1,ncham_hits-1
         do ipair2=ipair1+1,ncham_hits
-         if(ntest_points.lt.max_number_pairs) then 
-           plane1=plane_number(ipair1)
-           plane2=plane_number(ipair2)
-           determinate=xsp(plane1)*ysp(plane2)-ysp(plane1)*xsp(plane2)
-            if(abs(determinate) .gt. 1e-4 ) then
-             ntest_points=ntest_points+1
-             pair(ntest_points,1)=hit_number(ipair1)
-             pair(ntest_points,2)=hit_number(ipair2)
-             test_points(ntest_points,1)= 
-     &        (wire_center(ipair1)*ysp(plane2)-wire_center(ipair2)*ysp(plane1))
-     &        / determinate
-             test_points(ntest_points,2)= 
-     &        (wire_center(ipair2)*xsp(plane1)-wire_center(ipair1)*xsp(plane2))
-     &        / determinate
-           endif                   ! end if for indeterminate planes
-         endif                     ! end test on too many pairs 
-        enddo                      ! end loop over pair2
-      enddo                        ! end loop over pair1
+          if(ntest_points.lt.max_number_pairs) then 
+            plane1=plane_number(ipair1)
+            plane2=plane_number(ipair2)
+            determinate=xsp(plane1)*ysp(plane2)-ysp(plane1)*xsp(plane2)
+            if(abs(determinate) .gt. 0.3 ) then !0.3 is sin(alpha1-alpha2)=sin(17.5)
+              ntest_points=ntest_points+1
+              pair(ntest_points,1)=hit_number(ipair1)
+              pair(ntest_points,2)=hit_number(ipair2)
+              test_points(ntest_points,1)= 
+     &             (wire_center(ipair1)*ysp(plane2)-wire_center(ipair2)
+     $             *ysp(plane1))/ determinate
+              test_points(ntest_points,2)= 
+     &             (wire_center(ipair2)*xsp(plane1)-wire_center(ipair1)
+     $             *xsp(plane2))/ determinate
+            endif                       ! end if for indeterminate planes
+          endif                         ! end test on too many pairs 
+        enddo                           ! end loop over pair2
+      enddo                             ! end loop over pair1
 *
 *     loop over all test_points and calculate squared distance
 *     for each combination
@@ -97,101 +99,103 @@
         do ipair2=ipair1+1,ntest_points
           if(ncombo.lt.max_number_comb) then
             sqdistance_test=
-     &               (test_points(ipair1,1)-test_points(ipair2,1))**2 +
-     &               (test_points(ipair1,2)-test_points(ipair2,2))**2
+     &           (test_points(ipair1,1)-test_points(ipair2,1))**2 +
+     &           (test_points(ipair1,2)-test_points(ipair2,2))**2
             if(sqdistance_test.le.space_point_criterion) then 
-                ncombo=ncombo+1
-                combos(ncombo,1)=ipair1
-                combos(ncombo,2)=ipair2                    
+              ncombo=ncombo+1
+              combos(ncombo,1)=ipair1
+              combos(ncombo,2)=ipair2                    
             endif
-          endif                    ! end test on too many combos
-        enddo                      ! end loop over pair2
-      enddo                        ! end loop over pair1
+          endif                         ! end test on too many combos
+        enddo                           ! end loop over pair2
+      enddo                             ! end loop over pair1
 *
 *     loop over all valid combinations and build space points
       if(ncombo.gt.0) then
         do icombo=1,ncombo
 *     get hits in combo
-         hit(1)=pair(combos(icombo,1),1)
-         hit(2)=pair(combos(icombo,1),2)
-         hit(3)=pair(combos(icombo,2),1)
-         hit(4)=pair(combos(icombo,2),2)
+          hit(1)=pair(combos(icombo,1),1)
+          hit(2)=pair(combos(icombo,1),2)
+          hit(3)=pair(combos(icombo,2),1)
+          hit(4)=pair(combos(icombo,2),2)
 *     get average space point xt, yt
-         xt=(test_points(combos(icombo,1),1)+test_points(combos(icombo,2),1))/2
-         yt=(test_points(combos(icombo,1),2)+test_points(combos(icombo,2),2))/2
+          xt=(test_points(combos(icombo,1),1)
+     $         +test_points(combos(icombo,2),1))/2
+          yt=(test_points(combos(icombo,1),2)
+     $         +test_points(combos(icombo,2),2))/2
 *
 *     loop over space_points
-         if(nspace_points.gt.0) then
-          loopsp=1
-          add_flag=1
-          do while (loopsp .le. nspace_points)
-            if(space_point_hits(loopsp,1).gt.0)  then
-              sqdistance_test=(xt-space_points(loopsp,1))**2 +
-     &                   (yt-space_points(loopsp,2))**2
+          if(nspace_points.gt.0) then
+            loopsp=1
+            add_flag=1
+            do while (loopsp .le. nspace_points)
+              if(space_point_hits(loopsp,1).gt.0)  then
+                sqdistance_test=(xt-space_points(loopsp,1))**2 +
+     &               (yt-space_points(loopsp,2))**2
 *     I want to be careful if sqdistance is between 1 and 
 *     3 space_point_criterion. Let me ignore not add a new point then
-              if(sqdistance_test.lt. (3.*space_point_criterion)) then
-                 add_flag=0        ! do not add new space point
-              endif
-              if(sqdistance_test.lt.space_point_criterion) then
+                if(sqdistance_test.lt. (3.*space_point_criterion)) then
+                  add_flag=0            ! do not add new space point
+                endif
+                if(sqdistance_test.lt.space_point_criterion) then
 *     This is a real match.
 *     Add the new hits to existing space point
-               iflag(1)=0
-               iflag(2)=0
-               iflag(3)=0
-               iflag(4)=0
-                 do loop=1,space_point_hits(loopsp,1)
-                  do i=1,4 
-                   if(space_point_hits(loopsp,loop+2).eq.hit(i)) then
-                      iflag(i)=1
-                   endif
-                  enddo         ! end loop on i  
-                 enddo           ! end loop over hits in space point
+                  iflag(1)=0
+                  iflag(2)=0
+                  iflag(3)=0
+                  iflag(4)=0
+                  do loop=1,space_point_hits(loopsp,1)
+                    do i=1,4 
+                      if(space_point_hits(loopsp,loop+2).eq.hit(i)) then
+                        iflag(i)=1
+                      endif
+                    enddo               ! end loop on i  
+                  enddo                 ! end loop over hits in space point
 *  if 2 hits in the combo are identicle, both might get in. Remove all but one
-                 do i=1,3
-                   do j=i+1,4
-                     if (hit(j).eq.hit(i)) iflag(j)=1
-                   enddo
-                 enddo
-                 do i=1,4
-                  if(iflag(i).eq.0) then
-                     hit_point=space_point_hits(loopsp,1)+1
-                     space_point_hits(loopsp,1)=hit_point
-                     space_point_hits(loopsp,hit_point+2)=hit(i)
-                  endif
-                 enddo    ! end loop over 4 hits
+                  do i=1,3
+                    do j=i+1,4
+                      if (hit(j).eq.hit(i)) iflag(j)=1
+                    enddo
+                  enddo
+                  do i=1,4
+                    if(iflag(i).eq.0) then
+                      hit_point=space_point_hits(loopsp,1)+1
+                      space_point_hits(loopsp,1)=hit_point
+                      space_point_hits(loopsp,hit_point+2)=hit(i)
+                    endif
+                  enddo                 ! end loop over 4 hits
 *              increment number of combos contributing to this space point
-               space_point_hits(loopsp,2)=space_point_hits(loopsp,2)+1
+                  space_point_hits(loopsp,2)=space_point_hits(loopsp,2)+1
 *              terminate loop since this combo can only belong to one
 *              space point
-               loopsp=nspace_points+1    
-              endif
-            endif                  ! end check on number of hits
-            loopsp=loopsp+1        ! increment loop counter on return
-          enddo                    ! end do while loop over space points
+                  loopsp=nspace_points+1    
+                endif
+              endif                     ! end check on number of hits
+              loopsp=loopsp+1           ! increment loop counter on return
+            enddo                       ! end do while loop over space points
 *     create a new space point if more than 2*space_point_criteria
-         if(nspace_points.lt.nspace_point_len) then
+            if(nspace_points.lt.nspace_point_len) then
               if(add_flag.gt.0) then
-                 nspace_points=nspace_points+1
-                 space_point_hits(nspace_points,1)=2
-                 space_point_hits(nspace_points,2)=1
-                 space_point_hits(nspace_points,3)=hit(1)
-                 space_point_hits(nspace_points,4)=hit(2)
-                 space_points(nspace_points,1)=xt
-                 space_points(nspace_points,2)=yt
-                 if(hit(1).ne.hit(3) .and. hit(2) .ne. hit(3))   then
-                       hit_point=space_point_hits(nspace_points,1)+1
-                       space_point_hits(nspace_points,1)=hit_point
-                       space_point_hits(nspace_points,hit_point+2)=hit(3)
-                 endif              !
-                 if(hit(1).ne.hit(4) .and. hit(2) .ne. hit(4))   then
-                       hit_point=space_point_hits(nspace_points,1)+1
-                       space_point_hits(nspace_points,1)= hit_point
-                       space_point_hits(nspace_points,hit_point+2)=hit(4)
-                 endif         
-              endif             ! endif on check if too many space points
-            endif               ! endif to add point on add_flag
-         else
+                nspace_points=nspace_points+1
+                space_point_hits(nspace_points,1)=2
+                space_point_hits(nspace_points,2)=1
+                space_point_hits(nspace_points,3)=hit(1)
+                space_point_hits(nspace_points,4)=hit(2)
+                space_points(nspace_points,1)=xt
+                space_points(nspace_points,2)=yt
+                if(hit(1).ne.hit(3) .and. hit(2) .ne. hit(3))   then
+                  hit_point=space_point_hits(nspace_points,1)+1
+                  space_point_hits(nspace_points,1)=hit_point
+                  space_point_hits(nspace_points,hit_point+2)=hit(3)
+                endif                   !
+                if(hit(1).ne.hit(4) .and. hit(2) .ne. hit(4))   then
+                  hit_point=space_point_hits(nspace_points,1)+1
+                  space_point_hits(nspace_points,1)= hit_point
+                  space_point_hits(nspace_points,hit_point+2)=hit(4)
+                endif         
+              endif                     ! endif on check if too many space points
+            endif                       ! endif to add point on add_flag
+          else
 *    create first space point
             nspace_points=1
             space_point_hits(nspace_points,1)=2
@@ -201,32 +205,18 @@
             space_points(nspace_points,1)=xt
             space_points(nspace_points,2)=yt
             if(hit(1).ne.hit(3) .and. hit(2) .ne. hit(3))   then
-               hit_point=space_point_hits(nspace_points,1)+1
-               space_point_hits(nspace_points,1)=hit_point
-               space_point_hits(nspace_points,hit_point+2)=hit(3)
-            endif              !
+              hit_point=space_point_hits(nspace_points,1)+1
+              space_point_hits(nspace_points,1)=hit_point
+              space_point_hits(nspace_points,hit_point+2)=hit(3)
+            endif                       !
             if(hit(1).ne.hit(4) .and. hit(2) .ne. hit(4))   then
-               hit_point=space_point_hits(nspace_points,1)+1
-               space_point_hits(nspace_points,1)= hit_point
-               space_point_hits(nspace_points,hit_point+2)=hit(4)
+              hit_point=space_point_hits(nspace_points,1)+1
+              space_point_hits(nspace_points,1)= hit_point
+              space_point_hits(nspace_points,hit_point+2)=hit(4)
             endif         
-         endif                    ! end check on 0 space points
-        enddo                     ! end loop over combos
-      endif                       ! end check if no valid combos
-
-      do i=1,nspace_points
-       do j=3,(space_point_hits(i,1)+1)
-        do k=j+1,(space_point_hits(i,1)+2)
-         if (space_point_hits(i,j).eq.space_point_hits(i,k)) then
-           print *,'Space point ',i,' has hit ',space_point_hits(i,k),
-     &        'as hits',j,k
-         endif
-        enddo
-       enddo
-      enddo
+          endif                         ! end check on 0 space points
+        enddo                           ! end loop over combos
+      endif                             ! end check if no valid combos
 
       return
       end
-     
-
-*234567890123456789012345678901234567890123456789012345678901234567890123456789
