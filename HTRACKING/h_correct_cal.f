@@ -4,12 +4,16 @@
 *-
 *-      Purpose: Returns the impact point correction factor. This
 *-               factor is to be applied to the energy depositions.
+*-               The final energy is the ADC value TIMES the correction factor.
 *-
 *-      Input Parameters: x,y - impact point coordinates
 *-
 *-      Created 15 Mar 1994      Tsolak A. Amatuni
 *
 * $Log$
+* Revision 1.5  1996/01/16 21:46:10  cdaq
+* (JRA) Yet another sign change of quadratic term in attenuation correction
+*
 * Revision 1.4  1995/08/31 14:59:37  cdaq
 * (JRA) Change sign of quadratic term in attenuation correction
 *
@@ -39,10 +43,8 @@
       include 'hms_calorimeter.cmn'
 *
 *
-*      h_correct_cal=1.
       h_correct_cal=exp(y/200.) !200 cm atten length.
-*      h_correct_cal=h_correct_cal/(1. + y*y/8000.)
-      h_correct_cal=h_correct_cal/(1. - y*y/8000.)
+      h_correct_cal=h_correct_cal/(1. + y*y/8000.)
 
 *
       return
