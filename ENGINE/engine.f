@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.32.2.8  2003/09/04 20:30:48  jones
+* Changes for running with syncfilter (mkj)
+*
 * Revision 1.32.2.7  2003/08/14 00:42:23  cdaq
 * Modify to be able to write scaler rates for each read to a file (mkj)
 *
@@ -166,12 +169,14 @@ c
       integer total_event_count
       integer physics_events
       integer analyzed_events(0:gen_max_trigger_types)
-      integer sum_analyzed
+      integer sum_analyzed,sum_analyzed_skipped
       integer recorded_events(0:gen_max_trigger_types)
+      integer skipped_badsync_events(0:gen_max_trigger_types)
+      integer skipped_lowbcm_events(0:gen_max_trigger_types)
       integer sum_recorded
       integer num_events_skipped
       integer i,since_cnt,lastdump
-      integer mkj
+      integer mkj,ii
       integer rpc_pend                  ! # Pending asynchronous RPC requests
 c
       common /aevents/ analyzed_events
@@ -212,8 +217,11 @@ c
       do i=0,gen_max_trigger_types
         analyzed_events(i)=0
         recorded_events(i)=0
+        skipped_badsync_events(i)=0
+        skipped_lowbcm_events(i)=0
       enddo
       sum_analyzed=0
+      sum_analyzed_skipped=0
       sum_recorded=0
       num_events_skipped=0
 
@@ -291,6 +299,8 @@ c
 
       finished_extracting = .false.
       problems = .false.
+      syncfilter_on = .false.
+      insync = 0
       DO WHILE(.NOT.problems .and. .NOT.ABORT .and. .NOT.EoF .and.
      &         .NOT.finished_extracting)
         mss= ' '
@@ -369,6 +379,8 @@ c
           else if (gen_event_type.eq.141 .or. gen_event_type.eq.142 .or.
      &             gen_event_type.eq.144) then
 *             write(6,*) 'HV information event, event type=',gen_event_type
+          else if (gen_event_type.eq.251) then
+             syncfilter_on = .true.
           else
             call g_examine_control_event(CRAW,ABORT,err)
           endif
@@ -479,7 +491,14 @@ c
 
       start_time=time()
       lasttime=0.
-
+c
+c Start data analysis
+      if ( syncfilter_on) then
+         write(6,*) ' ******'
+         write(6,*) ' Analyzing using Syncfilter'
+         write(6,*) ' ******'
+      endif
+c
       DO WHILE(.NOT.problems .and. .NOT.ABORT .and. .NOT.EoF)
         mss= ' '
         g_replay_time=time()-start_time
@@ -524,7 +543,12 @@ c
 *
           if(gen_event_type.eq.0 .and. g_preproc_on.ne.0)
      &      call g_write_event(ABORT,err)
-
+c
+          if (gen_event_type .eq. 251) then
+             write(6,*) ' Syncfilter event, SYNC type = ',craw(5)
+             insync = craw(5)
+             endif
+c
           if (gen_event_type.eq.130) then       !run info event (get e,p,theta)
             write(6,*) " ***********"
             write(6,*) " A run info event after starting to analyze physics events"
@@ -544,12 +568,32 @@ c
 	    if (gen_event_type.eq.0) then          !scaler event.
               analyzed_events(gen_event_type)=analyzed_events(gen_event_type)+1
                call g_analyze_scalers_by_banks(CRAW,ABORT,err)
-            if (g_writeout_scaler_filename.ne.' ' .and. analyzed_events(0) .gt. 1 ) then
+            if (g_writeout_scaler_filename.ne.' ' ) then
                delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001D00)
                write(G_LUN_WRITEOUT_SCALER,*) analyzed_events(0),delta_time,
      >       (gscaler_change(INDEX_WRITEOUT_SCALERS(tindex))/delta_time
      >          ,tindex=1,NUM_WRITEOUT_SCALERS)
             endif            
+c
+               if (insync .eq. 1) write(*,*) ' Skipping out-of-sync events'
+               if ( ave_current_bcm(bcm_for_threshold_cut)  .le. g_beam_on_thresh_cur(bcm_for_threshold_cut)
+     >  .or. insync .eq. 1) then
+               do ii=1,MAX_NUM_SCALERS
+                  gscaler_skipped(ii) = gscaler_skipped(ii) +  gscaler_change(ii)
+               enddo
+               else
+               do ii=1,MAX_NUM_SCALERS
+                  gscaler_saved(ii) = gscaler_saved(ii) +  gscaler_change(ii)
+               enddo
+               endif
+c
+               if ( insync .eq. 1) then
+                  skipped_badsync_events(gen_event_type)=skipped_badsync_events(gen_event_type) + 1
+              endif
+               if ( ave_current_bcm(bcm_for_threshold_cut)  .le. g_beam_on_thresh_cur(bcm_for_threshold_cut)) then
+                  skipped_lowbcm_events(gen_event_type)=skipped_lowbcm_events(gen_event_type) + 1
+               endif
+c
                if (analyzed_events(0) .le. 1 ) then
                   write(*,*) '************'
                   write(*,*) ' Will not analyze events until after first scaler read'
@@ -585,9 +629,22 @@ c
                   goto 868      ! kludge mkj
                endif
 c
+c
               if(gen_event_type.le.gen_MAX_trigger_types .and.
      $           gen_run_enable(gen_event_type-1).ne.0) then
-
+c
+               if ( insync .eq. 1) then
+                  skipped_badsync_events(gen_event_type)=skipped_badsync_events(gen_event_type) + 1
+                  sum_analyzed_skipped = sum_analyzed_skipped + 1
+                  goto 868
+               endif
+               if ( ave_current_bcm(bcm_for_threshold_cut)  .le. g_beam_on_thresh_cur(bcm_for_threshold_cut)
+     >               .and. gen_event_type .le. 3 ) then
+                  skipped_lowbcm_events(gen_event_type)=skipped_lowbcm_events(gen_event_type) + 1
+                  sum_analyzed_skipped = sum_analyzed_skipped + 1
+                  goto 868
+               endif
+c
                 call g_examine_physics_event(CRAW,ABORT,err)
                 problems = problems .or.ABORT
 
@@ -737,7 +794,7 @@ c
         EoF= gen_event_type.EQ.20
 
         if(gen_run_stopping_event.gt.0 .and. gen_event_ID_number.gt.0) then
-          EoF=EoF .or. gen_run_stopping_event.le.sum_analyzed-analyzed_events(4)
+          EoF=EoF .or. gen_run_stopping_event.le.sum_analyzed+sum_analyzed_skipped-analyzed_events(4)
         EndIf
 *
 *- Here is where we insert a check for an Remote Proceedure Call (RPC)
@@ -813,6 +870,19 @@ c...
       write(mss,'(i12," / ",i8," total (neglecting scalers)")') sum_analyzed,sum_recorded
       call G_log_message(mss)
       print *,'  for run#',gen_run_number
+      if ( syncfilter_on) then
+      write(mss,'(i12," number of analyzed skipped ")') sum_analyzed_skipped
+      call G_log_message(mss)
+      write(mss,'(a)') " Skipped events bad sync / low ave beam current"
+      call G_log_message(mss)
+      DO i=0,gen_MAX_trigger_types
+        If(recorded_events(i).GT.0) Then
+          write(mss,'(4x,i12," / ",i8," events of type",i3)')
+     &             skipped_badsync_events(i),skipped_lowbcm_events(i),i
+          call G_log_message(mss)
+        ENDIF
+      ENDDO
+      endif
 
 * Comment out the following two lines if they cause trouble
       call system
