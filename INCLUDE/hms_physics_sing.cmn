@@ -1,5 +1,8 @@
 *    This include file contains all the variables required for h_physics
 * $Log$
+* Revision 1.9  2003/09/08 21:03:03  jones
+* Change h_phicentral_offset to h_oopcentral_offset (mkj)
+*
 * Revision 1.8  2002/09/24 20:29:04  jones
 *     add parameters hphicentral_offset, hpcentral_offset,
 *                hthetacentral_offset
@@ -161,7 +164,7 @@ c    D.Dutta, 24th-Apr-1996
 c    J.Volmer, 9th-Jul-1999
       real*4 hpcentral_offset  ! hms central momentum offset
       real*4 hthetacentral_offset ! hms central angle offset
-      real*4 hphicentral_offset   ! hms central oop angle offset
+      real*4 h_oopcentral_offset   ! hms central oop angle offset
 *
 *     CTPTYPE=event
 *
@@ -172,7 +175,7 @@ c    J.Volmer, 9th-Jul-1999
      &     hmomentum_factor,
      &     hpcentral_offset,
      &     hthetacentral_offset,
-     &     hphicentral_offset
+     &     h_oopcentral_offset
 *
 *     CTPTYPE=event
 *
