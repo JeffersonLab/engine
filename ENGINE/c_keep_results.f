@@ -10,6 +10,9 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 * $Log$
+* Revision 1.4  1996/01/22 15:05:20  saw
+* (JRA) Only fill coin ntuple if HMS and SOS both have tracks
+*
 * Revision 1.3  1996/01/16 21:00:40  cdaq
 * no change
 *
@@ -28,7 +31,10 @@
       IMPLICIT NONE
       SAVE
 *
-      character*50 here
+      include 'hms_data_structures.cmn'
+      include 'sos_data_structures.cmn'
+*
+      character*14 here
       parameter (here= 'C_keep_results')
 *
       logical ABORT
@@ -41,7 +47,8 @@
       ABORT= .FALSE.
       err = ' '
 *
-      call c_ntuple_keep(ABORT,err)
+      if(HNTRACKS_FP .gt. 0 .AND. SNTRACKS_FP .gt. 0) ! check for tracks
+     >  call c_ntuple_keep(ABORT,err)
 *
       IF(ABORT) THEN
          call G_add_path(here,err)
