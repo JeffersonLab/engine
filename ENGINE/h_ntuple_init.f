@@ -10,6 +10,15 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.10  2003/09/05 16:40:16  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.9.2.2  2003/09/04 21:10:33  jones
+* add event type to ntuple (mkj)
+*
+* Revision 1.9.2.1  2003/04/04 12:54:42  cdaq
+* add beam parameters to ntuple
+*
 * Revision 1.9  1996/09/04 14:42:44  saw
 * (JRA) Some changes to ntuple contents
 *
@@ -182,8 +191,31 @@
       h_Ntuple_tag(m)= 'hstart'
       m= m+1
       h_Ntuple_tag(m)= 'eventID'
+      m= m+1
+      h_Ntuple_tag(m)= 'evtype'
 
 * Experiment dependent entries start here.
+c
+      m= m+1
+      h_Ntuple_tag(m)= 'gfrx_raw'
+      m= m+1
+      h_Ntuple_tag(m)= 'gfry_raw'
+      m= m+1
+      h_Ntuple_tag(m)= 'gbeam_x'
+      m= m+1
+      h_Ntuple_tag(m)= 'gbeam_y'
+      m= m+1
+      h_Ntuple_tag(m)= 'bpma_x'
+      m= m+1
+      h_Ntuple_tag(m)= 'bpma_y'
+      m= m+1
+      h_Ntuple_tag(m)= 'bpmb_x'
+      m= m+1
+      h_Ntuple_tag(m)= 'bpmb_y'
+      m= m+1
+      h_Ntuple_tag(m)= 'bpmc_x'
+      m= m+1
+      h_Ntuple_tag(m)= 'bpmc_y'
 
 
 * Open ntuple

@@ -34,11 +34,10 @@
 *--------------------------------------------------------
 *
  
-      if (hphicentral_offset .ne. 0 ) then
+      if (h_oopcentral_offset .ne. 0 ) then
         write(*,*) ' ******'
-       write(6,*)' h_apply_offs: before:   hphi_lab =',hphi_lab
-       hphi_lab = hphi_lab + hphicentral_offset/degree
-       write(6,*)' h_apply_offs:  after:   hphi_lab =',hphi_lab
+       write(6,*)' h_apply_offs: h_oopcentral_offset =',h_oopcentral_offset,' rad'
+       write(6,*)'  Used to offset hsxp_tar in h_physics.f  '
       endif
 c
       if (hpcentral_offset .ne. 0 ) then
