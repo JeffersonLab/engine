@@ -5,6 +5,10 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.30  1999/02/10 17:50:04  csa
+* Added target eloss variables (D. Mack, K. Vansyoc, J. Volmer),
+* bpm variables (P. Gueye), and raster variables (J. Reinhold)
+*
 * Revision 1.29  1998/12/01 20:21:02  saw
 * (SAW) Change GNUM_MISC_PLANES from 2 to 3
 *
@@ -158,6 +162,28 @@
      &     gtarg_thick(gmax_targets),
      &     gtarg_dens(gmax_targets)
 *
+*     Energy loss parameters for the targets. Vansyoc, March 98
+*
+*     CTPTYPE=parm
+*
+      INTEGER gelossdebug,gen_eloss_enable
+      REAL*4 hscat_win_thk,hscat_win_den,hscat_win_a,hscat_win_z
+      REAL*4 hdet_ent_thk,hdet_ent_den,hdet_ent_a,hdet_ent_z
+      REAL*4 sscat_win_thk,sscat_win_den,sscat_win_a,sscat_win_z
+      REAL*4 sdet_ent_thk,sdet_ent_den,sdet_ent_a,sdet_ent_z
+      REAL*4 gcell_radius,gz_cell,ga_cell,gcell_den,gwall_thk,gend_thk
+      REAL*4 gfront_thk,gair_dens,gair_thk,gair_a,gair_z
+
+      COMMON/TARG_LOSS/
+     &     gelossdebug,gen_eloss_enable,
+     &     hscat_win_thk,hscat_win_den,hscat_win_a,hscat_win_z,
+     &     hdet_ent_thk,hdet_ent_den,hdet_ent_a,hdet_ent_z,
+     &     sscat_win_thk,sscat_win_den,sscat_win_a,sscat_win_z,
+     &     sdet_ent_thk,sdet_ent_den,sdet_ent_a,sdet_ent_z,
+     &     gcell_radius,gz_cell,ga_cell,gcell_den,gwall_thk,gend_thk,
+     &     gfront_thk,gair_dens,gair_thk,gair_a,gair_z
+
+*
 *     CTPTYPE=event
 *
 *
@@ -184,7 +210,7 @@
 *     CTPTYPE=event
 *
       INTEGER*4 GMAX_NUM_BPMS
-      PARAMETER(GMAX_NUM_BPMS=4)      !enough for 2 bpms, 2 readouts each.
+      PARAMETER(GMAX_NUM_BPMS=4)
       INTEGER*4 GNUM_BPM_SIGNALS
       PARAMETER(GNUM_BPM_SIGNALS=4)   !1=X+,2=X-,3=Y+,4=Y-
 
@@ -195,6 +221,23 @@
       REAL*4 GBPM_YPRIME(GMAX_NUM_BPMS)
       REAL*4 GBPM_X(GMAX_NUM_BPMS)
       REAL*4 GBPM_Y(GMAX_NUM_BPMS)
+      REAL*4 GBPM_MEANX(GMAX_NUM_BPMS)
+      REAL*4 GBPM_MEANY(GMAX_NUM_BPMS)
+      REAL*4 GBPM_BEAM_X,GBPM_BEAM_XP
+      REAL*4 GBPM_BEAM_Y,GBPM_BEAM_YP
+*
+*     CTPTYPE=parm
+*
+      real*4 GBPM_KAPPA
+      real*4 GBPM_ALPHA_X(GMAX_NUM_BPMS),GBPM_ALPHA_Y(GMAX_NUM_BPMS)
+      real*4 GBPM_X_OFF(GMAX_NUM_BPMS),GBPM_Y_OFF(GMAX_NUM_BPMS)
+      real*4 GBPM_XP_PED(GMAX_NUM_BPMS),GBPM_XM_PED(GMAX_NUM_BPMS)
+      real*4 GBPM_YP_PED(GMAX_NUM_BPMS),GBPM_YM_PED(GMAX_NUM_BPMS)
+      real*4 GBPM_ZPOS(GMAX_NUM_BPMS)
+      integer*4 GBPM_SAMPLE,GBPM_SAMPLE_MAX
+      integer*4 GUSE_BPM_IN_RECON
+      integer*4 GUSE_BPMC
+      parameter(GBPM_SAMPLE_MAX=5000)
 
       COMMON/COIN_DEC_BPM/
      &     GBPM_ADC_PED,
@@ -203,28 +246,57 @@
      &     GBPM_XPRIME,
      &     GBPM_YPRIME,
      &     GBPM_X,
-     &     GBPM_Y
-*
-*
+     &     GBPM_Y,
+     &     GBPM_MEANX,
+     &     GBPM_MEANY,
+     &     GBPM_BEAM_X,
+     &     GBPM_BEAM_XP,
+     &     GBPM_BEAM_Y,
+     &     GBPM_BEAM_YP,
+     &     GBPM_KAPPA,
+     &     GBPM_ALPHA_X,GBPM_ALPHA_Y,
+     &     GBPM_X_OFF,GBPM_Y_OFF,
+     &     GBPM_XP_PED,GBPM_XM_PED,GBPM_YP_PED,GBPM_YM_PED,
+     &     GBPM_ZPOS,
+     &     GBPM_SAMPLE,
+     &     GUSE_BPM_IN_RECON,
+     &     GUSE_BPMC
+
 *     Decoded data from ADC's encoding fast/slow raster position (FR/SR).
 *     The raw data comes from the 'hmisc' detector.
 *     The CBEAM variables are final beam positions from raster and bpm signals.
-*
-*
+
 *     CTPTYPE=event
-*
+
       REAL*4 GFRX_ADC_PED,GFRY_ADC_PED
       REAL*4 GFRX_RAW_ADC,GFRY_RAW_ADC
       REAL*4 GFRX_ADC,GFRY_ADC
       REAL*4 GFRX_SYNC,GFRY_SYNC
       REAL*4 GFRX_SYNC_MEAN,GFRY_SYNC_MEAN
       REAL*4 GFRX,GFRY
+      REAL*4 GFRXP,GFRYP
       REAL*4 GSRX_ADC_PED,GSRY_ADC_PED
       REAL*4 GSRX_RAW_ADC,GSRY_RAW_ADC
       REAL*4 GSRX_ADC,GSRY_ADC
       REAL*4 GSRX_SYNC,GSRY_SYNC
       REAL*4 GSRX_SYNC_MEAN,GSRY_SYNC_MEAN
       REAL*4 GSRX,GSRY
+*
+*     CTPTYPE=parm
+*
+      INTEGER*4 GUSEFR,GUSE_FRDEFAULT
+      REAL*4    GFR_CAL_MOM
+      REAL*4    GFRX_ADCPERCM,GFRY_ADCPERCM
+      REAL*4    GFRX_ADCMAX,GFRX_MAXSIZE 
+      REAL*4    GFRY_ADCMAX,GFRY_MAXSIZE 
+      REAL*4    GFRX_DPHASE,GFRX_SYNCCUT
+      REAL*4    GFRY_DPHASE,GFRY_SYNCCUT
+      REAL*4    GFRX_DIST,GFRY_DIST
+
+      REAL*4    GBEAM_XOFF,GBEAM_XPOFF
+      REAL*4    GBEAM_YOFF,GBEAM_YPOFF
+      REAL*4    GSPEC_XOFF,GSPEC_XPOFF
+      REAL*4    GSPEC_YOFF,GSPEC_YPOFF
 
       COMMON/COIN_DEC_RASTER/
      &     GFRX_ADC_PED,GFRY_ADC_PED,
@@ -238,7 +310,20 @@
      &     GSRX_ADC,GSRY_ADC,
      &     GSRX,GSRY,
      &     GSRX_SYNC,GSRY_SYNC,
-     &     GSRX_SYNC_MEAN,GSRY_SYNC_MEAN
+     &     GSRX_SYNC_MEAN,GSRY_SYNC_MEAN,
+     &     GFRXP,GFRYP,
+     &     GUSEFR,GUSE_FRDEFAULT,
+     &     GFR_CAL_MOM,
+     &     GFRX_ADCPERCM,GFRY_ADCPERCM,
+     &     GFRX_ADCMAX,GFRX_MAXSIZE, 
+     &     GFRY_ADCMAX,GFRY_MAXSIZE,
+     &     GFRX_DPHASE,GFRX_SYNCCUT,
+     &     GFRY_DPHASE,GFRY_SYNCCUT,
+     &     GFRX_DIST,GFRY_DIST,
+     &     GBEAM_XOFF,GBEAM_XPOFF,
+     &     GBEAM_YOFF,GBEAM_YPOFF,
+     &     GSPEC_XOFF,GSPEC_XPOFF,
+     &     GSPEC_YOFF,GSPEC_YPOFF
 
 *
 *     Misc. signals read out for hms AND sos events. Mostly
@@ -289,11 +374,6 @@
 *     CTPTYPE=parm
 *
       integer*4 gmisc_min_peds
-      integer*4 gusefr, guse_frdefault, guse_frphase
-      real*4    gfry_defcalib, gfry_vperch
-      real*4    gfry_adcmax, gfry_maxsize
-      real*4    gfry_dphase, gfry_synccut
-      real*4    gbeam_yoff
 *
       common/gen_misc_pedestals/
      &   gmisc_ped,
@@ -308,17 +388,14 @@
      &   gmisc_changed_tube,   !list of changed tubes
      &   gmisc_ped_change,     !change in pedestal
      &   gmisc_new_adc_threshold,
-     &   gmisc_dum_adc_threshold,
-     &   gusefr,
-     &   guse_frdefault,
-     &   guse_frphase,
-     &   gfry_defcalib,
-     &   gfry_vperch,
-     &   gfry_adcmax,
-     &   gfry_maxsize,
-     &   gfry_dphase,
-     &   gfry_synccut,
-     &   gbeam_yoff
+     &   gmisc_dum_adc_threshold
+*
+*     CTPTYPE=parm
+*
+      integer*4 genable_hms_satcorr,genable_sos_satcorr
+*
+      common/gen_satcorr/
+     &   genable_hms_satcorr,genable_sos_satcorr
 *
 *                                          
 *******************end: gen_data_structures.cmn*************************
@@ -327,5 +404,3 @@
 *     fortran-continuation-string: "&"
 *     comment-column: 35
 *     End:
-
-
