@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.9  1996/01/17 19:11:00  cdaq
+# (SAW) Add total_eloss
+#
 # Revision 1.8  1995/07/28 15:17:32  cdaq
 # (SAW) Add NFSDIRECTORY stuff
 #
@@ -26,7 +29,8 @@
 #
 include $(Csoft)/etc/Makefile
 
-sources = find_space_points.f select_space_points.f solve_four_by_four.f
+sources = find_space_points.f select_space_points.f solve_four_by_four.f \
+	total_eloss.f
 
 libsources = $(sources)
 
@@ -58,6 +62,6 @@ endif
 #
 
 %.cmn :: ../INCLUDE/%.cmn
-	cp -f $< $@
+	$(CP) $< $@
 
 include $(sources:.f=.d)
