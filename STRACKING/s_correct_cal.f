@@ -9,7 +9,10 @@
 *-
 *-      Created 15 Mar 1994      Tsolak A. Amatuni
 * $Log$
-* Revision 1.2  1994/11/22 21:09:22  cdaq
+* Revision 1.3  1995/05/11 21:02:59  cdaq
+* (???) Tweak hardwired attenuation length
+*
+* Revision 1.2  1994/11/22  21:09:22  cdaq
 * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.1  1994/04/13  18:10:02  cdaq
@@ -33,8 +36,8 @@
 *
 *
       s_correct_cal=1.
-      s_correct_cal=exp(y/200.)  !200 cm atten length.
-      s_correct_cal=s_correct_cal/(1. + y*y/8000)
+      s_correct_cal=exp(-y/400.)  !400 cm atten length.
+      s_correct_cal=s_correct_cal/(1. - y*y/12000)
 *
       return
       end
