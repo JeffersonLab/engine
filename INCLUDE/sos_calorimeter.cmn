@@ -1,7 +1,10 @@
 *
 *      SOS calorimeter. Parameters from sos_positions.parm
 * $Log$
-* Revision 1.5  1995/05/22 19:06:46  cdaq
+* Revision 1.6  1995/08/11 16:27:59  cdaq
+* (JRA) Add accumulators for calorimeter
+*
+* Revision 1.5  1995/05/22  19:06:46  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
 *
 * Revision 1.4  1995/03/13  19:02:05  cdaq
@@ -207,3 +210,22 @@
      &       sdbg_clusters_cal,
      &       sdbg_tracks_cal,
      &       sdbg_tests_cal
+
+
+*
+*     CTPTYPE=event
+*
+      integer*4 scal_zero_sum(smax_cal_blocks)
+      integer*4 scal_zero_sum2(smax_cal_blocks)
+      integer*4 scal_zero_num(smax_cal_blocks)
+      real*4 scal_zero_ave(smax_cal_blocks)
+      real*4 scal_zero_sig(smax_cal_blocks)
+      real*4 scal_zero_thresh(smax_cal_blocks)
+
+      common /sos_cal_zero/
+     &    scal_zero_ave,
+     &    scal_zero_sig,
+     &    scal_zero_thresh,
+     &    scal_zero_num,
+     &    scal_zero_sum,
+     &    scal_zero_sum2 

@@ -2,7 +2,10 @@
 *      HMS calorimeter. Parameters from hms_positions.parm
 *
 * $Log$
-* Revision 1.6  1995/05/22 19:06:29  cdaq
+* Revision 1.7  1995/08/11 16:27:42  cdaq
+* (JRA) Add accumulators for calorimeter
+*
+* Revision 1.6  1995/05/22  19:06:29  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
 *
 * Revision 1.5  1995/03/13  19:01:46  cdaq
@@ -212,3 +215,22 @@
      &       hdbg_clusters_cal,
      &       hdbg_tracks_cal,
      &       hdbg_tests_cal
+
+
+*
+*     CTPTYPE=event
+*
+      integer*4 hcal_zero_sum(hmax_cal_blocks)
+      integer*4 hcal_zero_sum2(hmax_cal_blocks)
+      integer*4 hcal_zero_num(hmax_cal_blocks)
+      real*4 hcal_zero_ave(hmax_cal_blocks)
+      real*4 hcal_zero_sig(hmax_cal_blocks)
+      real*4 hcal_zero_thresh(hmax_cal_blocks)
+
+      common /hms_cal_zero/
+     &    hcal_zero_ave,
+     &    hcal_zero_sig,
+     &    hcal_zero_thresh,
+     &    hcal_zero_num,
+     &    hcal_zero_sum,
+     &    hcal_zero_sum2
