@@ -19,7 +19,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.8  1995/05/22 19:45:43  cdaq
+* Revision 1.9  1995/07/20 18:59:15  cdaq
+* (SAW) Declare sind and tand for f2c compatibility
+*
+* Revision 1.8  1995/05/22  19:45:43  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.7  1995/05/11  17:15:15  cdaq
@@ -74,7 +77,8 @@
       real*4 cosgamma,tandelphi,sinsphi,cossstheta,sinsstheta
       real*4 t1,ta,p3,t3,sminv2
       real*4 cosssthetaq
-*
+      real*4 sind,tand
+*     
 *--------------------------------------------------------
 *
       if(SSNUM_FPTRACK.gt.0) then       ! Good track has been selected
