@@ -1,4 +1,4 @@
-      subroutine S_PATTERN_RECOGNITION(ABORT,err)
+      subroutine s_pattern_recognition(ABORT,err)
 *--------------------------------------------------------
 *-
 *-   Purpose and Methods :  Finds SOS Space points 
@@ -14,6 +14,9 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
+* Revision 1.10  1996/09/05 20:09:36  saw
+* (JRA) Cosmetic
+*
 * Revision 1.9  1996/04/30 17:34:56  saw
 * (JRA) Histogram the card id.
 *
