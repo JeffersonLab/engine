@@ -10,9 +10,12 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.8  1994/08/18 03:45:01  cdaq
-*-    (SAW) Correct typo in adding hack stuff
+*-    Revision 1.9  1994/08/30 14:47:41  cdaq
+*-    (SAW) Add calls to clear the test flags and scalers
 *-
+* Revision 1.8  1994/08/18  03:45:01  cdaq
+* (SAW) Correct typo in adding hack stuff
+*
 * Revision 1.7  1994/08/04  03:08:11  cdaq
 * (SAW) Add call to Breuer's hack_initialize
 *
@@ -118,6 +121,9 @@
             type *,'called haliaswrite',ierr
          endif
       endif
+*
+      call thtstclr                     ! Clear test flags
+      call thtstcls                     ! Clear test scalers
 *
 *-HMS initialize
       call H_initialize(HMS_ABORT,HMS_err)
