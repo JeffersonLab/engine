@@ -8,7 +8,10 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.4  1994/06/15 21:19:17  cdaq
+* Revision 1.5  1994/06/27 02:54:59  cdaq
+* (SAW) Increase hmax_chamber_hits to 544 from 100.
+*
+* Revision 1.4  1994/06/15  21:19:17  cdaq
 * (DFG) Add hdc_tdc_min_win and hdc_tdc_max_win.
 *       Add hwire_early_mult, hwire_late_mult, hwire_extra_mult
 *
@@ -27,7 +30,7 @@
       parameter (hmax_num_chambers=2)
       integer*4 hdc_num_chambers    ! actual number of chambers - set in CTP
       integer*4 hmax_chamber_hits
-      parameter (hmax_chamber_hits=100)
+      parameter (hmax_chamber_hits=544)
       integer*4 hmax_space_points   ! maximum number of space points
       integer*4 hmax_hits_per_point ! maximum number of hits per point
       parameter (hmax_space_points=50)
