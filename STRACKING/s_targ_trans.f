@@ -19,6 +19,9 @@
 *-Modified 21-JAN-94  D.F.Geesaman
 *-            Add ABORT and err
 * $Log$
+* Revision 1.13  1996/09/05 20:15:53  saw
+* (JRA) Apply offsets to reconstruction
+*
 * Revision 1.12  1996/01/17 18:10:27  cdaq
 * (JRA)
 *
@@ -81,18 +84,20 @@
       character*(*) err
       integer*4   istat
 *
+      INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       include 'sos_tracking.cmn'
       include 'sos_recon_elements.cmn'
       include 'sos_track_histid.cmn'
+      include 'sos_physics_sing.cmn'
 *
 * Misc. variables.
 
       integer*4        i,j,itrk
       
-      real*8           sum(4),hut(4),term,hut_rot(4)
+      real*8           sum(4),hut(5),term,hut_rot(5)
 
 *============================= Executable Code ================================
       ABORT= .FALSE.
@@ -115,11 +120,10 @@
          slink_tar_fp(itrk) = itrk
 *         
 * Reset COSY sums.
-
          do i = 1,4
             sum(i) = 0.
          enddo
-         
+
 * Load track data into local array, Converting to COSY units.
 * Note:  At this point, the focal plane variables sxp_fp and syp_fp are
 * still slopes.  We convert them to angles before running them through the
@@ -137,18 +141,20 @@
 ! again icludes transformation to true focus.
 
          hut(4) = syp_fp(itrk) + s_ang_offset_y         !COSY wants slopes
-         
+
+         hut(5) = gbeam_y/1000.         ! spectrometer target X in meter!    
+
 ! now transform
          hut_rot(1) = hut(1)
          hut_rot(3) = hut(3)
          hut_rot(2) = hut(2) + hut(1)*s_ang_slope_x
          hut_rot(4) = hut(4) + hut(3)*s_ang_slope_y
-
+         hut_rot(5) = hut(5)
 * Compute COSY sums.
 
          do i = 1,s_num_recon_terms
             term = 1.
-            do j = 1,4
+            do j = 1,5
                if (s_recon_expon(j,i).ne.0.)
      $              term = term*hut(j)**s_recon_expon(j,i)
             enddo
@@ -161,7 +167,7 @@
 
          do i = 1,s_num_recon_terms
             term = 1.
-            do j = 1,4
+            do j = 1,5
                if (s_recon_expon(j,i).ne.0.)
      $              term = term*hut_rot(j)**s_recon_expon(j,i)
             enddo
@@ -180,9 +186,16 @@ c         if(sum(3).lt. -1.0) sum(3)= -.99
          sxp_tar(itrk) = sum(1)         !Slope xp
          syp_tar(itrk) = sum(3)         !Slope yp
 
+         sz_tar(itrk) = 0.0             !Track is at origin
          sdelta_tar(itrk) = sum(4)*100. !percent.
-         SP_TAR(itrk)  = SPCENTRAL*(1.0 + sum(4)) !Momentum in GeV
-*
+
+* Apply offsets to reconstruction.
+         sdelta_tar(itrk) = sdelta_tar(itrk) + sdelta_offset
+         syp_tar(itrk) = syp_tar(itrk) + stheta_offset
+         sxp_tar(itrk) = sxp_tar(itrk) + sphi_offset
+
+         sp_tar(itrk)  = spcentral*(1.0 + sdelta_tar(itrk)/100.) !Momentum in GeV
+
 * The above coordinates are in the spectrometer reference frame in which the
 * Z axis is along the central ray. Do we need to rotate to the lab frame?
 * For now, I assume not.
