@@ -1,8 +1,11 @@
 #
 # $Log$
-# Revision 1.13  1996/11/07 20:19:37  saw
-# (SAW) Add SunOS and AIX compatibility
+# Revision 1.14  1998/12/01 14:09:09  saw
+# (SAW) Misc fixes
 #
+# Revision 1.13  96/11/07  20:19:37  20:19:37  saw (Stephen A. Wood)
+# (SAW) Add SunOS and AIX compatibility
+# 
 # Revision 1.12  1996/09/04 14:27:44  saw
 # (SAW) Add switches for OSF (Alpha) and some stuff for
 #       Linux (NFSDIRECTORY fixes)
@@ -74,8 +77,11 @@ endif
 
 ifeq ($(ARCH),HPUX)
   CC = gcc
+ifeq ($(OSEXT),TEST)
+  CFLAGS = -Dhpux -D_HPUX_SOURCE -Dextname -g -pg # for gprof
+else
   CFLAGS = -Dhpux -D_HPUX_SOURCE -Dextname -g
-#  CFLAGS = -D_HPUX_SOURCE -Dextname -g -pg # for gprof
+endif
   ARFLAGS = frv
   RPCCOM=rpcgen
   OSTYPE=HPUX
@@ -90,14 +96,27 @@ endif
 
 ifeq ($(ARCH),Linux)
   CC = cc
-  CFLAGS = -g -Df2cFortran -b i486-linux # -Df2cFortran for cfortran.h
+ifeq ($(F77COMPILER),Absoft)
+  CFLAGS = -g -DNOF77extname -DAbsoftUNIXFortran -O # -DAbsoftUNIXFortran for cfortran.h
+else
+ifeq ($(OSEXT),TEST)
+  CFLAGS = -g -Df2cFortran -b i486-linux -pg -O # -Df2cFortran for cfortran.h
+else
+#  CFLAGS = -g -Df2cFortran -b i486-linux -O # -Df2cFortran for cfortran.h
+  CFLAGS = -g -Df2cFortran -O # -Df2cFortran for cfortran.h
+endif
+endif
   RPCCOM=rpcgen -b -k
   OSTYPE=Linux
 endif
 
 ifeq ($(ARCH),SunOS)
   CC = gcc
-  CFLAGS = -O
+  ifeq ($(OSVERSION),4)
+    CFLAGS = -O -DNOFNMATCH
+  else
+    CFLAGS = -O
+  endif
   RPCCOM = /usr/bin/rpcgen
   OSTYPE=SunOS
 endif
