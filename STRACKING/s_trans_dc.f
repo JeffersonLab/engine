@@ -15,7 +15,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.1  1994/02/21 16:42:58  cdaq
+* Revision 1.2  1994/02/22 14:22:58  cdaq
+* (SAW) replace err='' with ' '
+*
+* Revision 1.1  1994/02/21  16:42:58  cdaq
 * Initial revision
 *
 *-
@@ -44,7 +47,7 @@
        integer*4 ihit,goodhit,old_wire,old_plane,wire,plane
 *
        ABORT= .FALSE.
-       err= ''
+       err= ' '
        old_wire = -1
        old_plane = -1
        goodhit = 0
