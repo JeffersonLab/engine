@@ -19,6 +19,9 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.13  1996/01/24 16:08:14  saw
+* (JRA) Change cpbeam/cebeam to gpbeam/gebeam
+*
 * Revision 1.12  1996/01/17 19:00:50  cdaq
 * (JRA) Calculate q, W for electrons
 *
@@ -185,7 +188,6 @@
           ssdc_track_coord(ip)=sdc_track_coord(itrkfp,ip)
         enddo
 
-c        write(38,*) ssx_fp,ssxp_fp,ssy_fp,ssyp_fp,smisc_dec_data(8)*.1-sstart_time
 
         if (sntrack_hits(itrkfp,1).eq.12 .and. sschi2perdeg.le.2) then
           xdist=ssx_dc1
@@ -193,17 +195,17 @@ c        write(38,*) ssx_fp,ssxp_fp,ssy_fp,ssyp_fp,smisc_dec_data(8)*.1-sstart_t
           do ip=1,12
             if (sdc_readout_x(ip)) then
               dist(ip) = ydist*sdc_readout_corr(ip)
-            else                            !readout from top/bottom
+            else                        !readout from top/bottom
               dist(ip) = xdist*sdc_readout_corr(ip)
             endif
             res(ip)=sdc_sing_res(ip)
             tmp = sdc_plane_wirecoord(itrkfp,ip)-sdc_plane_wirecenter(itrkfp,ip)
-            if (tmp.eq.0) then   !drift dist = 0
+            if (tmp.eq.0) then          !drift dist = 0
               res(ip)=abs(res(ip))
             else
-              res(ip)=res(ip) * (abs(tmp)/tmp)  !convert +/- res to near/far res
+              res(ip)=res(ip) * (abs(tmp)/tmp) !convert +/- res to near/far res
             endif
-        enddo
+          enddo
 c          write(38,'(12f7.2,12f8.3,12f8.5)') (ssdc_track_coord(ip),ip=1,12),
 c     &    (dist(ip),ip=1,12),(res(ip),ip=1,12)
         endif
@@ -219,29 +221,43 @@ c        sstheta = acos(cossstheta)
         sinsphi = sin(ssphi)            ! PI/2, OR ABOVE IS CRAP
 
 
-      if(spartmass .lt. 2*mass_electron) then ! Less than
-      call total_eloss(2,.true.,tz_target,ta_target,55.0,3.0,
-     >                  stheta_lab,ttheta_tar,1.0,sseloss)
-        SSENERGY = SSENERGY - sseloss
-         sqx = -SSP*cos(SSxp_tar)*sin(SSTHETA)
-         sqy = -SSP*sin(Ssxp_tar)
-         sqz = cpbeam - SSP*cos(SSxp_tar)*cos(SSTHETA)
-         sqabs= sqrt(sqx**2+sqy**2+sqz**2)
-         W2 = tmass_target**2 +2.*tmass_target*(cpbeam-ssp) - sqabs**2
-       if(W2.ge.0 ) then
-          SINVMASS = SQRT(W2)
+        if(spartmass .lt. 2*mass_electron) then ! Less than
+          if(gtarg_z(gtarg_num).gt.0.)then
+            call total_eloss(2,.true.,gtarg_z(gtarg_num),
+     $           gtarg_a(gtarg_num),gtarg_thick(gtarg_num),
+     $           gtarg_dens(gtarg_num),
+     $           sstheta,gtarg_theta,1.0,sseloss)
+            SSENERGY = SSENERGY - sseloss
+          else
+            sseloss=0.
+          endif
+          sqx = -SSP*cos(SSxp_tar)*sin(SSTHETA)
+          sqy = -SSP*sin(Ssxp_tar)
+          sqz = gpbeam - SSP*cos(SSxp_tar)*cos(SSTHETA)
+          sqabs= sqrt(sqx**2+sqy**2+sqz**2)
+          W2 = gtarg_mass(gtarg_num)**2 +
+     $         2.*gtarg_mass(gtarg_num)*(gpbeam-ssp) - sqabs**2
+     $         + (gpbeam-ssp)**2
+          if(W2.ge.0 ) then
+            SINVMASS = SQRT(W2)
+          else
+            SINVMASS = 0.
+          endif
         else
-          SINVMASS = 0.
+          if(gtarg_z(gtarg_num).gt.0.)then
+            call total_eloss(2,.false.,gtarg_z(gtarg_num),
+     $           gtarg_a(gtarg_num),
+     $           gtarg_thick(gtarg_num),gtarg_dens(gtarg_num),
+     $           sstheta,gtarg_theta,ssbeta,sseloss)
+            SSENERGY = SSENERGY - sseloss
+          else
+            sseloss=0.
+          endif
         endif
-      else
-      call total_eloss(2,.false.,tz_target,ta_target,
-     >                 55.0,3.0,stheta_lab,ttheta_tar,ssbeta,sseloss)
-        SSENERGY = SSENERGY - sseloss
-      endif
 
 *     Calculate elastic scattering kinematics
-        t1  = 2.*sphysicsa*cpbeam*cossstheta      
-        ta  = 4*cpbeam**2*cossstheta**2 - sphysicsb**2
+        t1  = 2.*sphysicsa*gpbeam*cossstheta      
+        ta  = 4*gpbeam**2*cossstheta**2 - sphysicsb**2
         if(ta.eq.0 .OR. ( sphysicab2 + sphysicsm3b * ta).lt.0.0) then
           p3=0.       
         else
@@ -252,8 +268,8 @@ c        sstheta = acos(cossstheta)
 *     and the momentum from elastic kinematics
         sselas_cor = ssp - p3
 *     invariant mass of the remaining particles
-        sminv2 =   ( (cebeam+tmass_target-ssenergy)**2
-     &       - (cpbeam - ssp * cossstheta)**2
+        sminv2 =   ( (gebeam+gtarg_mass(gtarg_num)-ssenergy)**2
+     &       - (gpbeam - ssp * cossstheta)**2
      &       - ( ssp * sinsstheta)**2  )       
         if(sminv2.ge.0 ) then
           ssminv = SQRT(sminv2)
@@ -265,7 +281,7 @@ c        sstheta = acos(cossstheta)
         if( sinsstheta .eq. 0.) then
           sszbeam = 0.
         else
-          sszbeam = sinsphi * ( -ssy_tar + cyrast * cossstheta) /
+          sszbeam = sinsphi * ( -ssy_tar + gbeam_y * cossstheta) /
      $         sinsstheta 
         endif                           ! end test on sinsstheta=0
 *
@@ -277,19 +293,25 @@ c        sstheta = acos(cossstheta)
           ssmass2 = 1.0E10
         endif
 
-        sst = (cebeam - ssenergy)**2
-     $       - (cpbeam - ssp*cossstheta)**2 - (ssp*sinsstheta)**2
-        ssu = (tmass_target - ssenergy)**2 - ssp**2
-
-c        sseloss = cebeam - ssenergy
-        ssq3 = sqrt(cpbeam**2 + ssp**2 - 2*cpbeam*ssp*cossstheta)
-        cosssthetaq = (cpbeam**2 - cpbeam*ssp*cossstheta)/cpbeam/SSQ3
-        ssthetaq = acos(cosssthetaq)
+        sst = (gebeam - ssenergy)**2
+     $       - (gpbeam - ssp*cossstheta)**2 - (ssp*sinsstheta)**2
+        ssu = (gtarg_mass(gtarg_num) - ssenergy)**2 - ssp**2
+        if(sseloss.eq.0.)then
+          sseloss = gebeam - ssenergy
+        endif
+        ssq3 = sqrt(gpbeam**2 + ssp**2 - 2*gpbeam*ssp*cossstheta)
+        if(gpbeam.ne.0.and.ssq3.ne.0.) then
+          cosssthetaq = (gpbeam**2 - gpbeam*ssp*cossstheta)/gpbeam/SSQ3
+        endif
+        if(cosssthetaq.le.1.and.cosssthetaq.ge.-1.) then
+          ssthetaq = acos(cosssthetaq)
+        endif
         ssphiq = ssphi + tt
         ssbigq2 = -sst
         ssx = ssbigq2/(2*mass_nucleon*sseloss)
-        ssy = sseloss/cebeam
-        ssw2 = tmass_target**2 + 2*tmass_target*sseloss - ssbigq2
+        ssy = sseloss/gebeam
+        ssw2 = gtarg_mass(gtarg_num)**2 +
+     $       2*gtarg_mass(gtarg_num)*sseloss - ssbigq2
         if(ssw2.ge.0.0) then
           ssw = sqrt(ssw2)
         else
@@ -310,5 +332,5 @@ c        sseloss = cebeam - ssenergy
           call G_add_path(here,err)
         ENDIF
       endif                             ! end test on zero tracks
-      RETURN
-      END
+      return
+      end
