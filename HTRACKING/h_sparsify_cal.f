@@ -13,7 +13,10 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to h_raw_dump_all
 * $Log$
-* Revision 1.5  1995/07/19 20:04:25  cdaq
+* Revision 1.6  1995/08/30 18:12:12  cdaq
+* (JRA) Add a hist of all adc's into one spectrum
+*
+* Revision 1.5  1995/07/19  20:04:25  cdaq
 * (JRA) Remove calorimeter raw data validity check
 *
 * Revision 1.4  1995/05/22  19:39:27  cdaq
@@ -48,6 +51,7 @@
 *
       include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
+      include 'hms_id_histid.cmn'
 *
 *
 *
@@ -102,6 +106,7 @@ c         endif
          nb =row+hmax_cal_rows*(col-1)
 
          hcal_realadc(nb) = float(adc)-hcal_ped_mean(nb)
+         call hf1(hidcalsumadc,hcal_realadc(nb),1.)
          if(hcal_realadc(nb).gt.hcal_threshold(nb)) then
             hcal_num_hits           =hcal_num_hits+1
             hcal_rows(hcal_num_hits)=row
