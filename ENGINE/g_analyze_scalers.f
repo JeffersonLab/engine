@@ -1,6 +1,9 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
+* Revision 1.13  1999/02/10 18:17:21  csa
+* Added beam-on calculations (D. McKee)
+*
 * Revision 1.12  1996/11/05 20:45:02  saw
 * (SAW) Use parameter for G_LUN_CHARGE_SCALER instead of hard coded #
 *
@@ -185,8 +188,8 @@ c
 
         delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001D00)
 
-        ave_current_bcm1 = gbcm1_gain*sqrt(max(0.0D00,
-     &       (gscaler_change(gbcm1_index)/delta_time)-gbcm1_offset))
+        ave_current_bcm1 = gbcm1_gain*((gscaler_change(gbcm1_index)
+     &       /delta_time) - gbcm1_offset)
         ave_current_bcm3 = gbcm3_gain*((gscaler_change(gbcm3_index)
      &       /delta_time) - gbcm3_offset)
         ave_current_unser = gunser_gain*((gscaler_change(gunser_index)
@@ -205,6 +208,15 @@ c
           gbcm2_charge = gbcm2_charge + ave_current_bcm2*delta_time
           gbcm3_charge = gbcm3_charge + ave_current_bcm3*delta_time
           gunser_charge = gunser_charge + ave_current_unser*delta_time
+
+*     Check for the "beam on" condition, and update "beam on" variables
+*     if needed. I'm only using bcm2 (the current "best" bcm) right
+*     now. This could be changed or added to.
+
+          if (ave_current_bcm2 .ge. g_beam_on_thresh_cur) then
+             g_beam_on_run_time = g_beam_on_run_time + delta_time
+             g_beam_on_bcm_charge = g_beam_on_bcm_charge + ave_current_bcm2*delta_time
+          endif
 
           gscaler_event_num = gscaler_event_num + 1
 
