@@ -3,18 +3,13 @@
 *     from standard f77s.
 *
 * $Log$
+* Revision 1.2  1996/11/22 17:06:27  saw
+* (SAW) Move trig routines to trig_wrappers.f
+*
 * Revision 1.1  1996/09/09 13:34:26  saw
 * Initial revision
 *
 *
-      integer*4 function time()
-*
-*     To be done
-*
-      time = 0
-      return
-      end
-
       integer*4 function jishft(a1,a2)
       integer*4 a1,a2
       if(a2.lt.0) then
@@ -43,20 +38,3 @@
       return
       end
 
-      real*4 function sind(x)
-      real*4 x
-      sind = sin(x*3.1415926535/180)
-      return
-      end
-
-      real*4 function cosd(x)
-      real*4 x
-      cosd = cos(x*3.1415926535/180)
-      return
-      end
-
-      real*4 function tand(x)
-      real*4 x
-      tand = tan(x*3.1415926535/180)
-      return
-      end
