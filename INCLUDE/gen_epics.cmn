@@ -1,0 +1,22 @@
+*    This include file contains all the epics extracted variables, 
+*    which should be parsed to the engine for further use.
+*
+* $Log$
+* Revision 1.1  1999/02/24 14:39:05  saw
+* Added to official source tree by csa.
+*
+*
+*     CTPTYPE=event
+*
+      real*4 gepics_delta_ebeam
+      real*4 gepics_xh00a,gepics_yh00a,gepics_xh00b,gepics_yh00b
+      real*4 gepics_beam_xpos,gepics_beam_ypos
+
+      COMMON/g_epics_events/
+     &	   gepics_delta_ebeam,
+     &	   gepics_xh00a,
+     &     gepics_yh00a,
+     &     gepics_xh00b,
+     &     gepics_yh00b,
+     &     gepics_beam_xpos,
+     &     gepics_beam_ypos
