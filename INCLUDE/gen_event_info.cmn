@@ -1,0 +1,19 @@
+**************************begin: gen_event_info.cmn ***********************
+*- 
+*-   Created   22-Apr-1994   Kevin B. Beard, Hampton Univ.
+* $Log$
+* Revision 1.1  1994/05/27 15:12:28  cdaq
+* Initial revision
+*
+*........................................................................
+*- Misc. info. about a run
+*
+      INTEGER gen_event_ID_number,gen_event_type,gen_event_class
+      INTEGER gen_event_ROC_summary
+      INTEGER gen_event_sequence_N
+*
+      COMMON /gen_event_info/ gen_event_ID_number,gen_event_type,
+     &         gen_event_class,gen_event_ROC_summary,
+     &          gen_event_sequence_N
+*
+****************************end: gen_event_info.cmn ***********************
