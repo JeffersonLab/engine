@@ -15,7 +15,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.2  1994/11/22 21:05:51  cdaq
+* Revision 1.3  1995/05/11 21:02:26  cdaq
+* (JRA) Add call to s_tracks_cal
+*
+* Revision 1.2  1994/11/22  21:05:51  cdaq
 * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.1  1994/02/21  16:06:52  cdaq
@@ -52,6 +55,12 @@
 *      
       call s_clusters_cal(abort,err)
       if(abort) then
+        call g_add_path(here,err)
+        return
+      endif
+*
+      call s_tracks_cal(abort,err)
+      if (abort) then
         call g_add_path(here,err)
         return
       endif
