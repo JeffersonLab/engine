@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.8.2.1  2003/04/04 12:55:11  cdaq
+* add beam quantities to ntuple (MKJ)
+*
 * Revision 1.8  1996/09/04 14:43:17  saw
 * (JRA) Modify ntuple contents
 *
@@ -45,6 +48,7 @@
 *
       INCLUDE 'h_ntuple.cmn'
       INCLUDE 'hms_data_structures.cmn'
+      INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_event_info.cmn'
       INCLUDE 'hms_tracking.cmn'
       INCLUDE 'hms_physics_sing.cmn'
@@ -113,6 +117,27 @@ c                                ! track with spectrometer ray
       h_Ntuple_contents(m)= hstart_time
       m= m+1
       h_Ntuple_contents(m)= float(gen_event_ID_number)
+c
+      m= m+1
+      h_Ntuple_contents(m)= gfrx_raw_adc
+      m= m+1
+      h_Ntuple_contents(m)= gfry_raw_adc
+      m= m+1
+      h_Ntuple_contents(m)= gbeam_x
+      m= m+1
+      h_Ntuple_contents(m)= gbeam_y
+      m= m+1
+      h_Ntuple_contents(m)= gbpm_x(1)
+      m= m+1
+      h_Ntuple_contents(m)= gbpm_y(1)
+      m= m+1
+      h_Ntuple_contents(m)= gbpm_x(2)
+      m= m+1
+      h_Ntuple_contents(m)= gbpm_y(2)
+      m= m+1
+      h_Ntuple_contents(m)= gbpm_x(3)
+      m= m+1
+      h_Ntuple_contents(m)= gbpm_y(3)
 
 * Experiment dependent entries start here.
 
