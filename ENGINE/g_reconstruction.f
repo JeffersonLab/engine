@@ -14,9 +14,12 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 *-    $Log$
-*-    Revision 1.9  1994/11/22 20:13:39  cdaq
-*-    (SPB) Uncomment call to SOS code
+*-    Revision 1.10  1995/04/01 19:50:22  cdaq
+*-    (JRA) Add pedestal event handling
 *-
+* Revision 1.9  1994/11/22  20:13:39  cdaq
+* (SPB) Uncomment call to SOS code
+*
 * Revision 1.8  1994/10/11  20:03:27  cdaq
 * (JRA) Comment out call to SOS
 *
@@ -55,9 +58,12 @@
       character*(*) err
 *     
       INCLUDE 'gen_data_structures.cmn'
-*
+      INCLUDE 'gen_event_info.cmn'
+*     
       logical FAIL
       character*1024 why
+*
+      logical update_peds               ! TRUE = There is new pedestal data
 *--------------------------------------------------------
 *
       ABORT= .FALSE.
@@ -67,6 +73,23 @@
       IF(ABORT) THEN
          call G_add_path(here,err)
          RETURN
+      ENDIF
+*
+*
+*  INTERRUPT ANALYSIS FOR PEDESTAL EVENTS.
+*
+*
+      IF(gen_event_type .eq. 4) then            !pedestal event
+        call g_analyze_pedestal(ABORT,err)
+        update_peds = .true.                    !need to recalculate pedestals
+        RETURN
+      ENDIF
+*
+*  check to see if pedestals need to be recalculated.
+*
+      IF(update_peds) then
+        call g_calc_pedestal(ABORT,err)
+        update_peds = .false.
       ENDIF
 *
 *-HMS reconstruction
