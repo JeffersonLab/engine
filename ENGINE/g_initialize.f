@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.21.2.1  2003/04/09 23:56:27  cdaq
+* Check for gpbeam=0
+*
 * Revision 1.21  1996/11/05 21:41:36  saw
 * (SAW) Use CTP routines as functions rather than subroutines for
 * porting.
@@ -180,6 +183,7 @@
       if (spcentral.le.0.001)  spcentral = 1.
       if (htheta_lab.le.0.001) htheta_lab = 90.
       if (stheta_lab.le.0.001) stheta_lab = 90.
+      if (gpbeam.le.0.001) gpbeam=1.
 
       if((first_time.or.g_hist_rebook).and.g_ctp_hist_filename.ne.' ') then
         file = g_ctp_hist_filename
