@@ -13,7 +13,10 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
-* Revision 1.7  1994/09/14 14:10:49  cdaq
+* Revision 1.8  1995/04/06 19:34:34  cdaq
+* (JRA) HMAX_NUM_DC_PLANES -> HDC_NUM_PLANES
+*
+* Revision 1.7  1994/09/14  14:10:49  cdaq
 * (JRA) Initialize hdc_center array first time.
 *
 * Revision 1.6  1994/08/16  13:24:58  cdaq
@@ -65,7 +68,7 @@
       goodhit = 0
       
       if (hdc_center(1).eq.0.) then   !initialize hdc_center if not yet set.
-        do plane = 1, hmax_num_dc_planes
+        do plane = 1, hdc_num_planes
           chamber = hdc_chamber_planes(plane)
           hdc_center(plane) = hdc_xcenter(chamber)*sin(hdc_alpha_angle(plane))+
      &                        hdc_ycenter(chamber)*cos(hdc_alpha_angle(plane))
