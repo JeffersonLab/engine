@@ -5,9 +5,12 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
-* Revision 1.28  1996/09/04 15:45:04  saw
-* (JRA) Increase # of possible targets.  Add fast raster variables.
+* Revision 1.29  1998/12/01 20:21:02  saw
+* (SAW) Change GNUM_MISC_PLANES from 2 to 3
 *
+* Revision 1.28  96/09/04  15:45:04  15:45:04  saw (Stephen A. Wood)
+* (JRA) Increase # of possible targets.  Add fast raster variables.
+* 
 * Revision 1.27  1996/04/30 13:34:25  saw
 * (JRA) Swap index order in GBPM_ADC_PED, GBPM_RAW_ADC
 *
@@ -247,7 +250,7 @@
       INTEGER GMAX_MISC_HITS
       PARAMETER(GMAX_MISC_HITS=100)
       INTEGER*4 GNUM_MISC_PLANES
-      PARAMETER(GNUM_MISC_PLANES=2)
+      PARAMETER(GNUM_MISC_PLANES=3)
 *
 *     CTPTYPE=event
 *
