@@ -16,9 +16,12 @@
 *- 
 *-   Created 10-JUN-1994     D. F. Geesaman
 * $Log$
-* Revision 1.1  1994/06/15 19:09:37  cdaq
-* Initial revision
-*-                           
+* Revision 1.2  1994/06/15 20:22:49  cdaq
+* (DFG) Add scin plane efficiency
+*
+c Revision 1.1  1994/06/15  19:09:37  cdaq
+c Initial revision
+c-                           
 *--------------------------------------------------------
       IMPLICIT NONE
       SAVE
@@ -75,6 +78,21 @@
      &           / FLOAT(hplanehitctr(plane)))
             hchambereff(plane)=FLOAT(hplanehitctr(plane))
      $           /FLOAT(hgoodtracksctr)
+         enddo                          ! endloop over hits in track
+      endif                             ! end test on zero hits
+*     
+*     Scintillator efficiencies
+      tothits = HNUM_SCIN_HIT(goodtrack)
+      if(tothits.gt.0) then
+*     loop over all hits in track
+         
+
+         do ihit = 1, tothits
+            hitnum=HSCIN_HIT(goodtrack,ihit)
+            plane = HSCIN_PLANE_NUM(hitnum)
+            hscinplanehitctr(plane) = hscinplanehitctr(plane) + 1
+            hscinplaneeff(plane) = FLOAT(hscinplanehitctr(plane))
+     &           /FLOAT(hgoodtracksctr)
          enddo                          ! endloop over hits in track
       endif                             ! end test on zero hits
 *     
