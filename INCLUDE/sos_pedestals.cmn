@@ -1,0 +1,57 @@
+* sos_pedestals.cmn -  counters used for calculating pedestals from the set
+*                      of pedestal events at the beginning of each run.
+*
+* $Log$
+* Revision 1.1  1995/04/06 20:18:01  cdaq
+* Initial revision
+*
+*
+*     The following include statments must precede the inclusion of this
+*     file in each routine that uses it.  The *%% syntax is also a
+*     directive to makereg to tell it to include the code in the program
+*     that it generates.
+*
+*%%   include 'gen_data_structures.cmn'
+*
+*     CTPTYPE=event
+*
+*
+* HODOSCOPE PEDESTALS
+* replace sscin_all_ped_pos with float(shodo_pos_ped_sum/shodo_pos_ped_num)
+* if shodo_pos_ped_num > shodo_min_peds.
+*
+      integer*4 shodo_pos_ped_sum2(snum_scin_planes,snum_scin_elements)
+      integer*4 shodo_neg_ped_sum2(snum_scin_planes,snum_scin_elements)
+      integer*4 shodo_pos_ped_sum(snum_scin_planes,snum_scin_elements)
+      integer*4 shodo_neg_ped_sum(snum_scin_planes,snum_scin_elements)
+      integer*4 shodo_pos_ped_num(snum_scin_planes,snum_scin_elements)
+      integer*4 shodo_neg_ped_num(snum_scin_planes,snum_scin_elements)
+      integer*4 shodo_min_peds
+*
+      common/sos_scin_pedestals/
+     &   shodo_pos_ped_sum2,  !sum of squares
+     &   shodo_neg_ped_sum2,  !sum of squares
+     &   shodo_pos_ped_sum,   !sum of peds
+     &   shodo_neg_ped_sum,   !sum of peds
+     &   shodo_pos_ped_num,   !number of peds
+     &   shodo_neg_ped_num,   !number of peds
+     &   shodo_min_peds       !# of peds required to override default pedestals
+*
+*
+* CALORIMETER PEDESTALS
+* replace scal_ped_mean with float(scal_ped_sum/scal_ped_num),
+*         scal_ped_rms  with (appropriate formula),
+*    and  scal_ped_threshold with (something like) min(10.,3.*scal_ped_rms)
+* if scal_num > scal_min_peds.
+*
+      integer*4 scal_ped_sum2(smax_cal_blocks)
+      integer*4 scal_ped_sum(smax_cal_blocks)
+      integer*4 scal_ped_num(smax_cal_blocks)
+      integer*4 scal_min_peds
+*
+      common/sos_cal_pedestals/
+     &   scal_ped_sum2,       !sum of squares
+     &   scal_ped_sum,        !sum of peds
+     &   scal_ped_num,        !number of peds
+     &   scal_min_peds        !# of peds required to override default pedestals
+
