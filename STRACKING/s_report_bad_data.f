@@ -17,6 +17,10 @@
 * author: John Arrington
 * created: 8/17/95
 * $Log$
+* Revision 1.3  1996/09/05 20:14:25  saw
+* (JRA) Don't report difference between input pedestals and pedestals from
+*       pedestal events
+*
 * Revision 1.2  1996/01/17 18:59:46  cdaq
 * (JRA) Warn when pedestals change too much
 *
@@ -61,39 +65,42 @@
 
       data mir/'scer1','scer2','scer3','scer4'/
 
+! Remove reporting of difference between pedestals and input pedestals
+! from parameter files now that we always use the pedestal events.
+!
 * report channels where the pedestal analysis differs from the param file.
-      if ((shodo_num_ped_changes+scal_num_ped_changes+scer_num_ped_changes)
-     &     .gt. 0) then
-
-        write(lunout,*) '  SOS detectors with large (>2sigma) pedestal changes'
-        write(lunout,*)
-        write(lunout,*) ' Signal  Pedestal change(new-old)'
-
-        if (shodo_num_ped_changes.gt.0) then
-          do ind=1,shodo_num_ped_changes
-            write(lunout,'(2x,a4,a2,a1,f9.1)')
-     $           pln(shodo_changed_plane(ind))
-     $           ,cnt(shodo_changed_element(ind))
-     $           ,sgn(shodo_changed_sign(ind)),shodo_ped_change(ind)
-          enddo
-        endif
-
-        if (scal_num_ped_changes.gt.0) then
-          do ind=1,scal_num_ped_changes
-            icol=(scal_changed_block(ind)-0.5)/smax_cal_rows + 1
-            irow=scal_changed_block(ind)-smax_cal_rows*(icol-1)
-            write(lunout,'(4x,a2,a2,f9.1)') col(icol),row(irow),
-     &           scal_ped_change(ind)
-          enddo
-        endif
-
-        if (scer_num_ped_changes.gt.0) then
-          do ind=1,scer_num_ped_changes
-            write(lunout,'(3x,a4,f9.1)') mir(scer_changed_tube(ind)),
-     &           scer_ped_change(ind)
-          enddo
-        endif
-      endif              ! are there pedestal changes to report?
+!      if ((shodo_num_ped_changes+scal_num_ped_changes+scer_num_ped_changes)
+!     &     .gt. 0) then
+!
+!        write(lunout,*) '  SOS detectors with large (>2sigma) pedestal changes'
+!        write(lunout,*)
+!        write(lunout,*) ' Signal  Pedestal change(new-old)'
+!
+!        if (shodo_num_ped_changes.gt.0) then
+!          do ind=1,shodo_num_ped_changes
+!            write(lunout,'(2x,a4,a2,a1,f9.1)')
+!     $           pln(shodo_changed_plane(ind))
+!     $           ,cnt(shodo_changed_element(ind))
+!     $           ,sgn(shodo_changed_sign(ind)),shodo_ped_change(ind)
+!          enddo
+!        endif
+!
+!        if (scal_num_ped_changes.gt.0) then
+!          do ind=1,scal_num_ped_changes
+!            icol=(scal_changed_block(ind)-0.5)/smax_cal_rows + 1
+!            irow=scal_changed_block(ind)-smax_cal_rows*(icol-1)
+!            write(lunout,'(4x,a2,a2,f9.1)') col(icol),row(irow),
+!     &           scal_ped_change(ind)
+!          enddo
+!        endif
+!
+!        if (scer_num_ped_changes.gt.0) then
+!          do ind=1,scer_num_ped_changes
+!            write(lunout,'(3x,a4,f9.1)') mir(scer_changed_tube(ind)),
+!     &           scer_ped_change(ind)
+!          enddo
+!        endif
+!      endif              ! are there pedestal changes to report?
 
       return
       end
