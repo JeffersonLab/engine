@@ -10,7 +10,10 @@
 * Output: any_FAIL      - OR of previous failure or current
 *         err           - appended error message
 * $Log$
-* Revision 1.1  1994/06/17 02:49:58  cdaq
+* Revision 1.2  1994/06/17 02:51:45  cdaq
+* (SAW) Fix typo in here
+*
+* Revision 1.1  1994/06/17  02:49:58  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -18,7 +21,7 @@
       SAVE
 *
       character*8 here
-      parameter (here= 'G_reg_I4')
+      parameter (here= 'G_reg_C')
 *
       character*(*) name
       character*(*) var
