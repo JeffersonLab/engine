@@ -2,7 +2,10 @@
 *     gen_data_structures.cmn or be separate.
 *
 * $Log$
-* Revision 1.2  1994/08/03 20:13:12  cdaq
+* Revision 1.3  1994/12/18 04:04:53  cdaq
+* (SAW) Add array and common for event by event scalers
+*
+* Revision 1.2  1994/08/03  20:13:12  cdaq
 * (SAW) Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
 *
 * Revision 1.1  1994/06/21  16:36:57  cdaq
@@ -12,8 +15,13 @@
 *
       integer*4 MAX_NUM_SCALERS
       parameter (MAX_NUM_SCALERS=500)
+      integer*4 MAX_NUM_EVSCALERS
+      parameter (MAX_NUM_EVSCALERS=16)
 *
       integer*4 scalers(MAX_NUM_SCALERS)
 *
       common /SCALERS/ scalers
 *
+      integer*4 evscalers(MAX_NUM_EVSCALERS)
+*
+      common /EVSCALERS/ evscalers
