@@ -3,6 +3,10 @@
 *- standalone DISPLAY for hall C
 *
 * $Log$
+* Revision 1.3  1996/01/17 16:30:02  cdaq
+* (SAW) Adjust RPC nums for new online analyzer (DD system).
+*       Add menu for view selection
+*
 * Revision 1.2  1995/09/18 13:47:44  cdaq
 * (DVW, SAW) Reorganize
 *
@@ -33,38 +37,29 @@
       integer i,j
 *
       character*1 spect
+      integer*4 view, newview
+      integer*4 revdis_ask
+      logical isdata
 *******************************************************************
 *
       PRINT *
       PRINT *,'       Standalone DISPLAY for hall C'
       PRINT *,'     R.Ent,S.Wood, & K.Beard  Oct.1994'
-      PRINT *,'     und Derek von der Westrum Jul 1995'
+      PRINT *,'       and Derek van Westrum Jul 1995'
       PRINT *
-      PRINT *,'**************************************************'
-      PRINT *,'*                                                *'
-      PRINT *,'*       Confused?  Don''t be.  Read the file      *'
-      PRINT *,'*   "~cdaq/documents/evdisplay/evdisplay.help"   *'
-      PRINT *,'*                                                *'
-      PRINT *,'**************************************************'
+      PRINT *,'****************************************************'
+      PRINT *,'*                                                  *'
+      PRINT *,'*       Confused?  Don''t be.  Read the file        *'
+      PRINT *,'*                                                  *'
+      PRINT *,'*   ~cdaq/documents/analysis_code/evdisplay.help   *'
+      PRINT *,'*                                                  *'
+      PRINT *,'****************************************************'
+      PRINT *
 *      PRINT *,' You need to specify the process and the machine you'
 *      PRINT *,' with which you want to connect this display process.'
 *      PRINT *,' Also, if you are using an Xwindow display'
 *      PRINT *,' you may need to run PAW once/session to get things to '
 *      PRINT *,' work correctly.'
-      PRINT *
-      PRINT *
-      PRINT *,' Enter the name of the machine running "engine" or CODA:'
-      PRINT *,' [cdaq1,cdaq2,hallc1,hallc2,cebafh, number; no default]:'
-      READ(5,'(a)') line
-      IF(line.EQ.' ') THEN
-        why= ':machine name must be specified!'
-        call G_add_path(here,why)
-        call G_rep_err(why)
-        STOP
-      ELSE
-        call NO_comments(line)
-        gen_display_server_machine= line
-      ENDIF
 *
       PRINT *,' 0: Connect to offline replay'
       PRINT *,' 1: Connect online analyzer'
@@ -73,13 +68,34 @@
       if(i.eq.0) then
         gen_display_server_RPCprgmID = '2c0daFF8'x   !default offline
         gen_display_server_RPCversionID = 1 ! default offline
+        call getenv("HOST",gen_display_server_machine)
       else if(i.eq.1) then
-        gen_display_server_RPCprgmID = '2c0da005'x   !default online
-        gen_display_server_RPCversionID = 0 ! default online
+c        gen_display_server_RPCprgmID = '2c0da005'x   !default online
+        gen_display_server_RPCprgmID = '2c0daFF8'x   !default online
+        gen_display_server_RPCversionID = 2 ! default online
+        gen_display_server_machine = 'cdaq2.cebaf.gov'
       else
         gen_display_server_RPCprgmID = i
         gen_display_server_RPCversionID = j
+        call getenv("HOST",gen_display_server_machine)
       endif
+*
+      PRINT *
+      PRINT *,' Enter the name of the machine running "engine" or CODA:'
+      i=index(gen_display_server_machine,' ')
+      if(i.gt.1) i = i-1
+      WRITE(6,'($,a)') '[cdaq1,cdaq2,hallc1,hallc2,cebafh, ... ['//
+     $     gen_display_server_machine(1:i)//']: '
+      READ(5,'(a)') line
+      IF(line.EQ.' '.and.gen_display_server_machine.eq.' ') THEN
+        why= ':machine name must be specified!'
+        call G_add_path(here,why)
+        call G_rep_err(why)
+        STOP
+      ELSE if(line.ne.' ') then
+        call NO_comments(line)
+        gen_display_server_machine= line
+      ENDIF
 *
       print *,"Server Program #=",gen_display_server_RPCprgmID
 *
@@ -157,30 +173,46 @@
       print *,g_label
       print *,' '
       PRINT *,' ............begin loop......................'
+      print *,' '
+      print *,' '
 *
       QUIT= .FALSE.
 
+      view = 1
+      isdata = .false.
+
       DO WHILE (.NOT.QUIT)
 *
-        PRINT *,' Next CTP condition for an event (?=help,1=any)?'
-        READ(5,'(a)',ERR=99,END=99) line
-        IF(line.EQ.'%EXIT' .or. line.EQ.'%QUIT') THEN
-          QUIT= .TRUE.
+        PRINT *,'Run Number = ',gen_run_number,
+     $        '  Event Number = ',gen_event_ID_number
+        PRINT *,' Enter a CTP condition for the next event (?=help,1=any).'
+        newview = revdis_ask(view)
+        if(newview.lt.0) then
+          QUIT = .TRUE.
+          isdata = .false.              ! Don't try to view
+        else if(newview.eq.0) then            ! Get a new event
+          call revdis_getev(FAIL,why)
+          If(FAIL) Then
+            call G_rep_err(FAIL,why)
+*          Else
+            Endif
+            write(6,'("Run",i6,", event ID",i7," sequence",i7)')
+     $           gen_run_number,gen_event_ID_number, gen_event_sequence_N
+            if(spect.eq.'h') then
+              call h_one_ev_generate
+            else if(spect.eq.'s') then
+              call s_one_ev_generate
+            endif
+*          EndIf
+          isdata = .true.
         else
-          call revdis_define(line,FAIL,why)
-          if(.NOT.FAIL) then
-            call revdis_getev(FAIL,why)
-            If(FAIL) Then
-              call G_rep_err(FAIL,why)
-            Else
-              write(6,'("Run",i6,", event ID",i7," sequence",i7)')
-     $             gen_run_number,gen_event_ID_number, gen_event_sequence_N
-              if(spect.eq.'h') then
-                call h_one_ev_display
-              else if(spect.eq.'s') then
-                call s_one_ev_display
-              endif
-            EndIf
+          view = newview
+        endif
+        if(isdata) then              ! There is an event to display
+          if(spect.eq.'h') then
+            call h_one_ev_display(view)
+          else if(spect.eq.'s') then
+            call s_one_ev_display(view)
           endif
         endif
 *     
