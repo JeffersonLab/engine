@@ -17,7 +17,10 @@
 *                add     hdc_xcenter
 *                        hdc_ycenter
 * $Log$
-* Revision 1.2  1994/03/24 18:36:06  cdaq
+* Revision 1.3  1994/04/13 17:33:06  cdaq
+* (DFG) Added dummy and dmytst
+*
+* Revision 1.2  1994/03/24  18:36:06  cdaq
 * (DFG) Additional parameters
 *
 * Revision 1.1  1994/02/22  14:46:27  cdaq
@@ -102,14 +105,20 @@
       real*4 hdc_tdc_time_per_channel ! hms drift chamber tdc calibration
       real*4 hdc_1_zpos
       real*4 hdc_2_zpos
+      real*4 dummy
       common/HMS_CHAMBER_READOUT_REAL/
      &     hdrift_velocity,
      &     hdc_tdc_time_per_channel,
      &     hdc_1_zpos,
-     &     hdc_2_zpos
+     &     hdc_2_zpos,
+     &     dummy
 *
-*     INTEGER*4
-      integer*4 hdc_wire_counting               ! readout numbering order
+*    INTEGER*4
+      integer*4 hdc_wire_counting     ! readout numbering order
+      integer*4 dmytst
 *
       common/HMS_CHAMBER_READOUT_INT/
-     &     hdc_wire_counting(HMAX_NUM_DC_PLANES) 
+     &     hdc_wire_counting(HMAX_NUM_DC_PLANES),
+     &     dmytst
+
+
