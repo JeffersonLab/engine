@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.4  1994/10/11 18:40:49  cdaq
-*-    (SAW) Protect agains blank blocknames
+*-    Revision 1.5  1995/03/13 18:17:49  cdaq
+*-    (JRA) Add calls to s_scin_eff_shutdown and s_cal_eff_shutdown.
 *-
+* Revision 1.4  1994/10/11  18:40:49  cdaq
+* (SAW) Protect agains blank blocknames
+*
 * Revision 1.3  1994/06/17  03:02:01  cdaq
 * (KBB) Fix typo
 *
@@ -49,6 +52,12 @@
       err= ' '
 *     
       call s_ntuple_shutdown(ABORT,err)
+*
+c*      call s_sv_nt_shutdown(ABORT,err)
+*
+      call s_scin_eff_shutdown(ABORT,err)
+*
+      call s_cal_eff_shutdown(ABORT,err)
 *
       if(s_report_blockname .ne. ' ') then
         ierr = threpa(s_report_blockname, g_report_output_filename)
