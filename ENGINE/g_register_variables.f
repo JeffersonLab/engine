@@ -19,8 +19,11 @@
 *     Modified: 24-May-1994 K.B.Beard
 *
 *     $Log$
-*     Revision 1.5  1994/06/17 03:30:35  cdaq
-*     (KBB) Execute all code despite registration errors
+*     Revision 1.6  1994/06/21 16:40:20  cdaq
+*     (SAW) Register g_report_rebook and scalers
+*
+* Revision 1.5  1994/06/17  03:30:35  cdaq
+* (KBB) Execute all code despite registration errors
 *
 * Revision 1.4  1994/06/16  03:24:28  cdaq
 * (SAW) Register reconstruction filenames and report generator filenames etc.
@@ -58,6 +61,7 @@
       INCLUDE 'gen_event_info.cmn'
       INCLUDE 'gen_run_pref.cmn'
       INCLUDE 'gen_run_pref.dte'
+      INCLUDE 'gen_scalers.cmn'
 *
 *----------------------------------------------------------------------
 *
@@ -89,6 +93,10 @@
 *
       ierr = regparmint('test_rebook',g_test_rebook,0)
       if(ierr.ne.0) call G_append(err,',"test_rebook"')
+      ABORT= ierr.ne.0 .or. ABORT
+*
+      ierr = regparmint('report_rebook',g_report_rebook,0)
+      if(ierr.ne.0) call G_append(err,',"report_rebook"')
       ABORT= ierr.ne.0 .or. ABORT
 *
       ierr = regparmstring('data_source_filename'
@@ -208,6 +216,12 @@
 *
       ierr = regparmint('PREF_muddleON',gen_pref_muddleON,0)
       if(ierr.ne.0) call G_append(err,',"PREF_muddleON"')
+      ABORT= ierr.ne.0 .or. ABORT
+*
+*     Scalers
+*
+      ierr = regparmint('scalers',scalers,'Raw scalers')
+      if(ierr.ne.0) call G_append(err,',"scalers"')
       ABORT= ierr.ne.0 .or. ABORT
 *
       IF(ABORT) call G_prepend(':unable to register',err)
