@@ -12,6 +12,9 @@
 *-      Created 09 October 1997      H. Mkrtchyan
 *
 * $Log$
+* Revision 1.2  1999/01/29 17:33:56  saw
+* Cosmetic changes
+*
 * Revision 1.1  1999/01/21 21:40:14  saw
 * Extra shower counter tube modifications
 *
@@ -24,7 +27,7 @@
 *
       logical abort
       character*(*) errmsg
-      character*13 here
+      character*17 here
       parameter (here='H_CORRECT_CAL_TWO')
 *
 *

@@ -16,6 +16,9 @@
 *-
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 * $Log$
+* Revision 1.5  1999/01/29 17:33:57  saw
+* Cosmetic changes
+*
 * Revision 1.4  1998/12/17 22:02:40  saw
 * Support extra set of tubes on HMS shower counter
 *
@@ -65,28 +68,28 @@
 *      Loop over hits
 *
       do nh=1,hcal_num_hits
-         row=hcal_rows(nh)
-         col=hcal_cols(nh)
-         adc_pos=hcal_adcs_pos(nh)
-         adc_neg=hcal_adcs_neg(nh)
-         nb =row+hmax_cal_rows*(col-1)
+        row=hcal_rows(nh)
+        col=hcal_cols(nh)
+        adc_pos=hcal_adcs_pos(nh)
+        adc_neg=hcal_adcs_neg(nh)
+        nb =row+hmax_cal_rows*(col-1)
 *
 *------Determine position and energy deposition for each block
-         hblock_xc(nh)=hcal_block_xc(nb)
-         hblock_zc(nh)=hcal_block_zc(nb)
-         if(col.le.hcal_num_neg_columns) then ! Blocks with two tubes
-           hblock_de(nh)=adc_pos*hcal_pos_cal_const(nb)*hcal_pos_gain_cor(nb)
-     $          +adc_neg*hcal_neg_cal_const(nb)*hcal_neg_gain_cor(nb)
-         else ! Blocks with single tube
-           hblock_de(nh)=adc_pos*hcal_pos_cal_const(nb)*hcal_pos_gain_cor(nb)
-         endif
+        hblock_xc(nh)=hcal_block_xc(nb)
+        hblock_zc(nh)=hcal_block_zc(nb)
+        if(col.le.hcal_num_neg_columns) then ! Blocks with two tubes
+          hblock_de(nh)=adc_pos*hcal_pos_cal_const(nb)*hcal_pos_gain_cor(nb)
+     $         +adc_neg*hcal_neg_cal_const(nb)*hcal_neg_gain_cor(nb)
+        else                            ! Blocks with single tube
+          hblock_de(nh)=adc_pos*hcal_pos_cal_const(nb)*hcal_pos_gain_cor(nb)
+        endif
 *
 *------Accumulate the integral energy depositions
-         if(col.eq.1) hcal_e1=hcal_e1+hblock_de(nh)
-         if(col.eq.2) hcal_e2=hcal_e2+hblock_de(nh)
-         if(col.eq.3) hcal_e3=hcal_e3+hblock_de(nh)
-         if(col.eq.4) hcal_e4=hcal_e4+hblock_de(nh)
-                      hcal_et=hcal_et+hblock_de(nh)
+        if(col.eq.1) hcal_e1=hcal_e1+hblock_de(nh)
+        if(col.eq.2) hcal_e2=hcal_e2+hblock_de(nh)
+        if(col.eq.3) hcal_e3=hcal_e3+hblock_de(nh)
+        if(col.eq.4) hcal_e4=hcal_e4+hblock_de(nh)
+                     hcal_et=hcal_et+hblock_de(nh)
       enddo      !End loop over hits
       hnhits_cal=hcal_num_hits
 *

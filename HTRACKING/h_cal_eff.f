@@ -15,6 +15,9 @@
 * h_cal_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
+* Revision 1.6  1999/01/29 17:33:56  saw
+* Cosmetic changes
+*
 * Revision 1.5  1998/12/17 22:02:38  saw
 * Support extra set of tubes on HMS shower counter
 *
@@ -33,7 +36,7 @@
 *--------------------------------------------------------
       IMPLICIT NONE
 *
-      character*50 here
+      character*9 here
       parameter (here= 'H_CAL_EFF')
 *
       logical ABORT
