@@ -11,6 +11,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.2.2  2004/05/13 22:06:30  jones
+* Change ntuple variables
+*
 * Revision 1.10.2.1  2004/02/26 14:33:51  jones
 * Starting code for mduality
 *
@@ -114,22 +117,22 @@ c
       m= 0
       m= m+1
       c_Ntuple_contents(m)= ccointime_hms ! Corrected Coincidence time
-      m= m+1
-      c_Ntuple_contents(m)= gbpm_beam_x   ! Mean Beam X Position
-      m= m+1
-      c_Ntuple_contents(m)= gbpm_beam_y   ! Mean Beam Y Position
+*      m= m+1
+*      c_Ntuple_contents(m)= gbpm_beam_x   ! Mean Beam X Position
+*      m= m+1
+*      c_Ntuple_contents(m)= gbpm_beam_y   ! Mean Beam Y Position
       m= m+1
       c_Ntuple_contents(m)= gbpm_x(2)   ! Beam X Position bei BPM 2 (gut=1.8)
       m= m+1
       c_Ntuple_contents(m)= gbpm_y(2)   ! Beam Y Position bei BPM 2 (gut=0.0)
-      m= m+1
-      c_Ntuple_contents(m)= gfrx_raw_adc ! Fast Raster X
-      m= m+1
-      c_Ntuple_contents(m)= gfry_raw_adc ! Fast Raster Y
-      m= m+1
-      c_Ntuple_contents(m)= gbeam_x ! Berechnete StrahlpositionX
-      m= m+1
-      c_Ntuple_contents(m)= gbeam_y ! Berechnete StrahlpositionY
+*      m= m+1
+*      c_Ntuple_contents(m)= gfrx_raw_adc ! Fast Raster X
+*      m= m+1
+*      c_Ntuple_contents(m)= gfry_raw_adc ! Fast Raster Y
+*      m= m+1
+*      c_Ntuple_contents(m)= gbeam_x ! Berechnete StrahlpositionX
+*      m= m+1
+*      c_Ntuple_contents(m)= gbeam_y ! Berechnete StrahlpositionY
       m= m+1
       c_Ntuple_contents(m)= HSX_FP      ! HMS Focal Plane
       m= m+1
@@ -192,12 +195,12 @@ c
       c_Ntuple_contents(m)= HBETA_NOTRK !
       m= m+1
       c_Ntuple_contents(m)= HSBETA      !
-      m= m+1
-      c_Ntuple_contents(m)= HSDEDX(1)   !
+*      m= m+1
+*      c_Ntuple_contents(m)= HSDEDX(1)   !
       m= m+1
       c_Ntuple_contents(m)= SCER_NPE_SUM ! SOS Particle Id.
       m= m+1
-      c_Ntuple_contents(m)= SSSHSUM  ! xucc what's wrong with this again?
+      c_Ntuple_contents(m)= SSSHSUM  ! 
       m= m+1
       c_Ntuple_contents(m)= SSSHTRK  !
       m= m+1
@@ -206,33 +209,32 @@ c
       c_Ntuple_contents(m)= SBETA_NOTRK      !
       m= m+1
       c_Ntuple_contents(m)= SSBETA      !
+*      m= m+1
+*      c_Ntuple_contents(m)= SSDEDX(1)   !
       m= m+1
-      c_Ntuple_contents(m)= SSDEDX(1)   !
-      m= m+1
-      c_Ntuple_contents(m)= gbcm1_charge ! Charge of last scaler event
+      c_Ntuple_contents(m)= g_beam_on_bcm_charge(1) ! Charge of last scaler event
       m= m+1
       c_Ntuple_contents(m)= FLOAT(gen_event_ID_number)
       m= m+1
       c_Ntuple_contents(m)= FLOAT(gen_event_type)
-      m= m+1
-      c_Ntuple_contents(m)= cmissing_e  ! missing energy
-      m= m+1
-      c_Ntuple_contents(m)= cmissing_mass ! missing mass
-      m= m+1
+*      m= m+1
+*      c_Ntuple_contents(m)= cmissing_e  ! missing energy
+*      m= m+1
+*      c_Ntuple_contents(m)= cmissing_mass ! missing mass
+*      m= m+1
 * 
-      c_Ntuple_contents(m)= cmex  ! missing energy
-      m= m+1
-      c_Ntuple_contents(m)= cmmx ! missing mass
-      m= m+1
-* 
- 
-      c_Ntuple_contents(m)= cmissing_mom ! Missing Momentum
-      m= m+1
-      c_Ntuple_contents(m)= cmissing_mom_par ! pm parallel to q
-      m= m+1
-      c_Ntuple_contents(m)= cmissing_mom_perp ! pm perp tp q
-      m= m+1
-      c_Ntuple_contents(m)= cmissing_mom_oop ! pm out of plane
+*      c_Ntuple_contents(m)= cmex  ! missing energy
+*      m= m+1
+*      c_Ntuple_contents(m)= cmmx ! missing mass
+
+*      m= m+1 
+*      c_Ntuple_contents(m)= cmissing_mom ! Missing Momentum
+*      m= m+1
+*      c_Ntuple_contents(m)= cmissing_mom_par ! pm parallel to q
+*      m= m+1
+*      c_Ntuple_contents(m)= cmissing_mom_perp ! pm perp tp q
+*      m= m+1
+*      c_Ntuple_contents(m)= cmissing_mom_oop ! pm out of plane
       m= m+1
       c_Ntuple_contents(m)= c_omega 
       m= m+1
@@ -244,7 +246,17 @@ c
       m= m+1
       c_Ntuple_contents(m)= qabs
       m= m+1
-      c_Ntuple_contents(m)= z_m
+      c_Ntuple_contents(m)= hsp
+      m= m+1
+      c_Ntuple_contents(m)= ssp
+
+*      m= m+1
+*      c_Ntuple_contents(m)= z_m
+      m= m+1
+      c_Ntuple_contents(m)= zpi
+      m= m+1
+      c_Ntuple_contents(m)= zka
+
       m= m+1
       c_Ntuple_contents(m)= pt2
 
@@ -275,18 +287,18 @@ c
       c_ntuple_contents(m)=  haero_pos_npe_sum
       m=m+1
       c_ntuple_contents(m)=  haero_neg_npe_sum
-      m=m+1
-      c_ntuple_contents(m)=  hcer_adc(1)
-      m=m+1
-      c_ntuple_contents(m)=  hcer_adc(2)
+*      m=m+1
+*      c_ntuple_contents(m)=  hcer_adc(1)
+*      m=m+1
+*      c_ntuple_contents(m)=  hcer_adc(2)
       m=m+1
       c_ntuple_contents(m)=  hsx_cer
       m=m+1
       c_ntuple_contents(m)=  (sspath_cor - hspath_cor)
-      m=m+1
-      c_ntuple_contents(m)=   sszbeam
-      m=m+1
-      c_ntuple_contents(m)=   hszbeam      
+*      m=m+1
+*      c_ntuple_contents(m)=   sszbeam
+*      m=m+1
+*      c_ntuple_contents(m)=   hszbeam      
       m=m+1
       c_ntuple_contents(m)=   ctphix
       m=m+1

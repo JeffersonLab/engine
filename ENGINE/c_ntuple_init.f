@@ -80,6 +80,9 @@ c       c_ntuple_contents(m)= hsmass2
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.10.2.2  2004/05/13 22:06:30  jones
+* Change ntuple variables
+*
 * Revision 1.10.2.1  2004/02/26 14:33:37  jones
 * Starting code for mduality
 *
@@ -201,22 +204,22 @@ c
       m= 0
       m=m+1
       c_Ntuple_tag(m)= 'cointime'      ! Corrected Coincidence Time
-      m= m+1
-      c_Ntuple_tag(m)= 'bpmxmean'         ! Mean Beam X Position
-      m= m+1
-      c_Ntuple_tag(m)= 'bpmymean'         ! Mean Beam Y Position
+*      m= m+1
+*      c_Ntuple_tag(m)= 'bpmxmean'         ! Mean Beam X Position
+*      m= m+1
+*      c_Ntuple_tag(m)= 'bpmymean'         ! Mean Beam Y Position
       m= m+1
       c_Ntuple_tag(m)= 'bpmx'         ! Beam X Position
       m= m+1
       c_Ntuple_tag(m)= 'bpmy'         ! Beam Y Position
-      m= m+1
-      c_Ntuple_tag(m)= 'frx'           ! Fast Raster X
-      m= m+1
-      c_Ntuple_tag(m)= 'fry'           ! Fast Raster Y
-      m= m+1
-      c_Ntuple_tag(m)= 'gbeam_x'           ! Fast Raster X
-      m= m+1
-      c_Ntuple_tag(m)= 'gbeam_y'           ! Fast Raster Y
+*      m= m+1
+*      c_Ntuple_tag(m)= 'frx'           ! Fast Raster X
+*      m= m+1
+*      c_Ntuple_tag(m)= 'fry'           ! Fast Raster Y
+*      m= m+1
+*      c_Ntuple_tag(m)= 'gbeam_x'           ! Fast Raster X
+*      m= m+1
+*      c_Ntuple_tag(m)= 'gbeam_y'           ! Fast Raster Y
       m= m+1
       c_Ntuple_tag(m)= 'hsxfp'         ! HMS Focal Plane
       m= m+1
@@ -273,13 +276,13 @@ c
       c_Ntuple_tag(m)= 'hsbeta_notrk'   ! 
       m= m+1
       c_Ntuple_tag(m)= 'hsbeta'         ! 
-      m= m+1
-      c_Ntuple_tag(m)= 'hsdedx1'        ! 
+*      m= m+1
+*      c_Ntuple_tag(m)= 'hsdedx1'        ! 
       m= m+1
       c_Ntuple_tag(m)= 'scer_npe'       ! SOS Particle Id.
-      m= m+1
+*      m= m+1
 c      c_Ntuple_tag(m)= 'saer_npe'       ! 
-c      m= m+1
+      m= m+1
       c_Ntuple_tag(m)= 'ssshsum'        ! 
       m= m+1
       c_Ntuple_tag(m)= 'ssshtrk'        ! 
@@ -289,34 +292,34 @@ c      m= m+1
       c_Ntuple_tag(m)= 'ssbeta_notrk'   ! 
       m= m+1
       c_Ntuple_tag(m)= 'ssbeta'         ! 
-      m= m+1
-      c_Ntuple_tag(m)= 'ssdedx1'        ! 
+*      m= m+1
+*      c_Ntuple_tag(m)= 'ssdedx1'        ! 
       m= m+1
       c_Ntuple_tag(m)= 'charge'         ! Charge of last Scaler Event
       m=m+1
       c_Ntuple_tag(m)= 'eventID' ! CODA event ID#
       m=m+1
       c_Ntuple_tag(m)= 'evtype' 
-      m=m+1
-      c_Ntuple_tag(m)= 'Em'
-      m=m+1
-      c_Ntuple_tag(m)= 'missmass'
-      m=m+1
+*      m=m+1
+*      c_Ntuple_tag(m)= 'Em'
+*      m=m+1
+*      c_Ntuple_tag(m)= 'missmass'
+*      m=m+1
 * 
-      c_Ntuple_tag(m)= 'Emx'
-      m=m+1
-      c_Ntuple_tag(m)= 'mmx'
-      m=m+1
+*      c_Ntuple_tag(m)= 'Emx'
+*      m=m+1
+*      c_Ntuple_tag(m)= 'mmx'
+*      m=m+1
 *  seems to add some new infor about excitation energy
 *     xucc added end
 
-      c_Ntuple_tag(m)= 'Pm'
-      m=m+1
-      c_Ntuple_tag(m)= 'PmPar'
-      m=m+1
-      c_Ntuple_tag(m)= 'PmPer'
-      m=m+1
-      c_Ntuple_tag(m)= 'PmOop'
+*      c_Ntuple_tag(m)= 'Pm'
+*      m=m+1
+*      c_Ntuple_tag(m)= 'PmPar'
+*      m=m+1
+*      c_Ntuple_tag(m)= 'PmPer'
+*      m=m+1
+*      c_Ntuple_tag(m)= 'PmOop'
       m=m+1
       c_Ntuple_tag(m)= 'omega'
       m=m+1
@@ -328,7 +331,17 @@ c      m= m+1
       m=m+1
       c_Ntuple_tag(m)= 'qabs'
       m=m+1
-      c_Ntuple_tag(m)= 'Zm'
+      c_Ntuple_tag(m)= 'hsp'
+      m=m+1
+      c_Ntuple_tag(m)= 'ssp'
+
+*      m=m+1
+*      c_Ntuple_tag(m)= 'Zm'
+      m=m+1
+      c_Ntuple_tag(m)= 'Zpi'
+      m=m+1
+      c_Ntuple_tag(m)= 'Zka'
+
       m=m+1
       c_Ntuple_tag(m)= 'Pt2'
 
@@ -357,18 +370,18 @@ c      m= m+1
       c_ntuple_tag(m)= 'haero_pos_npe_sum'
       m=m+1
       c_ntuple_tag(m)= 'haero_neg_npe_sum'
+*      m=m+1
+*      c_ntuple_tag(m)= 'hceradc1'
+*      m=m+1
+*      c_ntuple_tag(m)= 'hceradc2'
       m=m+1
-      c_ntuple_tag(m)= 'hceradc1'
-      m=m+1
-      c_ntuple_tag(m)= 'hceradc2'
-      m=m+1
-      c_ntuple_tag(m)= 'hcersx'
+      c_ntuple_tag(m)= 'hscerx'
       m=m+1
       c_ntuple_tag(m)= 'coinpathcor'
-      m=m+1
-      c_ntuple_tag(m)= 'sszbeam'
-      m=m+1
-      c_ntuple_tag(m)= 'hszbeam'
+*      m=m+1
+*      c_ntuple_tag(m)= 'sszbeam'
+*      m=m+1
+*      c_ntuple_tag(m)= 'hszbeam'
       m=m+1
       c_ntuple_tag(m)= 'ctphix'
       m=m+1
@@ -399,3 +412,5 @@ c      m= m+1
 *
       RETURN
       END  
+
+

@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.8.2.1  2004/05/13 22:06:30  jones
+* Change ntuple variables
+*
 * Revision 1.8  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -57,6 +60,7 @@
       INCLUDE 's_ntuple.cmn'
       INCLUDE 'gen_routines.dec'
       include 'gen_run_info.cmn'
+      INCLUDE 'gen_scalers.cmn'
 *
       character*80 default_name
       parameter (default_name= 'SOSntuple')
@@ -132,32 +136,40 @@ c
       s_Ntuple_tag(m)= 'W2' ! 
       m= m+1
       s_Ntuple_tag(m)= 'ssthet_g' ! 
-
+*
       m= m+1
       s_Ntuple_tag(m)= 'scer_npe' ! cerenkov photoelectron spectrum
       m= m+1
       s_Ntuple_tag(m)= 'ssp'	! Lab momentum of chosen track in GeV/c
-      m= m+1
-      s_Ntuple_tag(m)= 'ssenergy'! Lab total energy of chosen track in GeV
+*      m= m+1
+*      s_Ntuple_tag(m)= 'ssenergy'! Lab total energy of chosen track in GeV
       m= m+1
       s_Ntuple_tag(m)= 'ssdelta'	! Spectrometer delta of chosen track
       m= m+1
       s_Ntuple_tag(m)= 'sstheta'	! Lab Scattering angle in radians
       m= m+1
       s_Ntuple_tag(m)= 'ssphi'	! Lab Azymuthal angle in radians
-      m= m+1
-      s_Ntuple_tag(m)= 'w'	! Invariant Mass of remaing hadronic system
-      m= m+1
-      s_Ntuple_tag(m)= 'sszbeam'! Lab Z coordinate of intersection of beam
+*      m= m+1
+*      s_Ntuple_tag(m)= 'w'	! Invariant Mass of remaing hadronic system
+*      m= m+1
+*      s_Ntuple_tag(m)= 'sszbeam'! Lab Z coordinate of intersection of beam
                                 ! track with spectrometer ray
-      m= m+1
-      s_Ntuple_tag(m)= 'ssdedx1'  	! DEDX of chosen track in 1st scin plane
+*      m= m+1
+*      s_Ntuple_tag(m)= 'ssdedx1'  	! DEDX of chosen track in 1st scin plane
       m= m+1
       s_Ntuple_tag(m)= 'ssbeta'		! BETA of chosen track
       m= m+1
       s_Ntuple_tag(m)= 'ssshtrk' ! 'SSTRACK_ET'	! Total shower energy of chosen track
       m= m+1
+      s_Ntuple_tag(m)= 'ssshsum' ! 'SSSHSUM'	! Total shower energy 
+*
+      m= m+1
       s_Ntuple_tag(m)= 'ssprtrk'!'SSTRACK_PRESHOWER_E' ! preshower of chosen track
+      m=m+1
+      s_Ntuple_tag(m)= 'scal_x'
+      m=m+1
+      s_ntuple_tag(m)= 'scal_y'
+*
       m= m+1
       s_Ntuple_tag(m)= 'ssxfp'		! X focal plane position 
       m= m+1
@@ -169,6 +181,8 @@ c
       m= m+1
       s_Ntuple_tag(m)= 'ssytar'
       m= m+1
+      s_Ntuple_tag(m)= 'ssztar'
+      m= m+1
       s_Ntuple_tag(m)= 'ssxptar'
       m= m+1
       s_Ntuple_tag(m)= 'ssyptar'
@@ -178,45 +192,42 @@ c
       s_Ntuple_tag(m)= 'evtype'
       m= m+1
       s_Ntuple_tag(m)= 'sstart'
+*
       m= m+1
-      s_Ntuple_tag(m)= 'SAER_NPE' 
-
-
+      s_Ntuple_tag(m)= 'charge' ! Charge of last scaler event
+*
 * Experiment dependent entries start here.
+*      m= m+1
+*      s_Ntuple_tag(m)= 'gfrx_raw'
+*      m= m+1
+*      s_Ntuple_tag(m)= 'gfry_raw'
       m= m+1
-      s_Ntuple_tag(m)= 'gfrx_raw'
+      s_Ntuple_tag(m)= 'bpmx'         ! Beam X Position
       m= m+1
-      s_Ntuple_tag(m)= 'gfry_raw'
-      m= m+1
-      s_Ntuple_tag(m)= 'gbeam_x'
-      m= m+1
-      s_Ntuple_tag(m)= 'gbeam_y'
-      m= m+1
-      s_Ntuple_tag(m)= 'bpma_x'
-      m= m+1
-      s_Ntuple_tag(m)= 'bpma_y'
-      m= m+1
-      s_Ntuple_tag(m)= 'bpmb_x'
-      m= m+1
-      s_Ntuple_tag(m)= 'bpmb_y'
-      m= m+1
-      s_Ntuple_tag(m)= 'bpmc_x'
-      m= m+1
-      s_Ntuple_tag(m)= 'bpmc_y'
-      m= m+1
-      s_Ntuple_tag(m)= 'MPSclock'
-      m= m+1
-      s_Ntuple_tag(m)= 'hplus'
-      m= m+1
-      s_Ntuple_tag(m)= 'hminus'
-      m= m+1
-      s_Ntuple_tag(m)= 'sceradc1'
-      m= m+1
-      s_Ntuple_tag(m)= 'sceradc2'
-      m= m+1
-      s_Ntuple_tag(m)= 'sceradc3'
-      m= m+1
-      s_Ntuple_tag(m)= 'sceradc4'
+      s_Ntuple_tag(m)= 'bpmy'         ! Beam Y Position
+*      m= m+1
+*      s_Ntuple_tag(m)= 'gbeam_x'
+*      m= m+1
+*      s_Ntuple_tag(m)= 'gbeam_y'
+c
+*      m= m+1
+*      s_Ntuple_tag(m)= 'sceradc1'
+*      m= m+1
+*      s_Ntuple_tag(m)= 'sceradc2'
+*      m= m+1
+*      s_Ntuple_tag(m)= 'sceradc3'
+*      m= m+1
+*      s_Ntuple_tag(m)= 'sceradc4'
+*      m= m+1
+*      s_Ntuple_tag(m)= 'hminus'
+*      m= m+1
+*      s_Ntuple_tag(m)= 'scal_e1'
+*      m= m+1
+*      s_Ntuple_tag(m)= 'scal_e2'
+*      m= m+1
+*      s_Ntuple_tag(m)= 'scal_e3'
+*      m= m+1
+*      s_Ntuple_tag(m)= 'scal_e4'
 
 
 * Open ntuple.
@@ -238,3 +249,10 @@ c
 c
       RETURN
       END  
+
+
+
+
+
+
+
