@@ -17,6 +17,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.3.16.2  2004/07/13 15:04:04  saw
+ *   Get count of groups on begin line correct when there are other attributes
+ *
  *   Revision 1.3.16.1  2004/07/09 14:12:10  saw
  *   Add ability for CTP to make ROOT Trees
  *
@@ -555,8 +558,8 @@ int getblock(FILE **TEST_FILE, char **varname, char **vartitle, int *qualid
 	  }
 #endif
 	}	/* else { ignore if = is missing } */
+	ig++;
       }
-      ig++;
     }
     if(groups[ig]) {		/* Null terminate list */
       free(groups[ig]);
