@@ -5,6 +5,9 @@
 *     use symbolic names instead of numbers.
 *
 *     $Log$
+*     Revision 1.7  1996/11/08 21:20:05  saw
+*     (WH) Add Lucite counter detector ID
+*
 *     Revision 1.6  1996/01/24 16:26:08  saw
 *     (JRA) Change CBPM_D to GMISC_ID
 *
@@ -26,9 +29,10 @@
 *
 *
       integer MAXID, UNINST_ID, HDC_ID, HSCIN_ID, HCER_ID, HCAL_ID, HMISC_ID, 
-     $     GMISC_ID, SDC_ID, SSCIN_ID, SCER_ID, SCAL_ID, SMISC_ID, SAER_ID
+     $     GMISC_ID, SDC_ID, SSCIN_ID, SCER_ID, SCAL_ID, SMISC_ID, SAER_ID,
+     $     SLUC_ID
 
-      parameter (MAXID=16)
+      parameter (MAXID=17)
       parameter (UNINST_ID=0)           ! Uninstrumented channels
       parameter (HDC_ID=1)
       parameter (HSCIN_ID=2)
@@ -42,6 +46,7 @@
       parameter (SCAL_ID=14)
       parameter (SMISC_ID=15)           ! Miscilaneous FB channels
       parameter (SAER_ID=16)
+      parameter (SLUC_ID=17)
 
 *     Local Variables:
 *     mode: fortran
