@@ -15,7 +15,10 @@
 * h_scin_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
-* Revision 1.1  1995/02/23 13:31:41  cdaq
+* Revision 1.2  1995/05/11 20:27:21  cdaq
+* (JRA) Add position calibration variables
+*
+* Revision 1.1  1995/02/23  13:31:41  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -34,7 +37,7 @@
       include 'hms_scin_tof.cmn'
       include 'hms_statistics.cmn'
 
-      integer pln,cnt
+      integer pln,cnt,dist
       integer bothgood(hnum_scin_planes,hnum_scin_elements)
       integer posgood(hnum_scin_planes,hnum_scin_elements)
       integer neggood(hnum_scin_planes,hnum_scin_elements)
@@ -67,17 +70,30 @@
       hit_cnt(4)=max(min(hit_cnt(4),hnum_scin_counters(1)),1)
       hit_dist(4)=hit_pos(4)-(hhodo_center(4,1)-hscin_2y_spacing*(hit_cnt(4)-1))
 
+*   Record position differences between track and center of scin. and
 *   increment 'should have hit' counters
       do pln=1,hnum_scin_planes
+        cnt=hit_cnt(pln)
+        dist=hit_dist(pln)
+        if(abs(hit_dist(pln)).le.hscin_dpos_slop .and.  !track near scin.
+     &           hschi2perdeg.le.hscin_dpos_maxchisq) then
+          do nhit=1,hscin_tot_hits
+            if(hscin_plane_num(nhit).eq.pln .and.       !was the scint. hit?
+     &         hscin_counter_num(nhit).eq.cnt) then
+              hscin_dpos(pln,cnt)=dist
+              hscin_dpos_sum(pln,cnt)=hscin_dpos_sum(pln,cnt)+dist
+              hscin_dpos_sum2(pln,cnt)=hscin_dpos_sum2(pln,cnt)+dist*dist
+              hscin_num_dpos(pln,cnt)=hscin_num_dpos(pln,cnt)+1
+            endif
+          enddo
+        endif 
         if(abs(hit_dist(pln)).le.hstat_slop .and.    !hit in middle of scin.
      &           hschi2perdeg.le.hstat_maxchisq) then
-          hstat_trk(pln,hit_cnt(pln))=hstat_trk(pln,hit_cnt(pln))+1
+          hstat_trk(pln,cnt)=hstat_trk(pln,cnt)+1
         endif
       enddo
 
-c      do ind=1,hsnum_scin_hit
-c        nhit=hscin_hit(hsnum_fptrack,ind)
-       do nhit=1,hscin_tot_hits
+      do nhit=1,hscin_tot_hits
         cnt=hscin_counter_num(nhit)
         pln=hscin_plane_num(nhit)
 
@@ -122,23 +138,6 @@ c        nhit=hscin_hit(hsnum_fptrack,ind)
         endif
 
       enddo                 !loop over hsnum_pmt_hit
-
-
-! fill sums over counters
-c      do pln=1,hnum_scin_planes
-c          hstat_trksum(pln)=0
-c          hstat_possum(pln)=0
-c          hstat_negsum(pln)=0
-c          hstat_andsum(pln)=0
-c          hstat_orsum(pln)=0
-c        do cnt=1,hnum_scin_counters(pln)
-c          hstat_trksum(pln)=hstat_trksum(pln)+hstat_trk(pln,cnt)
-c          hstat_possum(pln)=hstat_possum(pln)+hstat_poshit(pln,cnt)
-c          hstat_negsum(pln)=hstat_negsum(pln)+hstat_neghit(pln,cnt)
-c          hstat_andsum(pln)=hstat_andsum(pln)+hstat_andhit(pln,cnt)
-c          hstat_orsum(pln)=hstat_orsum(pln)+hstat_orhit(pln,cnt)
-c        enddo
-c      enddo
 
       return
       end

@@ -16,7 +16,10 @@
 * h_scin_eff_shutdown does some final manipulation of the numbers.
 *
 * $Log$
-* Revision 1.1  1995/02/23 13:31:36  cdaq
+* Revision 1.2  1995/05/11 20:27:13  cdaq
+* (JRA) Add position calibration variables
+*
+* Revision 1.1  1995/02/23  13:31:36  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -36,6 +39,7 @@
       include 'hms_statistics.cmn'
 
       integer pln,cnt
+      real ave,ave2,num        !intermediate variables for sigma(position)
       real p1,p2,p3,p4         !prob. of having both tubes fire for planes1-4
       real p1234,p123,p124,p134,p234 !prob. of having combos fire
       save
@@ -47,17 +51,30 @@
         hstat_negsum(pln)=0
         hstat_andsum(pln)=0
         hstat_orsum(pln)=0
+        hscin_tot_dpos_sum(pln)=0.
+        hscin_tot_num_dpos(pln)=0
         do cnt=1,hnum_scin_counters(pln)
           hstat_trksum(pln)=hstat_trksum(pln)+hstat_trk(pln,cnt)
           hstat_possum(pln)=hstat_possum(pln)+hstat_poshit(pln,cnt)
           hstat_negsum(pln)=hstat_negsum(pln)+hstat_neghit(pln,cnt)
           hstat_andsum(pln)=hstat_andsum(pln)+hstat_andhit(pln,cnt)
           hstat_orsum(pln)=hstat_orsum(pln)+hstat_orhit(pln,cnt)
+          num=float(max(1,hscin_num_dpos(pln,cnt)))
+          ave=hscin_dpos_sum(pln,cnt)/num
+          hscin_dpos_ave(pln,cnt)=ave
+          ave2=hscin_dpos_sum2(pln,cnt)/num
+          hscin_dpos_sig(pln,cnt)=sqrt(max(0.,(ave2/num)-ave*ave))
+          hscin_tot_dpos_sum(pln)=
+     &            hscin_tot_dpos_sum(pln)+hscin_dpos_sum(pln,cnt)
+          hscin_tot_num_dpos(pln)=
+     &            hscin_tot_num_dpos(pln)+hscin_num_dpos(pln,cnt)
         enddo
-        hstat_poseff(pln)=hstat_possum(pln)/max(.01,float(hstat_trksum(pln)))
-        hstat_negeff(pln)=hstat_negsum(pln)/max(.01,float(hstat_trksum(pln)))
-        hstat_andeff(pln)=hstat_andsum(pln)/max(.01,float(hstat_trksum(pln)))
-        hstat_oreff(pln)=hstat_orsum(pln)/max(.01,float(hstat_trksum(pln)))
+        hstat_poseff(pln)=hstat_possum(pln)/max(1.,float(hstat_trksum(pln)))
+        hstat_negeff(pln)=hstat_negsum(pln)/max(1.,float(hstat_trksum(pln)))
+        hstat_andeff(pln)=hstat_andsum(pln)/max(1.,float(hstat_trksum(pln)))
+        hstat_oreff(pln)=hstat_orsum(pln)/max(1.,float(hstat_trksum(pln)))
+        hscin_tot_dpos_ave(pln)=
+     &        hscin_tot_dpos_sum(pln)/max(1.,float(hscin_tot_num_dpos(pln)))
       enddo
 
       p1=hstat_andeff(1)
