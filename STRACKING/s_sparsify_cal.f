@@ -13,7 +13,10 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to s_raw_dump_all
 * $Log$
-* Revision 1.2  1994/11/23 14:01:04  cdaq
+* Revision 1.3  1995/05/11 14:55:09  cdaq
+* (JRA) Add call to s_fill_cal_hist
+*
+* Revision 1.2  1994/11/23  14:01:04  cdaq
 * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.1  1994/04/13  18:44:11  cdaq
@@ -36,7 +39,6 @@
       integer*4 adc       !ADC value
       integer*4 adc_max   !Max. channel #
       parameter (adc_max=4095)
-      real*4    ped       !Pedestal value
 
       include 'gen_data_structures.cmn'
       include 'sos_calorimeter.cmn'
@@ -85,8 +87,8 @@
 *
 *------Sparsify the raw data
          nb =row+smax_cal_rows*(col-1)
-         ped=scal_ped_mean(nb)
-         scal_realadc(nh)=float(adc)-ped
+
+         scal_realadc(nh)=float(adc)-scal_ped_mean(nb)
          if(scal_realadc(nh).gt.scal_threshold(nb)) then
             scal_num_hits           =scal_num_hits+1
             scal_rows(scal_num_hits)=row
@@ -96,6 +98,8 @@
       enddo                      !End loop over raw hits
 *
       if(sdbg_sparsified_cal.gt.0) call s_prt_cal_sparsified
+*
+      call s_fill_cal_hist(abort,errmsg)
 *
       return
       end
