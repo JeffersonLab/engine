@@ -1,8 +1,11 @@
-******************* begin: hms_filenames.cmn ***********************
+******************* begin: coin_filenames.cmn ***********************
 *
 *-Common block with filenames
 * $Log$
-* Revision 1.3  1994/08/15 13:17:20  cdaq
+* Revision 1.4  1994/08/30 13:47:45  cdaq
+* (SAW) Name of common block was wrong (hms_filenames), fixed it.
+*
+* Revision 1.3  1994/08/15  13:17:20  cdaq
 * (SAW) Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
 *
 * Revision 1.2  1994/06/15  18:46:26  cdaq
@@ -13,10 +16,10 @@
 *
 *     CTPTYPE=parm
 *
-      character*80 c_report_template_filename    ! CTP file with hms report
+      character*80 c_report_template_filename    ! CTP file with coin report
       character*80 c_report_blockname
 *
-      common /hms_filenames/
+      common /coin_filenames/
      $     c_report_template_filename,
      $     c_report_blockname
 *
