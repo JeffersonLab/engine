@@ -5,7 +5,10 @@
 *     space point.
 *     d. f. geesaman           17 January 1994
 * $Log$
-* Revision 1.4  1994/08/16 13:26:50  cdaq
+* Revision 1.5  1994/10/11 18:59:15  cdaq
+* (DJM) Fill hdc_sing_wcoord for histogramming
+*
+* Revision 1.4  1994/08/16  13:26:50  cdaq
 * (DJA) Fix typo (Change wc from integer*4 to real*4)
 *
 * Revision 1.3  1994/08/14  02:11:18  cdaq
@@ -50,6 +53,10 @@
 *
       ABORT= .FALSE.
       err=':'
+* initialize hdc_sing_wcoord (or else!)
+      do plane=1,HMAX_NUM_DC_PLANES
+        hdc_sing_wcoord(plane) = -100.
+      enddo
 
       do isp=1,hnspace_points_tot             ! loop over all space points
           minchi2=1e10
@@ -115,6 +122,10 @@
             HDC_WIRE_COORD(hspace_point_hits(isp,ihit+2))=
      &      HDC_WIRE_CENTER(hspace_point_hits(isp,ihit+2)) +
      &      plusminusbest(ihit)*HDC_DRIFT_DIS(hspace_point_hits(isp,ihit+2))
+
+            hdc_sing_wcoord(pl(ihit)) =
+     $           HDC_WIRE_COORD(hspace_point_hits(isp,ihit+2))
+
           enddo
 *
 *     stubs are calculated in rotated coordinate system
