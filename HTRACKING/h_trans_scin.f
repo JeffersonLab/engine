@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.10  1995/01/27 19:28:48  cdaq
+* Revision 1.11  1995/01/31 21:51:13  cdaq
+* (JRA) Put hit in center of scint if only one tube fired
+*
+* Revision 1.10  1995/01/27  19:28:48  cdaq
 * (JRA) Adjust start time cut to be hardwired for December 94 run.  Need a
 *       better way to do this eventually.
 *
@@ -160,6 +163,7 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
               hscin_cor_adc(ihit) = 0.0
             endif
           else                          !only 1 tube fired
+            hscin_dec_hit_coord(ihit) = 0.
             hscin_cor_adc(ihit) = 0.
             hscin_cor_time(ihit) = 0.   !not a very good 'flag', but there is
                                         ! the logical htwo_good_hits.
