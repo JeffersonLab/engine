@@ -11,9 +11,12 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.1  1994/02/04 22:14:24  cdaq
-*-    Initial revision
+*-    Revision 1.2  1994/02/22 19:04:58  cdaq
+*-    (SAW) HNUM_DC_PLANES -> HMAX_NUM_DC_PLANES
 *-
+* Revision 1.1  1994/02/04  22:14:24  cdaq
+* Initial revision
+*
 *- 
 *-
 *- All standards are from "Proposal for Hall C Analysis Software
@@ -38,7 +41,7 @@
 *
       HDC_TOT_HITS= 0
 
-      DO plane= 1,HNUM_DC_PLANES
+      DO plane= 1,HMAX_NUM_DC_PLANES
          HDC_HITS_PER_PLANE(plane)= 0
       ENDDO
 *
