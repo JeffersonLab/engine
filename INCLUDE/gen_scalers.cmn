@@ -4,6 +4,9 @@
 *     quantities calculated from the scaler events (time, current, etc...)
 *
 * $Log$
+* Revision 1.13  2004/05/11 18:23:26  jones
+* Add logical variable skip_events to BEAMCURRENT common block
+*
 * Revision 1.12  2003/09/05 20:29:03  jones
 * Merge in online03 changes (mkj)
 *
@@ -126,6 +129,8 @@ c themselves.  The following is to
       real*8 gunser_charge
       real*8 g_beam_on_bcm_charge(2)   ! "beam on" accumulated charge
       integer*4 gscaler_event_num
+      logical skip_events
+
 *
       common/BEAMCURRENT/
      &    gbcm1_gain, gbcm2_gain, gbcm3_gain, gunser_gain,
@@ -133,6 +138,6 @@ c themselves.  The following is to
      &    gbcm1_charge, gbcm2_charge, gbcm3_charge, gunser_charge,
      &    g_beam_on_bcm_charge, g_beam_on_thresh_cur,
      &    gbcm1_index, gbcm2_index, gbcm3_index, gunser_index,bcm_for_threshold_cut,
-     &    gscaler_event_num
+     &    gscaler_event_num,skip_events
       common/ WRITESCALERS/
      & NUM_WRITEOUT_SCALERS,INDEX_WRITEOUT_SCALERS
