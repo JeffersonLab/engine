@@ -9,6 +9,9 @@
 *                              remove minuit. Make fit linear
 *                              still does not do errors properly
 * $Log$
+* Revision 1.11  1996/01/16 21:42:18  cdaq
+* (JRA) Remove slices code, misc fixes, reindent.
+*
 * Revision 1.10  1995/08/30 16:11:39  cdaq
 * (JRA) Don't fill single_residual arrray
 *
@@ -45,30 +48,28 @@
       include "hms_data_structures.cmn"
       include "hms_tracking.cmn"
       include "hms_geometry.cmn"
-      external H_DPSIFUN
+      external h_dpsifun
 *
 *
 *     local variables
 *
       logical ABORT
-      character*50 here
+      character*11 here
       parameter (here='H_TRACK_FIT')
       character*(*) err
-      integer*4 itrack                        ! track loop index
+      integer*4 itrk                        ! track loop index
       integer*4 ihit,ierr
-      integer*4 hit,plane
+      integer*4 hit,pln
       integer*4 i,j                             ! loop index
 *      real*4 z_slice
 
-      real*8   H_DPSIFUN
+      real*8   h_dpsifun
       real*8   pos
-      real*4   ray(hnum_fpray_param)
       real*8   ray1(4)
       real*8   ray2(4)
       real*8 TT(hnum_fpray_param)
       real*8 AA(hnum_fpray_param,hnum_fpray_param)
       real*8 dray(hnum_fpray_param)
-*      real*8 error(hnum_fpray_param)
       real*4 chi2,dummychi2
       parameter (dummychi2 = 1.E4)
 *     array to remap hplane_coeff to param number
@@ -80,35 +81,35 @@
       ierr=0
 *  initailize residuals
 
-      do plane=1,HDC_NUM_PLANES
-        do itrack=1,HNTRACKS_MAX
-          hdc_double_residual(itrack,plane)=1000
-          hdc_single_residual(itrack,plane)=1000
+      do pln=1,hdc_num_planes
+        do itrk=1,hntracks_fp
+          hdc_double_residual(itrk,pln)=1000
+          hdc_single_residual(itrk,pln)=1000
         enddo
 c fill the 1d arrays from the 2d arrays for good track (in h_physics)
-c        hdc_sing_res(plane)=1000
-        hdc_dbl_res(plane)=1000
+c        hdc_sing_res(pln)=1000
+        hdc_dbl_res(pln)=1000
       enddo
 
 *     test for no tracks
-      if(HNTRACKS_FP.ge.1) then
-        do itrack=1,HNTRACKS_FP
+      if(hntracks_fp.ge.1) then
+        do itrk=1,hntracks_fp
           chi2= dummychi2
-          htrack_fit_num=itrack
+          htrack_fit_num=itrk
 
 *     are there enough degrees of freedom
-          HNFREE_FP(itrack)=HNTRACK_HITS(itrack,1)-hnum_fpray_param
-          if(HNFREE_FP(itrack).gt.0) then
+          hnfree_fp(itrk)=hntrack_hits(itrk,1)-hnum_fpray_param
+          if(hnfree_fp(itrk).gt.0) then
 
 *     initialize parameters
             do i=1,hnum_fpray_param
               TT(i)=0.
-              do ihit=2,HNTRACK_HITS(itrack,1)+1
-                hit=HNTRACK_HITS(itrack,ihit)
-                plane=HDC_PLANE_NUM(hit)
-                TT(i)=TT(i)+((HDC_WIRE_COORD(hit)*
-     &               hplane_coeff(remap(i),plane))
-     &               /(hdc_sigma(plane)*hdc_sigma(plane)))
+              do ihit=2,hntrack_hits(itrk,1)+1
+                hit=hntrack_hits(itrk,ihit)
+                pln=hdc_plane_num(hit)
+                TT(i)=TT(i)+((hdc_wire_coord(hit)*
+     &               hplane_coeff(remap(i),pln))
+     &               /(hdc_sigma(pln)*hdc_sigma(pln)))
               enddo 
             enddo
             do i=1,hnum_fpray_param
@@ -117,12 +118,12 @@ c        hdc_sing_res(plane)=1000
                 if(j.lt.i)then
                   AA(i,j)=AA(j,i)
                 else 
-                  do ihit=2,HNTRACK_HITS(itrack,1)+1
-                    hit=HNTRACK_HITS(itrack,ihit)
-                    plane=HDC_PLANE_NUM(hit)
+                  do ihit=2,hntrack_hits(itrk,1)+1
+                    hit=hntrack_hits(itrk,ihit)
+                    pln=hdc_plane_num(hit)
                     AA(i,j)=AA(i,j) + (
-     &                   hplane_coeff(remap(i),plane)*hplane_coeff(remap(j)
-     $                   ,plane)/(hdc_sigma(plane)*hdc_sigma(plane)))
+     &                   hplane_coeff(remap(i),pln)*hplane_coeff(remap(j)
+     $                   ,pln)/(hdc_sigma(pln)*hdc_sigma(pln)))
                   enddo                 ! end loop on ihit
                 endif                   ! end test on j .lt. i
               enddo                     ! end loop on j
@@ -140,111 +141,96 @@ c        hdc_sing_res(plane)=1000
 *     calculate chi2
               chi2=0.
               
-              ray(1)=dray(1)
-              ray(2)=dray(2)
-              ray(3)=dray(3)
-              ray(4)=dray(4)
-              do ihit=2,HNTRACK_HITS(itrack,1)+1
-                hit=HNTRACK_HITS(itrack,ihit)
-                plane=HDC_PLANE_NUM(hit)
+* calculate hit coord at each plane for chisquared and efficiency calculations.
+              do pln=1,hdc_num_planes
+                hdc_track_coord(itrk,pln)=hplane_coeff(remap(1),pln)*dray(1)
+     &               +hplane_coeff(remap(2),pln)*dray(2)
+     &               +hplane_coeff(remap(3),pln)*dray(3)
+     &               +hplane_coeff(remap(4),pln)*dray(4)
+              enddo
+
+              do ihit=2,hntrack_hits(itrk,1)+1
+                hit=hntrack_hits(itrk,ihit)
+                pln=hdc_plane_num(hit)
 
 * note chi2 is single precision
-                hdc_single_residual(itrack,plane)=
-     &               (HDC_WIRE_COORD(hit)
-     &               -hplane_coeff(remap(1),plane)*ray(1)
-     &               -hplane_coeff(remap(2),plane)*ray(2)
-     &               -hplane_coeff(remap(3),plane)*ray(3)
-     &               -hplane_coeff(remap(4),plane)*ray(4))
-                chi2=chi2+((hdc_single_residual(itrack,plane))**2
-     &               )/(hdc_sigma(plane)*hdc_sigma(plane))
 
-* Fill single_residual array.  Note that due to ihit loop, the plane
-* will always contain a wire on the track being examined.
-c                hdc_sing_res(plane) = hdc_single_residual(itrack,plane)
+                hdc_single_residual(itrk,pln)=
+     &              hdc_wire_coord(hit)-hdc_track_coord(itrk,pln)
+                chi2=chi2+
+     &              (hdc_single_residual(itrk,pln)/hdc_sigma(pln))**2
               enddo
             endif
 
-            HX_FP(itrack)=ray(1)
-            HY_FP(itrack)=ray(2)
-            HZ_FP(itrack)=0.            ! z=0 of tracking.
-            HXP_FP(itrack)=ray(3)
-            HYP_FP(itrack)=ray(4)
+            hx_fp(itrk)=dray(1)
+            hy_fp(itrk)=dray(2)
+            hz_fp(itrk)=0.            ! z=0 of tracking.
+            hxp_fp(itrk)=dray(3)
+            hyp_fp(itrk)=dray(4)
           endif                         ! end test on degrees of freedom
-          HCHI2_FP(itrack)=chi2
+          hchi2_fp(itrk)=chi2
         enddo                           ! end loop over tracks
       endif
-
-**     A reasonable selection of slices is presently -80,-60,-40,-20,0,20,40
-**     ,60,80.   Zero is the nominal midplane between the chambers, -80
-**     corresponds closely to the exit flange position.  This slice pattern
-**     is created with hz_wild=-80., hdelta_z_wild=20., and hnum_zslice=9 
-*      if(hz_slice_enable.ne.0)then
-*        do k=1,hnum_zslice
-*          z_slice = hz_wild + (k-1)*hdelta_z_wild
-*          hx_fp_wild(k) = hx_fp(1) + hxp_fp(1)*z_slice
-*          hy_fp_wild(k) = hy_fp(1) + hyp_fp(1)*z_slice
-*        enddo
-*      endif
 
 * calculate residuals for each chamber if in single stub mode
 * and there were 2 tracks found one in first chanber and one in the second
 
       if (hsingle_stub.ne.0) then
-        if (HNTRACKS_FP.eq.2) then
-          itrack=1
+        if (hntracks_fp.eq.2) then
+          itrk=1
           ihit=2
-          hit=HNTRACK_HITS(itrack,ihit)
-          plane=HDC_PLANE_NUM(hit)
-          if (plane.le.6) then
-            itrack=2
-            hit=HNTRACK_HITS(itrack,ihit)
-            plane=HDC_PLANE_NUM(hit)
-            if (plane.ge.7) then
+          hit=hntrack_hits(itrk,ihit)
+          pln=hdc_plane_num(hit)
+          if (pln.le.6) then
+            itrk=2
+            hit=hntrack_hits(itrk,ihit)
+            pln=hdc_plane_num(hit)
+            if (pln.ge.7) then
 
 * condition of above met calculating residuals  
 * assigning rays to tracks in each chamber
 * ray1 is ray from first chamber fit
 * ray2 is ray from second chamber fit
 
-              ray1(1)=dble(HX_FP(1))
-              ray1(2)=dble(HY_FP(1))
-              ray1(3)=dble(HXP_FP(1))
-              ray1(4)=dble(HYP_FP(1))
-              ray2(1)=dble(HX_FP(2))
-              ray2(2)=dble(HY_FP(2))
-              ray2(3)=dble(HXP_FP(2))
-              ray2(4)=dble(HYP_FP(2))
+              ray1(1)=dble(hx_fp(1))
+              ray1(2)=dble(hy_fp(1))
+              ray1(3)=dble(hxp_fp(1))
+              ray1(4)=dble(hyp_fp(1))
+              ray2(1)=dble(hx_fp(2))
+              ray2(2)=dble(hy_fp(2))
+              ray2(3)=dble(hxp_fp(2))
+              ray2(4)=dble(hyp_fp(2))
 
-              itrack=1
+              itrk=1
 * loop over hits in second chamber
-              do ihit=1,HNTRACK_HITS(itrack+1,1)
+              do ihit=1,hntrack_hits(itrk+1,1)
 
 * calculate residual in second chamber from first chamber track
-                hit=HNTRACK_HITS(itrack+1,ihit+1)
-                plane=HDC_PLANE_NUM(hit)
-                pos=H_DPSIFUN(ray1,plane)
-                hdc_double_residual(itrack,plane)=HDC_WIRE_COORD(hit)-pos
+                hit=hntrack_hits(itrk+1,ihit+1)
+                pln=hdc_plane_num(hit)
+                pos=h_dpsifun(ray1,pln)
+                hdc_double_residual(itrk,pln)=hdc_wire_coord(hit)-pos
 * djm 8/31/94 stuff this variable into 1d array we can register
-                hdc_dbl_res(plane) = hdc_double_residual(1,plane)
+                hdc_dbl_res(pln) = hdc_double_residual(1,pln)
 
               enddo
 
-              itrack=2
+              itrk=2
 * loop over hits in first chamber
-              do ihit=1,HNTRACK_HITS(itrack-1,1)
+              do ihit=1,hntrack_hits(itrk-1,1)
 
 * calculate residual in first chamber from second chamber track
-                hit=HNTRACK_HITS(itrack-1,ihit+1)
-                plane=HDC_PLANE_NUM(hit)
-                pos=H_DPSIFUN(ray2,plane)
-                hdc_double_residual(itrack,plane)=HDC_WIRE_COORD(hit)-pos
+                hit=hntrack_hits(itrk-1,ihit+1)
+                pln=hdc_plane_num(hit)
+                pos=h_dpsifun(ray2,pln)
+                hdc_double_residual(itrk,pln)=hdc_wire_coord(hit)-pos
 * djm 8/31/94 stuff this variable into 1d array we can register
-                hdc_dbl_res(plane) = hdc_double_residual(2,plane)
+                hdc_dbl_res(pln) = hdc_double_residual(2,pln)
 
               enddo
-            endif                       ! end plane ge 7
-          endif                         ! end plane le 6
-        endif                           ! end HNTRACKS_FP eq 2
+            endif                       ! end pln ge 7
+          endif                         ! end pln le 6
+        endif                           ! end hntracks_fp eq 2
       endif                             ! end hsignle_stub .ne. 0
 
 *     test if we want to dump out trackfit results
