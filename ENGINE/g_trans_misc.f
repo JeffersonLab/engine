@@ -6,6 +6,9 @@
 * g_trans_misc fills the gen_decoded_misc common block
 *
 * $Log$
+* Revision 1.2  2002/09/25 14:37:32  jones
+* character*1024 errmsg changed to character*(*) errmsgCVS: ----------------------------------------------------------------------
+*
 * Revision 1.1  1996/01/22 15:14:10  saw
 * Initial revision
 *
@@ -16,7 +19,7 @@
       include 'gen_data_structures.cmn'
 
       logical abort
-      character*1024 errmsg
+      character*(*) errmsg
       character*20 here
       parameter (here = 'g_trans_misc')
 
