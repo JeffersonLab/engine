@@ -8,6 +8,10 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
+* Revision 1.27  2003/04/01 13:55:09  jones
+* Add variables hntracks_max_fp and h_remove_sppt_if_one_y_plane to
+* hms_tracking.cmn
+*
 * Revision 1.26  1999/02/23 19:18:42  csa
 * (JRA) Correct HMS_TFIT_MATRIX indices, remove hdebugcalcpeds
 *
@@ -183,6 +187,8 @@
       real*4 hypt_track_criterion  ! stub link criterion on yp_t
       real*4 hstub_max_xpdiff      ! stub criterion for l/r determination
       real*4 hspace_point_criterion ! maximum distance**2 to join pairs/combos.
+      INTEGER*4 HNTRACKS_MAX_FP       ! NUMBER OF TRACKS ALLOWED IN FOCAL PLANE
+      integer*4 h_remove_sppt_if_one_y_plane ! flag used in h_pattern_recognition.f
 *
 *     CTPTYPE=event
 *
@@ -232,7 +238,9 @@
      &     hdc_readout_x(hmax_num_dc_planes),
      &     hdc_card_delay(hdc_num_cards),
      &     hdc_card_no(hdc_max_wires_per_plane,hmax_num_dc_planes),
-     &     hdc_sing_cardid(hmax_num_dc_planes)
+     &     hdc_sing_cardid(hmax_num_dc_planes),
+     &     HNTRACKS_MAX_FP,h_remove_sppt_if_one_y_plane
+
 
 
 *----------------------------------------------------------------------

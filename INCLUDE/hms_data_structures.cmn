@@ -5,6 +5,10 @@
 *     Author:   D. F. Geesaman          1 September 1993
 *
 * $Log$
+* Revision 1.11  2003/04/01 13:55:08  jones
+* Add variables hntracks_max_fp and h_remove_sppt_if_one_y_plane to
+* hms_tracking.cmn
+*
 * Revision 1.10  2003/01/02 18:34:51  jones
 * change HNTRACKS_MAX from 5 to 20
 *
@@ -398,8 +402,8 @@
 *     HMS DETECTOR TRACK QUANTITIES
 *     FILLED BY H_TRACK SUBROUTINE 
 *
-      INTEGER*4 HNTRACKS_MAX       ! NUMBER OF TRACKS ALLOWED IN FOCAL PLANE
-      PARAMETER (HNTRACKS_MAX=20)   ! SET MAXIMUM TO 5
+      INTEGER*4 HNTRACKS_MAX       ! size of array
+      PARAMETER (HNTRACKS_MAX=20)   ! SET MAXIMUM TO 20
       INTEGER*4 HNTRACKHITS_MAX    ! MAXIMUM NUMBER OF HITS IN EACH TRACK
       PARAMETER (HNTRACKHITS_MAX=16) ! SET MAXIMUM TO 15
       INTEGER*4 HNTRACKS_FP         ! NUMBER OF FOCAL PLANE TRACKS FOUND
@@ -442,6 +446,7 @@
      >     HY_FP_rot(HNTRACKS_MAX), 
      >     HXP_FP_rot(HNTRACKS_MAX),
      >     HYP_FP_rot(HNTRACKS_MAX)
+
 
  
 *     HMS TARGET QUANTITIES
