@@ -5,9 +5,13 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
-* Revision 1.17  1996/09/04 14:34:19  saw
-* (JRA) More error reporting of error codes in FB data stream
+* Revision 1.18  1997/04/03 10:56:05  saw
+* (SAW) Better report of DCFE code words.  Prints out roc, slot, event
+* number and how many extra events are in the module.
 *
+* Revision 1.17  96/09/04  14:34:19  14:34:19  saw (Stephen A. Wood)
+* (JRA) More error reporting of error codes in FB data stream
+* 
 * Revision 1.16  1996/04/29 19:46:19  saw
 * (JRA) Tweak diagnostic messages
 *
@@ -99,9 +103,17 @@
      &        ' VME event length:',evfrag(pointer+2),' (or vice-versa).'
           pointer = pointer + 3
           goto 987
+! Check for extra events in FB modules on sync events
+        else if(jiand(evfrag(pointer),'FFFF0000'x).eq.'DCFE0000'x) then
+          write(6,'(a,i2,a,i3,a,i3,a,i10)') 'ROC',roc,': Slot'
+     $         ,jiand(jishft(evfrag(pointer),-11),'1F'x),': '
+     $         ,jiand(evfrag(pointer),'7FF'x),' extra events, event=',
+     &         gen_event_id_number
+          pointer = pointer + 1
+          goto 987
         else if(jiand(evfrag(pointer),'FF000000'x).eq.'DC000000'x) then ! Catch arrington's headers
-          write(6,'(a,i10,a,z10)') 'ERROR: no gate or too much data from DCs, event=',
-     &        gen_event_id_number,' error dataword=',evfrag(pointer)
+          write(6,'(a,i2,a,i10,a,z10)') 'ROC',roc,': no gate or too much data, event=',
+     &         gen_event_id_number,' error dataword=',evfrag(pointer)
           pointer = pointer + 1
           goto 987
         endif
