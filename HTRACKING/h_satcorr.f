@@ -18,6 +18,13 @@
 *-   Created 24-JUN-1998   J. Volmer
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.2  2003/12/19 19:53:15  jones
+* Add fit to 2003 data by T. Horn which should be applicable to data the
+* using field00.f or later to set magnets.
+* Change meaning of parameter enable_hms_satcorr.
+* enable_hms_satcorr = 2000 means use T.Horn parametrization
+* enable_hms_satcorr = 1999 means use old parametrization
+*
 * Revision 1.1  1999/02/10 18:34:42  csa
 * Initial revision
 *
@@ -54,8 +61,11 @@
 
       p0corr=0.
 
-      if(genable_hms_satcorr.ne.0) then
+      if(genable_hms_satcorr.eq. 1999) then
          if (hpcentral.lt.3.215) p0corr=-1.1298*(hpcentral-3.215)**2
+         hsdelta = hsdelta + p0corr*hsxp_fp
+      else if(genable_hms_satcorr .eq. 2000) then
+         p0corr = 0.82825*hpcentral-1.223      
          hsdelta = hsdelta + p0corr*hsxp_fp
       endif
 
