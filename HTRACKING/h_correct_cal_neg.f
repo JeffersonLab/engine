@@ -13,8 +13,10 @@
 *-      Created 09 October 1997      H. Mkrtchyan
 *
 * $Log$
-* Revision 1.3  1999/02/25 20:10:48  saw
-* Vardan Tadevosyan shower code updates
+* Revision 1.4  2002/09/26 14:43:17  jones
+*    Different parameters a,b,c
+*    Fit to pion data of run 23121
+*    Different formula for h_correct_cal_neg
 *
 * Revision 1.2  1999/01/29 17:33:56  saw
 * Cosmetic changes
@@ -33,21 +35,23 @@
       character*(*) errmsg
       character*17 here
       parameter (here='H_CORRECT_CAL_NEG')
-      real*4 a,b,c     ! Fit parameters.
-      parameter (a=2.3926,b=-0.371375,c=-0.25401)
+      real*4 a,b,c	! Fit parameters.
+      parameter (a=1.8904,b=-0.2289,c=-0.2724)
 *
 *
-      real*4 x,y         !Impact point coordinates
+      real*4 x,y	! Impact point coordinates
       real*4 h_correct_cal_neg
-      real*4 d,al                       ! Auxiliary variables
+      real*4 d,al	! Auxiliary variables.
 *
       include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
 *
-*   ! Here  I was used some preliminary function 
-*     Fit to the MC data in the range of y [-30,+30].
+*     Fit to stright through pion data of run # 23121.
 *
-      d=y-35.  ! Distance to the PMT.
+      if(y.lt.hcal_fv_ymin) y=hcal_fv_ymin
+      if(y.gt.hcal_fv_ymax) y=hcal_fv_ymax
+
+      d=hcal_ymax-y	! Distance to the PMT.
       al=alog(d)
       h_correct_cal_neg=1./(a+b*al+c/al)
 
@@ -56,5 +60,3 @@ ccc      h_correct_cal_neg=h_correct_cal_neg*(1. + y*y/8000.)
 *   
       return
       end
-
-
