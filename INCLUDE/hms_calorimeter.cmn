@@ -2,9 +2,21 @@
 *      HMS calorimeter. Parameters from hms_positions.parm
 *
 * $Log$
-* Revision 1.1  1994/04/12 21:32:21  cdaq
+* Revision 1.2  1994/08/05 15:35:42  cdaq
+* (SAW) Add makereg directive with required include files
+*       Add "CTPTYPE=event" directive for auto generation of CTP reg calls
+*
+* Revision 1.1  1994/04/12  21:32:21  cdaq
 * Initial revision
 *
+*     The following include statments must precede the inclusion of this
+*     file in each routine that uses it.  The *%% syntax is also a
+*     directive to makereg to tell it to include the code in the program
+*     that it generates.
+*
+*%%   include 'gen_data_structures.cmn'
+*
+*     CTPTYPE=parm
 *
       integer*4 hmax_cal_rows           !Number of calorimeter rows
       parameter (hmax_cal_rows=12)
@@ -96,6 +108,8 @@
 *
 *      HMS calorimeter. Sparsified data filled by h_sparsify_cal
 *
+*     CTPTYPE=event
+*
       integer*4 hcal_rows          !Row number. Copied from hms_raw_cal
       integer*4 hcal_cols          !Column number. Copied from hms_raw_cal
       real*4    hcal_adcs          !Pulse height in channels(ADC-PED).
@@ -141,6 +155,9 @@
      &       htrack_yc(hntracks_max),
      &       hcluster_track(hntracks_max),
      &       hntracks_cal
+*
+*     CTPTYPE=parm
+*
 *
 *      HMS calorimeter. ADC pedestals and thresholds
 *
