@@ -1,0 +1,55 @@
+**************************begin: gen_one_ev_info.cmn ***********************
+*- 
+*-   Created   4-Sep-1994   Kevin B. Beard, Hampton Univ.
+*........................................................................
+*- Misc. info. needed for remote display
+*
+* $Log$
+* Revision 1.1  1995/09/18 20:22:39  cdaq
+* Initial revision
+*
+*
+      INTEGER gen_display_server_RPCprgmID
+      INTEGER gen_display_server_RPCversionID
+      CHARACTER*80 gen_display_server_machine
+      INTEGER gen_display_RPCclientID
+      INTEGER gen_display_everything
+      INTEGER gen_display_event_info
+      INTEGER gen_display_device
+      INTEGER gen_display_wait_events
+      INTEGER gen_display_wait_seconds
+      CHARACTER*132 gen_display_interesting
+*
+      COMMON /gen_display_info/ gen_display_server_RPCprgmID,
+     &                 gen_display_server_RPCversionID,
+     &                 gen_display_server_machine,
+     &                 gen_display_RPCclientID,
+     &                 gen_display_everything,gen_display_event_info,
+     &                 gen_display_device,gen_display_wait_events,
+     &                 gen_display_wait_seconds,gen_display_interesting
+*
+
+*     CTPTYPE=parm
+*
+      integer*4 ONE_EV,GRAPH_IO_DEV
+*
+*      parameter (ONE_EV = -1)
+*      parameter (GRAPH_IO_DEV = 1)
+*
+      common/one_ev_io/ ONE_EV,GRAPH_IO_DEV
+*
+*     CERN lib stuff
+*
+      integer NGBANK			! size of GCBANK common block
+      parameter (NGBANK = 1000000)
+
+      integer NHBOOK			! size of PAWC common block
+      parameter (NHBOOK = 1000000)
+
+      REAL GCworking(NGBANK)                 ! GCBANK memory
+      COMMON /GCBANK/ GCworking
+*
+      REAL HBOOKworking(NGBANK)              ! PAWC memory
+      COMMON /PAWC/  HBOOKworking
+
+****************************end: gen_display_info.cmn ***********************
