@@ -3,15 +3,18 @@
 *-       Prototype C analysis routine
 *-
 *-
-*-   Purpose and Methods : reconstruction of HMS quantities 
+*-   Purpose and Methods : reconstruction of SOS quantities 
 *-
 *-   Output: ABORT              - success or failure
 *-         : err             - reason for failure, if any
 *- 
 *-    $Log$
-*-    Revision 1.6  1995/04/06 19:42:47  cdaq
-*-    (JRA) Add call to s_select_best_track before s_physics
+*-    Revision 1.7  1995/05/11 21:07:26  cdaq
+*-    (JRA) Add call to s_trans_misc
 *-
+* Revision 1.6  1995/04/06  19:42:47  cdaq
+* (JRA) Add call to s_select_best_track before s_physics
+*
 * Revision 1.5  1994/06/07  04:46:21  cdaq
 * (DFG) add s_recon_num and bypass switches
 *
@@ -75,6 +78,18 @@
 *          return
         endif                                     ! end test on SCIN ABORT
       endif                              ! end test on sbypass_trans_scin
+*
+*     TRANSLATE SMISC TDC HITS.
+*     S_RAW_MISC ====> SOS_DECODED_MISC
+*
+      If(sbypass_trans_scin.eq.0) then
+         call S_TRANS_MISC(ABORT,err)
+         if(ABORT)  then
+            call G_add_path(here,err)
+*     return
+         endif                          ! end test on SCIN ABORT
+      endif                             ! end test on hbypass_trans_scin
+*
 *
 *      TRANSLATE CALORIMETER 
 *      SOS_RAW_CAL ====> SOS_DECODED_CAL
