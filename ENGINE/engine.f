@@ -9,6 +9,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.21  1996/04/29 19:19:04  saw
+* (JRA) Corrections
+*
 * Revision 1.20  1996/01/24 16:11:10  saw
 * (JRA) Change evtype to registered gen_event_type.  Refresh statistics
 *       file at a time interval rather than event interval
@@ -276,7 +279,7 @@ c      if (itmp.ne.0) gen_run_hist_dump_interval=itmp
 *
       DO WHILE(.NOT.problems .and. .NOT.ABORT .and. .NOT.EoF)
         mss= ' '
-        g_real_time=time()-start_time
+        g_replay_time=time()-start_time
 *
         call G_clear_event(ABORT,err)   !clear out old data
         problems= problems .OR. ABORT
@@ -436,8 +439,8 @@ c            endif
 *
 *Now write the statistics report every 2 sec...
 *
-         if (g_real_time-lasttime.ge.2.) then  !dump every 2 seconds
-           lasttime=g_real_time
+         if (g_replay_time-lasttime.ge.2.) then  !dump every 2 seconds
+           lasttime=g_replay_time
            if(g_stats_blockname.ne.' '.and.
      $          g_stats_output_filename.ne.' ') then
               file = g_stats_output_filename
@@ -447,7 +450,7 @@ c            endif
         endif
 *
         since_cnt= since_cnt+1
-        if(since_cnt.GE.1000) then
+        if(since_cnt.GE.5000) then
           print *,' event#',total_event_count,'  ',ABORT
           since_cnt= 0
         endif
@@ -503,6 +506,7 @@ c            endif
         err= ' '
       EndIf
 *
+      call g_dump_peds
       call h_dump_peds
       call s_dump_peds
 *
