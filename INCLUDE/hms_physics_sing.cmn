@@ -1,5 +1,8 @@
 *    This include file contains all the variables required for h_physics
 * $Log$
+* Revision 1.7  1999/02/23 19:16:52  csa
+* Add some physics vars
+*
 * Revision 1.6  1996/09/04 16:11:28  saw
 * (JRA,DD) Add some egamma variables and some angle/momentum offset
 * variables
@@ -159,3 +162,16 @@ c    D.Dutta, 24th-Apr-1996
      &     htheta_offset,
      &     hphi_offset,
      &     hmomentum_factor
+*
+*     CTPTYPE=event
+*
+      real*4 hs_qvec(4)   
+      real*4 hs_kpvec(4) 
+      real*4 hs_kvec(4)  
+      real*4 hs_tvec(4)
+
+      COMMON/hs_vectors/
+     &     hs_qvec,
+     &     hs_kpvec,
+     &     hs_kvec,
+     &     hs_tvec
