@@ -1,6 +1,9 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
+* Revision 1.10  1996/04/29 19:41:57  saw
+* (JRA) Deal with out of order scaler events
+*
 * Revision 1.9  1996/01/22 15:10:03  saw
 * (JRA) Extract event number from scaler events
 *
@@ -42,10 +45,10 @@ c
 *
       INCLUDE 'gen_scalers.cmn'
 *
-      integer nroll(max_num_scalers)
-      integer index
+      integer ind
+      integer*4 cratenum                ! 1=hms,2=sos
       real*8 realscal
-      logical hmscrate
+
 *
       integer*4 jiand, jishft           ! Declare to help f2c
 *
@@ -56,7 +59,7 @@ c
 *     be no larger than 16, but we will allow more.)
 *
 *
-*     NOTE that the variables scalers(i) is REAL!!!!!
+*     NOTE that the variables gscaler(i) is REAL!!!!!
 *     this is so that we can record the correct value when the 
 *     hardware scalers (32 bit <> I*4) overflow.
 *
@@ -69,11 +72,25 @@ c
       real*8 ave_current_bcm1, ave_current_bcm2, ave_current_bcm3
       real*8 delta_time
 *
-      hmscrate=.false.
+* Find if hms or sos scaler event (assumes first HMS scaler is DA01).
+      if (jiand(jishft(event(3),-16),'FFFF'X).eq.'DA01'X) then !first scaler
+        cratenum=1     !hms
+      else
+        cratenum=2     !sos
+      endif
 *
       evtype = jishft(event(2),-16)
-*
       evnum = jiand(event(2),'FF'x)  ! last 2 bytes give event number (mod 256)
+*
+* evnum is mod(256), so must reset lastevnum for rollover
+      if (evnum.eq.0 .and. gscal_lastevnum(cratenum).gt.200) then
+        gscal_lastevnum(cratenum)=0
+      else if (evnum.le.gscal_lastevnum(cratenum)) then
+        write(6,*) 'skipping outoforder scaler event',cratenum,gscal_lastevnum(cratenum),evnum
+        return
+      endif
+*
+      gscal_lastevnum(cratenum)=evnum
 *
 *     Should check against list of known scaler events
 *
@@ -118,24 +135,24 @@ c
 *
           address = scalid*16
           do counter = 1,countinmod
-            index=address+counter
+            ind=address+counter
             realscal=dfloat(event(pointer+counter))
 
 * Save scaler value from previous scaler event:
-            prev_scalers(index) = scalers(index)
+            gscaler_old(ind) = gscaler(ind)
 
             if (realscal.lt.-0.5) then
               realscal=realscal+4294967296.
             endif
-            if ( (realscal+dfloat(nroll(index))*4294967296.) .ge.
-     &           scalers(index) ) then  ! 2**32 = 4.295e+9
-              scalers(index) = realscal + nroll(index)*4294967296.
+            if ( (realscal+dfloat(gscaler_nroll(ind))*4294967296.) .ge.
+     &           gscaler(ind) ) then  ! 2**32 = 4.295e+9
+              gscaler(ind) = realscal + gscaler_nroll(ind)*4294967296.
             else                        !32 bit scaler rolled over.
-              nroll(index)=nroll(index)+1
-              scalers(index) = realscal + nroll(index)*4294967296.
+              gscaler_nroll(ind)=gscaler_nroll(ind)+1
+              gscaler(ind) = realscal + gscaler_nroll(ind)*4294967296.
             endif
 * Calculate difference between current scaler value and previous value:
-            delta_scalers(index) = scalers(index) - prev_scalers(index)
+            gscaler_change(ind) = gscaler(ind) - gscaler_old(ind)
           enddo
           pointer = pointer + countinmod + 1 ! Add 17 to pointer
         enddo
@@ -146,27 +163,24 @@ c
         return
       endif
 
-* check last scaler to see which crate was read out.
-      if (index.le.208) hmscrate=.true.
-
 * calculate time of run (must not be zero to avoid div. by zero).
-      g_time = max(0.001,scalers(g_clock_index)/g_clock_rate)
+      g_run_time = max(0.001,gscaler(gclock_index)/gclock_rate)
 
 * Calculate beam current and charge between scaler events
 
-      if (hmscrate) then        ! time and bcms are in hms crate
-        delta_time = max(delta_scalers(g_clock_index)/g_clock_rate,.0001)
+      if (cratenum.eq.1) then        ! time and bcms are in hms crate
+        delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001)
 
-        ave_current_bcm1 = g_bcm1_gain*sqrt(max(0,
-     &        (delta_scalers(g_bcm1_index)/delta_time)-g_bcm1_offset))
-        ave_current_bcm2 = g_bcm2_gain*sqrt(max(0,
-     &        (delta_scalers(g_bcm2_index)/delta_time)-g_bcm2_offset))
-        ave_current_bcm3 = g_bcm3_gain*((delta_scalers(g_bcm3_index)
-     &        /delta_time) - g_bcm3_offset)
+        ave_current_bcm1 = gbcm1_gain*sqrt(max(0,
+     &        (gscaler_change(gbcm1_index)/delta_time)-gbcm1_offset))
+        ave_current_bcm2 = gbcm2_gain*sqrt(max(0,
+     &        (gscaler_change(gbcm2_index)/delta_time)-gbcm2_offset))
+        ave_current_bcm3 = gbcm3_gain*((gscaler_change(gbcm3_index)
+     &        /delta_time) - gbcm3_offset)
 
-        g_bcm1_charge = g_bcm1_charge + ave_current_bcm1*delta_time
-        g_bcm2_charge = g_bcm2_charge + ave_current_bcm2*delta_time
-        g_bcm3_charge = g_bcm3_charge + ave_current_bcm3*delta_time
+        gbcm1_charge = gbcm1_charge + ave_current_bcm1*delta_time
+        gbcm2_charge = gbcm2_charge + ave_current_bcm2*delta_time
+        gbcm3_charge = gbcm3_charge + ave_current_bcm3*delta_time
 
       endif
 
