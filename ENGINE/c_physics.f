@@ -7,6 +7,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.7.4.4  2003/12/08 17:34:53  xu
+* change shicentral_offset to oopcentral_offset
+*
 * Revision 1.7.4.3  2003/08/26 17:23:04  xu
 * change hstheta into inplane
 *
@@ -173,8 +176,8 @@ c      write(6,*)'c_phys: at 2'
          p_h         = ssp
          energy_e    = hsenergy
          energy_h    = ssenergy
-         xp_e_tar    = hsxp_tar + hphicentral_offset
-         xp_h_tar    = ssxp_tar + sphicentral_offset
+         xp_e_tar    = hsxp_tar +  h_oopcentral_offset
+         xp_h_tar    = ssxp_tar + s_oopcentral_offset
 
 c         theta_e     = hstheta
 c         theta_h     = -sstheta
@@ -191,8 +194,9 @@ c         theta_h     = -sstheta
          p_h         = hsp
          energy_e    = ssenergy
          energy_h    = hsenergy
-         xp_e_tar    = ssxp_tar + sphicentral_offset
-         xp_h_tar    = hsxp_tar + hphicentral_offset
+         xp_e_tar    = ssxp_tar + s_oopcentral_offset
+         xp_h_tar    = hsxp_tar + h_oopcentral_offset
+
 c         theta_e     = -sstheta
 c         theta_h     = hstheta
          theta_e     =  -ssinplane       
