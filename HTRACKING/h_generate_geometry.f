@@ -8,7 +8,10 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change HPLANE_PARAM to individual arrays
 * $Log$
-* Revision 1.3  1994/11/22 20:05:58  cdaq
+* Revision 1.4  1995/04/06 19:28:27  cdaq
+* (SAW) Remove hardwired plane and chamber counts
+*
+* Revision 1.3  1994/11/22  20:05:58  cdaq
 * (SAW) Add h's in front of fract, aa3, det3, aainv3.
 *
 * Revision 1.2  1994/10/12  18:23:47  cdaq
@@ -24,7 +27,7 @@
       include "hms_geometry.cmn"
 *
 *     local variables
-      integer*4 iplane,i,j,k,hitormiss,pindex
+      integer*4 iplane,i,j,k,pindex,ich
       real*4 cosalpha,sinalpha,cosbeta,sinbeta,cosgamma,singamma,z0
       real*4 stubxchi,stubxpsi,stubychi,stubypsi
       real*4 sumsqupsi,sumsquchi,sumcross,denom
@@ -39,7 +42,7 @@
 *     hdc_central_wire(iplane) = Location of center of wire 1
 *     hdc_sigma(iplane)       = sigma
 *
-*
+      hdc_planes_per_chamber = hdc_num_planes / hdc_num_chambers
 *
 *     loop over all planes
 
@@ -99,10 +102,10 @@
 *     check these   I don't think they are correct
         denom = stubxpsi*stubychi 
      &          - stubxchi*stubypsi
-       hstubcoef(iplane,1)= stubychi/(hdc_sigma(iplane)*denom)
-       hstubcoef(iplane,2)= -stubxchi/(hdc_sigma(iplane)*denom)
-       hstubcoef(iplane,3)= hphi0(iplane)*hstubcoef(iplane,1)
-       hstubcoef(iplane,4)= hphi0(iplane)*hstubcoef(iplane,2)
+        hstubcoef(iplane,1)= stubychi/(hdc_sigma(iplane)*denom)
+        hstubcoef(iplane,2)= -stubxchi/(hdc_sigma(iplane)*denom)
+        hstubcoef(iplane,3)= hphi0(iplane)*hstubcoef(iplane,1)
+        hstubcoef(iplane,4)= hphi0(iplane)*hstubcoef(iplane,2)
 *
 *     xsp and ysp used in space point pattern recognition
 *
@@ -141,62 +144,59 @@
       do pindex=1, HDC_NUM_PLANES + HDC_NUM_CHAMBERS
 
 * generate the matrix HAA3 for an hdc missing a particular plane
-      do i=1,3
-        do j=1,3
-        HAA3(i,j)=0.
-         if(j.lt.i)then      ! HAA3 is symmetric so only calculate 6 terms
-          HAA3(i,j)=HAA3(j,i)
-          else
-
-* AA for hdc1          
-         if(pindex.ge.1 .and. pindex.le.6 .or. pindex.eq.13)then        
-          do k=1,6            
-           if(pindex.ne.k .or. pindex.eq.13)then   
-           hitormiss=1
-           else
-           hitormiss=0
-           endif
-           HAA3(i,j)=HAA3(i,j) + hitormiss*hstubcoef(k,i)*hstubcoef(k,j)
-          enddo
-         endif
-* AA for hdc2         
-         if(pindex.ge.7 .and. pindex.le.12 .or. pindex.eq.14)then       
-          do k=7,12            
-           if(pindex.ne.k .or. pindex.eq.14)then   
-           hitormiss=1
-           else
-           hitormiss=0
-           endif
-           HAA3(i,j)=HAA3(i,j) + hitormiss*hstubcoef(k,i)*hstubcoef(k,j)
-          enddo
-         endif
-
-        endif  !end test j lt i
-        enddo  !end j loop
-      enddo    !end i loop
+        do i=1,3
+          do j=1,3
+            HAA3(i,j)=0.
+            if(j.lt.i)then              ! HAA3 is symmetric so only calculate 6 terms
+              HAA3(i,j)=HAA3(j,i)
+            else
+              if(pindex.le.HDC_NUM_PLANES) then
+                ich = (pindex-1)/(HDC_PLANES_PER_CHAMBER)+1
+                do k=(ich-1)*(HDC_PLANES_PER_CHAMBER)+1
+     $               ,ich*(HDC_PLANES_PER_CHAMBER)
+                  if(pindex.ne.k) then
+                    HAA3(i,j)=HAA3(i,j) + hstubcoef(k,i)*hstubcoef(k,j)
+                  endif
+                enddo
+              else
+                ich = pindex - HDC_NUM_PLANES
+                do k=(ich-1)*(HDC_PLANES_PER_CHAMBER)+1
+     $               ,ich*(HDC_PLANES_PER_CHAMBER)
+                  HAA3(i,j)=HAA3(i,j) + hstubcoef(k,i)*hstubcoef(k,j)
+                enddo
+              endif
+            endif                       !end test j lt i
+          enddo                         !end j loop
+        enddo                           !end i loop
 
 * form the inverse matrix HAAINV3 for each configuration
-      HAAINV3(1,1,pindex)=(HAA3(2,2)*HAA3(3,3)-HAA3(2,3)**2)
-      HAAINV3(1,2,pindex)=-(HAA3(1,2)*HAA3(3,3)-HAA3(1,3)*HAA3(2,3))
-      HAAINV3(1,3,pindex)=(HAA3(1,2)*HAA3(2,3)-HAA3(1,3)*HAA3(2,2))
-      HDET3(pindex)=HAA3(1,1)*HAAINV3(1,1,pindex)+HAA3(1,2)*HAAINV3(1,2,pindex)
-     &            +HAA3(1,3)*HAAINV3(1,3,pindex)
-       if(abs(hdet3(pindex)).le.1e-20)then
-        write(6,*)'******************************************************'
-        write(6,*)'Warning! Determinate of matrix HAA3(i,j) is nearly zero.'
-        write(6,*)'All tracks using pindex=',pindex,' will be zerfucked.'
-        write(6,*)'Fix problem in h_generate_geometry.f or else!'
-        write(6,*)'******************************************************'
-        hdet3(pindex)=1.
-       endif
-      HAAINV3(1,1,pindex)=HAAINV3(1,1,pindex)/HDET3(pindex)
-      HAAINV3(1,2,pindex)=HAAINV3(1,2,pindex)/HDET3(pindex)
-      HAAINV3(1,3,pindex)=HAAINV3(1,3,pindex)/HDET3(pindex)
-      HAAINV3(2,2,pindex)=(HAA3(1,1)*HAA3(3,3)-HAA3(1,3)**2)/HDET3(pindex)
-      HAAINV3(2,3,pindex)= -(HAA3(1,1)*HAA3(2,3)-HAA3(1,2)*HAA3(3,1))/HDET3(pindex)
-      HAAINV3(3,3,pindex)=(HAA3(1,1)*HAA3(2,2)-HAA3(1,2)**2)/HDET3(pindex)
+        HAAINV3(1,1,pindex)=(HAA3(2,2)*HAA3(3,3)-HAA3(2,3)**2)
+        HAAINV3(1,2,pindex)=-(HAA3(1,2)*HAA3(3,3)-HAA3(1,3)*HAA3(2,3))
+        HAAINV3(1,3,pindex)=(HAA3(1,2)*HAA3(2,3)-HAA3(1,3)*HAA3(2,2))
+        HDET3(pindex)=HAA3(1,1)*HAAINV3(1,1,pindex)+HAA3(1,2)*HAAINV3(1,2
+     $       ,pindex)+HAA3(1,3)*HAAINV3(1,3,pindex)
+        if(abs(hdet3(pindex)).le.1e-20)then
+          write(6,*
+     $         )'******************************************************'
+          write(6,*
+     $         )'Warning! Determinate of matrix HAA3(i,j) is nearly zero.'
+          write(6,*)'All tracks using pindex=',pindex,' will be zerfucked.'
+          write(6,*)'Fix problem in h_generate_geometry.f or else!'
+          write(6,*
+     $         )'******************************************************'
+          hdet3(pindex)=1.
+        endif
+        HAAINV3(1,1,pindex)=HAAINV3(1,1,pindex)/HDET3(pindex)
+        HAAINV3(1,2,pindex)=HAAINV3(1,2,pindex)/HDET3(pindex)
+        HAAINV3(1,3,pindex)=HAAINV3(1,3,pindex)/HDET3(pindex)
+        HAAINV3(2,2,pindex)=(HAA3(1,1)*HAA3(3,3)-HAA3(1,3)**2)/HDET3(pindex
+     $       )
+        HAAINV3(2,3,pindex)= -(HAA3(1,1)*HAA3(2,3)-HAA3(1,2)*HAA3(3,1))
+     $       /HDET3(pindex)
+        HAAINV3(3,3,pindex)=(HAA3(1,1)*HAA3(2,2)-HAA3(1,2)**2)/HDET3(pindex
+     $       )
 
-      enddo  !end pindex loop
+      enddo                             !end pindex loop
 
 *     for debug write out all parameters
       if(hdebugflaggeometry.ne.0) then
@@ -232,9 +232,9 @@
         write(hluno,'(''                 hplane_coeff'')')
         write(hluno,'('' plane     1        2       3        4        5'',
      &   ''      6       7       8        9'')')
-          do j=1,hdc_num_planes
-            write(hluno,1004) j,(hplane_coeff(i,j),i=1,9) 
-          enddo                           ! end of print over planes loop
+        do j=1,hdc_num_planes
+          write(hluno,1004) j,(hplane_coeff(i,j),i=1,9) 
+        enddo                           ! end of print over planes loop
 1004  format(1x,i3,f10.5,2f8.3,f9.3,4f8.3,f9.3)
 *
       endif                               !   end if on debug print out
