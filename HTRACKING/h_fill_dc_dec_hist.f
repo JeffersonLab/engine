@@ -9,7 +9,10 @@
 *                                 Put id's in hms_tracking_histid
 *                                 implement flag to turn block off
 * $Log$
-* Revision 1.3  1995/05/22 19:39:11  cdaq
+* Revision 1.4  1995/08/31 15:02:26  cdaq
+* (JRA) Comment out filling of hiddcwirecent (wire center) histogram
+*
+* Revision 1.3  1995/05/22  19:39:11  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.2  1994/08/18  04:26:03  cdaq
@@ -51,7 +54,7 @@
 * Is plane number valid
             if( (planeoff .gt. 0) .and. (planeoff.le. hdc_num_planes)) then
               call hf1(hiddcwiremap(planeoff),histval,1.)
-              call hf1(hiddcwirecent(planeoff),HDC_WIRE_CENTER(ihit),1.)
+c              call hf1(hiddcwirecent(planeoff),HDC_WIRE_CENTER(ihit),1.)
               call hf1(hiddcdriftdis(planeoff),HDC_DRIFT_DIS(ihit),1.)
               call hf1(hiddcdrifttime(planeoff),HDC_DRIFT_TIME(ihit),1.)
             endif                       ! end test on valid plane number
