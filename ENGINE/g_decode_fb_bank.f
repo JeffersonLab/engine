@@ -88,9 +88,9 @@
             else if (did.eq.HCAL_ID) then
                pointer = pointer +
      $              g_decode_fb_detector(roc, bank(pointer), 
-     &              maxwords, did,  HMAX_CAL_BLOCKS,
-     $              HCAL_TOT_HITS, HCAL_COLUMN, HCAL_ROW,
-     $              1,HCAL_ADC, 0, 0, 0)
+     &              maxwords, did,
+     $              HMAX_CAL_BLOCKS, HCAL_TOT_HITS, HCAL_ROW,
+     $              HCAL_COLUMN, 1, HCAL_ADC, 0, 0, 0)
 
             else if (did.eq.HCER_ID) then
 *
@@ -127,8 +127,8 @@
                pointer = pointer +
      $              g_decode_fb_detector(roc, bank(pointer), 
      &              maxwords, did, 
-     $              SMAX_CAL_BLOCKS, SCAL_TOT_HITS, SCAL_COLUMN, 
-     $              SCAL_ROW, 1,SCAL_ADC, 0, 0, 0)
+     $              SMAX_CAL_BLOCKS, SCAL_TOT_HITS, SCAL_ROW, 
+     $              SCAL_COLUMN, 1, SCAL_ADC, 0, 0, 0)
 
             else if (did.eq.SCER_ID) then
 *
