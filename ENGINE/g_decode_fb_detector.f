@@ -5,9 +5,12 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.7  1994/06/22 20:21:24  cdaq
-*-    (SAW) Put -1 in hodoscope signals that don't get any data
+*-    Revision 1.8  1994/06/27 02:14:18  cdaq
+*-    (SAW) Ignore all words that start with DC
 *-
+* Revision 1.7  1994/06/22  20:21:24  cdaq
+* (SAW) Put -1 in hodoscope signals that don't get any data
+*
 * Revision 1.6  1994/06/22  20:07:37  cdaq
 * (SAW) Fix problems with filling of hodoscope type hit lists (multiple signal)
 *
@@ -52,7 +55,7 @@
 
       do while(pointer.le.length .and. did.eq.newdid)
 *
-        if(evfrag(pointer).eq.'DCFF0000'x) then ! Catch arrington's headers
+        if(iand(evfrag(pointer),'FF000000'x).eq.'DC000000'x) then ! Catch arrington's headers
           pointer = pointer + 1
           goto 987
         endif
@@ -163,7 +166,8 @@
                 endif
               endif
             else
-              type *,'Max exceeded, did=',did,', max=',maxhits
+              type *,'g_decode_fb_detector: Max exceeded, did=',
+     $             did,', max=',maxhits
 *     
 *     Print/generate some kind of error that the hit array has been
 *     exceeded.
