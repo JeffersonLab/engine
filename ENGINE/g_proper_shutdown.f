@@ -10,6 +10,9 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 * $Log$
+* Revision 1.13  2004/02/17 17:27:10  jones
+* Only dump histograms when g_histout_filename is set.
+*
 * Revision 1.12  1999/02/23 18:24:23  csa
 * (JRA) Remove debugcalcpeds stuff, cleanup
 *
@@ -99,8 +102,10 @@
       close(unit=SPAREID)
 
       call hack_shutdown(bad_hack,err_hack)
-
+      
+      if (g_histout_filename .ne. ' ') then 
       call g_dump_histograms(bad_HBK,err_HBK)
+      endif
 
       bad_report = .false.
       err_report = ' '
