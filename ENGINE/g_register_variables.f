@@ -19,8 +19,11 @@
 *     Modified: 24-May-1994 K.B.Beard
 *
 *     $Log$
-*     Revision 1.9  1994/10/11 18:39:59  cdaq
-*     (SAW) Add some hacks for event dislpay
+*     Revision 1.10  1995/07/27 19:38:27  cdaq
+*     (SAW) Relocate data statements for f2c compatibility
+*
+* Revision 1.9  1994/10/11  18:39:59  cdaq
+* (SAW) Add some hacks for event dislpay
 *
 * Revision 1.8  1994/08/18  04:11:47  cdaq
 * (SAW) Call makereg generated routines to register variables
@@ -59,14 +62,15 @@
       include 'gen_routines.dec'
 *
       include 'gen_run_info.cmn'
-      include 'gen_run_info.dte'
       include 'gen_run_pref.cmn'
-      include 'gen_run_pref.dte'
 
       integer ierr,m,i
       logical FAIL
       character*1000 why
       character*30 msg
+*
+      include 'gen_run_info.dte'
+      include 'gen_run_pref.dte'
 *
 *----------------------------------------------------------------------
 *
