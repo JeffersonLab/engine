@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.5  1994/07/13 15:05:08  cdaq
+* Revision 1.6  1994/09/13 21:26:53  cdaq
+* (JRA) fix chisq calculation
+*
+* Revision 1.5  1994/07/13  15:05:08  cdaq
 * (SAW) Add abs around tmpdenom that I left out last update
 *
 * Revision 1.4  1994/07/11  18:34:35  cdaq
@@ -74,7 +77,6 @@
       tmpdenom = sumw*sumtz - sumz*sumt
       if(abs(tmpdenom) .gt. 1.e-10) then
          hbeta(trk) = tmp / tmpdenom        !velocity in cm/ns.
-         hbeta(trk) = hbeta(trk) / 29.9979  !velocity/c
          hbeta_chisq(trk) = 0.
          do hit = 1 , hscin_tot_hits
             if (hgood_scin_time(hit)) then
@@ -86,6 +88,7 @@
 
          pathnorm = 1 + hxp_fp(trk)**2 + hyp_fp(trk)**2
          hbeta(trk) = hbeta(trk) * pathnorm !take angle into account
+         hbeta(trk) = hbeta(trk) / 29.9979  !velocity/c
       else
          hbeta(trk) = 0.               ! set unphysical beta
          hbeta_chisq(trk) = -100
