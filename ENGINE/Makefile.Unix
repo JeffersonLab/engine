@@ -1,6 +1,11 @@
 #
 # $Log$
-# Revision 1.14  1995/07/28 14:13:32  cdaq
+# Revision 1.15  1996/01/16 16:03:10  cdaq
+# (SAW) Add g_scaler_reset_event, g_extract_kinematics, g_output_thresholds,
+#       g_examine_go_info, g_kludgeup_kinematics, s_sv_nt_init, s_sv_nt_keep,
+#       s_sv_nt_register, s_sv_nt_shutdown
+#
+# Revision 1.14  1995/07/28  14:13:32  cdaq
 # (SAW) Add new routines, SGI/IRIX compatibility
 #
 # Revision 1.13  1995/05/24  13:20:54  cdaq
@@ -56,7 +61,9 @@ general_source = $(decode_source) g_clear_event.f \
 	g_reset_event.f g_register_variables.f \
 	g_examine_control_event.f \
 	g_examine_physics_event.f g_dump_histograms.f g_analyze_pedestal.f \
-	g_calc_pedestal.f g_ctp_database.f
+	g_calc_pedestal.f g_ctp_database.f g_scaler_reset_event.f \
+	g_extract_kinematics.f g_output_thresholds.f \
+	g_examine_go_info.f g_kludgeup_kinematics.f
 hms_source = h_clear_event.f h_initialize.f h_keep_results.f \
 	h_proper_shutdown.f h_reset_event.f \
 	h_register_variables.f
@@ -66,12 +73,17 @@ sos_source = s_clear_event.f s_initialize.f s_keep_results.f \
 coin_source = c_register_variables.f c_clear_event.f c_initialize.f \
 	c_keep_results.f c_proper_shutdown.f c_reconstruction.f \
 	c_reset_event.f c_physics.f
-ntuple_source = c_ntuple_init.f c_ntuple_keep.f \
-	c_ntuple_register.f c_ntuple_shutdown.f h_ntuple_init.f \
-	h_ntuple_keep.f h_ntuple_register.f h_ntuple_shutdown.f \
-	s_ntuple_init.f s_ntuple_keep.f s_ntuple_register.f \
-	s_ntuple_shutdown.f h_sv_nt_register.f h_sv_nt_keep.f \
-	h_sv_nt_init.f h_sv_nt_shutdown.f g_ntuple_shutdown.f
+ntuple_source = g_ntuple_init.f g_ntuple_shutdown.f \
+	c_ntuple_init.f c_ntuple_keep.f \
+	c_ntuple_register.f c_ntuple_shutdown.f \
+	h_ntuple_init.f h_ntuple_keep.f \
+	h_ntuple_register.f h_ntuple_shutdown.f \
+	s_ntuple_init.f s_ntuple_keep.f \
+	s_ntuple_register.f s_ntuple_shutdown.f \
+	h_sv_nt_init.f h_sv_nt_keep.f \
+	h_sv_nt_register.f h_sv_nt_shutdown.f \
+	s_sv_nt_init.f s_sv_nt_keep.f \
+	s_sv_nt_register.f s_sv_nt_shutdown.f
 gmakeregstuff = r_gen_filenames.f r_gen_run_info.f r_gen_event_info.f \
 	r_gen_scalers.f r_gen_run_pref.f r_gen_data_structures.f
 cmakeregstuff = r_coin_filenames.f r_c_ntuple.f r_coin_data_structures.f
@@ -94,6 +106,7 @@ install-dirs := lib bin
 
 DEPLIBS = $(LIBROOT)/libengine.a \
 	$(LIBROOT)/libhtracking.a $(LIBROOT)/libstracking.a \
+	$(LIBROOT)/libengine.a \
 	$(LIBROOT)/libtracking.a $(LIBROOT)/libhack.a \
 	$(LIBROOT)/libutils.a $(LIBROOT)/libctp.a
 #$(LIBROOT)/libgmc.a 
@@ -101,7 +114,7 @@ DEPLIBS = $(LIBROOT)/libengine.a \
 ifeq ($(ARCH),HPUX)
 #  OTHERLIBS = -Wl,-L$(CODA)/HP_UX/lib \
 #	-lcoda -Wl,-L$(CERN_ROOT)/lib -lpacklib
-  OTHERLIBS = -Wl,-L$(CERN_ROOT)/lib -lpacklib -lm
+  OTHERLIBS = -Wl,-L$(CERN_ROOT)/lib -lpacklib -lU77 -lm
 endif
 
 ifeq ($(ARCH),ULTRIX)
@@ -169,15 +182,15 @@ g_decode_config.f : $(NFSDIRECTORY)/ENGINE/g_decode_config.f
 endif
 
 %.cmn :: ../INCLUDE/%.cmn
-	cp -f $< $@
+	$(CP) $< $@
 
 %.dec :: ../INCLUDE/%.dec
-	cp -f $< $@
+	$(CP) $< $@
 
 %.par :: ../INCLUDE/%.par
-	cp -f $< $@
+	$(CP) $< $@
 	
 %.dte :: ../INCLUDE/%.dte
-	cp -f $< $@
+	$(CP) $< $@
 	
 include $(sources:.f=.d)
