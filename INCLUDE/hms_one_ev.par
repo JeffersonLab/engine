@@ -1,0 +1,40 @@
+********************************************************************************
+*
+*       include file     one_ev_disp.inc
+*
+*       contains all information needed for the one event display
+* $Log$
+* Revision 1.1  1995/07/28 20:22:59  cdaq
+* Initial revision
+*
+********************************************************************************
+
+	real*4    HHUT_WIDTH,HHUT_HEIGHT
+	real*4    LOWER_CHAMBER_X_OFFSET,LOWER_CHAMBER_Y_OFFSET
+	real*4    UPPER_CHAMBER_X_OFFSET,UPPER_CHAMBER_Y_OFFSET
+	real*4    HODO_THICKNESS
+	real*4    HODO_LOWER_X_OFFSET,HODO_LOWER_Y_OFFSET
+	real*4    HODO_UPPER_X_OFFSET,HODO_UPPER_Y_OFFSET
+	real*4    SHOWER_X_OFFSET,SHOWER_Y_OFFSET
+	integer*4 HODO_X_PADDLES,HODO_Y_PADDLES
+
+	parameter (HHUT_WIDTH = 100.)		! full width of the det. hut
+	parameter (HHUT_HEIGHT = 800.)		! full height of the det. hut
+
+	parameter (LOWER_CHAMBER_X_OFFSET = 0.)	! offset
+	parameter (LOWER_CHAMBER_Y_OFFSET = 0.)	! offset
+	parameter (UPPER_CHAMBER_X_OFFSET = 0.)	! offset
+	parameter (UPPER_CHAMBER_Y_OFFSET = 0.)	! offset
+
+	parameter (HODO_X_PADDLES = 16)		! # of paddles in X direction
+	parameter (HODO_Y_PADDLES = 10)		! # of paddles in Y direction
+
+	parameter (HODO_THICKNESS = 1.0)	! full thickness of hodoscope
+
+	parameter (HODO_LOWER_X_OFFSET = 0.)	! offset
+	parameter (HODO_LOWER_Y_OFFSET = 0.)	! offset
+	parameter (HODO_UPPER_X_OFFSET = 0.)	! offset
+	parameter (HODO_UPPER_Y_OFFSET = 0.)	! offset
+
+	parameter (SHOWER_X_OFFSET = 0.)	! offset
+	parameter (SHOWER_Y_OFFSET = 0.)	! offset

@@ -1,0 +1,52 @@
+********************************************************************************
+*
+*       include file     one_ev_disp.inc
+*
+*       contains all information needed for the one event display
+*
+* Modified from the HMS version, hms_one_ev.par, March 1995 by
+* Derek van Westrum (vanwestr@cebaf.gov)
+*
+* $Log$
+* Revision 1.1  1995/07/28 20:27:00  cdaq
+* Initial revision
+*
+********************************************************************************
+
+      real*4    SHUT_WIDTH,SHUT_HEIGHT
+      real*4	  CHAMBER_WIDTH,CHAMBER_HEIGHT
+      real*4    LOWER_CHAMBER_X_OFFSET,LOWER_CHAMBER_Y_OFFSET
+      real*4    UPPER_CHAMBER_X_OFFSET,UPPER_CHAMBER_Y_OFFSET
+      real*4    HODO_THICKNESS
+      real*4    HODO_LOWER_X_OFFSET,HODO_LOWER_Y_OFFSET
+      real*4    HODO_UPPER_X_OFFSET,HODO_UPPER_Y_OFFSET
+      real*4    SHOWER_X_OFFSET,SHOWER_Y_OFFSET
+      integer*4 LOWER_HODO_X_PADDLES,LOWER_HODO_Y_PADDLES
+      integer*4 UPPER_HODO_X_PADDLES,UPPER_HODO_Y_PADDLES
+      real*4    zoffset
+      parameter (zoffset = 100.)
+
+      parameter (SHUT_WIDTH = 100.)     ! full width of the det. hut
+      parameter (SHUT_HEIGHT = 800.)    ! full height of the det. hut
+
+      parameter (CHAMBER_WIDTH = 40.)
+      parameter (CHAMBER_HEIGHT = 70.)
+      parameter (LOWER_CHAMBER_X_OFFSET = 0.) ! offset
+      parameter (LOWER_CHAMBER_Y_OFFSET = 0.) ! offset
+      parameter (UPPER_CHAMBER_X_OFFSET = 0.) ! offset
+      parameter (UPPER_CHAMBER_Y_OFFSET = 0.) ! offset
+
+      parameter (LOWER_HODO_X_PADDLES = 9) ! # of paddles in X direction
+      parameter (LOWER_HODO_Y_PADDLES = 9) ! # of paddles in Y direction
+      parameter (UPPER_HODO_X_PADDLES = 16) ! # of paddles in X direction
+      parameter (UPPER_HODO_Y_PADDLES = 9) ! # of paddles in Y direction
+
+      parameter (HODO_THICKNESS = 1.0)	! full thickness of hodoscope
+
+      parameter (HODO_LOWER_X_OFFSET = 0.) ! offset
+      parameter (HODO_LOWER_Y_OFFSET = 0.) ! offset
+      parameter (HODO_UPPER_X_OFFSET = 0.) ! offset
+      parameter (HODO_UPPER_Y_OFFSET = 0.) ! offset
+
+      parameter (SHOWER_X_OFFSET = 0.)	! offset
+      parameter (SHOWER_Y_OFFSET = 0.)	! offset
