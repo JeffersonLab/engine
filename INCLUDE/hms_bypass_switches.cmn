@@ -5,9 +5,13 @@
 *
 *     Created:     D.F.Geesaman         22 May 1994
 * $Log$
-* Revision 1.1  1994/06/06 16:51:47  cdaq
+* Revision 1.2  1994/08/05 19:37:01  cdaq
+* (SAW) Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
+*
+* Revision 1.1  1994/06/06  16:51:47  cdaq
 * Initial revision
 *
+*     CTPTYPE=parm
 *
       integer*4 hbypass_trans_scin
       integer*4 hbypass_trans_cal
@@ -29,5 +33,3 @@
      &     hbypass_cal,
      &     hbypass_cer,
      &     hbypass_physics
-
-
