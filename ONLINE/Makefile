@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.6  2003/02/14 18:10:21  jones
+# Add if statement for Alpha OSF1 (E. Brash)
+#
 # Revision 1.5  1996/01/17 16:48:24  cdaq
 # (SAW) Add libengine.a to library list
 #
@@ -38,6 +41,11 @@ endif
 ifeq ($(ARCH),ULTRIX)
   CC = gcc
   OTHERLIBS = -L$(CODA)/ULTRIX/lib -lana -lmsg -lcoda -L$(CERN_ROOT)/lib -lpacklib
+endif
+
+ifeq ($(ARCH),OSF1)
+  CC = cc
+  OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib
 endif
 
 bin_targets = engine_online
