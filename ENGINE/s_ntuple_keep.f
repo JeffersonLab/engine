@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.7.6.2  2003/12/18 18:09:34  jones
+* add common blocks needed
+*
 * Revision 1.7.6.1  2003/12/17 22:55:06  jones
 *  update e01004
 *
@@ -51,10 +54,12 @@
       INCLUDE 'sos_scin_tof.cmn'
       include 'sos_track_histid.cmn'
       include 'sos_aero_parms.cmn'
+      include 'sos_scin_parms.cmn'
+      include 'gen_data_structures.cmn'
 *
       logical HEXIST    !CERNLIB function
 *
-      integer m
+      integer m,ihit
 
       real proton_mass
       parameter ( proton_mass = 0.93827247 ) ! [GeV/c^2]
