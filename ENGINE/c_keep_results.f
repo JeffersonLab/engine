@@ -10,6 +10,11 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 * $Log$
+* Revision 1.5  1996/09/04 15:29:30  saw
+* * (JRA) Make HSNUM_FPTRACK.gt.0 and SSNUM_FPTRACK.gt.0  instead of
+*         HNTRACKS_FP .gt. 0 and HNTRACKS_FP .gt. 0 as criteria for
+*         adding to ntuples
+*
 * Revision 1.4  1996/01/22 15:05:20  saw
 * (JRA) Only fill coin ntuple if HMS and SOS both have tracks
 *
@@ -47,7 +52,7 @@
       ABORT= .FALSE.
       err = ' '
 *
-      if(HNTRACKS_FP .gt. 0 .AND. SNTRACKS_FP .gt. 0) ! check for tracks
+      if(HSNUM_FPTRACK .gt. 0 .AND. SSNUM_FPTRACK .gt. 0) ! check for tracks
      >  call c_ntuple_keep(ABORT,err)
 *
       IF(ABORT) THEN
