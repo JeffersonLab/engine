@@ -10,6 +10,9 @@
 *
 *     Created: 1-Nov-1994  
 * $Log$
+* Revision 1.4  1998/12/01 15:58:54  saw
+* (SAW) Output file name fixup
+*
 * Revision 1.3  1996/11/05 21:43:50  saw
 * (DD) Add gas cerenkov to ntuple
 *
@@ -101,7 +104,10 @@
 *
       id= s_sieve_Ntuple_ID
       name= s_sieve_Ntuple_name
+
       file= s_sieve_Ntuple_file
+      call g_sub_run_number(file,gen_run_number)
+
       recL= default_recL
       io= s_sieve_Ntuple_IOchannel
 *
@@ -168,7 +174,6 @@
       title= s_sieve_Ntuple_title
       size= s_sieve_Ntuple_size
       file= s_sieve_Ntuple_file
-      call g_sub_run_number(file, gen_run_number)
       bank= default_bank
  
       call HBOOKN(id,title,size,name,bank,s_sieve_Ntuple_tag)      !create Ntuple
