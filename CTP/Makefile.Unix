@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.5  1994/10/11 18:31:42  cdaq
+# Revision 1.6  1994/11/23 15:35:29  cdaq
+# (SAW) Make a libctpclient.a, add NOFNMATCH for ultrix
+#
+# Revision 1.5  1994/10/11  18:31:42  cdaq
 # (SAW) Add thClient
 #
 # Revision 1.4  1994/08/18  04:21:48  cdaq
@@ -18,15 +21,15 @@
 include $(Csoft)/etc/Makefile
 
 ctp_sources = thTest.c thTestParse.c thTestExecute.c thHandlers.c thParm.c \
-	thUtils.c thLoad.c thHist.c daVarRegister.c daVarRpcProc.c \
-	daVarServ.c thReport.c thGethit.c thClient.c
-derived_sources = daVarRpc_svc.c daVarRpc_xdr.c
+	thUtils.c thLoad.c thHist.c thReport.c thGethit.c daVarRegister.c \
+	daVarRpcProc.c daVarHandlers.c daVarServ.c \
+	daVarRpc_svc.c daVarRpc_xdr.c
+ctpclient_sources = daVarRpc_xdr.c daVarRpc_clnt.c thClient.c
 
-libsources = $(ctp_sources) $(derived_sources)
+sources = $(ctp_sources) $(ctpclient_sources) makereg.c
 
-sources = $(ctp_sources) makereg.c
-
-lib_targets := $(patsubst %.c, libctp.a(%.o), $(libsources))
+lib_targets := $(patsubst %.c, libctp.a(%.o), $(ctp_sources)) \
+	$(patsubst %.c, libctpclient.a(%.o), $(ctpclient_sources))
 
 bin_targets = makereg
 
@@ -42,7 +45,7 @@ endif
 
 ifeq ($(ARCH),ULTRIX)
   CC = gcc
-  CFLAGS =
+  CFLAGS = -DNOFNMATCH
   RPCCOM=/usr/site1/rpc/rpcgen
   OSTYPE=ULTRIX
 endif
