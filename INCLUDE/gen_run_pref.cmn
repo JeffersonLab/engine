@@ -3,8 +3,11 @@
 *-   Created   24-May-1994   Kevin B. Beard, Hampton Univ.
 *-   Modified  3-Jun-1994  KBB
 * $Log$
-* Revision 1.1  1994/06/04 04:53:28  cdaq
-* Initial revision
+* Revision 1.2  1994/06/04 05:14:41  cdaq
+* Fix typo
+*
+*Revision 1.1  1994/06/04  04:53:28  cdaq
+*Initial revision
 *
 *........................................................................
 *- Misc. display controls 
@@ -12,8 +15,7 @@
       LOGICAL gen_show_progress
       INTEGER gen_show_interval
 *
-      COMMON /gen_run_show/ gen_show_progress,gen_show_interval,
-     &                       gen_show_muddleON
+      COMMON /gen_run_show/ gen_show_progress,gen_show_interval
 *
 *- Misc. preferences 
 *
