@@ -23,6 +23,10 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.18.8.1  2004/05/19 14:44:02  jones
+* For mduality, ignore tdc of negative end of paddles 4,5,6 in
+* plane 4 in determining timing in the focal plane for the coincidence.
+*
 * Revision 1.18  1999/06/10 16:52:12  csa
 * (JRA) Cosmetic changes
 *
@@ -96,7 +100,7 @@
       include 'hms_scin_parms.cmn'
       include 'hms_scin_tof.cmn'
       integer*4 hit, trk
-      integer*4 plane,ind
+      integer*4 plane,ind,counter
       integer*4 hntof_pairs
       real*4 adc_ph                     !pulse height (channels)
       real*4 xhit_coord,yhit_coord
@@ -153,6 +157,8 @@
         do hit = 1 , hscin_tot_hits
           plane = hscin_plane_num(hit)
 
+          counter = hscin_counter_num(hit)           
+
 **    Find hit position
           xhit_coord = hx_fp(trk) + hxp_fp(trk)*hscin_zpos(hit)
           yhit_coord = hy_fp(trk) + hyp_fp(trk)*hscin_zpos(hit)
@@ -178,7 +184,7 @@
             hscin_on_track(trk,hit) = .true.
 **    Check for good TDC
             if (hscin_tdc_pos(hit) .ge. hscin_tdc_min .and.  
-     &          hscin_tdc_pos(hit) .le. hscin_tdc_max) then
+     1          hscin_tdc_pos(hit) .le. hscin_tdc_max ) then
 
 **    Calculate time for each tube with a good tdc. 'pos' side first.
               hgood_tdc_pos(trk,hit) = .true.
@@ -197,7 +203,9 @@
 
 **    Repeat for pmts on 'negative' side
             if (hscin_tdc_neg(hit).ge.hscin_tdc_min .and. !good tdc
-     1           hscin_tdc_neg(hit).le.hscin_tdc_max) then
+     1           hscin_tdc_neg(hit).le.hscin_tdc_max .and.
+     2           (.not. (plane.eq.4.and.(counter.eq.5.or.
+     3            counter.eq.4.or.counter.eq.6)))) then
 
               hgood_tdc_neg(trk,hit) = .true.
               hntof = hntof + 1
