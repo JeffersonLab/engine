@@ -6,6 +6,9 @@
 * s_trans_misc fills the sos_decoded_misc common block
 *
 * $Log$
+* Revision 1.3  1996/01/17 18:12:35  cdaq
+* (JRA) Misc. fixes.
+*
 * Revision 1.2  1995/05/22 19:46:03  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -30,7 +33,7 @@
       save
       
       do ihit = 1 , 48
-        smisc_dec_data(ihit)=0
+        smisc_dec_data(ihit)=-1         ! clear ADC's.
       enddo
 
       do ihit = 1 , smisc_tot_hits
