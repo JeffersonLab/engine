@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 *-    $Log$
-*-    Revision 1.9  1994/06/14 04:03:48  cdaq
-*-    (DFG) Add call to s_init_physics
+*-    Revision 1.10  1994/06/16 03:46:17  cdaq
+*-    *** empty log message ***
 *-
+* Revision 1.9  1994/06/14  04:03:48  cdaq
+* (DFG) Add call to s_init_physics
+*
 * Revision 1.8  1994/05/13  03:13:45  cdaq
 * (DFG) Add call to s_targ_trans_init
 *
@@ -84,7 +87,7 @@
       call s_init_physics(ABORT,err)
       if(ABORT) then
          call g_add_path(here,err)
-      endif       *
+      endif
 *
       call s_ntuple_init(ABORT,err)
 *
