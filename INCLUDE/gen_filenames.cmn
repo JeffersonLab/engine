@@ -2,6 +2,9 @@
 *
 *-Common block with filenames
 *     $Log$
+*     Revision 1.10  1996/04/30 13:37:06  saw
+*     (JRA) Add filename for pedestal output
+*
 *     Revision 1.9  1996/01/17 15:41:50  cdaq
 *     (JRA) Add filename/ctp names for tcl statistics screen
 *
@@ -54,6 +57,7 @@
       character*80 g_stats_template_filename   !online statistics report
       character*80 g_stats_output_filename
       character*80 g_stats_blockname
+      character*80 g_pedestal_output_filename
 *
       common /gen_filenames/
      $     g_config_filename,
@@ -72,7 +76,8 @@
      $     g_ctp_kinematics_filename,
      $     g_stats_template_filename,
      $     g_stats_output_filename,
-     $     g_stats_blockname
+     $     g_stats_blockname,
+     $     g_pedestal_output_filename
 *
       logical*4 g_hist_rebook
       logical*4 g_test_rebook
