@@ -27,7 +27,11 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
-* Revision 1.16  1995/05/22 20:50:45  cdaq
+* Revision 1.17  1995/07/27 19:06:02  cdaq
+* (SAW) Use specific bit manipulation routines for f2c compatibility
+*       Get FB roc from header on parallel link banks
+*
+* Revision 1.16  1995/05/22  20:50:45  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.15  1995/05/22  13:35:40  cdaq
@@ -93,16 +97,22 @@
       integer*4 g_decode_getdid                 ! Get detector ID routine
       integer*4 g_decode_fb_detector            ! Detector unpacking routine
       integer*4 i
+*
+      integer*4 jiand, jishft           ! Declare to help f2c
 
       banklength = bank(1) + 1                  ! Bank length including count
 
-      stat_roc = ishft(bank(2),-16)
-      roc = iand(stat_roc,'1F'X)                ! Get ROC from header
+c      stat_roc = ishft(bank(2),-16)
+      stat_roc = jishft(bank(2),-16)
+c      roc = iand(stat_roc,'1F'X)                ! Get ROC from header
+      roc = jiand(stat_roc,'1F'X)                ! Get ROC from header
 *
 *     First look for special Monte Carlo Banks
 *
       if(stat_roc.eq.mc_status_and_ROC) then
-        call gmc_mc_decode(banklength-2,bank(3),ABORT,error)
+*        call gmc_mc_decode(banklength-2,bank(3),ABORT,error)
+        ABORT = .TRUE.
+        error = 'Monte Carlo Event analysis disabled'
         if(ABORT) then
           call g_add_path(here,error)
         endif
@@ -131,8 +141,9 @@
 *     at least 5/31/95.
 *
         pointer=pointer+2               !using parallel link, so next
-        stat_roc = ishft(bank(pointer-1),-16)!2 words are fb roc header.
-        roc = iand(stat_roc,'1F'X)
+c        stat_roc = ishft(bank(pointer-1),-16)!2 words are fb roc header.
+        stat_roc = jishft(bank(pointer-1),-16)!2 words are fb roc header.
+        roc = jiand(stat_roc,'1F'X)
 *        print *,iand(ishft(bank(2),-16),'1F'X),'->',roc
       endif
 c      if (roc.eq.7) then                ! Change || link ROC #'s into ROC #'s
@@ -145,9 +156,11 @@ c      endif
       lastslot = -1
       do while (pointer .le. banklength)
 
-        slot = iand(ishft(bank(pointer),-27),'1F'X)
+c        slot = iand(ishft(bank(pointer),-27),'1F'X)
+        slot = jiand(jishft(bank(pointer),-27),'1F'X)
         if(slot.gt.0.and.slot.le.G_DECODE_MAXSLOTS) then
-          subadd = iand(ishft(bank(pointer),
+c          subadd = iand(ishft(bank(pointer),
+          subadd = jiand(jishft(bank(pointer),
      $         -g_decode_subaddbit(roc+1,slot)),'7F'X)
 ***         subadd = iand(ishft(bank(pointer),-17),'7F'X)
 ***         subadd = iand(ishft(bank(pointer),-16),'7F'X)
