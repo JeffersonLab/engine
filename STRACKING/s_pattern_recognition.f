@@ -14,6 +14,9 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
+* Revision 1.7  1995/10/10 16:13:47  cdaq
+* (JRA) Remove sdc_sing_wcenter, cosmetics.
+*
 * Revision 1.6  1995/07/20 18:58:50  cdaq
 * (SAW) Declare sind and cosd for f2c compatibility
 *
@@ -43,8 +46,8 @@
       IMPLICIT NONE
       SAVE
 *
-      character*50 here
-      parameter (here= 'S_PATTERN_RECOGNITION')
+      character*21 here
+      parameter (here= 's_pattern_recognition')
 *
       logical ABORT
       character*(*) err
@@ -52,52 +55,51 @@
       INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
+      INCLUDE 'sos_tracking.cmn'
+      INCLUDE 'sos_geometry.cmn'
 *
-*
-      include 'sos_tracking.cmn'
-      include 'sos_geometry.cmn'
 *     local variables
       integer*4 hit_number(smax_chamber_hits)
-      real*4 space_points(smax_space_points,2)
       integer*4 space_point_hits(smax_space_points,smax_hits_per_point+2)
-      integer*4 i,j,k
-*
       integer*4 plane, wire, isp, ihit, hit
+      integer*4 i,j,k
       integer*4 ich, ip
+*
+      real*4 space_points(smax_space_points,2)
       real*4 x_pos, x_drifttime_corr, y_pos, y_drifttime_corr
       real*4 up_pos, u_drifttime_corr, vp_pos, v_drifttime_corr
       real*4 s_drift_dist_calc
-      external s_drift_dist_calc
       real*4 sind,cosd
+      external s_drift_dist_calc
 
 *
 *     temporary initialization
       ABORT= .FALSE.
-      err=':success'
+      err=' '
 *
 *   
       ihit = 0
       snspace_points_tot = 0
-      do ich=1,SDC_NUM_CHAMBERS
+      do ich=1,sdc_num_chambers
         snspace_points(ich)=0        
         sncham_hits(ich)=0
 *
-*     For this loop to work, SDC_PLANES_PER_CHAMBER must be
+*     For this loop to work, sdc_planes_per_chamber must be
 *     the number of planes per chamber.  (And all chambers must have the
 *     same number of planes.)
 *
-        do ip=(ich-1)*SDC_PLANES_PER_CHAMBER+1,
-     $       ich*SDC_PLANES_PER_CHAMBER
-          sncham_hits(ich)=sncham_hits(ich)+SDC_HITS_PER_PLANE(ip)
+        do ip=(ich-1)*sdc_planes_per_chamber+1,
+     $       ich*sdc_planes_per_chamber
+          sncham_hits(ich)=sncham_hits(ich)+sdc_hits_per_plane(ip)
         enddo
-        if(sncham_hits(ich).gt.2 .and. sncham_hits(ich).lt.
+        if(sncham_hits(ich).ge.smin_hit(ich) .and. sncham_hits(ich).lt.
      $       smax_pr_hits(ich))  then
           do i=ihit+1,ihit+sncham_hits(ich)
             hit_number(i)=i
           enddo
           call find_space_points(sncham_hits(ich),hit_number(ihit+1),
-     &         SDC_WIRE_CENTER(ihit+1),
-     &         SDC_PLANE_NUM(ihit+1),sspace_point_criterion(ich),
+     &         sdc_wire_center(ihit+1),
+     &         sdc_plane_num(ihit+1),sspace_point_criterion(ich),
      &         sxsp(1),sysp(1),smax_space_points,
      &         snspace_points(ich), space_points, space_point_hits)
 *    
@@ -124,10 +126,6 @@
         snspace_points_tot = snspace_points_tot+ snspace_points(ich)
         ihit = ihit + sncham_hits(ich)
       enddo
-
-      do plane=1,SDC_NUM_PLANES
-        sdc_sing_wcenter(plane)=-100.
-      enddo
 *
 *     Now we know rough hit positions in the chambers so we can
 *     Make wire velocity drift time corrections for each hit in the space
@@ -143,29 +141,24 @@
 *     write(sluno,*)x_pos,x_drifttime_corr,y_pos,y_drifttime_corr
             do ihit=1,sspace_point_hits(isp,1)
               hit = sspace_point_hits(isp,ihit+2)
-              plane = SDC_PLANE_NUM(hit)
-              wire = SDC_WIRE_NUM(hit)
+              plane = sdc_plane_num(hit)
+              wire = sdc_wire_num(hit)
               if(plane.eq.2 .or. plane.eq.5 .or. 
      &             plane.eq.8 .or. plane.eq.11 .or. ! Y or Y'  plane
      &             plane.eq.14 .or. plane.eq.17) then
-                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) - y_drifttime_corr
+                sdc_drift_time(hit)=sdc_drift_time(hit) - y_drifttime_corr
               else                      ! X,U,V,X' plane
-                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) - x_drifttime_corr
+                sdc_drift_time(hit)=sdc_drift_time(hit) - x_drifttime_corr
               endif
-              SDC_DRIFT_DIS(hit) = s_drift_dist_calc
-     &             (plane,wire,SDC_DRIFT_TIME(hit))
-*     write(sluno,*)ihit,hit,SDC_DRIFT_TIME(hit),SDC_DRIFT_DIS(hit)
+              sdc_drift_dis(hit) = s_drift_dist_calc
+     &             (plane,wire,sdc_drift_time(hit))
+*     write(sluno,*)ihit,hit,sdc_drift_time(hit),sdc_drift_dis(hit)
 
 * djm 8/25/94
 * Stuff drift time and distance into registered variables for histogramming and tests.
 * In the case of two separated hits per plane, the last one will be histogrammed.
-
-              sdc_sing_drifttime(plane) = SDC_DRIFT_TIME(hit)
-              sdc_sing_driftdis(plane) = SDC_DRIFT_DIS(hit)
-* djm 9/16/94
-* add some wire positions for each plane 
-              sdc_sing_wcenter(plane) = SDC_WIRE_CENTER(hit)
-
+              sdc_sing_drifttime(plane) = sdc_drift_time(hit)
+              sdc_sing_driftdis(plane) = sdc_drift_dis(hit)
             enddo
           enddo
         else                            ! Brookhaven Chambers
@@ -197,41 +190,36 @@
 *     write(sluno,*)x_pos,x_drifttime_corr,y_pos,y_drifttime_corr
             do ihit=1,sspace_point_hits(isp,1)
               hit = sspace_point_hits(isp,ihit+2)
-              plane = SDC_PLANE_NUM(hit)
-              wire = SDC_WIRE_NUM(hit)
+              plane = sdc_plane_num(hit)
+              wire = sdc_wire_num(hit)
               if(plane.eq.1) then
-                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) -
+                sdc_drift_time(hit)=sdc_drift_time(hit) -
      $               sdc_u_central_time + u_drifttime_corr
               else if (plane.eq.2) then
-                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) -
+                sdc_drift_time(hit)=sdc_drift_time(hit) -
      $               sdc_u_central_time - u_drifttime_corr
               else if(plane.eq.3) then
-                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) -
+                sdc_drift_time(hit)=sdc_drift_time(hit) -
      $               sdc_x_central_time + x_drifttime_corr
               else if(plane.eq.4) then
-                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) -
+                sdc_drift_time(hit)=sdc_drift_time(hit) -
      $               sdc_x_central_time - x_drifttime_corr
               else if(plane.eq.5) then
-                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) -
+                sdc_drift_time(hit)=sdc_drift_time(hit) -
      $               sdc_v_central_time + v_drifttime_corr
               else if(plane.eq.6) then
-                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) -
+                sdc_drift_time(hit)=sdc_drift_time(hit) -
      $               sdc_v_central_time - v_drifttime_corr
               endif
-              SDC_DRIFT_DIS(hit) = s_drift_dist_calc
-     &             (plane,wire,SDC_DRIFT_TIME(hit))
-*     write(sluno,*)ihit,hit,SDC_DRIFT_TIME(hit),SDC_DRIFT_DIS(hit)
+              sdc_drift_dis(hit) = s_drift_dist_calc
+     &             (plane,wire,sdc_drift_time(hit))
+*     write(sluno,*)ihit,hit,sdc_drift_time(hit),sdc_drift_dis(hit)
 
 * djm 8/25/94
 * Stuff drift time and distance into registered variables for histogramming and tests.
 * In the case of two separated hits per plane, the last one will be histogrammed.
-
-              sdc_sing_drifttime(plane) = SDC_DRIFT_TIME(hit)
-              sdc_sing_driftdis(plane) = SDC_DRIFT_DIS(hit)
-* djm 9/16/94
-* add some wire positions for each plane 
-              sdc_sing_wcenter(plane) = SDC_WIRE_CENTER(hit)
-
+              sdc_sing_drifttime(plane) = sdc_drift_time(hit)
+              sdc_sing_driftdis(plane) = sdc_drift_dis(hit)
             enddo
           enddo
         endif
