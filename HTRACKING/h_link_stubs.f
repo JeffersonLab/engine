@@ -11,7 +11,10 @@
 *
 *     d.f. geesaman           17 January 1994
 * $Log$
-* Revision 1.1  1994/02/19 06:15:28  cdaq
+* Revision 1.2  1994/06/06 16:37:57  cdaq
+* Add switch to include single stub tracks
+*
+* Revision 1.1  1994/02/19  06:15:28  cdaq
 * Initial revision
 *
 *
@@ -23,6 +26,8 @@
 *                       or if there is another point in same chamber
 *                          make a copy containing isp2 rather than 
 *                            other point in same chamber
+*                  5) If hsingle_stub is set, make a track of all single
+*                     stubs.
 *
       implicit none
       include "gen_data_structures.cmn"
@@ -48,11 +53,12 @@
       integer*4  tryflag             ! flag to loop over rest of points
       integer*4  newtrack            ! make a new track
 *
-*     loop over all pairs of space points
       ABORT= .FALSE.
       err=':'
       HNTRACKS_FP=0
-      if(hnspace_points_tot.ge.2) then   ! return if less than 2 space points
+      if(hsingle_stub.eq.0 ) then
+*     loop over all pairs of space points
+       if(hnspace_points_tot.ge.2) then   ! return if less than 2 space points
         do isp1=1,hnspace_points_tot-1   ! loop over all points
 *     is this point all ready associated with a track
          tryflag=1
@@ -140,7 +146,19 @@
           enddo                             ! end loop over new space points
          endif                              ! end test on tryflag
         enddo                               ! end outer loop over space points
-      endif                                 ! end if on <2 space points
+       endif                                ! end if on <2 space points
+      else                                  ! if hsingle_stub .ne. 0
+*      when hsingle_stub is set, make each space point a track
+*      This will have poor resolution but may be appropriate for debugging
+*
+        do isp1=1,hnspace_points_tot        ! loop over all points
+           if(HNTRACKS_FP.lt.HNTRACKS_MAX) then    ! are there too many 
+              HNTRACKS_FP=HNTRACKS_FP+1   ! increment the number of tracks
+              track_space_points(HNTRACKS_FP,1)= 1
+              track_space_points(HNTRACKS_FP,2)= isp1
+           endif                    ! end if on too many tracks
+        enddo                               ! end loop over all space points
+      endif                                 ! end test on hsingle_stub 
 *     now list all hits on a track
       if(HNTRACKS_FP.gt.0)   then
         do itrack=1,HNTRACKS_FP             ! loop over all tracks
@@ -163,3 +181,8 @@
       endif
       return
       end
+*********
+*     mode: Fortran
+*     fortran-if-indent: 1
+*     fortran-do-indent: 1
+*     End:
