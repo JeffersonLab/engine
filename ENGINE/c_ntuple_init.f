@@ -65,6 +65,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.9.4.2  2003/08/22 15:04:40  xu
+* add more contents in c_ntuple
+*
 * Revision 1.9.4.1  2003/03/05 22:51:31  xu
 * new variables
 *
@@ -340,6 +343,38 @@ c      m= m+1
       c_ntuple_tag(m)= 'gamma_v'
 * added more thing for fpi analysis
 *     xucc added end
+* added more thing for fpi analysis
+*     xucc added end
+
+* on June 21,2003, xucc added following for online purpose
+      m=m+1
+      c_Ntuple_tag(m)= 'scal_x'
+      m=m+1
+      c_ntuple_tag(m)= 'scal_y'
+      m=m+1
+      c_ntuple_tag(m)= 'hsmass2'
+      m=m+1
+      c_ntuple_tag(m)= 'haero_pos_npe_sum'
+      m=m+1
+      c_ntuple_tag(m)= 'haero_neg_npe_sum'
+      m=m+1
+      c_ntuple_tag(m)= 'hceradc1'
+      m=m+1
+      c_ntuple_tag(m)= 'hceradc2'
+      m=m+1
+      c_ntuple_tag(m)= 'hcersx'
+      m=m+1
+      c_ntuple_tag(m)= 'coinpathcor'
+      m=m+1
+      c_ntuple_tag(m)= 'sszbeam'
+      m=m+1
+      c_ntuple_tag(m)= 'hszbeam'
+      m=m+1
+      c_ntuple_tag(m)= 'ctphix'
+      m=m+1
+      c_ntuple_tag(m)= 'ctphiy'
+
+* end of xucc adding on June 21,2003
 
 
 *      m=m+1
@@ -391,3 +426,6 @@ c      m= m+1
 *
       RETURN
       END  
+
+
+
