@@ -5,7 +5,10 @@
 *     space point.
 *     d. f. geesaman           17 January 1994
 * $Log$
-* Revision 1.8  1995/05/22 19:39:14  cdaq
+* Revision 1.9  1995/07/19 20:12:46  cdaq
+* (SAW) Declear jibset for f2c compatibility
+*
+* Revision 1.8  1995/05/22  19:39:14  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.7  1995/04/06  19:29:23  cdaq
@@ -38,6 +41,7 @@
 *
       externaljbit                            ! cernlib bit routine
       integer*4 jbit
+      integer*4 jibset                  ! Declare to help f2c
 *
 *     local variables
 *
