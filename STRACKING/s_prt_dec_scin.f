@@ -10,7 +10,13 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
-* Revision 1.3  1994/11/23 13:56:18  cdaq
+* Revision 1.4  1995/02/10 19:57:47  cdaq
+* (JRA) Make sscin_all_adc_pos/neg floating
+*
+* Revision 1.4  1995/02/10  19:13:11  cdaq
+* (JRA) Make sscin_all_adc_pos/neg floating
+*
+* Revision 1.3  1994/11/23  13:56:18  cdaq
 * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.2  1994/05/13  03:22:48  cdaq
@@ -44,7 +50,7 @@
       if(SSCIN_TOT_HITS.GT.0) then
         write(sluno,'('' Num  Plane    Counter        ADC_POS'',
      &       '' ADC_NEG  TDC_POS  TDC_NEG'')')
-        write(sluno,'(1x,i2,2x,i3,7x,i4,8x,4i8)')
+        write(sluno,'(1x,i2,2x,i3,7x,i4,8x,2f8.2,2i8)')
      &       (j,SSCIN_PLANE_NUM(j),SSCIN_COUNTER_NUM(j),
      &       SSCIN_ADC_POS(j),SSCIN_ADC_NEG(j),
      &       SSCIN_TDC_POS(j),SSCIN_TDC_NEG(j),
