@@ -16,6 +16,9 @@
 # 
 #  Revision History:
 #    $Log$
+#    Revision 1.4  2004/07/07 21:07:21  saw
+#    Move CODA routine from libctp to libcoda
+#
 #    Revision 1.3  1999/02/24 15:27:43  saw
 #    Add to CVS tree
 #
@@ -44,14 +47,14 @@ include ../../etc/Makefile
 
   install-dirs := lib #include
 
-  lib_targets      = libctp.a(evio.o) libctp.a(swap_util.o) \
-	libctp.a(ceMsgLib.o) libctp.a(ceMsgTbl.o)
+  lib_targets      = libcoda.a(evio.o) libcoda.a(swap_util.o) \
+	libcoda.a(ceMsgLib.o) libcoda.a(ceMsgTbl.o)
 #  include_targets  = evfile_msg.h
 
   sources          = evio.c evtest.c swap_util.c ceMsgLib.c ceMsgTbl.c
 
 ifeq ($(ARCH),Linux)
-  lib_targets := $(lib_targets) libctp.a(misc.o)
+  lib_targets := $(lib_targets) libcoda.a(misc.o)
   sources := $(sources) misc.c
 endif
 
