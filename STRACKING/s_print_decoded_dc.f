@@ -10,7 +10,10 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
-* Revision 1.1  1994/03/24 20:29:16  cdaq
+* Revision 1.2  1995/04/06 19:38:33  cdaq
+* (JRA) Remove SDC_WIRE_COORD
+*
+* Revision 1.1  1994/03/24  20:29:16  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -45,11 +48,11 @@
          write(sluno,'(7x,18i4)')
      &      (SDC_HITS_PER_PLANE(j),j=1,sdc_num_planes)
          write(sluno,'('' Num  Plane     Wire    Wire Center '',
-     &      ''TDC Value DRIFT TIME DRIFT DIST COORD'')')
-         write(sluno,'(1x,i2,2x,i3,7x,i4,5x,F10.5,i8,2x,3F10.5)')       
+     &      ''TDC Value DRIFT TIME DRIFT DIST'')')
+         write(sluno,'(1x,i2,2x,i3,7x,i4,5x,F10.5,i8,2x,2F10.5)')       
      &     (j,SDC_PLANE_NUM(j),SDC_WIRE_NUM(j),
      &        SDC_WIRE_CENTER(j),SDC_TDC(j),SDC_DRIFT_TIME(j),
-     &        SDC_DRIFT_DIS(j),SDC_WIRE_COORD(j),
+     &        SDC_DRIFT_DIS(j),
      &        j=1,SDC_TOT_HITS)    
        endif
        RETURN
