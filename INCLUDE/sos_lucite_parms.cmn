@@ -1,0 +1,39 @@
+*
+* $Log$
+* Revision 1.1  1996/10/02 18:58:07  saw
+* Initial revision
+*
+*%%   include 'sos_data_structures.cmn'
+
+*
+*      CTPTYPE = parm
+*
+      real*4 sluc_pos_gain(smax_luc_hits)
+      real*4 sluc_neg_gain(smax_luc_hits)
+
+*
+*      CTPTYPE = event
+*
+      integer*4 sluc_tot_good_hits
+      integer*4 sluc_rawadc_neg(smax_luc_hits)
+      integer*4 sluc_rawadc_pos(smax_luc_hits)
+      real*4 sluc_pos_npe(smax_luc_hits)
+      real*4 sluc_neg_npe(smax_luc_hits)
+      real*4 sluc_sum(smax_luc_hits)
+      real*4 sluc_neg_npe_sum
+      real*4 sluc_pos_npe_sum
+      real*4 sluc_npe_sum
+
+
+      common /luci_calib/
+     &  sluc_tot_good_hits,
+     &  sluc_pos_npe,
+     &  sluc_neg_npe,
+     &  sluc_pos_gain,
+     &  sluc_neg_gain,
+     &  sluc_neg_npe_sum,
+     &  sluc_pos_npe_sum,
+     &  sluc_npe_sum,
+     &  sluc_sum,
+     &  sluc_rawadc_neg,
+     &  sluc_rawadc_pos
