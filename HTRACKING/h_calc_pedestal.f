@@ -1,6 +1,9 @@
       subroutine h_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.13.2.3  2003/04/09 16:56:40  cdaq
+* Modified to force haero_new_threshold_neg = 400 and pos = 400 (MKJ)
+*
 * Revision 1.13.2.2  2003/04/09 02:45:33  cdaq
 * hardwire gas cerenkov thresholds to zero
 *
@@ -229,7 +232,9 @@
      &            haero_new_ped_pos(pmt)**2
         haero_new_rms_pos(pmt) = sqrt(max(0.,sig2))
         haero_new_threshold_pos(pmt) = haero_new_ped_pos(pmt)+15.
-
+c
+        haero_new_threshold_pos(pmt) = 400. ! mkj 4/9/03 force to 400 
+c
 *note channels with 2 sigma difference from parameter file values.
 * JRA - don't have the necessary variables (e.g. haero_all_ped_pos),
 * and as far as I can tell, this code doesn't work for any detector,
@@ -248,6 +253,8 @@
      &            haero_new_ped_neg(pmt)**2
         haero_new_rms_neg(pmt) = sqrt(max(0.,sig2))
         haero_new_threshold_neg(pmt) = haero_new_ped_neg(pmt)+15.
+c
+        haero_new_threshold_neg(pmt) = 400. ! mkj 4/9/03 force to 400 
  
         if (num.gt.haero_min_peds .and. haero_min_peds.ne.0) then
           haero_neg_ped_mean(pmt) = haero_new_ped_neg(pmt)
@@ -298,14 +305,17 @@
 * WRITE THRESHOLDS TO FILE FOR HARDWARE SPARCIFICATION
 *
       if (h_threshold_output_filename.ne.' ') then
+
 * file opened in g_calc_beam_pedestal.f -- if needed
 !        file=h_threshold_output_filename
 !        call g_sub_run_number(file, gen_run_number)
 !        open(unit=SPAREID,file=file,status='unknown')
+
+
  
         write(SPAREID,*) '# This is the ADC threshold file generated automatically'
         write(SPAREID,*) '# from the pedestal data from run number ',gen_run_number
-        write(SPAREID,*) 'Slot 13 (beamline stuff) is hardwired in h_calc_pedestal.f'
+        write(SPAREID,*) '# Slot 13 (beamline stuff) is hardwired in h_calc_pedestal.f'
         write(SPAREID,*) 'slot=  13'
         do ind=1,16
            write(SPAREID,*) '    0'    !BPM and raster stuff (4blank,2x4BPM,4raster)
@@ -319,6 +329,9 @@
         do ind=33,64
            write(SPAREID,*) ' 4000'
         enddo
+
+
+
 
         roc=1
 
