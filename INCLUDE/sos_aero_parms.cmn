@@ -1,0 +1,32 @@
+* $Log$
+* Revision 1.1  1996/04/30 13:44:22  saw
+* Initial revision
+*
+*%%   include 'sos_data_structures.cmn'
+
+*
+*      CTPTYPE = parm
+*
+      real*4 saer_pos_gain(smax_aer_hits)
+      real*4 saer_neg_gain(smax_aer_hits)
+
+*
+*      CTPTYPE = event
+*
+      integer*4 saer_tot_good_hits
+
+      real*4 saer_pos_npe(smax_aer_hits)
+      real*4 saer_neg_npe(smax_aer_hits)
+      real*4 saer_neg_npe_sum
+      real*4 saer_pos_npe_sum
+      real*4 saer_npe_sum
+
+      common /aero_calib/
+     &  saer_tot_good_hits,
+     &  saer_pos_npe,
+     &  saer_neg_npe,
+     &  saer_pos_gain,
+     &  saer_neg_gain,
+     &  saer_neg_npe_sum,
+     &  saer_pos_npe_sum,
+     &  saer_npe_sum
