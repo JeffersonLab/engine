@@ -1,6 +1,12 @@
       subroutine g_calc_beam_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.4  2003/09/05 15:33:55  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.3.2.1  2003/04/09 16:53:40  cdaq
+* Modified so that it does not write out slot = 15 to threshold file (MKJ)
+*
 * Revision 1.3  1996/12/12 22:10:20  saw
 * (SAW) Remove disabling of inputs  3 and 4 in slot 15 (Adds the slow
 * raster)
@@ -23,12 +29,13 @@ c
       integer*4 imisc
       integer*4 ind,ihit
       integer*4 roc,slot
-      integer*4 signalcount
+      integer*4 signalcount,istart
       real*4 sig2
       real*4 num
       character*132 file
 *
       INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'gen_decode_common.cmn'
       INCLUDE 'gen_run_info.cmn'
       INCLUDE 'hms_filenames.cmn'
 *
@@ -80,7 +87,11 @@ c
 
         slot=15
         signalcount=1
+      istart=g_decode_slotpointer(roc,slot)
+      if (istart.ne.-1) then   !uninstrumented slot.
         write(SPAREID,*) 'slot=',slot
+      endif
+
 
 ccc        gmisc_dum_adc_threshold(3,2)=4000   !empty slots after blm.
 ccc        gmisc_dum_adc_threshold(4,2)=4000

@@ -5,6 +5,12 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23  2003/09/05 15:31:23  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.22.2.1  2003/07/24 13:08:11  cdaq
+* Changes made for adding scaler ROC 5 during Baryon exp. (MKJ for SAW)
+*
 * Revision 1.22  2002/09/25 14:40:03  jones
 *    Eliminate commented out diagnostic messages and the variables
 *      buffer,iscaler,nscalers associated with them.
@@ -146,8 +152,8 @@
         slot = jiand(JISHFT(evfrag(pointer),-27),'1F'X)
         if(slot.ne.oslot.or.firsttime) then
           if (slot.le.0 .or. slot.ge.26 .or. roc.le.0 .or. roc.ge.9) then
-            write (6,'(a,i2,i3,z10,a,i5,a,i8)') 'roc,slot,evfrag=',roc,
-     &           slot,evfrag(pointer),
+            write (6,'(a,i3,i3,i3,z10,a,i5,a,i8)') 'roc,slot,oslot,evfrag=',roc,
+     &           slot,oslot,evfrag(pointer),
      $           '(p=',pointer,') for event #',gen_event_id_number
             write (6,'(a,i3)') '  Probably after slot',jiand(JISHFT(evfrag(pointer-1),-27),'1F'X)
             pointer = pointer + 1

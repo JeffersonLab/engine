@@ -1,5 +1,12 @@
       subroutine g_examine_epics_event
 * $Log$
+* Revision 1.5  2003/09/05 15:28:05  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.4.2.1  2003/08/14 00:17:55  cdaq
+* Modifly so that gdebugdumpepics=1,2,3 means dump 30 sec epics varaibles,
+* 2 sec epics variables, or both. (mkj)
+*
 * Revision 1.4  1999/06/10 14:41:03  csa
 * (JRA) Added dump for numevent up to 10
 *
@@ -20,24 +27,34 @@
       equivalence (craw(5), buffer)
       integer i,j,evlen
       integer g_important_length,find_char
+      integer evtype
       integer numevent
       logical dump_event
+      integer*4 jishft
 
       include 'gen_craw.cmn'
       include 'gen_run_info.cmn'
       include 'gen_filenames.cmn'
-
+*
+* event type =131 30 second epics read 
+* event type =132  2 second epics read
+*  when  gdebugdumpepics=1,2,3 dump 131,132, both
 *--------------------------------------------------------
 
       numevent = numevent + 1
 
       if (g_epics_output_filename.ne.' ' .and.
-     &   (gdebugdumpepics.eq.1 .or. numevent.le.10)) then  !write out event
+     &   (gdebugdumpepics.ge.1 )) then  !write out event
         dump_event = .true.
       else
         dump_event = .false.
+        return
       endif
-
+c
+      evtype = jishft(craw(2),-16)
+      if (evtype-gdebugdumpepics .gt. 130) dump_event = .false.
+  
+c
       if (dump_event) write (G_LUN_EPICS_OUTPUT,*) 'epics event #',numevent
 
       if (craw(3)-1.le.0) then

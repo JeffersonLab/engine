@@ -11,6 +11,12 @@
 *-   Created  30-Nov-1995   John Arrington, Caltech.
 *-
 * $Log$
+* Revision 1.4  2003/09/05 15:37:28  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.3.2.1  2003/04/09 02:49:42  cdaq
+* Update code to look for prescale factors in go_info event from ANY crate, also have it skip the nped=1000 line when extracting prescale factors
+*
 * Revision 1.3  1999/11/04 20:35:16  saw
 * Linux/G77 compatibility fixes
 *
@@ -43,6 +49,7 @@
       character*80 prescale_string
       character*4 tmpstring
       integer*4 ilo,prescale_len
+      integer*4 nped
 *     functions
       integer g_important_length
 *
@@ -94,8 +101,14 @@ c            write(6,*) 'g_threshold_readback(',ind,roc,slot,')=',g_threshold_re
 c	    write(6,*) 'subpntr=',subpntr
           enddo   !NEED CHECK FOR NEXT HEADER.
           pointer=pointer+subpntr
-        else if (roc.eq.0 .and.
-     &           jieor(jishft(jiand(subheader,'FF0000'x),-16),'02'x).eq.0) then
+*
+* Used to look at TS0 (roc=0) for prescales, but for daq03, there is
+*          no go_info event for TS0, so just take any crate with prescales.
+*
+*        else if (roc.eq.0 .and.
+*     &           jieor(jishft(jiand(subheader,'FF0000'x),-16),'02'x).eq.0) then
+*
+         else if (jieor(jishft(jiand(subheader,'FF0000'x),-16),'02'x).eq.0) then
 c        write(6,*) 'PRESCALE FACTORS'
           found_prescale=.true.
           do ind=2,sublen
@@ -114,13 +127,14 @@ c        write(6,*) '  NOT THRESHOLDS,NOT PS FACTORS.  WHO CARES.'
       if (found_prescale .and. prescale_len.ne.0) then
         prescale_len = g_important_length(prescale_string(1:prescale_len))
         ilo=index(prescale_string(1:prescale_len),'=')+1
+        read(prescale_string(ilo:prescale_len),*,err=998) nped
+        ilo=index(prescale_string(ilo+1:prescale_len),'=')+ilo+1
         read(prescale_string(ilo:prescale_len),*,err=998) gps1
         ilo=index(prescale_string(ilo+1:prescale_len),'=')+ilo+1
         read(prescale_string(ilo:prescale_len),*,err=998) gps2
         ilo=index(prescale_string(ilo+1:prescale_len),'=')+ilo+1
         read(prescale_string(ilo:prescale_len),*,err=998) gps3
-
-c      write(6,*) 'gps1=',gps1,'gps2=',gps2,'gps3=',gps3
+c      write(6,*) 'gps1=',gps1,' gps2=',gps2,' gps3=',gps3
       endif
 *
       goto 999
