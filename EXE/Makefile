@@ -1,5 +1,8 @@
-# Comment out the following line if you want to include the CTP Root stuff.
-ROOTSYS=
+# To disable compilation of CTP Root Trees, make sure that the environment
+# variable ROOTSYS is undefined, or uncomment "#ROOTSYS=" line below.
+# The same must be done in CTP/Makefile.Unix
+
+# ROOTSYS=
 
 
 disp_objs = glvolu.o 
