@@ -4,6 +4,9 @@
 *
 *	4-Oct-1994 K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.2  1996/01/17 16:32:49  cdaq
+* (SAW) Change an include file name
+*
 * Revision 1.1  1995/03/14 21:25:45  cdaq
 * Initial revision
 *
@@ -19,7 +22,7 @@
 *
       integer ierr
 *
-      INCLUDE 'gen_display_info.cmn'
+      INCLUDE 'gen_one_ev_info.cmn'
       INCLUDE 'gen_routines.dec'
 *
 *--------------------------------------------------------

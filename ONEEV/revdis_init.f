@@ -1,6 +1,9 @@
       subroutine revdis_init(ABORT,err)
 *--------------------------------------------------------
 * $Log$
+* Revision 1.3  1996/01/17 16:34:52  cdaq
+* (SAW) Change an include file name
+*
 * Revision 1.2  1995/07/28 18:08:03  cdaq
 * (SAW) Cosmetic changes
 *
@@ -18,11 +21,7 @@
       logical ABORT
       character*(*) err
 *
-*      INCLUDE 'one_ev_io.cmn'
-      INCLUDE 'params.inc'
-      INCLUDE 'gen_display_cern.cmn'
-*
-      INCLUDE 'gen_display_info.cmn'
+      INCLUDE 'gen_one_ev_info.cmn'
       INCLUDE 'gen_routines.dec'
 *
       integer size
