@@ -15,6 +15,9 @@
 * h_scin_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
+* Revision 1.7.2.2  2003/04/03 14:02:13  cdaq
+* Remove extra enddo (JRA)
+*
 * Revision 1.7.2.1  2003/04/02 22:26:55  cdaq
 * added some extra scint. effic calculations (from oct 1999 online) - JRA
 *
@@ -161,8 +164,6 @@
             hneggood(pln,cnt)=hneggood(pln,cnt)+1
           endif
         endif
-
-      enddo                 !loop over hsnum_pmt_hit
 
 *  Determine if one or both PMTs had a good tdc.
         if (hgood_tdc_pos(hsnum_fptrack,nhit) .and. 
