@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.5  1995/01/27 21:11:04  cdaq
+# Revision 1.6  1995/03/14 21:04:40  cdaq
+# # (SAW) Add -f switch on include file copy commands
+#
+# Revision 1.5  1995/01/27  21:11:04  cdaq
 # (SAW) Remove RCS from include file rules
 #
 # Revision 1.4  1994/08/18  04:36:28  cdaq
@@ -34,21 +37,13 @@ sources = $(libsources)
 lib_targets := $(patsubst %.f, libutils.a(%.o), $(libsources))
 
 install-dirs := lib
-ifeq ($(ARCH),HPUX)
-##  lib_targets = libutils.a
-  bin_targets =
-endif
-
-ifeq ($(ARCH),ULTRIX)
-##  lib_targets = libutils.a
-  bin_targets =
-endif
+bin_targets =
 
 default:
 	@echo "nothing to make"
 
 %.cmn :: ../INCLUDE/%.cmn
-	cp $< $@
+	cp -f $< $@
 
 include $(sources:.f=.d)
 
