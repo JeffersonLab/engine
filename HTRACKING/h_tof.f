@@ -23,7 +23,11 @@
 * the correction parameters.
 *
 * $Log$
-* Revision 1.12  1995/02/02 16:35:25  cdaq
+* Revision 1.13  1995/02/10 18:59:41  cdaq
+* (JRA) Add track index to hgood_plane_time, hgood_scin_time, hgood_tdc_pos,
+* and  hgood_tdc_neg
+*
+* Revision 1.12  1995/02/02  16:35:25  cdaq
 * (JRA) Zero out some variables at start, minph variables now per pmt,
 *       hscin_adc_pos/neg change to floats.
 *
@@ -116,15 +120,15 @@
         hnum_pmt_hit(trk) = 0
 
         do plane = 1 , hnum_scin_planes
-          hgood_plane_time(plane) = .false.
+          hgood_plane_time(trk,plane) = .false.
           sum_plane_time(plane) = 0.
           num_plane_time(plane) = 0
         enddo
 
         do hit = 1 , hscin_tot_hits
-          hgood_scin_time(hit) = .false.
-          hgood_tdc_pos(hit) = .false.
-          hgood_tdc_neg(hit) = .false.
+          hgood_scin_time(trk,hit) = .false.
+          hgood_tdc_pos(trk,hit) = .false.
+          hgood_tdc_neg(trk,hit) = .false.
           hscin_time(hit) = 0
           hscin_sigma(hit) = 0
         enddo
@@ -160,7 +164,7 @@
      1           hscin_tdc_pos(hit) .le. hscin_tdc_max) then
 
 **    Calculate time for each tube with a good tdc. 'pos' side first.
-              hgood_tdc_pos(hit) = .true.
+              hgood_tdc_pos(trk,hit) = .true.
               hntof = hntof + 1
               adc_ph = hscin_adc_pos(hit)
               path = hscin_pos_coord(hit) - hscin_long_coord(hit)
@@ -180,7 +184,7 @@
             if (hscin_tdc_neg(hit).ge.hscin_tdc_min .and. !good tdc
      1           hscin_tdc_neg(hit).le.hscin_tdc_max) then
 
-              hgood_tdc_neg(hit) = .true.
+              hgood_tdc_neg(trk,hit) = .true.
               hntof = hntof + 1
               adc_ph = hscin_adc_neg(hit)
               path = hscin_long_coord(hit) - hscin_neg_coord(hit)
@@ -194,30 +198,30 @@
             endif
 
 **    Calculate ave time for scintillator and error.
-            if (hgood_tdc_pos(hit)) then
-              if (hgood_tdc_neg(hit)) then
+            if (hgood_tdc_pos(trk,hit)) then
+              if (hgood_tdc_neg(trk,hit)) then
                 hscin_time(hit) = 
      1               (hscin_neg_time(hit) + hscin_pos_time(hit))/2.
                 hscin_sigma(hit) = sqrt(hscin_neg_sigma(hit)**2 + 
      1               hscin_pos_sigma(hit)**2)/2.
-                hgood_scin_time(hit) = .true.
+                hgood_scin_time(trk,hit) = .true.
                 hntof_pairs = hntof_pairs + 1
               else
                 hscin_time(hit) = hscin_pos_time(hit)
                 hscin_sigma(hit) = hscin_pos_sigma(hit)
-*                hgood_scin_time(hit) = .true.
-                hgood_scin_time(hit) = .false.
+*                hgood_scin_time(trk,hit) = .true.
+                hgood_scin_time(trk,hit) = .false.
               endif
             else                        ! if hgood_tdc_neg = .false.
-              if (hgood_tdc_neg(hit)) then
+              if (hgood_tdc_neg(trk,hit)) then
                 hscin_time(hit) = hscin_neg_time(hit)
                 hscin_sigma(hit) = hscin_neg_sigma(hit)
-*                hgood_scin_time(hit) = .true.
-                hgood_scin_time(hit) = .false.
+*                hgood_scin_time(trk,hit) = .true.
+                hgood_scin_time(trk,hit) = .false.
               endif
             endif
 c     Get time at focal plane
-            if (hgood_scin_time(hit)) then
+            if (hgood_scin_time(trk,hit)) then
 * for electrons:
               hscin_time_fp(hit) = hscin_time(hit) -
      &             (hscin_zpos(hit)/30.) * sqrt(1. + hxp_fp(trk)
@@ -229,20 +233,20 @@ c     Get time at focal plane
               num_plane_time(plane)=num_plane_time(plane)+1
               hnum_scin_hit(trk) = hnum_scin_hit(trk) + 1
               hscin_hit(trk,hnum_scin_hit(trk)) = hit
-              if (hgood_tdc_pos(hit) .and. hgood_tdc_neg(hit)) then
+              if (hgood_tdc_pos(trk,hit) .and. hgood_tdc_neg(trk,hit)) then
                 hnum_pmt_hit(trk) = hnum_pmt_hit(trk) + 2
               else
                 hnum_pmt_hit(trk) = hnum_pmt_hit(trk) + 1
               endif
-              if (hgood_tdc_pos(hit)) then
-                if (hgood_tdc_neg(hit)) then
+              if (hgood_tdc_pos(trk,hit)) then
+                if (hgood_tdc_neg(trk,hit)) then
                   hdedx(trk,hnum_scin_hit(trk)) = sqrt(max(0.,
      $                 hscin_adc_pos(hit)*hscin_adc_neg(hit)))
                 else
                   hdedx(trk,hnum_scin_hit(trk))=max(0.,hscin_adc_pos(hit))
                 endif
               else
-                if (hgood_tdc_neg(hit)) then
+                if (hgood_tdc_neg(trk,hit)) then
                   hdedx(trk,hnum_scin_hit(trk))=max(0.,hscin_adc_neg(hit))
                 else
                   hdedx(trk,hnum_scin_hit(trk)) = 0.
@@ -253,8 +257,8 @@ c     Get time at focal plane
           endif                 !end of 'if scintillator was on the track'
           
 **    See if there are any good time measurements in the plane.
-          if (hgood_scin_time(hit)) then
-            hgood_plane_time(plane) = .true. !still in loop over hits.
+          if (hgood_scin_time(trk,hit)) then
+            hgood_plane_time(trk,plane) = .true. !still in loop over hits.
           endif
           
         enddo                           !end of loop over hit scintillators
@@ -262,15 +266,15 @@ c     Get time at focal plane
 
 c**    For now, require at least 3 planes, to avoid bad fits.
 c        numplanes=0
-c        if (hgood_plane_time(1)) numplanes=numplanes+1
-c        if (hgood_plane_time(2)) numplanes=numplanes+1
-c        if (hgood_plane_time(3)) numplanes=numplanes+1
-c        if (hgood_plane_time(4)) numplanes=numplanes+1
+c        if (hgood_plane_time(trk,1)) numplanes=numplanes+1
+c        if (hgood_plane_time(trk,2)) numplanes=numplanes+1
+c        if (hgood_plane_time(trk,3)) numplanes=numplanes+1
+c        if (hgood_plane_time(trk,4)) numplanes=numplanes+1
 c        if (numplanes.ge.3) then
 
 **    Fit beta if there are enough time measurements (one upper, one lower)
-        if ((hgood_plane_time(1) .or. hgood_plane_time(2)) .and.
-     1       (hgood_plane_time(3) .or. hgood_plane_time(4))) then
+        if ((hgood_plane_time(trk,1) .or. hgood_plane_time(trk,2)) .and.
+     1       (hgood_plane_time(trk,3) .or. hgood_plane_time(trk,4))) then
           call h_tof_fit(abort,errmsg,trk) !fit velocity of particle
           if (abort) then
             call g_prepend(here,errmsg)
