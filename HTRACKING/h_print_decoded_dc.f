@@ -10,7 +10,10 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
-* Revision 1.1  1994/03/24 20:15:18  cdaq
+* Revision 1.2  1995/01/27 19:10:23  cdaq
+* (JRA) Trivial write statement format changes
+*
+* Revision 1.1  1994/03/24  20:15:18  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -45,12 +48,11 @@
          write(hluno,'(7x,18i4)')
      &      (HDC_HITS_PER_PLANE(j),j=1,hdc_num_planes)
          write(hluno,'('' Num  Plane     Wire    Wire Center '',
-     &      ''TDC Value DRIFT TIME DRIFT DIST COORD'')')
-         write(hluno,'(1x,i2,2x,i3,7x,i4,5x,F10.5,i8,2x,3F10.5)')       
-     &     (j,HDC_PLANE_NUM(j),HDC_WIRE_NUM(j),
+     &      ''TDC Value DRIFT TIME DRIFT DIST'')')
+         write(hluno,'(1x,i2,2x,i3,7x,i4,5x,F10.5,i8,2x,2F10.5)')
+     &        (j,HDC_PLANE_NUM(j),HDC_WIRE_NUM(j),
      &        HDC_WIRE_CENTER(j),HDC_TDC(j),HDC_DRIFT_TIME(j),
-     &        HDC_DRIFT_DIS(j),HDC_WIRE_COORD(j),
-     &        j=1,HDC_TOT_HITS)    
+     &        HDC_DRIFT_DIS(j),j=1,HDC_TOT_HITS)
        endif
        RETURN
        END
