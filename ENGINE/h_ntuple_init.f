@@ -10,7 +10,10 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
-* Revision 1.6  1995/07/27 19:00:17  cdaq
+* Revision 1.7  1995/09/01 13:38:05  cdaq
+* (JRA) Add Cerenkov photoelectron count to ntuple
+*
+* Revision 1.6  1995/07/27  19:00:17  cdaq
 * (SAW) Relocate data statements for f2c compatibility
 *
 * Revision 1.5  1995/05/22  20:50:46  cdaq
@@ -134,6 +137,8 @@
       h_Ntuple_tag(m)= 'Hcer_1'	! cerenkov adc # 1
       m= m+1
       h_Ntuple_tag(m)= 'Hcer_2'	! cerenkov adc # 2
+      m= m+1
+      h_Ntuple_tag(m)= 'HCER_NPE' ! cerenkov photoelectron spectrum
       m= m+1
       h_Ntuple_tag(m)= 'HSP'	! Lab momentum of chosen track in GeV/c
       m= m+1

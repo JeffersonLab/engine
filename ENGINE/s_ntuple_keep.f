@@ -8,7 +8,10 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
-* Revision 1.4  1995/05/22 20:50:48  cdaq
+* Revision 1.5  1995/09/01 13:38:46  cdaq
+* (JRA) Add Cerenkov photoelectron count to ntuple
+*
+* Revision 1.4  1995/05/22  20:50:48  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.3  1995/05/11  19:00:39  cdaq
@@ -37,7 +40,6 @@
 *
       logical HEXIST    !CERNLIB function
 *
-      character*80 directory,name,msg
       integer m
 *
 *--------------------------------------------------------
@@ -49,6 +51,8 @@
       m= 0
 *  
 ***********************************************************
+      m= m+1
+      s_Ntuple_contents(m)= SCER_NPE_SUM ! cerenkov photoelectron spectrum
       m= m+1
       s_Ntuple_contents(m)= SSP	! Lab momentum of chosen track in GeV/c
       m= m+1

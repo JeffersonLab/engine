@@ -8,7 +8,10 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
-* Revision 1.5  1995/05/22 20:50:46  cdaq
+* Revision 1.6  1995/09/01 13:38:28  cdaq
+* (JRA) Add Cerenkov photoelectron count to ntuple
+*
+* Revision 1.5  1995/05/22  20:50:46  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.4  1995/05/11  17:37:13  cdaq
@@ -55,6 +58,8 @@
       h_Ntuple_contents(m)= HCER_ADC(1) ! cerenkov adc #1
       m= m+1
       h_Ntuple_contents(m)= HCER_ADC(2) ! cerenkov adc #2
+      m= m+1
+      h_Ntuple_contents(m)= HCER_NPE_SUM ! cerenkov photoelectron spectrum
       m= m+1
       h_Ntuple_contents(m)= HSP	! Lab momentum of chosen track in GeV/c
       m= m+1

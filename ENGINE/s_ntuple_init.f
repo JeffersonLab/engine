@@ -10,7 +10,10 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
-* Revision 1.4  1995/07/27 19:00:31  cdaq
+* Revision 1.5  1995/09/01 13:38:59  cdaq
+* (JRA) Add Cerenkov photoelectron count to ntuple
+*
+* Revision 1.4  1995/07/27  19:00:31  cdaq
 * (SAW) Relocate data statements for f2c compatibility
 *
 * Revision 1.3  1995/05/11  19:00:02  cdaq
@@ -121,6 +124,8 @@
 **********begin insert description of contents of SOS tuple ******
       m= 0
 *  
+      m= m+1
+      s_Ntuple_tag(m)= 'SCER_NPE' ! cerenkov photoelectron spectrum
       m= m+1
       s_Ntuple_tag(m)= 'SSP'	! Lab momentum of chosen track in GeV/c
       m= m+1
