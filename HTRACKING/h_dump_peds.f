@@ -1,6 +1,9 @@
       subroutine h_dump_peds(ABORT,err)
 *
 * $Log$
+* Revision 1.4  1996/01/24 15:57:06  saw
+* (JRA) Remove MISC pedestals
+*
 * Revision 1.3  1996/01/16 21:47:10  cdaq
 * (JRA)
 *
@@ -116,16 +119,6 @@
       write(SPAREID,*) 'hcer_ped = '
       write(SPAREID,113) (hcer_ped(pmt),pmt=1,hmax_cer_hits)
 113   format (f5.1,',',f5.1)
-
-*
-*
-* MISC. PEDESTALS
-*
-      write(SPAREID,*) ' hmisc_ped = '
-      write(SPAREID,114) (hmisc_ped(blk),blk=1,8)
-      write(SPAREID,114) (hmisc_ped(blk),blk=9,16)
-114   format (7(f7.1,','),f7.1)
-
 
       close(SPAREID)
 
