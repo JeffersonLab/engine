@@ -13,9 +13,12 @@
 *    Run#332 Event sequence#55 ID#51 Type#1 Class#4 8-Jun-1994 14:11:33 GMT
 *
 * $Log$
-* Revision 1.1  1994/07/08 18:45:43  cdaq
-* Initial revision
+* Revision 1.2  1995/03/21 15:35:00  cdaq
+* (SAW) Replace variable min with minute
 *
+c Revision 1.1  1994/07/08  18:45:43  cdaq
+c Initial revision
+c
 *----------------------------------------------------------------------
       IMPLICIT NONE
       SAVE 
@@ -28,7 +31,7 @@
 *
       character*80 time
       character*160 msg
-      integer iv(10),dy,mth,yr,hr,min,sec
+      integer iv(10),dy,mth,yr,hr,minute,sec
       real rv(10)
 *
       character*50 pttrn
@@ -44,7 +47,7 @@
 *     
       If(gen_run_UTC_last.NE.0) Then              !update date
         call g_UTC_date(gen_run_UTC_last,gen_run_date_last,
-     &                                  dy,mth,yr,hr,min,sec)
+     &                                  dy,mth,yr,hr,minute,sec)
         time= gen_run_date_last
       Else                                        !ignore date
         time= ' '

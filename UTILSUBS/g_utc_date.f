@@ -1,4 +1,4 @@
-      SUBROUTINE G_UTC_date(UTC_time,date,dy,mth,yr,hr,min,sec)
+      SUBROUTINE G_UTC_date(UTC_time,date,dy,mth,yr,hr,minute,sec)
 *----------------------------------------------------------------------
 *- 
 *-   Purpose and Methods : Convert UTC time (seconds since 1 Jan 1970)
@@ -10,18 +10,21 @@
 *-             mth	- month (1-12)
 *-             yr	- year (1970-)
 *-             hr	- hr (0-23)
-*-             min	- min. (0-59)
+*-             minute	- minute. (0-59)
 *-             sec	- sec. (0-59)
 *- 
 *-   Created 27-Apr-1992   Kevin B. Beard
 * $Log$
-* Revision 1.1  1994/05/27 16:45:09  cdaq
+* Revision 1.2  1995/03/21 15:35:10  cdaq
+* (SAW) Replace variable min with minute
+*
+* Revision 1.1  1994/05/27  16:45:09  cdaq
 * Initial revision
 *
 *----------------------------------------------------------------------
       IMPLICIT NONE
       SAVE
-      INTEGER UTC_time,dy,mth,yr,hr,min,sec
+      INTEGER UTC_time,dy,mth,yr,hr,minute,sec
       CHARACTER*(*) date
 *
       integer hr_per_day,min_per_hr,sec_per_min,sec_per_day
@@ -46,10 +49,10 @@
       character*3 month(JAN:DEC)
       integer days_per_month(JAN:DEC)
 *
-      integer year,mon,time
+      integer mon,time
       integer sec_year,sec_mon,sec_nonleap,sec_leap,iv(6)
       real rv
-      logical first_call,leap_year,fnd,forward
+      logical first_call,leap_year
       data first_call/.TRUE./
 *
 *----------------------------------------------------------------------
@@ -136,16 +139,16 @@
 *-hr
       hr= INT(time/(min_per_hr*sec_per_min))
       time= time - hr*min_per_hr*sec_per_min
-*-min
-      min= INT(time/sec_per_min)
-      time= time - min*sec_per_min
+*-minute
+      minute= INT(time/sec_per_min)
+      time= time - minute*sec_per_min
 *-sec
       sec= time
 *
       iv(1)= dy
       iv(2)= yr
       iv(3)= hr
-      iv(4)= min
+      iv(4)= minute
       iv(5)= sec
       call G_build_note('#-'//month(mth)//'-# #:#:# GMT',
      &                                    '#',iv,' ',rv,' ',date)

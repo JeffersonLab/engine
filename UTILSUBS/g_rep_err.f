@@ -10,8 +10,11 @@
 *-   Modified for hall C 9/1/93: KBB
 *-   Modified 11/19/93 for warning: KBB
 *     $Log$
-*     Revision 1.2  1994/06/06 13:30:35  cdaq
-*     (KBB) Add date/time info.  Return on warning's.
+*     Revision 1.3  1995/03/21 15:35:48  cdaq
+*     (SAW) Replace variable min with minute
+*
+* Revision 1.2  1994/06/06  13:30:35  cdaq
+* (KBB) Add date/time info.  Return on warning's.
 *
 * Revision 1.1  1994/02/09  14:17:33  cdaq
 * Initial revision
@@ -29,7 +32,7 @@
 *
       logical warning,valid_run_info
       character*80 msg,time
-      integer iv(10),dy,mth,yr,hr,min,sec
+      integer iv(10),dy,mth,yr,hr,minute,sec
       real rv(10)
 *
 *----------------------------------------------------------------------
@@ -50,7 +53,7 @@
 *     
          If(gen_run_UTC_last.NE.0) Then
             call g_UTC_date(gen_run_UTC_last,gen_run_date_last,
-     &           dy,mth,yr,hr,min,sec)
+     &           dy,mth,yr,hr,minute,sec)
             time= gen_run_date_last
          Else
             time= ' '
