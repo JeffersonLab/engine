@@ -1,7 +1,11 @@
 * sos_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the sos time of flight.
 * $Log$
-* Revision 1.6  1995/03/13 19:13:57  cdaq
+* Revision 1.7  1995/05/22 19:03:32  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
+* Add some varaibles and fix typos
+*
+* Revision 1.6  1995/03/13  19:13:57  cdaq
 * (JRA) Change sscin_minph to sscin_???_minph arrays.  Add tracks index to
 *       sgood_tdc_pos, sgood_tdc_neg, sgood_scin_time, sgood_plane_time,
 *       and sgood_beta.
@@ -27,7 +31,7 @@
 *     directive to makereg to tell it to include the code in the program
 *     that it generates.
 *
-*%%   include 'gen_data_structures.cmn'
+*%%   include 'sos_data_structures.cmn'
 *%%   include 'sos_scin_parms.cmn'
 *
 *     CTPTYPE=event
@@ -59,6 +63,8 @@
       real*4 sscin_tdc_min
       real*4 sscin_tdc_max
       real*4 sscin_tdc_to_time
+      real*4 sstart_time_center    ! center of time window on scin. hits
+      real*4 sstart_time_slop      ! 1/2 width of time window on scin. hits
 *
 *     CTPTYPE=event
 *
@@ -89,13 +95,15 @@
      &     sgood_scin_time,             !was a time found for the hit?
      &     sgood_plane_time,            !was a time found for the plane?
      &     sgood_beta,                  !was a value of beta found?
-     &     sscin_on_track,              !list of which scins. were on each track.
-     &     sscin_time_fp                !scin time (ave) projected to fp
-
+     &     sscin_on_track,              !list of scins on each track.
+     &     sscin_time_fp,               !scin time (ave) projected to fp
+     &     sstart_time_center,
+     &     sstart_time_slop
+ 
 *
 *     CTPTYPE=event
 *
-      real*4 s_fptime(hnum_scin_planes)    !time at fp from all hits in 1 plane
+      real*4 s_fptime(snum_scin_planes)    !time at fp from all hits in 1 plane
       real*4 s_fptimedif(6)                !fp time differences
       real*4 sbeta_notrk
       real*4 sbeta_chisq_notrk
