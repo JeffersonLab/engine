@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.7  1995/04/06 20:37:18  cdaq
+# Revision 1.8  1995/07/28 15:23:51  cdaq
+# (SAW) Add NFSDIRECTORY stuff
+#
+# Revision 1.7  1995/04/06  20:37:18  cdaq
 # (SAW) Add g_sub_run_number
 #
 # Revision 1.6  1995/03/14  21:04:40  cdaq
@@ -42,8 +45,15 @@ lib_targets := $(patsubst %.f, libutils.a(%.o), $(libsources))
 install-dirs := lib
 bin_targets =
 
-default:
-	@echo "nothing to make"
+#default:
+#	@echo "nothing to make"
+
+ifdef NFSDIRECTORY
+%.f : $(NFSDIRECTORY)/UTILSUBS/%.f
+	ln -s $< $@
+
+.PRECIOUS: %.f
+endif
 
 %.cmn :: ../INCLUDE/%.cmn
 	cp -f $< $@
