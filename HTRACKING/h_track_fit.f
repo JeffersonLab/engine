@@ -9,7 +9,10 @@
 *                              remove minuit. Make fit linear
 *                              still does not do errors properly
 * $Log$
-* Revision 1.7  1995/01/27 20:26:50  cdaq
+* Revision 1.8  1995/04/06 19:32:58  cdaq
+* (JRA) Rename residuals variables
+*
+* Revision 1.7  1995/01/27  20:26:50  cdaq
 * (JRA) Remove Mack's personal focalplane diceamatic (z slicer) code
 *
 * Revision 1.6  1994/12/06  15:45:27  cdaq
@@ -48,7 +51,7 @@
       integer*4 itrack                        ! track loop index
       integer*4 ihit,ierr
       integer*4 hit,plane
-      integer*4 i,j,k                             ! loop index
+      integer*4 i,j                             ! loop index
 *      real*4 z_slice
 
       real*8   H_DPSIFUN
@@ -59,7 +62,7 @@
       real*8 TT(hnum_fpray_param)
       real*8 AA(hnum_fpray_param,hnum_fpray_param)
       real*8 dray(hnum_fpray_param)
-      real*8 error(hnum_fpray_param)
+*      real*8 error(hnum_fpray_param)
       real*4 chi2,dummychi2
       parameter (dummychi2 = 1.E4)
 *     array to remap hplane_coeff to param number
@@ -71,18 +74,14 @@
       ierr=0
 *  initailize residuals
 
-      do itrack=1,HNTRACKS_MAX
-        do plane=1,HMAX_NUM_DC_PLANES
-          hdc_residual(itrack,plane)=1000
-          hdc_sing_res(itrack,plane)=1000
-          hdc1_sing_res(plane)=1000
-          hdc2_sing_res(plane)=1000
-          hdc1_dbl_res(plane)=1000
-          hdc2_dbl_res(plane)=1000
-
+      do plane=1,HDC_NUM_PLANES
+        do itrack=1,HNTRACKS_MAX
+          hdc_double_residual(itrack,plane)=1000
+          hdc_single_residual(itrack,plane)=1000
         enddo
+        hdc_sing_res(plane)=1000
+        hdc_dbl_res(plane)=1000
       enddo
-
 
 *     test for no tracks
       if(HNTRACKS_FP.ge.1) then
@@ -143,19 +142,18 @@
                 plane=HDC_PLANE_NUM(hit)
 
 * note chi2 is single precision
-                hdc_sing_res(itrack,plane)=
+                hdc_single_residual(itrack,plane)=
      &               (HDC_WIRE_COORD(hit)
      &               -hplane_coeff(remap(1),plane)*ray(1)
      &               -hplane_coeff(remap(2),plane)*ray(2)
      &               -hplane_coeff(remap(3),plane)*ray(3)
      &               -hplane_coeff(remap(4),plane)*ray(4))
-                chi2=chi2+((hdc_sing_res(itrack,plane))**2
+                chi2=chi2+((hdc_single_residual(itrack,plane))**2
      &               )/(hdc_sigma(plane)*hdc_sigma(plane))
-*djm
-                if(itrack.eq.1 .and. plane.ge.1 .and. plane.le.6)
-     &               hdc1_sing_res(plane) = hdc_sing_res(itrack,plane)
-                if(itrack.eq.2 .and. plane.ge.7 .and. plane.le.12)
-     &               hdc2_sing_res(plane) = hdc_sing_res(itrack,plane)
+
+* Fill single_residual array.  Note that due to ihit loop, the plane
+* will always contain a wire on the track being examined.
+                hdc_sing_res(plane) = hdc_single_residual(itrack,plane)
               enddo
             endif
 
@@ -218,9 +216,9 @@
                 hit=HNTRACK_HITS(itrack+1,ihit+1)
                 plane=HDC_PLANE_NUM(hit)
                 pos=H_DPSIFUN(ray1,plane)
-                hdc_residual(itrack,plane)=HDC_WIRE_COORD(hit)-pos
+                hdc_double_residual(itrack,plane)=HDC_WIRE_COORD(hit)-pos
 * djm 8/31/94 stuff this variable into 1d array we can register
-                hdc2_dbl_res(plane) = hdc_residual(1,plane)
+                hdc_dbl_res(plane) = hdc_double_residual(1,plane)
 
               enddo
 
@@ -232,9 +230,9 @@
                 hit=HNTRACK_HITS(itrack-1,ihit+1)
                 plane=HDC_PLANE_NUM(hit)
                 pos=H_DPSIFUN(ray2,plane)
-                hdc_residual(itrack,plane)=HDC_WIRE_COORD(hit)-pos
+                hdc_double_residual(itrack,plane)=HDC_WIRE_COORD(hit)-pos
 * djm 8/31/94 stuff this variable into 1d array we can register
-                hdc1_dbl_res(plane) = hdc_residual(2,plane)
+                hdc_dbl_res(plane) = hdc_double_residual(2,plane)
 
               enddo
             endif                       ! end plane ge 7
