@@ -10,7 +10,10 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
-* Revision 1.5  1994/09/13 20:23:29  cdaq
+* Revision 1.6  1995/02/02 16:10:49  cdaq
+* (JRA) Make hscin_all_adc_pos/neg floating
+*
+* Revision 1.5  1994/09/13  20:23:29  cdaq
 * *** empty log message ***
 *
 * Revision 1.4  1994/09/13  20:20:21  cdaq
@@ -50,7 +53,7 @@
       if(HSCIN_TOT_HITS.GT.0) then
         write(hluno,'('' Num  Plane    Counter        ADC_POS'',
      &       '' ADC_NEG  TDC_POS  TDC_NEG'')')
-        write(hluno,'(1x,i2,2x,i3,7x,i4,8x,4i8)')
+        write(hluno,'(1x,i2,2x,i3,7x,i4,8x,2f8.2,2i8)')
      &       (j,HSCIN_PLANE_NUM(j),HSCIN_COUNTER_NUM(j),
      &       HSCIN_ADC_POS(j),HSCIN_ADC_NEG(j),
      &       HSCIN_TDC_POS(j),HSCIN_TDC_NEG(j),
