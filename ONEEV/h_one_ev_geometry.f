@@ -9,6 +9,9 @@
 *	at least I didn't see a method around them.  So I have defined all
 *	the subvolumes explicitly. (TPW)
 * $Log$
+* Revision 1.6  1996/01/17 16:35:37  cdaq
+* (DVW) Tweak hodoscale
+*
 * Revision 1.5  1995/10/06 18:39:36  cdaq
 * (DVW) Changed to ctp geometry variables and eliminated call to h_one_ev.par.
 *
@@ -46,7 +49,7 @@ c
       integer DETMEDIA                  ! sensitive tracking media
       parameter (HHUTMEDIA = 1, DETMEDIA = 2)
       real*4 hodoscale
-      parameter (hodoscale = 3.)
+      parameter (hodoscale = 2.)
       real*4 wcscale
       parameter (wcscale = 1.)
       real*4 xwirelength

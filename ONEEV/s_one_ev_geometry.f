@@ -13,6 +13,9 @@
 * Derek van Westrum (vanwestr@cebaf.gov)
 *
 * $Log$
+* Revision 1.3  1996/01/17 16:37:48  cdaq
+* (DVW) Tweak hodoscale
+*
 * Revision 1.2  1995/10/06 18:24:18  cdaq
 * (DVW) Changed to ctp geometry variables and eliminated call to s_one_ev.par.
 *
@@ -39,7 +42,7 @@
       integer DETMEDIA                  ! sensitive tracking media
       parameter (SHUTMEDIA = 1, DETMEDIA = 2)
       real*4 hodoscale
-      parameter (hodoscale = 3.)
+      parameter (hodoscale = 2.)
       real*4 wcscale
 *      parameter (wcscale = 5.)
       parameter (wcscale = 1.)
