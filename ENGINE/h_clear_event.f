@@ -11,9 +11,12 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.4  1994/06/22 20:53:21  cdaq
-*-    (SAW) zero the miscleaneous hits counter
+*-    Revision 1.5  1994/06/28 20:05:20  cdaq
+*-    (SAW) Add clear of hscin_all_tot_hits
 *-
+* Revision 1.4  1994/06/22  20:53:21  cdaq
+* (SAW) zero the miscleaneous hits counter
+*
 * Revision 1.3  1994/03/01  20:14:24  cdaq
 * (SAW) Add zeroing of the raw total hits counter for the drift chambers
 *
@@ -53,6 +56,7 @@
          HDC_HITS_PER_PLANE(plane)= 0
       ENDDO
 *
+      HSCIN_ALL_TOT_HITS = 0
       HSCIN_TOT_HITS = 0
 *
       DO plane=1,HNUM_SCIN_PLANES
