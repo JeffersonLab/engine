@@ -5,7 +5,10 @@
 *     space point.
 *     d. f. geesaman           17 January 1994
 * $Log$
-* Revision 1.3  1994/08/14 02:11:18  cdaq
+* Revision 1.4  1994/08/16 13:26:50  cdaq
+* (DJA) Fix typo (Change wc from integer*4 to real*4)
+*
+* Revision 1.3  1994/08/14  02:11:18  cdaq
 * (DA) Change Y' in chamber 1 from plane 4 (wrong) to plane 5 (correct)
 *
 * Revision 1.2  1994/08/04  15:03:46  cdaq
@@ -35,7 +38,7 @@
       integer*4 nplusminus
       integer*4 numhits
       integer*4 hits(hmax_hits_per_point),pl(hmax_hits_per_point)
-      integer*4 wc(hmax_hits_per_point)
+      real*4 wc(hmax_hits_per_point)
       integer*4 plane, isa_y1, isa_y2
       integer*4 plusminusknown(hmax_hits_per_point)
       real*4 plusminus(hmax_hits_per_point)
