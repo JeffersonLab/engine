@@ -5,6 +5,9 @@
 *     use symbolic names instead of numbers.
 *
 *     $Log$
+*     Revision 1.6  1996/01/24 16:26:08  saw
+*     (JRA) Change CBPM_D to GMISC_ID
+*
 *     Revision 1.5  1995/05/22 19:13:41  cdaq
 *     (SAW) Add Aerogel detector id
 *
@@ -23,7 +26,7 @@
 *
 *
       integer MAXID, UNINST_ID, HDC_ID, HSCIN_ID, HCER_ID, HCAL_ID, HMISC_ID, 
-     $     CBPM_ID, SDC_ID, SSCIN_ID, SCER_ID, SCAL_ID, SMISC_ID, SAER_ID
+     $     GMISC_ID, SDC_ID, SSCIN_ID, SCER_ID, SCAL_ID, SMISC_ID, SAER_ID
 
       parameter (MAXID=16)
       parameter (UNINST_ID=0)           ! Uninstrumented channels
@@ -32,7 +35,7 @@
       parameter (HCER_ID=3)
       parameter (HCAL_ID=4)
       parameter (HMISC_ID=5)            ! Misclaneous FB channels
-      parameter (CBPM_ID=6)             ! BPM/Raster data
+      parameter (GMISC_ID=6)             ! BPM/Raster data
       parameter (SDC_ID=11)
       parameter (SSCIN_ID=12)
       parameter (SCER_ID=13)
