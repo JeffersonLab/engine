@@ -8,7 +8,10 @@
 * Version:  0.1 (In development)
 *
 * $Log$
-* Revision 1.1  1994/05/13 03:50:18  cdaq
+* Revision 1.2  1995/08/08 16:08:36  cdaq
+* (DD) Add detector and angular offsets
+*
+* Revision 1.1  1994/05/13  03:50:18  cdaq
 * Initial revision
 *
 * Abstract: Temporary routine to initialize SOS reconstruction coefficients
@@ -60,6 +63,14 @@
            enddo
         enddo
 
+        s_ang_slope_x=0.0
+        s_ang_slope_y=0.0
+        s_ang_offset_x=0.0
+        s_ang_offset_y=0.0
+        s_det_offset_x=0.0
+        s_det_offset_y=0.0
+        s_z_true_focus=0.0
+ 
         istat = 1                               !Assume success.
 ! Get an I/O unit to open datafiles.
         call G_IO_control(chan,'ANY',ABORT,err)  !"ASK"="ANY"
@@ -75,8 +86,28 @@
            read (chan,1001,err=94) line
         enddo
 
-! Read in coefficients and exponents.
+* Read in focal plane rotation coefficients.
+        do while (line(1:4).ne.' ---')
+          if(line(1:13).eq.'s_ang_slope_x')
+     $         read(line,1201,err=94)s_ang_slope_x
+          if(line(1:13).eq.'s_ang_slope_y')
+     $         read(line,1201,err=94)s_ang_slope_y
+          if(line(1:14).eq.'s_ang_offset_x')
+     $         read(line,1201,err=94)s_ang_offset_x
+          if(line(1:14).eq.'s_ang_offset_y')
+     $         read(line,1201,err=94)s_ang_offset_y
+          if(line(1:14).eq.'s_det_offset_x')
+     $         read(line,1201,err=94)s_det_offset_x
+          if(line(1:14).eq.'s_det_offset_y')
+     $         read(line,1201,err=94)s_det_offset_y
+          if(line(1:14).eq.'s_z_true_focus')
+     $         read(line,1201,err=94)s_z_true_focus
+          read (chan,1001,err=94) line
+        enddo
 
+! Read in coefficients and exponents.
+        line =' '
+        read (chan,1001,err=94) line
         s_num_recon_terms = 0
         do while (line(1:4).ne.' ---')
            s_num_recon_terms = s_num_recon_terms + 1
@@ -120,5 +151,6 @@
 
 1001    format(a)
 1200    format(1x,4g16.9,1x,4i1)
+1201    format(17x,g16.9)
 
         end
