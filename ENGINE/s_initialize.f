@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 *-    $Log$
-*-    Revision 1.11  1994/06/17 04:02:58  cdaq
-*-    (KBB) Upgrade error reporting
+*-    Revision 1.12  1994/11/22 20:15:10  cdaq
+*-    (SAW) Cosmetic change
 *-
+* Revision 1.11  1994/06/17  04:02:58  cdaq
+* (KBB) Upgrade error reporting
+*
 * Revision 1.10  1994/06/16  03:46:17  cdaq
 * *** empty log message ***
 *
@@ -62,6 +65,8 @@
 *
       logical FAIL
       character*1000 why
+*SDISPLAY*
+*SDISPLAY   include 'one_ev_io.cmn'
 *
 *--------------------------------------------------------
       ABORT = .FALSE.
@@ -86,12 +91,15 @@
         err= why
       endif
       ABORT= ABORT .or. FAIL
+*SDISPLAY*     If one_ev flag on, initialize the event display package
+*           if(one_ev.ne.0) call one_ev_init  !One event display unit
+*
 *
 *-read in Optical matrix elements
       call s_targ_trans_init(FAIL,why,istat)
-      if(ABORT) then
-         call g_build_note(':istat=@-','@',istat,' ',1.,'(I3)',err1)
-         call G_prepend(err1,why)
+      if(FAIL) then
+        write(err1,'(":istat=",i2)') istat
+        call G_prepend(err1,why)
       endif
       if(err.NE.' ' .and. why.NE.' ') then   !keep warnings
         call G_append(err,' & '//why)
