@@ -5,6 +5,9 @@
 *                              change name to sos_tracking.cmn
 *                              put sluno and debugflags from parameters to CTP
 * $Log$
+* Revision 1.15  1996/04/30 14:04:39  saw
+* (JRA) Bunch of changes
+*
 * Revision 1.14  1996/01/17 15:05:05  cdaq
 * (JRA) Change name of various correction variables.
 *       Add some efficiency accumulator variables.
@@ -57,19 +60,21 @@
 *     that it generates.
 *
 *%%   include 'sos_data_structures.cmn'
+
+
+*----------------------------------------------------------------------
+* PARAMETERS FOR DRIFT TIME TO DISTANCE CALCULATION
 *
-*     CTPTYPE=parm
+*      CTPTYPE=parm
 *
-*
-*     Parameters for drift time to distance calculation
-*
-      integer*4 sdriftbins_max          ! maximum number of bins for drift
-* change to 150
-      parameter (sdriftbins_max=200)    ! lookup table time
-      real*4    sdriftbins              ! number of bins for drift time lookup table
-      real*4    sdriftbinsz             ! drift bin size in nsec of lookup
-      real*4    sdrift1stbin            ! drift time of 1st bin in nsec of lookup table
-      real*4     sfract             !fraction of integrated time spectrum
+      integer*4 sdriftbins_max  ! number of bins for drift time lookup table
+      parameter (sdriftbins_max=138)
+      real*4    sdriftbins      ! number of bins for drift time lookup table
+      real*4    sdriftbinsz     ! drift bin size in nsec of lookup table
+      real*4    sdrift1stbin    ! drift time of 1st bin in nsec of lookup
+      real*4    sfract
+                                !fraction of integrated time spectrum
+
       real*4 swc1u1fract(sdriftbins_max),swc1u2fract(sdriftbins_max),
      &       swc1x1fract(sdriftbins_max),swc1x2fract(sdriftbins_max),
      &       swc1v1fract(sdriftbins_max),swc1v2fract(sdriftbins_max),
@@ -90,126 +95,135 @@
       equivalence (swc2v1fract(1),sfract(1,11))
       equivalence (swc2v2fract(1),sfract(1,12))
 
-      common/SOS_DRIFT/sfract(sdriftbins_max,SMAX_NUM_DC_PLANES),
-     $     sdriftbinsz,sdrift1stbin,sdriftbins
+      common/SOS_DRIFT/
+     &        sfract(sdriftbins_max,smax_num_dc_planes),
+     &        sdriftbinsz,
+     &        sdrift1stbin,
+     &        sdriftbins
 
-      integer*4 sdc_num_planes   ! actual number of dc chambers - set in CTP
-      integer*4 sdc_num_chambers    ! actual number of chambers - set in CTP
-      integer*4 sdc_planes_per_chamber
+
+*----------------------------------------------------------------------
+* INFORMATION ABOUT PLANE GEOMETRY AND TRACKING PARAMETERS
+*
+*     CTPTYPE=parm
+*
       integer*4 smax_chamber_hits
       parameter (smax_chamber_hits=544)
       integer*4 smax_space_points   ! maximum number of space points
-      integer*4 smax_hits_per_point ! maximum number of hits per point
       parameter (smax_space_points=50)
-      parameter (smax_hits_per_point=20)
+      integer*4 smax_hits_per_point ! maximum number of hits per point
+      parameter (smax_hits_per_point=15)
+      integer*4 snum_fpray_param    ! number of ray parameters in focal plane
+      parameter (snum_fpray_param=4)
+      integer*4 sdc_num_cards       ! #/discriminator cards
+      parameter (sdc_num_cards=40)
+      integer*4 sdc_max_wires_per_plane
+      parameter (sdc_max_wires_per_plane=64)
+
+      integer*4 sdc_num_planes   ! actual number of dc chambers - set in CTP
+      integer*4 sdc_num_chambers ! actual number of chambers - set in CTP
+      integer*4 sdc_planes_per_chamber
+      integer*4 sdc_tdc_min_win  ! drift chamber tdc min value for good hit
+      integer*4 sdc_tdc_max_win  ! drfit chamber tdc max value for good hit
+      integer*4 smin_hit         ! minimum hits   for space point
+      integer*4 smin_combos      ! minimum combos for space point
+      integer*4 smax_pr_hits     ! max number of hits in each plane for
+                                 ! pattern recognition to be done in that pla
+* wire velocity corrections.
+      logical sdc_readout_x      !true = read out from side (like x plane)
+      real*4  sdc_readout_corr   !wire path length/dist. to readout side
+      real*4  sdc_wire_velocity  ! propogation velocity of signal on wire(cm/ns)
+      real*4  sdc_drifttime_sign !sign of correction term.
+      real*4  sdc_central_time   !ave. time (ns) for signal to reach disc. card.
+                                 ! (both times are from center of the chamber)
+* timing offsets per card.
+      integer*4 sdc_sing_cardid  ! array of card id's so one can put cuts/test on a per/card basys
+      integer*4 sdc_card_no      ! card number
+      real*4 sdc_card_delay      ! delay for a given card
+
+      real*4 sxt_track_criterion    ! stub link criterion on x_t
+      real*4 syt_track_criterion    ! stub link criterion on y_t
+      real*4 sxpt_track_criterion   ! stub link criterion on xp_t
+      real*4 sypt_track_criterion   ! stub link criterion on yp_t
+      real*4 sspace_point_criterion ! maximum distance**2 to join pairs/combos.
 *
 *     CTPTYPE=event
 *
-      integer*4 snspace_points  ! number of space points in each chamber
+      integer*4 sncham_hits
+      integer*4 snspace_points     ! number of space points in each chamber
+      integer*4 sdc_hits_per_plane
+      integer*4 strack_fit_num     ! track number in fitting loop
       integer*4 snspace_points_tot ! total number of space points after select.
-
       integer*4 gplanesdc(smax_space_points,smax_num_chambers)   ! good plane pattern unit, set bit if respective plane hit
-      integer*4 gplanesdc1(smax_space_points)  ! good plane pattern unit, set bit if respective plane hit
-      integer*4 gplanesdc2(smax_space_points)  ! good plane pattern unit, set bit if respective plane hit
-      integer*4 gplanesdc3(smax_space_points)  ! good plane pattern unit, set bit if respective plane hit
-
+      integer*4 gplanesdc1(smax_space_points)  ! good plane pattern unit,
+      integer*4 gplanesdc2(smax_space_points)  ! set bit if respective plane
+      integer*4 gplanesdc3(smax_space_points)  ! was hit.
+ 
       equivalence (gplanesdc1(1),gplanesdc(1,1))
       equivalence (gplanesdc2(1),gplanesdc(2,1))
       equivalence (gplanesdc3(1),gplanesdc(3,1))
 
-      real*4 sspace_points         ! array of x, y of space points
-      real*4 sbeststub              ! array of stubs fit to each space point
-      real*4 sdc_sing_drifttime ! array of fully corrected drift times for each plane
-      real*4 sdc_sing_driftdis  ! array of final drift distances for each plane
-
-*
-*     CTPTYPE=parm
-*
-      real*4 sspace_point_criterion
-*
-*     CTPTYPE=event
-*
       integer*4 sspace_point_hits  ! array of n rows of space points
                                    ! (n,1) = number of hits
                                    ! (n,2) = number of valid combinations
                                    ! (n,3...) hit numbers for space point
-      integer*4 sncham_hits
-*
-*     CTPTYPE=parm
-*
-      integer*4 smin_hit
-      integer*4 smin_combos
+      real*4 sspace_points         ! array of x, y of space points
+      real*4 sbeststub             ! array of stubs fit to each space point
+      real*4 sdc_sing_drifttime    ! array of fully corrected drift times for each plane
+      real*4 sdc_sing_driftdis     ! array of final drift distances for each plane
 
-      real*4 sxt_track_criterion   ! stub link criterion on x_t
-      real*4 syt_track_criterion   ! stub link criterion on y_t
-      real*4 sxpt_track_criterion   ! stub link criterion on xp_t
-      real*4 sypt_track_criterion  ! stub link criterion on yp_t
-
-*
-*     CTPTYPE=event
-*
-      integer*4 strack_fit_num     ! track number in fitting loop
-
-      integer*4 snum_fpray_param   ! number of ray parameters in focal plane
-      parameter (snum_fpray_param=4)
-
-*
-*     CTPTYPE=parm
-*
-      integer*4 sdc_tdc_min_win   ! drift chamber tdc min value for good hit
-      integer*4 sdc_tdc_max_win   ! drfit chamber tdc max value for good hit
-      integer*4 smax_pr_hits      ! max number of hits in each plane for
-                                  ! pattern recognition to be done in that pla
-      logical sdc_readout_x(smax_num_dc_planes)
-                                 ! true = read out from side (like x plane)
-      real*4 sdc_readout_corr(smax_num_dc_planes)
-                                 ! wire path length/dist. from readout side
-      real*4 sdc_wire_velocity    ! propogation velocity of signal on wire (cm--M/ns)
-      real*4 sdc_central_time(smax_num_dc_planes) !ave. time for signal to reach card
-      real*4 sdc_drifttime_sign(smax_num_dc_planes) !sign of correction term.
-*
-*     CTPTYPE=event
-*
-      INTEGER*4 SDC_HITS_PER_PLANE
 *
       common/SOS_TRACKING/
-     &     sbeststub(smax_space_points,snum_fpray_param),
-     &     sspace_point_criterion(smax_num_chambers),
-     &     sxt_track_criterion,syt_track_criterion,
-     &     sxpt_track_criterion,sypt_track_criterion,
+     &     sdc_num_chambers,sdc_num_planes,
+     &     sdc_planes_per_chamber,
+     &     sdc_hits_per_plane(smax_num_dc_planes),
+     &     gplanesdc,
      &     sspace_points(smax_space_points,2),
      &     sspace_point_hits(smax_space_points,smax_hits_per_point+2),
-     &     snspace_points(5),snspace_points_tot,
-     &     sncham_hits(smax_num_chambers),smin_hit(smax_num_chambers),
-     &     smin_combos(smax_num_chambers),strack_fit_num,
-     &     sdc_num_planes,sdc_num_chambers,
-     &     sdc_planes_per_chamber,
-     &     sdc_tdc_min_win(SMAX_NUM_DC_PLANES), 
-     &     sdc_tdc_max_win(SMAX_NUM_DC_PLANES),
+     &     snspace_points(smax_num_chambers),
+     &     snspace_points_tot,
+     &     sbeststub(smax_space_points,snum_fpray_param),
+     &     sncham_hits(smax_num_chambers),
+     &     strack_fit_num,
+     &     sspace_point_criterion(smax_num_chambers),
+     &     sdc_tdc_min_win(smax_num_dc_planes), 
+     &     sdc_tdc_max_win(smax_num_dc_planes),
+     &     smin_hit(smax_num_chambers),smin_combos(smax_num_chambers),
      &     smax_pr_hits(smax_num_chambers),
+     &     sxt_track_criterion,syt_track_criterion,
+     &     sxpt_track_criterion,sypt_track_criterion,
+     &     sdc_sing_drifttime(smax_num_dc_planes),
+     &     sdc_sing_driftdis(smax_num_dc_planes),
      &     sdc_wire_velocity,
-     &     sdc_sing_drifttime(SMAX_NUM_DC_PLANES),
-     &     sdc_sing_driftdis(SMAX_NUM_DC_PLANES),
-     &     SDC_HITS_PER_PLANE(SMAX_NUM_DC_PLANES),
-     &     gplanesdc,
-     &     sdc_central_time,
-     &     sdc_drifttime_sign,
-     &     sdc_readout_corr,
-     &     sdc_readout_x
+     &     sdc_central_time(smax_num_dc_planes),
+     &     sdc_drifttime_sign(smax_num_dc_planes),
+     &     sdc_readout_corr(smax_num_dc_planes),
+     &     sdc_readout_x(smax_num_dc_planes),
+     &     sdc_card_delay(sdc_num_cards),
+     &     sdc_card_no(sdc_max_wires_per_plane,smax_num_dc_planes),
+     &     sdc_sing_cardid(smax_num_dc_planes)
 
-*     
+
+*----------------------------------------------------------------------
+* MATRICES FOR 3 PARAMETER FITS.
+*
 *     CTPTYPE=parm
 *
-      real*8 saa3,saainv3         ! matrix AA and its inverse AAINV 
-      real*8 sdet3               ! array of determinants of AA
+      real*8 saa3,saainv3      ! matrix AA and its inverse AAINV 
+      real*8 sdet3             ! array of determinants of AA
       common/SOS_TFIT_MATRIX/
-     &     saa3(3,3),saainv3(3,3,smax_num_dc_planes+smax_num_chambers)
-     $     ,sdet3(smax_num_dc_planes+smax_num_chambers)
+     &     saa3(3,3),
+     &     saainv3(3,3,smax_num_dc_planes+smax_num_chambers),
+     &     sdet3(smax_num_dc_planes+smax_num_chambers)
 
-*     sos print routines logical unit number for output
-      integer*4 sluno
-*     debug print flags
-*     if flags .ne. 0 then execute debug code
+
+
+*----------------------------------------------------------------------
+* DRIFT CHAMBER DEBUGGING FLAGS/INFO.
+*
+*     CTPTYPE=parm
+*
+* debug print flags, if flags .ne. 0 then execute debug code
       integer*4 sdebugprintrawdc
       integer*4 sdebugprintdecodeddc
       integer*4 sdebugflagpsi          
@@ -219,14 +233,14 @@
       integer*4 sdebuglinkstubs
       integer*4 sdebugtrackprint
       integer*4 sdebugstubchisq
-      integer*4 sdebugtartrackprint     ! call s_print_tar_track
-*      integer*4 sdebug_mc_start_time    ! kludge for Monte Carlo start time
-      integer*4 sdebugdumptof           ! dumps tof fitting data
-      integer*4 sdebugdumpcal           ! dumps cal fitting data
-      integer*4 sdebugcalcpeds          ! calc peds from physics events.
-      integer*4 ssingle_stub            ! switch to make tracks of all stubs
-      integer*4 sSmallAngleApprox       ! switch for alternate L/R determ. of Y,Yprime planes
-      integer*4 s_hms_style_chambers    ! Using HMS style drift chambers
+      integer*4 sdebugtartrackprint   ! call h_print_tar_track
+      integer*4 sdebugdumptof         ! dumps tof fitting data
+      integer*4 sdebugdumpcal         ! dumps cal fitting data
+      integer*4 sdebugcalcpeds        ! calc peds from physics events.
+      integer*4 ssingle_stub          ! switch to make tracks of all stubs
+      integer*4 ssmallAngleApprox     ! switch for alternate L/R determ. of Y,Yprime planes
+      integer*4 s_hms_style_chambers  ! Using HMS style drift chambers.
+      integer*4 sluno                 ! logical unit number for debugging output
       common/SOS_TRACKFLAGS/
      &     sluno,
      &     sdebugflagpsi,
@@ -243,42 +257,66 @@
      &     sdebugdumpcal,
      &     sdebugcalcpeds,
      &     ssingle_stub,
-     &     sSmallAngleApprox,
+     &     ssmallAngleApprox,
      &     s_hms_style_chambers
-*     &     sdebug_mc_start_time,
+
+*----------------------------------------------------------------------
+* DRIFT CHAMBER EFFICIENCY MEASUREMENTS.
 *
 *     CTPTYPE=parm
 *
-*     These arrays are presumably scalers to per run statistics
+* warning levels for efficiency
+      real*4 sdc_min_plane_eff(smax_num_dc_planes)
+      real*4 sdc_min_wire_eff
 *
-*     array to hold multiple hits per wire
-      integer*4 sdc_max_wires_per_plane   ! maximum number of wires per plane
-* change to 64
-      parameter (sdc_max_wires_per_plane = 200)
-      integer*4 swire_mult(sdc_max_wires_per_plane,SMAX_NUM_DC_PLANES)
-      integer*4 swire_early_mult(sdc_max_wires_per_plane,SMAX_NUM_DC_PLANES)
-      integer*4 swire_late_mult(sdc_max_wires_per_plane,SMAX_NUM_DC_PLANES)
-      integer*4 swire_extra_mult(sdc_max_wires_per_plane,SMAX_NUM_DC_PLANES)
+*     CTPTYPE=event
 *
-      common/sos_wire_multiplicity/
-     &     swire_mult,
-     &     swire_early_mult,
-     &     swire_late_mult,
-     &     swire_extra_mult
+* multiple hits per wire statistics.
+      integer*4 swire_mult(sdc_max_wires_per_plane,smax_num_dc_planes)
+      integer*4 swire_early_mult(sdc_max_wires_per_plane,smax_num_dc_planes)
+      integer*4 swire_late_mult(sdc_max_wires_per_plane,smax_num_dc_planes)
+      integer*4 swire_extra_mult(sdc_max_wires_per_plane,smax_num_dc_planes)
+* stuff for calcualting efficiency per wire.
+      integer*4 sdc_shouldhit(smax_num_dc_planes,sdc_max_wires_per_plane)
+      integer*4 sdc_didhit(smax_num_dc_planes,sdc_max_wires_per_plane)
+      integer*4 sdc_shouldsum(smax_num_dc_planes)
+      integer*4 sdc_didsum(smax_num_dc_planes)
+      integer*4 sdc_eff(smax_num_dc_planes)
+      real*4 sdc_track_coord(sntracks_max,smax_num_dc_planes)
+      real*4 ssdc_track_coord(smax_num_dc_planes)
+
+      common/sos_dc_track_efficiency/
+     &   sdc_track_coord,   !track position per plane, in x,y,u,v directions.
+     &   ssdc_track_coord,  !track position in x,y,,u,v directions-final track.
+     &   sdc_shouldhit,     !times a wire should have fired.
+     &   sdc_didhit,        !times a wire did fire.
+     &   sdc_shouldsum,     !sum over plane.
+     &   sdc_didsum,        !sum over plane.
+     &   sdc_eff,           !effic. per plane.
+     &   sdc_min_wire_eff,  !warning level for wire effic.
+     &   sdc_min_plane_eff, !warning level for plane effic.
+     &   swire_mult,
+     &   swire_early_mult,
+     &   swire_late_mult,
+     &   swire_extra_mult
+
+
+*----------------------------------------------------------------------
+* DRIFT CHAMBER RESIDUALS
 *
 *     CTPTYPE=event
 *
 *  complete 2-D array for residuals in all planes over all tracks
-      real*4 sdc_single_residual(SNTRACKS_MAX,SMAX_NUM_DC_PLANES)
-      real*4 sdc_double_residual(SNTRACKS_MAX,SMAX_NUM_DC_PLANES)
+      real*4 sdc_single_residual(sntracks_max,smax_num_dc_planes)
+      real*4 sdc_double_residual(sntracks_max,smax_num_dc_planes)
 
 *     djm 8/26/94 arrays containing single and double residual arrays which can be
 *     histogrammed in the normal fashion (ie, not hardwired histograms).
 
-      real*4 sdc_sing_res(SMAX_NUM_DC_PLANES)
-      real*4 sdc_dbl_res(SMAX_NUM_DC_PLANES)
-      real*4 sdc_plane_wirecoord(SNTRACKS_MAX,SMAX_NUM_DC_PLANES)
-      real*4 sdc_plane_wirecenter(SNTRACKS_MAX,SMAX_NUM_DC_PLANES)
+      real*4 sdc_sing_res(smax_num_dc_planes)
+      real*4 sdc_dbl_res(smax_num_dc_planes)
+      real*4 sdc_plane_wirecoord(sntracks_max,smax_num_dc_planes)
+      real*4 sdc_plane_wirecenter(sntracks_max,smax_num_dc_planes)
 
       common/SOS_RESIDUAL/
      &     sdc_single_residual,
@@ -289,29 +327,18 @@
      &     sdc_plane_wirecenter
 
 
+*----------------------------------------------------------------------
+* DEADWIRE LIST
 *
 *     CTPTYPE=parm
 *
-      real*4 sdc_min_plane_eff(SMAX_NUM_DC_PLANES)
-      real*4 sdc_min_wire_eff
-*
-*     CTPTYPE=event
-*
-      real*4 sdc_track_coord(SNTRACKS_MAX,SMAX_NUM_DC_PLANES)
-      real*4 ssdc_track_coord(SMAX_NUM_DC_PLANES)
-      integer*4 sdc_shouldhit(SMAX_NUM_DC_PLANES,SDC_MAX_WIRES_PER_PLANE)
-      integer*4 sdc_didhit(SMAX_NUM_DC_PLANES,SDC_MAX_WIRES_PER_PLANE)
-      integer*4 sdc_shouldsum(SMAX_NUM_DC_PLANES)
-      integer*4 sdc_didsum(SMAX_NUM_DC_PLANES)
-      integer*4 sdc_eff(SMAX_NUM_DC_PLANES)
+      integer*4 smax_num_deadwires
+      parameter (smax_num_deadwires=60)
+      integer*4 sdc_num_deadwires
+      integer*4 sdc_deadwire_plane(smax_num_deadwires)
+      integer*4 sdc_deadwire_num(smax_num_deadwires)
 
-      common/sos_dc_track_efficiency/
-     &   sdc_track_coord,  !track position per plane, in x,y,u,v directions.
-     &   ssdc_track_coord, !track position in x,y,,u,v directions-final track.
-     &   sdc_shouldhit,    !times a wire should have fired.
-     &   sdc_didhit,       !times a wire did fire.
-     &   sdc_shouldsum,    !sum over plane.
-     &   sdc_didsum,       !sum over plane.
-     &   sdc_eff,          !effic. per plane.
-     &   sdc_min_wire_eff, !warning level for wire effic.
-     &   sdc_min_plane_eff !warning level for plane effic.
+      common/sos_dead_wires/
+     &   sdc_num_deadwires,  !number of dead wires.
+     &   sdc_deadwire_plane, !list of plane numbers.
+     &   sdc_deadwire_num    !list of wire numbers.
