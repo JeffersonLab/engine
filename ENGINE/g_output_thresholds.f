@@ -1,6 +1,9 @@
       subroutine g_output_thresholds(lunout,roc,slot,signalcount,
      &               elements_per_plane,signal0,signal1,sigma0,sigma1)
 * $Log$
+* Revision 1.6.2.1  2003/04/09 16:51:38  cdaq
+* Added # to comment written out to threshold file. (MKJ)
+*
 * Revision 1.6  1999/02/23 18:23:01  csa
 * (JRA) Move temps to signalcount 2 and make SunOS fixes
 *
@@ -41,9 +44,10 @@
 
       annoying_message=.true.
 
+
       istart=g_decode_slotpointer(roc,slot)
       if (istart.eq.-1) then   !uninstrumented slot.
-        write(lunout,*) 'roc#',roc,', slot#',slot,' is not in the map'
+        write(lunout,*) '#   roc#',roc,', slot#',slot,' is not in the map'
         return
       endif
 
