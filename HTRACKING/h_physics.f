@@ -20,6 +20,18 @@
 *-                           Dummy Shell routine
 *
 * $Log$
+* Revision 1.22  2003/09/05 18:20:30  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.21.2.3  2003/09/04 21:30:12  jones
+* Add h_oopcentraloffset (mkj)
+*
+* Revision 1.21.2.2  2003/07/15 19:04:52  cdaq
+* add calculation of hsinplane
+*
+* Revision 1.21.2.1  2003/04/10 12:39:03  cdaq
+* add  e_nonzero and modify p_nonzero.  These are used in calculating E_cal/p and beta.
+*
 * Revision 1.21  2002/12/27 22:07:04  jones
 *    a. Ioana Niculescu modified total_eloss call
 *    b. CSA 4/15/99 -- changed hsbeta to hsbeta_p in total_eloss call
@@ -121,19 +133,17 @@
       integer*4 i,ip,ihit
       integer*4 itrkfp
       real*4 coshstheta,sinhstheta
-      real*4 p_nonzero
+      real*4 p_nonzero,e_nonzero
       real*4 xdist,ydist,dist(12),res(12)
       real*4 tmp,W2
       real*4 hsp_z
       real*4 Wvec(4)
       real*4 hstheta_1st
       real*4 scalar,mink
-      real*4 denom
 *
 *--------------------------------------------------------
 *
       ierr=0
-      hphi_lab=0.0
 
       if (hsnum_fptrack.le.0) return    ! No Good track 
 
@@ -145,6 +155,7 @@
       hsx_tar      = hx_tar(hsnum_tartrack)
       hsy_tar      = hy_tar(hsnum_tartrack)
       hsxp_tar     = hxp_tar(hsnum_tartrack) ! This is an angle (radians)
+      hsxp_tar     = hsxp_tar + h_oopcentral_offset
       hsyp_tar     = hyp_tar(hsnum_tartrack) ! This is an angle (radians)
       hsbeta       = hbeta(itrkfp)
       hsbeta_chisq = hbeta_chisq(itrkfp)
@@ -164,7 +175,12 @@
 
       hstrack_et   = htrack_et(itrkfp)
       hstrack_preshower_e = htrack_preshower_e(itrkfp)
-      p_nonzero    = max(.0001,hsp)      !momentum (used to normalize calorim.)
+      p_nonzero    = hsp !reconstructed momentum with 'reasonable' limits.
+                         !Used to calc. E_cal/p and beta.
+      p_nonzero    = max(0.8*hpcentral,p_nonzero)
+      p_nonzero    = min(1.2*hpcentral,p_nonzero)
+      e_nonzero    = sqrt(p_nonzero**2+hpartmass**2)
+
       hscal_suma   = hcal_e1/p_nonzero  !normalized cal. plane sums
       hscal_sumb   = hcal_e2/p_nonzero
       hscal_sumc   = hcal_e3/p_nonzero
@@ -207,7 +223,12 @@
       hsx_cal = hsx_fp  +  hsxp_fp * hcal_1pr_zpos
       hsy_cal = hsy_fp  +  hsyp_fp * hcal_1pr_zpos
 
-      hsbeta_p = hsp/max(hsenergy,.00001)
+c Used to use hsp, replace with p_nonzero, to give reasonable limits
+C (+/-20%) to avoid unreasonable hsbeta_p values
+c      hsbeta_p = hsp/max(hsenergy,.00001)
+
+      hsbeta_p = p_nonzero/e_nonzero
+
 
 C old 'fit' value for pathlen correction
 C        hspathlength = -1.47e-2*hsx_fp + 11.6*hsxp_fp - 36*hsxp_fp**2
@@ -273,7 +294,9 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 
 *     Do energy loss, which is particle specific
 
-      hstheta_1st = htheta_lab*TT/180. - atan(hsyp_tar) ! rough scat angle
+      hstheta_1st = htheta_lab*TT/180. - atan(hsyp_tar) ! rough scat
+                                                        ! angle
+      hsinplane = htheta_lab*TT/180. - atan(hsyp_tar) ! rough scat angle
 
       if (hpartmass .lt. 2.*mass_electron) then ! for electron
         if (gtarg_z(gtarg_num).gt.0.) then
@@ -337,9 +360,11 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 
       sinhstheta = sin(hstheta)
       coshstheta = cos(hstheta)
+c      write(*,*) ' hsphi = ',hsphi,hphi_lab,hs_kpvec(3),hs_kpvec(2)
 
       hsphi = hphi_lab + hsphi
-      if (hsphi .gt. 0.) hsphi = hsphi - tt
+
+c      if (hsphi .gt. 0.) hsphi = hsphi - tt
 
 *     hszbeam is the intersection of the beam ray with the
 *     spectrometer as measured along the z axis.
