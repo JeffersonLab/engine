@@ -4,6 +4,9 @@
 *     quantities calculated from the scaler events (time, current, etc...)
 *
 * $Log$
+* Revision 1.11.2.1  2003/08/14 00:44:13  cdaq
+* Modify to be able to write scaler rates for each read to a file (mkj)
+*
 * Revision 1.11  1999/02/23 19:07:06  csa
 * (JRA) Add WEIRD_CLEARS common
 *
@@ -43,6 +46,10 @@
       parameter (MAX_NUM_SCALERS=500)
       integer*4 MAX_NUM_EVSCALERS
       parameter (MAX_NUM_EVSCALERS=16)
+      integer*4 MAX_WRITEOUT_SCALERS
+      parameter (MAX_WRITEOUT_SCALERS=10)
+      integer*4 INDEX_WRITEOUT_SCALERS(10)
+      integer*4 NUM_WRITEOUT_SCALERS
 
       integer*4 gclock_index      !index of hardware scaler clock.
       real*4 gclock_rate          ! rate of hardware scaler clock.
@@ -54,7 +61,7 @@
       real*8 gscaler_old(MAX_NUM_SCALERS)     ! Scaler values at last event
       real*8 gscaler_change(MAX_NUM_SCALERS)  ! prev_scalers - scalers
       real*4 g_run_time                       !time of run at most recent scaler event
-      real*4 g_beam_on_run_time               ! accumulated time of run for which
+      real*4 g_beam_on_run_time(2)               ! accumulated time of run for which
                                               ! beam current exceeded beam_on_thresh_cur.
       integer g_replay_time                   !time since start of run (from cpu clock) 
 *
@@ -96,7 +103,7 @@ c themselves.  The following is to
       real*8 gbcm2_offset
       real*8 gbcm3_offset
       real*8 gunser_offset
-      real*8 g_beam_on_thresh_cur     ! threshold for beam to be on.
+      real*8 g_beam_on_thresh_cur(2)     ! threshold for beam to be on.
 *
 *     CTPTYPE=event
 *
@@ -104,7 +111,7 @@ c themselves.  The following is to
       real*8 gbcm2_charge
       real*8 gbcm3_charge
       real*8 gunser_charge
-      real*8 g_beam_on_bcm_charge   ! "beam on" accumulated charge
+      real*8 g_beam_on_bcm_charge(2)   ! "beam on" accumulated charge
       integer*4 gscaler_event_num
 *
       common/BEAMCURRENT/
@@ -114,3 +121,5 @@ c themselves.  The following is to
      &    gbcm1_charge, gbcm2_charge, gbcm3_charge, gunser_charge,
      &    g_beam_on_bcm_charge, g_beam_on_thresh_cur,
      &    gscaler_event_num
+      common/ WRITESCALERS/
+     & NUM_WRITEOUT_SCALERS,INDEX_WRITEOUT_SCALERS

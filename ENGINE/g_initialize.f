@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.21.2.3  2003/08/14 00:42:22  cdaq
+* Modify to be able to write scaler rates for each read to a file (mkj)
+*
 * Revision 1.21.2.2  2003/04/10 00:41:27  cdaq
 * Added gen_data_structures and included status messages when kinematics overridden
 *
@@ -130,7 +133,7 @@
 *
 * set the runtime variable to avoid divide by zero during report
 *
-      g_run_time = 0.0001
+*      g_run_time = 0.0001
 *
 *     Book the histograms, tests and parameters
 *
@@ -292,6 +295,20 @@
         write(G_LUN_CHARGE_SCALER,*) '!Charge scalers - Run #',gen_run_number
         write(G_LUN_CHARGE_SCALER,*) '!event   Unser(Hz)     BCM1(Hz)     BCM2(Hz)',
      &               '     BCM3(Hz)     Time(s)'
+      endif
+
+* Open output file to writeout scalers.
+      if (g_writeout_scaler_filename.ne.' ') then
+        if ( NUM_WRITEOUT_SCALERS .le. MAX_WRITEOUT_SCALERS) then
+         file=g_writeout_scaler_filename
+         call g_sub_run_number(file,gen_run_number)
+         open(unit=G_LUN_WRITEOUT_SCALER,file=file,status='unknown')
+        else
+           write(*,*) ' Asking to write out ',NUM_WRITEOUT_SCALERS,' scalers'
+           write(*,*) ' Maximum is  ' ,MAX_WRITEOUT_SCALERS
+           WRITE(*,*) ' Modify  MAX_WRITEOUT_SCALERS in INCLUDE/gen_scalers and recompile code'
+           g_writeout_scaler_filename = ' '
+        endif
       endif
 
 * Open output file for epics events.

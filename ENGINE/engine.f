@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.32.2.7  2003/08/14 00:42:23  cdaq
+* Modify to be able to write scaler rates for each read to a file (mkj)
+*
 * Revision 1.32.2.6  2003/06/26 12:38:11  cdaq
 * add write statement when genable_sos_satcorr .ne. 0  (mkj)
 *
@@ -192,7 +195,8 @@ c
       integer*4 preprocessor_keep_event
       external time
 c
-      integer*4 skipped_events_scal
+      integer*4 skipped_events_scal,tindex
+      real*8 delta_time
 *
 *
 *--------------------------------------------------------
@@ -540,6 +544,12 @@ c
 	    if (gen_event_type.eq.0) then          !scaler event.
               analyzed_events(gen_event_type)=analyzed_events(gen_event_type)+1
                call g_analyze_scalers_by_banks(CRAW,ABORT,err)
+            if (g_writeout_scaler_filename.ne.' ' .and. analyzed_events(0) .gt. 1 ) then
+               delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001D00)
+               write(G_LUN_WRITEOUT_SCALER,*) analyzed_events(0),delta_time,
+     >       (gscaler_change(INDEX_WRITEOUT_SCALERS(tindex))/delta_time
+     >          ,tindex=1,NUM_WRITEOUT_SCALERS)
+            endif            
                if (analyzed_events(0) .le. 1 ) then
                   write(*,*) '************'
                   write(*,*) ' Will not analyze events until after first scaler read'

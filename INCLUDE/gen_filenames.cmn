@@ -2,6 +2,9 @@
 *
 *-Common block with filenames
 *     $Log$
+*     Revision 1.13.2.1  2003/08/14 00:44:13  cdaq
+*     Modify to be able to write scaler rates for each read to a file (mkj)
+*
 *     Revision 1.13  2002/09/25 13:54:16  jones
 *        a. change g_data_source_filename to character*120
 *        b. add variable g_segment
@@ -56,6 +59,9 @@
       integer G_LUN_EPICS_OUTPUT
       parameter (G_LUN_EPICS_OUTPUT=G_LUN_CHARGE_SCALER+1)
 *
+      integer G_LUN_WRITEOUT_SCALER
+      parameter (G_LUN_WRITEOUT_SCALER=G_LUN_TEMP+1)
+*
 
       character*80 g_config_filename
       character*80 g_ctp_hist_filename
@@ -78,6 +84,7 @@
       character*80 g_bad_output_filename
       character*80 g_preproc_filename
       character*80 g_charge_scaler_filename
+      character*80 g_writeout_scaler_filename
       character*80 g_epics_output_filename
 *
       common /gen_filenames/
@@ -101,6 +108,7 @@
      $     g_pedestal_output_filename,
      $     g_bad_output_filename,
      $     g_preproc_filename,
+     $     g_writeout_scaler_filename,
      $     g_charge_scaler_filename,
      $     g_epics_output_filename
 

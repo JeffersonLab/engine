@@ -23,6 +23,9 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
+* Revision 1.17.2.1  2003/08/14 00:42:22  cdaq
+* Modify to be able to write scaler rates for each read to a file (mkj)
+*
 * Revision 1.17  1996/11/05 21:40:59  saw
 * (JRA) Add g_epics_output_filename
 *
@@ -112,6 +115,7 @@
       g_ctp_database_filename = ' '
       g_ctp_kinematics_filename = ' '
       g_charge_scaler_filename = ' '
+      g_writeout_scaler_filename = ' '
 *
       s_recon_coeff_filename = ' '
       h_recon_coeff_filename = ' '
