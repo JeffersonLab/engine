@@ -19,10 +19,15 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 *
-* csa 11/24/98 -- replaced with a version of the new h_physics.f
-* (which contains G. Warren's cleanups).
 *
 * $Log$
+* Revision 1.19  2002/12/27 22:13:00  jones
+*    a. Ioana Niculescu modified total_eloss call
+*    b. CSA 4/15/99 -- changed ssbeta to ssbeta_p in total_eloss call
+*       to yield reasonable calculation for ssbeta=0 events.
+*    c. CSA 4/12/99 -- changed sscorre/p back to ssenergy and ssp so
+*       I could keep those names in c_physics.f
+*
 * Revision 1.18  2002/07/31 20:20:58  saw
 * Only try to fill user hists that are defined
 *
@@ -265,26 +270,24 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 
       if (spartmass .lt. 2.*mass_electron) then ! for electron
         if (gtarg_z(gtarg_num).gt.0.) then
-          call total_eloss(2,.true.,gtarg_z(gtarg_num),gtarg_a(gtarg_num),
-     $           gtarg_thick(gtarg_num),gtarg_dens(gtarg_num),
-     $           sstheta_1st,gtarg_theta,1.0,sseloss)
+          call total_eloss(2,.true.,sstheta_1st,1.0,sseloss)
          else
            sseloss=0.
         endif
       else   ! not an electron
         if (gtarg_z(gtarg_num).gt.0.) then
-          call total_eloss(2,.false.,gtarg_z(gtarg_num),gtarg_a(gtarg_num),
-     $           gtarg_thick(gtarg_num),gtarg_dens(gtarg_num),
-     $           sstheta_1st,gtarg_theta,ssbeta,sseloss)
+          call total_eloss(2,.false.,sstheta_1st,ssbeta_p,sseloss)
         else
           sseloss=0.
         endif
       endif           ! particle specific stuff
 
 *     Correct ssenergy and ssp for eloss at the target
+* csa 4/12/99 -- changed sscorre/p back to ssenergy and ssp so
+* I could keep those names in c_physics.f
 
-      sscorre = ssenergy + sseloss
-      sscorrp = sqrt(sscorre**2-spartmass**2)
+      ssenergy = ssenergy + sseloss
+      ssp = sqrt(ssenergy**2-spartmass**2)
 
 *     Begin Kinematic stuff
 
@@ -296,7 +299,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 *     This coordinate system is a just a simple rotation away from the
 *     TRANSPORT coordinate system used in the spectrometers
 
-      ssp_z = sscorrp/sqrt(1.+ssxp_tar**2+ssyp_tar**2)
+      ssp_z = ssp/sqrt(1.+ssxp_tar**2+ssyp_tar**2)
             
 *     Initial Electron
 
@@ -309,7 +312,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 *     calculation without small angle approximation - gaw 98/10/5 csa
 *     12/21/98 -- notice assumption of no out-of-plane offset
 
-      ss_kpvec(1) =  sscorre
+      ss_kpvec(1) =  ssenergy
       ss_kpvec(2) =  ssp_z*ssxp_tar
       ss_kpvec(3) =  ssp_z*(ssyp_tar*cossthetas+sinsthetas)
       ss_kpvec(4) =  ssp_z*(-ssyp_tar*sinsthetas+cossthetas)
@@ -320,7 +323,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 *     +pi/2 for SOS.
 
       if (abs(ss_kpvec(4)/ssp).le.1.) then
-        sstheta = acos(ss_kpvec(4)/sscorrp)
+        sstheta = acos(ss_kpvec(4)/ssp)
       else
         sstheta = -10.
       endif
@@ -414,7 +417,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
          write(6,*)' s_phys: ssbeta, ssbeta_p   =',ssbeta,ssbeta_p
          write(6,*)' s_phys: ssenergy, ssp      =',ssenergy,ssp
          write(6,*)' s_phys: sseloss            =',sseloss
-         write(6,*)' s_phys: sscorre, sscorrp   =',sscorre,sscorrp
+*         write(6,*)' s_phys: sscorre, sscorrp   =',sscorre,sscorrp
          write(6,*)' s_phys: sstheta_1st        =',sstheta_1st
          write(6,*)' s_phys: ssp_z              =',ssp_z
          write(6,*)' s_phys: ss_kvec            =',ss_kvec
