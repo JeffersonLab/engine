@@ -9,10 +9,13 @@
 *-         : err	- reason for failure, if any
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
-*-    $Log$
-*-    Revision 1.10  1995/09/01 13:40:09  cdaq
-*-    (JRA) Add calls to more efficiency calculations and bad counter report
-*-
+* $Log$
+* Revision 1.11  1995/10/09 18:56:25  cdaq
+* (JRA) Add bypass switches to efficiency shutdown routine calls
+*
+* Revision 1.10  1995/09/01 13:40:09  cdaq
+* (JRA) Add calls to more efficiency calculations and bad counter report
+*
 * Revision 1.9  1995/08/11  15:39:32  cdaq
 * (JRA) Add sos Cerenkov efficiencies
 * (DD) Add sos sieve slit ntuple
@@ -53,6 +56,7 @@
       include 'gen_filenames.cmn'
       include 'gen_run_info.cmn'
       include 'sos_filenames.cmn'
+      include 'sos_bypass_switches.cmn'
 *
       character*17 here
       parameter (here= 'S_proper_shutdown')
@@ -70,13 +74,16 @@
       ABORT= .FALSE.
       err= ' '
 *     
-      call s_dc_eff_shutdown(lunout,ABORT,err)
+      if (sbypass_dc_eff.eq.0) then
+        call s_dc_eff_shutdown(lunout,ABORT,err)
+        call s_dc_trk_eff_shutdown(lunout,ABORT,err)
+      endif
 *     
-      call s_scin_eff_shutdown(lunout,ABORT,err)
+      if (sbypass_scin_eff.eq.0) call s_scin_eff_shutdown(lunout,ABORT,err)
 *
-      call s_cer_eff_shutdown(lunout,ABORT,err)
+      if (sbypass_cer_eff.eq.0) call s_cer_eff_shutdown(lunout,ABORT,err)
 *
-      call s_cal_eff_shutdown(ABORT,err)
+      if (sbypass_cal_eff.eq.0) call s_cal_eff_shutdown(ABORT,err)
 *     
       call s_report_bad_data(lunout,ABORT,err)
 *

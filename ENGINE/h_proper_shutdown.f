@@ -9,10 +9,13 @@
 *-         : err	- reason for failure, if any
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
-*-    $Log$
-*-    Revision 1.9  1995/09/01 13:39:46  cdaq
-*-    (JRA) Add calls to more efficiency calculations and bad counter report
-*-
+* $Log$
+* Revision 1.10  1995/10/09 18:55:48  cdaq
+* (JRA) Add bypass switches to efficiency shutdown routine calls
+*
+* Revision 1.9  1995/09/01 13:39:46  cdaq
+* (JRA) Add calls to more efficiency calculations and bad counter report
+*
 * Revision 1.8  1995/07/27  19:02:34  cdaq
 * (SAW) Move ntuple shutdown to g_ntuple_shutdown
 *
@@ -49,6 +52,7 @@
       include 'gen_filenames.cmn'
       include 'gen_run_info.cmn'
       include 'hms_filenames.cmn'
+      include 'hms_bypass_switches.cmn'
 *
       character*17 here
       parameter (here= 'H_proper_shutdown')
@@ -66,13 +70,16 @@
       ABORT= .FALSE.
       err= ' '
 *
-      call h_dc_eff_shutdown(lunout,ABORT,err)
+      if (hbypass_dc_eff.eq.0) then
+        call h_dc_eff_shutdown(lunout,ABORT,err)
+        call h_dc_trk_eff_shutdown(lunout,ABORT,err)
+      endif
 *
-      call h_scin_eff_shutdown(lunout,ABORT,err)
+      if (hbypass_scin_eff.eq.0) call h_scin_eff_shutdown(lunout,ABORT,err)
 *
-      call h_cer_eff_shutdown(lunout,ABORT,err)
+      if (hbypass_cer_eff.eq.0) call h_cer_eff_shutdown(lunout,ABORT,err)
 *
-      call h_cal_eff_shutdown(ABORT,err)
+      if (hbypass_cal_eff.eq.0) call h_cal_eff_shutdown(ABORT,err)
 *
       call h_report_bad_data(lunout,ABORT,err)
 *
