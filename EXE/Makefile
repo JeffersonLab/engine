@@ -24,8 +24,9 @@ endif
 ONEEVLIB = $(LIBROOT)/liboneev.a
 ENGINELIB = $(LIBROOT)/libengine.a
 UTILLIB = $(LIBROOT)/libutils.a
+CODALIB = $(LIBROOT)/libcoda.a
 ifdef ROOTSYS
-  CTPLIB = $(LIBROOT)/libctp.a $(LIBROOT)/libctp_root.a
+  CTPLIB = $(LIBROOT)/libctp_root.a
   CTPCLIENTLIB = $(LIBROOT)/libctpclient_root.a
   OTHERLIBS = $(shell $(ROOTSYS)/bin/root-config --libs)
 else
@@ -39,7 +40,7 @@ STRACKINGLIB = $(LIBROOT)/libstracking.a
 HACKLIB = $(LIBROOT)/libhack.a
 CERNLIBS = -lgeant$(GEANTVER) -lpawlib -lgraflib -lgrafX11 -lpacklib -lmathlib
 OURGENLIBS = $(ENGINELIB) $(HTRACKINGLIB) $(STRACKINGLIB) $(TRACKINGLIB) \
-	$(HACKLIB) $(UTILLIB) $(CTPLIB) $(CTPCLIENTLIB) 
+	$(HACKLIB) $(UTILLIB) $(CODALIB) $(CTPLIB) $(CTPCLIENTLIB) 
 MAKEREG=$(Csoft)/../$(MYOS)/bin/makereg
 
 ifeq ($(MYOS),HPUX)
