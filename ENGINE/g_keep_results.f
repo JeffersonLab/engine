@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard, HU
 *-    $Log$
-*-    Revision 1.1  1994/02/04 22:10:48  cdaq
-*-    Initial revision
+*-    Revision 1.2  1994/04/15 20:35:29  cdaq
+*-    (KBB) Add calls to thtstexe and thhstexe
 *-
+* Revision 1.1  1994/02/04  22:10:48  cdaq
+* Initial revision
+*
 *-
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
@@ -28,9 +31,14 @@
       character*(*) err
 *
       INCLUDE 'gen_data_structures.cmn'
+      include 'gen_routines.dec'
 *
       logical HMS_ABORT,SOS_ABORT
       character*1024 HMS_err,SOS_err
+      character*80 msg
+      integer ierr
+      real rv
+*
 *--------------------------------------------------------
 *
       err= ' '                                  !erase any old errors
@@ -70,7 +78,29 @@
 *
       ENDIF
 *
+      IF(.NOT.ABORT) THEN
+         ierr= thtstexe()
+         ABORT= ierr.NE.0
+         If(ABORT) Then
+            call G_build_note(':failure#$ in thtstexe','$',ierr,
+     &           ' ',rv,' ',msg)
+         Else
+            ierr= thhstexe()
+            ABORT= ierr.NE.0
+            if(ABORT) then
+               call G_build_note(':failure#$ in thhstexe','$',ierr,
+     &              ' ',rv,' ',msg)
+            endif
+         EndIf
+         If(ABORT .and. err.NE.' ') Then
+            call G_prepend(msg//'&',err)
+         ElseIf(ABORT) Then
+            err= msg
+         EndIf
+      ENDIF
+*
       IF(ABORT) call G_add_path(here,err)
 *
       RETURN
       END
+
