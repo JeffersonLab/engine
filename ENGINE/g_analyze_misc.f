@@ -7,6 +7,9 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.6  1999/06/10 14:38:25  csa
+* (CSA) Commented out debugging output
+*
 * Revision 1.5  1999/02/23 16:55:43  csa
 * Correct gbeam calc, add a bunch of comments
 *
@@ -77,17 +80,17 @@
 *     can be removed.
 
       if(guse_bpm_in_recon .ne. 0) then
-         write(6,*)' g_analyze_misc: forcing guse_bpm_in_recon to 0'
+*         write(6,*)' g_analyze_misc: forcing guse_bpm_in_recon to 0'
          guse_bpm_in_recon = 0
       endif
 
       if(gusefr .ne. 0) then
-         write(6,*)' g_analyze_misc: forcing gusefr to 0 (NO Fast Raster corrections)'
+*         write(6,*)' g_analyze_misc: forcing gusefr to 0 (NO Fast Raster corrections)'
          gusefr = 0
       endif
 
       if(guse_frdefault .ne. 1) then
-         write(6,*)' g_analyze_misc: forcing guse_frdefault to 1'
+*         write(6,*)' g_analyze_misc: forcing guse_frdefault to 1'
          guse_frdefault = 1
       endif
 
