@@ -19,6 +19,9 @@
 *-   Created 4-JUN-2004   C. Xu
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.1.2.2  2004/07/01 19:15:50  jones
+* Defined variable 'i' and correct some typos. Fpi2 branch
+*
 * Revision 1.1.2.1  2004/07/01 14:49:50  jones
 * New codes to correct SOS ytar, xptar and yptar for the fpi2
 * branch of Analyzer.
@@ -35,7 +38,7 @@
 *
       logical ABORT
       character*(*) err
-      integer ierr
+      integer ierr,i
 *
       include 'gen_data_structures.cmn'
       INCLUDE 'sos_data_structures.cmn'
@@ -45,14 +48,14 @@
 *     local variables 
 *
       REAL*4 c(75),xptarcorr
-      real*4 xp, yp, yta
+      real*4 xp, yp, ytar
 
 *--------------------------------------------------------
 *
       ierr=0
       ABORT=.FALSE.
 
-      yptarcorr=0.
+      xptarcorr=0.
 
       xp=ssxp_tar
       yp=ssyp_tar
