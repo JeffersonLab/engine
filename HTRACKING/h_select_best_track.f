@@ -12,9 +12,11 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log$
-*- Revision 1.1  1995/01/31 21:33:54  cdaq
-*- Initial revision
+*- Revision 1.2  1995/02/23 13:31:01  cdaq
+*- (JRA) Adjust include file ordering
 *-
+* Revision 1.1  1995/01/31  21:33:54  cdaq
+* Initial revision
 *-
 *--------------------------------------------------------
       IMPLICIT NONE
@@ -31,10 +33,9 @@
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       INCLUDE 'hms_physics_sing.cmn'
-      INCLUDE 'mc_structures.cmn'
       INCLUDE 'hms_calorimeter.cmn'
-      INCLUDE 'hms_scin_tof.cmn'
       INCLUDE 'hms_scin_parms.cmn'
+      INCLUDE 'hms_scin_tof.cmn'
 *
 *     local variables 
       integer*4 goodtrack,track
