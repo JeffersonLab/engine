@@ -23,7 +23,10 @@
 * the correction parameters.
 *
 * $Log$
-* Revision 1.5  1994/07/21 13:29:45  cdaq
+* Revision 1.6  1994/08/02 20:11:47  cdaq
+* (JRA) Some hacks
+*
+* Revision 1.5  1994/07/21  13:29:45  cdaq
 * (JRA) Correct sign on a time correction
 *
 * Revision 1.4  1994/07/08  19:43:53  cdaq
@@ -54,6 +57,7 @@
       include 'hms_scin_tof.cmn'
       integer*4 hit, trk
       integer*4 plane
+      integer*4 numplanes
       real*4 adc_ph                     !pulse height (channels)
       real*4 xhit_coord,yhit_coord
       real*4 time
@@ -81,6 +85,7 @@
                hgood_tdc_neg(hit) = .false.
                hscin_time(hit) = 0
                hscin_sigma(hit) = 0
+ccc               hnum_scin_hit(hit) = 0
             enddo
 
             do hit = 1 , hscin_tot_hits
@@ -155,6 +160,7 @@
                         hscin_sigma(hit) = sqrt(hscin_neg_sigma(hit)**2 + 
      1                       hscin_pos_sigma(hit)**2)/2.
                         hgood_scin_time(hit) = .true.
+ccc                        hnum_scin_hit(trk) = hnum_scin_hit(trk)+1
                      else
                         hscin_time(hit) = hscin_pos_time(hit)
                         hscin_sigma(hit) = hscin_pos_sigma(hit)
@@ -179,8 +185,16 @@
 
 
 ** Fit beta if there are enough time measurements (one upper, one lower)
-            if ((hgood_plane_time(1) .or. hgood_plane_time(2)) .and.
-     1           (hgood_plane_time(3) .or. hgood_plane_time(4))) then
+***            if ((hgood_plane_time(1) .or. hgood_plane_time(2)) .and.
+***     1           (hgood_plane_time(3) .or. hgood_plane_time(4))) then
+
+** For now, require at least 3 planes, to avoid bad fits.
+             numplanes=0
+             if (hgood_plane_time(1)) numplanes=numplanes+1
+             if (hgood_plane_time(2)) numplanes=numplanes+1
+             if (hgood_plane_time(3)) numplanes=numplanes+1
+             if (hgood_plane_time(4)) numplanes=numplanes+1
+             if (numplanes.ge.3) then
                call h_tof_fit(abort,errmsg,trk) !fit velocity of particle
                if (abort) then
                   call g_prepend(here,errmsg)
@@ -195,6 +209,13 @@
             if(hdebugprinttoftracks.ne.0 ) then 
                call h_prt_tof(trk)
             endif
+***            if(hbeta(trk).ge.2. ) then
+***              type *,hbeta(trk),hbeta_chisq(trk)
+***              do hit=1,hscin_tot_hits
+***                type *,hscin_plane_num(hit),
+***     &                      hscin_counter_num(hit),hscin_on_track(trk,hit)
+***              enddo
+***            endif
 *
 *
          enddo                          !end of loop over tracks
