@@ -9,6 +9,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.22  1996/09/04 15:33:43  saw
+* (JRA) Assorted changes and diagnostics
+*
 * Revision 1.21  1996/04/29 19:19:04  saw
 * (JRA) Corrections
 *
@@ -101,14 +104,15 @@
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
 *
-      logical problems
+      logical problems, finished_extracting
       integer total_event_count
       integer physics_events
       integer analyzed_events(0:gen_max_trigger_types)
       integer sum_analyzed
       integer recorded_events(0:gen_max_trigger_types)
       integer sum_recorded
-      integer i,since_cnt,itmp,lastdump
+      integer num_events_skipped
+      integer i,since_cnt,lastdump
       integer rpc_pend                  ! # Pending asynchronous RPC requests
 *
       character*80 g_config_environmental_var
@@ -121,19 +125,19 @@
       character*20 groupname
       character*132 system_string
 *
-c      real*4 ebeam,phms,thms,psos,tsos
+      real*4 ebeam,phms,thms,psos,tsos,ntarg
 *
       integer start_time,lasttime
       integer time
+      integer*4 preprocessor_keep_event
       external time
 *
 *
 *--------------------------------------------------------
 *
       print *
-      print *,'    Hall C Proudly Presents: PHYSICS Analysis Engine - Winter 1995'
+      print *,'  Hall C Proudly Presents: PHYSICS Analysis Engine - Spring 1996'
 *
-      err= ' '
       print *
 *
       total_event_count= 0                      ! Need to register this
@@ -144,6 +148,7 @@ c      real*4 ebeam,phms,thms,psos,tsos
       enddo
       sum_analyzed=0
       sum_recorded=0
+      num_events_skipped=0
 *
       rpc_on=0                          ! RPC servicing off by default
       rpc_control=-1                    ! If RPC on, don't block by default
@@ -158,7 +163,7 @@ c      real*4 ebeam,phms,thms,psos,tsos
 *
       g_config_filename = ' '
 *
-      call engine_command_line          ! Set CTP vars from command line
+      call engine_command_line(.false.) ! Set CTP vars from command line
 *       
       call G_init_filenames(ABORT,err,g_config_environmental_var)
       if(ABORT.or.err.ne.' ') then
@@ -168,10 +173,10 @@ c      real*4 ebeam,phms,thms,psos,tsos
          err= ' '
       ENDIF
 *
-      call engine_command_line          ! Set CTP vars from command line
+      call engine_command_line(.false.) ! Set CTP vars from command line
 *
-*     If there is a g_ctp_database_filename set, pass the run number
-*     to it to set CTP variables
+* If there is a g_ctp_database_filename set, pass the run number
+* to it to set CTP variables
 *
       if(.not.ABORT.and.g_ctp_database_filename.ne.' ') then
         call g_ctp_database(ABORT, err
@@ -181,7 +186,7 @@ c      real*4 ebeam,phms,thms,psos,tsos
         endif
       ENDIF
 *       
-      call engine_command_line          ! Set CTP vars from command line
+      call engine_command_line(.false.) ! Set CTP vars from command line
 *
       call G_decode_init(ABORT,err)
       if(ABORT.or.err.ne.' ') then
@@ -191,16 +196,8 @@ c      real*4 ebeam,phms,thms,psos,tsos
          err= ' '
       endif
 *
-      call G_initialize(ABORT,err)              !includes a total reset
-      IF(ABORT.or.err.NE.' ') THEN
-         call G_add_path(here,err)
-         call G_rep_err(ABORT,err)
-         If(ABORT) STOP
-         err= ' '
-      ENDIF
-*
-*-attempt to open FASTBUS-CODA file
-*
+
+
       g_data_source_opened = .false.     !not opened yet
       g_data_source_in_hndl= 0           !none
       call G_open_source(ABORT,err)
@@ -211,7 +208,121 @@ c      real*4 ebeam,phms,thms,psos,tsos
          err= ' '
       endif
 *
-      call engine_command_line          ! Set CTP vars from command line
+* if preprocessor on, open event file
+*
+      if(g_preproc_on.ne.0)then
+        g_preproc_opened=.false. !not opened yet
+        g_preproc_in_hndl=0      !none IO opened
+        call g_preproc_open(ABORT,err)
+        if (ABORT.or.err.ne.' ')then
+          call G_add_path(here,err)
+          call G_rep_err(ABORT,err)
+          if (ABORT) STOP
+          err=' '
+        endif
+        write(6,*)'Opened CODA event file for preprocessor output'
+      endif
+
+      finished_extracting = .false.
+      DO WHILE(.NOT.problems .and. .NOT.ABORT .and. .NOT.EoF .and.
+     &         .NOT.finished_extracting)
+        mss= ' '
+        g_replay_time=time()-start_time
+*
+        call G_clear_event(ABORT,err)   !clear out old data
+        problems= problems .OR. ABORT
+*
+        if(mss.NE.' ' .and. err.NE.' ') then
+          call G_append(mss,' & '//err)
+        elseif(err.NE.' ') then
+          mss= err
+        endif
+*
+        If(.NOT.problems) Then
+          call G_get_next_event(ABORT,err) !get and store 1 event 
+          problems= problems .OR. ABORT 
+          if(.NOT.ABORT) total_event_count= total_event_count+1
+*     
+        EndIf
+*
+        if(mss.NE.' ' .and. err.NE.' ') then
+          call G_append(mss,' & '//err)
+        elseif(err.NE.' ') then
+          mss= err
+        endif
+*
+* Check if this is a physics event or a CODA control event.
+*
+        if(.not.problems) then
+          gen_event_type = jishft(craw(2),-16)
+          if(gen_event_type.le.gen_MAX_trigger_types) then
+            recorded_events(gen_event_type)=recorded_events(gen_event_type)+1
+            sum_recorded=sum_recorded+1
+            write(6,*) "AAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHH!!!!!!!!!!"
+            write(6,*) "Whew, I feel much bettter now"
+            write(6,*) "However, you might want to know that I've hit a physics event"
+            write(6,*) "In my run info event loop and THAT SHOULD NEVER HAPPEN!!!"
+            write(6,*) "KILL ME!!! KILL ME NOW!!!!!"
+          endif
+*
+* if preprocessor is on write all events of trig type > 16
+*   (i.e. all non-physics events)
+*
+          if(gen_event_type.ge.(gen_max_trigger_types-1) .and.
+     $         g_preproc_on.ne.0) then
+            call g_write_event(ABORT,err)
+          endif
+
+          if (gen_event_type.eq.130) then !run info event (get e,p,theta)
+            finished_extracting=.true.
+            write(6,'(a)') 'COMMENTS FROM RUN INFO EVENT'
+            call g_extract_kinematics(ebeam,phms,thms,psos,tsos,ntarg)
+            write(6,'(a)') 'KINEMATICS FROM RUN INFO EVENT'
+c  beam energy no longer in runinfo event.
+c            if (ebeam.gt.10.) ebeam=ebeam/1000. !usually in MeV
+c            write(6,*) '   gpbeam     =',abs(ebeam),' GeV'
+c            gpbeam=abs(ebeam)
+            write(6,*) '   hpcentral  =',abs(phms),' GeV/c'
+            hpcentral=abs(phms)
+            write(6,*) '   htheta_lab =',abs(thms),' deg.'
+            htheta_lab=abs(thms)
+            write(6,*) '   spcentral  =',abs(psos),' GeV/c'
+            spcentral=abs(psos)
+            write(6,*) '   stheta_lab =',abs(tsos),' deg.'
+            stheta_lab=abs(tsos)
+            write(6,*) '   gtarg_num  =',abs(ntarg)
+            gtarg_num=ntarg
+          endif
+
+          if (gen_event_type.eq.131.or.gen_event_type.eq.133) then !past run info event. must be missing
+            write(6,*) "no run information event found"
+            finished_extracting=.true.
+          endif
+
+        endif                           !if .not.problems
+      enddo                             !do while .not.finished_extracting
+
+      call G_initialize(ABORT,err)              !includes a total reset
+      IF(ABORT.or.err.NE.' ') THEN
+         call G_add_path(here,err)
+         call G_rep_err(ABORT,err)
+         If(ABORT) STOP
+         err= ' '
+      ENDIF
+*
+*-attempt to open FASTBUS-CODA file
+*
+c      g_data_source_opened = .false.     !not opened yet
+c      g_data_source_in_hndl= 0           !none
+c      call G_open_source(ABORT,err)
+c      if(ABORT.or.err.ne.' ') then
+c         call G_add_path(here,err)
+c         call G_rep_err(ABORT,err)
+c         If(ABORT) STOP
+c         err= ' '
+c      endif
+*
+      call engine_command_line(.false.) ! Set CTP vars from command line
 *
 * Print out the statistics report once...
       if(g_stats_blockname.ne.' '.and.
@@ -221,10 +332,11 @@ c      real*4 ebeam,phms,thms,psos,tsos
          ierr = threp(g_stats_blockname,file)
       endif
 *
-*     Comment out the following three lines if they cause trouble or
-*     if wish is unavailable.
-      write(system_string,*) 'runstats ',g_stats_output_filename,
-     $     ' ',gen_run_number, '> /dev/null 2>&1 &'
+* Comment out the following three lines if they cause trouble or
+* if wish is unavailable.
+*
+      write(system_string,*) 'runstats ',file(1:index(file,' ')-1), ' ',
+     $     gen_run_number, '> /dev/null 2>&1 &'
       call system(system_string)
 *
 *-zero entire event buffer
@@ -232,18 +344,6 @@ c      real*4 ebeam,phms,thms,psos,tsos
       DO i=1,LENGTH_CRAW
          CRAW(i)= 0
       ENDDO
-*
-* input number of events to analyze and hist dumping interval
-*
-c      write(6,'(/,"Starting Event #: [",i7,"] "$)') gen_run_starting_event
-c      read(5,'(i30)') itmp
-c      if (itmp.ne.0) gen_run_starting_event=itmp
-c      write(6,'("Stopping Event #: [",i7,"] "$)') gen_run_stopping_event
-c      read(5,'(i30)') itmp
-c      if (itmp.ne.0) gen_run_stopping_event=itmp
-c      write(6,'("Hist dump intrvl: (-1=@end) [",i7,"] "$)') gen_run_hist_dump_interval
-c      read(5,'(i30)') itmp
-c      if (itmp.ne.0) gen_run_hist_dump_interval=itmp
 *
       since_cnt= 0
       problems= .false.
@@ -291,10 +391,10 @@ c      if (itmp.ne.0) gen_run_hist_dump_interval=itmp
         endif
 *
         If(.NOT.problems) Then
-          call G_get_next_event(ABORT,err) !get and store 1 event 
-          problems= problems .OR. ABORT 
+          call G_get_next_event(ABORT,err) !get and store 1 event
+          problems= problems .OR. ABORT
           if(.NOT.ABORT) total_event_count= total_event_count+1
-*     
+*
         EndIf
 *
         if(mss.NE.' ' .and. err.NE.' ') then
@@ -303,7 +403,7 @@ c      if (itmp.ne.0) gen_run_hist_dump_interval=itmp
           mss= err
         endif
 *
-*     Check if this is a physics event or a CODA control event.
+* Check if this is a physics event or a CODA control event.
 *
         if(.not.problems) then
           gen_event_type = jishft(craw(2),-16)
@@ -311,12 +411,20 @@ c      if (itmp.ne.0) gen_run_hist_dump_interval=itmp
             recorded_events(gen_event_type)=recorded_events(gen_event_type)+1
             sum_recorded=sum_recorded+1
           endif
+*
+*if preprocessor is on write all events of trig type > 16
+*  (i.e. all non-physics events)
+*
+          if(gen_event_type.ge.(gen_max_trigger_types-1) .and.
+     &         g_preproc_on.ne.0)then
+            call g_write_event(ABORT,err)
+          endif
 
           if (gen_event_type.eq.130) then       !run info event (get e,p,theta)
 c            call g_extract_kinematics(ebeam,phms,thms,psos,tsos)
-c            if (cpbeam .ge. 7. .and. ebeam.le.7.) then !sometimes ebeam in MeV
-c              cpbeam=abs(ebeam)
-c              write(6,*) 'cpbeam=',abs(ebeam),' GeV'
+c            if (gpbeam .ge. 7. .and. ebeam.le.7.) then !sometimes ebeam in MeV
+c              gpbeam=abs(ebeam)
+c              write(6,*) 'gpbeam=',abs(ebeam),' GeV'
 c            endif
 c            if (hpcentral .ge. 7.) then
 c              write(6,*) 'hpcentral=',abs(phms),' GeV/c'
@@ -338,21 +446,24 @@ c            endif
 
 
           if(jiand(CRAW(2),'FFFF'x).eq.'10CC'x) then ! Physics event
-*     
+*
             if(gen_event_type.le.gen_MAX_trigger_types .and.
      $           gen_run_enable(gen_event_type-1).ne.0) then
                   
               call g_examine_physics_event(CRAW,ABORT,err)
               problems = problems .or.ABORT
-*     
+*
               if(mss.NE.' ' .and. err.NE.' ') then
                 call G_append(mss,' & '//err)
               elseif(err.NE.' ') then
                 mss= err
               endif
-*     
-              IF(gen_run_starting_event.LE.gen_event_ID_number .or.
-     $             gen_event_type.eq.4) THEN ! always analyze peds.
+*
+*
+              IF(num_events_skipped.lt.gen_run_starting_event .and.
+     $             gen_event_type.ne.4) THEN ! always analyze peds.
+                num_events_skipped = num_events_skipped + 1
+              ELSE
                 if(gen_run_starting_event.eq.gen_event_id_number)
      &               start_time=time()  !reset start time for analysis rate
                 if(.NOT.problems) then
@@ -362,7 +473,7 @@ c            endif
                   sum_analyzed=sum_analyzed+1
                   problems= problems .OR. ABORT
                 endif
-*     
+*
                 if(mss.NE.' ' .and. err.NE.' ') then
                   call G_append(mss,' & '//err)
                 elseif(err.NE.' ') then
@@ -378,6 +489,7 @@ c            endif
                   groupname='both'
                 else if (gen_event_type.eq.4) then
                   start_time=time()     !reset start time for analysis rate
+                  groupname='ped'
                 else
                   write(6,*) 'gen_event_type= ',gen_event_type,' for call to g_keep_results'
                 endif
@@ -394,7 +506,19 @@ c            endif
                 endif
 
 *
-*- Here is where we insert a check for an Remote Proceedure Call (RPC) 
+* if preprocessor is on check event for write criteria
+*
+                if(g_preproc_on.ne.0)then
+                  if(.NOT.problems)then
+                    call g_preproc_event(preprocessor_keep_event)
+                    if(preprocessor_keep_event.eq.1)then
+                      call g_write_event(ABORT,err)
+                    endif
+                  endif
+                endif
+
+*
+*- Here is where we insert a check for an Remote Proceedure Call (RPC)
 *- from another process for CTP to interpret
 *
                 if(rpc_on.ne.0) then
@@ -412,14 +536,13 @@ c            endif
                   if(rpc_control.gt.0) rpc_control = rpc_control - 1
                 endif
 
-
               ENDIF
             endif
           Else
             if(gen_event_type.eq.129) then
               call g_analyze_scalers(CRAW,ABORT,err)
-*  Dump report at first scaler event AFTER hist_dump_interval to keep hardware
-*  and software scalers in sync.
+* Dump report at first scaler event AFTER hist_dump_interval to keep hardware
+* and software scalers in sync.
               if((physics_events-lastdump).ge.gen_run_hist_dump_interval.and.
      &            gen_run_hist_dump_interval.gt.0) then
                 lastdump=physics_events   ! Wait for next interval of dump_int.
@@ -439,7 +562,7 @@ c            endif
 *
 *Now write the statistics report every 2 sec...
 *
-         if (g_replay_time-lasttime.ge.2.) then  !dump every 2 seconds
+         if (g_replay_time-lasttime.ge.2) then  !dump every 2 seconds
            lasttime=g_replay_time
            if(g_stats_blockname.ne.' '.and.
      $          g_stats_output_filename.ne.' ') then
@@ -462,13 +585,13 @@ c            endif
 *
         EoF= gen_event_type.EQ.20
 *
-        If(gen_run_stopping_event.GT.0 .and. 
+        If(gen_run_stopping_event.GT.0 .and.
      &       gen_event_ID_number.GT.0) Then
           EoF= EoF .or. gen_run_stopping_event.LE.sum_analyzed-
      $         analyzed_events(4)
         EndIf
 *
-*- Here is where we insert a check for an Remote Proceedure Call (RPC) 
+*- Here is where we insert a check for an Remote Proceedure Call (RPC)
 *- from another process for CTP to interpret
 *
       ENDDO                             !found a problem or end of run
@@ -506,6 +629,9 @@ c            endif
         err= ' '
       EndIf
 *
+* close charge scalers output file.
+      if (g_charge_scaler_filename.ne.' ') close(unit=217)
+*
       call g_dump_peds
       call h_dump_peds
       call s_dump_peds
@@ -522,26 +648,28 @@ c            endif
       call G_log_message(mss)
       print *,'  for run#',gen_run_number
 *
-*     Comment out the following two lines if they cause trouble
+* Comment out the following two lines if they cause trouble
       call system
      &  ("kill `ps | grep runstats | awk '{ print $1}'` > /dev/null 2>&1")
 *
       END
 
-      subroutine engine_command_line
+      subroutine engine_command_line(outputflag)
 *
       implicit none
       integer iarg
       character*132 arg
       integer iargc
       external iargc
+      logical outputflag
 *
-*     Process command line args that set CTP variables
+* Process command line args that set CTP variables
 *
       do iarg=1,iargc()
         call getarg(iarg,arg)
         if(index(arg,'=').gt.0) then
           call thpset(arg)
+          if (outputflag) write(6,'(4x,a70)') arg(1:70)
         endif
       enddo
 *
