@@ -8,7 +8,11 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.16  1994/10/28 15:55:24  cdaq
+* Revision 1.17  1994/11/22 18:42:03  cdaq
+* (SAW) Add h's in front of fract, aa3, det3, aainv3.  Remove fractinterp
+*       Cleaned up ?DC_NUM_CHAMBERS and ?MAX_NUM_CHAMBERS stuff
+*
+* Revision 1.16  1994/10/28  15:55:24  cdaq
 * (DM) Change drift time array parmeters to variables
 *
 * Revision 1.15  1994/10/12  18:16:13  cdaq
@@ -78,8 +82,7 @@
       real*4    hdriftbins         ! number of bins for drift time lookup table
       real*4    hdriftbinsz         ! drift bin size in nsec of lookup table
       real*4    hdrift1stbin        ! drift time of 1st bin in nsec of lookup
-      real*4     fract              !fraction of integrated time spectrum
-      real*4     fractinterp        !  interpolated fraction 
+      real*4     hfract             !fraction of integrated time spectrum
       real*4 hwc1x1fract(hdriftbins_max),hwc1y1fract(hdriftbins_max),
      &       hwc1u1fract(hdriftbins_max),hwc1v1fract(hdriftbins_max),
      &       hwc1y2fract(hdriftbins_max),hwc1x2fract(hdriftbins_max),
@@ -87,25 +90,23 @@
      &       hwc2u1fract(hdriftbins_max),hwc2v1fract(hdriftbins_max),
      &       hwc2y2fract(hdriftbins_max),hwc2x2fract(hdriftbins_max)
 
-      equivalence (hwc1x1fract(1),fract(1,1))
-      equivalence (hwc1y1fract(1),fract(1,2))
-      equivalence (hwc1u1fract(1),fract(1,3))
-      equivalence (hwc1v1fract(1),fract(1,4))
-      equivalence (hwc1y2fract(1),fract(1,5))
-      equivalence (hwc1x2fract(1),fract(1,6))
-      equivalence (hwc2x1fract(1),fract(1,7))
-      equivalence (hwc2y1fract(1),fract(1,8))
-      equivalence (hwc2u1fract(1),fract(1,9))
-      equivalence (hwc2v1fract(1),fract(1,10))
-      equivalence (hwc2y2fract(1),fract(1,11))
-      equivalence (hwc2x2fract(1),fract(1,12))
+      equivalence (hwc1x1fract(1),hfract(1,1))
+      equivalence (hwc1y1fract(1),hfract(1,2))
+      equivalence (hwc1u1fract(1),hfract(1,3))
+      equivalence (hwc1v1fract(1),hfract(1,4))
+      equivalence (hwc1y2fract(1),hfract(1,5))
+      equivalence (hwc1x2fract(1),hfract(1,6))
+      equivalence (hwc2x1fract(1),hfract(1,7))
+      equivalence (hwc2y1fract(1),hfract(1,8))
+      equivalence (hwc2u1fract(1),hfract(1,9))
+      equivalence (hwc2v1fract(1),hfract(1,10))
+      equivalence (hwc2y2fract(1),hfract(1,11))
+      equivalence (hwc2x2fract(1),hfract(1,12))
 
-      common/HMS_DRIFT/fract(hdriftbins_max,12),fractinterp,
+      common/HMS_DRIFT/hfract(hdriftbins_max,12),
      $     hdriftbinsz,hdrift1stbin,hdriftbins
 
       integer*4 hdc_num_planes      ! actual number of dc chambers - set in CTP
-      integer*4 hmax_num_chambers   ! maximum number of chambers
-      parameter (hmax_num_chambers=2)
       integer*4 hdc_num_chambers    ! actual number of chambers - set in CTP
       integer*4 hmax_chamber_hits
       parameter (hmax_chamber_hits=544)
@@ -123,8 +124,6 @@
       real*4 hbeststub              ! array of stubs fit to each space point
       real*4 hdc_sing_drifttime ! array of fully corrected drift times for each plane
       real*4 hdc_sing_driftdis  ! array of final drift distances for each plane
-      real*8 aa3,aainv3         ! matrix AA and its inverse AAINV 
-      real*8 det3               ! array of determinants of AA
 
 *
 *     CTPTYPE=parm
@@ -194,14 +193,16 @@
      &     HDC_HITS_PER_PLANE(HMAX_NUM_DC_PLANES),
      &     HDC_SING_WCENTER(HMAX_NUM_DC_PLANES),
      &     HDC_SING_WCOORD(HMAX_NUM_DC_PLANES),
-     &     gplanehdc1(hmax_space_points),gplanehdc2(hmax_space_points),
-     &     aa3(3,3),aainv3(3,3,14),det3(14)
-
-
+     &     gplanehdc1(hmax_space_points),gplanehdc2(hmax_space_points)
 
 *
 *
 *     CTPTYPE=parm
+*
+      real*8 haa3,haainv3         ! matrix AA and its inverse AAINV 
+      real*8 hdet3               ! array of determinants of AA
+      common/HMS_TFIT_MATRIX/
+     &     haa3(3,3),haainv3(3,3,14),hdet3(14)
 *
 *     hms print routines logical unit number for output
       integer*4 hluno
