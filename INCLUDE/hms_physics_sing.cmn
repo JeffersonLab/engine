@@ -1,5 +1,8 @@
 *    This include file contains all the variables required for h_physics
 * $Log$
+* Revision 1.5  1996/04/30 13:39:20  saw
+* (JRA) Add pathlength, rf, and photodisintigration variables
+*
 * Revision 1.4  1995/09/01 13:03:31  cdaq
 * (JRA) Add cerenkov position variables
 *
@@ -83,3 +86,53 @@
      &     hsx_s2, hsy_s2,
      &     hsx_cal, hsy_cal,
      &     hsscin_elem_hit
+
+*
+*     CTPTYPE=parm
+*
+      real*4 hpathlength_central
+*
+*     CTPTYPE=event
+*
+      real*4 hsbeta_p
+      real*4 hspathlength
+      real*4 hspath_cor
+      real*4 hsrftime
+
+      COMMON/hms_timing_stuff/
+     &     hpathlength_central,
+     &     hsbeta_p,
+     &     hspathlength,
+     &     hspath_cor,
+     &     hsrftime
+
+*
+*     CTPTYPE=event
+*
+      real*4 hqx,hqy,hqz,hqabs
+      real*4 hinvmass
+
+      common/hms_physics_quantaties/
+     &    hqx,hqy,hqz,hqabs,
+     &    hinvmass
+
+
+c------------------------------------------------------------------
+c     For photodisintegration calculations.
+c     M.Miller, NPL UIUC, 10-Sept-1995, miller5@uiuc.edu
+*
+*     CTPTYPE=parm
+*
+      real*4 hphoto_mtarget    ! Mass of target [Gev/c^2]
+      real*4 hphoto_mparticle  ! Mass of detected particle [Gev/c^2]
+      real*4 hphoto_mrecoil    ! Mass of recoil system [Gev/c^2]
+*
+*     CTPTYPE=event
+*
+      real*4 hsegamma
+
+      common /hms_photo_param/
+     &     hphoto_mtarget,
+     &     hphoto_mparticle,
+     &     hphoto_mrecoil,
+     &     hsegamma
