@@ -5,6 +5,9 @@
 *     space point.
 *     d. f. geesaman           17 January 1994
 * $Log$
+* Revision 1.13  1999/02/23 18:39:52  csa
+* (JRA) Correct two typos in 4/6 code
+*
 * Revision 1.12  1999/02/10 18:23:41  csa
 * Added 4/6 tracking code (D. Meekins)
 *
@@ -182,9 +185,9 @@
             pindex=11
           else if(gplanehdc2(isp).eq.31)then
             pindex=12
-          else if(gplanehdc1(isp).eq.15)then !4/6 planes fire
+          else if(gplanehdc2(isp).eq.15)then !4/6 planes fire
             pindex=30
-          else if(gplanehdc1(isp).eq.23)then !4/6 planes fire
+          else if(gplanehdc2(isp).eq.23)then !4/6 planes fire
             pindex=31
           else if(gplanehdc2(isp).eq.27)then !4/6 planes fire
             pindex=32
@@ -306,7 +309,7 @@
                     enddo
                  endif
              else
-                write(6,*) 'pindex=',pindex,' in h_left_right'
+                write(6,*) 'pindex=',pindex,' in h_left_right','gplanehdc1/2=',gplanehdc1(isp),gplanehdc2(isp)
              endif ! 4/6 plane tracking
           endif
         enddo                           ! end loop on possible left-right
