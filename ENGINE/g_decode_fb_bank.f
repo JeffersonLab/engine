@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.31.2.1  2003/07/24 13:08:11  cdaq
+* Changes made for adding scaler ROC 5 during Baryon exp. (MKJ for SAW)
+*
 * Revision 1.31  2002/12/20 21:55:22  jones
 * Modified by Hamlet for new HMS aerogel
 *
@@ -152,7 +155,7 @@
       stat_roc = jishft(bank(2),-16)
       roc = jiand(stat_roc,'1F'X)                ! Get ROC from header
 
-      if(roc.eq.20) then
+      if(roc.eq.20.or.roc.eq.5) then
         return                  ! scaler ROC
       endif
 *
@@ -168,7 +171,7 @@
         return
       endif
 *
-      if(roc.gt.G_DECODE_MAXROCS .and. roc.ne.9) then
+      if(roc.gt.G_DECODE_MAXROCS) then
         ABORT = .false.                 ! Just warn
         write(error,*) ':ROC out of range, ROC#=',roc
         call g_add_path(here,error)
