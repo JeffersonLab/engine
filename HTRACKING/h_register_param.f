@@ -13,7 +13,10 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
-* Revision 1.5  1994/03/24 19:41:33  cdaq
+* Revision 1.6  1994/06/06 17:13:37  cdaq
+* (DFG) add call to register bypass switches and statistics
+*
+* Revision 1.5  1994/03/24  19:41:33  cdaq
 * (DFG) Move actual registereing of variables to subroutines
 *
 * Revision 1.4  1994/02/23  15:39:02  cdaq
@@ -38,8 +41,6 @@
 *
       INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_routines.dec'
-      INCLUDE 'hms_tracking.cmn'
-      INCLUDE 'hms_geometry.cmn'
 *
 *
 *--------------------------------------------------------
@@ -55,6 +56,16 @@
 *
 *     register cal, tof and cer variables
       call h_register_id_param(ABORT,err)
+      IF(ABORT) THEN
+         call G_add_path(here,err)
+      ENDIF
+*     register bypass switches
+      call h_register_bypass(ABORT,err)
+      IF(ABORT) THEN
+         call G_add_path(here,err)
+      ENDIF
+*     register hms statistics
+      call h_register_statistics(ABORT,err)
       IF(ABORT) THEN
          call G_add_path(here,err)
       ENDIF
