@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 *-    $Log$
-*-    Revision 1.4  1995/05/11 15:48:15  cdaq
-*-    (SAW) Add call to c_physics for coincidence variables
+*-    Revision 1.5  1995/05/22 20:50:44  cdaq
+*-    (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *-
+* Revision 1.4  1995/05/11  15:48:15  cdaq
+* (SAW) Add call to c_physics for coincidence variables
+*
 * Revision 1.3  1994/06/17  03:16:29  cdaq
 * (KBB) Remove not yet written warning
 *
@@ -37,7 +40,7 @@ c
       logical ABORT
       character*(*) err
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'coin_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       INCLUDE 'coin_bypass_switches.cmn'

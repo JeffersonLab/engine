@@ -14,9 +14,12 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 *-    $Log$
-*-    Revision 1.10  1995/04/01 19:50:22  cdaq
-*-    (JRA) Add pedestal event handling
+*-    Revision 1.11  1995/05/22 20:50:45  cdaq
+*-    (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *-
+* Revision 1.10  1995/04/01  19:50:22  cdaq
+* (JRA) Add pedestal event handling
+*
 * Revision 1.9  1994/11/22  20:13:39  cdaq
 * (SPB) Uncomment call to SOS code
 *
@@ -85,7 +88,9 @@
         RETURN
       ENDIF
 *
-*  check to see if pedestals need to be recalculated.
+*  check to see if pedestals need to be recalculated.  Note that this is only
+*  done if the event was NOT a scaler event, because of the 'return' at the
+*  end of the pedestal handling call.
 *
       IF(update_peds) then
         call g_calc_pedestal(ABORT,err)

@@ -8,7 +8,10 @@
 *
 *     Created: 1-Nov-1994  
 * $Log$
-* Revision 1.1  1995/01/27 20:05:23  cdaq
+* Revision 1.2  1995/05/22 20:50:47  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.1  1995/01/27  20:05:23  cdaq
 * Initial revision
 *
 *
@@ -23,7 +26,7 @@
       character*(*) err
 *
       INCLUDE 'h_sieve_ntuple.cmn'
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'gen_event_info.cmn'
 *
       logical HEXIST                    !CERNLIB function

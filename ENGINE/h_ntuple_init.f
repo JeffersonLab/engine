@@ -10,7 +10,10 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
-* Revision 1.4  1995/05/11 17:17:38  cdaq
+* Revision 1.5  1995/05/22 20:50:46  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.4  1995/05/11  17:17:38  cdaq
 * (SAW) Allow %d for run number in filenames
 *
 * Revision 1.3  1995/01/27  20:09:59  cdaq
@@ -36,7 +39,7 @@
       INCLUDE 'h_ntuple.cmn'
       INCLUDE 'h_ntuple.dte'
       INCLUDE 'gen_routines.dec'
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'gen_run_info.cmn'
 *
       character*80 default_name

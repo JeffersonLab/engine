@@ -11,9 +11,12 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.9  1995/03/13 18:12:46  cdaq
-*-    (SAW) Include file ordering
+*-    Revision 1.10  1995/05/22 20:50:46  cdaq
+*-    (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *-
+* Revision 1.9  1995/03/13  18:12:46  cdaq
+* (SAW) Include file ordering
+*
 * Revision 1.8  1994/10/11  20:27:35  cdaq
 * (JRA) Include additional common blocks
 *
@@ -54,7 +57,7 @@
       logical ABORT
       character*(*) err
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_tracking.cmn'
       INCLUDE 'hms_statistics.cmn'
       INCLUDE 'hms_scin_parms.cmn'

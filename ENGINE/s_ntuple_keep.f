@@ -8,7 +8,10 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
-* Revision 1.3  1995/05/11 19:00:39  cdaq
+* Revision 1.4  1995/05/22 20:50:48  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1995/05/11  19:00:39  cdaq
 * (SAW) Change SSDEDXn vars to an array.
 *
 * Revision 1.2  1994/06/17  02:42:33  cdaq
@@ -29,7 +32,7 @@
       character*(*) err
 *
       INCLUDE 's_ntuple.cmn'
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'gen_event_info.cmn'
 *
       logical HEXIST    !CERNLIB function

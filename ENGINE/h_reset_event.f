@@ -15,7 +15,10 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
-* Revision 1.9  1995/05/11 18:58:17  cdaq
+* Revision 1.10  1995/05/22 20:50:47  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.9  1995/05/11  18:58:17  cdaq
 * (SAW) Change HSDEDXn vars to an array
 *
 * Revision 1.8  1994/09/20  17:29:33  cdaq
@@ -38,7 +41,7 @@
       logical ABORT
       character*(*) err
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'hms_data_structures.cmn'
       include 'hms_tracking.cmn'
 *
       INTEGER hit,track,block,i,j,plane

@@ -12,9 +12,12 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-      $Log$
-*-      Revision 1.7  1995/05/11 15:08:32  cdaq
-*-      (SAW) Change SDEDXn vars to an array.  Add reset of Aerogel structure.
+*-      Revision 1.8  1995/05/22 20:50:48  cdaq
+*-      (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *-
+* Revision 1.7  1995/05/11  15:08:32  cdaq
+* (SAW) Change SDEDXn vars to an array.  Add reset of Aerogel structure.
+*
 * Revision 1.6  1994/11/22  20:15:35  cdaq
 * (SPB) Bring up to date with h_reset_event
 *
@@ -49,7 +52,7 @@
       logical ABORT
       character*(*) err
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'sos_tracking.cmn'
 *
       INTEGER track,hit,block,i,j,plane

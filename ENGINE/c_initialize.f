@@ -10,9 +10,12 @@
 *- 
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.4  1995/05/11 13:44:50  cdaq
-*-    (SAW) Add calculation of s from beam and target info
+*-    Revision 1.5  1995/05/22 20:50:43  cdaq
+*-    (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *-
+* Revision 1.4  1995/05/11  13:44:50  cdaq
+* (SAW) Add calculation of s from beam and target info
+*
 * Revision 1.3  1994/06/14  03:16:09  cdaq
 * (DFG) Add CEBEAM calculation
 *
@@ -39,6 +42,7 @@
       character*(*) err
 *
       INCLUDE 'gen_data_structures.cmn'
+**      INCLUDE 'coin_data_structures.cmn'
       INCLUDE 'gen_constants.par'
 *
 *--------------------------------------------------------

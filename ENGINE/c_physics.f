@@ -7,7 +7,10 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
-* Revision 1.2  1995/05/13 02:44:07  cdaq
+* Revision 1.3  1995/05/22 20:50:44  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1995/05/13  02:44:07  cdaq
 * (SAW) Remove some debugging
 *
 * Revision 1.1  1995/05/11  15:17:36  cdaq
@@ -24,6 +27,9 @@
       character*(*) err
 *
       include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
+      include 'sos_data_structures.cmn'
+      include 'coin_data_structures.cmn'
       include 'gen_constants.par'
 *
 *     local variables

@@ -8,7 +8,10 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
-* Revision 1.2  1994/06/17 02:41:25  cdaq
+* Revision 1.3  1995/05/22 20:50:43  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1994/06/17  02:41:25  cdaq
 * (KBB) Upgrade
 *
 * Revision 1.1  1994/04/12  16:12:33  cdaq
@@ -27,6 +30,7 @@
 *
       INCLUDE 'c_ntuple.cmn'
       INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'coin_data_structures.cmn'
       INCLUDE 'gen_event_info.cmn'
 *
       logical HEXIST    !CERNLIB function

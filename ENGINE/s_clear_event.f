@@ -12,9 +12,12 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 *-    $Log$
-*-    Revision 1.7  1995/05/11 15:08:57  cdaq
-*-    (SAW) Add clear of Aerogel hit counter
+*-    Revision 1.8  1995/05/22 20:50:48  cdaq
+*-    (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *-
+* Revision 1.7  1995/05/11  15:08:57  cdaq
+* (SAW) Add clear of Aerogel hit counter
+*
 * Revision 1.6  1995/04/01  20:10:55  cdaq
 * (SAW) Add missing SSCIN_ALL_TOT_HITS = 0
 *
@@ -47,7 +50,7 @@
       logical ABORT
       character*(*) err
 *     
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'sos_tracking.cmn'
       INCLUDE 'sos_statistics.cmn'
       INCLUDE 'sos_scin_tof.cmn'

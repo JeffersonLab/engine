@@ -27,7 +27,10 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
-* Revision 1.15  1995/05/22 13:35:40  cdaq
+* Revision 1.16  1995/05/22 20:50:45  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.15  1995/05/22  13:35:40  cdaq
 * (SAW) Fix up some problems with decoding of parallel link wrappers around
 * fastbus events.  Still doesn't hadle two fb rocs wrapped into one bank.
 *
@@ -77,6 +80,8 @@
 *
       include 'gen_detectorids.par'
       include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'gen_decode_common.cmn'
       include 'mc_structures.cmn'
 
