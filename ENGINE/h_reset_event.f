@@ -15,7 +15,10 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
-* Revision 1.8  1994/09/20 17:29:33  cdaq
+* Revision 1.9  1995/05/11 18:58:17  cdaq
+* (SAW) Change HSDEDXn vars to an array
+*
+* Revision 1.8  1994/09/20  17:29:33  cdaq
 * (SAW) Add include of hms_tracking.cmn
 *
 * Revision 1.7  1994/07/07  21:16:38  cdaq
@@ -180,10 +183,9 @@
        HSPHI=0.
        HSMINV=0.
        HSZBEAM=0.
-       HSDEDX1=0.
-       HSDEDX2=0.
-       HSDEDX3=0.
-       HSDEDX4=0.
+       do plane = 1 , HNUM_SCIN_PLANES
+         HSDEDX(plane) = 0.
+       enddo
        HSBETA=0.
        HSTRACK_ET=0.
        HSTRACK_PRESHOWER_E=0.
