@@ -6,6 +6,9 @@
 * h_trans_misc fills the hms_decoded_misc common block
 *
 * $Log$
+* Revision 1.6  1996/09/04 14:24:13  saw
+* (JRA) Add misc. tdc's
+*
 * Revision 1.5  1996/01/24 16:00:04  saw
 * (JRA) Replace 48 with hmax_misc_hits
 *
@@ -28,13 +31,14 @@
 
       include 'hms_data_structures.cmn'
       include 'hms_scin_parms.cmn'
+      include 'hms_id_histid.cmn'
 
       logical abort
       character*1024 errmsg
       character*20 here
       parameter (here = 'h_trans_misc')
 
-      integer*4 ihit
+      integer*4 ihit,ich,isig
 
       save
 
@@ -44,8 +48,13 @@
       enddo
       
       do ihit = 1 , hmisc_tot_hits
-        hmisc_dec_data(hmisc_raw_addr2(ihit),hmisc_raw_addr1(ihit)) =
-     $       hmisc_raw_data(ihit)
+        ich=hmisc_raw_addr2(ihit)
+        isig=hmisc_raw_addr1(ihit)
+        hmisc_dec_data(ich,isig) = hmisc_raw_data(ihit)
+        hmisc_scaler(ich,isig) = hmisc_scaler(ich,isig) + 1
+        if (isig.eq.1) then        !TDC
+          call hf1(hidmisctdcs,float(hmisc_dec_data(ich,isig)),1.)
+        endif
       enddo
 
       return
