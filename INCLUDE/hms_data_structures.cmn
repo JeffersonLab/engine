@@ -5,11 +5,8 @@
 *     Author:   D. F. Geesaman          1 September 1993
 *
 * $Log$
-* Revision 1.12.12.3  2004/09/07 18:42:05  cdaq
-* added pretrigger signals to hms and sos ntuples
-*
-* Revision 1.12.12.2  2004/09/07 18:03:29  cdaq
-* added hpcentral_set
+* Revision 1.12.12.4  2004/10/03 02:34:34  cdaq
+* Added more trigger variables
 *
 * Revision 1.12.12.1  2004/06/28 17:33:40  cdaq
 * new variables like x_si, etc.
@@ -72,7 +69,7 @@
       REAL*4  HTHETA_LAB     ! HMS LAB ANGLE THETA (RADIANS)
       REAL*4  HPHI_LAB       ! HMS LAB ANGLE PHI 
       REAL*4  HPCENTRAL      ! HMS CENTRAL MOMENUTM (GEV)
-      REAL*4  HPCENTRAL_SET  ! HMS CENTRAL MOMENUTM (GEV) (no offset)
+      REAL*4  HPCENTRAL_SET  ! HMS CENTRAL MOMENUTM SET POINT - no offset(GEV)
       REAL*4  HBFIELD        ! HMS B FIELD INCLUDING SIGN
       REAL*4  HPARTMASS      ! EXPECTED MASS OF DETECTED PARTICLE IN HMS
 
@@ -613,6 +610,9 @@
       real*4 xsi_scale	           ! nachtmann variable (=x at Q2=1)
       real*4 yscale_eps	           ! separation energy
       real*4 hspipre               ! hms pipre TDC value
+      real*4 hselreal              ! hms elreal TDC value
+      real*4 hselclean             ! hms elclean TDC value
+      real*4 hstrig                ! hms trig TDC value
       real*4 hselhi                ! hms elhi TDC value
       real*4 hsello                ! hms ello TDC value
       real*4 hsprhi                ! hms pre-shower hi TDC value
@@ -671,6 +671,9 @@
      & y_scale,
      & xsi_scale,
      & hspipre,
+     & hselreal,
+     & hselclean,
+     & hstrig,
      & hselhi,
      & hsello,
      & hsprhi,
