@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.1  1994/04/15 20:28:07  cdaq
+# Revision 1.2  1994/05/19 13:55:24  cdaq
+# Add new routines from DFG
+#
+# Revision 1.1  1994/04/15  20:28:07  cdaq
 # Initial revision
 #
 include $(Csoft)/etc/Makefile
@@ -22,8 +25,9 @@ newstuff = s_cal.f s_clusters_cal.f s_correct_cal.f s_fill_dc_dec_hist.f \
 	s_prt_raw_scin.f s_prt_tof.f s_prt_track_tests.f s_raw_dump_all.f \
 	s_sparsify_cal.f s_tof.f s_tof_init.f s_tof_fit.f s_tracks_cal.f \
 	s_trans_cal.f s_trans_scin.f s_fill_scin_raw_hist.f
+newerstuff = s_fill_dc_target_hist.f s_targ_trans_init.f
 
-libsources = $(sources) $(newstuff)
+libsources = $(sources) $(newstuff) $(newerstuff)
 
 lib_targets := $(patsubst %.f, libstracking.a(%.o), $(libsources))
 
