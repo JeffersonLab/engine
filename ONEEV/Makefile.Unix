@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.9  1998/12/01 20:34:21  saw
+# (SAW) HPUX 10 fix
+#
 # Revision 1.8  1996/11/22 17:05:00  saw
 # (SAW) Add SunOS compatibility
 #
@@ -64,7 +67,7 @@ CTP =  $(LIBROOT)/libctp.a
 GEANTVER = 321
 CERNLIBS = -lgeant$(GEANTVER) -lpawlib -lgraflib -lgrafX11 -lpacklib -lmathlib
 ifeq ($(ARCH),HPUX)
-  FFLAGS = -g +ppu +es -O +Obb1000 +FPVZOU 
+  FFLAGS = -g +ppu +es -O +Onolimit +O2 +FPVZOU 
   OTHERLIBS = -Wl,-L$(LIBROOT) -lctpclient -lctp -Wl,-L$(CODA)/HP_UX/lib \
 	-Wl,-L$(CERN_ROOT)/lib $(CERNLIBS) \
 	-Wl,-L/usr/lib/X11R5 -lX11 -lm
