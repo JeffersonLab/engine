@@ -4,6 +4,9 @@
 *     quantities calculated from the scaler events (time, current, etc...)
 *
 * $Log$
+* Revision 1.10  1999/02/10 17:40:52  csa
+* Added beam-on variables (D. McKee)
+*
 * Revision 1.9  1996/09/04 15:46:56  saw
 * (JRA) Add g_scaler_event_num
 *
@@ -48,10 +51,13 @@
       real*8 gscaler_old(MAX_NUM_SCALERS)     ! Scaler values at last event
       real*8 gscaler_change(MAX_NUM_SCALERS)  ! prev_scalers - scalers
       real*4 g_run_time                       !time of run at most recent scaler event
+      real*4 g_beam_on_run_time               ! accumulated time of run for which
+                                              ! beam current exceeded beam_on_thresh_cur.
       integer g_replay_time                   !time since start of run (from cpu clock) 
 *
       common /SCALERS/ gscaler, gscaler_old, gscaler_change,
-     $     gclock_rate, g_run_time, gclock_index, g_replay_time, gscaler_nroll
+     $     gclock_rate, g_run_time, gclock_index, g_replay_time, 
+     $     gscaler_nroll, g_beam_on_run_time
 
 *
       integer*4 gscal_lastevnum(2)      ! check for missing/out of order of scaler events
@@ -74,6 +80,7 @@
       real*8 gbcm2_offset
       real*8 gbcm3_offset
       real*8 gunser_offset
+      real*8 g_beam_on_thresh_cur     ! threshold for beam to be on.
 *
 *     CTPTYPE=event
 *
@@ -81,11 +88,13 @@
       real*8 gbcm2_charge
       real*8 gbcm3_charge
       real*8 gunser_charge
-      integer gscaler_event_num
+      real*8 g_beam_on_bcm_charge   ! "beam on" accumulated charge
+      integer*4 gscaler_event_num
 *
       common/BEAMCURRENT/
      &    gbcm1_index, gbcm2_index, gbcm3_index, gunser_index,
      &    gbcm1_gain, gbcm2_gain, gbcm3_gain, gunser_gain,
      &    gbcm1_offset, gbcm2_offset, gbcm3_offset, gunser_offset,
      &    gbcm1_charge, gbcm2_charge, gbcm3_charge, gunser_charge,
+     &    g_beam_on_bcm_charge, g_beam_on_thresh_cur,
      &    gscaler_event_num
