@@ -1,0 +1,76 @@
+        subroutine h_tof_init(abort,errmsg)
+
+*-------------------------------------------------------------------
+* author: John Arrington
+* created: 2/22/94
+*
+* h_tof_init sets up the track independant parameters
+* for fitting the tof of the particle.
+*
+* modifications: 31 Mar 1994    DFG  Check for 0 hits
+* $Log$
+* Revision 1.1  1994/04/13 16:29:31  cdaq
+* Initial revision
+*
+*-------------------------------------------------------------------
+
+        implicit none
+
+        include 'gen_data_structures.cmn'
+        include 'hms_scin_parms.cmn'
+        include 'hms_scin_tof.cmn'
+
+        logical abort
+        character*1024 errmsg
+        character*20 here
+        parameter (here = 'h_tof_init')
+
+        integer*4 ihit,plane,counter
+        save
+
+        if(hscin_tot_hits.gt.0) then
+        do ihit = 1 , hscin_tot_hits
+
+          plane = hscin_plane_num(ihit)     !from h_raw_scin common block.
+          counter = hscin_counter_num(ihit)
+
+          hscin_pos_sigma(ihit) = hhodo_pos_sigma(plane,counter)
+          hscin_neg_sigma(ihit) = hhodo_neg_sigma(plane,counter)
+          hscin_center_coord(ihit) = hhodo_center_coord(plane,counter)
+          hscin_vel_light(ihit) = hhodo_vel_light(plane,counter)
+          hscin_pos_phc_coeff(ihit) = hhodo_pos_phc_coeff(plane,counter)
+          hscin_neg_phc_coeff(ihit) = hhodo_neg_phc_coeff(plane,counter)
+          hscin_pos_time_offset(ihit) = hhodo_pos_time_offset(plane,counter)
+          hscin_neg_time_offset(ihit) = hhodo_neg_time_offset(plane,counter)
+
+          if (plane .eq. 1) then                   !1x
+            hscin_zpos(ihit) = hscin_1x_zpos
+            hscin_pos_coord(ihit) = hscin_1x_left
+            hscin_neg_coord(ihit) = hscin_1x_right
+            hscin_width(ihit) = hscin_1x_size
+          else if (plane .eq. 2) then              !1y
+            hscin_zpos(ihit) = hscin_1y_zpos
+            hscin_pos_coord(ihit) = hscin_1y_bot
+            hscin_neg_coord(ihit) = hscin_1y_top
+            hscin_width(ihit) = hscin_1y_size
+          else if (plane .eq. 3) then              !2x
+            hscin_zpos(ihit) = hscin_2x_zpos
+            hscin_pos_coord(ihit) = hscin_2x_left
+            hscin_neg_coord(ihit) = hscin_2x_right
+            hscin_width(ihit) = hscin_2x_size
+          else if (plane .eq. 4) then              !2y
+            hscin_zpos(ihit) = hscin_2y_zpos
+            hscin_pos_coord(ihit) = hscin_2y_bot
+            hscin_neg_coord(ihit) = hscin_2y_top
+            hscin_width(ihit) = hscin_2y_size
+          else
+              abort = .true.
+              write(errmsg,*) 'Trying to init. hms hodoscope plane',plane
+              call g_prepend(here,errmsg)
+              return
+          endif
+
+        enddo
+        endif      ! end test on zero hits
+        return
+        end
