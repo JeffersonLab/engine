@@ -12,9 +12,12 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-      $Log$
-*-      Revision 1.6  1994/11/22 20:15:35  cdaq
-*-      (SPB) Bring up to date with h_reset_event
+*-      Revision 1.7  1995/05/11 15:08:32  cdaq
+*-      (SAW) Change SDEDXn vars to an array.  Add reset of Aerogel structure.
 *-
+* Revision 1.6  1994/11/22  20:15:35  cdaq
+* (SPB) Bring up to date with h_reset_event
+*
 * Revision 1.5  1994/06/22  20:51:22  cdaq
 * (SAW) Zero out the miscleaneous hits array
 *
@@ -118,6 +121,16 @@
          SCER_PLANE(hit) = 0
       ENDDO
       SCER_TOT_HITS= 0
+*
+*     SOS AEROGEL HITS
+*
+      DO hit= 1,SMAX_AER_HITS
+         SAER_PAIR_NUM(hit) = 0
+         SAER_ADC_LEFT(hit) = 0
+         SAER_ADC_RIGHT(hit) = 0
+         SAER_PLANE(hit) = 0
+      ENDDO
+      SAER_TOT_HITS = 0
 *     
 *     SOS Miscleaneous hits
 *
@@ -197,10 +210,9 @@
       SSPHI=0
       SSMINV=0
       SSZBEAM=0
-      SSDEDX1=0
-      SSDEDX2=0
-      SSDEDX3=0
-      SSDEDX4=0
+      do plane = 1 , SNUM_SCIN_PLANES
+        SSDEDX(plane) = 0.
+      enddo
       SSBETA=0
       SSTRACK_ET=0
       SSTRACK_PRESHOWER_E=0
