@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, HU: added Ntuples
 * $Log$
+* Revision 1.6  2004/02/17 17:26:34  jones
+* Changes to enable possiblity of segmenting rzdat files
+*
 * Revision 1.5  1998/12/01 16:02:39  saw
 * (SAW) Clean out archaic g_build_note stuff
 *
@@ -39,73 +42,29 @@
       INCLUDE 's_ntuple.cmn'
       INCLUDE 'gen_routines.dec'
 *
-      logical HEXIST      !CERNLIB function
 *
       logical FAIL
       character*80 why,directory,name
       character*1000 msg
-      integer io,id,cycle,m,iv(10)
+      integer io,id,cycle,m
 *
-*--------------------------------------------------------
       err= ' '
       ABORT = .FALSE.
 *
+
       IF(.NOT.s_Ntuple_exists) RETURN       !nothing to do
+c
+
+      call s_ntuple_close(ABORT,err)
+
 *
-      call HCDIR(directory,'R')                !keep current directory
-*
-*
-      id= s_Ntuple_ID
-      io= s_Ntuple_IOchannel
-*
-      ABORT= .NOT.HEXIST(id)
-      IF(ABORT) THEN
-        write(err,'(": Ntuple ID#",i5," does not exist")') id
-        call G_add_path(here,err)
-        If(io.GT.0) Then
-          call G_IO_control(io,'FREE',FAIL,why) !free up
-          if(.NOT.FAIL) CLOSE(io)
-        EndIf
-        s_Ntuple_exists= .FALSE.
-        s_Ntuple_ID= 0
-        s_Ntuple_name= ' '
-        s_Ntuple_IOchannel= 0
-        s_Ntuple_file= ' '
-        s_Ntuple_title= ' '
-        s_Ntuple_directory= ' '
-        s_Ntuple_size= 0
-        do m=1,SMAX_Ntuple_size
-          s_Ntuple_tag(m)= ' '
-          s_Ntuple_contents(m)= 0.
-        enddo
-        RETURN
-      ENDIF
-*
-      id= s_Ntuple_ID
-      io= s_Ntuple_IOchannel
-      name= s_Ntuple_name
-      call HCDIR(s_Ntuple_directory,' ')      !goto Ntuple directory
-*
-      write(msg,'("closing ID#",i5," IO#",i3," ",a)') id,io,s_ntuple_file
-      call G_add_path(here,msg)
-c      call G_log_message('INFO: '//msg)
-*
-      cycle= 0                                !dummy for HROUT
-      call HROUT(id,cycle,' ')                !flush CERNLIB buffers
-      call HREND(name)                        !CERNLIB close file
-*      call HDELET(id)                         !CERNLIB delete tuple
-      call G_IO_control(io,'FREE',ABORT,err)  !free up IO channel
-      CLOSE(io)                               !close IO channel
-*
-      call HCDIR(directory,' ')               !return to current directory
-*
-      s_Ntuple_exists= .FALSE.
+      IF(s_Ntuple_exists) then
+         ABORT = .true.
+      endif
       s_Ntuple_ID= 0
       s_Ntuple_name= ' '
-      s_Ntuple_IOchannel= 0
       s_Ntuple_file= ' '
       s_Ntuple_title= ' '
-      s_Ntuple_directory= ' '
       s_Ntuple_size= 0
       do m=1,SMAX_Ntuple_size
         s_Ntuple_tag(m)= ' '
@@ -113,6 +72,6 @@ c      call G_log_message('INFO: '//msg)
       enddo
 *
       IF(ABORT) call G_add_path(here,err)
-*
+*--------------------------------------------------------
       RETURN
       END      

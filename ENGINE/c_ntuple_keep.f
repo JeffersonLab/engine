@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10  2004/02/17 17:26:34  jones
+* Changes to enable possiblity of segmenting rzdat files
+*
 * Revision 1.9  1999/02/23 16:41:08  csa
 * Variable changes
 *
@@ -75,6 +78,15 @@
       ABORT = .FALSE.
 *
       IF(.NOT.c_Ntuple_exists) RETURN       !nothing to do
+c
+      if (c_Ntuple_max_segmentevents .gt. 0) then
+       if (c_Ntuple_segmentevents .gt. c_Ntuple_max_segmentevents) then
+        call c_ntuple_change(ABORT,err)
+        c_Ntuple_segmentevents = 0
+       else
+        c_Ntuple_segmentevents = c_Ntuple_segmentevents +1
+       endif
+      endif
 *
 **********begin insert description of contents of COIN tuple ******
 

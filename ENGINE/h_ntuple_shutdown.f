@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, HU: added Ntuples
 * $Log$
+* Revision 1.6  2004/02/17 17:26:34  jones
+* Changes to enable possiblity of segmenting rzdat files
+*
 * Revision 1.5  1998/12/01 15:56:25  saw
 * (SAW) Clean out archaic g_build_note stuff
 *
@@ -39,7 +42,6 @@
       INCLUDE 'h_ntuple.cmn'
       INCLUDE 'gen_routines.dec'
 *
-      logical HEXIST    !CERNLIB function
 *
       logical FAIL
       character*80 why,directory,name
@@ -50,61 +52,20 @@
       err= ' '
       ABORT = .FALSE.
 *
+
       IF(.NOT.h_Ntuple_exists) RETURN       !nothing to do
+c
+
+      call h_ntuple_close(ABORT,err)
+
 *
-      call HCDIR(directory,'R')                !keep current directory
-*
-      id= h_Ntuple_ID
-      io= h_Ntuple_IOchannel
-*
-      ABORT= .NOT.HEXIST(id)
-      IF(ABORT) THEN
-        write(err,'(": Ntuple ID#",i5," does not exist")') id
-        call G_add_path(here,err)
-        If(io.GT.0) Then
-          call G_IO_control(io,'FREE',FAIL,why) !free up
-          if(.NOT.FAIL) CLOSE(io)
-        EndIf
-        h_Ntuple_exists= .FALSE.
-        h_Ntuple_ID= 0
-        h_Ntuple_name= ' '
-        h_Ntuple_IOchannel= 0
-        h_Ntuple_file= ' '
-        h_Ntuple_title= ' '
-        h_Ntuple_directory= ' '
-        h_Ntuple_size= 0
-        do m=1,HMAX_Ntuple_size
-          h_Ntuple_tag(m)= ' '
-          h_Ntuple_contents(m)= 0.
-        enddo
-        RETURN
-      ENDIF
-*
-      id= h_Ntuple_ID
-      io= h_Ntuple_IOchannel
-      name= h_Ntuple_name
-      call HCDIR(h_Ntuple_directory,' ')      !goto Ntuple directory
-*
-      write(msg,'("closing ID#",i5," IO#",i3," ",a)') id,io,h_ntuple_file
-      call G_add_path(here,msg)
-c      call G_log_message('INFO: '//msg)
-*
-      cycle= 0                                !dummy for HROUT
-      call HROUT(id,cycle,' ')                !flush CERNLIB buffers
-      call HREND(name)                        !CERNLIB close file
-*      call HDELET(id)                         !CERNLIB delete tuple
-      call G_IO_control(io,'FREE',ABORT,err)  !free up IO channel
-      CLOSE(io)                               !close IO channel
-*
-      call HCDIR(directory,' ')               !return to current directory
-*
-      h_Ntuple_exists= .FALSE.
+      IF(h_Ntuple_exists) then
+         ABORT = .true.
+      endif
       h_Ntuple_ID= 0
       h_Ntuple_name= ' '
-      h_Ntuple_IOchannel= 0
       h_Ntuple_file= ' '
       h_Ntuple_title= ' '
-      h_Ntuple_directory= ' '
       h_Ntuple_size= 0
       do m=1,HMAX_Ntuple_size
         h_Ntuple_tag(m)= ' '

@@ -8,6 +8,18 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.8  2004/02/17 17:26:34  jones
+* Changes to enable possiblity of segmenting rzdat files
+*
+* Revision 1.7.2.3  2003/08/12 17:35:34  cdaq
+* Add variables for e00-108 (hamlet)
+*
+* Revision 1.7.2.2  2003/06/26 12:39:55  cdaq
+* changes for e01-001  (mkj)
+*
+* Revision 1.7.2.1  2003/04/04 12:54:42  cdaq
+* add beam parameters to ntuple
+*
 * Revision 1.7  1996/09/04 15:18:21  saw
 * (JRA) Modify ntuple contents
 *
@@ -42,12 +54,15 @@
 *
       INCLUDE 's_ntuple.cmn'
       INCLUDE 'sos_data_structures.cmn'
+      INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_event_info.cmn'
       INCLUDE 'sos_tracking.cmn'
       INCLUDE 'sos_physics_sing.cmn'
       INCLUDE 'sos_scin_tof.cmn'
       include 'sos_track_histid.cmn'
       include 'sos_aero_parms.cmn'
+      include 'sos_scin_parms.cmn'
+      INCLUDE 'sos_calorimeter.cmn'
 *
       logical HEXIST    !CERNLIB function
 *
@@ -55,14 +70,39 @@
 
       real proton_mass
       parameter ( proton_mass = 0.93827247 ) ! [GeV/c^2]
+      
+      real Wsq
 *
 *--------------------------------------------------------
       err= ' '
       ABORT = .FALSE.
 *
       IF(.NOT.s_Ntuple_exists) RETURN       !nothing to do
+c
+      if (s_Ntuple_max_segmentevents .gt. 0) then
+       if (s_Ntuple_segmentevents .gt. s_Ntuple_max_segmentevents) then
+        call s_ntuple_change(ABORT,err)
+        s_Ntuple_segmentevents = 0
+       else
+        s_Ntuple_segmentevents = s_Ntuple_segmentevents +1
+       endif
+      endif
 *
       m= 0
+      m= m+1
+      s_Ntuple_contents(m)= SSOMEGA !
+      m= m+1
+      s_Ntuple_contents(m)= SSBIGQ2 !
+      m= m+1
+      s_Ntuple_contents(m)= SSX_bj !
+      m= m+1
+      s_Ntuple_contents(m)= SSQ3 !
+      Wsq=SINVMASS*SINVMASS
+      m= m+1
+      s_Ntuple_contents(m)= Wsq !
+      m= m+1
+      s_Ntuple_contents(m)= SSTHET_GAMMA !
+
       m= m+1
       s_Ntuple_contents(m)= SCER_NPE_SUM ! cerenkov photoelectron spectrum
       m= m+1
@@ -85,7 +125,7 @@
       m= m+1
       s_Ntuple_contents(m)= SSBETA	! BETA of chosen track
       m= m+1
-      s_Ntuple_contents(m)= SSTRACK_ET	! Total shower energy of chosen track
+      s_Ntuple_contents(m)= SSSHTRK	! Total shower energy / momentum
       m= m+1
       s_Ntuple_contents(m)= SSTRACK_PRESHOWER_E	! preshower of chosen track
       m= m+1
@@ -105,9 +145,50 @@
       m= m+1
       s_Ntuple_contents(m)= float(gen_event_ID_number)
       m= m+1
+      s_Ntuple_contents(m)= float(gen_event_type)
+      m= m+1
       s_Ntuple_contents(m)= sstart_time
       m= m+1
       s_Ntuple_contents(m)= saer_npe_sum
+c
+      m= m+1
+      s_Ntuple_contents(m)= gfrx_raw_adc
+      m= m+1
+      s_Ntuple_contents(m)= gfry_raw_adc
+      m= m+1
+      s_Ntuple_contents(m)= gbeam_x
+      m= m+1
+      s_Ntuple_contents(m)= gbeam_y
+      m= m+1
+      s_Ntuple_contents(m)= gbpm_x(1)
+      m= m+1
+      s_Ntuple_contents(m)= gbpm_y(1)
+      m= m+1
+      s_Ntuple_contents(m)= gbpm_x(2)
+      m= m+1
+      s_Ntuple_contents(m)= gbpm_y(2)
+      m= m+1
+      s_Ntuple_contents(m)= gbpm_x(3)
+      m= m+1
+      s_Ntuple_contents(m)= gbpm_y(3)
+      m= m+1
+      s_Ntuple_contents(m)= smisc_dec_data(2,2)
+      m= m+1
+      s_Ntuple_contents(m)= smisc_dec_data(3,2) 
+      m= m+1
+      s_Ntuple_contents(m)= smisc_dec_data(4,2) 
+      m= m+1
+c      s_Ntuple_contents(m)= smisc_dec_data(7,1) 
+       s_Ntuple_contents(m)= scer_adc(1)
+      m= m+1
+c      s_Ntuple_contents(m)= smisc_dec_data(8,1) 
+       s_Ntuple_contents(m)= scer_adc(2)
+      m= m+1
+c      s_Ntuple_contents(m)= smisc_dec_data(5,2) 
+       s_Ntuple_contents(m)= scer_adc(3)
+      m= m+1
+c      s_Ntuple_contents(m)= smisc_dec_data(6,2) 
+       s_Ntuple_contents(m)= scer_adc(4)
 
 
 * Experiment dependent entries start here.

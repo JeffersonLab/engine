@@ -8,11 +8,8 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
-* Revision 1.9  2003/09/05 16:40:26  jones
-* Merge in online03 changes (mkj)
-*
-* Revision 1.8.2.2  2003/09/04 21:10:33  jones
-* add event type to ntuple (mkj)
+* Revision 1.10  2004/02/17 17:26:34  jones
+* Changes to enable possiblity of segmenting rzdat files
 *
 * Revision 1.8.2.1  2003/04/04 12:55:11  cdaq
 * add beam quantities to ntuple (MKJ)
@@ -74,6 +71,15 @@
       ABORT = .FALSE.
 *
       IF(.NOT.h_Ntuple_exists) RETURN       !nothing to do
+c
+      if (h_Ntuple_max_segmentevents .gt. 0) then
+       if (h_Ntuple_segmentevents .gt. h_Ntuple_max_segmentevents) then
+        call h_ntuple_change(ABORT,err)
+        h_Ntuple_segmentevents = 0
+       else
+        h_Ntuple_segmentevents = h_Ntuple_segmentevents +1
+       endif
+      endif
 *
 ************************************************
       m= 0

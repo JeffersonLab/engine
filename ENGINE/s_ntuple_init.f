@@ -10,6 +10,18 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.8  2004/02/17 17:26:34  jones
+* Changes to enable possiblity of segmenting rzdat files
+*
+* Revision 1.7.2.3  2003/08/12 17:35:32  cdaq
+* Add variables for e00-108 (hamlet)
+*
+* Revision 1.7.2.2  2003/06/26 12:39:52  cdaq
+* changes for e01-001  (mkj)
+*
+* Revision 1.7.2.1  2003/04/04 12:54:42  cdaq
+* add beam parameters to ntuple
+*
 * Revision 1.7  1996/09/04 15:18:02  saw
 * (JRA) Modify ntuple contents
 *
@@ -48,18 +60,12 @@
 *
       character*80 default_name
       parameter (default_name= 'SOSntuple')
-      integer default_bank,default_recL
-      parameter (default_bank= 8000)    !4 bytes/word
-      parameter (default_recL= 1024)    !record length
-      character*80 title
-      character*80 directory,name
-      character*256 file
+c
+      character*80 file
+      character*80 name
       character*1000 pat,msg
-      integer status,size,io,id,bank,recL,iv(10),m
-      real rv(10)
-*
-      logical HEXIST           !CERNLIB function
-*
+      integerilo,fn_len,m
+      character*1 ifile
       INCLUDE 's_ntuple.dte'
 *
 *--------------------------------------------------------
@@ -78,56 +84,55 @@
 *
 *-if name blank, just forget it
       IF(s_Ntuple_file.EQ.' ') RETURN   !do nothing
-*
-*- get any free IO channel
-*
-      call g_IO_control(s_Ntuple_IOchannel,'ANY',ABORT,err)
-      io= s_Ntuple_IOchannel
-      s_Ntuple_exists= .NOT.ABORT
-      IF(ABORT) THEN
-        call G_add_path(here,err)
-        RETURN
-      ENDIF
-*
       s_Ntuple_ID= default_s_Ntuple_ID
-      id= s_Ntuple_ID
-*
-      ABORT= HEXIST(id)
-      IF(ABORT) THEN
-        call g_IO_control(s_Ntuple_IOchannel,'FREE',ABORT,err)
-        call G_build_note(':HBOOK id#$ already in use',
-     &                                 '$',id,' ',rv,' ',err)
-        call G_add_path(here,err)
-        RETURN
+      s_Ntuple_name= default_name
+      IF(s_Ntuple_title.EQ.' ') THEN
+        msg= name//' '//s_Ntuple_file
+        call only_one_blank(msg)
+        s_Ntuple_title= msg
       ENDIF
 *
-      CALL HCDIR(directory,'R')       !CERNLIB read current directory
-*
-      s_Ntuple_name= default_name
-*
-      id= s_Ntuple_ID
-      name= s_Ntuple_name
-
       file= s_Ntuple_file
       call g_sub_run_number(file,gen_run_number)
 
-      recL= default_recL
-*
-*-open New *.rzdat file-
-      call HROPEN(io,name,file,'N',recL,status)       !CERNLIB
-*                                       !directory set to "//TUPLE"
-      ABORT= status.NE.0
-      IF(ABORT) THEN
-        call g_IO_control(s_Ntuple_IOchannel,'FREE',ABORT,err)
-        iv(1)= status
-        iv(2)= io
-        pat= ':HROPEN error#$ opening IO#$ "'//file//'"'
-        call G_build_note(pat,'$',iv,' ',rv,' ',err)
-        call G_add_path(here,err)
+
+*     * only needed if using more than one file      
+      if (s_Ntuple_max_segmentevents .gt. 0) then
+       s_Ntuple_filesegments = 1
+
+       ifile = char(ichar('0')+s_Ntuple_filesegments)
+ 
+       fn_len = g_important_length(file)
+       ilo=index(file,'.hbook')
+       if ((ilo.le.1).or.(ilo.gt.fn_len-5)) then
+         ilo=index(file,'.rzdat')
+       endif  
+
+       if ((ilo.gt.1).and.(ilo.lt.fn_len)) then
+         file = file(1:ilo-1) // '.' // ifile // file(ilo:fn_len)
+       else
+         ABORT = .true.
         RETURN
-      ENDIF
+       endif
+       write(*,*) ' Using segmented SOS rzdat files first filename: ',file
+       else
+         write(*,*) ' Not using segmented SOS rzdat files first filename: ',file  
+      endif
 *
       m= 0
+      m= m+1
+      s_Ntuple_tag(m)= 'omega' ! 
+      m= m+1
+      s_Ntuple_tag(m)= 'q2' ! 
+      m= m+1
+      s_Ntuple_tag(m)= 'xbj' ! 
+      m= m+1
+      s_Ntuple_tag(m)= 'qabs' ! 
+      m= m+1
+      s_Ntuple_tag(m)= 'W2' ! 
+      m= m+1
+      s_Ntuple_tag(m)= 'ssthet_g' ! 
+
       m= m+1
       s_Ntuple_tag(m)= 'scer_npe' ! cerenkov photoelectron spectrum
       m= m+1
@@ -170,55 +175,66 @@
       m= m+1
       s_Ntuple_tag(m)= 'eventID'
       m= m+1
+      s_Ntuple_tag(m)= 'evtype'
+      m= m+1
       s_Ntuple_tag(m)= 'sstart'
       m= m+1
       s_Ntuple_tag(m)= 'SAER_NPE' 
 
 
 * Experiment dependent entries start here.
+      m= m+1
+      s_Ntuple_tag(m)= 'gfrx_raw'
+      m= m+1
+      s_Ntuple_tag(m)= 'gfry_raw'
+      m= m+1
+      s_Ntuple_tag(m)= 'gbeam_x'
+      m= m+1
+      s_Ntuple_tag(m)= 'gbeam_y'
+      m= m+1
+      s_Ntuple_tag(m)= 'bpma_x'
+      m= m+1
+      s_Ntuple_tag(m)= 'bpma_y'
+      m= m+1
+      s_Ntuple_tag(m)= 'bpmb_x'
+      m= m+1
+      s_Ntuple_tag(m)= 'bpmb_y'
+      m= m+1
+      s_Ntuple_tag(m)= 'bpmc_x'
+      m= m+1
+      s_Ntuple_tag(m)= 'bpmc_y'
+      m= m+1
+      s_Ntuple_tag(m)= 'MPSclock'
+      m= m+1
+      s_Ntuple_tag(m)= 'hplus'
+      m= m+1
+      s_Ntuple_tag(m)= 'hminus'
+      m= m+1
+      s_Ntuple_tag(m)= 'sceradc1'
+      m= m+1
+      s_Ntuple_tag(m)= 'sceradc2'
+      m= m+1
+      s_Ntuple_tag(m)= 'sceradc3'
+      m= m+1
+      s_Ntuple_tag(m)= 'sceradc4'
 
 
 * Open ntuple.
 *
       s_Ntuple_size= m     !total size
 *
-      title= s_Ntuple_title
-      IF(title.EQ.' ') THEN
-        msg= name//' '//s_Ntuple_file
-        call only_one_blank(msg)
-        title= msg   
-        s_Ntuple_title= title
-      ENDIF
-*
-      id= s_Ntuple_ID
-      title= s_Ntuple_title
-      size= s_Ntuple_size
-      file= s_Ntuple_file
-      bank= default_bank
-      call HBOOKN(id,title,size,name,bank,s_Ntuple_tag)      !create Ntuple
-*
-      call HCDIR(s_Ntuple_directory,'R')      !record Ntuple directory
-*
-      CALL HCDIR(directory,' ')       !reset CERNLIB directory
-*
-      s_Ntuple_exists= HEXIST(s_Ntuple_ID)
-      ABORT= .NOT.s_Ntuple_exists
-*
-      iv(1)= id
-      iv(2)= io
-      pat= 'Ntuple id#$ [' // s_Ntuple_directory // '/]' // 
-     &           name // ' IO#$ "' // s_Ntuple_file // '"'
-      call G_build_note(pat,'$',iv,' ',rv,' ',msg)
-      call sub_string(msg,' /]','/]')
-*
+* Open ntuple
+
+      call s_Ntuple_open(file,ABORT,err)      
+
       IF(ABORT) THEN
-        err= ':unable to create '//msg
+        err= ':unable to create SOS Ntuple'
         call G_add_path(here,err)
-c      ELSE
-c        pat= ':created '//msg
-c        call G_add_path(here,pat)
-c        call G_log_message('INFO: '//pat)
+      ELSE
+        pat= ':created SOS Ntuple'
+        call G_add_path(here,pat)
+        call G_log_message('INFO: '//pat)
       ENDIF
-*
+c
       RETURN
       END  

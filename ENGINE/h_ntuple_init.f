@@ -10,11 +10,8 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
-* Revision 1.10  2003/09/05 16:40:16  jones
-* Merge in online03 changes (mkj)
-*
-* Revision 1.9.2.2  2003/09/04 21:10:33  jones
-* add event type to ntuple (mkj)
+* Revision 1.11  2004/02/17 17:26:34  jones
+* Changes to enable possiblity of segmenting rzdat files
 *
 * Revision 1.9.2.1  2003/04/04 12:54:42  cdaq
 * add beam parameters to ntuple
@@ -64,17 +61,13 @@
 *
       character*80 default_name
       parameter (default_name= 'HMSntuple')
-      integer default_bank,default_recL
-      parameter (default_bank= 8000)    !4 bytes/word
-      parameter (default_recL= 1024)    !record length
-      character*80 title,file
-      character*80 directory,name
+c
+      character*80 file
+      character*80 name
       character*1000 pat,msg
-      integer status,size,io,id,bank,recL,iv(10),m
-      real rv(10)
-*
-      logical HEXIST           !CERNLIB function
-*
+      integerilo,fn_len,m
+      character*1 ifile
+
       INCLUDE 'h_ntuple.dte'
 *
 *--------------------------------------------------------
@@ -93,57 +86,40 @@
 *
 *-if name blank, just forget it
       IF(h_Ntuple_file.EQ.' ') RETURN   !do nothing
-*
-*- get any free IO channel
-*
-      call g_IO_control(io,'ANY',ABORT,err)
-      h_Ntuple_exists= .NOT.ABORT
-      IF(ABORT) THEN
-        call G_add_path(here,err)
-        RETURN
-      ENDIF
-      h_Ntuple_IOchannel= io
-*
       h_Ntuple_ID= default_h_Ntuple_ID
-      id= h_Ntuple_ID
-*
-      ABORT= HEXIST(id)
-      IF(ABORT) THEN
-        call g_IO_control(h_Ntuple_IOchannel,'FREE',ABORT,err)
-        call G_build_note(':HBOOK id#$ already in use',
-     &                                 '$',id,' ',rv,' ',err)
-        call G_add_path(here,err)
-        RETURN
-      ENDIF
-*
-      CALL HCDIR(directory,'R')       !CERNLIB read current directory
-*
       h_Ntuple_name= default_name
-*
-      id= h_Ntuple_ID
-      name= h_Ntuple_name
+      IF(h_Ntuple_title.EQ.' ') THEN
+        msg= name//' '//h_Ntuple_file
+        call only_one_blank(msg)
+        h_Ntuple_title= msg
+      ENDIF
 
       file= h_Ntuple_file
       call g_sub_run_number(file,gen_run_number)
 
-      recL= default_recL
-      io= h_Ntuple_IOchannel
-*
-*-open New *.rzdat file-
-      call HROPEN(io,name,file,'N',recL,status)       !CERNLIB
-*                                       !directory set to "//TUPLE"
-      io= h_Ntuple_IOchannel
-      ABORT= status.NE.0
-      IF(ABORT) THEN
-        call g_IO_control(h_Ntuple_IOchannel,'FREE',ABORT,err)
-        iv(1)= status
-        iv(2)= io
-        pat= ':HROPEN error#$ opening IO#$ "'//file//'"'
-        call G_build_note(pat,'$',iv,' ',rv,' ',err)
-        call G_add_path(here,err)
+
+*     * only needed if using more than one file      
+      if (h_Ntuple_max_segmentevents .gt. 0) then
+       h_Ntuple_filesegments = 1
+
+       ifile = char(ichar('0')+h_Ntuple_filesegments)
+ 
+       fn_len = g_important_length(file)
+       ilo=index(file,'.hbook')
+       if ((ilo.le.1).or.(ilo.gt.fn_len-5)) then
+         ilo=index(file,'.rzdat')
+       endif  
+
+       if ((ilo.gt.1).and.(ilo.lt.fn_len)) then
+         file = file(1:ilo-1) // '.' // ifile // file(ilo:fn_len)
+       else
+         ABORT = .true.
         RETURN
-      ENDIF
-      h_Ntuple_file= file
+       endif
+       write(*,*) ' Using segmented hms rzdat files first filename: ',file
+       else
+         write(*,*) ' Not using segmented hms rzdat files first filename: ',file  
+      endif
 *
       m= 0
       m= m+1
@@ -192,7 +168,7 @@
       m= m+1
       h_Ntuple_tag(m)= 'eventID'
       m= m+1
-      h_Ntuple_tag(m)= 'evtype'
+      h_Ntuple_tag(m)= 'ev_type'
 
 * Experiment dependent entries start here.
 c
@@ -217,50 +193,19 @@ c
       m= m+1
       h_Ntuple_tag(m)= 'bpmc_y'
 
-
-* Open ntuple
-*
       h_Ntuple_size= m     !total size
-*
-      title= h_Ntuple_title
-      IF(title.EQ.' ') THEN
-        msg= name//' '//h_Ntuple_file
-        call only_one_blank(msg)
-        title= msg   
-        h_Ntuple_title= title
-      ENDIF
-*
-      id= h_Ntuple_ID
-      io= h_Ntuple_IOchannel
-      name= h_Ntuple_name
-      title= h_Ntuple_title
-      size= h_Ntuple_size
-      file= h_Ntuple_file
-      bank= default_bank
-      call HBOOKN(id,title,size,name,bank,h_Ntuple_tag)      !create Ntuple
-*
-      call HCDIR(h_Ntuple_directory,'R')      !record Ntuple directory
-*
-      CALL HCDIR(directory,' ')       !reset CERNLIB directory
-*
-      h_Ntuple_exists= HEXIST(h_Ntuple_ID)
-      ABORT= .NOT.h_Ntuple_exists
-*
-      iv(1)= id
-      iv(2)= io
-      pat= 'Ntuple id#$ [' // h_Ntuple_directory // '/]' // 
-     &                         name // ' IO#$ "' // file // '"'
-      call G_build_note(pat,'$',iv,' ',rv,' ',msg)
-      call sub_string(msg,' /]','/]')
-*
+* Open ntuple
+
+      call h_Ntuple_open(file,ABORT,err)      
+
       IF(ABORT) THEN
-        err= ':unable to create '//msg
+        err= ':unable to create HMS Ntuple'
         call G_add_path(here,err)
-c      ELSE
-c        pat= ':created '//msg
-c        call G_add_path(here,pat)
-c        call G_log_message('INFO: '//pat)
+      ELSE
+        pat= ':created HMS Ntuple'
+        call G_add_path(here,pat)
+        call G_log_message('INFO: '//pat)
       ENDIF
-*
+
       RETURN
       END  
