@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.14  1995/11/28 18:59:24  cdaq
+* (SAW) Change arrays that use roc as index to start with zero.
+*
 * Revision 1.13  1995/10/09 18:23:29  cdaq
 * (JRA) Comment out some debugging statements
 *
@@ -109,8 +112,8 @@
 *            write (6,*) 'roc,slot=',roc,slot
 *            write (6,*) 'evfrag(pointer)=',evfrag(pointer)
 *          endif
-          mappointer = g_decode_slotpointer(roc+1,slot)
-          subaddbit = g_decode_subaddbit(roc+1,slot) ! Usually 16 or 17
+          mappointer = g_decode_slotpointer(roc,slot)
+          subaddbit = g_decode_subaddbit(roc,slot) ! Usually 16 or 17
         endif
         if(slot.ne.oslot) then
           oslot = slot
@@ -165,7 +168,7 @@ c
             if(did.ne.UNINST_ID) then
               plane = g_decode_planemap(mappointer+subadd)
               counter = g_decode_countermap(mappointer+subadd)
-              signal =jiand(evfrag(pointer),g_decode_slotmask(roc+1,slot))
+              signal =jiand(evfrag(pointer),g_decode_slotmask(roc,slot))
             else
               plane = jishft(roc,16) + slot
               counter = subadd
