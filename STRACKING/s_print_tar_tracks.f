@@ -14,7 +14,10 @@
 *              changed name for s_target_dump to s_print_tar_tracks
 *              made output lun sluno
 * $Log$
-* Revision 1.1  1994/02/21 16:38:38  cdaq
+* Revision 1.2  1994/05/13 03:20:37  cdaq
+* (DFG) Check for more than zero tracks
+*
+* Revision 1.1  1994/02/21  16:38:38  cdaq
 * Initial revision
 *
 *______________________________________________________________________________
@@ -32,7 +35,7 @@
      >                   itrk
 
 ! ============================= Executable Code ================================
-
+       if(sntracks_tar .gt. 0 ) then
 ! Write out header.
         write (sluno,1001) 'SOS TARGET TRACKS'
 	write (sluno,1002)
@@ -47,17 +50,20 @@
      >        sx_tar(itrk),sxp_tar(itrk),
      >        sy_tar(itrk),syp_tar(itrk),
      >        sz_tar(itrk),
-     >        sdelta_tar(itrk)
+     >        sdelta_tar(itrk),
+     >        sp_tar(itrk)
 
 	enddo
-
+        endif
 	return
 
 ! ============================ Format Statements ===============================
 
 1001    format(a)
-1002	format(/,1x,'TRK',t8,'SX_TAR',t20,'SXP_TAR',t32,'SY_TAR',t44,'SYP_TAR',
-     >         t56,'SZ_TAR',t68,'SDELTA_TAR')
-1003	format(1x,i4,t8,6(f12.6))
+1002	format(/,1x,'TRK',t10,'SX_TAR',t20,'SXP_TAR',t30,'SY_TAR',t40,'SYP_TAR',
+     >         t50,'SZ_TAR',t60,'SDELTA_TAR',t72,'SP_TAR')
+1003	format(1x,i2,t8,3(f10.6,f10.5),f10.5)
 
 	end
+
+
