@@ -11,7 +11,11 @@
 *       Modified 23 March 1994   DFG
 *           Add definition of hnum_scin_elements and set parameter value
 * $Log$
-* Revision 1.6  1995/03/13 19:08:45  cdaq
+* Revision 1.7  1995/05/22 19:11:18  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts.
+* Make pedestal arrays real.  Add hms_scin_positions and hms_misc_parms commons
+*
+* Revision 1.6  1995/03/13  19:08:45  cdaq
 * (JRA) Move hnum_scin_elements to gen_data_structures, remove
 *       hscin_num_counters.  Change hscin_??_top and _left to center and offset.
 *       Add hscin_??_spacing parms.  Change hhodo_center_coord to hhodo_center.
@@ -37,7 +41,7 @@
 *     directive to makereg to tell it to include the code in the program
 *     that it generates.
 *
-*%%   include 'gen_data_structures.cmn'
+*%%   include 'hms_data_structures.cmn'
 *
 *     CTPTYPE=parm
 *
@@ -82,8 +86,8 @@
       real*4 hscin_1y_spacing
       real*4 hscin_2x_spacing
       real*4 hscin_2y_spacing
-      integer*4 hscin_all_ped_pos(hnum_scin_planes,hnum_scin_elements)
-      integer*4 hscin_all_ped_neg(hnum_scin_planes,hnum_scin_elements)
+      real*4 hscin_all_ped_pos(hnum_scin_planes,hnum_scin_elements)
+      real*4 hscin_all_ped_neg(hnum_scin_planes,hnum_scin_elements)
 
       common/hms_scin_parms/            !variables from h_positions.parm
      &     hscin_1x_nr, hscin_1y_nr,    !Elements per plane
@@ -150,3 +154,51 @@
      &     hhodo_neg_time_offset,
      $     hhodo_pos_minph,
      $     hhodo_neg_minph
+*
+*
+* hms_scin_positions.cmn - common block with the variables used
+*           to calculate/verify detector positions.
+*
+*
+*      CTPTYPE=parm
+*
+      real*4 hscin_dpos_slop
+      real*4 hscin_dpos_maxchisq
+*
+*      CTPTYPE=event
+*
+
+      real*4 hscin_dpos(hnum_scin_planes,hnum_scin_elements)
+      real*4 hscin_dpos_sum(hnum_scin_planes,hnum_scin_elements)
+      real*4 hscin_dpos_sum2(hnum_scin_planes,hnum_scin_elements)
+      real*4 hscin_dpos_ave(hnum_scin_planes,hnum_scin_elements)
+      real*4 hscin_dpos_sig(hnum_scin_planes,hnum_scin_elements)
+      integer*4 hscin_num_dpos(hnum_scin_planes,hnum_scin_elements)
+      real*4 hscin_tot_dpos_sum(hnum_scin_planes)
+      real*4 hscin_tot_dpos_ave(hnum_scin_planes)
+      integer*4 hscin_tot_num_dpos(hnum_scin_planes)
+
+      common/hms_scin_positions/
+     &   hscin_dpos,         ! x(y) of track - x(y) of center of scin.
+     &   hscin_dpos_sum,     ! sum of position differences
+     &   hscin_dpos_sum2,    ! sum of pos. differences squared
+     &   hscin_num_dpos,     ! number of position measurements
+     &   hscin_dpos_ave,     ! average of position differences
+     &   hscin_dpos_sig,     ! sigma of position differences
+     &   hscin_dpos_slop,    ! cut used to determine if scin. is on track
+     &   hscin_dpos_maxchisq,! chisq cut for good pos. measurement.
+     &   hscin_tot_dpos_sum, ! sum of pos. differences per plane.
+     &   hscin_tot_dpos_ave, ! ave pos. diff per plane.
+     &   hscin_tot_num_dpos  ! num. position measurements per plane.
+*
+*
+* hms_misc_parms.cmn -  misc tdc's filled as array over signal number
+*         (tdc is sparsified, so the raw signals are array over hits)
+*
+*
+*     CTPTYPE=event
+*
+      integer*4 hmisc_dec_data(hmax_misc_hits)
+
+      common/hms_misc_parms/
+     &   hmisc_dec_data
