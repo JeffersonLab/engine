@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.41.6.2  2004/06/30 19:31:49  cdaq
+* Add call to g_examine_picture_event (DJG)
+*
 * Revision 1.41.6.1  2004/06/18 11:24:11  cdaq
 *  Fixed so that runstats works under Linux
 *
@@ -413,6 +416,9 @@ c
           else if (gen_event_type.eq.141 .or. gen_event_type.eq.142 .or.
      &             gen_event_type.eq.144) then
 *             write(6,*) 'HV information event, event type=',gen_event_type
+	  else if (gen_event_type.eq.146..or.gen_event_type.eq.147) then
+c	     write(6,*) 'Cheesy poofs! - picture event'
+	     call g_examine_picture_event
           else if (gen_event_type.eq.251) then
              syncfilter_on = .true.
           else
