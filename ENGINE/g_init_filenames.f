@@ -23,6 +23,9 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
+* Revision 1.17  1996/11/05 21:40:59  saw
+* (JRA) Add g_epics_output_filename
+*
 * Revision 1.16  1996/09/04 14:36:59  saw
 * (JRA) Add read of command line parameters
 *
@@ -125,6 +128,7 @@
       c_report_output_filename = ' '
       g_stats_output_filename = ' '
       g_bad_output_filename = ' '
+      g_epics_output_filename = ' '
 *
       h_report_blockname = ' '
       s_report_blockname = ' '
