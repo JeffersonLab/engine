@@ -5,6 +5,9 @@
 *
 *     d.f. geesaman              17 feb 1994
 * $Log$
+* Revision 1.5  1995/10/09 20:16:02  cdaq
+* (JRA) Remove monte carlo data option
+*
 * Revision 1.4  1995/05/22 19:39:09  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -34,18 +37,9 @@
 *
       real*4     h_drift_time_calc      !  drift time in nanoseconds
 *
-*     monte Carlo data does not set HSTART_TIME properly
-*     check debuging switch
-      if( hdebug_mc_start_time .ne. 0) then 
-         h_drift_time_calc = 0.
-     &        - FLOAT(tdc)*hdc_tdc_time_per_channel
+      h_drift_time_calc = hstart_time
+     &        - float(tdc)*hdc_tdc_time_per_channel
      &        + hdc_plane_time_zero(plane)
-
-      else
-         h_drift_time_calc = HSTART_TIME 
-     &        - FLOAT(tdc)*hdc_tdc_time_per_channel
-     &        + hdc_plane_time_zero(plane)
-      endif                             ! End check on monte carlo start time
       return
       end
 
