@@ -16,7 +16,10 @@
 * s_cal_eff_shutdown does some final manipulation of the numbers.
 *
 * $Log$
-* Revision 1.2  1995/05/22 19:45:32  cdaq
+* Revision 1.3  1995/08/31 18:04:19  cdaq
+* (JRA) Calculate and printout pedestals
+*
+* Revision 1.2  1995/05/22  19:45:32  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.1  1995/02/23  15:42:42  cdaq
@@ -25,8 +28,8 @@
 *--------------------------------------------------------
       IMPLICIT NONE
 *
-      character*50 here
-      parameter (here= 'S_SCIN_EFF')
+      character*18 here
+      parameter (here= 'S_CAL_EFF_SHUTDOWN')
 *
       logical ABORT
       character*(*) errmsg
@@ -37,7 +40,8 @@
       include 'sos_calorimeter.cmn'
       include 'sos_statistics.cmn'
 
-      integer col,row
+      integer col,row,blk
+      real ave,ave2,num
       save
 
 ! fill sums over counters
@@ -45,13 +49,42 @@
         sstat_cal_trksum(col)=0
         sstat_cal_hitsum(col)=0
         do row=1,smax_cal_rows
+          sstat_cal_eff(col,row)=sstat_cal_hit(col,row)
+     $         /max(.01,float(sstat_cal_trk(col,row))) 
           sstat_cal_trksum(col)=sstat_cal_trksum(col)+sstat_cal_trk(col,row)
           sstat_cal_hitsum(col)=sstat_cal_hitsum(col)+sstat_cal_hit(col,row)
-ccc      write(6,*) row,col,sstat_cal_trksum(col)
         enddo
-        sstat_cal_eff(col)=sstat_cal_hitsum(col)/max(.01,float(sstat_cal_trksum(col)))
-ccc      write(6,*) sstat_cal_eff(col) 
+        sstat_cal_effsum(col)=sstat_cal_hitsum(col)
+     $       /max(.01,float(sstat_cal_trksum(col)))
       enddo
 
+      do blk=1,smax_cal_blocks
+        num=float(max(1,scal_zero_num(blk)))
+        ave=float(scal_zero_sum(blk))/num
+        ave2=float(scal_zero_sum2(blk))/num
+        scal_zero_ave(blk)=ave
+        scal_zero_sig(blk)=sqrt(max(0.,ave2-ave*ave))
+        scal_zero_thresh(blk)=min(50.,max(20.,3*scal_zero_sig(blk)))
+      enddo
+
+      write(39,*) '; calorimeter pedestal centroids'
+      write(39,*) ' scal_ped_mean = '
+      write(39,111) (scal_zero_ave(blk),blk=1,smax_cal_rows)
+      write(39,111) (scal_zero_ave(blk),blk=smax_cal_rows+1,2*smax_cal_rows)
+      write(39,111) (scal_zero_ave(blk),blk=2*smax_cal_rows+1,3*smax_cal_rows)
+      write(39,111) (scal_zero_ave(blk),blk=3*smax_cal_rows+1,4*smax_cal_rows)
+      write(39,*) '; calorimeter ped. sigma (sqrt(variance))'
+      write(39,*) ' scal_ped_rms = '
+      write(39,111) (scal_zero_sig(blk),blk=1,smax_cal_rows)
+      write(39,111) (scal_zero_sig(blk),blk=smax_cal_rows+1,2*smax_cal_rows)
+      write(39,111) (scal_zero_sig(blk),blk=2*smax_cal_rows+1,3*smax_cal_rows)
+      write(39,111) (scal_zero_sig(blk),blk=3*smax_cal_rows+1,4*smax_cal_rows)
+      write(39,*) '; calorimeter threshold above ped. =MIN(50,MAX(20,3*sigma))'
+      write(39,*) 'scal_threshold = '
+      write(39,111) (scal_zero_thresh(blk),blk=1,smax_cal_rows)
+      write(39,111) (scal_zero_thresh(blk),blk=smax_cal_rows+1,2*smax_cal_rows)
+      write(39,111) (scal_zero_thresh(blk),blk=2*smax_cal_rows+1,3*smax_cal_rows)
+      write(39,111) (scal_zero_thresh(blk),blk=3*smax_cal_rows+1,4*smax_cal_rows)
+111   format (10(f5.1,','),f5.1)
       return
       end
