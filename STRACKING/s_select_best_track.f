@@ -12,9 +12,12 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log$
-*- Revision 1.2  1995/04/06 19:44:04  cdaq
-*- (JRA) Fix some latent HMS variable names
+*- Revision 1.3  1995/05/22 19:45:55  cdaq
+*- (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *-
+c Revision 1.2  1995/04/06  19:44:04  cdaq
+c (JRA) Fix some latent HMS variable names
+c
 c Revision 1.1  1995/02/23  13:29:49  cdaq
 c Initial revision
 c
@@ -28,7 +31,7 @@ c
       logical ABORT
       character*(*) err
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'gen_routines.dec'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'

@@ -8,7 +8,10 @@
 *-      Modified 25 Mar 1994      DFG
 *-                                change name and lun
 * $Log$
-* Revision 1.1  1994/04/13 18:19:30  cdaq
+* Revision 1.2  1995/05/22 19:45:47  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.1  1994/04/13  18:19:30  cdaq
 * Initial revision
 *
 *-----------------------------------------------------------------------
@@ -20,7 +23,7 @@
       integer*4 nh      !Hit number
       integer*4 nc      !Cluster number
 *
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_calorimeter.cmn'
       include 'sos_tracking.cmn'
 *

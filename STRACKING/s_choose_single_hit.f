@@ -12,7 +12,10 @@
 *- 
 *-   Created 28-JUN-1994   D. F. Geesaman
 * $Log$
-* Revision 1.1  1994/11/22 21:06:12  cdaq
+* Revision 1.2  1995/05/22 19:45:33  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.1  1994/11/22  21:06:12  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -26,7 +29,7 @@
       logical ABORT
       character*(*) err
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       include 'sos_tracking.cmn'

@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.4  1995/02/23 13:28:35  cdaq
+* Revision 1.5  1995/05/22 19:45:59  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.4  1995/02/23  13:28:35  cdaq
 * (JRA) Add track index to sgood_scin_time
 *
 * Revision 1.3  1994/11/23  14:15:49  cdaq
@@ -25,7 +28,7 @@
 
       implicit none
 
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_scin_parms.cmn'
       include 'sos_scin_tof.cmn'
 

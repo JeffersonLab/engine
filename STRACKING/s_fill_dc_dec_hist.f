@@ -8,7 +8,10 @@
 *                                 Put id's in sos_tracking_histid
 *                                 implement flag to turn block off
 * $Log$
-* Revision 1.2  1994/08/18 04:33:13  cdaq
+* Revision 1.3  1995/05/22 19:45:38  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1994/08/18  04:33:13  cdaq
 * (SAW) Indentation changes
 *
 * Revision 1.1  1994/04/13  18:10:22  cdaq
@@ -25,7 +28,7 @@
       real*4  histval
       integer*4 planeoff,ihit
 *
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_tracking.cmn'
       include 'sos_track_histid.cmn'          
 *

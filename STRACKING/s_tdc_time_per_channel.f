@@ -5,7 +5,10 @@
 *
 *     d.f. geesaman      17 feb 1994        first dummy routine
 * $Log$
-* Revision 1.2  1994/03/24 19:56:24  cdaq
+* Revision 1.3  1995/05/22 19:45:57  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1994/03/24  19:56:24  cdaq
 * (DFG) Add includes, return value now a registered variable
 *
 * Revision 1.1  1994/02/21  16:41:23  cdaq
@@ -13,7 +16,7 @@
 *
 *
       implicit none
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_geometry.cmn'
 *     inputs
 *     

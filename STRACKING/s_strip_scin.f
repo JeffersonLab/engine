@@ -7,7 +7,10 @@
 * s_strip_scin converts the raw hits to arrays over hits
 * with good TDC values.
 * $Log$
-* Revision 1.3  1995/05/11 15:02:18  cdaq
+* Revision 1.4  1995/05/22 19:45:56  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1995/05/11  15:02:18  cdaq
 * (JRA) Cosmetic changes
 *
 * Revision 1.2  1995/02/10  19:14:37  cdaq
@@ -20,7 +23,7 @@
 
       implicit none
 
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_scin_parms.cmn'
       include 'sos_scin_tof.cmn'
 

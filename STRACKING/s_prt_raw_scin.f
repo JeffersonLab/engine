@@ -10,7 +10,10 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
-* Revision 1.3  1995/04/06 19:42:03  cdaq
+* Revision 1.4  1995/05/22 19:45:50  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1995/04/06  19:42:03  cdaq
 * (JRA) SSCIN_TOT_HITS -> SSCIN_ALL_TOT_HITS
 *
 * Revision 1.2  1994/11/23  13:56:57  cdaq
@@ -30,7 +33,7 @@
       character*(*) err
 *
       integer*4 j
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'gen_constants.par'
       include 'gen_units.par'
       include 'sos_tracking.cmn'

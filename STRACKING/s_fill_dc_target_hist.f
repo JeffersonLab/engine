@@ -5,7 +5,10 @@
 *     Author:	D. F. Geesaman
 *     Date:     3 May 1994
 * $Log$
-* Revision 1.2  1994/08/18 04:31:47  cdaq
+* Revision 1.3  1995/05/22 19:45:38  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1994/08/18  04:31:47  cdaq
 * (SAW) Indentation changes
 *
 * Revision 1.1  1994/05/13  03:04:19  cdaq
@@ -24,7 +27,7 @@
       integer*4 itrk
 
 *
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_track_histid.cmn'
 *     
       SAVE

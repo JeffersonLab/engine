@@ -15,7 +15,10 @@
 * s_scin_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
-* Revision 1.3  1995/05/11 21:17:23  cdaq
+* Revision 1.4  1995/05/22 19:45:54  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1995/05/11  21:17:23  cdaq
 * (JRA) Add position calibration variables
 *
 * Revision 1.2  1995/04/06  19:43:37  cdaq
@@ -33,7 +36,7 @@
       logical ABORT
       character*(*) errmsg
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       include 'sos_scin_parms.cmn'

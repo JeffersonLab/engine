@@ -3,11 +3,14 @@
 *     All the results are contained in sos_tracking.inc
 *     d.f. geesaman          5 September 1993
 * $Log$
-* Revision 1.1  1994/02/21 16:37:52  cdaq
+* Revision 1.2  1995/05/22 19:45:45  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.1  1994/02/21  16:37:52  cdaq
 * Initial revision
 *
       implicit none
-      include "gen_data_structures.cmn"
+      include "sos_data_structures.cmn"
       include "sos_tracking.cmn"
       include "sos_geometry.cmn"
 *     local variables

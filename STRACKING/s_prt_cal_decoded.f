@@ -9,7 +9,10 @@
 *-                                Change name
 *-                                Change lun
 * $Log$
-* Revision 1.1  1994/04/13 18:19:52  cdaq
+* Revision 1.2  1995/05/22 19:45:48  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.1  1994/04/13  18:19:52  cdaq
 * Initial revision
 *
 *-----------------------------------------------------------------------
@@ -19,7 +22,7 @@
 *
       integer*4 hit      !Hit number
 *
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_calorimeter.cmn'
       include 'sos_tracking.cmn'
 *

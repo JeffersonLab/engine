@@ -8,7 +8,10 @@
 *                                   Transfer ID in common block
 *                                   Implement flag to turn block on
 * $Log$
-* Revision 1.3  1995/04/06 19:35:40  cdaq
+* Revision 1.4  1995/05/22 19:45:38  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1995/04/06  19:35:40  cdaq
 * (JRA) Add WC residual histograms
 *
 * Revision 1.2  1994/08/18  04:34:23  cdaq
@@ -29,7 +32,7 @@
       integer*4 itrk
       integer*4 plane
 *
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_track_histid.cmn'
       include 'sos_tracking.cmn'
 *

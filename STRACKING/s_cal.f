@@ -15,7 +15,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.3  1995/05/11 21:02:26  cdaq
+* Revision 1.4  1995/05/22 19:45:31  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1995/05/11  21:02:26  cdaq
 * (JRA) Add call to s_tracks_cal
 *
 * Revision 1.2  1994/11/22  21:05:51  cdaq
@@ -27,7 +30,7 @@
 *--------------------------------------------------------
       IMPLICIT NONE
       SAVE
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'sos_calorimeter.cmn'
 *
       character*50 here

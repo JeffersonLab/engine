@@ -8,7 +8,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.2  1994/11/23 13:57:39  cdaq
+* Revision 1.3  1995/05/22 19:45:51  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1994/11/23  13:57:39  cdaq
 * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.1  1994/04/13  18:22:01  cdaq
@@ -18,7 +21,7 @@
 
       implicit none
 
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_scin_parms.cmn'
       include 'sos_scin_tof.cmn'
       include 'sos_tracking.cmn'

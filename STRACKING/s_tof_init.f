@@ -9,7 +9,10 @@
 *
 * modifications: 31 Mar 1994    DFG  Check for 0 hits
 * $Log$
-* Revision 1.4  1995/02/23 15:58:54  cdaq
+* Revision 1.5  1995/05/22 19:46:00  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.4  1995/02/23  15:58:54  cdaq
 * (JRA)  Change shodo_center_coord to shodo_center.
 *        Make minph variables into per pmt constants.
 *
@@ -26,7 +29,7 @@
 
       implicit none
 
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_scin_parms.cmn'
       include 'sos_scin_tof.cmn'
 

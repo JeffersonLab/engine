@@ -5,7 +5,10 @@
 *
 *     d.f. geesaman         8 Sept 1993
 * $Log$
-* Revision 1.3  1995/04/06 19:45:16  cdaq
+* Revision 1.4  1995/05/22 19:46:01  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1995/04/06  19:45:16  cdaq
 * (JRA) Rename residuals variables
 *
 * Revision 1.2  1994/11/23  14:24:18  cdaq
@@ -15,7 +18,7 @@
 * Initial revision
 *
       implicit none
-      include "gen_data_structures.cmn"
+      include "sos_data_structures.cmn"
       include "sos_tracking.cmn"
 *
       external S_FCNCHISQ

@@ -14,7 +14,10 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
-* Revision 1.4  1995/04/06 19:36:53  cdaq
+* Revision 1.5  1995/05/22 19:45:43  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.4  1995/04/06  19:36:53  cdaq
 * (SAW) Hopefully improve wire velocity correction for SOS chambers
 *
 * Revision 1.3  1994/12/06  15:33:06  cdaq
@@ -43,7 +46,7 @@
       logical ABORT
       character*(*) err
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
 *

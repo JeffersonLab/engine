@@ -15,7 +15,10 @@
 *-      Modified 25 Mar 1994      DFG
 *-                                Change name of print routine
 * $Log$
-* Revision 1.2  1994/11/23 14:24:46  cdaq
+* Revision 1.3  1995/05/22 19:46:01  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1994/11/23  14:24:46  cdaq
 * * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.1  1994/04/13  16:16:04  cdaq
@@ -42,7 +45,7 @@
       real*4 dz_b       !calorimeter front(f) and back(b) surfaces
       real*4 delta_x    !Distance between track & cluster in X projection
 *
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_calorimeter.cmn'
 *
 *

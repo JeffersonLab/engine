@@ -3,14 +3,17 @@
 *
 *     d.f. geesaman               8 Sept 1993
 * $Log$
-* Revision 1.1  1994/02/21 16:14:30  cdaq
+* Revision 1.2  1995/05/22 19:45:41  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.1  1994/02/21  16:14:30  cdaq
 * Initial revision
 *
 *
       implicit none
       external S_FCNCHISQ
       real*8 S_FCNCHISQ
-      include "gen_data_structures.cmn"
+      include "sos_data_structures.cmn"
       include "sos_tracking.cmn"
 *     local variables
       integer*4 ierr,dummy

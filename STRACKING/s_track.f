@@ -13,7 +13,10 @@
 *- 
 *-   Created 19-JAN-1994   D. F. Geesaman
 * $Log$
-* Revision 1.2  1994/04/13 18:51:49  cdaq
+* Revision 1.3  1995/05/22 19:46:00  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1994/04/13  18:51:49  cdaq
 * (DFG) Add call to s_fill_dc_fp_hist
 *
 * Revision 1.1  1994/02/21  16:42:12  cdaq
@@ -32,7 +35,7 @@
        integer*4 ierr
        character*5  line_err
 *
-       INCLUDE 'gen_data_structures.cmn'
+       INCLUDE 'sos_data_structures.cmn'
        INCLUDE 'gen_constants.par'
        INCLUDE 'gen_units.par'
 *

@@ -4,9 +4,12 @@
 *     Used in find_best_stub.f
 
 * $Log$
-* Revision 1.1  1994/11/23 13:59:37  cdaq
-* Initial revision
+* Revision 1.2  1995/05/22 19:45:55  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
+c Revision 1.1  1994/11/23  13:59:37  cdaq
+c Initial revision
+c
 *
 * djm 10/2/94
 * The present version replaces solve_three_by_three(TT,AA,stub,ierr) in 
@@ -15,7 +18,7 @@
 
 *
       implicit none
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_tracking.cmn'
 
 

@@ -9,7 +9,10 @@
 *     space point.
 *     d. f. geesaman           31 August 1993
 * $Log$
-* Revision 1.5  1995/05/11 21:05:32  cdaq
+* Revision 1.6  1995/05/22 19:45:42  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.5  1995/05/11  21:05:32  cdaq
 * (JRA) Fix errors in left right selection.  Add some commented out code
 *
 * Revision 1.4  1995/04/01  20:42:35  cdaq
@@ -30,7 +33,7 @@
 *
       implicit none
       save
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_tracking.cmn'
       include 'sos_geometry.cmn'
 *

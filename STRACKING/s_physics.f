@@ -19,7 +19,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.7  1995/05/11 17:15:15  cdaq
+* Revision 1.8  1995/05/22 19:45:43  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.7  1995/05/11  17:15:15  cdaq
 * (SAW) Add additional kinematics variables
 *
 * Revision 1.6  1995/04/06  19:37:30  cdaq
@@ -54,7 +57,8 @@
       character*(*) err
       integer*4 ierr
 *
-      INCLUDE 'gen_data_structures.cmn'
+      include 'gen_data_structures.cmn'
+      INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'gen_routines.dec'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'

@@ -15,7 +15,10 @@
 * s_cal_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
-* Revision 1.2  1995/04/01 20:39:32  cdaq
+* Revision 1.3  1995/05/22 19:45:31  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1995/04/01  20:39:32  cdaq
 * (SAW) Fix typos
 *
 * Revision 1.1  1995/02/23  15:42:27  cdaq
@@ -30,7 +33,7 @@
       logical ABORT
       character*(*) errmsg
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       include 'sos_calorimeter.cmn'

@@ -6,7 +6,10 @@
 *     modified   dfg            14 Feb 1993   Change SPLANE_PARAM to 
 *                                             sdc_sigma
 * $Log$
-* Revision 1.2  1994/11/22 21:11:17  cdaq
+* Revision 1.3  1995/05/22 19:45:37  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1994/11/22  21:11:17  cdaq
 * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.1  1994/02/21  16:13:20  cdaq
@@ -16,7 +19,7 @@
       implicit none
       external S_DPSIFUN
       real*8 S_DPSIFUN
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_tracking.cmn'
       include 'sos_geometry.cmn'
 *

@@ -19,7 +19,10 @@
 *-Modified 21-JAN-94  D.F.Geesaman
 *-            Add ABORT and err
 * $Log$
-* Revision 1.8  1995/03/23 16:51:57  cdaq
+* Revision 1.9  1995/05/22 19:45:57  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.8  1995/03/23  16:51:57  cdaq
 * (SAW) Previous change wrong.  COSY wants slopes.
 * Target track data is now slopes.
 *
@@ -69,7 +72,7 @@
       character*(*) err
       integer*4   istat
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       include 'sos_tracking.cmn'

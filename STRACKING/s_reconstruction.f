@@ -9,9 +9,12 @@
 *-         : err             - reason for failure, if any
 *- 
 *-    $Log$
-*-    Revision 1.7  1995/05/11 21:07:26  cdaq
-*-    (JRA) Add call to s_trans_misc
+*-    Revision 1.8  1995/05/22 19:45:54  cdaq
+*-    (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *-
+* Revision 1.7  1995/05/11  21:07:26  cdaq
+* (JRA) Add call to s_trans_misc
+*
 * Revision 1.6  1995/04/06  19:42:47  cdaq
 * (JRA) Add call to s_select_best_track before s_physics
 *
@@ -45,7 +48,7 @@
       logical ABORT
       character*(*) err
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       include 'sos_scin_parms.cmn'

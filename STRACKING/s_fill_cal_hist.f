@@ -8,7 +8,10 @@
 *
 *
 * $Log$
-* Revision 1.1  1995/04/27 20:40:22  cdaq
+* Revision 1.2  1995/05/22 19:45:37  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.1  1995/04/27  20:40:22  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -23,7 +26,7 @@
       character*(*) err
       real*4  histval
       integer*4 row,col,ihit
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_id_histid.cmn'          
       include 'sos_calorimeter.cmn'
 *

@@ -2,12 +2,15 @@
 *     prints the output of link matching
 *     d.f. geesaman           7 Sept 1993
 * $Log$
-* Revision 1.1  1994/02/21 16:15:59  cdaq
+* Revision 1.2  1995/05/22 19:45:45  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.1  1994/02/21  16:15:59  cdaq
 * Initial revision
 *
 *
       implicit none
-      include "gen_data_structures.cmn"
+      include "sos_data_structures.cmn"
       include "sos_tracking.cmn"
       integer*4 itrack,ihit
       write(sluno,

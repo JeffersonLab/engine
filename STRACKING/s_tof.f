@@ -15,7 +15,10 @@
 *-   Created 22-FEB-1994   John Arrington
 *
 * $Log$
-* Revision 1.8  1995/05/17 16:46:14  cdaq
+* Revision 1.9  1995/05/22 19:45:58  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.8  1995/05/17  16:46:14  cdaq
 * (JRA) Add sum_plane_time and num_plane_time
 *
 * Revision 1.7  1995/02/23  15:47:24  cdaq
@@ -64,7 +67,7 @@
       logical ABORT
       character*(*) errmsg
 *
-      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
       include 'sos_scin_parms.cmn'

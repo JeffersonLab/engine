@@ -6,7 +6,10 @@
 * s_trans_misc fills the sos_decoded_misc common block
 *
 * $Log$
-* Revision 1.1  1995/04/12 03:59:23  cdaq
+* Revision 1.2  1995/05/22 19:46:03  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.1  1995/04/12  03:59:23  cdaq
 * Initial revision
 *
 *
@@ -14,7 +17,7 @@
 
       implicit none
 
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_scin_parms.cmn'
 
       logical abort

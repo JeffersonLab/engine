@@ -10,7 +10,10 @@
 *
 *     d.f. geesaman           7-September 1993
 * $Log$
-* Revision 1.3  1995/04/01 20:42:57  cdaq
+* Revision 1.4  1995/05/22 19:45:42  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1995/04/01  20:42:57  cdaq
 * (SAW) Fix typos
 *
 * Revision 1.2  1994/06/07  04:41:19  cdaq
@@ -32,7 +35,7 @@
 *                     stubs.
 *
       implicit none
-      include "gen_data_structures.cmn"
+      include "sos_data_structures.cmn"
       include "sos_tracking.cmn"
       external s_chamnum
       integer*4 s_chamnum

@@ -2,11 +2,14 @@
 *     This function returns the chamber number of a space point
 *      d.f. geesaman              8 Sept 1993
 * $Log$
-* Revision 1.1  1994/02/21 16:07:27  cdaq
+* Revision 1.2  1995/05/22 19:45:33  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.1  1994/02/21  16:07:27  cdaq
 * Initial revision
 *
       implicit none
-      include "gen_data_structures.cmn"
+      include "sos_data_structures.cmn"
       include "sos_tracking.cmn"
       include "sos_geometry.cmn"
 *     output

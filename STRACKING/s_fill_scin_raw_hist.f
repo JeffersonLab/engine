@@ -10,7 +10,10 @@
 *                                Add CTP flag to turn on histogramming
 *                                id's in sos_id_histid
 * $Log$
-* Revision 1.3  1995/05/11 21:04:14  cdaq
+* Revision 1.4  1995/05/22 19:45:39  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1995/05/11  21:04:14  cdaq
 * (JRA) Modifications to user histograms
 *
 * Revision 1.2  1995/02/10  19:11:36  cdaq
@@ -31,7 +34,7 @@
        character*(*) err
        real*4  histval
        integer*4 plane,counter,ihit
-       include 'gen_data_structures.cmn'
+       include 'sos_data_structures.cmn'
        include 'sos_scin_parms.cmn'
        include 'sos_id_histid.cmn'          
 *

@@ -13,7 +13,10 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to s_raw_dump_all
 * $Log$
-* Revision 1.3  1995/05/11 14:55:09  cdaq
+* Revision 1.4  1995/05/22 19:45:56  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1995/05/11  14:55:09  cdaq
 * (JRA) Add call to s_fill_cal_hist
 *
 * Revision 1.2  1994/11/23  14:01:04  cdaq
@@ -40,7 +43,7 @@
       integer*4 adc_max   !Max. channel #
       parameter (adc_max=4095)
 
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_calorimeter.cmn'
 *
 *

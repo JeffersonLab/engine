@@ -8,7 +8,10 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change SPLANE_PARAM to individual arrays
 * $Log$
-* Revision 1.3  1995/04/01 20:42:06  cdaq
+* Revision 1.4  1995/05/22 19:45:40  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.3  1995/04/01  20:42:06  cdaq
 * (SAW) Use sdc_planes_per_chamber instead of (sdc_num_planes/sdc_num_chambers)
 *
 * Revision 1.2  1994/11/22  20:19:22  cdaq
@@ -20,7 +23,7 @@
 *
 *
       implicit none
-      include "gen_data_structures.cmn"
+      include "sos_data_structures.cmn"
       include "sos_tracking.cmn"
       include "sos_geometry.cmn"
 *

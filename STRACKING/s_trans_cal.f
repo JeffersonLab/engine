@@ -16,7 +16,10 @@
 *-
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 * $Log$
-* Revision 1.2  1994/11/23 14:45:40  cdaq
+* Revision 1.3  1995/05/22 19:46:02  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.2  1994/11/23  14:45:40  cdaq
 * * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.1  1994/02/21  16:42:44  cdaq
@@ -37,7 +40,7 @@
       integer*4 col     !Column number
       real*4 adc        !ADC-PED value
 *
-      include 'gen_data_structures.cmn'
+      include 'sos_data_structures.cmn'
       include 'sos_calorimeter.cmn'
 *
 *      Sparsify the raw data
