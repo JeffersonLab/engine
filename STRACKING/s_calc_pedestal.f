@@ -1,6 +1,9 @@
       subroutine s_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.10  1996/11/07 19:49:46  saw
+* (WH) Add calculations for Lucite Cerenkov
+*
 * Revision 1.9  1996/09/05 13:15:15  saw
 * (JRA) Slight increase in threshold above pedestal
 *
@@ -197,6 +200,33 @@ c        scal_new_adc_threshold(blk) = scal_new_ped(blk)+2.*scal_new_rms(blk)
         endif
       enddo
 
+** LUCITE CERENKOV PEDESTALS
+*
+      do pmt = 1 , (smax_luc_hits-1)
+        if (sluc_pos_ped_num(pmt) .ge. sluc_min_peds .and.
+     &      sluc_min_peds .ne. 0) then
+          sluc_pos_ped_mean(pmt) = sluc_pos_ped_sum(pmt) /
+     &      float(sluc_pos_ped_num(pmt))
+          sig2 = float(sluc_pos_ped_sum2(pmt))/
+     &            float(sluc_pos_ped_num(pmt))-
+     &            sluc_pos_ped_mean(pmt)**2
+          sluc_pos_ped_rms(pmt) = sqrt(max(0.,sig2))
+        endif
+        if (sluc_neg_ped_num(pmt) .ge. sluc_min_peds .and.
+     &      sluc_min_peds .ne. 0) then
+          sluc_neg_ped_mean(pmt) = sluc_neg_ped_sum(pmt) /
+     &      float(sluc_neg_ped_num(pmt))
+          sig2 = float(sluc_neg_ped_sum2(pmt))/
+     &            float(sluc_neg_ped_num(pmt))-
+     &            sluc_neg_ped_mean(pmt)**2
+          sluc_neg_ped_rms(pmt) = sqrt(max(0.,sig2))
+
+          sluc_neg_adc_threshold(pmt) = sluc_neg_ped_mean(pmt)
+          sluc_pos_adc_threshold(pmt) = sluc_pos_ped_mean(pmt)
+
+        endif
+      enddo
+
 
 *
 * WRITE THRESHOLDS TO FILE FOR HARDWARE SPARCIFICATION
@@ -230,7 +260,16 @@ c
         do ind=1,4
           write(SPAREID,*) int(scer_new_adc_threshold(ind))
         enddo
-        do ind=5,34
+        do ind=5,15
+          write(SPAREID,*) '4000'
+        enddo
+* Lucite
+        do pmt=1,8
+          write(SPAREID,*) sluc_pos_adc_threshold(pmt)
+          write(SPAREID,*) sluc_neg_adc_threshold(pmt)  
+        enddo
+
+        do ind=32,34
           write(SPAREID,*) '4000'
         enddo
         do pmt=1,7
