@@ -5,25 +5,31 @@
 *     use symbolic names instead of numbers.
 *
 *     $Log$
-*     Revision 1.2  1994/04/11 15:11:25  cdaq
-*     (SAW) Add uninstrumented channel "detector" id
+*     Revision 1.3  1994/06/18 02:50:30  cdaq
+*     (SAW) Add code for miscleaneous data and uninstrumented channels and
+*     change name to gen_detectorids.par (was gen_detectorids.cmn)
+*
+* Revision 1.2  1994/04/11  15:11:25  cdaq
+* (SAW) Add uninstrumented channel "detector" id
 *
 * Revision 1.1  1994/02/07  19:37:01  cdaq
 * Initial revision
 *
 *
-      integer MAXID, UNINST, HDC_ID, HSCIN_ID, HCER_ID, HCAL_ID, SDC_ID,
-     $     SSCIN_ID, SCER_ID, SCAL_ID
-      parameter (MAXID=15)
-      parameter (UNINST=0)              ! Uninstrumented channels
+      integer MAXID, UNINST_ID, HDC_ID, HSCIN_ID, HCER_ID, HCAL_ID, HMISC_ID, 
+     $     SDC_ID, SSCIN_ID, SCER_ID, SCAL_ID, SMISC_ID
+      parameter (MAXID=16)
+      parameter (UNINST_ID=0)           ! Uninstrumented channels
       parameter (HDC_ID=1)
       parameter (HSCIN_ID=2)
       parameter (HCER_ID=3)
       parameter (HCAL_ID=4)
+      parameter (HMISC_ID=5)            ! Misclaneous FB channels
       parameter (SDC_ID=11)
       parameter (SSCIN_ID=12)
       parameter (SCER_ID=13)
       parameter (SCAL_ID=14)
+      parameter (SMISC_ID=15)           ! Miscilaneous FB channels
 
 *     Local Variables:
 *     mode: fortran
