@@ -7,6 +7,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.10.10.2  2004/07/09 15:30:48  cdaq
+* commit of c_physics.f before modification for pionct
+*
 * Revision 1.10.10.1  2004/06/18 15:26:59  cdaq
 * replaced with fpi2 version
 *
@@ -14,6 +17,9 @@
 * change shicentral_offset to oopcentral_offset
 *
 * $Log$
+* Revision 1.10.10.2  2004/07/09 15:30:48  cdaq
+* commit of c_physics.f before modification for pionct
+*
 * Revision 1.10.10.1  2004/06/18 15:26:59  cdaq
 * replaced with fpi2 version
 *
@@ -561,7 +567,7 @@ cdjm I added the fudge factor of about 23 ns to get both scctime and
 
        offset_ctime = - (hstime_at_fp-hstart_time_center)
      &               + (sstime_at_fp-sstart_time_center)
-     &               - hspath_cor + sspath_cor + 10. - 22.7
+     &               - hspath_cor + sspath_cor + 10. - 22.7 - 40.0
 c      offset_ctime = - (hstime_at_fp-hstart_time_center)
 c     &               + (sstime_at_fp-sstart_time_center)
 
