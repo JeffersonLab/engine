@@ -5,7 +5,10 @@
 *     Author:	D. F. Geesaman
 *     Date:     3 May 1994
 * $Log$
-* Revision 1.1  1994/05/13 03:04:19  cdaq
+* Revision 1.2  1994/08/18 04:31:47  cdaq
+* (SAW) Indentation changes
+*
+* Revision 1.1  1994/05/13  03:04:19  cdaq
 * Initial revision
 *
 *-
@@ -22,8 +25,8 @@
 
 *
       include 'gen_data_structures.cmn'
-      include 'sos_tracking_histid.cmn'
-*
+      include 'sos_track_histid.cmn'
+*     
       SAVE
 *--------------------------------------------------------
 *
@@ -33,17 +36,17 @@
 * Make sure there is at least 1 track
       if(SNTRACKS_FP .gt. 0 ) then
 * Loop over all hits
-         do itrk=1,SNTRACKS_FP
-            call hf1(sidsx_tar,SX_TAR(itrk),1.)
-            call hf1(sidsy_tar,SY_TAR(itrk),1.)
-            call hf1(sidsz_tar,SZ_TAR(itrk),1.)
-            call hf1(sidsxp_tar,SXP_TAR(itrk),1.)
-            call hf1(sidsyp_tar,SYP_TAR(itrk),1.)
-            call hf1(sidsdelta_tar,SDELTA_TAR(itrk),1.)
-            call hf1(sidsp_tar,SP_TAR(itrk),1.)
+        do itrk=1,SNTRACKS_FP
+          call hf1(sidsx_tar,SX_TAR(itrk),1.)
+          call hf1(sidsy_tar,SY_TAR(itrk),1.)
+          call hf1(sidsz_tar,SZ_TAR(itrk),1.)
+          call hf1(sidsxp_tar,SXP_TAR(itrk),1.)
+          call hf1(sidsyp_tar,SYP_TAR(itrk),1.)
+          call hf1(sidsdelta_tar,SDELTA_TAR(itrk),1.)
+          call hf1(sidsp_tar,SP_TAR(itrk),1.)
 *     
 * 
-         enddo                          ! end loop over hits
+        enddo                           ! end loop over hits
       endif                             ! end test on zero hits       
       RETURN
       END
