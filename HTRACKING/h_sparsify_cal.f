@@ -13,7 +13,10 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to h_raw_dump_all
 * $Log$
-* Revision 1.1  1994/04/13 16:21:31  cdaq
+* Revision 1.2  1994/09/13 20:31:08  cdaq
+* (JRA) Subtract pedestals in sparsified data
+*
+* Revision 1.1  1994/04/13  16:21:31  cdaq
 * Initial revision
 *
 *-----------------------------------------------------------------------
@@ -34,7 +37,6 @@
       integer*4 adc_max   !Max. channel #
       parameter (adc_max=4095)
       real*4    ped       !Pedestal value
-      real*4    dif       !ADC-PED
 *
       include 'gen_data_structures.cmn'
       include 'hms_calorimeter.cmn'
@@ -84,12 +86,12 @@
 *------Sparsify the raw data
          nb =row+hmax_cal_rows*(col-1)
          ped=hcal_ped_mean(nb)
-         dif=float(adc)-ped
-         if(dif.gt.hcal_threshold(nb)) then   
+         hcal_realadc(nh)=float(adc)-ped
+         if(hcal_realadc(nh).gt.hcal_threshold(nb)) then
             hcal_num_hits           =hcal_num_hits+1
             hcal_rows(hcal_num_hits)=row
             hcal_cols(hcal_num_hits)=col
-            hcal_adcs(hcal_num_hits)=dif
+            hcal_adcs(hcal_num_hits)=hcal_realadc(nh)
          endif
       enddo                      !End loop over raw hits
 *
