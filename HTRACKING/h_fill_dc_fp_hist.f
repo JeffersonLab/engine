@@ -1,4 +1,3 @@
-
       subroutine h_fill_dc_fp_hist(Abort,err)
 *
 *     routine to fill histograms with hms_focal_plane varibles
@@ -9,7 +8,10 @@
 *                                   Transfer ID in common block
 *                                   Implement flag to turn block on
 * $Log$
-* Revision 1.3  1994/08/18 03:13:08  cdaq
+* Revision 1.4  1995/04/06 19:27:11  cdaq
+* (JRA) Rename residuals variables
+*
+* Revision 1.3  1994/08/18  03:13:08  cdaq
 * (SAW) Use arrays of histids for residuals
 *
 * Revision 1.2  1994/08/18  02:35:36  cdaq
@@ -67,8 +69,8 @@
             call hf1(hidhchi2perdeg_fp,histval,1.)
 *     
             do plane = 1,hdc_num_planes
-              call hf1(hidres_fp(plane),hdc_residual(itrk,plane),1.)
-              call hf1(hidsingres_fp(plane),hdc_sing_res(itrk,plane),1.)
+              call hf1(hidres_fp(plane),hdc_double_residual(itrk,plane),1.)
+              call hf1(hidsingres_fp(plane),hdc_single_residual(itrk,plane),1.)
             enddo
 
           enddo                         ! end loop over hits
