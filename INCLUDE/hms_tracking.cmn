@@ -8,7 +8,11 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.13  1994/09/19 20:27:42  cdaq
+* Revision 1.14  1994/09/20 17:13:25  cdaq
+* (SAW) Change HDC_HITS_PER_PLANE, HDC_SING_WCENTER, HDC_SING_WCOORD
+* to CTPTYPE=event registration
+*
+* Revision 1.13  1994/09/19  20:27:42  cdaq
 * (SAW) Add HDC_HITS_PER_PLANE (from gen_data_structures.cmn)
 * (DJM) Add HDC_SING_WCENTER and HDC_SING_WCOORD
 *
@@ -154,6 +158,9 @@
       real*4 hdc_x_central_time   ! time (ns) for signal to reach disc. card o--Mn XUVX' planes
       real*4 hdc_y_central_time   ! time (ns) for signal to reach disc. card o--Mn YY' planes
                                   ! (both times are from center of the chamber--M)
+*
+*     CTPTYPE=event
+*
       INTEGER*4 HDC_HITS_PER_PLANE
       REAL*4 HDC_SING_WCENTER
       REAL*4 HDC_SING_WCOORD
