@@ -7,6 +7,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.10.10.3  2004/07/12 03:07:25  cdaq
+* problem with mmx fixed?
+*
 * Revision 1.10.10.2  2004/07/09 15:30:48  cdaq
 * commit of c_physics.f before modification for pionct
 *
@@ -17,6 +20,9 @@
 * change shicentral_offset to oopcentral_offset
 *
 * $Log$
+* Revision 1.10.10.3  2004/07/12 03:07:25  cdaq
+* problem with mmx fixed?
+*
 * Revision 1.10.10.2  2004/07/09 15:30:48  cdaq
 * commit of c_physics.f before modification for pionct
 *
@@ -175,10 +181,13 @@ c      if (abs(targmass-mp).lt.0.01) targmass = mp  ! vanity rules: get ac      
       cmmx        = 0.
       ce_excx     = 0.
 
-      if ((gtarg_num.eq.15).or.(gtarg_num.eq.16)) then
-         c_e_bind=0.00222445
-         deuterium = .true.
-      endif
+c     THIS SECTION WAS COMMENTED FOR THE PIONCT EXPERIMENT, THEN SET THE
+c     SPECIAL CASE OF DEUTERIUM TO FALSE
+c      if ((gtarg_num.eq.15).or.(gtarg_num.eq.16)) then
+c         c_e_bind=0.00222445
+c         deuterium = .true.
+c      endif
+      deuterium = .false.
 
 c      write(6,*)'c_phys: at 2'
 
@@ -190,6 +199,7 @@ c      write(6,*)'c_phys: at 2'
 
       mype = hsp
       myph = ssp
+*      print *,'ssp =',ssp
 
       if ((hpartmass.lt.2*mass_electron) .and.
      1     (spartmass.gt.2*mass_electron)) then ! HMS electron arm
@@ -337,7 +347,7 @@ c        write(6,*)'c_phys: at 3'
       pt2 = cmissing_mom_perp*cmissing_mom_perp
 
       if ((gtarg_num.eq.17).or.(gtarg_num.eq.18)) then
-         write(6,*) 'dummy target!!'
+c         write(6,*) 'dummy target!!'
         if(flag.eq.1.0) then
            targmass = mp
         elseif(flag.eq.0.0) then
@@ -456,6 +466,19 @@ c      write(6,*) 'missine, missing_mom=', cmissing_e,cmissing_mom
          endif
 
          ce_exc = cmissing_mass-m_rec-c_e_bind    !??? c_e_bind here?, yes!!
+CCC Added for pionCT experiment
+c         mmx2=(cmissing_e-m_rec)**2 - cmissing_mom**2 !!! Nucleon missing mass
+         mmx2=(cmissing_e)**2 - cmissing_mom**2 !!! Nucleon missing mass
+          if (mmx2.gt.0.) then
+           cmmx = sqrt(mmx2)
+c           print *,'w = ', c_omega ,' mt = ' , targmass, ' Phadron = ', p_h
+c           print *,'Mhadron = ', m_hadron ,' Em = ' , cmissing_e, 
+c     >          ' Pm = ', cmissing_mom
+c           print *,'MA-1 = ', m_rec, ' mmx = ', cmmx
+        else
+           cmmx = -20000.
+        endif    
+CCC  End addition for PionCT experiment
          if (deuterium) ce_excx = cmmx-2.*m_rec   ! ??? c_e_bind not here?
 
       elseif ((m_hadron.eq.mp).and.(missingmass2.ne.0.)) then

@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.10.3  2004/07/12 03:07:34  cdaq
+* problem with mmx fixed?
+*
 * Revision 1.10.10.2  2004/06/23 19:32:25  cdaq
 * removed ssnum_fp and hsnum_fp from c ntuple
 *
@@ -166,7 +169,7 @@ c
       c_Ntuple_contents(m)= ztar_dummy   
       m= m+1
 *     xucc added end 
-
+*      print *,'ssp2 =',ssp,' m= ',m
       c_Ntuple_contents(m)= SSP	! Lab momentum of chosen track in GeV/c
       m= m+1
       c_Ntuple_contents(m)= SSXP_TAR    ! 
