@@ -16,6 +16,9 @@
 * h_scin_eff_shutdown does some final manipulation of the numbers.
 *
 * $Log$
+* Revision 1.7  1996/01/16 21:57:27  cdaq
+* (JRA) Add debug control flag around write statements
+*
 * Revision 1.6  1995/08/30 18:14:15  cdaq
 * (JRA) Dump bad counter infomation
 *
@@ -49,6 +52,7 @@
       include 'hms_scin_parms.cmn'
       include 'hms_scin_tof.cmn'
       include 'hms_statistics.cmn'
+      include 'hms_tracking.cmn'
 
       logical written_header
       integer pln,cnt
@@ -135,15 +139,17 @@
       heff_3_of_4=p1234+p123+p124+p134+p234
       heff_4_of_4=p1234
 
-      write(39,*) 'hscin_all_ped_pos ='
-      do cnt=1,hnum_scin_elements
-        write(39,111) (hscin_zero_pave(pln,cnt),pln=1,hnum_scin_planes)
-      enddo
+      if (hdebugcalcpeds.ne.0) then     !calc. peds from data.
+        write(39,*) 'hscin_all_ped_pos ='
+        do cnt=1,hnum_scin_elements
+          write(39,111) (hscin_zero_pave(pln,cnt),pln=1,hnum_scin_planes)
+        enddo
 
-      write(39,*) 'hscin_all_ped_neg ='
-      do cnt=1,hnum_scin_elements
-        write(39,111) (hscin_zero_nave(pln,cnt),pln=1,hnum_scin_planes)
-      enddo
+        write(39,*) 'hscin_all_ped_neg ='
+        do cnt=1,hnum_scin_elements
+          write(39,111) (hscin_zero_nave(pln,cnt),pln=1,hnum_scin_planes)
+        enddo
+      endif
 111   format (10x,3(f6.1,','),f6.1)
 
       return
