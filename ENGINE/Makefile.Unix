@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.11  1995/04/06 20:05:30  cdaq
+# Revision 1.12  1995/05/11 19:03:10  cdaq
+# (SAW) Compile c_physics.f and some ntuple variable registration routines
+#
+# Revision 1.11  1995/04/06  20:05:30  cdaq
 # (SAW) Add pedestal routines
 #
 # Revision 1.10  1995/03/08  20:32:52  cdaq
@@ -56,7 +59,7 @@ sos_source = s_clear_event.f s_initialize.f s_keep_results.f \
 	s_register_variables.f
 coin_source = c_register_variables.f c_clear_event.f c_initialize.f \
 	c_keep_results.f c_proper_shutdown.f c_reconstruction.f \
-	c_reset_event.f
+	c_reset_event.f c_physics.f
 ntuple_source = c_ntuple_init.f c_ntuple_keep.f \
 	c_ntuple_register.f c_ntuple_shutdown.f h_ntuple_init.f \
 	h_ntuple_keep.f h_ntuple_register.f h_ntuple_shutdown.f \
@@ -65,7 +68,8 @@ ntuple_source = c_ntuple_init.f c_ntuple_keep.f \
 	h_sv_nt_init.f h_sv_nt_shutdown.f
 makeregstuff = r_gen_filenames.f r_gen_run_info.f r_gen_event_info.f \
 	r_gen_scalers.f r_gen_run_pref.f r_gen_data_structures.f \
-	r_coin_filenames.f
+	r_coin_filenames.f r_c_ntuple.f r_h_ntuple.f r_s_ntuple.f \
+	r_h_sieve_ntuple.f
 replay_source = engine.f
 
 libsources =  $(coin_source) $(sos_source) $(hms_source) $(general_source) \
@@ -88,7 +92,7 @@ ifeq ($(ARCH),HPUX)
   CC = gcc
 #  OTHERLIBS = -Wl,-L$(CODA)/HP_UX/lib \
 #	-lcoda -Wl,-L$(CERN_ROOT)/lib -lpacklib
-  OTHERLIBS = -Wl,-L$(CERN_ROOT)/lib -lpacklib
+  OTHERLIBS = -Wl,-L$(CERN_ROOT)/lib -lpacklib -lm
 ##  lib_targets := libengine.a
   bin_targets = engine
 endif
