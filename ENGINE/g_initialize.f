@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.24  2005/02/16 22:39:09  saw
+* Construct Root tree filenames
+*
 * Revision 1.23  2004/05/11 18:24:12  jones
 * Initialize skip_events to false
 *
@@ -270,6 +273,20 @@
         file = c_report_template_filename
         call g_sub_run_number(file,gen_run_number)
         ierr = thload(file)
+      endif
+*
+*     Do run number substituion on Root tree filenames
+*
+      if (h_tree_filename.ne.' ') then
+        call g_sub_run_number(h_tree_filename,gen_run_number)
+      endif
+
+      if (s_tree_filename.ne.' ') then
+        call g_sub_run_number(s_tree_filename,gen_run_number)
+      endif
+
+      if (c_tree_filename.ne.' ') then
+        call g_sub_run_number(c_tree_filename,gen_run_number)
       endif
 *
 *     Call thbook if any new files have been loaded
