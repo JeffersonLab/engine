@@ -28,6 +28,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.8.4.2  2003/12/08 19:14:30  xu
+* add eventype in ntuple
+*
 * Revision 1.8.4.1  2003/03/05 22:53:10  xu
 * new variables
 *
@@ -166,6 +169,9 @@ c                                ! track with spectrometer ray
       h_Ntuple_contents(m)= hstart_time
       m= m+1
       h_Ntuple_contents(m)= float(gen_event_ID_number)
+      m= m+1
+      h_Ntuple_contents(m)= float(gen_event_type)
+
 
 * Experiment dependent entries start here.
 *       xucc added begin

@@ -35,6 +35,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.9.4.2  2003/12/08 19:14:22  xu
+* add eventype in ntuple
+*
 * Revision 1.9.4.1  2003/03/05 22:52:44  xu
 * new variables
 *
@@ -220,6 +223,9 @@
       h_Ntuple_tag(m)= 'hstart'
       m= m+1
       h_Ntuple_tag(m)= 'eventID'
+      m= m+1
+      h_Ntuple_tag(m)= 'evtype'
+
 
 * Experiment dependent entries start here.
 *  xucc added begin
