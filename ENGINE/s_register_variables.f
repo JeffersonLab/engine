@@ -13,8 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.9  1995/05/22 13:32:11  cdaq
-*     (SAW) Add call to register sos_data_structures.cmn variables
+*     Revision 1.10  1995/08/11 15:41:09  cdaq
+*     (DD) Add sos sieve slit ntuple
+*
+* Revision 1.9  1995/05/22  13:32:11  cdaq
+* (SAW) Add call to register sos_data_structures.cmn variables
 *
 * Revision 1.8  1995/05/11  18:59:39  cdaq
 * (SAW) Add register call for s_ntuple.cmn
@@ -73,6 +76,14 @@
       ABORT= ABORT .or. FAIL
 *
       call s_ntuple_register(FAIL,why)  ! Remove this when ctp files fixed
+      IF(err.NE.' ' .and. why.NE.' ') THEN   !keep warnings
+        call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+        err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL
+*
+      call s_sv_nt_register(FAIL,why)  ! Remove this when ctp files fixed
       IF(err.NE.' ' .and. why.NE.' ') THEN   !keep warnings
         call G_append(err,' & '//why)
       ELSEIF(why.NE.' ') THEN
