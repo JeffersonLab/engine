@@ -1,6 +1,9 @@
       subroutine h_analyze_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.8  1999/06/10 16:46:06  csa
+* (JRA) Removed two calorimeter debugging statements
+*
 * Revision 1.7  1999/02/23 18:33:31  csa
 * (JRA) Implement improved pedestal calcs
 *
@@ -99,7 +102,6 @@ c        call hf1(hidsumnegadc(pln),histval,1.)
           if (hcal_pos_ped_num(blk).eq.nint(hcal_min_peds/5.)) then
             hcal_pos_ped_limit(blk) = 100 +
      &              hcal_pos_ped_sum(blk) / hcal_pos_ped_num(blk)
-	    write(6,*) 'blk=',blk,'+  newlimit=',hcal_pos_ped_limit(blk)
           endif
         endif
 
@@ -111,7 +113,6 @@ c        call hf1(hidsumnegadc(pln),histval,1.)
           if (hcal_neg_ped_num(blk).eq.nint(hcal_min_peds/5.)) then
             hcal_neg_ped_limit(blk) = 100 +
      &              hcal_neg_ped_sum(blk) / hcal_neg_ped_num(blk)
-	    write(6,*) 'blk=',blk,'-  newlimit=',hcal_pos_ped_limit(blk)
           endif
         endif
       enddo
