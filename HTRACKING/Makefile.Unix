@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.8  1994/10/11 18:32:09  cdaq
+# Revision 1.9  1994/11/23 15:36:37  cdaq
+# (SAW) Update list of sources
+#
+# Revision 1.8  1994/10/11  18:32:09  cdaq
 # *** empty log message ***
 #
 # Revision 1.7  1994/08/18  04:23:22  cdaq
@@ -33,7 +36,7 @@ osources = h_cal.f h_cer.f h_chamnum.f h_dpsifun.f \
 	h_link_stubs.f h_pattern_recognition.f h_physics.f h_print_links.f \
 	h_print_pr.f h_print_stubs.f h_print_tar_tracks.f h_print_tracks.f \
 	h_psifun.f h_register_param.f h_reconstruction.f h_targ_trans.f \
-	h_tdc_time_per_channel.f h_tdc_zero.f h_tof.f h_track.f h_track_fit.f \
+	h_tof.f h_track.f h_track_fit.f \
 	h_trans_cal.f h_trans_dc.f h_trans_scin.f h_wire_center_calc.f \
 	h_print_decoded_dc.f h_print_raw_dc.f \
 	h_register_track_param.f
@@ -47,7 +50,7 @@ newstuff = h_clusters_cal.f h_correct_cal.f \
 	h_tof_init.f h_tracks_cal.f h_fill_scin_raw_hist.f
 newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f h_register_bypass.f \
 	h_register_statistics.f h_init_physics.f h_physics_stat.f \
-	h_strip_scin.f h_choose_single_hit.f
+	h_strip_scin.f h_choose_single_hit.f h_solve_3by3.f
 makeregstuff =	r_hms_filenames.f r_hms_scin_parms.f r_hms_scin_tof.f \
 	r_hms_calorimeter.f r_hms_id_histid.f r_hms_tracking.f \
 	r_hms_geometry.f r_hms_track_histid.f r_hms_recon_elements.f \
@@ -70,8 +73,8 @@ ifeq ($(ARCH),ULTRIX)
   bin_targets =
 endif
 
-default:
-	@echo "nothing to make"
+#default:
+#	@echo "nothing to make"
 
 #
 # Rule for making the register subroutines
