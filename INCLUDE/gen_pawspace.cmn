@@ -1,0 +1,24 @@
+**************** begin: gen_pawspace.cmn **********************
+*     $Log$
+*     Revision 1.1  1994/02/07 19:41:18  cdaq
+*     Initial revision
+*
+*    
+*-sizes of CERNLIB working space
+*
+      INTEGER G_sizeHBOOK,G_sizeHIGZ,G_sizeKUIP,G_sizePAW
+      PARAMETER (G_sizeHBOOK= 100000)
+      PARAMETER (G_sizeHIGZ=   50000)
+      PARAMETER (G_sizeKUIP=   75000)
+      PARAMETER (G_sizePAW=G_sizeHIGZ+G_sizeKUIP+
+     &                      G_sizeHBOOK+100000)
+*
+*-CERNLIB working space
+*
+        integer G_CERNmemory(G_sizePAW)
+	COMMON /PAWC/ G_CERNmemory	!special nonstandard name!
+*
+**************** end: gen_pawspace.cmn **********************
+*     Local Variables:
+*     mode: fortran
+*     End:

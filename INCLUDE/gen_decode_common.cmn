@@ -1,0 +1,35 @@
+*
+*     Common block that contains the mapping of physical fastbus locations
+*     to logical detector identification.
+*
+*     $Log$
+*     Revision 1.1  1994/02/07 19:36:23  cdaq
+*     Initial revision
+*
+*
+      integer G_DECODE_MAXWORDS                 ! Must exceed number of
+      parameter (G_DECODE_MAXWORDS=5000)        ! installed FB channels
+      integer G_DECODE_MAXROCS
+      parameter (G_DECODE_MAXROCS=8)            ! Largest ROC # + 1
+      integer G_DECODE_MAXSLOTS
+      parameter (G_DECODE_MAXSLOTS=25)          ! # slots in a FB crate
+      integer*4 g_decode_slotpointer            ! Pointer into map arrays
+      integer*4 g_decode_subaddcnt              ! Number of subadds per slot
+      integer*4 g_decode_slotmask
+      integer*4 g_decode_didmap
+      integer*4 g_decode_planemap, g_decode_countermap
+      integer*4 g_decode_sigtypmap
+      integer*4 g_decode_nextpointer            ! Next free in map arrays
+      common /UPCOMMON/
+     $     g_decode_slotpointer(G_DECODE_MAXROCS, G_DECODE_MAXSLOTS),
+     $     g_decode_subaddcnt(G_DECODE_MAXROCS,G_DECODE_MAXSLOTS),
+     $     g_decode_slotmask(G_DECODE_MAXROCS,G_DECODE_MAXSLOTS),
+     $     g_decode_didmap(G_DECODE_MAXWORDS),
+     $     g_decode_planemap(G_DECODE_MAXWORDS),
+     $     g_decode_countermap(G_DECODE_MAXWORDS),
+     $     g_decode_sigtypmap(G_DECODE_MAXWORDS),
+     $     g_decode_nextpointer
+
+*     Local Variables:
+*     mode: fortran
+*     End:

@@ -1,0 +1,26 @@
+*
+*     detectorids.inc
+*
+*     It would be nice if the data file that set's up the unpacker could
+*     use symbolic names instead of numbers.
+*
+*     $Log$
+*     Revision 1.1  1994/02/07 19:37:01  cdaq
+*     Initial revision
+*
+*
+      integer MAXID, HDC_ID, HSCIN_ID, HCAL_ID, HCER_ID, SDC_ID, 
+     &                                     SSCIN_ID, SCAL_ID, SCER_ID
+      parameter (MAXID=15)
+      parameter (HDC_ID=1)
+      parameter (HSCIN_ID=2)
+      parameter (HCER_ID=3)
+      parameter (HCAL_ID=4)
+      parameter (SDC_ID=11)
+      parameter (SSCIN_ID=12)
+      parameter (SCER_ID=13)
+      parameter (SCAL_ID=14)
+
+*     Local Variables:
+*     mode: fortran
+*     End:
