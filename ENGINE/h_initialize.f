@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-    $Log$
-*-    Revision 1.8  1994/05/12 19:34:06  cdaq
-*-    (DFG) Add call to h_targ_trans_init
+*-    Revision 1.9  1994/06/14 04:02:13  cdaq
+*-    (DFG) Add call to h_init_physics
 *-
+* Revision 1.8  1994/05/12  19:34:06  cdaq
+* (DFG) Add call to h_targ_trans_init
+*
 * Revision 1.7  1994/04/13  04:31:00  cdaq
 * (DFG) Add initialize for scin and cal
 *
@@ -71,7 +74,11 @@
          call g_rep_err(ABORT,err)
          call g_add_path(here,err)
       endif
-
+*     calculate physics singles constants
+      call h_init_physics(ABORT,err)
+      if(ABORT) then
+         call g_add_path(here,err)
+      endif
 *
       call h_ntuple_init(ABORT,err)
 *
