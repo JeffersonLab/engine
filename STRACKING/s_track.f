@@ -13,6 +13,9 @@
 *- 
 *-   Created 19-JAN-1994   D. F. Geesaman
 * $Log$
+* Revision 1.5  1996/09/04 20:19:45  saw
+* (JRA) Initialize sstubmin variables
+*
 * Revision 1.4  1995/10/11 12:31:21  cdaq
 * (JRA) Only call tracking routines when it is warranted
 *
@@ -41,7 +44,7 @@
       INCLUDE 'sos_tracking.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
-*
+
 *--------------------------------------------------------
 *
 *
@@ -60,6 +63,10 @@
             return
           endif
 *
+          sstubminx = 999999.
+          sstubminy = 999999.
+          sstubminxp = 999999.
+          sstubminyp = 999999.
           call S_LINK_STUBS(ABORT,err)
           if(ABORT) then
             call G_add_path(here,err)
