@@ -1,7 +1,10 @@
 ********************** begin: gen_constants.par *******************************
 *     $Log$
-*     Revision 1.1  1994/02/07 20:06:14  cdaq
-*     Initial revision
+*     Revision 1.2  1994/02/08 04:23:05  cdaq
+*     Small fix
+*
+* Revision 1.1  1994/02/07  20:06:14  cdaq
+* Initial revision
 *
 *
 *		general purpose constants
@@ -53,7 +56,7 @@
 *
       real index_of_refraction
       parameter (index_of_refraction= 1.581)	!plastic scint. n
-*	real speed_in_plastic
+      real speed_in_plastic
       parameter (speed_in_plastic= speed_of_light/index_of_refraction)
 *
 ************************ end: gen_constants.par *******************************
