@@ -16,7 +16,10 @@
 *- 
 *-   Created 10-JUN-1994     D. F. Geesaman
 * $Log$
-* Revision 1.3  1995/05/22 19:45:44  cdaq
+* Revision 1.4  1995/08/31 18:56:53  cdaq
+* (JRA) Add call to s_cer_eff
+*
+* Revision 1.3  1995/05/22  19:45:44  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.2  1995/02/23  15:38:41  cdaq
@@ -29,12 +32,11 @@
       IMPLICIT NONE
       SAVE
 *
-      character*50 here
+      character*14 here
       parameter (here= 's_physics_stat')
 *
       logical ABORT
       character*(*) err
-      integer*4 ierr
 *
       INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'gen_routines.dec'
@@ -45,7 +47,7 @@
       INCLUDE 'sos_statistics.cmn'
 *     
 *     local variables 
-      integer*4 goodtrack,tothits,ihit,sigma,hitnum,plane
+      integer*4 goodtrack,tothits,ihit,hitnum,plane
       real*4 normsigma
       real*8 ray(4)                     ! xt,yt,xpt,ypt
       EXTERNAL  S_DPSIFUN
@@ -86,6 +88,9 @@
 *
 *     Scintillator efficiencies
       call s_scin_eff
+*
+*     Cerenkov efficiencies
+      call s_cer_eff
 *
 *     Calorimeter efficiencies
       call s_cal_eff
