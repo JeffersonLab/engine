@@ -1,7 +1,12 @@
-*     Common block to hold the scalers.  Should this go in
-*     gen_data_structures.cmn or be separate.
+******************* begin: gen_filenames.cmn ***********************
+*
+*     Common block to hold the raw scaler information and
+*     quantities calculated from the scaler events (time, current, etc...)
 *
 * $Log$
+* Revision 1.9  1996/09/04 15:46:56  saw
+* (JRA) Add g_scaler_event_num
+*
 * Revision 1.8  1996/04/30 14:05:12  saw
 * (JRA) Add some bcm stuff
 *
@@ -76,9 +81,11 @@
       real*8 gbcm2_charge
       real*8 gbcm3_charge
       real*8 gunser_charge
+      integer gscaler_event_num
 *
       common/BEAMCURRENT/
      &    gbcm1_index, gbcm2_index, gbcm3_index, gunser_index,
      &    gbcm1_gain, gbcm2_gain, gbcm3_gain, gunser_gain,
      &    gbcm1_offset, gbcm2_offset, gbcm3_offset, gunser_offset,
-     &    gbcm1_charge, gbcm2_charge, gbcm3_charge, gunser_charge
+     &    gbcm1_charge, gbcm2_charge, gbcm3_charge, gunser_charge,
+     &    gscaler_event_num
