@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.29  1999/02/23 16:58:58  csa
+* (JRA) Add roc 20 handling
+*
 * Revision 1.28  1999/01/29 17:47:44  saw
 * Fix Typo
 *
@@ -143,6 +146,9 @@
       stat_roc = jishft(bank(2),-16)
       roc = jiand(stat_roc,'1F'X)                ! Get ROC from header
 
+      if(roc.eq.20) then
+        return                  ! scaler ROC
+      endif
 *
 *     First look for special Monte Carlo Banks
 *
