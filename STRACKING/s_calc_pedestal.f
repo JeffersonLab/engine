@@ -1,6 +1,9 @@
       subroutine s_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.13.16.2  2004/07/08 21:15:47  cdaq
+* SOS cer peds correct, set it so SOS cer thresholds are always written as 0
+*
 * Revision 1.13.16.1  2004/07/06 21:14:44  cdaq
 * hardwired scer peds to 0
 *
@@ -202,9 +205,7 @@ c        type *,num,scal_min_peds
         endif
 
         if (num.gt.scer_min_peds .and. scer_min_peds.ne.0) then
-* for now, hardwired the SOS Cerenkov pedestal to zero...js 7.6.4
-*          scer_ped(pmt)=scer_new_ped(pmt)
-          scer_ped(pmt)=0.0
+          scer_ped(pmt)=scer_new_ped(pmt)
         endif
 
       enddo
@@ -302,7 +303,8 @@ c
         slot=3
         write(SPAREID,*) 'slot=',slot
         do ind=1,4
-          write(SPAREID,*) int(scer_new_adc_threshold(ind))
+c          write(SPAREID,*) int(scer_new_adc_threshold(ind))
+          write(SPAREID,*) '0'
         enddo
         do ind=5,64
           write(SPAREID,'(a6)') '  4000'
