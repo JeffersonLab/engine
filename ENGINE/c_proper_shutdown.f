@@ -9,10 +9,13 @@
 *-         : err	- reason for failure, if any
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
-*-    $Log$
-*-    Revision 1.7  1995/07/27 19:02:19  cdaq
-*-    (SAW) Move ntuple shutdown to g_ntuple_shutdown
-*-
+* $Log$
+* Revision 1.8  1996/01/16 21:07:45  cdaq
+* no change
+*
+* Revision 1.7  1995/07/27 19:02:19  cdaq
+* (SAW) Move ntuple shutdown to g_ntuple_shutdown
+*
 * Revision 1.6  1995/05/22  13:30:11  cdaq
 * (JRA) Make a listing of potential detector problems
 *

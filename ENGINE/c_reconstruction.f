@@ -10,10 +10,13 @@
 *- 
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
-*-    $Log$
-*-    Revision 1.5  1995/05/22 20:50:44  cdaq
-*-    (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
-*-
+* $Log$
+* Revision 1.6  1996/01/16 21:08:42  cdaq
+* no change
+*
+* Revision 1.5  1995/05/22 20:50:44  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
 * Revision 1.4  1995/05/11  15:48:15  cdaq
 * (SAW) Add call to c_physics for coincidence variables
 *
@@ -23,9 +26,9 @@
 * Revision 1.2  1994/02/04  21:09:43  cdaq
 * Fix indentation
 *
-c Revision 1.1  1994/02/04  21:08:21  cdaq
-c Initial revision
-c
+* Revision 1.1  1994/02/04  21:08:21  cdaq
+* Initial revision
+*
 *-
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993

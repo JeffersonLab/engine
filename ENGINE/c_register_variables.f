@@ -12,9 +12,12 @@
 *           : err        - reason for failure, if any
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
-*     $Log$
-*     Revision 1.8  1995/05/22 13:32:49  cdaq
-*     (SAW) Add call to register coin_data_structures.cmn variables
+* $Log$
+* Revision 1.9  1996/01/16 21:09:28  cdaq
+* no change
+*
+* Revision 1.8  1995/05/22 13:32:49  cdaq
+* (SAW) Add call to register coin_data_structures.cmn variables
 *
 * Revision 1.7  1995/05/11  14:50:17  cdaq
 * (SAW) Add call to register variables from c_ntuple.cmn
