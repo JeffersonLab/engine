@@ -3,6 +3,9 @@
 *     from standard f77s.
 *
 * $Log$
+* Revision 1.3  1999/11/04 20:36:32  saw
+* Linux/G77 compatibility fixes - Add jieor function
+*
 * Revision 1.2  1996/11/22 17:06:27  saw
 * (SAW) Move trig routines to trig_wrappers.f
 *
@@ -23,6 +26,12 @@
       integer*4 function jiand(a1,a2)
       integer*4 a1,a2
       jiand = and(a1,a2)
+      return
+      end
+
+      integer*4 function jieor(a1,a2)
+      integer*4 a1,a2
+      jieor = xor(a1,a2)
       return
       end
 
