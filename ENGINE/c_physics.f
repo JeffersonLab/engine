@@ -7,6 +7,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.7.2.5  2003/08/12 13:27:38  cdaq
+* *** empty log message ***
+*
 * Revision 1.7.2.4  2003/07/15 19:05:20  cdaq
 * use h(s)inplane in physics calcs
 *
@@ -202,7 +205,7 @@ c      write(6,*)'c_phys: at 2'
 
       else
 c         write(6,*) 'c_physics: no electron arm'
-c         return
+         return
       endif
 
 c        if(m_hadron.lt.0.8) then
@@ -317,7 +320,8 @@ c      e_pion_lab = sqrt(p_h**2 + mpi2)                    ! Pion Energy
 * INNER PRODUCT OF q AND THE LAB HADRON MOMENTUM YIELDS ANGLE theta_pq
    
       dot = phx*cqx + phy*cqy + phz*cqz
-      if((cqabs*p_h).eq.0.) write(6,*) 'c_physics: dot problem'
+      if((cqabs*p_h).eq.0.) write(6,*) 
+     >  'c_physics: dot problem',cqabs,p_h,abs(dot/(cqabs*p_h))
       if(abs(dot/(cqabs*p_h)).le.1.0) then
         cthetapq = acos(dot/(cqabs*p_h))
       else
