@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.10.12.1  2004/09/07 18:03:39  cdaq
+* added spcentral_set
+*
 * Revision 1.10  2003/09/05 20:37:14  jones
 * Merge in online03 changes (mkj)
 *
@@ -52,12 +55,14 @@
       REAL*4  STHETA_LAB     ! SOS LAB ANGLE THETA (RADIANS)
       REAL*4  SPHI_LAB       ! SOS LAB ANGLE PHI 
       REAL*4  SPCENTRAL      ! SOS CENTRAL MOMENUTM (GEV)
+      REAL*4  SPCENTRAL_SET  ! SOS CENTRAL MOMENUTM (GEV) (no offset)
       REAL*4  SBFIELD        ! SOS B FIELD INCLUDING SIGN
       REAL*4  SPARTMASS      ! EXPECTED MASS OF DETECTED PARTICLE IN SOS
       COMMON/SOS_SPECTROMETER/
      &     STHETA_LAB,
      &     SPHI_LAB,
      &     SPCENTRAL,
+     &     SPCENTRAL_SET,
      &     SBFIELD,
      &     SPARTMASS
 *
