@@ -1,0 +1,17 @@
+******************* begin: hms_filenames.cmn ***********************
+*
+*-Common block with filenames
+* $Log$
+* Revision 1.1  1994/06/15 18:12:33  cdaq
+* Initial revision
+*
+*
+      character*80 h_recon_coeff_filename
+      character*80 h_report_template_filename    ! CTP file with hms report
+      character*80 h_report_blockname
+*
+      common /hms_filenames/
+     $     h_recon_coeff_filename,
+     $     h_report_template_filename,
+     $     h_report_blockname
+*

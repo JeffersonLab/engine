@@ -1,0 +1,17 @@
+******************* begin: sos_filenames.cmn ***********************
+*
+*-Common block with filenames
+* $Log$
+* Revision 1.1  1994/06/15 18:12:47  cdaq
+* Initial revision
+*
+*
+      character*80 s_recon_coeff_filename
+      character*80 s_report_template_filename    ! CTP file with sos report
+      character*80 s_report_blockname   ! Name of block for sos report template
+*
+      common /sos_filenames/
+     $     s_recon_coeff_filename,
+     $     s_report_template_filename,
+     $     s_report_blockname
+*
