@@ -5,6 +5,12 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.32  2002/09/24 20:30:17  jones
+*   a. Add genable_hms_fieldcorr to common/gen_satcorr/
+*   b. Move array definitions from COMMON block to REAL statement
+*
+*
+*
 * Revision 1.31  1999/02/23 19:05:55  csa
 * (JRA) Remove slow raster stuff
 *
@@ -146,24 +152,24 @@
       integer   gmax_targets
       parameter(gmax_targets=30)
       integer   gtarg_num       !position in target ladder
-      REAL*4    gtarg_mass      !target mass
-      REAL*4    gtarg_z         !target Z
-      REAL*4    gtarg_a         !target A
-      REAL*4    gtarg_lrad      !radiation length in %
-      REAL*4    gtarg_thick     !thickness in g/cm^2
-      REAL*4    gtarg_dens      !density in g/cm^3
+      REAL*4    gtarg_mass(gmax_targets)      !target mass
+      REAL*4    gtarg_z(gmax_targets)         !target Z
+      REAL*4    gtarg_a (gmax_targets)        !target A
+      REAL*4    gtarg_lrad(gmax_targets)      !radiation length in %
+      REAL*4    gtarg_thick(gmax_targets)     !thickness in g/cm^2
+      REAL*4    gtarg_dens(gmax_targets)     !density in g/cm^3
       REAL*4    gtarg_theta     !angle of target to beam. Note that
                                  !90 degrees is target normal to beam!
-
+      integer gtarg_type        ! 1=tuna can, 2=beer can, >=21 solid tgt
       COMMON/GEN_TARGET/
      &     gtarg_num,
      &     gtarg_theta,
-     &     gtarg_mass(gmax_targets),
-     &     gtarg_z(gmax_targets),
-     &     gtarg_a(gmax_targets),
-     &     gtarg_lrad(gmax_targets),
-     &     gtarg_thick(gmax_targets),
-     &     gtarg_dens(gmax_targets)
+     &     gtarg_mass,
+     &     gtarg_z,
+     &     gtarg_a,
+     &     gtarg_lrad,
+     &     gtarg_thick,
+     &     gtarg_dens
 *
 *     Energy loss parameters for the targets. Vansyoc, March 98
 *
@@ -176,6 +182,7 @@
       REAL*4 sdet_ent_thk,sdet_ent_den,sdet_ent_a,sdet_ent_z
       REAL*4 gcell_radius,gz_cell,ga_cell,gcell_den,gwall_thk,gend_thk
       REAL*4 gfront_thk,gair_dens,gair_thk,gair_a,gair_z
+
 
       COMMON/TARG_LOSS/
      &     gelossdebug,gen_eloss_enable,
@@ -196,13 +203,13 @@
       INTEGER GMAX_UNINST_HITS
       PARAMETER(GMAX_UNINST_HITS=1000)
       INTEGER*4 GUNINST_TOT_HITS
-      INTEGER*4 GUNINST_RAW_ROCSLOT     ! ROC*2**16 + SLOT
-      INTEGER*4 GUNINST_RAW_SUBADD      ! Fastbus channel
-      INTEGER*4 GUNINST_RAW_DATAWORD    ! Full fastbus dataword
+      INTEGER*4 GUNINST_RAW_ROCSLOT(GMAX_UNINST_HITS)     ! ROC*2**16 + SLOT
+      INTEGER*4 GUNINST_RAW_SUBADD(GMAX_UNINST_HITS)      ! Fastbus channel
+      INTEGER*4 GUNINST_RAW_DATAWORD(GMAX_UNINST_HITS)    ! Full fastbus dataword
       COMMON/G_RAW_UNINST/
-     &     GUNINST_RAW_ROCSLOT(GMAX_UNINST_HITS),
-     &     GUNINST_RAW_SUBADD(GMAX_UNINST_HITS),
-     &     GUNINST_RAW_DATAWORD(GMAX_UNINST_HITS),
+     &     GUNINST_RAW_ROCSLOT,
+     &     GUNINST_RAW_SUBADD,
+     &     GUNINST_RAW_DATAWORD,
      &     GUNINST_TOT_HITS
 *
 *
@@ -212,8 +219,9 @@
 *
 *     CTPTYPE=event
 *
+
       INTEGER*4 GMAX_NUM_BPMS
-      PARAMETER(GMAX_NUM_BPMS=4)
+      PARAMETER(GMAX_NUM_BPMS=4)      
       INTEGER*4 GNUM_BPM_SIGNALS
       PARAMETER(GNUM_BPM_SIGNALS=4)   !1=X+,2=X-,3=Y+,4=Y-
 
@@ -331,17 +339,17 @@
 *     CTPTYPE=event
 *
       INTEGER*4 GMISC_TOT_HITS
-      INTEGER*4 GMISC_RAW_ADDR1    ! "Plane"   (1=TDC,2=ADC)
-      INTEGER*4 GMISC_RAW_ADDR2    ! "Counter"
-      INTEGER*4 GMISC_RAW_DATA
-      INTEGER*4 GMISC_DEC_DATA
+      INTEGER*4 GMISC_RAW_ADDR1(GMAX_MISC_HITS)    ! "Plane"   (1=TDC,2=ADC)
+      INTEGER*4 GMISC_RAW_ADDR2(GMAX_MISC_HITS)    ! "Counter"
+      INTEGER*4 GMISC_RAW_DATA(GMAX_MISC_HITS)
+      INTEGER*4 GMISC_DEC_DATA(GMAX_MISC_HITS,GNUM_MISC_PLANES)
 
       COMMON/G_RAW_MISC/
      &     GMISC_TOT_HITS,
-     &     GMISC_RAW_ADDR1(GMAX_MISC_HITS),
-     &     GMISC_RAW_ADDR2(GMAX_MISC_HITS),
-     &     GMISC_RAW_DATA(GMAX_MISC_HITS),
-     &     GMISC_DEC_DATA(GMAX_MISC_HITS,GNUM_MISC_PLANES)
+     &     GMISC_RAW_ADDR1,
+     &     GMISC_RAW_ADDR2,
+     &     GMISC_RAW_DATA,
+     &     GMISC_DEC_DATA
 *
 *
 * MISC. PEDESTALS
@@ -384,9 +392,11 @@
 *     CTPTYPE=parm
 *
       integer*4 genable_hms_satcorr,genable_sos_satcorr
+      integer*4 genable_hms_fieldcorr
 *
       common/gen_satcorr/
-     &   genable_hms_satcorr,genable_sos_satcorr
+     &   genable_hms_satcorr,genable_sos_satcorr,
+     &   genable_hms_fieldcorr
 *
 *                                          
 *******************end: gen_data_structures.cmn*************************
