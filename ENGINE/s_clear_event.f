@@ -12,9 +12,12 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 *-    $Log$
-*-    Revision 1.6  1995/04/01 20:10:55  cdaq
-*-    (SAW) Add missing SSCIN_ALL_TOT_HITS = 0
+*-    Revision 1.7  1995/05/11 15:08:57  cdaq
+*-    (SAW) Add clear of Aerogel hit counter
 *-
+* Revision 1.6  1995/04/01  20:10:55  cdaq
+* (SAW) Add missing SSCIN_ALL_TOT_HITS = 0
+*
 * Revision 1.5  1994/11/22  20:14:23  cdaq
 * (SPB) Bring up to date with h_clear_event
 *
@@ -79,6 +82,10 @@
 *     SOS CERENKOV HITS
 *     
       SCER_TOT_HITS= 0
+*
+*     SOS AEROGEL HITS
+*
+      SAER_TOT_HITS = 0
 *
 *     SOS Miscleaneous hits
 *
