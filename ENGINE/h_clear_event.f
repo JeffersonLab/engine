@@ -11,9 +11,12 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.7  1994/09/20 17:29:41  cdaq
-*-    (SAW) Add include of hms_tracking.cmn
+*-    Revision 1.8  1994/10/11 20:27:35  cdaq
+*-    (JRA) Include additional common blocks
 *-
+* Revision 1.7  1994/09/20  17:29:41  cdaq
+* (SAW) Add include of hms_tracking.cmn
+*
 * Revision 1.6  1994/07/07  21:16:57  cdaq
 * (JRA) Clear additional variables
 *
@@ -49,9 +52,14 @@
       character*(*) err
 *
       INCLUDE 'gen_data_structures.cmn'
-      include 'hms_tracking.cmn'
+      INCLUDE 'hms_tracking.cmn'
+      INCLUDE 'hms_statistics.cmn'
+      INCLUDE 'hms_scin_tof.cmn'
+      INCLUDE 'hms_scin_parms.cmn'
+      INCLUDE 'hms_calorimeter.cmn'
+
 *
-      INTEGER hit,track,block,i,j,plane
+      INTEGER plane
 *
 *--------------------------------------------------------
 *
@@ -73,6 +81,8 @@
 *     HMS CALORIMETER HITS
 *
       HCAL_TOT_HITS= 0
+*
+      HCAL_NUM_HITS= 0
 *
 *     HMS CERENKOV HITS
 *
