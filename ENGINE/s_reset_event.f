@@ -12,6 +12,9 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-      $Log$
+*-      Revision 1.11  1996/04/30 12:29:55  saw
+*-      (JRA) Change SAER_ADC_LEFT/RIGHT to POS/NEG
+*-
 *-      Revision 1.10  1995/10/09 18:09:01  cdaq
 *-      (JRA) Add clear of SCER_RAW_ADC
 *-
@@ -169,8 +172,8 @@
 *
       DO hit= 1,SMAX_AER_HITS
          SAER_PAIR_NUM(hit) = 0
-         SAER_ADC_LEFT(hit) = 0
-         SAER_ADC_RIGHT(hit) = 0
+         SAER_ADC_POS(hit) = 0
+         SAER_ADC_NEG(hit) = 0
          SAER_PLANE(hit) = 0
       ENDDO
       SAER_TOT_HITS = 0
