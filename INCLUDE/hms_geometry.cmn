@@ -17,7 +17,10 @@
 *                add     hdc_xcenter
 *                        hdc_ycenter
 * $Log$
-* Revision 1.6  1994/08/05 17:54:15  cdaq
+* Revision 1.7  1994/09/13 19:19:37  cdaq
+* (JRA) Add global Wire chamber offsets
+*
+* Revision 1.6  1994/08/05  17:54:15  cdaq
 * (SAW) Add makereg directive with required include files
 *       Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
 *
@@ -93,6 +96,7 @@
       real*4    hdc_sigma
       real*4    hdc_xcenter
       real*4    hdc_ycenter
+      real*4    hdc_center
       integer*4 hdc_chamber_planes
       character*16 hdc_plane_name
       common/HMS_PLANE_PARAMETERS/
@@ -104,10 +108,11 @@
      &     hdc_central_wire(HMAX_NUM_DC_PLANES),
      &     hdc_nrwire(HMAX_NUM_DC_PLANES),
      &     hdc_sigma(HMAX_NUM_DC_PLANES),
-     &     hdc_xcenter(HMAX_NUM_DC_PLANES),
-     &     hdc_ycenter(HMAX_NUM_DC_PLANES),
+     &     hdc_xcenter(HNUM_DC_CHAMBERS),
+     &     hdc_ycenter(HNUM_DC_CHAMBERS),
      &     hdc_chamber_planes(HMAX_NUM_DC_PLANES),
-     &     hdc_plane_name(HMAX_NUM_DC_PLANES) 
+     &     hdc_plane_name(HMAX_NUM_DC_PLANES),
+     &     hdc_center(HMAX_NUM_DC_PLANES)
 *
 *
       real*4 hlocrayzt
