@@ -1,3 +1,22 @@
+#
+# $Log:
+#
+
+MYOS := $(subst -,,$(shell uname))
+ifeq ($(MYOS),SunOS)
+  OSTYPE = sunos
+else
+  ifeq ($(MYOS),HPUX)
+    OSTYPE = hpux10
+  else
+    ifeq ($(MYOS),AIX)
+      OSTYPE = aix
+    else
+      OSTYPE = $(MYOS)
+    endif
+  endif
+endif
+
 .PHONY: utilsubs ctp coda engine tracking stracking htracking hack \
 	oneev coda port t20
 
@@ -61,6 +80,3 @@ clean:
 #	$(MAKE) -C HTRACKING clean
 #	$(MAKE) -C STRACKING clean
 #	$(MAKE) -C GMC clean
-
-
-
