@@ -10,7 +10,10 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
-* Revision 1.2  1994/11/23 13:56:57  cdaq
+* Revision 1.3  1995/04/06 19:42:03  cdaq
+* (JRA) SSCIN_TOT_HITS -> SSCIN_ALL_TOT_HITS
+*
+* Revision 1.2  1994/11/23  13:56:57  cdaq
 * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.1  1994/04/13  18:21:45  cdaq
@@ -37,8 +40,8 @@
       ABORT = .FALSE.
       err = ' '
       write(sluno,'(''        SOS_RAW_SCIN BANKS'')')
-      write(sluno,'(''     SSCIN_TOT_HITS='',I4)') SSCIN_TOT_HITS
-      if(SSCIN_TOT_HITS.GT.0) then
+      write(sluno,'(''     SSCIN_ALL_TOT_HITS='',I4)') SSCIN_ALL_TOT_HITS
+      if(SSCIN_ALL_TOT_HITS.GT.0) then
         write(sluno,'('' Num  Plane    Counter        ADC_POS''
      &       '' ADC_NEG  TDC_POS  TDC_NEG'')')
         write(sluno,'(1x,i2,2x,i3,7x,i4,8x,4i8)')
