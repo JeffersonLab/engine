@@ -12,9 +12,12 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 *-    $Log$
-*-    Revision 1.1  1994/02/04 22:21:07  cdaq
-*-    Initial revision
+*-    Revision 1.2  1994/02/22 19:04:02  cdaq
+*-    (SAW) SNUM_DC_PLANES  --> SMAX_NUM_DC_PLANES
 *-
+* Revision 1.1  1994/02/04  22:21:07  cdaq
+* Initial revision
+*
 *-
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
@@ -37,7 +40,7 @@
 *     
 *     SOS DECODED DATA
 *     
-      DO plane= 1,SNUM_DC_PLANES
+      DO plane= 1,SMAX_NUM_DC_PLANES
          SDC_HITS_PER_PLANE(plane)= 0
       ENDDO
       SDC_TOT_HITS= 0
