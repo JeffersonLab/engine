@@ -7,6 +7,9 @@
 * h_strip_scin converts the raw hits to arrays over hits
 * with good TDC values.
 * $Log$
+* Revision 1.10  1996/01/16 21:59:35  cdaq
+* (JRA) Add hdebugcalcpeds flag
+*
 * Revision 1.9  1995/08/30 17:35:14  cdaq
 * (JRA) Accumulate pedestals from pedestal events.
 *
@@ -41,6 +44,7 @@
       include 'hms_data_structures.cmn'
       include 'hms_scin_parms.cmn'
       include 'hms_scin_tof.cmn'
+      include 'hms_tracking.cmn'
 
       logical abort
       character*(*) err
@@ -91,12 +95,13 @@
 
         else                            !not a real event, calc. pedestals
 
-          ip = hscin_all_plane_num(ihit)
-          ic = hscin_all_counter_num(ihit)
-          hscin_zero_pos(ip,ic)=hscin_zero_pos(ip,ic)+hscin_all_adc_pos(ihit)
-          hscin_zero_neg(ip,ic)=hscin_zero_neg(ip,ic)+hscin_all_adc_neg(ihit)
-          hscin_zero_num(ip,ic)=hscin_zero_num(ip,ic)+1
-
+          if (hdebugcalcpeds.ne.0) then
+            ip = hscin_all_plane_num(ihit)
+            ic = hscin_all_counter_num(ihit)
+            hscin_zero_pos(ip,ic)=hscin_zero_pos(ip,ic)+hscin_all_adc_pos(ihit)
+            hscin_zero_neg(ip,ic)=hscin_zero_neg(ip,ic)+hscin_all_adc_neg(ihit)
+            hscin_zero_num(ip,ic)=hscin_zero_num(ip,ic)+1
+          endif
         endif
       enddo
 
