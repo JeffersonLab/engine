@@ -11,10 +11,13 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified 1-Dec-1993    KBB: borrowed L.Dennis's hall B routines
-*-   $Log$
-*-   Revision 1.3  1994/04/12 18:45:53  cdaq
-*-   (SAW) Add include for the CRAW event buffer common
-*-
+* $Log$
+* Revision 1.4  1996/01/16 18:32:21  cdaq
+* no change
+*
+* Revision 1.3  1994/04/12 18:45:53  cdaq
+* (SAW) Add include for the CRAW event buffer common
+*
 * Revision 1.2  1994/02/11  15:43:08  cdaq
 * Replace fbgen library call with plain evread call
 *
