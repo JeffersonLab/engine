@@ -51,9 +51,9 @@ c        Choose clean single electron tracks within HMS momentum acceptance.
          if(  (hntracks_fp.eq.1).and.
      &        (hnclusters_cal.eq.1).and.
      &        (hntracks_cal.eq.1).and.
-     &        (hcer_npe_sum.gt.4).and.
      &        (abs(hdelta_tar(1)).lt.10.).and.
-     &        (abs(hbeta(1)-1.).lt.0.05)  .and.
+     &        (hcer_npe_sum.gt.4).and.
+     &        (abs(hbeta(1)-1.).lt.0.1).and.
      &        spare_id .ne. 0 ) then
 ***   &     (hbeta_chisq(1).ge.0.).and.(hbeta_chisq(1).lt.1.)  ) then
 
