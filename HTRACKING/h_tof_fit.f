@@ -1,4 +1,4 @@
-        subroutine h_tof_fit(abort,errmsg,trk)
+      subroutine h_tof_fit(abort,errmsg,trk)
 
 *-------------------------------------------------------------------
 * author: John Arrington
@@ -9,46 +9,49 @@
 *
 * modifications:
 * $Log$
-* Revision 1.1  1994/04/13 16:29:15  cdaq
+* Revision 1.2  1994/06/14 04:53:41  cdaq
+* (DFG) Protect against divide by 0 in beta calc
+*
+* Revision 1.1  1994/04/13  16:29:15  cdaq
 * Initial revision
 *
 *-------------------------------------------------------------------
 
-        implicit none
+      implicit none
 
-        include 'gen_data_structures.cmn'
-        include 'hms_scin_parms.cmn'
-        include 'hms_scin_tof.cmn'
+      include 'gen_data_structures.cmn'
+      include 'hms_scin_parms.cmn'
+      include 'hms_scin_tof.cmn'
 
-        logical abort
-        character*1024 errmsg
-        character*20 here
-        parameter (here = 'h_tof_fit')
+      logical abort
+      character*1024 errmsg
+      character*20 here
+      parameter (here = 'h_tof_fit')
+      
+      real*4 sumw, sumt, sumz, sumzz, sumtz
+      real*4 scin_weight
+      real*4 tmp, t0 ,tmpdenom
+      real*4 pathnorm
+      integer*4 hit, trk
+      save
+      
+      sumw = 0.
+      sumt = 0.
+      sumz = 0.
+      sumzz = 0.
+      sumtz = 0.
 
-        real*4 sumw, sumt, sumz, sumzz, sumtz
-        real*4 scin_weight
-        real*4 tmp, t0
-        real*4 pathnorm
-        integer*4 hit, trk
-        save
-
-        sumw = 0.
-        sumt = 0.
-        sumz = 0.
-        sumzz = 0.
-        sumtz = 0.
-
-        do hit = 1 , hscin_tot_hits
-          if (hgood_scin_time(hit)) then
+      do hit = 1 , hscin_tot_hits
+         if (hgood_scin_time(hit)) then
             scin_weight = 1./hscin_sigma(hit)**2
             sumw = sumw + scin_weight
             sumt = sumt + scin_weight * hscin_time(hit)
             sumz = sumz + scin_weight * hscin_zpos(hit)
             sumzz = sumzz + scin_weight * hscin_zpos(hit)**2
             sumtz = sumtz + scin_weight * hscin_zpos(hit) *
-     1             hscin_time(hit)
-          endif
-        enddo
+     1           hscin_time(hit)
+         endif
+      enddo
 
 * The formula for beta (and t0) come from taking chi-squared (as
 * defined below), and differentiating  with respect to each
@@ -57,21 +60,25 @@
 * chisquared (since they are quadratic in beta and t0), and
 * gives a solution for beta in terms of sums of z, t, and w.
 
-        tmp = sumw*sumzz - sumz*sumz
-        t0 = (sumt*sumzz - sumz*sumtz) / tmp
-        hbeta(trk) = tmp / (sumw*sumtz - sumz*sumt)
-        
-        hbeta_chisq(trk) = 0.
-        do hit = 1 , hscin_tot_hits
-          if (hgood_scin_time(hit)) then
+      tmp = sumw*sumzz - sumz*sumz
+      t0 = (sumt*sumzz - sumz*sumtz) / tmp
+      tmpdenom = sumw*sumtz - sumz*sumt
+      if(tmpdenom .gt. 1.e-15) then
+         hbeta(trk) = tmp / tmpdenom
+      else
+         hbeta(trk) = -1.               ! set unphysical beta
+      endif                             ! end if on denomimator = 0.
+      hbeta_chisq(trk) = 0.
+      do hit = 1 , hscin_tot_hits
+         if (hgood_scin_time(hit)) then
             hbeta_chisq(trk) = hbeta_chisq(trk) + 
-     1              (hscin_zpos(hit)/hbeta(trk) -
-     1              (hscin_time(hit) - t0))**2 / hscin_sigma(hit)**2
-          endif
-        enddo
+     1           (hscin_zpos(hit)/hbeta(trk) -
+     1           (hscin_time(hit) - t0))**2 / hscin_sigma(hit)**2
+         endif
+      enddo
 
-        pathnorm = 1 + hxp_fp(trk)**2 + hyp_fp(trk)**2
-        hbeta(trk) = hbeta(trk) * pathnorm   !take angle into account
+      pathnorm = 1 + hxp_fp(trk)**2 + hyp_fp(trk)**2
+      hbeta(trk) = hbeta(trk) * pathnorm !take angle into account
 
-        return
-        end
+      return
+      end
