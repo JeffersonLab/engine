@@ -8,7 +8,10 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.8  1994/08/05 15:47:37  cdaq
+* Revision 1.9  1994/08/16 03:56:54  cdaq
+* (SAW) Change some variables to parm CTPTYPE
+*
+* Revision 1.8  1994/08/05  15:47:37  cdaq
 * (SAW) Add makereg directive with required include files
 *
 * Revision 1.7  1994/08/04  15:31:41  cdaq
@@ -59,7 +62,13 @@
       integer*4 hnspace_points_tot ! total number of space points after select.
       real*4 hspace_points         ! array of x, y of space points
       real*4 hbeststub              ! array of stubs fit to each space point
+*
+*     CTPTYPE=parm
+*
       real*4 hspace_point_criterion
+*
+*     CTPTYPE=event
+*
       integer*4 hspace_point_hits  ! array of n rows of space points
                                    ! (n,1) = number of hits
                                    ! (n,2) = number of valid combinations

@@ -1,7 +1,10 @@
 * hms_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the hms time of flight.
 * $Log$
-* Revision 1.5  1994/08/05 15:29:44  cdaq
+* Revision 1.6  1994/08/16 03:56:33  cdaq
+* (SAW) Change some variables to parm CTPTYPE
+*
+* Revision 1.5  1994/08/05  15:29:44  cdaq
 * (SAW) Add makereg directive with required include files
 *
 * Revision 1.4  1994/08/04  18:02:13  cdaq
@@ -43,13 +46,16 @@
       real*4 hscin_pos_time_offset(hmax_scin_hits)
       real*4 hscin_neg_time_offset(hmax_scin_hits)
 
-*     ctp parameters
-*     
+*
+*     CTPTYPE=parm
+*
       real*4 hscin_minph
       real*4 hscin_tdc_min
       real*4 hscin_tdc_max
       real*4 hscin_tdc_to_time
-*     
+*
+*     CTPTYPE=event
+*
       logical*4 hgood_tdc_pos(hmax_scin_hits)
       logical*4 hgood_tdc_neg(hmax_scin_hits)
       logical*4 hgood_scin_time(hmax_scin_hits)
