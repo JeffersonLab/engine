@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.3  1994/11/23 14:15:49  cdaq
+* Revision 1.4  1995/02/23 13:28:35  cdaq
+* (JRA) Add track index to sgood_scin_time
+*
+* Revision 1.3  1994/11/23  14:15:49  cdaq
 * * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.2  1994/06/14  04:36:30  cdaq
@@ -45,7 +48,7 @@
       sumtz = 0.
 
       do hit = 1 , sscin_tot_hits
-        if (sgood_scin_time(hit)) then
+        if (sgood_scin_time(trk,hit)) then
           scin_weight = 1./sscin_sigma(hit)**2
           sumw = sumw + scin_weight
           sumt = sumt + scin_weight * sscin_time(hit)
@@ -67,11 +70,10 @@
       t0 = (sumt*sumzz - sumz*sumtz) / tmp
       tmpdenom = sumw*sumtz - sumz*sumt
       if(tmpdenom .gt. 1.e-10) then
-        sbeta(trk) = tmp / tmpdenom
-*
+        sbeta(trk) = tmp / tmpdenom     !velocity in cm/ns.
         sbeta_chisq(trk) = 0.
         do hit = 1 , sscin_tot_hits
-          if (sgood_scin_time(hit)) then
+          if (sgood_scin_time(trk,hit)) then
             sbeta_chisq(trk) = sbeta_chisq(trk) + 
      1           (sscin_zpos(hit)/sbeta(trk) -
      1           (sscin_time(hit) - t0))**2 / sscin_sigma(hit)**2
@@ -83,7 +85,7 @@
         sbeta(trk) = sbeta(trk) / 29.9979 !velocity/c
       else
         sbeta(trk) = 0.                 !set unphysical beta
-        sbeta(trk) = -100
+        sbeta_chisq(trk) = -2
       endif                             !end if on denomimator = 0.
 
       return
