@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.20  1996/09/04 14:37:56  saw
+* (JRA) Open output file for charge scalers
+*
 * Revision 1.19  1996/04/29 19:47:42  saw
 * (JRA) Add call to engine_command_line
 *
@@ -95,8 +98,8 @@
       INCLUDE 'gen_pawspace.cmn'        !includes sizes of special CERNLIB space
       INCLUDE 'gen_run_info.cmn'
       include 'gen_scalers.cmn'
-*HDISPLAY      include 'one_ev_io.cmn'
-*HDISPLAY      include 'gen_gcbank.cmn'
+      include 'hms_data_structures.cmn'
+      include 'sos_data_structures.cmn'
 *
       integer ierr
       logical HMS_ABORT,SOS_ABORT, HACK_ABORT
@@ -121,7 +124,6 @@
 *     Book the histograms, tests and parameters
 *
       if(first_time) then
-*HDISPLAY        call GZEBRA(G_size_GCBANK)      ! init GEANT memory
         call HLIMIT(G_sizeHBOOK)        !set in "gen_pawspace.cmn"
       endif
 *     Load and book all the CTP files
@@ -143,6 +145,7 @@
 *     override values defined in the CTP input files.
 *
       if(.not.ABORT.and.g_ctp_kinematics_filename.ne.' ') then
+        write(6,'(a,a60)') 'KINEMATICS FROM ',g_ctp_kinematics_filename(1:60)
         call g_ctp_database(ABORT, err
      $       ,gen_run_number, g_ctp_kinematics_filename)
         IF(ABORT) THEN
@@ -163,7 +166,16 @@
         endif
       endif
 
-      call engine_command_line          ! Reset CTP vars from command line
+      write(6,'(a)') 'COMMAND LINE FLAGS'
+      call engine_command_line(.true.)  ! Reset CTP vars from command line
+
+* that was the last call to engine_command_line, the last time to input
+* ctp variables.  Set some here to avoid divide by zero errors if they
+* were not read in.
+      if (hpcentral.le.0.001)  hpcentral = 1.
+      if (spcentral.le.0.001)  spcentral = 1.
+      if (htheta_lab.le.0.001) htheta_lab = 90.
+      if (stheta_lab.le.0.001) stheta_lab = 90.
 
       if((first_time.or.g_hist_rebook).and.g_ctp_hist_filename.ne.' ') then
         file = g_ctp_hist_filename
@@ -244,6 +256,16 @@
       call thtstclsg("default")                     ! Clear test scalers
 *
       call g_target_initialize(ABORT,err)
+
+* Open output file for charge scalers.
+      if (g_charge_scaler_filename.ne.' ') then
+        file=g_charge_scaler_filename
+        call g_sub_run_number(file,gen_run_number)
+        open(unit=217,file=file,status='unknown')
+        write(217,*) '!Charge scalers - Run #',gen_run_number
+        write(217,*) '!event   Unser(Hz)     BCM1(Hz)     BCM2(Hz)',
+     &               '     BCM3(Hz)     Time(s)'
+      endif
 
 *-HMS initialize
       call H_initialize(HMS_ABORT,HMS_err)
