@@ -10,7 +10,10 @@
 *-                                Change lun
 *-                7 Apr 1884      DFG   Change print order
 * $Log$
-* Revision 1.3  1995/05/22 19:39:20  cdaq
+* Revision 1.4  1995/07/19 18:54:55  cdaq
+* *** empty log message ***
+*
+* Revision 1.3  1995/05/22  19:39:20  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.2  1995/01/27  20:26:00  cdaq
@@ -44,10 +47,10 @@
         row=hcal_row(hit)
         col=hcal_column(hit)
         nb =row+hmax_cal_rows*(col-1)
-        adc=hcal_adc(hit)-hcal_ped_mean(nb)
+        adc=float(hcal_adc(hit))-hcal_ped_mean(nb)
         write(hlun_dbg_cal,20)
      &       hit,hcal_column(hit),hcal_row(hit),adc
- 20     format(i5,3x,i5,4x,i5,7x,i5)
+ 20     format(i5,3x,i5,4x,i5,7x,f8.1)
       enddo
 *
       return
