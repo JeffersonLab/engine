@@ -1,6 +1,6 @@
       subroutine g_ctp_database(ABORT, error, run, filename)
 *
-* USES LUN 133 as a temporary LUN
+* USES LUN G_LUN_TEMP as a temporary LUN
 *
 ************************************************************************
 *     g_ctp_database(run, filename, ABORT)
@@ -31,6 +31,9 @@
 *                        don't print out stuff following the ';').
 *
 * $Log$
+* Revision 1.5  1996/09/04 14:33:40  saw
+* (SAW) Use G_LUN_TEMP instead of 133 for linux compatibility
+*
 * Revision 1.4  1996/01/16 18:42:07  cdaq
 * (JRA) Minor bug fixes
 *
@@ -47,6 +50,8 @@
 ************************************************************************
       implicit none
       SAVE
+*
+      include 'gen_filenames.cmn'
 *
       character*14 here
       parameter (here='g_ctp_database')
@@ -83,7 +88,7 @@ c      endif
 * Again, I don't make mistakes.
       ABORT = .FALSE.
 
-      chan = 133
+      chan = G_LUN_TEMP
 
       open (unit=chan, status='old', name=filename)
 
@@ -191,8 +196,8 @@ c      endif
           read (chan, 1001, end=9999) line
           index = 1
           if (debug) write (6,*) line
-          do while ((ichar(line(1:1)) .le. ichar('0')) .or.
-     $         (ichar(line(1:1)) .ge. ichar('9')))
+          do while ((ichar(line(1:1)) .lt. ichar('0')) .or.
+     $         (ichar(line(1:1)) .gt. ichar('9')))
             read (chan, 1001, end=9999) line
             index = 1
             if (debug) write (6,*) line
@@ -236,7 +241,7 @@ c      endif
 c     write(6,*)'g_ctp_database is setting the following CTP parameters'
               printed_header = .true.
             endif
-            write(6,'(a)') newline(1:79) ! Truncate to keep 1/line
+            write(6,'(4x,a)') newline(1:70) ! Truncate to keep 1/line
             call thpset(newline)
           end if
         end if
