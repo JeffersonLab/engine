@@ -4,6 +4,9 @@
 # definitions of some fortran functions that are missing under F2C/Linux.
 #
 # $Log$
+# Revision 1.5  2000/11/30 14:23:03  saw
+# Add other_wrappers.f for jidnnt
+#
 # Revision 1.4  1998/12/09 16:31:16  saw
 # Remove dependence on Csoft environment variable
 #
@@ -27,7 +30,8 @@ else
     ifeq ($(F77COMPILER),Absoft)
       libsources =  absoft_wrappers.f
     else
-      libsources =  bit_wrappers.f trig_wrappers.f ran_wrappers.f
+      libsources =  bit_wrappers.f trig_wrappers.f ran_wrappers.f \
+		    other_wrappers.f
     endif
     install-dirs := lib
   else
