@@ -14,7 +14,10 @@
 *       23 March 1993   DFG
 *            Remove /nolist from include statement. UNIX doesn't like it.
 * $Log$
-* Revision 1.3  1994/06/14 03:58:10  cdaq
+* Revision 1.4  1994/09/13 19:40:10  cdaq
+* (JRA) Remove some unused variables
+*
+* Revision 1.3  1994/06/14  03:58:10  cdaq
 * (DFG) remove hard wired numbers
 *
 * Revision 1.2  1994/06/01  15:36:20  cdaq
@@ -44,10 +47,6 @@
       hnum_scin_counters(2) = hscin_1y_nr
       hnum_scin_counters(3) = hscin_2x_nr
       hnum_scin_counters(4) = hscin_2y_nr
-      hhodo_zpos(1) = hscin_1x_zpos
-      hhodo_zpos(2) = hscin_1y_zpos
-      hhodo_zpos(3) = hscin_2x_zpos
-      hhodo_zpos(4) = hscin_2y_zpos
 
       do plane = 1 , hnum_scin_planes
          do counter = 1 , hnum_scin_counters(plane)
@@ -79,7 +78,6 @@
 
          enddo                          !loop over counters
       enddo                             !loop over planes
-*     check I make it here
 
       return
       end
