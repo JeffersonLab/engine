@@ -11,6 +11,9 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
+* Revision 1.8  1996/01/17 15:09:34  cdaq
+* (JRA) Add sidscintimes histogram
+*
 * Revision 1.7  1995/09/01 13:02:48  cdaq
 * (JRA) Add dpos histid's
 *
@@ -52,6 +55,7 @@
       integer*4 sidcalplane
       integer*4 sidcalhits(SMAX_CAL_COLUMNS)
       integer*4 sidscinalltimes
+      integer*4 sidscintimes
       integer*4 sidsumposadc(SNUM_SCIN_PLANES)
       integer*4 sidsumnegadc(SNUM_SCIN_PLANES)
       integer*4 sidsumpostdc(SNUM_SCIN_PLANES)
@@ -76,6 +80,7 @@
      &     sidcalplane,
      &     sidcalhits,
      &     sidscinalltimes,
+     &     sidscintimes,
      &     sidsumposadc,
      &     sidsumnegadc,
      &     sidsumpostdc,
