@@ -16,6 +16,9 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
+* Revision 1.16  1999/02/23 18:50:38  csa
+* (JRA) Correct (another) hut(5) error
+*
 * Revision 1.15  1999/02/10 17:47:27  csa
 * Sign change in hut(5)
 *
@@ -151,7 +154,7 @@
 
          hut(4) = hyp_fp(itrk) + h_ang_offset_y           !radians
 
-         hut(5)= -gbeam_y/1000. ! spectrometer target X in meter!
+         hut(5)= -gbeam_y/100. ! spectrometer target X in meter!
                                 ! note that pos. spect. X = neg. beam Y
 
 ! now transform 
