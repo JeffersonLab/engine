@@ -15,9 +15,12 @@
 *-
 *-     Created   3-Dec-1993   Kevin Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.2  1994/02/02 19:59:16  cdaq
-*-    Rewrite without using fbgen routines
+*-    Revision 1.3  1994/02/17 21:30:37  cdaq
+*-    Move ABORT, err args to end of g_decode_fb_bank call
 *-
+* Revision 1.2  1994/02/02  19:59:16  cdaq
+* Rewrite without using fbgen routines
+*
 c Revision 1.1  1994/02/01  20:38:58  cdaq
 c Initial revision
 c
@@ -75,7 +78,7 @@ c
 
       do while(bankpointer.lt.evlength)
          
-         call g_decode_fb_bank(ABORT, err, CRAW(bankpointer) )
+         call g_decode_fb_bank(CRAW(bankpointer), ABORT, err)
          bankpointer = bankpointer + CRAW(bankpointer) + 1
 
       enddo
