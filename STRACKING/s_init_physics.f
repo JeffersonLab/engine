@@ -9,6 +9,9 @@
 *- 
 *-   Created 6-6-94          D. F. Geesaman
 * $Log$
+* Revision 1.6  1999/02/10 18:15:40  csa
+* Bug fix in sin/cossthetas calculations
+*
 * Revision 1.5  1996/09/05 19:54:16  saw
 * (JRA) avoid setting p=0??
 *
@@ -54,8 +57,8 @@
         spcentral = spcentral * smomentum_factor
       endif
 *
-      cossthetas = cos(stheta_lab)
-      sinsthetas = sin(stheta_lab)
+      cossthetas = cos(stheta_lab*degree)
+      sinsthetas = sin(stheta_lab*degree)
 *     Constants for elastic kinematics calcultion
       sphysicsa = 2.*gebeam*gtarg_mass(gtarg_num) -
      $     mass_electron**2 - spartmass**2
