@@ -7,6 +7,9 @@
 * s_strip_scin converts the raw hits to arrays over hits
 * with good TDC values.
 * $Log$
+* Revision 1.7  1999/02/23 19:00:39  csa
+* (JRA) Remove sdebugcalcpeds stuff
+*
 * Revision 1.6  1996/01/17 18:57:36  cdaq
 * (JRA) Add sdebugcalcpeds flag
 *
@@ -80,16 +83,6 @@
           plane = sscin_PLANE_NUM(igoodhit)
           counter = sscin_COUNTER_NUM(igoodhit)
           if(plane.ge.1.and.plane.le.4) sscin_sing_counter(plane) = counter
-
-        else            !not a real event, calc. pedestals
-
-          if (sdebugcalcpeds.ne.0) then
-            ip = sscin_all_plane_num(ihit)
-            ic = sscin_all_counter_num(ihit)
-            sscin_zero_pos(ip,ic)=sscin_zero_pos(ip,ic)+sscin_all_adc_pos(ihit)
-            sscin_zero_neg(ip,ic)=sscin_zero_neg(ip,ic)+sscin_all_adc_neg(ihit)
-            sscin_zero_num(ip,ic)=sscin_zero_num(ip,ic)+1
-          endif
         endif
       enddo
 

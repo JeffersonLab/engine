@@ -16,6 +16,9 @@
 * s_scin_eff_shutdown does some final manipulation of the numbers.
 *
 * $Log$
+* Revision 1.9  1999/02/23 18:59:27  csa
+* (JRA) Remove sdebugcalcpeds stuff
+*
 * Revision 1.8  1996/09/05 20:15:12  saw
 * (JRA) Cosmetic
 *
@@ -140,19 +143,6 @@
       seff_stof=seff_s1 * seff_s2
       seff_3_of_4=p1234+p123+p124+p134+p234
       seff_4_of_4=p1234
-
-      if (sdebugcalcpeds.ne.0) then
-        write(39,*) 'sscin_all_ped_pos ='
-        do cnt=1,snum_scin_elements
-          write(39,111) (sscin_zero_pave(pln,cnt),pln=1,snum_scin_planes)
-        enddo
-
-        write(39,*) 'sscin_all_ped_neg ='
-        do cnt=1,snum_scin_elements
-          write(39,111) (sscin_zero_nave(pln,cnt),pln=1,snum_scin_planes)
-        enddo
-      endif
-111   format (10x,3(f6.1,','),f6.1)
 
       return
       end
