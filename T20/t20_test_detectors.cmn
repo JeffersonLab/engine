@@ -1,0 +1,244 @@
+*     t20_test_detectors.cmn
+*     include file for t20 tracking intermediate results
+*      R. Gilman December 1996, loosely based on HMS tracking code, ...
+*
+* $Log$
+* Revision 1.1  1997/05/20 19:09:01  saw
+* Initial revision
+*
+*     The following include statments must precede the inclusion of this
+*     file in each routine that uses it.  The *%% syntax is also a
+*     directive to makereg to tell it to include the code in the program
+*     that it generates.
+*
+*%%   include 't20_data_structures.cmn'
+
+*----------------------------------------------------------------------
+* PARAMETERS TO DEFINE STRAW CHAMBERS GEOMETRY, NUMBER STRAWS
+*
+*     CTPTYPE=parm
+*
+      integer*4 ttst_n_straw_planes
+      parameter (ttst_n_straw_planes=8)
+      integer*4 ttst_n_straw_wgs
+      parameter (ttst_n_straw_wgs=40)
+       
+      integer*4 ttst_straw_planes
+      integer*4 ttst_straw_groups
+      integer*4 ttst_plane_group(ttst_n_straw_planes)
+      integer*4 ttst_plane_of_group(ttst_n_straw_wgs)
+      
+      real*4 ttst_straw_z(ttst_n_straw_planes)
+      real*4 ttst_straw_x1(ttst_n_straw_planes)
+      real*4 ttst_straw_x2(ttst_n_straw_planes)
+      real*4 ttst_straw_ywid(ttst_n_straw_planes)
+      real*4 ttst_straw_xwid(ttst_n_straw_planes)
+      real*4 ttst_straw_sctr(ttst_n_straw_planes)
+      integer*4 ttst_straw_nst(ttst_n_straw_planes)
+
+      real*4 ttst_scin_z(2)
+      real*4 ttst_scin_x(2)
+      real*4 ttst_scin_y(2)
+      real*4 ttst_scin_xwid(2)
+      real*4 ttst_scin_ywid(2)
+
+      real*4 ttst_scin_v_corr
+      real*4 ttst_straw_v_corr
+      
+      integer*4 ttst_straw_num_wg(ttst_n_straw_planes)
+      integer*4 ttst_straws_per_plane(ttst_n_straw_planes)
+      integer*4 ttst_straw_type(ttst_n_straw_planes)
+      integer*4 ttst_type_order(ttst_n_straw_planes,2)
+      integer*4 ttst_straw_plane_group_off(ttst_n_straw_planes)
+
+      integer*4 ttst_dmx(9,ttst_n_straw_wgs)
+
+      integer*4 ttst_TDC_min
+      integer*4 ttst_TDC_max
+      integer*4 ttst_t0(ttst_n_straw_wgs)
+
+      real*4 ttst_sigma
+      real*4 ttst_straw_spacing
+      real*4 ttst_drift_con
+      real*4 ttst_drift_max
+      real*4 ttst_drift_v
+      real*4 ttst_drift_t0
+      real*4 ttst_drift_table(400)
+
+      integer*4 ttst_track_ntuples_out
+
+      common /ttst_parms/
+     $     ttst_straw_z,                ! Real*4
+     $     ttst_straw_x1,
+     $     ttst_straw_x2,
+     $     ttst_straw_ywid,
+     $     ttst_straw_xwid,
+     $     ttst_straw_sctr,
+     $     ttst_straw_nst,
+     $     ttst_scin_z,
+     $     ttst_scin_x,
+     $     ttst_scin_y,
+     $     ttst_scin_xwid,
+     $     ttst_scin_ywid,
+     $     ttst_scin_v_corr,
+     $     ttst_straw_v_corr,
+     $     ttst_sigma,
+     $     ttst_straw_spacing,
+     $     ttst_drift_con,
+     $     ttst_drift_max,
+     $     ttst_drift_v,
+     $     ttst_drift_t0,
+     $     ttst_drift_table,
+     $     ttst_straw_planes,           ! Integer*4
+     $     ttst_straw_groups,
+     $     ttst_plane_group,
+     $     ttst_straw_num_wg,
+     $     ttst_straws_per_plane,
+     $     ttst_straw_type,
+     $     ttst_type_order,
+     $     ttst_straw_plane_group_off,
+     $     ttst_dmx,
+     $     ttst_TDC_min,
+     $     ttst_TDC_max, 
+     $     ttst_t0,
+     $     ttst_track_ntuples_out
+
+
+*----------------------------------------------------------------------
+* Scintillator Event variables
+*
+*     CTPTYPE=event
+*
+      integer*4 ttst_scin_adc(4)
+      integer*4 ttst_scin_tdc(4)
+      integer*4 ttst_scin_timeoff(4)
+      integer*4 ttst_scin_tdccor(4)
+      integer*4 ttst_scin_pos1
+      integer*4 ttst_scin_pos2
+      integer*4 ttst_scin_pos
+      integer*4 ttst_scin_time1
+      integer*4 ttst_scin_time2
+      integer*4 ttst_scin_time
+      integer*4 ttst_scin_timecor1
+      integer*4 ttst_scin_timecor2
+      integer*4 ttst_scin_timecor
+      integer*4 ttst_t0_correction
+      common /ttst_scin/ 
+     $     ttst_scin_adc,
+     $     ttst_scin_tdc,
+     $     ttst_scin_timeoff,
+     $     ttst_scin_tdccor,
+     $     ttst_scin_pos1,
+     $     ttst_scin_pos2,
+     $     ttst_scin_pos,
+     $     ttst_scin_time1,
+     $     ttst_scin_time2,
+     $     ttst_scin_time,
+     $     ttst_scin_timecor1,
+     $     ttst_scin_timecor2,
+     $     ttst_scin_timecor,
+     $     ttst_t0_correction
+
+
+*----------------------------------------------------------------------
+* Chamber Event variables
+*
+*     CTPTYPE=event
+*
+      integer*4 ttst_straw_tims(16,ttst_n_straw_wgs)
+      integer*4 ttst_straw_wids(16,ttst_n_straw_wgs)
+      integer*4 ttst_straw_straw(16,ttst_n_straw_wgs)
+      integer*4 ttst_straw_hits(ttst_n_straw_wgs)
+      integer*4 ttst_straw_goodedge
+      integer*4 ttst_straw_plane
+      integer*4 ttst_straw_ggroup
+      integer*4 ttst_straw_goodhit
+      integer*4 ttst_straw_gooddemux
+      integer*4 ttst_straw_xygddmx(2)
+      integer*4 ttst_straw_xgddmx
+      integer*4 ttst_straw_ygddmx
+      equivalence (ttst_straw_xygddmx(1), ttst_straw_xgddmx)
+      equivalence (ttst_straw_xygddmx(2), ttst_straw_ygddmx)
+      integer*4 ttst_straw_xyplnsht(2)
+      integer*4 ttst_straw_xplnsht
+      integer*4 ttst_straw_yplnsht
+      equivalence (ttst_straw_xyplnsht(1), ttst_straw_xplnsht)
+      equivalence (ttst_straw_xyplnsht(2), ttst_straw_yplnsht)
+      integer*4 ttst_straw_planes_hit(ttst_n_straw_planes)
+      integer*4 ttst_straw_plane1_hit
+      integer*4 ttst_straw_plane2_hit
+      integer*4 ttst_straw_plane3_hit
+      integer*4 ttst_straw_plane4_hit
+      integer*4 ttst_straw_plane5_hit
+      integer*4 ttst_straw_plane6_hit
+      integer*4 ttst_straw_plane7_hit
+      integer*4 ttst_straw_plane8_hit
+      equivalence (ttst_straw_planes_hit(1), ttst_straw_plane1_hit)
+      equivalence (ttst_straw_planes_hit(2), ttst_straw_plane2_hit)
+      equivalence (ttst_straw_planes_hit(3), ttst_straw_plane3_hit)
+      equivalence (ttst_straw_planes_hit(4), ttst_straw_plane4_hit)
+      equivalence (ttst_straw_planes_hit(5), ttst_straw_plane5_hit)
+      equivalence (ttst_straw_planes_hit(6), ttst_straw_plane6_hit)
+      equivalence (ttst_straw_planes_hit(7), ttst_straw_plane7_hit)
+      equivalence (ttst_straw_planes_hit(8), ttst_straw_plane8_hit)
+      common /ttst_straw/ 
+     $     ttst_straw_tims,
+     $     ttst_straw_wids,
+     $     ttst_straw_straw,
+     $     ttst_straw_hits,
+     $     ttst_straw_goodedge,
+     $     ttst_straw_plane,
+     $     ttst_straw_ggroup,
+     $     ttst_straw_goodhit,
+     $     ttst_straw_gooddemux,
+     $     ttst_straw_xgddmx,
+     $     ttst_straw_ygddmx,
+     $     ttst_straw_planes_hit
+
+*----------------------------------------------------------------------
+* Straw Chamber Tracking variables
+*
+*     CTPTYPE=event
+*
+      integer*4 max_track_hit
+      parameter (max_track_hit=16)
+
+      real*4 ttst_track_xpos(max_track_hit,ttst_n_straw_planes)
+      real*4 ttst_track_dxpos(max_track_hit,ttst_n_straw_planes)
+      real*4 ttst_track_dxpos2(max_track_hit,ttst_n_straw_planes)
+      integer*4 ttst_track_straw(max_track_hit,ttst_n_straw_planes)
+c     info type, hit_on_plane, plane#
+      real*4 ttst_track_hitarray(4,10,8)
+      integer*4 ttst_track_ntracks
+      real*4 ttst_track_params(3,2)
+      real*4 ttst_track_bxint
+      real*4 ttst_track_byint
+      equivalence (ttst_track_params(2,1),ttst_track_bxint)
+      equivalence (ttst_track_params(2,2),ttst_track_byint)
+      real*4 ttst_track_angle(2)
+      real*4 ttst_track_theta
+      real*4 ttst_track_phi
+      equivalence (ttst_track_angle(1),ttst_track_theta)
+      equivalence (ttst_track_angle(2),ttst_track_phi)
+
+      common /ttst_track_strawchamber/
+     $     ttst_track_xpos,
+     $     ttst_track_dxpos,
+     $     ttst_track_dxpos2,
+     $     ttst_track_straw,
+     $     ttst_track_hitarray,
+     $     ttst_track_ntracks,
+     $     ttst_track_params,
+     $     ttst_track_angle
+
+*----------------------------------------------------------------------
+*
+*     CTPTYPE=param
+*
+*     How many ntuple should written out.  May go away when ENGINE
+*     standard ntuples are used.
+*
+      integer*4 ttst_raw_ntuples_out
+      common /ttst_stuff/
+     $     ttst_raw_ntuples_out
+      
