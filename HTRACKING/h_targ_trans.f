@@ -16,6 +16,9 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
+* Revision 1.15  1999/02/10 17:47:27  csa
+* Sign change in hut(5)
+*
 * Revision 1.14  1996/09/04 13:32:36  saw
 * (JRA) Apply offsets to reconstruction
 *
@@ -148,7 +151,8 @@
 
          hut(4) = hyp_fp(itrk) + h_ang_offset_y           !radians
 
-         hut(5)= gbeam_y/1000. ! spectrometer target X in meter!
+         hut(5)= -gbeam_y/1000. ! spectrometer target X in meter!
+                                ! note that pos. spect. X = neg. beam Y
 
 ! now transform 
 *         hx_fp_rot(itrk)=  hut(1) + h_det_offset_x    ! include detector offset
