@@ -23,9 +23,12 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 *-    $Log$
-*-    Revision 1.5  1994/06/16 03:47:57  cdaq
-*-    (SAW) Blank out filenames for reports
+*-    Revision 1.6  1994/06/22 20:57:14  cdaq
+*-    (SAW) Add more variables for reports
 *-
+* Revision 1.5  1994/06/16  03:47:57  cdaq
+* (SAW) Blank out filenames for reports
+*
 * Revision 1.4  1994/03/24  22:02:21  cdaq
 * Reorganize for online compatibility
 *
@@ -56,12 +59,13 @@
       include 'gen_routines.dec'
 *
       integer ierr
-c     
 *
 *-all crucial setup information here; failure is fatal
+*
       g_hist_rebook = .true.
       g_test_rebook = .true.
       g_parm_rebook = .true.
+      g_report_rebook = .true.
       g_ctp_parm_filename = ' '
       g_ctp_test_filename = ' '
       g_ctp_hist_filename = ' '
