@@ -8,6 +8,9 @@
 *- 
 *-   Created  14-Jun-1994   S.A. Wood
 * $Log$
+* Revision 1.3  2002/09/25 14:42:06  jones
+* Replace call HREND(nametag) with call HRENDC(nametag) and close(IO)
+*
 * Revision 1.2  1995/04/01 19:45:37  cdaq
 * (SAW) Allow %d for run number in filenames
 *
@@ -51,7 +54,9 @@
 *        call HRFILE(IO,nametag,'N')   !tell HBOOK to use channel IO (New)
         cycle= 0                      !dummy for internal counting
         call HROUT(0,cycle,' ')	      !CERNLIB flush buffers, all histograms
-        call HREND(nametag)           !done with this channel
+*        call HREND(nametag)           !done with this channel
+        call HRENDC(nametag)           !done with this channel
+        close (IO)
       ENDIF
 *
       return
