@@ -14,7 +14,10 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
-* Revision 1.4  1994/08/16 13:08:50  cdaq
+* Revision 1.5  1994/08/22 19:54:11  cdaq
+* (DJA) Correct sign errors in wire velocity correction
+*
+* Revision 1.4  1994/08/16  13:08:50  cdaq
 * (DJA) Add wire velocity correction
 *
 * Revision 1.3  1994/06/30  02:27:48  cdaq
@@ -143,8 +146,8 @@
 *     write(hluno,*)' ** space point',isp
           x_pos = hspace_points(isp,1)
           y_pos = hspace_points(isp,2)
-          x_drifttime_corr = -hdc_x_central_time + y_pos/hdc_wire_velocity
-          y_drifttime_corr = -hdc_y_central_time + x_pos/hdc_wire_velocity
+          x_drifttime_corr = hdc_x_central_time + y_pos/hdc_wire_velocity
+          y_drifttime_corr = hdc_y_central_time + x_pos/hdc_wire_velocity
 *     write(hluno,*)x_pos,x_drifttime_corr,y_pos,y_drifttime_corr
           do ihit=1,hspace_point_hits(isp,1)
             hit = hspace_point_hits(isp,ihit+2)
@@ -154,7 +157,7 @@
      &           plane.eq.8 .or. plane.eq.11) then ! Y or Y'  plane
               HDC_DRIFT_TIME(hit)=HDC_DRIFT_TIME(hit) - y_drifttime_corr
             else                        ! X,U,V,X' plane
-              HDC_DRIFT_TIME(hit)=HDC_DRIFT_TIME(hit) + x_drifttime_corr
+              HDC_DRIFT_TIME(hit)=HDC_DRIFT_TIME(hit) - x_drifttime_corr
             endif
             HDC_DRIFT_DIS(hit) = h_drift_dist_calc
      &           (plane,wire,HDC_DRIFT_TIME(hit))
