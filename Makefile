@@ -42,16 +42,18 @@ port:
 
 #broken
 clean:
-	rm UTILSUBS/$(OSTYPE)/*.d
-	rm TRACKING/$(OSTYPE)/*.d
-	rm STRACKING/$(OSTYPE)/*.d
-	rm HTRACKING/$(OSTYPE)/*.d
-	rm ENGINE/$(OSTYPE)/*.d
-	rm CTP/$(OSTYPE)/*.d
-	rm HACK/$(OSTYPE)/*.d
-	rm ONEEV/$(OSTYPE)/*.d
-	rm ONLINE/$(OSTYPE)/*.d
-	rm CODA/$(OSTYPE)/$(OSTYPE)/*.d CODA/$(OSTYPE)/*.o
+	-@rm UTILSUBS/O.$(OSTYPE)/*.[do]
+	-@rm TRACKING/O.$(OSTYPE)/*.[do]
+	-@rm STRACKING/O.$(OSTYPE)/*.[do]
+	-@rm HTRACKING/O.$(OSTYPE)/*.[do]
+	-@rm ENGINE/O.$(OSTYPE)/*.[do]
+	-@rm CTP/O.$(OSTYPE)/*.[do]
+	-@rm HACK/O.$(OSTYPE)/*.[do]
+	-@rm ONEEV/O.$(OSTYPE)/*.[do]
+	-@rm PORT/O.$(OSTYPE)/*.[do]
+	-@rm CODA/O.$(OSTYPE)/*.[do]
+	-@rm ONLINE/O.$(OSTYPE)/*.[do]
+	-@rm CTP/daVarRpc_svc.c CTP/daVarRpc_xdr.c CTP/daVarRpc_clnt.c CTP/daVarRpc.h
 #	$(MAKE) -C UTILSUBS clean
 #	$(MAKE) -C ENGINE clean
 #	$(MAKE) -C CTP clean
