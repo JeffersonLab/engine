@@ -5,7 +5,10 @@
 *     space point.
 *     d. f. geesaman           17 January 1994
 * $Log$
-* Revision 1.2  1994/08/04 15:03:46  cdaq
+* Revision 1.3  1994/08/14 02:11:18  cdaq
+* (DA) Change Y' in chamber 1 from plane 4 (wrong) to plane 5 (correct)
+*
+* Revision 1.2  1994/08/04  15:03:46  cdaq
 * (DA) Incorporate small angle approximageion of L/R for YY' planes
 *
 * Revision 1.1  1994/02/19  06:15:15  cdaq
@@ -14,9 +17,9 @@
 *
       implicit none
       save
-       include 'gen_data_structures.cmn'
-       include 'hms_tracking.cmn'
-       include 'hms_geometry.cmn'
+      include 'gen_data_structures.cmn'
+      include 'hms_tracking.cmn'
+      include 'hms_geometry.cmn'
 *
       externaljbit                            ! cernlib bit routine
       integer*4 jbit
@@ -58,7 +61,7 @@
              wc(ihit)=HDC_WIRE_CENTER(hits(ihit))
              plusminusknown(ihit) = 0
              if(pl(ihit).eq.2 .OR. pl(ihit).eq.8)  isa_y1 = ihit
-             if(pl(ihit).eq.4 .OR. pl(ihit).eq.11) isa_y2 = ihit
+             if(pl(ihit).eq.5 .OR. pl(ihit).eq.11) isa_y2 = ihit
           enddo
 *     check if small angle L/R determination of Y and Y' planes is possible
           if(isa_y1.gt.0 .AND. isa_y2.gt.0) smallAngOK = .TRUE.
