@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.8  1996/11/22 17:05:00  saw
+# (SAW) Add SunOS compatibility
+#
 # Revision 1.7  1996/09/04 16:37:02  saw
 # (SAW) New makefile style
 #
@@ -79,15 +82,24 @@ ifeq ($(ARCH),ULTRIX)
 	-lana -lmsg -lcoda -L$(CERN_ROOT)/lib $(CERNLIBS) -L/usr/lib -lX11 -lm
 endif
 
+ifeq ($(ARCH),SunOS)
+  OTHERLIBS = -L$(LIBROOT) -lctpclient -lctp -L$(CERN_ROOT)/lib $(CERNLIBS) -lX11
+endif
+
+ifeq ($(ARCH),AIX)
+  OTHERLIBS = -L$(LIBROOT) -lctpclient -lctp \
+	-L$(CERN_ROOT)/lib $(CERNLIBS) -lX11
+endif
+
 ifeq ($(ARCH),Linux)
   CERN_ROOT = /usr/local/cernlib/95b
   CERNLIBS = -lgeant$(GEANTVER) -lpawlib -lgraflib -lgrafX11 -lmathlib -lpacklib -lkernlib -lmathlib -lpacklib
   OTHERLIBS = -L$(LIBROOT) -lctpclient -lctp -L$(CERN_ROOT)/lib \
-	$(CERNLIBS) -L/usr/lib/X11 -lX11 -lm
-  DEPLIBS := $(DEPLIBS) $(LIBROOT)/libf2c.a
+	$(CERNLIBS) -L/usr/X11/lib -lX11 -lm
+  DEPLIBS := $(DEPLIBS) $(LIBROOT)/libport.a
 
-$(LIBROOT)/libf2c.a:
-	@make -C $(Csoft)/SRC/F2C csoft
+$(LIBROOT)/libport.a:
+	@make -C $(Csoft)/SRC/PORT
 
 endif
 
