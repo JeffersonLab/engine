@@ -8,6 +8,10 @@
 *
 *
 * $Log$
+* Revision 1.10  2002/12/19 22:05:45  jones
+*    sidcalposhits and sidcalneghits are integer*4 not logical
+*  so sidcalposhits(col).gt.0 replaces sidcalposhits(col) in if statement
+*
 * Revision 1.9  2002/07/31 20:20:58  saw
 * Only try to fill user hists that are defined
 *
@@ -66,9 +70,9 @@
           histval=float(col)
           if(sidcalplane.gt.0) call hf1(sidcalplane,histval,1.)
           histval=float(row)
-          if(scal_adcs_pos(ihit).gt.0.1.and.sidcalposhits(col))
+          if(scal_adcs_pos(ihit).gt.0.1.and.sidcalposhits(col).gt.0)
      $         call hf1(sidcalposhits(col),histval,1.)
-          if(scal_adcs_neg(ihit).gt.0.1.and.sidcalneghits(col))
+          if(scal_adcs_neg(ihit).gt.0.1.and.sidcalneghits(col).gt.0)
      $         call hf1(sidcalneghits(col),histval,1.)
         enddo
       endif
