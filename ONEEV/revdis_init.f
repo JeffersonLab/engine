@@ -1,7 +1,10 @@
       subroutine revdis_init(ABORT,err)
 *--------------------------------------------------------
 * $Log$
-* Revision 1.1  1995/03/14 21:26:16  cdaq
+* Revision 1.2  1995/07/28 18:08:03  cdaq
+* (SAW) Cosmetic changes
+*
+* Revision 1.1  1995/03/14  21:26:16  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -68,9 +71,8 @@
 *      size= thremlist(gen_display_everything,'parm.GRAPH_IO_DEV')
       ABORT= size.LE.0
       IF(ABORT) THEN
-        call G_build_note(':ABORTed to get list for '//
-     &           '"gen_display_everything"#$','$',
-     &                  gen_display_everything,' ',0.,' ',err)
+        write(err,'(":ABORTed to get list for gen_display_everything",
+     $       i10)') gen_display_everything
         call G_add_path(here,err)
         RETURN
       ELSE
@@ -84,14 +86,11 @@
 *
       gen_display_event_info= thcrlist()
       size= thaddlist(gen_display_event_info,'event.*')  !list of all event stuff
-*      size= thremlist(gen_display_event_info,'parm.ONE_EV')
-*      size= thremlist(gen_display_event_info,'parm.GRAPH_IO_DEV')
 
       ABORT= size.LE.0
       IF(ABORT) THEN
-        call G_build_note(':ABORTed to get list for '//
-     &           '"gen_display_event_info"#$','$',
-     &                  gen_display_event_info,' ',0.,' ',err)
+        write(err,'(":ABORTed to get list for gen_display_event_info",
+     $       i10)') gen_display_event_info
         call G_add_path(here,err)
         RETURN
       ELSE
