@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.41  2004/05/27 23:51:28  jones
+* Initialize EoF = .false.
+*
 * Revision 1.40  2004/05/27 22:01:55  jones
 * Comment call to  g_analyze_scalers when there is an event 129
 * ( a CODA 1.4 scaler event).
@@ -328,6 +331,7 @@ c
       problems = .false.
       syncfilter_on = .false.
       insync = 0
+      EoF=.false.
       DO WHILE(.NOT.problems .and. .NOT.ABORT .and. .NOT.EoF .and.
      &         .NOT.finished_extracting)
         mss= ' '
