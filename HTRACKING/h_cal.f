@@ -16,6 +16,9 @@
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 *
 * $Log$
+* Revision 1.8  1999/02/25 20:10:48  saw
+* Vardan Tadevosyan shower code updates
+*
 * Revision 1.7  1999/02/03 21:13:22  saw
 * Code for new Shower counter tubes
 *
@@ -48,12 +51,14 @@
 *
       integer*4 nt           !Detector track number
       integer*4 nc           !Calorimeter cluster number
+      real*4 cor         !Correction factor for X,Y dependenc.   ! Single   PMT
       real*4 cor_pos     !Correction factor for X,Y dependenc.   ! Single  "POS_PMT"
       real*4 cor_neg     !Correction factor for X,Y dependenc.   ! Single  "NEG_PMT" 
-      real*4 cor_two     !Correction factor for X,Y dependence.  ! "POS_PMT" + "NEG_PMT"  
+ccc      real*4 cor_two     !Correction factor for X,Y dependence.  ! "POS_PMT" + "NEG_PMT"  
+      real*4 h_correct_cal              !External function to compute "cor". 
       real*4 h_correct_cal_pos          !External function to compute "cor_pos". 
       real*4 h_correct_cal_neg          !External function to compute "cor_neg"   
-      real*4 h_correct_cal_two          !External function to compute "cor_two"
+ccc      real*4 h_correct_cal_two          !External function to compute "cor_two"
 
 *
       include 'hms_data_structures.cmn'
@@ -96,11 +101,12 @@
          nc=hcluster_track(nt)
 
          if(nc.gt.0) then
+           cor    =h_correct_cal(htrack_xc(nt),htrack_yc(nt)) ! For single "pmt"
            cor_pos=h_correct_cal_pos(htrack_xc(nt),htrack_yc(nt)) ! For single "pos_pmt"
 *
            cor_neg=h_correct_cal_neg(htrack_xc(nt),htrack_yc(nt)) ! For single "neg_pmt"
 *
-           cor_two=h_correct_cal_two(htrack_xc(nt),htrack_yc(nt)) ! For "pos_pmt"+"neg_pmt"
+ccc           cor_two=h_correct_cal_two(htrack_xc(nt),htrack_yc(nt)) ! For "pos_pmt"+"neg_pmt"
 *
            hnblocks_cal(nt)=hcluster_size(nc)
 *
@@ -131,8 +137,10 @@
            if(hcal_num_neg_columns.ge.3) then
              print *,"Extra tubes on more than two layers not supported"
            endif
-           htrack_e3(nt)=cor_pos*hcluster_e3(nc)  
-           htrack_e4(nt)=cor_pos*hcluster_e4(nc)
+           htrack_e3(nt)=cor*hcluster_e3(nc)  
+           htrack_e4(nt)=cor*hcluster_e4(nc)
+ccc           htrack_e3(nt)=cor_pos*hcluster_e3(nc)  
+ccc           htrack_e4(nt)=cor_pos*hcluster_e4(nc)
 
  
            htrack_et(nt)=htrack_e1(nt)+htrack_e2(nt)+ htrack_e3(nt)

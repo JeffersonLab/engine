@@ -13,6 +13,9 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to h_raw_dump_all
 * $Log$
+* Revision 1.11  1999/02/25 20:10:48  saw
+* Vardan Tadevosyan shower code updates
+*
 * Revision 1.10  1999/02/23 18:48:45  csa
 * (JRA) Add neg cal hf1 call
 *
@@ -118,24 +121,30 @@ c         endif
 *------Sparsify the raw data
          nb =row+hmax_cal_rows*(col-1)
 
+ccc         hcal_realadc_pos(nb) = 1.0
+ccc         hcal_realadc_neg(nb) = 1.0
+*     Need to do this right
          hcal_realadc_pos(nb) = float(adc_pos) - hcal_pos_ped_mean(nb)
          hcal_realadc_neg(nb) = float(adc_neg) - hcal_neg_ped_mean(nb)
-         if (hcal_realadc_pos(nb).le.200 .and. adc_pos.gt.0)
+ccc Ask Vardan if there should be both a pos and neg call
+         if (hcal_realadc_pos(nb).le.200)
      &        call hf1(hidcalsumadc,hcal_realadc_pos(nb),1.)
-         if (hcal_realadc_neg(nb).le.200 .and. adc_neg.gt.0)
+         if (hcal_realadc_neg(nb).le.200)
      &        call hf1(hidcalsumadc,hcal_realadc_neg(nb),1.)
-
+* ??
          if(hcal_realadc_pos(nb).gt.hcal_pos_threshold(nb) .or.
      &        hcal_realadc_neg(nb).gt.hcal_neg_threshold(nb)) then
             hcal_num_hits           =hcal_num_hits+1
             hcal_rows(hcal_num_hits)=row
             hcal_cols(hcal_num_hits)=col
-            if(adc_pos.lt.0) then	!initialized to -1 if no hit.
+ccc            if(adc_pos.lt.0) then
+            if(hcal_realadc_pos(nb).lt.hcal_pos_threshold(nb)) then
                hcal_adcs_pos(hcal_num_hits)= 0.0
             else
                hcal_adcs_pos(hcal_num_hits)=hcal_realadc_pos(nb)
             endif
-            if(adc_neg.lt.0) then
+ccc            if(adc_neg.lt.0) then
+            if(hcal_realadc_neg(nb).lt.hcal_neg_threshold(nb)) then
                hcal_adcs_neg(hcal_num_hits)= 0.0
             else
                hcal_adcs_neg(hcal_num_hits)=hcal_realadc_neg(nb)
