@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.18  1996/09/04 14:25:57  saw
+# (SAW) Fixup some O. subdirectory errors
+#
 # Revision 1.17  1996/04/29 18:29:23  saw
 # (SAW) New makefile style
 #
@@ -82,7 +85,7 @@ newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f \
 	h_cer_eff.f h_cer_eff_shutdown.f h_init_cer.f h_trans_cer.f \
 	h_dc_eff.f h_dc_eff_shutdown.f h_dump_peds.f h_dump_cal.f \
 	h_report_bad_data.f h_dc_trk_eff.f h_dc_trk_eff_shutdown.f \
-	h_find_easy_space_point.f
+	h_find_easy_space_point.f h_track_tests.f
 makeregstuff =	r_hms_filenames.f r_hms_scin_parms.f r_hms_scin_tof.f \
 	r_hms_calorimeter.f r_hms_id_histid.f r_hms_tracking.f \
 	r_hms_geometry.f r_hms_track_histid.f r_hms_recon_elements.f \
@@ -103,16 +106,16 @@ bin_targets =
 #
 # Rule for making the register subroutines
 #
-r_%.f : %.cmn $(MAKEREG)
+../r_%.f : ../%.cmn $(MAKEREG)
 	(cd .. ; $(MAKEREG) $(<F) -o $(@F) -e /dev/null)
 
-.PRECIOUS: r_%.f
+.PRECIOUS: ../r_%.f
 
 ifdef NFSDIRECTORY
-%.f : $(NFSDIRECTORY)/HTRACKING/%.f
+../%.f : $(NFSDIRECTORY)/HTRACKING/%.f
 	ln -s $< $@
 
-.PRECIOUS: %.f
+.PRECIOUS: ../%.f
 endif
 
 #
