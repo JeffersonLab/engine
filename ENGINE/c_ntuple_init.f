@@ -10,7 +10,10 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
-* Revision 1.4  1995/07/27 18:59:48  cdaq
+* Revision 1.5  1995/08/08 16:09:40  cdaq
+* (DD) Change ntuple list
+*
+* Revision 1.4  1995/07/27  18:59:48  cdaq
 * (SAW) Relocate data statements for f2c compatibility
 *
 * Revision 1.3  1995/05/11  13:55:27  cdaq
@@ -123,22 +126,44 @@
 **********begin insert description of contents of COIN tuple ******
       m= 0
       m= m+1
-      c_Ntuple_tag(m)= 'CXRAST'         ! beam X rastor
+      c_Ntuple_tag(m)= 'HSX_FP'         ! beam X rastor
       m= m+1
-      c_Ntuple_tag(m)= 'CYRAST'         ! beam Y rastor
+      c_Ntuple_tag(m)= 'HSY_FP'         ! beam Y rastor
       m= m+1
-      c_Ntuple_tag(m)= 'Cmiss_MASS' !'CMISSING_MASS'!Missing mass of undetected hadron system
+      c_Ntuple_tag(m)= 'HSXP_FP' !'CMISSING_MASS'!Missing mass of undetected hadron system
       m= m+1
-      c_Ntuple_tag(m)= 'CmissMOM'  !'CMISSING_MOM'!Magnitude of missing momentum 
+      c_Ntuple_tag(m)= 'HSYP_FP'  !'CMISSING_MOM'!Magnitude of missing momentum 
       m= m+1
-      c_Ntuple_tag(m)= 'CmissXmom' !'CMISSING_MOMX'!X component of missing momentum
+      c_Ntuple_tag(m)= 'HSX_TAR' !'CMISSING_MOMX'!X component of missing momentum
       m= m+1
-      c_Ntuple_tag(m)= 'CmissYmom' !'CMISSING_MOMY'  ! Y component of missing momentum
+      c_Ntuple_tag(m)= 'HSY_TAR' !'CMISSING_MOMY'  ! Y component of missing momentum
       m= m+1
-      c_Ntuple_tag(m)= 'CmissZmom' !'CMISSING_MOMZ'  ! Z component of missing momentum
+      c_Ntuple_tag(m)= 'HSXP_TAR' !'CMISSING_MOMZ'  ! Z component of missing momentum
       m= m+1
-      c_Ntuple_tag(m)= 'CTIME_COIN_COR' ! Corrected Coincidence time
+      c_Ntuple_tag(m)= 'HSYP_TAR' ! Corrected Coincidence time
       m= m+1
+      c_Ntuple_tag(m)= 'HS_TIME'
+      m=m+1
+      c_Ntuple_tag(m)= 'SSX_FP'
+      m=m+1
+      c_Ntuple_tag(m)= 'SSY_FP'
+      m=m+1
+      c_Ntuple_tag(m)= 'SSXP_FP'
+      m=m+1
+      c_Ntuple_tag(m)= 'SSYP_FP'
+      m=m+1
+      c_Ntuple_tag(m)= 'SSX_TAR'
+      m=m+1
+      c_Ntuple_tag(m)= 'SSY_TAR'
+      m=m+1
+      c_Ntuple_tag(m)= 'SSXP_TAR'
+      m=m+1
+      c_Ntuple_tag(m)= 'SSYP_TAR'
+      m=m+1
+      c_Ntuple_tag(m)= 'SS_TIME'
+      m=m+1
+      c_Ntuple_tag(m)= 'COIN_TIME'
+      m=m+1
       c_Ntuple_tag(m)= 'eventID' ! CODA event ID#
       c_Ntuple_size= m
 ***********end insert description of contents of COIN tuple********
