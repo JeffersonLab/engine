@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.20  1998/12/07 22:11:21  saw
+# Initial setup
+#
 # Revision 1.19  1996/11/08 20:33:53  saw
 # (SAW) Add AIX compatibility
 #
@@ -61,7 +64,7 @@
 # Initial revision
 #
 NEWSTYLE = 1
-include $(Csoft)/etc/Makefile
+include ../../etc/Makefile
 
 osources = h_cal.f h_cer.f h_chamnum.f h_dpsifun.f \
 	h_drift_dist_calc.f h_drift_time_calc.f h_fcnchisq.f \
@@ -133,21 +136,20 @@ endif
 # Get include files from INCLUDE directory
 #
 
-%.cmn :: ../../INCLUDE/%.cmn
+%.cmn ../%.cmn:: ../../INCLUDE/%.cmn
 	$(CP) $< $@
 	$(CP) $< ../$@
 
-%.dec :: ../../INCLUDE/%.dec
+%.dec:: ../../INCLUDE/%.dec
 	$(CP) $< $@
 	$(CP) $< ../$@
 
-%.par :: ../../INCLUDE/%.par
+%.par:: ../../INCLUDE/%.par
 	$(CP) $< $@
 	$(CP) $< ../$@
 
-%.dte :: ../../INCLUDE/%.dte
+%.dte:: ../../INCLUDE/%.dte
 	$(CP) $< $@
 	$(CP) $< ../$@
 
 include $(sources:.f=.d)
-

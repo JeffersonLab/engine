@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.2  1998/12/07 22:11:31  saw
+# Initial setup
+#
 # Revision 1.1  1998/12/01 20:56:12  saw
 # Initial revision
 #
@@ -149,31 +152,28 @@ endif
 # just put in explicit rules for .par files as needed.
 #
 
-%.cmn : ../%.cmn
+%.cmn:: ../%.cmn
 	$(CP) $< $@
 
-../%.cmn :: ../../INCLUDE/%.cmn
-	$(CP) $< $@
-
-%.dec : ../%.dec
+%.dec:: ../%.dec
 	$(CP) $< $@
 
 ../%.dec :: ../../INCLUDE/%.dec
 	$(CP) $< $@
 
-%.par : ../%.par
+%.par:: ../%.par
 	$(CP) $< $@
 
-../gen_units.par :: ../../INCLUDE/gen_units.par
+../gen_units.par:: ../../INCLUDE/gen_units.par
 	$(CP) $< $@
 
-../gen_constants.par :: ../../INCLUDE/gen_constants.par
+../gen_constants.par:: ../../INCLUDE/gen_constants.par
 	$(CP) $< $@
 
-%.dte : ../%.dte
+%.dte:: ../%.dte
 	$(CP) $< $@
 
-../%.dte :: ../../INCLUDE/%.dte
+../%.dte:: ../../INCLUDE/%.dte
 	$(CP) $< $@
 
 include $(sources:.f=.d)

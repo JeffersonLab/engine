@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.13  1998/12/07 22:11:35  saw
+# Initial setup
+#
 # Revision 1.12  1998/12/01 21:19:55  saw
 # (SAW) Remove g_sort
 #
@@ -37,7 +40,7 @@
 # Initial revision
 #
 NEWSTYLE = 1
-include $(Csoft)/etc/Makefile
+include ../../etc/Makefile
 
 gsources = g_add_path.f g_build_note.f g_important_length.f g_int_sort.f \
 	g_log_message.f g_normalize.f g_prepend.f g_rep_err.f \
@@ -69,15 +72,15 @@ ifdef NFSDIRECTORY
 .PRECIOUS: ../%.f
 endif
 
-%.cmn :: ../../INCLUDE/%.cmn
+%.cmn:: ../../INCLUDE/%.cmn
 	$(CP) $< $@
 	$(CP) $< ../$@
 
-%.dec :: ../../INCLUDE/%.dec
+%.dec:: ../../INCLUDE/%.dec
 	$(CP) $< $@
 	$(CP) $< ../$@
 
-%.par :: ../../INCLUDE/%.par
+%.par:: ../../INCLUDE/%.par
 	$(CP) $< $@
 	$(CP) $< ../$@
 

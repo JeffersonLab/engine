@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.18  1998/12/07 22:11:29  saw
+# Initial setup
+#
 # Revision 1.17  1996/11/07 19:54:28  saw
 # (SAW) Add Lucite Cerenkov routines and AIX support
 #
@@ -129,15 +132,15 @@ endif
 # Get include files from INCLUDE directory
 #
 
-%.cmn :: ../../INCLUDE/%.cmn
+%.cmn ../%.cmn:: ../../INCLUDE/%.cmn
 	$(CP) $< $@
 	$(CP) $< ../$@
 
-%.dec :: ../../INCLUDE/%.dec
+%.dec:: ../../INCLUDE/%.dec
 	$(CP) $< $@
 	$(CP) $< ../$@
 
-%.par :: ../../INCLUDE/%.par
+%.par:: ../../INCLUDE/%.par
 	$(CP) $< $@
 	$(CP) $< ../$@
 

@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.15  1998/12/07 22:11:08  saw
+# Initial setup
+#
 # Revision 1.14  1998/12/01 14:09:09  saw
 # (SAW) Misc fixes
 #
@@ -44,7 +47,7 @@
 # Initial revision
 #
 NEWSTYLE = 1
-include $(Csoft)/etc/Makefile
+include ../../etc/Makefile
 
 ctp_sources = thTest.c thTestParse.c thTestExecute.c thHandlers.c thParm.c \
        thUtils.c thLoad.c thGroup.c thHist.c thReport.c thGethit.c \
