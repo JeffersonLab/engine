@@ -12,6 +12,9 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log$
+*- Revision 1.5  2005/03/23 16:18:14  jones
+*- Add new code s_select_best_track_using_scin.f . Copy of code used for HMS.
+*-
 *- Revision 1.4  1995/07/20 19:01:37  cdaq
 *- (CC) Fix bug in best chisq finding
 *-
@@ -42,10 +45,15 @@ c
       INCLUDE 'sos_calorimeter.cmn'
       INCLUDE 'sos_scin_parms.cmn'
       INCLUDE 'sos_scin_tof.cmn'
+      INCLUDE 'sos_tracking.cmn'
 *
 *     local variables 
       integer*4 goodtrack,track
+      logical first
       real*4 chi2perdeg,chi2min
+c
+      integer*4 i,j
+      data first /.true./
 *--------------------------------------------------------
 *
       ABORT= .FALSE.
@@ -53,31 +61,41 @@ c
 *     Need to test to chose the best track
       SSNUM_FPTRACK = 0
       SSNUM_TARTRACK = 0
-      if( SNTRACKS_FP.GT. 0) then
-        chi2min= 1e10
-        goodtrack = 0
-        do track = 1, SNTRACKS_FP
 
-          if( SNFREE_FP(track).ge. ssel_ndegreesmin) then
-            chi2perdeg = SCHI2_FP(track)/FLOAT(SNFREE_FP(track))
-            if(chi2perdeg .lt. chi2min) then
+* adding choice to use scintillators to choose best track...
+      if ( ssel_using_scin .eq. 1) then
+         if (first) write(*,*) ' SOS track selection using scintillators'
+         first = .false.
+         call S_SELECT_BEST_TRACK_USING_SCIN(ABORT,err)
+      else
+* done here...
+         if( SNTRACKS_FP.GT. 0) then
+            if (first) write(*,*) ' SOS track selection using chi-squared'
+            first = .false.
+            chi2min= 1e10
+            goodtrack = 0
+            do track = 1, SNTRACKS_FP
+               
+               if( SNFREE_FP(track).ge. ssel_ndegreesmin) then
+                  chi2perdeg = SCHI2_FP(track)/FLOAT(SNFREE_FP(track))
+                  if(chi2perdeg .lt. chi2min) then
 *     simple particle id tests
-              if( ( SDEDX(track,1) .gt. ssel_dedx1min)  .and.
-     &             ( SDEDX(track,1) .lt. ssel_dedx1max)  .and.
-     &             ( SBETA(track)   .gt. ssel_betamin)   .and.
-     &             ( SBETA(track)   .lt. ssel_betamax)   .and.
-     &             ( STRACK_ET(track) .gt. ssel_etmin)   .and.
-     &             ( STRACK_ET(track) .lt. ssel_etmax)) then
-                goodtrack = track
-                chi2min = chi2perdeg
-              endif                     ! end test on track id
-            endif                       ! end test on lower chisq
-          endif                         ! end test on minimum number of degrees of freedom
-        enddo                           ! end loop on track
-        SSNUM_TARTRACK = goodtrack
-        SSNUM_FPTRACK  = goodtrack
-        if(goodtrack.eq.0) return       ! return if no valid tracks
+                     if( ( SDEDX(track,1) .gt. ssel_dedx1min)  .and.
+     &                    ( SDEDX(track,1) .lt. ssel_dedx1max)  .and.
+     &                    ( SBETA(track)   .gt. ssel_betamin)   .and.
+     &                    ( SBETA(track)   .lt. ssel_betamax)   .and.
+     &                    ( STRACK_ET(track) .gt. ssel_etmin)   .and.
+     &                    ( STRACK_ET(track) .lt. ssel_etmax)) then
+                        goodtrack = track
+                        chi2min = chi2perdeg
+                     endif      ! end test on track id
+                  endif         ! end test on lower chisq
+               endif            ! end test on minimum number of degrees of freedom
+            enddo               ! end loop on track
+            SSNUM_TARTRACK = goodtrack
+            SSNUM_FPTRACK  = goodtrack
+            if(goodtrack.eq.0) return ! return if no valid tracks
+         endif
       endif
-
       return
       end
