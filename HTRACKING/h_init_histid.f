@@ -7,6 +7,9 @@
 *     Date:      9 April 1994
 *
 * $Log$
+* Revision 1.4  1996/01/16 21:52:05  cdaq
+* (JRA) Add hidcuttdc, hidscinalltimes, and hidscintimes
+*
 * Revision 1.3  1995/08/31 14:53:47  cdaq
 * (JRA) Add dpos (pos. track - pos. hit) histograms
 *
@@ -120,6 +123,7 @@ c
 
 *     histogram block hms_decoded_dc
       hidrawtdc = thgetid('hdcrawtdc')
+      hidcuttdc = thgetid('hdccuttdc')
       do plane = 1, hdc_num_planes
         histname = hdcplanename(plane)//wiremap
         hiddcwiremap(plane) = thgetid(histname)
@@ -139,7 +143,8 @@ c
 
       hidscinrawtothits = thgetid('hscintothits')
       hidscinplane = thgetid('hscinplane')
-      hidscinalltimes = thgetid('hscintimes')
+      hidscinalltimes = thgetid('hscinalltimes')
+      hidscintimes = thgetid('hscintimes')
       hnum_scin_counters(1) = hscin_1x_nr
       hnum_scin_counters(2) = hscin_1y_nr
       hnum_scin_counters(3) = hscin_2x_nr
