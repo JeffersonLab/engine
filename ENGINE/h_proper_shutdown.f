@@ -10,9 +10,13 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.5  1995/03/13 18:13:19  cdaq
-*-    (JRA) Add calls to h_scin_eff_shutdown and h_cal_eff_shutdown.
+*-    Revision 1.6  1995/04/01 20:09:28  cdaq
+*-    (SAW) One report file for each of g, h, s, c instead of a single report file
+*-          Allow %d for run number in filenames
 *-
+* Revision 1.5  1995/03/13  18:13:19  cdaq
+* (JRA) Add calls to h_scin_eff_shutdown and h_cal_eff_shutdown.
+*
 * Revision 1.4  1995/01/27  20:15:11  cdaq
 * (SAW) Add call to sieve slit ntuple shutdown routine
 *
@@ -34,16 +38,17 @@
 *
       include 'gen_routines.dec'
       include 'gen_filenames.cmn'
+      include 'gen_run_info.cmn'
       include 'hms_filenames.cmn'
 *
-      character*50 here
+      character*17 here
       parameter (here= 'H_proper_shutdown')
 *
       logical ABORT, report_abort
       character*(*) err
 *
       integer ierr
-*
+      character*132 file
 *--------------------------------------------------------
 *-chance to flush any statistics, etc.
 *
@@ -59,10 +64,15 @@
 *
       call h_cal_eff_shutdown(ABORT,err)
 *
-      if(h_report_blockname .ne. ' ') then
-        ierr = threpa(h_report_blockname, g_report_output_filename)
+      if(h_report_blockname.ne.' '.and.
+     $     h_report_output_filename.ne.' ') then
+
+        file = h_report_output_filename
+        call g_sub_run_number(file, gen_run_number)
+
+        ierr = threp(h_report_blockname, file)
         if(ierr.ne.0) then
-          call g_append(err,'& threpa failed to append report')
+          call g_append(err,'& threp failed to create report in file'//file)
           report_abort = .true.
         endif
       endif
