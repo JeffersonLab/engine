@@ -9,6 +9,9 @@
 *	at least I didn't see a method around them.  So I have defined all
 *	the subvolumes explicitly. (TPW)
 * $Log$
+* Revision 1.8  1996/11/22 15:36:37  saw
+* (SAW) Some code cleanup
+*
 * Revision 1.7  1996/04/30 14:09:54  saw
 * (JRA) Some new code
 *
@@ -76,8 +79,10 @@ c
       real par(10)			! geometry parameters
       real x, y, z			! offset position for placement of dets
       integer i                         ! index variable
+      real wspace                       ! Wire spacing temp variable
       real*4 raddeg
       parameter (raddeg = 3.14159265/180.)
+
 
 * First define two general media that everything is made of
 * one is insensitive, and the other is sensitive
@@ -189,45 +194,31 @@ c
       par(1) = hdc_pitch(1) / 2./1000.        ! make the cells "wire" thin
       par(2) = xwirelength/ 2. ! half width of chamber planes
       par(3) = (hdc_zpos(2) - hdc_zpos(1))/ 2. /1000. ! half width of chamber planes
+
+      wspace = hdc_pitch(1)
 *
-* First define all the "boxes" for the all the X wires in both chambers...
+* Now position the X wires plane by plane
 *
       do ichamber=1,2
-         do isector=1,12
-            do iwire=1,19
-               write (wire,'(a,a,a,a)') char(64+ichamber),"X",
-     $              char(64 + isector),char(64 + iwire)
-               call g_ugsvolu (wire, 'BOX ', DETMEDIA, par, 3, ivolu) ! X cell
-               call gsatt (wire, 'SEEN', 0) ! can't see the wire cells
-            enddo
-         enddo
+        iplane = 1
+        x = - (numxwires) /2. * wspace
+        do isector=1,12
+          if (isector.eq.7)  then
+            iplane = 2
+            x = - (numxwires) /2. * wspace
+          endif
+          write (plane,'(a,a,a,a)') 'W',char(64+ichamber),char(64+iplane),'X'
+          do iwire=1,19
+            x = x + wspace
+            write (wire,'(a,a,a,a)') char(64+ichamber),"X",
+     $           char(64 + isector),char(64 + iwire)
+            call g_ugsvolu (wire, 'BOX ', DETMEDIA, par, 3, ivolu) ! X cell
+            call gsatt (wire, 'SEEN', 0) ! can't see the wire cells
+            call gspos (wire, 1, plane, x, 0., 0., 0, 'ONLY')
+          enddo
+        enddo
       enddo
 *
-      par(1) = hdc_pitch(1)
-* Now position the X wires plane by plane...
-*
-      do ichamber = 1,2
-         x = - (numxwires) / 2. * par(1)
-         do isector = 1,6
-            do iwire = 1,19
-               write (plane,'(a,a,a,a)') "W",char(64+ichamber),"AX"
-               write (wire,'(a,a,a,a)') char(64 + ichamber),"X",
-     $              char(64 + isector),char(64 + iwire) 
-               x = x + par(1)
-               call gspos (wire, 1, plane, x, 0., 0., 0, 'ONLY')
-            enddo
-         enddo
-         x = -(numxwires) / 2. * par(1)
-         do isector = 7,12
-            do iwire = 1,19
-               write (plane,'(a,a,a,a)') "W",char(64+ichamber),"BX"
-               write (wire,'(a,a,a,a)') char(64 + ichamber),"X",
-     $              char(64 + isector),char(64 + iwire) 
-               x = x + par(1)
-               call gspos (wire, 1, plane, x, 0., 0., 0, 'ONLY')
-            enddo
-         enddo
-      enddo
 
 *****
 *YYYY
@@ -235,82 +226,52 @@ c
       par(1) = ywirelength/ 2. ! half width of chamber planes
       par(2) = hdc_pitch(2) / 2. / 1000.       ! half width of cell
       par(3) = (hdc_zpos(3) - hdc_zpos(2))/ 2./1000. ! half width of chamber planes
+      wspace = hdc_pitch(2)
 *
-* First define all the "boxes" for the all the Y wires in both chambers...
+* Now position the Y wires plane by plane
 *
       do ichamber=1,2
-         do isector=1,4
-            do iwire=1,26
-               write (wire,'(a,a,a,a)') char(64+ichamber),"Y",
-     $              char(64 + isector),char(64 + iwire)
-               call g_ugsvolu (wire, 'BOX ', DETMEDIA, par, 3, ivolu) ! Y cell
-               call gsatt (wire, 'SEEN', 0) ! can't see the wire cells
-            enddo
+        iplane = 1
+        y = -(numywires + 1.) / 2. * wspace
+        do isector=1,4
+          if(isector.eq.3) then
+            iplane = 2
+            y = -(numywires + 1.) / 2. * wspace
+          endif
+          write (plane,'(a,a,a,a)') 'W',char(64+ichamber),char(64+iplane),'Y'
+          do iwire=1,26
+            y = y + wspace
+            write (wire,'(a,a,a,a)') char(64+ichamber),"Y",
+     $           char(64 + isector),char(64 + iwire)
+            call g_ugsvolu (wire, 'BOX ', DETMEDIA, par, 3, ivolu) ! Y cell
+            call gsatt (wire, 'SEEN', 0) ! can't see the wire cells
+            call gspos (wire, 1, plane, 0., y, 0., 0, 'ONLY')
+          enddo
          enddo
       enddo
 *
-      par(2) = hdc_pitch(2)
-*
-* Now position the Y wires plane by plane...
-*
-      do ichamber = 1,2
-         y = -(numywires + 1.) / 2. * par(2)
-         do isector = 1,2
-            do iwire = 1,26
-               write (plane,'(a,a,a,a)') "W",char(64+ichamber),"AY"
-               write (wire,'(a,a,a,a)') char(64 + ichamber),"Y",
-     $              char(64 + isector),char(64 + iwire) 
-               y = y + par(2)
-               call gspos (wire, 1, plane, 0., y, 0., 0, 'ONLY')
-            enddo
-         enddo
-         y = -(numywires + 1.) / 2. * par(2)
-         do isector = 3,4
-            do iwire = 1,26
-               write (plane,'(a,a,a,a)') "W",char(64+ichamber),"BY"
-               write (wire,'(a,a,a,a)') char(64 + ichamber),"Y",
-     $              char(64 + isector),char(64 + iwire) 
-               y = y + par(2)
-               call gspos (wire, 1, plane, 0., y, 0., 0, 'ONLY')
-            enddo
-         enddo
-      enddo
-
 *****
 *UUUU
 *****
       par(1) = hdc_pitch(1) / 2./1000.        ! make the cells "wire" thin
       par(2) = uwirelength/2.
       par(3) = (hdc_zpos(2) - hdc_zpos(1))/ 2. /1000. ! half width of chamber planes
-*
-* First define all the "boxes" for the all the U wires in both chambers...
-*
-      do ichamber=1,2
-         do isector=1,6
-            do iwire=1,18
-               write (wire,'(a,a,a,a)') char(64+ichamber),"U",
-     $              char(64 + isector),char(64 + iwire)
-               call g_ugsvolu (wire, 'BOX ', DETMEDIA, par, 3, ivolu) ! U cell
-               call gsatt (wire, 'SEEN', 0) ! can't see the wire cells
-            enddo
-         enddo
-      enddo
-*
-      par(1) = hdc_pitch(3) / SIN (hdc_alpha_angle(3))
-*
+      wspace = hdc_pitch(3) / SIN (hdc_alpha_angle(3))
+
 * Now position the U wires plane by plane...
-*
-      do ichamber = 1,2
-         x = - (numuwires) / 2. * par(1)
-         do isector = 1,6
-            do iwire = 1,18
-               write (plane,'(a,a,a,a)') "W",char(64+ichamber),"AU"
-               write (wire,'(a,a,a,a)') char(64 + ichamber),"U",
-     $              char(64 + isector),char(64 + iwire) 
-               x = x + par(1)
-               call gspos (wire, 1, plane, x, 0., 0., 4, 'ONLY')
-            enddo
-         enddo
+      do ichamber=1,2
+        x = -(numuwires) / 2. * wspace
+        write (plane,'(a,a,a)') "W",char(64+ichamber),"AU"
+        do isector=1,6
+          do iwire=1,18
+            x = x + wspace
+            write (wire,'(a,a,a,a)') char(64+ichamber),"U",
+     $           char(64 + isector),char(64 + iwire)
+            call g_ugsvolu (wire, 'BOX ', DETMEDIA, par, 3, ivolu) ! U cell
+            call gsatt (wire, 'SEEN', 0) ! can't see the wire cells
+            call gspos (wire, 1, plane, x, 0.0 , 0., 4, 'ONLY')
+          enddo
+        enddo
       enddo
 *****
 *VVVV
@@ -318,38 +279,25 @@ c
       par(1) = hdc_pitch(1) / 2./1000.        ! make the cells "wire" thin
       par(2) = vwirelength/2.
       par(3) = (hdc_zpos(2) - hdc_zpos(1))/ 2. /1000. ! half width of chamber planes
-*
-* First define all the "boxes" for the all the V wires in both chambers...
-*
-      do ichamber=1,2
-         do isector=1,6
-            do iwire=1,18
-               write (wire,'(a,a,a,a)') char(64+ichamber),"V",
-     $              char(64 + isector),char(64 + iwire)
-               call g_ugsvolu (wire, 'BOX ', DETMEDIA, par, 3, ivolu) ! V cell
-               call gsatt (wire, 'SEEN', 0) ! can't see the wire cells
-            enddo
-         enddo
-      enddo
-*
-      par(1) = hdc_pitch(4) / SIN (hdc_alpha_angle(4))
-*
+
+      wspace = hdc_pitch(4) / SIN (hdc_alpha_angle(4))
+
 * Now position the V wires plane by plane...
-*
-      do ichamber = 1,2
-         x = - (numvwires) / 2. * par(1)
-         do isector = 1,6
-            do iwire = 1,18
-               write (plane,'(a,a,a,a)') "W",char(64+ichamber),"AV"
-               write (wire,'(a,a,a,a)') char(64 + ichamber),"V",
-     $              char(64 + isector),char(64 + iwire) 
-               x = x + par(1)
-               call gspos (wire, 1, plane, x, 0., 0., 3, 'ONLY')
-            enddo
-         enddo
+      do ichamber=1,2
+        x = - (numvwires) / 2. * wspace
+        write (plane,'(a,a,a)') "W",char(64+ichamber),"AV"
+        do isector=1,6
+          do iwire=1,18
+            x = x + wspace
+            write (wire,'(a,a,a,a)') char(64+ichamber),"V",
+     $           char(64 + isector),char(64 + iwire)
+            call g_ugsvolu (wire, 'BOX ', DETMEDIA, par, 3, ivolu) ! V cell
+            call gsatt (wire, 'SEEN', 0) ! can't see the wire cells
+            call gspos (wire, 1, plane, x, 0., 0., 3, 'ONLY')
+          enddo
+        enddo
       enddo
-
-
+*
 * Now define the hodoscope layers
 * See the file "displaynumbering.help" for a description of the numbering of the
 * various detector elements
@@ -465,46 +413,29 @@ c
       call gspos ('SHOW', 1, 'HHUT', x, y, z, 0, 'ONLY')
       call gsatt ('SHOW', 'SEEN',0)
 
-! half width of the shower in x
-      par(1) = hmax_cal_rows * hcal_block_zsize / 2.
-! half width of the shower in y
-      par(2) = hcal_block_ysize / 2.
-! half height of the shower detector
-      par(3) = hcal_block_xsize / 2.
-      call g_ugsvolu ('LAY1', 'BOX ', DETMEDIA, par, 3, ivolu)
-      call g_ugsvolu ('LAY2', 'BOX ', DETMEDIA, par, 3, ivolu)      
-      call g_ugsvolu ('LAY3', 'BOX ', DETMEDIA, par, 3, ivolu)      
-      call g_ugsvolu ('LAY4', 'BOX ', DETMEDIA, par, 3, ivolu)
+
+      par(1) = hmax_cal_rows * hcal_block_zsize / 2. ! half width of shower in x
+      par(2) = hcal_block_ysize / 2.    ! half width of the shower in y
+      par(3) = hcal_block_xsize / 2.    ! half height of the shower detector
 
       z = -(hmax_cal_columns + 1.) / 2. * hcal_block_xsize
-      z = z + hcal_block_xsize
-      call gspos('LAY1', 1, 'SHOW', 0., 0., z, 0, 'ONLY')
-      z = z + hcal_block_xsize
-      call gspos('LAY2', 1, 'SHOW', 0., 0., z, 0, 'ONLY')
-      z = z + hcal_block_xsize
-      call gspos('LAY3', 1, 'SHOW', 0., 0., z, 0, 'ONLY')
-      z = z + hcal_block_xsize
-      call gspos('LAY4', 1, 'SHOW', 0., 0., z, 0, 'ONLY')
-     
-
-      par(1) = hcal_block_zsize / 2.	! half width of a block
-      par(2) = hcal_block_ysize / 2.	! half length of a block
-      par(3) = hcal_block_xsize / 2.	! half height of a block
-      do ilayer = 1, hmax_cal_columns
-         do irow = 1, hmax_cal_rows
-            write (blockname,'(a,i1,a)') 'BL',ilayer,char(64 + irow)
-            call g_ugsvolu (blockname, 'BOX ', DETMEDIA, par, 3, ivolu)
-         enddo
-      enddo
-*
       do ilayer = 1,hmax_cal_columns
-         x = (hmax_cal_rows - 1.) / 2. * hcal_block_zsize
-         do irow = 1, hmax_cal_rows
-            write (blockname,'(a,i1,a)') 'BL',ilayer,char(64 + irow)
-            write (layername,'(a,i1)') 'LAY',ilayer
-            call gspos(blockname,1,layername, x, 0., 0., 0, 'ONLY')
-            x = x - hcal_block_zsize
-         enddo
-      enddo
+        z = z + hcal_block_xsize
 
+        write (layername,'(a,i1)') 'LAY',ilayer
+
+        par(1) = hmax_cal_rows * hcal_block_zsize / 2.
+        call g_ugsvolu (layername, 'BOX ', DETMEDIA, par, 3, ivolu)
+        call gspos(layername, 1, 'SHOW', 0., 0., z, 0, 'ONLY')
+
+        par(1) = hcal_block_zsize / 2.  ! half width of a block
+        x = (hmax_cal_rows - 1.) / 2. * hcal_block_zsize
+        do irow = 1, hmax_cal_rows
+          write (blockname,'(a,i1,a)') 'BL',ilayer,char(64 + irow)
+          call g_ugsvolu (blockname, 'BOX ', DETMEDIA, par, 3, ivolu)
+          call gspos(blockname,1,layername, x, 0., 0., 0, 'ONLY')
+          x = x - hcal_block_zsize
+        enddo
+      enddo
+        
       end
