@@ -14,9 +14,12 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 *-    $Log$
-*-    Revision 1.8  1994/10/11 20:03:27  cdaq
-*-    (JRA) Comment out call to SOS
+*-    Revision 1.9  1994/11/22 20:13:39  cdaq
+*-    (SPB) Uncomment call to SOS code
 *-
+* Revision 1.8  1994/10/11  20:03:27  cdaq
+* (JRA) Comment out call to SOS
+*
 * Revision 1.7  1994/08/04  03:46:31  cdaq
 * (SAW) Add call to Breuer's hack_anal
 *
@@ -76,13 +79,13 @@
       ABORT= ABORT .or. FAIL
 *
 *-SOS reconstruction
-*      call S_reconstruction(FAIL,why)
-*      IF(err.NE.' ' .and. why.NE.' ') THEN
-*        call G_append(err,' & '//why)
-*      ELSEIF(why.NE.' ') THEN
-*        err= why
-*      ENDIF
-*      ABORT= ABORT .or. FAIL
+      call S_reconstruction(FAIL,why)
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+        call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+        err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL
 *
 *-COIN reconstruction
       call C_reconstruction(ABORT,err)
