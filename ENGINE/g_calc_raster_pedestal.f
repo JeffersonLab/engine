@@ -1,6 +1,9 @@
       subroutine g_calc_raster_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.2  1999/02/10 17:38:43  csa
+* Cleanup
+*
 * Revision 1.1  1996/01/22 15:10:20  saw
 * Initial revision
 *
@@ -12,8 +15,6 @@
 *
       logical ABORT
       character*(*) err
-*
-      integer*4 ind
 *
       INCLUDE 'gen_data_structures.cmn'
 *
