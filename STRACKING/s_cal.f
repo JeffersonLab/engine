@@ -15,6 +15,9 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.7  1999/02/25 20:18:40  saw
+* Vardan Tadevosyan shower code updates
+*
 * Revision 1.6  1999/02/03 21:13:44  saw
 * Code for new Shower counter tubes
 *
@@ -45,14 +48,14 @@
 *
       integer*4 nt                      !Detector track number
       integer*4 nc                      !Calorimeter cluster number
-      real*4    cor_pos    !Correction factor for X,Y dependence ! Pos
-*      real*4    cor        !Correction factor for X,Y dependence ! Old
-      real*4    cor_neg    !Correction factor for X,Y dependence ! Neg
-      real*4    cor_two     !Correction factor for X,Y dependence ! POS+NEG
+      real*4    cor     !Correction factor for X,Y dependence ! Single PMT.
+      real*4    cor_pos !Correction factor for X,Y dependence ! Pos
+      real*4    cor_neg !Correction factor for X,Y dependence ! Neg
+ccc      real*4    cor_two     !Correction factor for X,Y dependence ! POS+NEG
+      real*4 s_correct_cal     !External function to compute "cor"
       real*4 s_correct_cal_pos !External function to compute "cor_pos"
-*      real*4 s_correct_cal !External function to compute "cor"
       real*4 s_correct_cal_neg !External function to compute "cor_neg"
-      real*4 s_correct_cal_two !External function to compute "cor_two"
+ccc      real*4 s_correct_cal_two !External function to compute "cor_two"
 *
       include 'sos_data_structures.cmn'
       include 'sos_calorimeter.cmn'
@@ -95,9 +98,10 @@
       do nt =1,sntracks_fp
         nc=scluster_track(nt)
         if(nc.gt.0) then
+          cor    =s_correct_cal(strack_xc(nt),strack_yc(nt))     ! Single PMT
           cor_pos=s_correct_cal_pos(strack_xc(nt),strack_yc(nt)) ! Single pos PMT
           cor_neg=s_correct_cal_neg(strack_xc(nt),strack_yc(nt)) ! Single neg PMT
-          cor_two=s_correct_cal_two(strack_xc(nt),strack_yc(nt)) ! Pos + Neg
+ccc          cor_two=s_correct_cal_two(strack_xc(nt),strack_yc(nt)) ! Pos + Neg
 *
           snblocks_cal(nt)=scluster_size(nc)
 *
@@ -129,8 +133,10 @@
            if(scal_num_neg_columns.ge.3) then
              print *,"Extra tubes on more than two layers not supported"
            endif
-           strack_e3(nt)=cor_pos*scluster_e3(nc)  
-           strack_e4(nt)=cor_pos*scluster_e4(nc)
+           strack_e3(nt)=cor*scluster_e3(nc)  
+           strack_e4(nt)=cor*scluster_e4(nc)
+ccc           strack_e3(nt)=cor_pos*scluster_e3(nc)  
+ccc           strack_e4(nt)=cor_pos*scluster_e4(nc)
 
  
            strack_et(nt)=strack_e1(nt)+strack_e2(nt)+ strack_e3(nt)
