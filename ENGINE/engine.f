@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.32  2003/02/21 14:51:13  jones
+* Added line to call s_fieldcorr subroutine
+*
 * Revision 1.31  2003/02/15 17:11:45  jones
 * Eliminated STOP command when run info event found after starting the analyze physics events. Just wrote out comments to let the user decide what to do.
 *
@@ -325,7 +328,7 @@ c
             write(6,*) '   gtarg_num  =',abs(ntarg)
             gtarg_num=ntarg
           else if (gen_event_type.eq.133) then  !SAW's new go_info events
-            call g_examine_go_info(CRAW,ABORT,err)
+             call g_examine_go_info(CRAW,ABORT,err)
           else
             call g_examine_control_event(CRAW,ABORT,err)
           endif
@@ -343,10 +346,8 @@ c
             finished_extracting=.true.
           endif
 
-
         endif                           !if .not.problems
       enddo                             !do while .not.finished_extracting
-
       call G_initialize(ABORT,err)              !includes a total reset
       IF(ABORT.or.err.NE.' ') THEN
          call G_add_path(here,err)
@@ -377,6 +378,8 @@ c    applies to experiments using fieldxx.f programs before field02.f
 c    parameter genable_hms_fieldcorr is switch to determine
 c    whether fix is applied.
 c
+      call s_fieldcorr(ABORT,err)
+
 c
       call G_apply_offsets(ABORT,err)  
 c
