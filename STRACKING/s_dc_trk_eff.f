@@ -16,6 +16,9 @@
 *   using the tracking information.
 *
 * $Log$
+* Revision 1.2  1996/01/17 17:09:36  cdaq
+* (JRA) Change array sizes from sdc_num_planes to SMAX_NUM_DC_PLANES
+*
 * Revision 1.1  1995/10/09 20:02:37  cdaq
 * Initial revision
 *
@@ -35,10 +38,10 @@
       include 'sos_geometry.cmn'
 
       integer*4 pln,hit,ihit
-      integer*4 iwire(sdc_num_planes)
+      integer*4 iwire(SMAX_NUM_DC_PLANES)
       integer*4 ihitwire
       real*4 hitwire
-      real*4 hitdist(sdc_num_planes)
+      real*4 hitdist(SMAX_NUM_DC_PLANES)
 
       save
 
