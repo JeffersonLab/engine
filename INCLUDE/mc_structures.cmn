@@ -1,0 +1,122 @@
+*****************begin: mc_structures.cmn*************************
+*-
+*- This file defines the structure of GEANT simulated quantities
+*- to be packed in a FASTBUS-CODA file.
+*-         6-Feb-1994  K.B.Beard, Hampton U. 
+*- Modified to add path length, internal setup 7-Feb-1994  KBB
+*-
+*- note: units are hall C standard units: GeV, cm, nSec
+*        ID numbers are as given by "g_decode" package.
+* $Log$
+* Revision 1.1  1994/02/17 21:01:14  cdaq
+* Initial revision
+*
+*-
+      CHARACTER*4 mc_TEST_C4
+      REAL*4 mc_TEST_R4
+      INTEGER*4 mc_TEST_I4
+*-
+*- following are used to determine the proper byte swapping;
+*- sort of a "Rosetta Stone" for CODA files
+*-
+*-                   each of 4 bytes unique!
+      PARAMETER (mc_TEST_C4= 'gMc_')             !program pkg
+      PARAMETER (mc_TEST_R4= 2.07)               !version
+      PARAMETER (mc_TEST_I4= '7feb1994'x)        !date
+*-
+*- identifing status and ROC integer
+      INTEGER mc_status_and_ROC
+      PARAMETER (mc_status_and_ROC= 'FFFF'x)
+*-
+      LOGICAL mc_READY                       !status of MonteCarlo info.
+
+*-target quantities are in appropriate SPECTROMETER SYSTEM
+*-
+*- All target tracks put in sequentially (don't start over with 1 for
+*- 2nd arm)
+*-
+      INTEGER mc_MAX_TarTrks                  !upper limit on target tracks
+      PARAMETER (mc_MAX_TarTrks= 10)
+      INTEGER mc_N_TarTrks                    !present # of target tracks
+*
+*- values "HMS ","SOS ","HNSS","NPOL",....
+*
+      CHARACTER*4 mc_TarTrk_arm(mc_MAX_TarTrks) !spectrometer name
+*
+      INTEGER mc_TarTrk_type(mc_MAX_TarTrks)    !GEANT particle ID
+      REAL mc_TarTrk_X(mc_MAX_TarTrks)
+      REAL mc_TarTrk_Y(mc_MAX_TarTrks)        !position[cm]
+      REAL mc_TarTrk_Z(mc_MAX_TarTrks)
+      REAL mc_TarTrk_T(mc_MAX_TarTrks)        !time[nS]
+      REAL mc_TarTrk_Px(mc_MAX_TarTrks)
+      REAL mc_TarTrk_Py(mc_MAX_TarTrks)       !momentum[GeV/c]
+      REAL mc_TarTrk_Pz(mc_MAX_TarTrks)
+*
+*- focal plane quantities are in appropriate DETECTOR SYSTEM
+*-
+*- All focal plane tracks put in sequentially (don't start over with 1 for
+*- 2nd arm; relevant target track determines which arm)
+*-
+      INTEGER mc_MAX_FocTrks            !upper limit on focal plane tracks
+      PARAMETER (mc_MAX_FocTrks= 50)
+      INTEGER mc_N_FocTrks              !present # of focal plane tracks
+*
+*-assume TarTrks and FocTrks numbered sequentially
+*
+      INTEGER mc_FocTrk_TarTrk(mc_MAX_FocTrks)    !relevant target track#
+*
+      INTEGER mc_FocTrk_type(mc_MAX_FocTrks)      !GEANT particle ID
+      REAL mc_FocTrk_X(mc_MAX_FocTrks)
+      REAL mc_FocTrk_Y(mc_MAX_FocTrks)            !position[cm]
+      REAL mc_FocTrk_Z(mc_MAX_FocTrks)
+      REAL mc_FocTrk_T(mc_MAX_FocTrks)            !time[nS]
+      REAL mc_FocTrk_Px(mc_MAX_FocTrks)
+      REAL mc_FocTrk_Py(mc_MAX_FocTrks)           !momentum[GeV/c]
+      REAL mc_FocTrk_Pz(mc_MAX_FocTrks)
+      REAL mc_FocTrk_path(mc_MAX_FocTrks)         !distance to end of track[cm]
+*-
+*- detector quantities are in appropriate DETECTOR SYSTEM
+*-
+*- All detector hits tracks put in sequentially (detector ID# and relevant
+*- focal plane track determine which arm; don't start over with 1 for
+*- 2nd arm)
+*-
+      INTEGER mc_MAX_DetHits                   !upper limit on # of Det hits
+      PARAMETER (mc_MAX_DetHits= 2000)
+      INTEGER mc_N_DetHits                        !present # of Det hits
+      INTEGER mc_DetHit_FocTrk(mc_MAX_DetHits)    !relevant focal plane track#
+*
+*- ID numbers assigned according to those specified in
+*-"gen_detectorids.cmn"
+*
+      INTEGER mc_DetHit_detector(mc_MAX_DetHits)  !detector ID
+      INTEGER mc_DetHit_plane(mc_MAX_DetHits)     !plane-row ID
+      INTEGER mc_DetHit_element(mc_MAX_DetHits)   !wire-element-column ID
+*
+      REAL mc_DetHit_X(mc_MAX_DetHits)
+      REAL mc_DetHit_Y(mc_MAX_DetHits)          !position[cm]
+      REAL mc_DetHit_Z(mc_MAX_DetHits)
+      REAL mc_DetHit_T(mc_MAX_DetHits)          !time[nS]
+      REAL mc_DetHit_Px(mc_MAX_DetHits)
+      REAL mc_DetHit_Py(mc_MAX_DetHits)         !momentum[GeV/c]
+      REAL mc_DetHit_Pz(mc_MAX_DetHits)
+      REAL mc_DetHit_dE(mc_MAX_DetHits)         !energy loss[GeV]
+*-
+      COMMON /Mc_status/ mc_READY
+*-
+      COMMON /Mc_target_track_info/ mc_TarTrk_X,mc_TarTrk_Y,
+     &      mc_TarTrk_Z,mc_TarTrk_T,mc_TarTrk_Px,mc_TarTrk_Py, 
+     &      mc_TarTrk_Pz,mc_N_TarTrks,mc_TarTrk_type, 
+     &      mc_TarTrk_arm
+*-
+      COMMON /Mc_focal_plane_info/ mc_FocTrk_X,mc_FocTrk_Y,
+     &      mc_FocTrk_Z,mc_FocTrk_T,mc_FocTrk_Px,mc_FocTrk_Py,
+     &      mc_FocTrk_Pz,mc_FocTrk_path,mc_N_FocTrks,mc_FocTrk_TarTrk,
+     &      mc_FocTrk_type
+*-
+      COMMON /Mc_Det_info/ mc_DetHit_X,mc_DetHit_Y,mc_DetHit_Z,
+     &      mc_DetHit_T,mc_DetHit_Px,mc_DetHit_Py,mc_DetHit_Pz,
+     &      mc_DetHit_dE,mc_N_DetHits,mc_DetHit_FocTrk,
+     &      mc_DetHit_detector,mc_DetHit_plane,mc_DetHit_element
+*-
+*******************end: mc_structures.cmn*************************
