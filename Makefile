@@ -4,7 +4,7 @@
 
 MYOS := $(subst -,,$(shell uname))
 ifeq ($(MYOS),SunOS)
-  OSTYPE = sunos
+  OSTYPE = $(MYOS)
 else
   ifeq ($(MYOS),HPUX)
     OSTYPE = hpux10
