@@ -23,6 +23,9 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
+* Revision 1.18.12.1  2004/06/30 19:32:32  cdaq
+* Add initialition of angle picture filenames (DJG)
+*
 * Revision 1.18  2003/09/05 15:44:44  jones
 * Merge in online03 changes (mkj)
 *
@@ -148,6 +151,9 @@
       g_pedestal_output_filename = ' '
       h_pedestal_output_filename = ' '
       s_pedestal_output_filename = ' '
+*
+      h_angle_output_filename = ' '
+      s_angle_output_filename = ' '
 *
       g_label = ' '                     ! Label for reports etc.
 *
