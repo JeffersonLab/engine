@@ -9,7 +9,10 @@
 *                              remove minuit. Make fit linear
 *                              still does not do errors properly
 * $Log$
-* Revision 1.1  1994/02/19 06:20:53  cdaq
+* Revision 1.2  1994/02/22 05:25:00  cdaq
+* (SAW) Remove dfloat calls with floating args
+*
+* Revision 1.1  1994/02/19  06:20:53  cdaq
 * Initial revision
 *
 *
@@ -57,7 +60,7 @@
             do ihit=2,HNTRACK_HITS(itrack,1)+1
               hit=HNTRACK_HITS(itrack,ihit)
               plane=HDC_PLANE_NUM(hit)
-              TT(i)=TT(i)+DFLOAT((HDC_WIRE_COORD(hit)*
+              TT(i)=TT(i)+((HDC_WIRE_COORD(hit)*
      &          hplane_coeff(remap(i),plane))
      &          /(hdc_sigma(plane)*hdc_sigma(plane)))
             enddo 
@@ -68,7 +71,7 @@
             do ihit=2,HNTRACK_HITS(itrack,1)+1
               hit=HNTRACK_HITS(itrack,ihit)
               plane=HDC_PLANE_NUM(hit)
-              AA(i,j)=AA(i,j) + DFLOAT(
+              AA(i,j)=AA(i,j) + (
      &           hplane_coeff(remap(i),plane)*hplane_coeff(remap(j),plane)
      &          /(hdc_sigma(plane)*hdc_sigma(plane)))
             enddo               ! end loop on ihit
