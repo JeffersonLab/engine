@@ -1,4 +1,4 @@
-      SUBROUTINE G_keep_results(ABORT,err)
+      SUBROUTINE G_keep_results(groupname,ABORT,err)
 *----------------------------------------------------------------------
 *-       Prototype hall C keep_results routine
 *- 
@@ -9,10 +9,14 @@
 *-         : err	- reason for failure, if any
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard, HU
-*-    $Log$
-*-    Revision 1.7  1995/04/01 19:49:49  cdaq
-*-    (SAW) Fix mistake in error reporting
-*-
+*
+* $Log$
+* Revision 1.8  1996/01/16 18:18:33  cdaq
+* (JRA) Add group name to CTP calls
+*
+* Revision 1.7  1995/04/01 19:49:49  cdaq
+* (SAW) Fix mistake in error reporting
+*
 * Revision 1.6  1995/01/13  18:15:39  cdaq
 * (SAW) Put in a missing else that conspired with a broken thgethit (CTP) so that
 * things actually worked on HPUX.  (But not Ultrix)
@@ -52,29 +56,30 @@
       logical FAIL
       character*1024 why
       character*80 msg
+      character*20 groupname
       integer ierr
 *
 *--------------------------------------------------------
 *
       err= ' '                                  !erase any old errors
 *
-      ierr= thgethit()
+      ierr= thgethitg(groupname)
       ABORT= ierr.NE.0
       IF(ABORT) THEN
-        call G_build_note(':failure#$ in thgethit',
+        call G_build_note(':failure#$ in thgethitg',
      &       '$',ierr,' ',0.,' ',err)
       else
-        ierr= thtstexe()
-        call thtstins                   ! Increment scalers
+        ierr= thtstexeg(groupname)
+        call thtstinsg(groupname)                ! Increment scalers
 *
         ABORT= ierr.NE.0
         IF(ABORT) THEN
-          call G_build_note(':failure#$ in thtstexe',
+          call G_build_note(':failure#$ in thtstexeg',
      &         '$',ierr,' ',0.,' ',err)
         ELSE
-          ierr= thhstexe()
+          ierr= thhstexeg(groupname)
           ABORT= ierr.NE.0
-          If(ABORT) call G_build_note(':failure#$ in thhstexe',
+          If(ABORT) call G_build_note(':failure#$ in thhstexeg',
      &         '$',ierr,' ',0.,' ',err)
         ENDIF
       ENDIF
