@@ -9,7 +9,10 @@
 *                              remove minuit. Make fit linear
 *                              still does not do errors properly
 * $Log$
-* Revision 1.9  1995/05/22 19:39:31  cdaq
+* Revision 1.10  1995/08/30 16:11:39  cdaq
+* (JRA) Don't fill single_residual arrray
+*
+* Revision 1.9  1995/05/22  19:39:31  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.8  1995/04/06  19:32:58  cdaq
@@ -82,7 +85,8 @@
           hdc_double_residual(itrack,plane)=1000
           hdc_single_residual(itrack,plane)=1000
         enddo
-        hdc_sing_res(plane)=1000
+c fill the 1d arrays from the 2d arrays for good track (in h_physics)
+c        hdc_sing_res(plane)=1000
         hdc_dbl_res(plane)=1000
       enddo
 
@@ -156,7 +160,7 @@
 
 * Fill single_residual array.  Note that due to ihit loop, the plane
 * will always contain a wire on the track being examined.
-                hdc_sing_res(plane) = hdc_single_residual(itrack,plane)
+c                hdc_sing_res(plane) = hdc_single_residual(itrack,plane)
               enddo
             endif
 
