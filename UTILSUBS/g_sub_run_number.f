@@ -1,6 +1,9 @@
       subroutine g_sub_run_number(string,number)
 *
 * $Log$
+* Revision 1.4  1996/09/05 21:06:54  saw
+* (SAW) fix a bug
+*
 * Revision 1.3  1996/01/17 19:26:27  cdaq
 * (SAW) Fix so it works on more platforms
 *
@@ -52,6 +55,8 @@
       if(reallen+(10-inum+1)-2.gt.len(stemp)) return ! Would be too long
       if(iper+2.gt.reallen) then        ! Line ends with %d
         stemp = string(1:iper-1)//snum(inum:10)
+      else if (iper.eq.1) then
+        stemp = snum(inum:10)//string(iper+2:reallen)
       else
         stemp = string(1:iper-1)//snum(inum:10)//string(iper+2:reallen)
       endif
