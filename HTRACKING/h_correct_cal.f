@@ -10,7 +10,10 @@
 *-      Created 15 Mar 1994      Tsolak A. Amatuni
 *
 * $Log$
-* Revision 1.3  1995/05/22 19:39:08  cdaq
+* Revision 1.4  1995/08/31 14:59:37  cdaq
+* (JRA) Change sign of quadratic term in attenuation correction
+*
+* Revision 1.3  1995/05/22  19:39:08  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.2  1994/11/22  20:02:52  cdaq
@@ -38,7 +41,8 @@
 *
 *      h_correct_cal=1.
       h_correct_cal=exp(y/200.) !200 cm atten length.
-      h_correct_cal=h_correct_cal/(1. + y*y/8000.)
+*      h_correct_cal=h_correct_cal/(1. + y*y/8000.)
+      h_correct_cal=h_correct_cal/(1. - y*y/8000.)
 
 *
       return
