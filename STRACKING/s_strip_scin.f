@@ -7,7 +7,10 @@
 * s_strip_scin converts the raw hits to arrays over hits
 * with good TDC values.
 * $Log$
-* Revision 1.2  1995/02/10 19:14:37  cdaq
+* Revision 1.3  1995/05/11 15:02:18  cdaq
+* (JRA) Cosmetic changes
+*
+* Revision 1.2  1995/02/10  19:14:37  cdaq
 * JRA) Make sscin_all_adc_pos/neg floating
 *
 * Revision 1.1  1994/11/23  14:01:45  cdaq
@@ -48,10 +51,10 @@
           
           igoodhit = igoodhit + 1
           sscin_tot_hits = sscin_tot_hits + 1
-          sscin_plane_num(igoodhit) = sscin_all_plane_num(ihit)
-          ip = sscin_plane_num(igoodhit)
-          sscin_counter_num(igoodhit) = sscin_all_counter_num(ihit)
-          ic = sscin_counter_num(igoodhit)
+          ip = sscin_all_plane_num(ihit)
+          sscin_plane_num(igoodhit) = ip
+          ic = sscin_all_counter_num(ihit)
+          sscin_counter_num(igoodhit) = ic
           sscin_adc_pos(igoodhit) = float(sscin_all_adc_pos(ihit)) -
      $         sscin_all_ped_pos(ip,ic)
           sscin_adc_neg(igoodhit) = float(sscin_all_adc_neg(ihit)) -
