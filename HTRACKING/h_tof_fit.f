@@ -9,6 +9,9 @@
 *
 * modifications:
 * $Log$
+* Revision 1.10  1996/09/04 13:36:24  saw
+* (JRA) Include actual beta in calculation of focal plane time.
+*
 * Revision 1.9  1995/05/22 19:39:29  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -95,9 +98,9 @@
           endif
         enddo
 
-        pathnorm = 1 + hxp_fp(trk)**2 + hyp_fp(trk)**2
+        pathnorm = sqrt(1 + hxp_fp(trk)**2 + hyp_fp(trk)**2)
         hbeta(trk) = hbeta(trk) * pathnorm !take angle into account
-        hbeta(trk) = hbeta(trk) / 29.9979 !velocity/c
+        hbeta(trk) = hbeta(trk) / 29.979 !velocity/c
       else
         hbeta(trk) = 0.                 ! set unphysical beta
         hbeta_chisq(trk) = -2

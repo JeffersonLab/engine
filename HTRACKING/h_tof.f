@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.16  1996/09/04 13:36:00  saw
+* (JRA) Include actual beta in calculation of focal plane time.
+*
 * Revision 1.15  1996/01/16 22:00:15  cdaq
 * (JRA)
 *
@@ -88,11 +91,11 @@
       include 'hms_scin_tof.cmn'
       integer*4 hit, trk
       integer*4 plane,ind
-      integer*4 numplanes
       integer*4 hntof_pairs
       real*4 adc_ph                     !pulse height (channels)
       real*4 xhit_coord,yhit_coord
       real*4 time
+      real*4 p,betap         !momentum and velocity from momentum, assuming desired mass
       real*4 path
       real*4 sum_fp_time,sum_plane_time(hnum_scin_planes)
       integer*4 num_fp_time,num_plane_time(hnum_scin_planes)
@@ -124,6 +127,8 @@
         num_fp_time = 0
         hnum_scin_hit(trk) = 0
         hnum_pmt_hit(trk) = 0
+        p = hp_tar(trk)
+        betap = p/sqrt(p*p+hpartmass*hpartmass)
 
         do plane = 1 , hnum_scin_planes
           hgood_plane_time(trk,plane) = .false.
@@ -226,9 +231,9 @@
             endif
 c     Get time at focal plane
             if (hgood_scin_time(trk,hit)) then
-* for electrons:
-              hscin_time_fp(hit) = hscin_time(hit) - hscin_zpos(hit)/30. *
-     $             sqrt(1.+hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk))
+              hscin_time_fp(hit) = hscin_time(hit)
+     $             - (hscin_zpos(hit)/(29.979*betap) *
+     $             sqrt(1.+hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
               sum_fp_time = sum_fp_time + hscin_time_fp(hit)
               num_fp_time = num_fp_time + 1
               sum_plane_time(plane)=sum_plane_time(plane)
@@ -267,15 +272,6 @@ c     Get time at focal plane
           endif
           
         enddo                           !end of loop over hit scintillators
-
-
-c**    For now, require at least 3 planes, to avoid bad fits.
-c        numplanes=0
-c        if (hgood_plane_time(trk,1)) numplanes=numplanes+1
-c        if (hgood_plane_time(trk,2)) numplanes=numplanes+1
-c        if (hgood_plane_time(trk,3)) numplanes=numplanes+1
-c        if (hgood_plane_time(trk,4)) numplanes=numplanes+1
-c        if (numplanes.ge.3) then
 
 **    Fit beta if there are enough time measurements (one upper, one lower)
         if ((hgood_plane_time(trk,1) .or. hgood_plane_time(trk,2)) .and.
