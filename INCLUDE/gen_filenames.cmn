@@ -1,13 +1,13 @@
 ******************* begin: gen_filenames.cmn ***********************
 *
-*-essential UNIX environmental variable- specify Engine setup filename
+*-Common block with filenames
 *     $Log$
-*     Revision 1.1  1994/02/07 19:38:11  cdaq
-*     Initial revision
+*     Revision 1.2  1994/03/24 16:49:57  cdaq
+*     (SAW) Make logical's logical*4 so they can be registered to CTP
 *
+* Revision 1.1  1994/02/07  19:38:11  cdaq
+* Initial revision
 *
-      character*80 g_config_environmental_var
-      parameter (g_config_environmental_var= 'ENGINE_CONFIG_FILE')
 *
       integer G_LUN_CONFIG
       parameter (G_LUN_CONFIG= 55)
@@ -34,13 +34,13 @@
      $     g_histout_filename,
      $     g_decode_map_filename
 *
-      logical g_hist_rebook
-      logical g_test_rebook
-      logical g_parm_rebook
-      logical g_config_loaded               !Make sure this is false first time
-      logical g_data_source_opened          !whether FASTBUS CODA file opened OK
-      integer g_data_source_in_hndl         !IO channel assigned by CODA library
-      integer g_max_events                  !quit after this number events
+      logical*4 g_hist_rebook
+      logical*4 g_test_rebook
+      logical*4 g_parm_rebook
+      logical*4 g_config_loaded                 !Make sure this is false first time
+      logical*4 g_data_source_opened            !whether FASTBUS CODA file opened OK
+      integer g_data_source_in_hndl             !IO channel assigned by CODA library
+      integer g_max_events                      !quit after this number events
 *
       common /gen_config_flags/
      $     g_hist_rebook, g_test_rebook, g_parm_rebook, 
@@ -53,3 +53,4 @@
 *     End:
 *
 ******************** end: gen_filenames.cmn ***********************
+
