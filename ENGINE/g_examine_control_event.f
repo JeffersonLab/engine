@@ -10,7 +10,10 @@
 *- 
 *-   Created  17-May-1994   Kevin B. Beard, Hampton U.
 * $Log$
-* Revision 1.4  1994/06/24 19:11:26  cdaq
+* Revision 1.5  1994/06/28 20:04:49  cdaq
+* *** empty log message ***
+*
+* Revision 1.4  1994/06/24  19:11:26  cdaq
 * (KBB) Fill in gen_event_type with the event type
 *
 * Revision 1.3  1994/06/09  04:29:44  cdaq
@@ -38,9 +41,8 @@
       INCLUDE 'gen_run_info.cmn'
       INCLUDE 'gen_event_info.cmn'
 *
-      integer iv(10),dy,mth,yr,hr,min,sec,m,EvType,status,nth
-      real rv(10)
-      logical control,nontrivial,bad_sync
+      integer dy,mth,yr,hr,minute,sec,m,EvType,status,nth
+      logical control,bad_sync
       character*160 msg,note
 *
       integer SYNC_EvType,PRESTART_EvType,GO_EvType,END_EvType
@@ -73,7 +75,7 @@
          gen_run_UTC_last= buffer(3)
          gen_run_total_events= buffer(5)
          call g_UTC_date(gen_run_UTC_last,gen_run_date_last,
-     &        dy,mth,yr,hr,min,sec)
+     &        dy,mth,yr,hr,minute,sec)
 *     
          status= buffer(6)
          bad_sync= status.NE.0
@@ -99,7 +101,7 @@
          gen_run_number= buffer(4)
          gen_run_type= buffer(5)
          call g_UTC_date(gen_run_UTC_start,gen_run_date_start,
-     &        dy,mth,yr,hr,min,sec)
+     &        dy,mth,yr,hr,minute,sec)
 *     
          gen_event_sequence_N= 1        !start counting over
          gen_run_total_events= 1
@@ -116,7 +118,7 @@
 *     
          gen_run_UTC_start= buffer(3)
          call g_UTC_date(gen_run_UTC_start,gen_run_date_start,
-     &        dy,mth,yr,hr,min,sec)
+     &        dy,mth,yr,hr,minute,sec)
 *     
          msg= 'INFO:GO '//gen_run_date_start
          call G_log_message(msg)
@@ -126,7 +128,7 @@
          gen_run_UTC_last= buffer(3)
          gen_run_total_events= buffer(5)
          call g_UTC_date(gen_run_UTC_last,gen_run_date_last,
-     &        dy,mth,yr,hr,min,sec)
+     &        dy,mth,yr,hr,minute,sec)
          msg= 'INFO:PAUSE '//gen_run_date_last
          call G_log_message(msg)
 *     
@@ -135,7 +137,7 @@
          gen_run_UTC_stop= buffer(3)
          gen_run_total_events= buffer(5)
          call g_UTC_date(gen_run_UTC_stop,gen_run_date_stop,
-     &        dy,mth,yr,hr,min,sec)
+     &        dy,mth,yr,hr,minute,sec)
 *     
          msg= 'INFO:END '//gen_run_date_stop
          call G_log_message(msg)
