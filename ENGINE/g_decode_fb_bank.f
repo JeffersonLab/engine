@@ -1,4 +1,4 @@
-      subroutine g_decode_fb_bank(ABORT, error, bank)
+      subroutine g_decode_fb_bank(bank, ABORT, error)
 *
 *     Purpose and Methods: Decode a Fastbus bank.
 *
@@ -29,6 +29,10 @@
 *
       implicit none
       SAVE
+*
+      character*16 here
+      parameter (here='g_decode_fb_bank')
+*
       logical ABORT
       character*(*) error
       integer*4 bank(*)
@@ -43,20 +47,33 @@
 *
       include 'gen_detectorids.cmn'
       include 'gen_data_structures.cmn'
+      include 'mc_structures.cmn'
 
       integer*4 pointer                         ! Pointer FB data word
       integer*4 banklength,maxwords
       integer*4 roc,subadd,slot
+      integer*4 stat_roc
       integer*4 did                             ! Detector ID
       integer*4 g_decode_getdid                 ! Get detector ID routine
       integer*4 g_decode_fb_detector            ! Detector unpacking routine
 
       banklength = bank(1) + 1                  ! Bank length including count
 
-      roc = iand(ishft(bank(2),-16),'1F'X)      ! Get ROC from header
+      stat_roc = ishft(bank(2),-16)
+      roc = iand(stat_roc,'1F'X)                ! Get ROC from header
+      
+*
+*     First look for special Monte Carlo Banks
+*
+      if(stat_roc.eq.mc_status_and_ROC) then
+         call gmc_mc_decode(banklength-2,bank(3),ABORT,error)
+         if(ABORT) then
+            call g_add_path(here,error)
+         endif
+         return
+      endif
 
       pointer = 3                               ! First word of bank
-
       do while (pointer .le. banklength)
 
          subadd = iand(ishft(bank(pointer),-17),'7F'X)
