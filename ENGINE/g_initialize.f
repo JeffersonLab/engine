@@ -10,9 +10,12 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.5  1994/06/04 02:35:59  cdaq
-*-    (KBB) Make sure CTP files are non-blank before trying to thload them
+*-    Revision 1.6  1994/06/22 20:55:14  cdaq
+*-    (SAW) Load report templates
 *-
+* Revision 1.5  1994/06/04  02:35:59  cdaq
+* (KBB) Make sure CTP files are non-blank before trying to thload them
+*
 * Revision 1.4  1994/04/12  20:59:21  cdaq
 * (SAW) Add call to calculation of histid's for hfilled histograms
 *
@@ -40,6 +43,9 @@
       character*(*) err
 *
       INCLUDE 'gen_filenames.cmn'               !all setup files
+      INCLUDE 'hms_filenames.cmn'
+      INCLUDE 'sos_filenames.cmn'
+      INCLUDE 'coin_filenames.cmn'
       INCLUDE 'gen_routines.dec'
       INCLUDE 'gen_pawspace.cmn'                !includes sizes of special CERNLIB space
 *
@@ -73,8 +79,28 @@
       if((first_time.or.g_hist_rebook).and.g_ctp_hist_filename.ne.' ')
      $     call thload(g_ctp_hist_filename)
 *
-      if(first_time.or.g_parm_rebook
-     $     .or.g_test_rebook.or.g_hist_rebook) then
+*     Load the report definitions
+*
+      if((first_time.or.g_report_rebook)
+     $     .and.g_report_template_filename.ne.' ')
+     $     call thload(g_report_template_filename)
+*
+      if((first_time.or.g_report_rebook)
+     $     .and.s_report_template_filename.ne.' ')
+     $     call thload(s_report_template_filename)
+*
+      if((first_time.or.g_report_rebook)
+     $     .and.h_report_template_filename.ne.' ')
+     $     call thload(h_report_template_filename)
+*
+      if((first_time.or.g_report_rebook)
+     $     .and.c_report_template_filename.ne.' ')
+     $     call thload(c_report_template_filename)
+*
+*     Call thbook if any new files have been loaded
+*
+      if(first_time.or.g_parm_rebook.or.g_test_rebook
+     $     .or.g_hist_rebook.or.g_report_rebook) then
          call thbook
 *
 *     Recalculate all histogram id's of user (hard wired) histograms
