@@ -7,6 +7,10 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.5  1996/01/22 15:08:02  saw
+* (JRA) Adjust variable names.  Get particle properties from lookup
+* tables
+*
 * Revision 1.4  1996/01/16 21:06:55  cdaq
 * (RE?) Change some definitions
 *
@@ -37,9 +41,7 @@
 *
 *     local variables
 *
-      real*4 coshq,sinpq,cosphipq, sinphipq, costhm
-      real*4 qe,qp,qtheta,qphi
-      real*4 he,hp,htheta,hphi
+      real*4 costhm
       real*8 temp
       real*4 cqx,cqy,cqz,cqabs
       real*4 ekinrec,m_rec
@@ -49,19 +51,11 @@
       ABORT = .FALSE.
       err = ' '
 *
-c      RETURN  !*********kill this routine, to avoid numerical crashed
-!                       caused by bad angle reconstruction, and errors
-!                       due to having wrong particle in spectrometer
-!                       (i.e. this gives errors and few crashes if
-!                       have wrong particle masses in the param files.
-*
       if(HSNUM_FPTRACK.le.0.or.SSNUM_FPTRACK.le.0) then
         return
       endif
-c      type *,hsenergy,hsp,hstheta,hsphi
-c      type *,ssenergy,hsp,sstheta,ssphi
 *
-c      cs = (HSENERGY+SSENERGY)**2 - hsp**2 - ssp**2 -
+c      cs = (hsenergy+ssenergy)**2 - hsp**2 - ssp**2 -
 c     $     hsp*ssp*(cos(hstheta)*cos(sstheta) +
 c     $     sin(hstheta)*sin(sstheta)*cos(hsphi-ssphi))
 
@@ -69,18 +63,18 @@ c     $     sin(hstheta)*sin(sstheta)*cos(hsphi-ssphi))
 *     Need to select which arm is the hadron
 *
 
-        tar_amin1= ta_target-1.0
-c        p_beam = sqrt(cebeam**2-mass_electron**2)
+        tar_amin1= gtarg_a(gtarg_num)-1.0
+c        p_beam = sqrt(gebeam**2-mass_electron**2)
         m_rec = tar_amin1*m_amu
 c        write(*,*)hstheta,sstheta
       if(hpartmass .lt. 2*mass_electron) then ! Less than 1 MeV, HMS is elec
-        cqx = -HSP*cos(HSxp_tar)*sin(HSTHETA)
-        cqy = -HSP*sin(Hsxp_tar)
-        cqz = cpbeam - HSP*cos(HSxp_tar)*cos(HSTHETA)
+        cqx = -hsp*cos(hsxp_tar)*sin(hstheta)
+        cqy = -hsp*sin(hsxp_tar)
+        cqz = gpbeam - hsp*cos(hsxp_tar)*cos(hstheta)
         cqabs= sqrt(cqx**2+cqy**2+cqz**2)
-        cmissing_momx = cqx + SSP*cos(SSxp_tar)*sin(SSTHETA)
-        cmissing_momy = cqy - SSP*sin(SSxp_tar)
-        cmissing_momz = cqz - SSP*cos(SSxp_tar)*cos(SSTHETA)
+        cmissing_momx = cqx + ssp*cos(ssxp_tar)*sin(sstheta)
+        cmissing_momy = cqy - ssp*sin(ssxp_tar)
+        cmissing_momz = cqz - ssp*cos(ssxp_tar)*cos(sstheta)
         cmissing_mom    = sqrt(cmissing_momx**2 + cmissing_momy**2 
      >                         + cmissing_momz**2)
         cmissing_mom_par = (cmissing_momx*cqx+cmissing_momz*cqz)/cqabs
@@ -89,17 +83,17 @@ c        write(*,*)hstheta,sstheta
         if(cmissing_mom_perp.lt.0)then
          cmissing_mom = -cmissing_mom
         endif
-        OMEGA = cebeam-HSENERGY
+        omega = gebeam-hsenergy
         if(tar_amin1.ge.999. .or.tar_amin1.lt.0.001)then
          ekinrec = 0
         else
          ekinrec = sqrt(cmissing_mom**2 + m_rec**2)-m_rec
         endif      
-        CMISSING_E= OMEGA -(SSENERGY - mass_nucleon) - ekinrec
-        P_HMS_CORR = HSENERGY - cebeam/(1+cebeam/0.938272*(1-cos(HSTHETA)))
-        P_SOS_CORR = SSP -2.*mass_nucleon*cebeam*cos(SSTHETA)/
-     >     (cebeam+mass_nucleon)/(1-(cebeam*cos(SSTHETA)/
-     >     (cebeam+mass_nucleon))**2) 
+        cmissing_e= omega -(ssenergy - mass_nucleon) - ekinrec
+        p_hms_corr = hsenergy - gebeam/(1+gebeam/0.938272*(1-cos(hstheta)))
+        p_sos_corr = ssp -2.*mass_nucleon*gebeam*cos(sstheta)/
+     >     (gebeam+mass_nucleon)/(1-(gebeam*cos(sstheta)/
+     >     (gebeam+mass_nucleon))**2) 
 C        cqe = hseloss
 C        cqp = hscq3
 C        cqtheta = hsthetacq 
@@ -108,34 +102,34 @@ c        he = ssenergy
 c        hp = ssp                        ! Hadron momentum
 c        htheta = sstheta                ! Hadron polar angle
 c        hphi = ssphi                    ! Hadron Azimutal angle
-c       W2 = mass_nucleon**2 +2.*mass_nucleon*(cpbeam-hsp) - cqabs**2       
+c       W2 = mass_nucleon**2 +2.*mass_nucleon*(gpbeam-hsp) - cqabs**2       
       else                              ! SOS is the electron
-        cqx = -SSP*cos(SSxp_tar)*sin(SSTHETA)
-        cqy = -SSP*sin(SSxp_tar)
-        cqz = cpbeam - SSP*cos(SSxp_tar)*cos(SSTHETA)
+        cqx = -ssp*cos(ssxp_tar)*sin(sstheta)
+        cqy = -ssp*sin(ssxp_tar)
+        cqz = gpbeam - ssp*cos(ssxp_tar)*cos(sstheta)
         cqabs= sqrt(cqx**2+cqy**2+cqz**2)
-        cmissing_momx = cqx + HSP*cos(HSxp_tar)*sin(HSTHETA)
-        cmissing_momy = cqy - HSP*sin(HSxp_tar)
-        cmissing_momz = cqz - HSP*cos(HSxp_tar)*cos(HSTHETA)
+        cmissing_momx = cqx + hsp*cos(hsxp_tar)*sin(hstheta)
+        cmissing_momy = cqy - hsp*sin(hsxp_tar)
+        cmissing_momz = cqz - hsp*cos(hsxp_tar)*cos(hstheta)
         cmissing_mom    = sqrt(cmissing_momx**2 + cmissing_momy**2 
-     >                         + cmissing_momz**2)
+     >       + cmissing_momz**2)
         cmissing_mom_par = (cmissing_momx*cqx+cmissing_momz*cqz)/cqabs
         cmissing_mom_perp = (-cmissing_momz*cqx+cmissing_momx*cqz)/cqabs
         cmissing_mom_oop = cmissing_momy
         if(cmissing_mom_perp.lt.0)then
          cmissing_mom = -cmissing_mom
         endif
-        OMEGA = cebeam-SSENERGY
+        omega = gebeam-ssenergy
         if(tar_amin1.ge.999. .or.tar_amin1.lt.0.001)then
          ekinrec = 0
         else
          ekinrec = sqrt(cmissing_mom**2 + m_rec**2)-m_rec
         endif      
-        CMISSING_E= OMEGA -(HSENERGY - mass_nucleon) - ekinrec
-        P_SOS_CORR = SSENERGY - cebeam/(1+cebeam/0.938272*(1-cos(SSTHETA))) 
-        P_HMS_CORR = HSP -2.*mass_nucleon*cebeam*cos(HSTHETA)/
-     >     (cebeam+mass_nucleon)/(1-(cebeam*cos(HSTHETA)/
-     >     (cebeam+mass_nucleon))**2)
+        cmissing_e= omega -(hsenergy - mass_nucleon) - ekinrec
+        p_sos_corr = ssenergy - gebeam/(1+gebeam/0.938272*(1-cos(sstheta))) 
+        p_hms_corr = hsp -2.*mass_nucleon*gebeam*cos(hstheta)/
+     >       (gebeam+mass_nucleon)/(1-(gebeam*cos(hstheta)/
+     >       (gebeam+mass_nucleon))**2)
 c        he = sseloss
 c        hp = sscq3
 c        htheta = ssthetacq 
@@ -175,25 +169,25 @@ c      if(cmissing_momx.lt.0) cmissing_moms = -cmissing_moms
 *     Missing energy
 *c
 c      if(tmass_recoil.gt.mass_electron) then
-c        cmissing_e = cqe - (he - (TMASS_TARGET-TMASS_RECOIL))
-c     $       - cmissing_mom**2/(2*TMASS_RECOIL)
+c        cmissing_e = cqe - (he - (gtarg_mass(gtarg_num)-tmass_recoil))
+c     $       - cmissing_mom**2/(2*tmass_recoil)
 c      else
-c        cmissing_e = cqe - (he - (TMASS_TARGET-TMASS_RECOIL))
+c        cmissing_e = cqe - (he - (gtarg_mass(gtarg_num)-tmass_recoil))
 c      endif
 *
 *     Missing mass (excitation of the residual nucleus)
 *
 c      type *,g_beam_target_s,cs
 c      temp = g_beam_target_s + cs - 2*
-c     $     ((CEBEAM+TMASS_TARGET)*(CEBEAM+he-cqe)
-c     $     - CPBEAM*(CPBEAM+hp*cos(htheta)-cqp*cos(cqtheta)))
+c     $     ((GEBEAM+gtarg_mass(gtarg_num))*(GEBEAM+he-cqe)
+c     $     - GPBEAM*(GPBEAM+hp*cos(htheta)-cqp*cos(cqtheta)))
 c      if(temp.lt.0) then
 *        type *,hsenergy,hsp,hstheta,hsphi
 *        type *,ssenergy,hsp,sstheta,ssphi
 *        type *,temp
-c        cmissing_mass = -TMASS_RECOIL
+c        cmissing_mass = -tmass_recoil
 c      else
-c        cmissing_mass = sqrt(temp) - TMASS_RECOIL
+c        cmissing_mass = sqrt(temp) - tmass_recoil
 c      endif
 c      print *,cmissing_mass
 *      
