@@ -10,9 +10,12 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.9  1994/08/30 14:47:41  cdaq
-*-    (SAW) Add calls to clear the test flags and scalers
+*-    Revision 1.10  1994/09/21 19:52:57  cdaq
+*-    (SAW) Cosmetic change
 *-
+* Revision 1.9  1994/08/30  14:47:41  cdaq
+* (SAW) Add calls to clear the test flags and scalers
+*
 * Revision 1.8  1994/08/18  03:45:01  cdaq
 * (SAW) Correct typo in adding hack stuff
 *
@@ -76,8 +79,9 @@
 *
 *     Book the histograms, tests and parameters
 *
-      if(first_time) call HLIMIT(G_sizeHBOOK)   !set in "gen_pawspace.cmn"
-
+      if(first_time) then
+        call HLIMIT(G_sizeHBOOK)        !set in "gen_pawspace.cmn"
+      endif
 *     Load and book all the CTP files
 *
 *
