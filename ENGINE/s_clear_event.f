@@ -12,6 +12,9 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 * $Log$
+* Revision 1.11  1996/11/05 21:42:56  saw
+* (WH) Add lucite counter
+*
 * Revision 1.10  1995/10/09 18:08:15  cdaq
 * (JRA) Add clear of SCER_RAW_ADC
 *
@@ -102,6 +105,10 @@
 *     SOS AEROGEL HITS
 *
       SAER_TOT_HITS = 0
+*
+*     SOS LUCITE HITS
+*
+      SLUC_TOT_HITS = 0
 *
 *     SOS Miscleaneous hits
 *

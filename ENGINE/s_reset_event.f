@@ -12,6 +12,9 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-      $Log$
+*-      Revision 1.13  1996/11/05 21:43:16  saw
+*-      (WH) Add lucite counter
+*-
 *-      Revision 1.12  1996/09/04 15:18:54  saw
 *-      (JRA) Zero out some misc scalers
 *-
@@ -181,6 +184,20 @@
          SAER_PLANE(hit) = 0
       ENDDO
       SAER_TOT_HITS = 0
+
+*
+*     SOS LUCITE HITS
+*
+      DO hit= 1,SMAX_LUC_HITS
+         SLUC_PAIR_NUM(hit) = 0
+         SLUC_ADC_POS(hit) = 0
+         SLUC_ADC_NEG(hit) = 0
+         SLUC_TDC_POS(hit)= 0
+         SLUC_TDC_NEG(hit)= 0
+         SLUC_PLANE(hit) = 0
+      ENDDO
+      SLUC_TOT_HITS = 0
+
 *     
 *     SOS Miscleaneous hits
 *
