@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.4  1994/07/27 19:25:56  cdaq
+* Revision 1.5  1994/08/02 20:34:00  cdaq
+* (JRA) Some hacks
+*
+* Revision 1.4  1994/07/27  19:25:56  cdaq
 * ??
 *
 * Revision 1.3  1994/06/29  03:43:27  cdaq
@@ -184,38 +187,57 @@
 *     For now, skip event and don't set hgood_start_plane flag true if
 *     1st plane didn't set timing.
 
-         if (hscin_plane_num(iset) .eq. 1) then
-            hgood_start_plane = .true.
+*  TEMPORARY START TIME CALCULATION.  ASSUME XP=YP=0 RADIANS.  PROJECT ALL CORRECTED
+*  TIME VALUES TO FOCAL PLANE.  USE AVERAGE FOR START TIME.
+         time_num = 0
+         time_sum = 0.
+         do ihit = 1 , hscin_tot_hits
+            if (htwo_good_times(ihit)) then
+               time_sum = time_sum + hscin_cor_time(ihit)
+               time_num = time_num + 1
+            endif
+         enddo
+         if (time_num.eq.0) then
+            hgood_start_time = .false.
+            hstart_time = 150.		!150 ns is a rough average of time dif between trig
+                                        ! and wire firing.
          else
-            goto 100                    !give up on finding start_time
+            hgood_start_time = .true.
+            hstart_time = time_sum / float(time_num)
          endif
 
-*     See if both tubes have good TDC value.
-         if (.not.htwo_good_times(iset)) goto 100 !give up on start time.
-
-*     Get start time.
-         if (setside.eq.1) then         !setside=1 means pos tube set time.
-            hstart_time = postime(iset)
-            hgood_start_time = .true.
-            hstart_hitnum = iset
-            hstart_hitside = setside
-         else if (setside.eq.2) then    !setside=2 means neg tube set time.
-            hstart_time = negtime(iset)
-            hgood_start_time = .true.
-            hstart_hitnum = iset
-            hstart_hitside = setside
-         else
-*     we don't want to abort eveything if no scin fire
-*     abort = .true.
+***         if (hscin_plane_num(iset) .eq. 1) then
+***            hgood_start_plane = .true.
+***         else
+***            goto 100                    !give up on finding start_time
+***         endif
+***
+****     See if both tubes have good TDC value.
+***         if (.not.htwo_good_times(iset)) goto 100 !give up on start time.
+***
+****     Get start time.
+***         if (setside.eq.1) then         !setside=1 means pos tube set time.
+***           hstart_time = postime(iset)
+***            hgood_start_time = .true.
+***            hstart_hitnum = iset
+***            hstart_hitside = setside
+***         else if (setside.eq.2) then    !setside=2 means neg tube set time.
+***            hstart_time = negtime(iset)
+***            hgood_start_time = .true.
+***            hstart_hitnum = iset
+***            hstart_hitside = setside
+***         else
+****     we don't want to abort eveything if no scin fire
+****     abort = .true.
 *     
-            write(errmsg,*)
-     $           'variable SETSIDE (1=pos tube set time,2=neg side) ='
-     $           ,setside
-            call g_prepend(here,errmsg)
-            return
-         endif
-
- 100     continue                       !jump here if have error finding start_time
+***            write(errmsg,*)
+***     $           'variable SETSIDE (1=pos tube set time,2=neg side) ='
+***     $           ,setside
+***            call g_prepend(here,errmsg)
+***            return
+***         endif
+***
+*** 100     continue                       !jump here if have error finding start_time
 *     
 *     Dump decoded bank if hdebugprintscindec is set
          if( hdebugprintscindec .ne. 0) then
