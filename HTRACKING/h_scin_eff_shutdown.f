@@ -16,6 +16,9 @@
 * h_scin_eff_shutdown does some final manipulation of the numbers.
 *
 * $Log$
+* Revision 1.8  1996/08/30 20:35:14  saw
+* (JRA) Cosmetic
+*
 * Revision 1.7  1996/01/16 21:57:27  cdaq
 * (JRA) Add debug control flag around write statements
 *
@@ -96,7 +99,7 @@
             if (hstat_peff(pln,cnt).le.hstat_mineff) then
             if (.not.written_header) then
                 write(lunout,*)
-                write(lunout,'(a,f6.3)') ' HMS scintilators with effic. < '
+                write(lunout,'(a,f6.3)') ' HMS scintillators with tracking based effic. < '
      $               ,hstat_mineff
                 written_header = .true.
               endif
