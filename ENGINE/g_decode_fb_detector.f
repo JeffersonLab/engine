@@ -1,13 +1,17 @@
-      INTEGER*4 FUNCTION g_decode_fb_detector(roc,evfrag,length,did,
+      INTEGER*4 FUNCTION g_decode_fb_detector(oslot,roc,evfrag,length,did,
      $     maxhits,hitcount,planelist,counterlist,signalcount,signal0,
      $     signal1,signal2,signal3)
 *----------------------------------------------------------------------
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.9  1994/10/20 12:34:55  cdaq
-*-    (SAW) Only print out "Max exceeded, did=" meesage once
+*-    Revision 1.10  1995/01/27 20:14:04  cdaq
+*-    (SAW) Add assorted diagnostic printouts.  Add hack to look for the headers
+*-          on new 1881M/1877 modules while maintaining backward compatibility.
 *-
+* Revision 1.9  1994/10/20  12:34:55  cdaq
+* (SAW) Only print out "Max exceeded, did=" meesage once
+*
 * Revision 1.8  1994/06/27  02:14:18  cdaq
 * (SAW) Ignore all words that start with DC
 *
@@ -41,6 +45,7 @@
       integer*4 roc,evfrag(*),length,did,maxhits,signalcount
 
 *     The following arguments get modified.
+      integer*4 oslot
       integer*4 hitcount,planelist(*),counterlist(*)
       integer*4 signal0(*),signal1(*),signal2(*),signal3(*)
       integer pointer,newdid,subadd,slot,mappointer,plane
@@ -48,25 +53,80 @@
 *
       include 'gen_decode_common.cmn'
       include 'gen_detectorids.par'
+      include 'gen_scalers.cmn'
+      integer iscaler,nscalers
 *
-      integer oslot,h,hshift
+      integer h,hshift
       integer subaddbit
-*
-      oslot = -1                     !illegal old slot
+      logical printerr  !flag to turn off printing of error after 1 time.
+      logical lastwordheader
+*     
+      if(oslot.lt.0) lastwordheader = .false.
+      printerr = .true.
       pointer = 1
       newdid = did
 
       do while(pointer.le.length .and. did.eq.newdid)
 *
         if(iand(evfrag(pointer),'FF000000'x).eq.'DC000000'x) then ! Catch arrington's headers
+          write(6,*) 'no gate or too much data from DCs.'
+          write(6,*) 'Turn off parallel link if this persists'
+          pointer = pointer + 1
+          goto 987
+        endif
+*
+*     Check for event by event scalers thrown in by the scaler hack.
+*
+*        if(iand(evfrag(pointer),'FF000000'x).eq.'DA000000'x) then ! Magic header
+*          nscalers = iand(evfrag(pointer),'FF'x)
+*          do iscaler=1,nscalers
+**            type *,iscaler,evfrag(pointer+iscaler)
+*            evscalers(iscaler) = evfrag(pointer+iscaler)
+*          enddo
+*          pointer = pointer + nscalers + 1
+*          goto 987
+*        endif
+        if(evfrag(pointer).le.1.and.evfrag(pointer).ge.0) then
+          write(6,'(" BAD FB value evfrag(",i4,")=",z10," ROC=",i2)')
+     $         pointer,evfrag(pointer),roc
           pointer = pointer + 1
           goto 987
         endif
         slot = iand(ISHFT(evfrag(pointer),-27),'1F'X)
         if(slot.ne.oslot) then
+          if (slot.le.0 .or. slot.ge.26 .or. roc.le.0 .or. roc.ge.9) then
+            write (6,*) 'roc,slot=',roc,slot
+            write (6,*) 'evfrag(pointer)=',evfrag(pointer)
+          endif
           mappointer = g_decode_slotpointer(roc+1,slot)
           oslot = slot
           subaddbit = g_decode_subaddbit(roc+1,slot) ! Usually 16 or 17
+
+c
+c     On 1881M's and 1877, a subaddress of zero could be a header word, so
+c     we need to put in some hackery to catch these.  We need to make sure
+c     that 1881's and 1876's will still work.
+c
+c     A real ugly hack that looks to see if the first word of an 1881M or
+c     1877 has a subaddress of zero, in which case it is the header word and must
+c     be discarded.  If it is an 1881 or 1876, then the the first word of a
+c     new slot will have a subaddress of '7F' and later be discarded.
+c
+          if(subaddbit.eq.17) then      ! Is not an 1872A (which has not headers)
+            if(iand(evfrag(pointer),'00FE0000'X).eq.0) then ! probably a header
+              if(iand(evfrag(pointer),'07FF0000'X).ne.0) then
+                print *,
+     $               "SHIT: we misidentified a real data word as a header
+     $               "
+                print *,"DID=",did,", SLOT=",slot,", POINTER=",pointer
+              else
+*                print *,"FOUND NEW HEADER in roc, slot ",roc,slot
+
+                pointer = pointer + 1
+                goto 987
+              endif
+            endif
+          endif
         endif
 *
         subadd = iand(ISHFT(evfrag(pointer),-subaddbit),'7F'X)
@@ -82,23 +142,23 @@
 *     the proper BSUB value.
 *
         if (subadd .lt. '7F'X) then     ! Only valid subaddresses
-                                        ! Skips headers for 1881 and 1876/7
+                                        ! Skips headers for 1881 and 1876
           if(mappointer.gt.0) then
             newdid = g_decode_didmap(mappointer+subadd)
           else
             newdid = UNINST_ID
           endif
           if(newdid.eq.did) then
+            if(did.ne.UNINST_ID) then
+              plane = g_decode_planemap(mappointer+subadd)
+              counter = g_decode_countermap(mappointer+subadd)
+              signal =iand(evfrag(pointer),g_decode_slotmask(roc+1,slot))
+            else
+              plane = ishft(roc,16) + slot
+              counter = subadd
+              signal = evfrag(pointer)
+            endif
             if(hitcount .lt. maxhits) then ! Don't overwrite arrays
-              if(did.ne.UNINST_ID) then
-                plane = g_decode_planemap(mappointer+subadd)
-                counter = g_decode_countermap(mappointer+subadd)
-                signal =iand(evfrag(pointer),g_decode_slotmask(roc+1,slot))
-              else
-                plane = ishft(roc,16) + slot
-                counter = subadd
-                signal = evfrag(pointer)
-              endif
               if(signalcount .eq. 1) then ! single signal counter
 *     
 *     Starting at end of hit list, search back until a hit earlier in
@@ -168,15 +228,18 @@
                   signal3(h) = signal
                 endif
               endif
-            else if(hitcount.eq.maxhits) then ! Only print this message once
+            else if(hitcount.eq.maxhits .and. printerr) then ! Only print this message once
               type *,'g_decode_fb_detector: Max exceeded, did=',
      $             did,', max=',maxhits
+              printerr = .false.
 *     
 *     Print/generate some kind of error that the hit array has been
 *     exceeded.
 *     
             endif
             pointer = pointer + 1
+*         else
+*           exit and get called back with the correct arrays for the new did
           endif
         else
           pointer = pointer + 1
