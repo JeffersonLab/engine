@@ -12,9 +12,12 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.4  1994/02/22 19:47:36  cdaq
-*-    Change gmc_reset_event to gmc_mc_reset
+*-    Revision 1.5  1994/04/12 18:42:05  cdaq
+*-    (SAW) Remove clearing of CRAW event buffer to online compatibility
 *-
+* Revision 1.4  1994/02/22  19:47:36  cdaq
+* Change gmc_reset_event to gmc_mc_reset
+*
 * Revision 1.3  1994/02/17  21:49:57  cdaq
 * Simplify error handling to be like g_clear_event
 *
@@ -52,12 +55,6 @@
       hms_err = ' '
       sos_err = ' '
       gmc_err = ' '
-*
-*-zero entire event buffer
-*
-      DO i=1,LENGTH_CRAW
-         CRAW(i)= 0
-      ENDDO
 *
       call H_reset_event(HMS_ABORT,HMS_err)
 *     
