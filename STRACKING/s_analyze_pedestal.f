@@ -1,6 +1,9 @@
       subroutine s_analyze_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.10  1999/06/10 16:55:48  csa
+* (JRA) Removed two calorimeter debugging statements
+*
 * Revision 1.9  1999/02/23 18:54:33  csa
 * (JRA) Implement improved pedestal calcs
 *
@@ -93,7 +96,6 @@
           if (scal_pos_ped_num(blk).eq.nint(scal_min_peds/5.)) then
             scal_pos_ped_limit(blk) = 100 +
      &              scal_pos_ped_sum(blk) / scal_pos_ped_num(blk)
-            write(6,*) 'blk=',blk,'+  newlimit=',scal_pos_ped_limit(blk)
           endif
         endif
 
@@ -105,7 +107,6 @@
           if (scal_neg_ped_num(blk).eq.nint(scal_min_peds/5.)) then
             scal_neg_ped_limit(blk) = 100 +
      &              scal_neg_ped_sum(blk) / scal_neg_ped_num(blk)
-            write(6,*) 'blk=',blk,'+  newlimit=',scal_neg_ped_limit(blk)
           endif
         endif
       enddo
