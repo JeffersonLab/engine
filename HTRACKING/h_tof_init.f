@@ -9,7 +9,10 @@
 *
 * modifications: 31 Mar 1994    DFG  Check for 0 hits
 * $Log$
-* Revision 1.2  1994/06/01 15:39:34  cdaq
+* Revision 1.3  1994/09/13 21:30:01  cdaq
+* (JRA) Add staggering of scintillator counters
+*
+* Revision 1.2  1994/06/01  15:39:34  cdaq
 * (SAW) Change declaration of err to *(*)
 *
 * Revision 1.1  1994/04/13  16:29:31  cdaq
@@ -37,6 +40,7 @@
           plane = hscin_plane_num(ihit)     !from h_raw_scin common block.
           counter = hscin_counter_num(ihit)
 
+          hscin_slop(ihit) = hhodo_slop(plane)
           hscin_pos_sigma(ihit) = hhodo_pos_sigma(plane,counter)
           hscin_neg_sigma(ihit) = hhodo_neg_sigma(plane,counter)
           hscin_center_coord(ihit) = hhodo_center_coord(plane,counter)
@@ -48,21 +52,33 @@
 
           if (plane .eq. 1) then                   !1x
             hscin_zpos(ihit) = hscin_1x_zpos
+            if (2*int(float(counter)/2.) .eq. counter) then !even tube, in back.
+              hscin_zpos(ihit) = hscin_zpos(ihit) + hscin_1x_dzpos
+            endif
             hscin_pos_coord(ihit) = hscin_1x_left
             hscin_neg_coord(ihit) = hscin_1x_right
             hscin_width(ihit) = hscin_1x_size
           else if (plane .eq. 2) then              !1y
             hscin_zpos(ihit) = hscin_1y_zpos
+            if (2*int(float(counter)/2.) .eq. counter) then !even tube, in back.
+              hscin_zpos(ihit) = hscin_zpos(ihit) + hscin_1y_dzpos
+            endif
             hscin_pos_coord(ihit) = hscin_1y_bot
             hscin_neg_coord(ihit) = hscin_1y_top
             hscin_width(ihit) = hscin_1y_size
           else if (plane .eq. 3) then              !2x
             hscin_zpos(ihit) = hscin_2x_zpos
+            if (2*int(float(counter)/2.) .eq. counter) then !even tube, in back.
+              hscin_zpos(ihit) = hscin_zpos(ihit) + hscin_2x_dzpos
+            endif
             hscin_pos_coord(ihit) = hscin_2x_left
             hscin_neg_coord(ihit) = hscin_2x_right
             hscin_width(ihit) = hscin_2x_size
           else if (plane .eq. 4) then              !2y
             hscin_zpos(ihit) = hscin_2y_zpos
+            if (2*int(float(counter)/2.) .eq. counter) then !even tube, in back.
+              hscin_zpos(ihit) = hscin_zpos(ihit) + hscin_2y_dzpos
+            endif
             hscin_pos_coord(ihit) = hscin_2y_bot
             hscin_neg_coord(ihit) = hscin_2y_top
             hscin_width(ihit) = hscin_2y_size
