@@ -12,9 +12,13 @@
 *           : err        - reason for failure, if any
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
-*     $Log$
-*     Revision 1.10  1995/08/11 15:41:09  cdaq
-*     (DD) Add sos sieve slit ntuple
+*
+* $Log$
+* Revision 1.11  1996/01/16 16:27:28  cdaq
+* no change
+*
+* Revision 1.10  1995/08/11 15:41:09  cdaq
+* (DD) Add sos sieve slit ntuple
 *
 * Revision 1.9  1995/05/22  13:32:11  cdaq
 * (SAW) Add call to register sos_data_structures.cmn variables
