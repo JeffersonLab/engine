@@ -9,7 +9,10 @@
 *
 *      Created 9 April 1994	D. F. Geesaman
 * $Log$
-* Revision 1.3  1994/08/05 19:22:30  cdaq
+* Revision 1.4  1994/08/18 01:59:15  cdaq
+* (DM) Add residuals histid's
+*
+* Revision 1.3  1994/08/05  19:22:30  cdaq
 * (SAW) Add makereg directive with required include files
 *       Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
 *
@@ -35,7 +38,7 @@
       integer*4 hidhx_fp,hidhy_fp,hidhxp_fp,hidhyp_fp,hidhlogchi2_fp,
      &     hidhnfree_fp,hidhchi2perdeg_fp
       integer*4 hidhx_tar, hidhy_tar, hidhz_tar, hidhxp_tar, hidhyp_tar,
-     &     hidhdelta_tar, hidhp_tar
+     &     hidhdelta_tar, hidhp_tar, hidres_fp, hidsingres_fp
 
 
       common/hms_tracking_histid/
@@ -56,7 +59,9 @@
      &     hidhxp_tar,
      &     hidhyp_tar,
      &     hidhdelta_tar,
-     &     hidhp_tar
+     &     hidhp_tar,
+     &     hidres_fp,
+     &     hidsingres_fp
 
 *
 *     CTPTYPE=parm
