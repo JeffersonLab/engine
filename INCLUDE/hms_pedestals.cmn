@@ -4,6 +4,9 @@
 *
 
 * $Log$
+* Revision 1.6.2.1  2003/04/06 06:19:41  cdaq
+* updated variables for haero
+*
 * Revision 1.6  2002/12/20 21:52:32  jones
 * Modified by Hamlet for new HMS aerogel
 *
@@ -196,16 +199,19 @@
 *     CTPTYPE=parm
 *
       integer*4 haero_min_peds
+      real*4 haero_new_ped_pos(hmax_aero_hits)
+      real*4 haero_new_ped_neg(hmax_aero_hits)
+      real*4 haero_new_rms_pos(hmax_aero_hits)
+      real*4 haero_new_rms_neg(hmax_aero_hits)
+
       real*4 haero_pos_ped_mean(hmax_aero_hits)
       real*4 haero_neg_ped_mean(hmax_aero_hits)
       real*4 haero_pos_ped_rms(hmax_aero_hits)
       real*4 haero_neg_ped_rms(hmax_aero_hits)
 
-      integer*4 haero_pos_adc_threshold(hmax_aero_hits)
-      integer*4 haero_neg_adc_threshold(hmax_aero_hits)
       integer*4 haero_pos_ped_limit(hmax_aero_hits)
       integer*4 haero_neg_ped_limit(hmax_aero_hits)
-*
+
       common/hms_aeroi_pedestals/
      &   haero_pos_ped_sum2,       !sum of squares
      &   haero_neg_ped_sum2,       !sum of squares
@@ -220,9 +226,10 @@
      &   haero_neg_ped_mean,
      &   haero_pos_ped_rms,        !calculated pedestal width
      &   haero_neg_ped_rms,
-     &   haero_pos_adc_threshold,
-     &   haero_neg_adc_threshold
-
+     &   haero_new_ped_pos,
+     &	 haero_new_ped_neg,
+     &	 haero_new_rms_pos,
+     &	 haero_new_rms_neg
 *
 *.........................................................................
 *
@@ -273,6 +280,8 @@
       real*4 hcal_new_adc_threshold_neg(hmax_cal_blocks)
       real*4 hcer_new_adc_threshold(hmax_cer_hits)
       real*4 hmisc_new_adc_threshold(hmax_misc_hits)
+      real*4 haero_new_threshold_pos(hmax_aero_hits)
+      real*4 haero_new_threshold_neg(hmax_aero_hits)
 *
       common/hms_adc_thresholds/
      &   hhodo_new_threshold_pos,
@@ -280,5 +289,7 @@
      &   hcal_new_adc_threshold_pos,
      &   hcal_new_adc_threshold_neg,
      &   hcer_new_adc_threshold,
-     &   hmisc_new_adc_threshold
+     &   hmisc_new_adc_threshold,
+     &   haero_new_threshold_pos,
+     &   haero_new_threshold_neg
 

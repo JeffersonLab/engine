@@ -1,6 +1,9 @@
 * hms_aero_parms.cmn
 *
 * $Log$
+* Revision 1.1.2.1  2003/04/06 06:19:49  cdaq
+* updated variables for haero
+*
 * Revision 1.1  2002/12/20 21:52:32  jones
 * Modified by Hamlet for new HMS aerogel
 *
@@ -25,13 +28,9 @@
 
       integer*4 haero_rawadc_neg(HMAX_AERO_HITS)
       integer*4 haero_rawadc_pos(HMAX_AERO_HITS)
-      integer*4 haero_adc_neg_pedsubtr(HMAX_AERO_HITS)
-      integer*4 haero_adc_pos_pedsubtr(HMAX_AERO_HITS)
 
       integer*4 haero_rawtdc_neg(HMAX_AERO_HITS)
       integer*4 haero_rawtdc_pos(HMAX_AERO_HITS)
-C      integer*4 haero_tdc_neg(HMAX_AERO_HITS)
-C      integer*4 haero_tdc_pos(HMAX_AERO_HITS)
 
       integer*4 aero_tp(HMAX_AERO_HITS)
       integer*4 aero_tn(HMAX_AERO_HITS)
