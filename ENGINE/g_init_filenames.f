@@ -23,9 +23,12 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 *-    $Log$
-*-    Revision 1.3  1994/02/11 18:34:34  cdaq
-*-    Split off CTP variables registration from initialize routines
+*-    Revision 1.4  1994/03/24 22:02:21  cdaq
+*-    Reorganize for online compatibility
 *-
+* Revision 1.3  1994/02/11  18:34:34  cdaq
+* Split off CTP variables registration from initialize routines
+*
 * Revision 1.2  1994/02/03  18:12:17  cdaq
 * Use CTP parameter block to get the filenames
 *
@@ -48,6 +51,20 @@
 *
       integer ierr
 c     
+*
+*-all crucial setup information here; failure is fatal
+      g_hist_rebook = .true.
+      g_test_rebook = .true.
+      g_parm_rebook = .true.
+      g_ctp_parm_filename = ' '
+      g_ctp_test_filename = ' '
+      g_ctp_hist_filename = ' '
+      g_data_source_filename= ' '        !undefined
+      g_alias_filename = ' '
+      g_histout_filename = ' '
+      g_decode_map_filename = ' '
+*
+*
       call getenv(env_var,g_config_filename)
 *
       ABORT= g_config_filename.EQ.' '
