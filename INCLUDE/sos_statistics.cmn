@@ -1,11 +1,30 @@
 *      sos_statistics.cmn
 *      common blocks containing event statistics for s_reconstruction
 * $Log$
-* Revision 1.1  1994/06/07 02:00:48  cdaq
+* Revision 1.2  1994/06/14 03:34:25  cdaq
+* (DFG) add chamber efficiency and sigma
+*
+* Revision 1.1  1994/06/07  02:00:48  cdaq
 * Initial revision
 *
 *
-       integer*4 s_recon_num    ! Number of calls to s_reconstruction
+      integer*4 s_recon_num             ! Number of calls to s_reconstruction
+      integer*4 sgoodtracksctr          ! number of good tracks in s_physics
+      integer*4 splanehitctr(SMAX_NUM_DC_PLANES) ! number of hits in each plane
+*                                       for good tracks
+*     
+      common/sos_statistics/
+     &     s_recon_num,
+     &     sgoodtracksctr,
+     &     splanehitctr
+
+
+      real*4 splanesigmasq(SMAX_NUM_DC_PLANES) ! sum of 
+*                                        (position - fit position)**2 /sigma**2
+      real*4 smeasuredsigma(SMAX_NUM_DC_PLANES) ! splanesigmasq/ sgoodtracksctr
+      real*4 schambereff(SMAX_NUM_DC_PLANES)  ! chamber efficencies
 *
-       common/sos_statistics/
-     &     s_recon_num
+      common/sos_statistisc_r4/
+     & splanesigmasq,
+     & smeasuredsigma,
+     & schambereff

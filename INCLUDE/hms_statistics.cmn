@@ -1,11 +1,30 @@
 *     hms_statistics.cmn
 *     common blocks containing event statistics for h_reconstruction
 * $Log$
-* Revision 1.1  1994/06/06 16:52:57  cdaq
-* Initial revision
+* Revision 1.2  1994/06/14 03:30:16  cdaq
+* (DFG) add chamber efficiency and sigma
+*
+*Revision 1.1  1994/06/06  16:52:57  cdaq
+*Initial revision
 *
 *
       integer*4 h_recon_num             ! Number of calls to h_reconstruction
+      integer*4 hgoodtracksctr          ! number of good tracks in h_physics
+      integer*4 hplanehitctr(HMAX_NUM_DC_PLANES) ! number of hits in each plane
+*                                       for good tracks
 *     
       common/hms_statistics/
-     &     h_recon_num
+     &     h_recon_num,
+     &     hgoodtracksctr,
+     &     hplanehitctr
+
+
+      real*4 hplanesigmasq(HMAX_NUM_DC_PLANES) ! sum of 
+*                                        (position - fit position)**2 /sigma**2
+      real*4 hmeasuredsigma(HMAX_NUM_DC_PLANES) ! hplanesigmasq/ hgoodtracksctr
+      real*4 hchambereff(HMAX_NUM_DC_PLANES)  ! chamber efficencies
+*
+      common/hms_statistisc_r4/
+     & hplanesigmasq,
+     & hmeasuredsigma,
+     & hchambereff
