@@ -8,6 +8,9 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change HPLANE_PARAM to individual arrays
 * $Log$
+* Revision 1.8  1996/08/30 19:54:33  saw
+* (JRA) Format statement changes
+*
 * Revision 1.7  1996/04/30 12:43:54  saw
 * (JRA) Set up card drift time delay structures
 *
@@ -238,7 +241,7 @@
      &                     hdc_nrwire(j),
      &                     hdc_central_wire(j),
      &                     hdc_sigma(j),j=1,hdc_num_planes)
-1000  format(1x,i4,f9.4,3f10.6,f8.4,f6.0,f10.4,f10.6)
+1000  format(1x,i4,f9.4,3f10.6,f8.4,i6,f10.4,f10.6)
         write(hluno,'(''  plane'',
      &        ''  hzchi     hzpsi     hxchi     hxpsi     hychi     hypsi'')')
         write(hluno,1001) (i, hzchi(i),hzpsi(i),hxchi(i),hxpsi(i),hychi(i),
