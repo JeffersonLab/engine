@@ -1,6 +1,9 @@
 *
 *      SOS calorimeter. Parameters from sos_positions.parm
 * $Log$
+* Revision 1.10  1999/02/23 19:19:23  csa
+* Add scal_fv_test
+*
 * Revision 1.9  1999/01/29 17:34:22  saw
 * Add variables for second tubes on shower counter
 *
@@ -63,6 +66,8 @@
       real*4 scal_4ta_right     !
       real*4 scal_4ta_top       ! X positions, column #4
       REAL*4 SCAL_SLOP          !SLOP IN DISTANCE BETWEEN TRACK AND BLOCK
+      integer*4 scal_fv_test    !Turn on SOS fiducial cut
+
       common/sos_cal_parms/
      &       scal_1pr_zpos,
      &       scal_2ta_zpos,
@@ -88,7 +93,8 @@
      &       scal_4ta_left,
      &       scal_4ta_right,
      &       scal_4ta_top(smax_cal_rows),
-     &       scal_slop
+     &       scal_slop,
+     &       scal_fv_test
 *
 *      SOS calorimeter. Geometrical constants filled by s_init_cal
 *
