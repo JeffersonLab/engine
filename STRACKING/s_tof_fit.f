@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.2  1994/06/14 04:36:30  cdaq
+* Revision 1.3  1994/11/23 14:15:49  cdaq
+* * (SPB) Recopied from hms file and modified names for SOS
+*
+* Revision 1.2  1994/06/14  04:36:30  cdaq
 * (DFG) Protect against divide by 0 in beta calc
 *
 * Revision 1.1  1994/04/13  18:45:19  cdaq
@@ -42,15 +45,15 @@
       sumtz = 0.
 
       do hit = 1 , sscin_tot_hits
-         if (sgood_scin_time(hit)) then
-            scin_weight = 1./sscin_sigma(hit)**2
-            sumw = sumw + scin_weight
-            sumt = sumt + scin_weight * sscin_time(hit)
-            sumz = sumz + scin_weight * sscin_zpos(hit)
-            sumzz = sumzz + scin_weight * sscin_zpos(hit)**2
-            sumtz = sumtz + scin_weight * sscin_zpos(hit) *
-     1           sscin_time(hit)
-         endif
+        if (sgood_scin_time(hit)) then
+          scin_weight = 1./sscin_sigma(hit)**2
+          sumw = sumw + scin_weight
+          sumt = sumt + scin_weight * sscin_time(hit)
+          sumz = sumz + scin_weight * sscin_zpos(hit)
+          sumzz = sumzz + scin_weight * sscin_zpos(hit)**2
+          sumtz = sumtz + scin_weight * sscin_zpos(hit) *
+     1         sscin_time(hit)
+        endif
       enddo
       
 * The formula for beta (and t0) come from taking chi-squared (as
@@ -63,23 +66,25 @@
       tmp = sumw*sumzz - sumz*sumz
       t0 = (sumt*sumzz - sumz*sumtz) / tmp
       tmpdenom = sumw*sumtz - sumz*sumt
-      if(tmpdenom .gt. 1.e-15) then
-         sbeta(trk) = tmp / tmpdenom
-      else
-         sbeta(trk) = -1.               ! set unphysical beta
-      endif                             ! end if on denomimator = 0.
-*        
-      sbeta_chisq(trk) = 0.
-      do hit = 1 , sscin_tot_hits
-         if (sgood_scin_time(hit)) then
+      if(tmpdenom .gt. 1.e-10) then
+        sbeta(trk) = tmp / tmpdenom
+*
+        sbeta_chisq(trk) = 0.
+        do hit = 1 , sscin_tot_hits
+          if (sgood_scin_time(hit)) then
             sbeta_chisq(trk) = sbeta_chisq(trk) + 
      1           (sscin_zpos(hit)/sbeta(trk) -
      1           (sscin_time(hit) - t0))**2 / sscin_sigma(hit)**2
-         endif
-      enddo
+          endif
+        enddo
 
-      pathnorm = 1 + sxp_fp(trk)**2 + syp_fp(trk)**2
-      sbeta(trk) = sbeta(trk) * pathnorm !take angle into account
+        pathnorm = 1 + sxp_fp(trk)**2 + syp_fp(trk)**2
+        sbeta(trk) = sbeta(trk) * pathnorm !take angle into account
+        sbeta(trk) = sbeta(trk) / 29.9979 !velocity/c
+      else
+        sbeta(trk) = 0.                 !set unphysical beta
+        sbeta(trk) = -100
+      endif                             !end if on denomimator = 0.
 
       return
       end
