@@ -1,6 +1,9 @@
       subroutine s_dump_peds(ABORT,err)
 *
 * $Log$
+* Revision 1.2  1995/10/09 20:18:31  cdaq
+* (JRA) Cleanup, add cerenkov pedestals
+*
 * Revision 1.1  1995/08/31 18:06:45  cdaq
 * Initial revision
 *
@@ -22,25 +25,17 @@
       INCLUDE 'sos_pedestals.cmn'
       INCLUDE 'sos_scin_parms.cmn'
       INCLUDE 'sos_calorimeter.cmn'
+
+
+      open(unit=99,file='peds.sos',status='unknown')
+
+      write(99,*) 'These are the values that were used for the analysis'
+      write(99,*) '      (from the param file or pedestal events)'
+      write(99,*)
 *
 *
 * HODOSCOPE PEDESTALS
 *
-
-      open(unit=99,file='peds.sos',status='unknown')
-
-c      write(99,*) 'HODOSCOPE +'
-c      do pln = 1 , snum_scin_planes
-c        do cnt = 1 , snum_scin_elements
-c          write(99,1001) pln,cnt,sscin_all_ped_pos(pln,cnt),shodo_all_sig_pos(pln,cnt)
-c        enddo
-c      enddo
-c      write(99,*) 'HODOSCOPE -'
-c      do pln = 1 , snum_scin_planes
-c        do cnt = 1 , snum_scin_elements
-c          write(99,1001) pln,cnt,sscin_all_ped_neg(pln,cnt),shodo_all_sig_neg(pln,cnt)
-c        enddo
-c      enddo
       write(99,*) 'sscin_all_ped_pos ='
       do cnt = 1 , snum_scin_elements
           write(99,111) (sscin_all_ped_pos(pln,cnt),pln=1,4)
@@ -51,8 +46,6 @@ c      enddo
       enddo
 
 111   format(10x,3(f6.1,','),f6.1)
-c1001  format(2i4,2f10.2)
-c1000  format(i4,2f10.2)
 *
 *
 * CALORIMETER PEDESTALS
@@ -81,10 +74,9 @@ c1000  format(i4,2f10.2)
 *
 * GAS CERENKOV PEDESTALS
 *
-c      write(99,*) 'CERENKOV'
-c      do pmt = 1 , smax_cer_hits
-c          write(99,1000) pmt,scer_ped_mean(pmt),scer_ped_rms(pmt)
-c      enddo
+      write(99,*) 'scer_ped_mean = '
+      write(99,113) (scer_ped_mean(pmt),pmt=1,smax_cer_hits)
+113   format (3(f5.1,','),f5.1)
 
       close(99)
 
