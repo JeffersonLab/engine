@@ -14,9 +14,12 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 *-    $Log$
-*-    Revision 1.5  1994/04/15 20:37:41  cdaq
-*-    (SAW) for ONLINE compatibility get event from argument instead of commmon.
+*-    Revision 1.6  1994/06/17 03:36:57  cdaq
+*-    (KBB) Upgrade error reporting
 *-
+* Revision 1.5  1994/04/15  20:37:41  cdaq
+* (SAW) for ONLINE compatibility get event from argument instead of commmon.
+*
 * Revision 1.4  1994/02/02  19:58:47  cdaq
 * Remove some damn nulls at the end of the file
 *
@@ -44,10 +47,11 @@
 *     
       INCLUDE 'gen_data_structures.cmn'
 *
-      logical HMS_ABORT,SOS_ABORT
-      character*1024 HMS_err,SOS_err
+      logical FAIL
+      character*1024 why
 *--------------------------------------------------------
 *
+      ABORT= .FALSE.
       err= ' '                                  !erase any old errors
 *
       call G_decode_event_by_banks(event,ABORT,err)
@@ -57,42 +61,33 @@
       ENDIF
 *
 *-HMS reconstruction
-      call H_reconstruction(HMS_ABORT,HMS_err)
+      call H_reconstruction(FAIL,why)
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+        call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+        err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL
 *
 *-SOS reconstruction
-      call S_reconstruction(SOS_ABORT,SOS_err)
-*
-      IF(.NOT.HMS_ABORT .and. .NOT.SOS_ABORT) THEN
+      call S_reconstruction(FAIL,why)
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+        call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+        err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL
 *
 *-COIN reconstruction
-*
-         call C_reconstruction(ABORT,err)
-*
-      ELSEIF(HMS_ABORT) THEN
-*     
-*-HMS only
-*
-         ABORT= SOS_ABORT                       !nonfatal error?
-         err= SOS_err                           !warning about SOS
-         call G_log_message('WARNING: '//err)
-*
-      ELSEIF(SOS_ABORT) THEN
-*
-*-SOS only
-*
-         ABORT= HMS_ABORT                       !nonfatal error?
-         err= HMS_err                           !warning about HMS
-         call G_log_message('WARNING: '//err)
-*
-      ELSE
-*     error from both HMS and SOS
-         ABORT= .TRUE.
-         call G_prepend(HMS_err//' & '//SOS_err,err)
-*
+      call C_reconstruction(ABORT,err)
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+        call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+        err= why
       ENDIF
+      ABORT= ABORT .or. FAIL
 *
-      IF(ABORT) call G_add_path(here,err)
+      IF(ABORT .or. err.NE.' ') call G_add_path(here,err)
 *
       RETURN
       END
-

@@ -9,9 +9,12 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 *-    $Log$
-*-    Revision 1.6  1994/06/15 14:27:30  cdaq
-*-    (SAW) Actually add call to g_examine_physics_event
+*-    Revision 1.7  1994/06/17 03:35:00  cdaq
+*-    (KBB) Upgrade error reporting
 *-
+* Revision 1.6  1994/06/15  14:27:30  cdaq
+* (SAW) Actually add call to g_examine_physics_event
+*
 * Revision 1.5  1994/06/07  18:22:58  cdaq
 * (SAW) Add calls to g_examine_physics_event and g_examine_control_event
 *
@@ -35,15 +38,15 @@
       character*6 here
       parameter (here= 'Engine')
 *
-      logical OK,ABORT
-      character*800 err
+      logical OK,ABORT,FAIL
+      character*800 err,why,mss
 *
       include 'gen_filenames.cmn'
       include 'gen_craw.cmn'
 *
       logical problems
       integer total_event_count
-      integer i
+      integer i,since_cnt
 * 
       character*80 g_config_environmental_var
       parameter (g_config_environmental_var= 'ENGINE_CONFIG_FILE')
@@ -51,6 +54,10 @@
       EXTERNAL thwhalias,thbook
 *
 *--------------------------------------------------------
+*
+      type *
+      type *,'                hall C analysis engine June 1994'
+      type *
 *
       err= ' '
       type *
@@ -61,29 +68,24 @@
       if(ABORT.or.err.ne.' ') then
          call G_add_path(here,err)
          call G_rep_err(ABORT,err)
-         If(.not. ABORT) err= ' '
+         If(ABORT) STOP
+         err= ' '
       ENDIF
 *
       call G_init_filenames(ABORT,err,g_config_environmental_var)
       if(ABORT.or.err.ne.' ') then
          call G_add_path(here,err)
          call G_rep_err(ABORT,err)
-         If(ABORT) then
-            stop
-         else
-            err= ' '
-         endif
+         If(ABORT) STOP
+         err= ' '
       ENDIF
 *
       call G_decode_init(ABORT,err)
       if(ABORT.or.err.ne.' ') then
          call G_add_path(here,err)
          call G_rep_err(ABORT,err)
-         If(ABORT) then
-            stop
-         else
-            err= ' '
-         endif
+         If(ABORT) STOP
+         err= ' '
       endif
 *
 *-attempt to open FASTBUS-CODA file
@@ -94,22 +96,16 @@
       if(ABORT.or.err.ne.' ') then
          call G_add_path(here,err)
          call G_rep_err(ABORT,err)
-         If(ABORT) then
-            stop
-         else
-            err= ' '
-         endif
+         If(ABORT) STOP
+         err= ' '
       endif
 *
       call G_initialize(ABORT,err)              !includes a total reset
       IF(ABORT.or.err.NE.' ') THEN
          call G_add_path(here,err)
          call G_rep_err(ABORT,err)
-         If(ABORT) then
-            stop
-         else
-            err= ' '
-         endif
+         If(ABORT) STOP
+         err= ' '
       ENDIF
 *
 *-zero entire event buffer
@@ -119,21 +115,40 @@
       ENDDO
 
 *
+      since_cnt= 0
       problems= .false.
 *
       DO WHILE(.NOT.problems .and. .NOT.ABORT)
+         mss= ' '
 *
          call G_clear_event(ABORT,err)          !clear out old data
          problems= problems .OR. ABORT
+*
+         if(mss.NE.' ' .and. err.NE.' ') then
+           call G_append(mss,' & '//err)
+         elseif(err.NE.' ') then
+           mss= err
+         endif
 *
          If(.NOT.problems) Then
             call G_get_next_event(ABORT,err)    !get and store 1 event 
             problems= problems .OR. ABORT 
             if(.NOT.ABORT) total_event_count= total_event_count+1
 *
-*            type *,' event#',total_event_count,'  ',ABORT
+            since_cnt= since_cnt+1
+            if(since_cnt.GE.1000) then
+              type *,' event#',total_event_count,'  ',ABORT
+              since_cnt= 0
+            endif
+
 *
          EndIf
+*
+         if(mss.NE.' ' .and. err.NE.' ') then
+           call G_append(mss,' & '//err)
+         elseif(err.NE.' ') then
+           mss= err
+         endif
 *
 *     Check if this is a physics event or a CODA control event.
 *
@@ -144,25 +159,44 @@
 *
                call g_examine_physics_event(CRAW,ABORT,err)
                problems = problems .or.ABORT
-               
+*               
+               if(mss.NE.' ' .and. err.NE.' ') then
+                 call G_append(mss,' & '//err)
+               elseif(err.NE.' ') then
+                  mss= err
+               endif
+*
                if(.NOT.problems) Then
                   call G_reconstruction(CRAW,ABORT,err) !COMMONs
                   problems= problems .OR. ABORT
                endif
-
+*
+               if(mss.NE.' ' .and. err.NE.' ') then
+                 call G_append(mss,' & '//err)
+               elseif(err.NE.' ') then
+                  mss= err
+               endif
+*
                If(.NOT.problems) Then
                   call G_keep_results(ABORT,err) !file away results as
                   problems= problems .OR. ABORT !specified by interface
                EndIf
+*
+               if(mss.NE.' ' .and. err.NE.' ') then
+                 call G_append(mss,' & '//err)
+               elseif(err.NE.' ') then
+                  mss= err
+               endif
+*
             else
                call g_examine_control_event(CRAW,ABORT,err)
             EndIf
          endif
 *
 *
-         If(ABORT .or. err.NE.' ') Then
-            call G_add_path(here,err)           !only if problems
-            call G_log_message(err)
+         If(ABORT .or. mss.NE.' ') Then
+            call G_add_path(here,mss)           !only if problems
+            call G_rep_err(ABORT,mss)
          EndIf
 *
 *- Here is where we insert a check for an Remote Proceedure Call (RPC) 
@@ -170,10 +204,14 @@
 *
       ENDDO                                   !found a problem
 *
-      IF(ABORT .or. err.NE.' ') THEN
-         call G_rep_err(ABORT,err)              !report any errors or warnings
+      type *,'    -------------------------------------'
+*
+      IF(ABORT .or. mss.NE.' ') THEN
+         call G_rep_err(ABORT,mss)              !report any errors or warnings
          err= ' '
       ENDIF
+*
+      type *,'    -------------------------------------'
 *
       call G_proper_shutdown(ABORT,err)         !save files, etc.
       If(ABORT .or. err.NE.' ') Then
