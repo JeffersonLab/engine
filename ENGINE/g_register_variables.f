@@ -19,8 +19,11 @@
 *     Modified: 24-May-1994 K.B.Beard
 *
 *     $Log$
-*     Revision 1.8  1994/08/18 04:11:47  cdaq
-*     (SAW) Call makereg generated routines to register variables
+*     Revision 1.9  1994/10/11 18:39:59  cdaq
+*     (SAW) Add some hacks for event dislpay
+*
+* Revision 1.8  1994/08/18  04:11:47  cdaq
+* (SAW) Call makereg generated routines to register variables
 *
 * Revision 1.7  1994/08/04  03:47:05  cdaq
 * (SAW) Add call to Breuer's hack_register_variables
@@ -84,6 +87,8 @@
       call r_gen_run_pref
 
       call r_gen_data_structures        ! Contains both HMS and SOS stuff
+
+*HDISPLAY      call r_one_ev_io
 *
 *     Need to change in parm files
 *     hist_filename -> g_ctp_hist_filename
