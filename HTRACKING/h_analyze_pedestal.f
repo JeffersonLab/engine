@@ -1,6 +1,9 @@
       subroutine h_analyze_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.7  1999/02/23 18:33:31  csa
+* (JRA) Implement improved pedestal calcs
+*
 * Revision 1.6  1998/12/17 22:02:37  saw
 * Support extra set of tubes on HMS shower counter
 *
@@ -43,20 +46,33 @@
 *
 * HODOSCOPE PEDESTALS
 *
-
+* Update ped limits after have enough events (h*_min_peds/5)
+*
       do ihit = 1 , hscin_all_tot_hits
         pln = hscin_all_plane_num(ihit)
         cnt = hscin_all_counter_num(ihit)
-        hhodo_pos_ped_sum2(pln,cnt) = hhodo_pos_ped_sum2(pln,cnt) +
+        if (hscin_all_adc_pos(ihit).le.hhodo_pos_ped_limit(pln,cnt)) then
+          hhodo_pos_ped_sum2(pln,cnt) = hhodo_pos_ped_sum2(pln,cnt) +
      &          hscin_all_adc_pos(ihit)*hscin_all_adc_pos(ihit)
-        hhodo_neg_ped_sum2(pln,cnt) = hhodo_neg_ped_sum2(pln,cnt) +
-     &          hscin_all_adc_neg(ihit)*hscin_all_adc_neg(ihit)
-        hhodo_pos_ped_sum(pln,cnt) = hhodo_pos_ped_sum(pln,cnt) +
+          hhodo_pos_ped_sum(pln,cnt) = hhodo_pos_ped_sum(pln,cnt) +
      &          hscin_all_adc_pos(ihit)
-        hhodo_neg_ped_sum(pln,cnt) = hhodo_neg_ped_sum(pln,cnt) +
+          hhodo_pos_ped_num(pln,cnt) = hhodo_pos_ped_num(pln,cnt) + 1
+          if (hhodo_pos_ped_num(pln,cnt).eq.nint(hhodo_min_peds/5.)) then
+            hhodo_pos_ped_limit(pln,cnt) = 100 +
+     &               hhodo_pos_ped_sum(pln,cnt) / hhodo_pos_ped_num(pln,cnt)
+          endif
+        endif
+        if (hscin_all_adc_neg(ihit).le.hhodo_neg_ped_limit(pln,cnt)) then
+          hhodo_neg_ped_sum2(pln,cnt) = hhodo_neg_ped_sum2(pln,cnt) +
+     &          hscin_all_adc_neg(ihit)*hscin_all_adc_neg(ihit)
+          hhodo_neg_ped_sum(pln,cnt) = hhodo_neg_ped_sum(pln,cnt) +
      &          hscin_all_adc_neg(ihit)
-        hhodo_pos_ped_num(pln,cnt) = hhodo_pos_ped_num(pln,cnt) + 1
-        hhodo_neg_ped_num(pln,cnt) = hhodo_neg_ped_num(pln,cnt) + 1
+          hhodo_neg_ped_num(pln,cnt) = hhodo_neg_ped_num(pln,cnt) + 1
+          if (hhodo_neg_ped_num(pln,cnt).eq.nint(hhodo_min_peds/5.)) then
+            hhodo_neg_ped_limit(pln,cnt) = 100 +
+     &               hhodo_neg_ped_sum(pln,cnt) / hhodo_neg_ped_num(pln,cnt)
+          endif
+        endif
 
 * fill pedestal histograms.
 c        histval = hscin_all_adc_pos(ihit)-hscin_all_ped_pos(pln,cnt)
@@ -75,15 +91,29 @@ c        call hf1(hidsumnegadc(pln),histval,1.)
         col = hcal_column(ihit)
         blk = row + (col-1)*hmax_cal_rows
 
-        hcal_pos_ped_sum2(blk) = hcal_pos_ped_sum2(blk) +
-     $       hcal_adc_pos(ihit)*hcal_adc_pos(ihit)
-        hcal_pos_ped_sum(blk) = hcal_pos_ped_sum(blk) + hcal_adc_pos(ihit)
-        hcal_pos_ped_num(blk) = hcal_pos_ped_num(blk) + 1
+        if (hcal_adc_pos(ihit) .le. hcal_pos_ped_limit(blk)) then
+          hcal_pos_ped_sum2(blk) = hcal_pos_ped_sum2(blk) +
+     &       hcal_adc_pos(ihit)*hcal_adc_pos(ihit)
+          hcal_pos_ped_sum(blk) = hcal_pos_ped_sum(blk) + hcal_adc_pos(ihit)
+          hcal_pos_ped_num(blk) = hcal_pos_ped_num(blk) + 1
+          if (hcal_pos_ped_num(blk).eq.nint(hcal_min_peds/5.)) then
+            hcal_pos_ped_limit(blk) = 100 +
+     &              hcal_pos_ped_sum(blk) / hcal_pos_ped_num(blk)
+	    write(6,*) 'blk=',blk,'+  newlimit=',hcal_pos_ped_limit(blk)
+          endif
+        endif
 
-        hcal_neg_ped_sum2(blk) = hcal_neg_ped_sum2(blk) +
-     $       hcal_adc_neg(ihit)*hcal_adc_neg(ihit)
-        hcal_neg_ped_sum(blk) = hcal_neg_ped_sum(blk) + hcal_adc_neg(ihit)
-        hcal_neg_ped_num(blk) = hcal_neg_ped_num(blk) + 1
+        if (hcal_adc_neg(ihit) .le. hcal_neg_ped_limit(blk)) then
+          hcal_neg_ped_sum2(blk) = hcal_neg_ped_sum2(blk) +
+     &       hcal_adc_neg(ihit)*hcal_adc_neg(ihit)
+          hcal_neg_ped_sum(blk) = hcal_neg_ped_sum(blk) + hcal_adc_neg(ihit)
+          hcal_neg_ped_num(blk) = hcal_neg_ped_num(blk) + 1
+          if (hcal_neg_ped_num(blk).eq.nint(hcal_min_peds/5.)) then
+            hcal_neg_ped_limit(blk) = 100 +
+     &              hcal_neg_ped_sum(blk) / hcal_neg_ped_num(blk)
+	    write(6,*) 'blk=',blk,'-  newlimit=',hcal_pos_ped_limit(blk)
+          endif
+        endif
       enddo
 *
 *
@@ -91,10 +121,16 @@ c        call hf1(hidsumnegadc(pln),histval,1.)
 *
       do ihit = 1 , hcer_tot_hits
         pmt=hcer_tube_num(ihit)      ! no sparsification yet - NEED TO FIX!!!!
-        hcer_ped_sum2(pmt) = hcer_ped_sum2(pmt) +
+        if (hcer_raw_adc(ihit) .le. hcer_ped_limit(pmt)) then
+          hcer_ped_sum2(pmt) = hcer_ped_sum2(pmt) +
      $       hcer_raw_adc(ihit)*hcer_raw_adc(ihit)
-        hcer_ped_sum(pmt) = hcer_ped_sum(pmt) + hcer_raw_adc(ihit)
-        hcer_ped_num(pmt) = hcer_ped_num(pmt) + 1
+          hcer_ped_sum(pmt) = hcer_ped_sum(pmt) + hcer_raw_adc(ihit)
+          hcer_ped_num(pmt) = hcer_ped_num(pmt) + 1
+          if (hcer_ped_num(pmt).eq.nint(hcer_min_peds/5.)) then
+            hcer_ped_limit(pmt) = 100 +
+     &              hcer_ped_sum(pmt) / hcer_ped_num(pmt)
+          endif
+        endif
       enddo
 *
 *
@@ -103,11 +139,16 @@ c        call hf1(hidsumnegadc(pln),histval,1.)
       do ihit = 1 , hmisc_tot_hits
         if (hmisc_raw_addr1(ihit).eq.2) then   !ADCs
           ind=hmisc_raw_addr2(ihit)      ! no sparsification yet - NEED TO FIX!!!!
-          hmisc_ped_sum2(ind) = hmisc_ped_sum2(ind) +
+          if (hmisc_raw_data(ihit) .le. hmisc_ped_limit(ind)) then
+            hmisc_ped_sum2(ind) = hmisc_ped_sum2(ind) +
      $         hmisc_raw_data(ihit)*hmisc_raw_data(ihit)
-          hmisc_ped_sum(ind) = hmisc_ped_sum(ind) + hmisc_raw_data(ihit)
-          hmisc_ped_num(ind) = hmisc_ped_num(ind) + 1
-c         write(6,*) hmisc_raw_addr1(ihit),hmisc_raw_addr2(ihit),hmisc_ped_sum(ind),hmisc_ped_num(ind)
+            hmisc_ped_sum(ind) = hmisc_ped_sum(ind) + hmisc_raw_data(ihit)
+            hmisc_ped_num(ind) = hmisc_ped_num(ind) + 1
+            if (hmisc_ped_num(ind).eq.nint(hmisc_min_peds/5.)) then
+              hmisc_ped_limit(ind) = 100 +
+     &                hmisc_ped_sum(ind) / hmisc_ped_num(ind)
+            endif
+          endif
         endif
       enddo
 
