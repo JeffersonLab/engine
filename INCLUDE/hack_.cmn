@@ -1,26 +1,36 @@
-*
 *---------------------------------------------------------------------------
-*---    file: hacking.cmn
-*---    include file for USER DEVOLOPMENT common blocks definitions;
-*---    used in files HACKING*.F
-*---    the arrays hack_par (integer) and hack_output (real) are provided
-*---    for convenience and are registered for external input and output;
-*---    any additional variables should be added (and registered) by the user.
+*-- file: hack_.cmn
+*-- include file for USER DEVOLOPMENT common block definitions;
+*     used in files HACK_*.F
+*-- The parameter hack_enable must be set to .ne. 0 to enable execution of
+*     hack_anal subroutine for each event.
+*-- provided for general use are the 1024 element long arrays:
+*-   hack_eventint, hack_eventreal: two arrays for storage of user-calculated
+*     values for each event which can be accessed from the "outside", e.g.
+*     in histogram definitions or in tests; one array for integer results,
+*     the other array for real results;
+*-   hack_parmreal: an array for input of real values, e.g. for calibration
+*     constants.
+*-- any additional arrays or variables my be added by the user
+*---------------------------------------------------------------------------
 * $Log$
-* Revision 1.1  1994/07/22 13:55:48  cdaq
+* Revision 1.2  1994/07/25 18:02:18  cdaq
+* (HB) New version
+*
+* Revision 1.1  1994/07/22  13:55:48  cdaq
 * Initial revision
 *
 *---------------------------------------------------------------------------
 *
-***      include 'gen_data_structures.cmn' ! Include files may not include
-***            other include files.
-*
       integer*4 max_user_par
       parameter (max_user_par=1024)
 *
-      integer*4 hack_int(max_user_par) !User Development input parameters
-      real*4 hack_real(max_user_par)   !User Development output results
-      common /hacking_c/ hack_int,hack_real
+      integer*4 hack_enable
+      integer*4 hack_eventint(max_user_par) !User Development event output
+      real*4 hack_eventreal(max_user_par)   !User Development event output
+      real*4 hack_parmreal(max_user_par)    !User Development parameter input
+      common /hack_c/ hack_enable,
+     &  hack_parmreal,hack_eventreal,hack_eventint
 *
       integer hack_hmssc_au(16,4) !raw HMS-scintillator ADC up in fixed array
       integer hack_hmssc_ad(16,4) !raw HMS-scintillator ADC down in fixed array
