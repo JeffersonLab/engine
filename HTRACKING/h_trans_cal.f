@@ -16,6 +16,9 @@
 *-
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 * $Log$
+* Revision 1.6  1999/02/03 21:13:24  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.5  1999/01/29 17:33:57  saw
 * Cosmetic changes
 *
@@ -63,6 +66,13 @@
       hcal_e3    =0.
       hcal_e4    =0.
       hcal_et    =0.
+*
+      hcal_e1_pos    =0.
+      hcal_e1_neg    =0.
+*
+      hcal_e2_pos    =0.
+      hcal_e2_neg    =0.
+
       if(hcal_num_hits.le.0) go to 100   !Return
 *
 *      Loop over hits
@@ -85,11 +95,29 @@
         endif
 *
 *------Accumulate the integral energy depositions
-        if(col.eq.1) hcal_e1=hcal_e1+hblock_de(nh)
-        if(col.eq.2) hcal_e2=hcal_e2+hblock_de(nh)
-        if(col.eq.3) hcal_e3=hcal_e3+hblock_de(nh)
-        if(col.eq.4) hcal_e4=hcal_e4+hblock_de(nh)
-                     hcal_et=hcal_et+hblock_de(nh)
+        if(col.eq.1) then
+          if(hcal_num_neg_columns.ge.1) then
+            hcal_e1_pos=hcal_e1_pos+hblock_de_pos(nh)
+            hcal_e1_neg=hcal_e1_neg+hblock_de_neg(nh)
+            hcal_e1=hcal_e1_pos+hcal_e1_neg
+          else
+            hcal_e1=hcal_e1+hblock_de(nh)
+          endif
+        else if (col.eq.2) then
+          if(hcal_num_neg_columns.ge.2) then
+            hcal_e2_pos=hcal_e2_pos+hblock_de_pos(nh)
+            hcal_e2_neg=hcal_e2_neg+hblock_de_neg(nh)
+            hcal_e2=hcal_e2_pos+hcal_e2_neg
+          else
+            hcal_e2=hcal_e2+hblock_de(nh)
+          endif
+        else if(col.eq.3) then
+          hcal_e3=hcal_e3+hblock_de(nh)
+        else if(col.eq.4) then
+          hcal_e4=hcal_e4+hblock_de(nh)
+        endif
+        hcal_et=hcal_et+hblock_de(nh)  ! Is hblock_de de_pos+de_neg?
+*
       enddo      !End loop over hits
       hnhits_cal=hcal_num_hits
 *

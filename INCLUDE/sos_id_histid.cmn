@@ -11,6 +11,9 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
+* Revision 1.10  1999/02/03 21:13:34  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.9  1996/09/04 16:28:58  saw
 * (JRA) Add sidmisctdcs
 *
@@ -55,17 +58,29 @@
       integer*4 sidscinnegadc(SNUM_SCIN_PLANES,snum_scin_elements)
       integer*4 sidscinpostdc(SNUM_SCIN_PLANES,snum_scin_elements)
       integer*4 sidscinnegtdc(SNUM_SCIN_PLANES,snum_scin_elements)
-      integer*4 sidcalplane
-      integer*4 sidcalhits(SMAX_CAL_COLUMNS)
       integer*4 sidscinalltimes
-      integer*4 sidscintimes
+      integer*4 sidscindpos(SNUM_SCIN_PLANES)
       integer*4 sidsumposadc(SNUM_SCIN_PLANES)
       integer*4 sidsumnegadc(SNUM_SCIN_PLANES)
       integer*4 sidsumpostdc(SNUM_SCIN_PLANES)
       integer*4 sidsumnegtdc(SNUM_SCIN_PLANES)
+      integer*4 sidscintimes
+
+      integer*4 sidcalplane
+      integer*4 sidcalhits(SMAX_CAL_COLUMNS)
+      integer*4 sidcalposhits(SMAX_CAL_COLUMNS)
+      integer*4 sidcalneghits(SMAX_CAL_COLUMNS)
       integer*4 sidcalsumadc
-      integer*4 sidscindpos(SNUM_SCIN_PLANES)
       integer*4 sidcaldpos
+
+*      integer*4 sidcaladcpos
+*      integer*4 sidcaladcneg
+c      integer*4 sidcalsuma_pos
+c      integer*4 sidcalsuma_neg
+*
+c      integer*4 sidcalsumb_pos
+c      integer*4 sidcalsumb_neg
+
       integer*4 siddcdposx,siddcdposy,siddcdposxp,siddcdposyp
       integer*4 sidmisctdcs
 *
@@ -81,19 +96,24 @@
      &     sidscinnegadc,
      &     sidscinpostdc,
      &     sidscinnegtdc,
-     &     sidcalplane,
-     &     sidcalhits,
      &     sidscinalltimes,
      &     sidscintimes,
      &     sidsumposadc,
      &     sidsumnegadc,
      &     sidsumpostdc,
      &     sidsumnegtdc,
-     &     sidcalsumadc,
      &     sidscindpos,
+     &     sidcalplane,
+     &     sidcalhits,
+     &     sidcalsumadc,
+     $     sidcalposhits,
+     $     sidcalneghits,
      &     sidcaldpos,
      &     siddcdposx,siddcdposy,siddcdposxp,siddcdposyp,
      &     sidmisctdcs
+c      sidcaladcpos, sidcaladcneg
+c      sidcalsuma_pos, sidcalsuma_neg
+c      sidcalsumb_pos, sidcalsumb_neg
 
 *
 *     CTPTYPE=parm

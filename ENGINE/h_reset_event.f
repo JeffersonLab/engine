@@ -15,6 +15,9 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
+* Revision 1.15  1999/02/03 21:13:03  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.14  1998/12/17 21:50:31  saw
 * Support extra set of tubes on HMS shower counter
 *
@@ -136,10 +139,16 @@
          HBLOCK_XC(block)= 0.
          HBLOCK_ZC(block)= 0
          HBLOCK_DE(block)= 0
+         HBLOCK_DE_POS(block)= 0
+         HBLOCK_DE_NEG(block)= 0
          HCAL_ROW(block)= 0
          HCAL_COLUMN(block)= 0
+         HCAL_ADC_POS(block)= 0
+         HCAL_ADC_NEG(block)= 0
          HCAL_ADC(block)= 0
       ENDDO
+      HCAL_POS_HITS= 0
+      HCAL_NEG_HITS= 0
       HCAL_TOT_HITS= 0
 *     
 *     HMS CERENKOV HITS
@@ -210,6 +219,10 @@
          HTRACK_E3(track)= 0.
          HTRACK_E4(track)= 0.
          HTRACK_ET(track)= 0.
+         HTRACK_E1_POS(track)= 0.
+         HTRACK_E1_NEG(track)= 0.
+         HTRACK_E2_POS(track)= 0.
+         HTRACK_E2_NEG(track)= 0.
          HTRACK_PRESHOWER_E(track)= 0.
          do hit = 1 , HMAX_SCIN_HITS
            HSCIN_HIT(track,hit)= 0

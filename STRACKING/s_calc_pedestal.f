@@ -1,6 +1,9 @@
       subroutine s_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.12  1999/02/03 21:13:44  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.11  1999/01/29 17:34:57  saw
 * Add variables for second tubes on shower counter
 *
@@ -134,9 +137,9 @@ c      write(6,*) blk,'+',num
         scal_new_ped_pos(blk)=scal_pos_ped_sum(blk)/num
         sig2 = float(scal_pos_ped_sum2(blk))/num - scal_new_ped_pos(blk)**2
         scal_new_rms_pos(blk)=sqrt(max(0.,sig2))
-*        scal_new_adc_threshold_pos(blk)=scal_pos_new_ped(blk)+
+*        scal_new_adc_threshold_pos(blk)=scal_new_ped_pos(blk)+
 *     &                  2.*scal_new_rms_pos(blk)
-c        type *,blk,smax_cal_blocks,scal_new_adc_threshold_pos(blk),scal_pos_new_ped(blk)
+c        type *,blk,smax_cal_blocks,scal_new_adc_threshold_pos(blk),scal_new_ped_pos(blk)
         scal_new_adc_threshold_pos(blk)=scal_new_ped_pos(blk)+15.
         if (abs(scal_pos_ped_mean(blk)-scal_new_ped_pos(blk))
      &                 .ge.(2.*scal_new_rms_pos(blk))) then
@@ -160,10 +163,10 @@ c      write(6,*) blk,'-',num
         scal_new_ped_neg(blk)=scal_neg_ped_sum(blk)/num
         sig2 = float(scal_neg_ped_sum2(blk))/num-scal_new_ped_neg(blk)**2
         scal_new_rms_neg(blk)=sqrt(max(0.,sig2))
-*        scal_new_adc_threshold_neg(blk)=scal_neg_new_ped(blk)+
+*        scal_new_adc_threshold_neg(blk)=scal_new_ped_neg(blk)+
 *     &                  2.*scal_new_rms_neg(blk)
         scal_new_adc_threshold_neg(blk)=scal_new_ped_neg(blk)+15.
-c        type *,blk,smax_cal_blocks,scal_new_adc_threshold_neg(blk),scal_neg_new_ped(blk)
+c        type *,blk,smax_cal_blocks,scal_new_adc_threshold_neg(blk),scal_new_ped_neg(blk)
         if (abs(scal_neg_ped_mean(blk)-scal_new_ped_neg(blk))
      &                 .ge.(2.*scal_new_rms_neg(blk))) then
           ind = ind + 1

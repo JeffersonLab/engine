@@ -8,6 +8,9 @@
 *
 *
 * $Log$
+* Revision 1.7  1999/02/03 21:13:23  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.6  1999/01/27 16:02:39  saw
 * Check if some hists are defined before filling
 *
@@ -58,6 +61,12 @@
           if(hidcalplane.gt.0) call hf1(hidcalplane,histval,1.)
           histval=float(row)
           call hf1(hidcalhits(col),histval,1.)
+          if(hcal_adc_pos(ihit).ge.0) then
+            call hf1(hidcalposhits(col),histval,1.)
+          endif
+          if(hcal_adc_neg(ihit).ge.0) then
+            call hf1(hidcalneghits(col),histval,1.)
+          endif
         enddo
       endif
 

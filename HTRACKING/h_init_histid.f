@@ -7,6 +7,9 @@
 *     Date:      9 April 1994
 *
 * $Log$
+* Revision 1.6  1999/02/03 21:13:23  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.5  1996/08/30 19:55:09  saw
 * (JRA) Get id for misc. TDC's
 *
@@ -219,6 +222,22 @@ c
       hidcalhits(3) = thgetid('hcalchits')
       hidcalhits(4) = thgetid('hcaldhits')
       hidcalsumadc = thgetid('hcalsumadc')
+
+      hidcalposhits(1)= thgetid('hcala_pos_hits')  
+      hidcalposhits(2)= thgetid('hcalb_pos_hits')   
+      hidcalposhits(3)= thgetid('hcalc_pos_hits')   
+      hidcalposhits(4)= thgetid('hcald_pos_hits')   
+*
+      hidcalneghits(1)= thgetid('hcala_neg_hits')  
+      hidcalneghits(2)= thgetid('hcalb_neg_hits')  
+      hidcalneghits(3)= thgetid('hcalc_neg_hits')  
+      hidcalneghits(4)= thgetid('hcald_neg_hits')   
+*
+c      hidcalsuma_pos = thgetid('hcalsuma_pos')   
+c      hidcalsuma_neg = thgetid('hcalsuma_neg')
+*
+c      hidcalsumb_pos = thgetid('hcalsumb_pos')   
+c      hidcalsumb_neg = thgetid('hcalsumb_neg')   
 
       hidmisctdcs = thgetid('hmisctdcs')
 

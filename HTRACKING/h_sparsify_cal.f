@@ -13,6 +13,9 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to h_raw_dump_all
 * $Log$
+* Revision 1.9  1999/02/03 21:13:24  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.8  1998/12/17 22:02:40  saw
 * Support extra set of tubes on HMS shower counter
 *
@@ -83,6 +86,7 @@
          adc_pos=hcal_adc_pos(nh)
          adc_neg=hcal_adc_neg(nh)
 *
+*
 *------Check the validity of raw data
 c         abort=row.le.0.or.row.gt.hmax_cal_rows
 c         if(abort) then
@@ -125,8 +129,16 @@ c         endif
             hcal_num_hits           =hcal_num_hits+1
             hcal_rows(hcal_num_hits)=row
             hcal_cols(hcal_num_hits)=col
-            hcal_adcs_pos(hcal_num_hits)=hcal_realadc_pos(nb)
-            hcal_adcs_neg(hcal_num_hits)=hcal_realadc_neg(nb)
+            if(adc_pos.lt.0) then
+               hcal_adcs_pos(hcal_num_hits)= 0.0
+            else
+               hcal_adcs_pos(hcal_num_hits)=hcal_realadc_pos(nb)
+            endif
+            if(adc_neg.lt.0) then
+               hcal_adcs_neg(hcal_num_hits)= 0.0
+            else
+               hcal_adcs_neg(hcal_num_hits)=hcal_realadc_neg(nb)
+            endif
          endif
       enddo                      !End loop over raw hits
 *

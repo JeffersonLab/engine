@@ -8,6 +8,9 @@
 *
 *
 * $Log$
+* Revision 1.7  1999/02/03 21:13:45  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.6  1999/01/29 17:34:58  saw
 * Add variables for second tubes on shower counter
 *
@@ -58,6 +61,12 @@
           if(sidcalplane.gt.0) call hf1(sidcalplane,histval,1.)
           histval=float(row)
           call hf1(sidcalhits(col),histval,1.)
+          if(scal_adc_pos(ihit).ge.0) then
+            call hf1(sidcalposhits(col),histval,1.)
+          endif
+          if(scal_adc_neg(ihit).ge.0) then
+            call hf1(sidcalneghits(col),histval,1.)
+          endif
         enddo
       endif
 

@@ -14,6 +14,9 @@
 * author: Chris Cothran
 * created: 5/25/95
 * $Log$
+* Revision 1.3  1999/02/03 21:13:23  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.2  1995/10/09 20:15:08  cdaq
 * (JRA) Move calculation of hit position on mirror to s_physics
 *
@@ -44,7 +47,7 @@
      &  .and. hsbeta .gt. hcer_beta_min
      &  .and. hsbeta .lt. hcer_beta_max
      &  .and. hstrack_et .gt. hcer_et_min
-     &  .and. hstrack_et .lt. hcer_et_max) then
+     &  .and. hstrack_et .lt. hcer_et_max) then ! Some use hsshtrk instead
         do nr = 1, hcer_num_regions
 *
 * hit must be inside the region in order to continue

@@ -12,6 +12,9 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-      $Log$
+*-      Revision 1.14  1999/02/03 21:13:04  saw
+*-      Code for new Shower counter tubes
+*-
 *-      Revision 1.13  1996/11/05 21:43:16  saw
 *-      (WH) Add lucite counter
 *-
@@ -90,9 +93,12 @@
       enddo
 
       do i=1,smax_cal_blocks
-        scal_ped_num(i)=0
-        scal_ped_sum2(i)=0
-        scal_ped_sum(i)=0
+        scal_pos_ped_num(i)=0
+        scal_pos_ped_sum2(i)=0
+        scal_pos_ped_sum(i)=0
+        scal_neg_ped_num(i)=0
+        scal_neg_ped_sum2(i)=0
+        scal_neg_ped_sum(i)=0
       enddo
 
       do i=1,smax_cer_hits
@@ -159,8 +165,12 @@
          SBLOCK_XC(block) = 0.
          SBLOCK_ZC(block) = 0.
          SBLOCK_DE(block) = 0.
+         SBLOCK_DE_POS(block)= 0
+         SBLOCK_DE_NEG(block)= 0
          SCAL_ROW(block) = 0
          SCAL_COLUMN(block) = 0
+         SCAL_ADC_POS(block)= 0
+         SCAL_ADC_NEG(block)= 0
          SCAL_ADC(block) = 0
       ENDDO
       SCAL_TOT_HITS= 0
@@ -260,6 +270,10 @@
          STRACK_E3(track)=0
          STRACK_E4(track)=0
          STRACK_ET(track)=0
+         STRACK_E1_POS(track)= 0.
+         STRACK_E1_NEG(track)= 0.
+         STRACK_E2_POS(track)= 0.
+         STRACK_E2_NEG(track)= 0.
          STRACK_PRESHOWER_E(track)=0
           do hit = 1, SMAX_SCIN_HITS
             SSCIN_HIT(track,hit)= 0

@@ -16,6 +16,9 @@
 *-
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 * $Log$
+* Revision 1.5  1999/02/03 21:13:45  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.4  1999/01/29 17:34:59  saw
 * Add variables for second tubes on shower counter
 *
@@ -82,11 +85,28 @@
         endif
 *
 *------Accumulate the integral energy depositions
-        if(col.eq.1) scal_e1=scal_e1+sblock_de(nh)
-        if(col.eq.2) scal_e2=scal_e2+sblock_de(nh)
-        if(col.eq.3) scal_e3=scal_e3+sblock_de(nh)
-        if(col.eq.4) scal_e4=scal_e4+sblock_de(nh)
-        scal_et=scal_et+sblock_de(nh)
+        if(col.eq.1) then
+          if(scal_num_neg_columns.ge.1) then
+            scal_e1_pos=scal_e1_pos+sblock_de_pos(nh)
+            scal_e1_neg=scal_e1_neg+sblock_de_neg(nh)
+            scal_e1=scal_e1_pos+scal_e1_neg
+          else
+            scal_e1=scal_e1+sblock_de(nh)
+          endif
+        else if (col.eq.2) then
+          if(scal_num_neg_columns.ge.2) then
+            scal_e2_pos=scal_e2_pos+sblock_de_pos(nh)
+            scal_e2_neg=scal_e2_neg+sblock_de_neg(nh)
+            scal_e2=scal_e2_pos+scal_e2_neg
+          else
+            scal_e2=scal_e2+sblock_de(nh)
+          endif
+        else if(col.eq.3) then
+          scal_e3=scal_e3+sblock_de(nh)
+        else if(col.eq.4) then
+          scal_e4=scal_e4+sblock_de(nh)
+        endif
+        scal_et=scal_et+sblock_de(nh)  ! Is sblock_de de_pos+de_neg?
       enddo                             !End loop over hits
       snhits_cal=scal_num_hits
 *

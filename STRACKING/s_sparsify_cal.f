@@ -13,6 +13,9 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to s_raw_dump_all
 * $Log$
+* Revision 1.9  1999/02/03 21:13:45  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.8  1999/01/29 17:34:59  saw
 * Add variables for second tubes on shower counter
 *
@@ -123,8 +126,16 @@ c         endif
             scal_num_hits           =scal_num_hits+1
             scal_rows(scal_num_hits)=row
             scal_cols(scal_num_hits)=col
-            scal_adcs_pos(scal_num_hits)=scal_realadc_pos(nb)
-            scal_adcs_neg(scal_num_hits)=scal_realadc_neg(nb)
+            if(adc_pos.lt.0) then
+               scal_adcs_pos(scal_num_hits)= 0.0
+            else
+               scal_adcs_pos(scal_num_hits)=scal_realadc_pos(nb)
+            endif
+            if(adc_neg.lt.0) then
+               scal_adcs_neg(scal_num_hits)= 0.0
+            else
+               scal_adcs_neg(scal_num_hits)=scal_realadc_neg(nb)
+            endif
          endif
       enddo                      !End loop over raw hits
 *

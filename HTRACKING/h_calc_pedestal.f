@@ -1,6 +1,9 @@
       subroutine h_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.11  1999/02/03 21:13:23  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.10  1998/12/17 22:02:38  saw
 * Support extra set of tubes on HMS shower counter
 *
@@ -138,9 +141,9 @@ c      write(6,*) blk,'+',num
         hcal_new_ped_pos(blk)=hcal_pos_ped_sum(blk)/num
         sig2 = float(hcal_pos_ped_sum2(blk))/num - hcal_new_ped_pos(blk)**2
         hcal_new_rms_pos(blk)=sqrt(max(0.,sig2))
-*        hcal_new_adc_threshold_pos(blk)=hcal_pos_new_ped(blk)+
+*        hcal_new_adc_threshold_pos(blk)=hcal_new_ped_pos(blk)+
 *     &                  2.*hcal_new_rms_pos(blk)
-c        type *,blk,hmax_cal_blocks,hcal_new_adc_threshold_pos(blk),hcal_pos_new_ped(blk)
+c        type *,blk,hmax_cal_blocks,hcal_new_adc_threshold_pos(blk),hcal_new_ped_pos(blk)
         hcal_new_adc_threshold_pos(blk)=hcal_new_ped_pos(blk)+15.
         if (abs(hcal_pos_ped_mean(blk)-hcal_new_ped_pos(blk))
      &                 .ge.(2.*hcal_new_rms_pos(blk))) then

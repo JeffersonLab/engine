@@ -15,6 +15,9 @@
 * h_cal_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
+* Revision 1.7  1999/02/03 21:13:23  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.6  1999/01/29 17:33:56  saw
 * Cosmetic changes
 *
@@ -102,7 +105,7 @@
         row=hcal_rows(nhit)
         col=hcal_cols(nhit)
 * We don't actually do anything with the following values?
-        adc_pos=hcal_adcs_pos(nhit)
+        adc_pos=hcal_adcs_pos(nhit)  ! Do we want hcal_adc_pos or hcal_adcs_pos
         adc_neg=hcal_adcs_neg(nhit)
         blk=row+hmax_cal_rows*(col-1)
 

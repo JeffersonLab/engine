@@ -16,6 +16,9 @@
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 *
 * $Log$
+* Revision 1.7  1999/02/03 21:13:22  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.6  1999/01/21 21:40:13  saw
 * Extra shower counter tube modifications
 *
@@ -46,11 +49,9 @@
       integer*4 nt           !Detector track number
       integer*4 nc           !Calorimeter cluster number
       real*4 cor_pos     !Correction factor for X,Y dependenc.   ! Single  "POS_PMT"
-*      real*4 cor         !Correction factor for X,Y dependenc.  !! For old version
       real*4 cor_neg     !Correction factor for X,Y dependenc.   ! Single  "NEG_PMT" 
       real*4 cor_two     !Correction factor for X,Y dependence.  ! "POS_PMT" + "NEG_PMT"  
       real*4 h_correct_cal_pos          !External function to compute "cor_pos". 
-*      real*4 h_correct_cal              !External function to compute "cor" For old version.
       real*4 h_correct_cal_neg          !External function to compute "cor_neg"   
       real*4 h_correct_cal_two          !External function to compute "cor_two"
 
@@ -96,8 +97,6 @@
 
          if(nc.gt.0) then
            cor_pos=h_correct_cal_pos(htrack_xc(nt),htrack_yc(nt)) ! For single "pos_pmt"
-*
-*     cor=h_correct_cal(htrack_xc(nt),htrack_yc(nt))   ! For old version single "pos_pmt"
 *
            cor_neg=h_correct_cal_neg(htrack_xc(nt),htrack_yc(nt)) ! For single "neg_pmt"
 *

@@ -22,6 +22,9 @@
 *-                                Change name of print routine
 *                10 Apr 1994      DFG Protect for Et=0 division
 * $Log$
+* Revision 1.5  1999/02/03 21:13:23  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.4  1995/05/22 19:39:07  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -150,6 +153,11 @@
 *     and the total energy deposition
 *     
       do nc=1,hnclusters_max
+        hcluster_e1_pos(nc)=0.      
+        hcluster_e1_neg(nc)=0.
+        hcluster_e2_pos(nc)=0.      
+        hcluster_e2_neg(nc)=0.     
+*
         hcluster_e1(nc)=0.
         hcluster_e2(nc)=0.
         hcluster_e3(nc)=0.
@@ -166,11 +174,29 @@
 *     
         hcluster_xc(nc)=hcluster_xc(nc)+hblock_xc(nh)*hblock_de(nh)
 *
-        if(col.eq.1) hcluster_e1(nc)=hcluster_e1(nc)+hblock_de(nh)
-        if(col.eq.2) hcluster_e2(nc)=hcluster_e2(nc)+hblock_de(nh)
-        if(col.eq.3) hcluster_e3(nc)=hcluster_e3(nc)+hblock_de(nh)
-        if(col.eq.4) hcluster_e4(nc)=hcluster_e4(nc)+hblock_de(nh)
-        hcluster_et(nc)=hcluster_et(nc)+hblock_de(nh)
+        if(col.eq.1) then
+          if(hcal_num_neg_columns.ge.1) then
+            hcluster_e1_pos(nc)=hcluster_e1_pos(nc)+hblock_de_pos(nh)
+            hcluster_e1_neg(nc)=hcluster_e1_neg(nc)+hblock_de_neg(nh)
+            hcluster_e1(nc)=hcluster_e1_pos(nc)+hcluster_e1_neg(nc)
+          else
+            hcluster_e1(nc)=hcluster_e1(nc)+hblock_de(nh)
+          endif
+        else if (col.eq.2) then
+          if(hcal_num_neg_columns.ge.2) then
+            hcluster_e2_pos(nc)=hcluster_e2_pos(nc)+hblock_de_pos(nh)
+            hcluster_e2_neg(nc)=hcluster_e2_neg(nc)+hblock_de_neg(nh)
+            hcluster_e2(nc)=hcluster_e2_pos(nc)+hcluster_e2_neg(nc)
+          else
+            hcluster_e2(nc)=hcluster_e2(nc)+hblock_de(nh)
+          endif
+        else if(col.eq.3) then
+          hcluster_e3(nc)=hcluster_e3(nc)+hblock_de(nh)
+        else if(col.eq.4) then
+          hcluster_e4(nc)=hcluster_e4(nc)+hblock_de(nh)
+        endif
+        hcluster_et(nc)=hcluster_et(nc)+hblock_de(nh)  ! Is hblock_de de_pos+de_neg?
+*
       enddo
 *
       do nc=1,hnclusters_cal

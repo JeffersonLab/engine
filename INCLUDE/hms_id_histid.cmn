@@ -11,6 +11,9 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
+* Revision 1.11  1999/02/03 21:13:34  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.10  1996/09/04 15:51:24  saw
 * Add hidmisctdcs
 *
@@ -62,17 +65,29 @@
       integer*4 hidscinnegadc(HNUM_SCIN_PLANES,hnum_scin_elements)
       integer*4 hidscinpostdc(HNUM_SCIN_PLANES,hnum_scin_elements)
       integer*4 hidscinnegtdc(HNUM_SCIN_PLANES,hnum_scin_elements)
-      integer*4 hidcalplane
-      integer*4 hidcalhits(HMAX_CAL_COLUMNS)
       integer*4 hidscinalltimes
-      integer*4 hidscintimes
+      integer*4 hidscindpos(HNUM_SCIN_PLANES)
       integer*4 hidsumposadc(HNUM_SCIN_PLANES)
       integer*4 hidsumnegadc(HNUM_SCIN_PLANES)
       integer*4 hidsumpostdc(HNUM_SCIN_PLANES)
       integer*4 hidsumnegtdc(HNUM_SCIN_PLANES)
+      integer*4 hidscintimes
+
+      integer*4 hidcalplane
+      integer*4 hidcalhits(HMAX_CAL_COLUMNS)
+      integer*4 hidcalposhits(HMAX_CAL_COLUMNS)
+      integer*4 hidcalneghits(HMAX_CAL_COLUMNS)
       integer*4 hidcalsumadc
-      integer*4 hidscindpos(HNUM_SCIN_PLANES)
       integer*4 hidcaldpos
+
+*      integer*4 hidcaladcpos
+*      integer*4 hidcaladcneg
+c      integer*4 hidcalsuma_pos
+c      integer*4 hidcalsuma_neg
+*
+c      integer*4 hidcalsumb_pos
+c      integer*4 hidcalsumb_neg
+
       integer*4 hiddcdposx,hiddcdposy,hiddcdposxp,hiddcdposyp
       integer*4 hidmisctdcs
 *
@@ -88,19 +103,24 @@
      &     hidscinnegadc,
      &     hidscinpostdc,
      &     hidscinnegtdc,
-     &     hidcalplane,
-     &     hidcalhits,
      &     hidscinalltimes,
      &     hidscintimes,
      &     hidsumposadc,
      &     hidsumnegadc,
      &     hidsumpostdc,
      &     hidsumnegtdc,
-     &     hidcalsumadc,
      &     hidscindpos,
+     &     hidcalplane,
+     &     hidcalhits,
+     &     hidcalsumadc,
+     $     hidcalposhits,
+     $     hidcalneghits,
      &     hidcaldpos,
      &     hiddcdposx,hiddcdposy,hiddcdposxp,hiddcdposyp,
      &     hidmisctdcs
+c      hidcaladcpos, hidcaladcneg
+c      hidcalsuma_pos, hidcalsuma_neg
+c      hidcalsumb_pos, hidcalsumb_neg
 
 *
 *     CTPTYPE=parm

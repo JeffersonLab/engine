@@ -15,6 +15,9 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.6  1999/02/03 21:13:44  saw
+* Code for new Shower counter tubes
+*
 * Revision 1.5  1999/01/29 17:34:56  saw
 * Add variables for second tubes on shower counter
 *
@@ -57,6 +60,12 @@
 *--------------------------------------------------------
 *
       do nt=1, sntracks_fp
+        strack_e1_pos(nt)=0.            !  Only pos_pmt for layer "A"
+        strack_e1_neg(nt)=0.            !  Only_neg_pmt for layer "A"
+*
+        strack_e2_pos(nt)=0.            !  Only_pos_pmt for layer "B"  
+        strack_e2_neg(nt)=0.            !  Only_neg_pmt for layer "B" 
+*
         strack_e1(nt)=0.
         strack_e2(nt)=0.
         strack_e3(nt)=0.
@@ -86,7 +95,6 @@
       do nt =1,sntracks_fp
         nc=scluster_track(nt)
         if(nc.gt.0) then
-*          cor=s_correct_cal(strack_xc(nt),strack_yc(nt)) ! Old version
           cor_pos=s_correct_cal_pos(strack_xc(nt),strack_yc(nt)) ! Single pos PMT
           cor_neg=s_correct_cal_neg(strack_xc(nt),strack_yc(nt)) ! Single neg PMT
           cor_two=s_correct_cal_two(strack_xc(nt),strack_yc(nt)) ! Pos + Neg
