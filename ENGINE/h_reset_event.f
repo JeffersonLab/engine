@@ -45,7 +45,7 @@
       ENDDO
       HDC_TOT_HITS= 0
 *
-      DO plane= 1,HNUM_DC_PLANES
+      DO plane= 1,HMAX_NUM_DC_PLANES
          HDC_HITS_PER_PLANE(plane)= 0
       ENDDO
 *
