@@ -1,0 +1,40 @@
+*     t20_tracking.cmn
+*     include file for t20 tracking intermediate results
+*     S.A. Wood              22 Jan 97
+
+* $Log$
+* Revision 1.1  1997/05/23 19:07:39  saw
+* Initial revision
+*
+*     The following include statments must precede the inclusion of this
+*     file in each routine that uses it.  The *%% syntax is also a
+*     directive to makereg to tell it to include the code in the program
+*     that it generates.
+*
+*%%   include 't20_data_structures.cmn'
+
+
+
+*------------------------------Csoft/SRC/HTRACKING/----------------------------------------
+* INFORMATION ABOUT PLANE GEOMETRY AND TRACKING PARAMETERS
+*
+*     CTPTYPE=parm
+*
+      integer*4 tmwpc_num_planes        ! Actual number of mwpc planes - set in CTP
+      common/T20_TRACKING/
+     $     tmwpc_num_planes
+*
+*
+* MWPC CHAMBER DEBUGGING FLAGS/INFO.
+*
+*     CTPTYPE=parm
+*
+      integer*4 tdebugcalcpeds        ! calc peds from physics events.
+      integer*4 tdebugprintmwpcraw    !
+      integer*4 tluno                   ! logical unit number for debugging output
+
+      common/T20_TRACKFLAGS/
+     &     tdebugcalcpeds,
+     $     tdebugprintmwpcraw,
+     $     tluno
+
