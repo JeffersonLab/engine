@@ -5,7 +5,10 @@
 *
 *     d.f. geesaman         8 Sept 1993
 * $Log$
-* Revision 1.5  1995/07/20 19:06:05  cdaq
+* Revision 1.6  1995/08/31 20:44:56  cdaq
+* (JRA) Don't fill single_residual arrray
+*
+* Revision 1.5  1995/07/20  19:06:05  cdaq
 * (SAW) Move data statements for f2c compatibility
 *
 * Revision 1.4  1995/05/22  19:46:01  cdaq
@@ -70,7 +73,7 @@
           sdc_double_residual(itrack,plane)=1000
           sdc_single_residual(itrack,plane)=1000
         enddo
-        sdc_sing_res(plane)=1000
+c        sdc_sing_res(plane)=1000
         sdc_dbl_res(plane)=1000
       enddo
 
@@ -120,7 +123,7 @@
              plane=SDC_PLANE_NUM(hit)
              pos=S_DPSIFUN(ray1,plane)
              sdc_single_residual(itrack,plane)=SDC_WIRE_COORD(hit)-pos
-             sdc_sing_res(plane)=sdc_single_residual(itrack,plane)
+c             sdc_sing_res(plane)=sdc_single_residual(itrack,plane)
            enddo
          endif                          ! end test on degrees of freedom
        enddo                            ! end loop over tracks
