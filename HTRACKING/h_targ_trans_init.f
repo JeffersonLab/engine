@@ -7,7 +7,10 @@
 *
 * Version:  0.1 (In development)
 * $Log$
-* Revision 1.2  1995/04/06 19:32:19  cdaq
+* Revision 1.3  1995/05/11 19:13:27  cdaq
+* (JRA) Fix errors in reading of focal plane rot coeffs
+*
+* Revision 1.2  1995/04/06  19:32:19  cdaq
 * (SAW) Put in ddutta's pre cosy x-x', y-y' transformation
 *
 * Revision 1.1  1994/05/13  03:51:55  cdaq
@@ -83,10 +86,10 @@
 
 * Read in focal plane rotation coefficients.
       do while (line(1:4).ne.' ---')
-        if(line(1:11).eq.'h_ang_slope_x')read(line,1201,err=94)h_ang_slope_x
-        if(line(1:11).eq.'h_ang_slope_y')read(line,1201,err=94)h_ang_slope_y
-        if(line(1:12).eq.'h_ang_offset_x')read(line,1201,err=94)h_ang_offset_x
-        if(line(1:12).eq.'h_ang_offset_y')read(line,1201,err=94)h_ang_offset_y
+        if(line(1:13).eq.'h_ang_slope_x')read(line,1201,err=94)h_ang_slope_x
+        if(line(1:13).eq.'h_ang_slope_y')read(line,1201,err=94)h_ang_slope_y
+        if(line(1:14).eq.'h_ang_offset_x')read(line,1201,err=94)h_ang_offset_x
+        if(line(1:14).eq.'h_ang_offset_y')read(line,1201,err=94)h_ang_offset_y
         read (chan,1001,err=94) line
       enddo
 * Read in reconstruction coefficients and exponents.
@@ -135,6 +138,6 @@
 
  1001 format(a)
  1200 format(1x,4g16.9,1x,4i1)
- 1201 format(15x,g16.9)
+ 1201 format(17x,g16.9)
       
       end
