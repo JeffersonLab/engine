@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.13  1996/11/07 20:19:37  saw
+# (SAW) Add SunOS and AIX compatibility
+#
 # Revision 1.12  1996/09/04 14:27:44  saw
 # (SAW) Add switches for OSF (Alpha) and some stuff for
 #       Linux (NFSDIRECTORY fixes)
@@ -92,6 +95,19 @@ ifeq ($(ARCH),Linux)
   OSTYPE=Linux
 endif
 
+ifeq ($(ARCH),SunOS)
+  CC = gcc
+  CFLAGS = -O
+  RPCCOM = /usr/bin/rpcgen
+  OSTYPE=SunOS
+endif
+
+ifeq ($(ARCH),AIX)
+  CC = gcc
+  CFLAGS = -O -Dextname
+  RPCCOM = rpcgen
+  OSTYPE=AIX
+endif
 
 ##library: libctp.a
 
