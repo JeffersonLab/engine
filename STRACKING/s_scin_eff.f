@@ -15,7 +15,10 @@
 * s_scin_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
-* Revision 1.1  1995/02/23 15:42:08  cdaq
+* Revision 1.2  1995/04/06 19:43:37  cdaq
+* (JRA) Fix some latent HMS variable names
+*
+* Revision 1.1  1995/02/23  15:42:08  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -47,22 +50,22 @@
 
       if (sschi2perdeg.le.sstat_maxchisq) sstat_numevents=sstat_numevents+1
 
-      hit_pos(1)=hsx_fp + hsxp_fp*(sscin_1x_zpos+0.5*sscin_1x_dzpos)
+      hit_pos(1)=ssx_fp + ssxp_fp*(sscin_1x_zpos+0.5*sscin_1x_dzpos)
       hit_cnt(1)=nint((hit_pos(1)-shodo_center(1,1))/sscin_1x_spacing)+1
       hit_cnt(1)=max(min(hit_cnt(1),snum_scin_counters(1)),1)
       hit_dist(1)=hit_pos(1)-(sscin_1x_spacing*(hit_cnt(1)-1)+shodo_center(1,1))
 
-      hit_pos(2)=hsy_fp + hsyp_fp*(sscin_1y_zpos+0.5*sscin_1y_dzpos)
+      hit_pos(2)=ssy_fp + ssyp_fp*(sscin_1y_zpos+0.5*sscin_1y_dzpos)
       hit_cnt(2)=nint((shodo_center(2,1)-hit_pos(2))/sscin_1y_spacing)+1
       hit_cnt(2)=max(min(hit_cnt(2),snum_scin_counters(1)),1)
       hit_dist(2)=hit_pos(2)-(shodo_center(2,1)-sscin_1y_spacing*(hit_cnt(2)-1))
 
-      hit_pos(3)=hsx_fp + hsxp_fp*(sscin_2x_zpos+0.5*sscin_2x_dzpos)
+      hit_pos(3)=ssx_fp + ssxp_fp*(sscin_2x_zpos+0.5*sscin_2x_dzpos)
       hit_cnt(3)=nint((hit_pos(3)-shodo_center(3,1))/sscin_2x_spacing)+1
       hit_cnt(3)=max(min(hit_cnt(3),snum_scin_counters(1)),1)
       hit_dist(3)=hit_pos(3)-(sscin_2x_spacing*(hit_cnt(3)-1)+shodo_center(3,1))
 
-      hit_pos(4)=hsy_fp + hsyp_fp*(sscin_2y_zpos+0.5*sscin_2y_dzpos)
+      hit_pos(4)=ssy_fp + ssyp_fp*(sscin_2y_zpos+0.5*sscin_2y_dzpos)
       hit_cnt(4)=nint((shodo_center(4,1)-hit_pos(4))/sscin_2y_spacing)+1
       hit_cnt(4)=max(min(hit_cnt(4),snum_scin_counters(1)),1)
       hit_dist(4)=hit_pos(4)-(shodo_center(4,1)-sscin_2y_spacing*(hit_cnt(4)-1))
@@ -122,23 +125,6 @@ c        nhit=sscin_hit(ssnum_fptrack,ind)
         endif
 
       enddo                 !loop over ssnum_pmt_hit
-
-
-! fill sums over counters
-c      do pln=1,snum_scin_planes
-c          sstat_trksum(pln)=0
-c          sstat_possum(pln)=0
-c          sstat_negsum(pln)=0
-c          sstat_andsum(pln)=0
-c          sstat_orsum(pln)=0
-c        do cnt=1,snum_scin_counters(pln)
-c          sstat_trksum(pln)=sstat_trksum(pln)+sstat_trk(pln,cnt)
-c          sstat_possum(pln)=sstat_possum(pln)+sstat_poshit(pln,cnt)
-c          sstat_negsum(pln)=sstat_negsum(pln)+sstat_neghit(pln,cnt)
-c          sstat_andsum(pln)=sstat_andsum(pln)+sstat_andhit(pln,cnt)
-c          sstat_orsum(pln)=sstat_orsum(pln)+sstat_orhit(pln,cnt)
-c        enddo
-c      enddo
 
       return
       end

@@ -1,4 +1,4 @@
-      SUBROUTINE H_SELECT_BEST_TRACK(ABORT,err)
+      SUBROUTINE S_SELECT_BEST_TRACK(ABORT,err)
 *--------------------------------------------------------
 *-
 *-   Purpose and Methods : Select the best track through the HMS
@@ -12,15 +12,18 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log$
-*- Revision 1.1  1995/02/23 13:29:49  cdaq
-*- Initial revision
+*- Revision 1.2  1995/04/06 19:44:04  cdaq
+*- (JRA) Fix some latent HMS variable names
 *-
+c Revision 1.1  1995/02/23  13:29:49  cdaq
+c Initial revision
+c
 *--------------------------------------------------------
       IMPLICIT NONE
       SAVE
 *
       character*50 here
-      parameter (here= 'H_SELECT_BEST_TRACK')
+      parameter (here= 'S_SELECT_BEST_TRACK')
 *
       logical ABORT
       character*(*) err
