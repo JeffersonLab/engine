@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.5  1994/07/07 15:17:56  cdaq
+# Revision 1.6  1994/08/18 04:23:42  cdaq
+# (SAW) Call makereg generated routines to register variables
+#
+# Revision 1.5  1994/07/07  15:17:56  cdaq
 # (SAW) Fix a bug so that all sources not get compiled
 #
 # Revision 1.4  1994/06/14  05:02:25  cdaq
@@ -36,8 +39,12 @@ newstuff = s_cal.f s_clusters_cal.f s_correct_cal.f s_fill_dc_dec_hist.f \
 	s_trans_cal.f s_trans_scin.f s_fill_scin_raw_hist.f
 newerstuff = s_fill_dc_target_hist.f s_targ_trans_init.f s_register_bypass.f \
 	s_register_statistics.f s_init_physics.f s_physics_stat.f
+makeregstuff = r_sos_filenames.f r_sos_tracking.f r_sos_geometry.f \
+	 r_sos_track_histid.f r_sos_recon_elements.f r_sos_physics_sing.f \
+	r_sos_scin_parms.f r_sos_scin_tof.f r_sos_calorimeter.f \
+	r_sos_id_histid.f r_sos_bypass_switches.f r_sos_statistics.f
 
-sources = $(osources) $(newstuff) $(newerstuff)
+sources = $(osources) $(newstuff) $(newerstuff) $(makeregstuff)
 libsources = $(sources)
 
 lib_targets := $(patsubst %.f, libstracking.a(%.o), $(libsources))
@@ -53,6 +60,14 @@ endif
 
 default:
 	@echo "nothing to make"
+
+#
+# Rule for making the register subroutines
+#
+r_%.f : %.cmn $(MAKEREG)
+	$(MAKEREG) $< -o $@ -e /dev/null
+
+.PRECIOUS: r_%.f
 
 #
 # Get include files from INCLUDE directory

@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.6  1994/08/04 03:49:53  cdaq
+# Revision 1.7  1994/08/18 04:22:46  cdaq
+# (SAW) Call makereg generated routines to register variables
+#
+# Revision 1.6  1994/08/04  03:49:53  cdaq
 # (SAW) Add libhack.a to library list
 #
 # Revision 1.5  1994/07/07  15:18:22  cdaq
@@ -45,10 +48,14 @@ ntuple_source = c_ntuple_init.f c_ntuple_keep.f \
 	c_ntuple_register.f c_ntuple_shutdown.f h_ntuple_init.f \
 	h_ntuple_keep.f h_ntuple_register.f h_ntuple_shutdown.f \
 	s_ntuple_init.f s_ntuple_keep.f s_ntuple_register.f \
-	s_ntuple_shutdown.f 
+	s_ntuple_shutdown.f
+makeregstuff = r_gen_filenames.f r_gen_run_info.f r_gen_event_info.f \
+	r_gen_scalers.f r_gen_run_pref.f r_gen_data_structures.f \
+	r_coin_filenames.f
 replay_source = engine.f
 
-libsources =  $(coin_source) $(sos_source) $(hms_source) $(general_source) $(ntuple_source)
+libsources =  $(coin_source) $(sos_source) $(hms_source) $(general_source) \
+	$(ntuple_source) $(makeregstuff)
 
 #short_names = g_xyz_sph.f g_shift_len.f g_sort.f g_rep_err.f g_prepend.f \
 #	g_normalize.f g_add_path.f g_decode_clear.f
@@ -101,6 +108,14 @@ engine: $(DEPLIBS)
 	$(AR) x $(LIBROOT)/libengine.a engine.o
 	$(F77) $(FFLAGS) -o engine engine.o $(DEPLIBS) $(OTHERLIBS)
 	$(RM) engine.o
+
+#
+# Rule for making the register subroutines
+#
+r_%.f : %.cmn $(MAKEREG)
+	$(MAKEREG) $< -o $@ -e /dev/null
+
+.PRECIOUS: r_%.f
 
 %.cmn : ../INCLUDE/RCS/%.cmn,v
 	$(CO) $(COFLAGS) $<

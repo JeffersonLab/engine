@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.6  1994/08/04 03:50:37  cdaq
+# Revision 1.7  1994/08/18 04:23:22  cdaq
+# (SAW) Call makereg generated routines to register variables
+#
+# Revision 1.6  1994/08/04  03:50:37  cdaq
 # (SAW) Add rule for .dte files
 #
 # Revision 1.5  1994/07/07  15:17:45  cdaq
@@ -18,6 +21,7 @@
 # Revision 1.1  1994/04/15  20:30:16  cdaq
 # Initial revision
 #
+
 include $(Csoft)/etc/Makefile
 
 osources = h_cal.f h_cer.f h_chamnum.f h_dpsifun.f \
@@ -40,8 +44,13 @@ newstuff = h_clusters_cal.f h_correct_cal.f \
 newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f h_register_bypass.f \
 	h_register_statistics.f h_init_physics.f h_physics_stat.f \
 	h_strip_scin.f h_choose_single_hit.f
+makeregstuff =	r_hms_filenames.f r_hms_scin_parms.f r_hms_scin_tof.f \
+	r_hms_calorimeter.f r_hms_id_histid.f r_hms_tracking.f \
+	r_hms_geometry.f r_hms_track_histid.f r_hms_recon_elements.f \
+	r_hms_physics_sing.f r_hms_bypass_switches.f r_hms_statistics.f
 
-sources = $(osources) $(newstuff) $(newerstuff)
+
+sources = $(osources) $(newstuff) $(newerstuff) $(makeregstuff)
 libsources = $(sources)
 
 lib_targets := $(patsubst %.f, libhtracking.a(%.o), $(libsources))
@@ -60,6 +69,18 @@ endif
 default:
 	@echo "nothing to make"
 
+#
+# Rule for making the register subroutines
+#
+r_%.f : %.cmn $(MAKEREG)
+	$(MAKEREG) $< -o $@ -e /dev/null
+
+.PRECIOUS: r_%.f
+
+#r_%.d : %.cmn
+#	(echo r_$*.o: r_$*.f ; 	cat $< | sed -n -e \
+#	"s/^\*%%[\t ]*[Ii][Nn][Cc][Ll][Uu][Dd][Ee][ \t]*'/r_$*.o: /p" | \
+#	sed -e "s/'.*$$//" | ; echo r_$*.o: .os$(OSTYPE) ) > $@
 #
 # Get include files from INCLUDE directory
 #
