@@ -7,6 +7,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.6  1996/04/29 19:13:00  saw
+* (JRA) Corrections
+*
 * Revision 1.5  1996/01/22 15:08:02  saw
 * (JRA) Adjust variable names.  Get particle properties from lookup
 * tables
@@ -38,35 +41,30 @@
       include 'sos_data_structures.cmn'
       include 'coin_data_structures.cmn'
       include 'gen_constants.par'
+      include 'hms_scin_tof.cmn'
+      include 'sos_scin_tof.cmn'
+      include 'hms_physics_sing.cmn'
+      include 'sos_physics_sing.cmn'
+      include 'hms_scin_parms.cmn'
+      include 'sos_scin_parms.cmn'
 *
 *     local variables
 *
-      real*4 costhm
-      real*8 temp
       real*4 cqx,cqy,cqz,cqabs
       real*4 ekinrec,m_rec
       real*4 tar_amin1
+      real*4 offset_ctime
 
-*
       ABORT = .FALSE.
       err = ' '
-*
+
       if(HSNUM_FPTRACK.le.0.or.SSNUM_FPTRACK.le.0) then
         return
       endif
-*
-c      cs = (hsenergy+ssenergy)**2 - hsp**2 - ssp**2 -
-c     $     hsp*ssp*(cos(hstheta)*cos(sstheta) +
-c     $     sin(hstheta)*sin(sstheta)*cos(hsphi-ssphi))
 
-*
 *     Need to select which arm is the hadron
-*
-
         tar_amin1= gtarg_a(gtarg_num)-1.0
-c        p_beam = sqrt(gebeam**2-mass_electron**2)
         m_rec = tar_amin1*m_amu
-c        write(*,*)hstheta,sstheta
       if(hpartmass .lt. 2*mass_electron) then ! Less than 1 MeV, HMS is elec
         cqx = -hsp*cos(hsxp_tar)*sin(hstheta)
         cqy = -hsp*sin(hsxp_tar)
@@ -94,15 +92,6 @@ c        write(*,*)hstheta,sstheta
         p_sos_corr = ssp -2.*mass_nucleon*gebeam*cos(sstheta)/
      >     (gebeam+mass_nucleon)/(1-(gebeam*cos(sstheta)/
      >     (gebeam+mass_nucleon))**2) 
-C        cqe = hseloss
-C        cqp = hscq3
-C        cqtheta = hsthetacq 
-C        cqphi = hsphicq
-c        he = ssenergy
-c        hp = ssp                        ! Hadron momentum
-c        htheta = sstheta                ! Hadron polar angle
-c        hphi = ssphi                    ! Hadron Azimutal angle
-c       W2 = mass_nucleon**2 +2.*mass_nucleon*(gpbeam-hsp) - cqabs**2       
       else                              ! SOS is the electron
         cqx = -ssp*cos(ssxp_tar)*sin(sstheta)
         cqy = -ssp*sin(ssxp_tar)
@@ -130,69 +119,14 @@ c       W2 = mass_nucleon**2 +2.*mass_nucleon*(gpbeam-hsp) - cqabs**2
         p_hms_corr = hsp -2.*mass_nucleon*gebeam*cos(hstheta)/
      >       (gebeam+mass_nucleon)/(1-(gebeam*cos(hstheta)/
      >       (gebeam+mass_nucleon))**2)
-c        he = sseloss
-c        hp = sscq3
-c        htheta = ssthetacq 
-c        hphi = ssphicq
-c        cqe = hsenergy
-c        cqp = hsp                        ! Hadron momentum
-c        cqtheta = hstheta                ! Hadron polar angle
-c        cqphi = hsphi                    ! Hadron Azimutal angle
        endif
-*
-*     How do we define x axes about cq.  Towards beam line?  Yes!
-*     Need to rotate coord system of the hadron into the cq coord system.
 
-c      coshcq = cos(cqtheta)*cos(htheta)
-c    $     +sin(cqtheta)*sin(htheta)*cos(cqphi-hphi)
-c     cthetapcq = acos(coshcq)
-c     sinpcq = sqrt(1-coshcq**2)
-
-c      cosphipcq = cos(htheta)/(cos(cqtheta)*coshcq) - 1
-c     sinphipcq = sin(cqtheta)*sin(htheta)
-c     $     *(sin(cqphi)*cos(hphi)-cos(cqphi)*sin(hphi))
-c     $     /(cos(cqphi)*coshcq)
-*      print *,sinphipcq,cosphipcq
-c      cphipcq = atan2(sinphipcq,cosphipcq)
-c
-c      cmissing_mom = sqrt(hp**2 + cqp**2 - 2*hp*cqp*coshcq)
-c      costhm = (hp*coshcq - cqp)/cmissing_mom
-c      cmissing_momx = cmissing_mom*sqrt(1-costhm**2)*cosphipcq
-c      cmissing_momy = cmissing_mom*sqrt(1-costhm**2)*sinphipcq
-c      cmissing_momz = cmissing_mom*costhm
-c*
-c*     Editors Note:  I object to this verkachte sign convention on general principles
-c*
-c      cmissing_moms = cmissing_mom
-c      if(cmissing_momx.lt.0) cmissing_moms = -cmissing_moms
-*
-*     Missing energy
-*c
-c      if(tmass_recoil.gt.mass_electron) then
-c        cmissing_e = cqe - (he - (gtarg_mass(gtarg_num)-tmass_recoil))
-c     $       - cmissing_mom**2/(2*tmass_recoil)
-c      else
-c        cmissing_e = cqe - (he - (gtarg_mass(gtarg_num)-tmass_recoil))
-c      endif
-*
-*     Missing mass (excitation of the residual nucleus)
-*
-c      type *,g_beam_target_s,cs
-c      temp = g_beam_target_s + cs - 2*
-c     $     ((GEBEAM+gtarg_mass(gtarg_num))*(GEBEAM+he-cqe)
-c     $     - GPBEAM*(GPBEAM+hp*cos(htheta)-cqp*cos(cqtheta)))
-c      if(temp.lt.0) then
-*        type *,hsenergy,hsp,hstheta,hsphi
-*        type *,ssenergy,hsp,sstheta,ssphi
-*        type *,temp
-c        cmissing_mass = -tmass_recoil
-c      else
-c        cmissing_mass = sqrt(temp) - tmass_recoil
-c      endif
-c      print *,cmissing_mass
+* Coincidence timing.
+      offset_ctime = - (hstime_at_fp-hstart_time_center)
+     &               + (sstime_at_fp-sstart_time_center)
+     &               - hspath_cor + sspath_cor + 10
+      ccointime_hms = (hmisc_dec_data(10,1)-2450)/9.46 + offset_ctime
+      ccointime_sos = (smisc_dec_data(9,1)-1570)/9.68 - offset_ctime
 *      
       return
       end
-
-
-
