@@ -13,8 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.8  1995/05/11 18:59:39  cdaq
-*     (SAW) Add register call for s_ntuple.cmn
+*     Revision 1.9  1995/05/22 13:32:11  cdaq
+*     (SAW) Add call to register sos_data_structures.cmn variables
+*
+* Revision 1.8  1995/05/11  18:59:39  cdaq
+* (SAW) Add register call for s_ntuple.cmn
 *
 * Revision 1.7  1994/08/18  04:11:36  cdaq
 * (SAW) Call makereg generated routines to register variables
@@ -55,6 +58,8 @@
       err= ' '
       ABORT = .FALSE.
 *
+      call r_sos_data_structures
+
       call r_sos_filenames
 
       call r_s_ntuple
