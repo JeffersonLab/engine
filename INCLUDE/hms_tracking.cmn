@@ -8,7 +8,10 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.17  1994/11/22 18:42:03  cdaq
+* Revision 1.18  1994/12/06 12:46:07  cdaq
+* (DJM) Variables for focal plane z slices
+*
+* Revision 1.17  1994/11/22  18:42:03  cdaq
 * (SAW) Add h's in front of fract, aa3, det3, aainv3.  Remove fractinterp
 *       Cleaned up ?DC_NUM_CHAMBERS and ?MAX_NUM_CHAMBERS stuff
 *
@@ -166,6 +169,10 @@
       real*4 hdc_x_central_time   ! time (ns) for signal to reach disc. card o--Mn XUVX' planes
       real*4 hdc_y_central_time   ! time (ns) for signal to reach disc. card o--Mn YY' planes
                                   ! (both times are from center of the chamber--M)
+      real*4 hz_wild,hdelta_z_wild
+      integer*4 hmax_num_zslice,hnum_zslice,hz_slice_enable
+      parameter (hmax_num_zslice = 50)
+
 *
 *     CTPTYPE=event
 *
@@ -194,6 +201,13 @@
      &     HDC_SING_WCENTER(HMAX_NUM_DC_PLANES),
      &     HDC_SING_WCOORD(HMAX_NUM_DC_PLANES),
      &     gplanehdc1(hmax_space_points),gplanehdc2(hmax_space_points)
+
+      real*4 hx_fp_wild,hy_fp_wild
+      common/HMS_SLICES/
+     &     hz_slice_enable,
+     &     hz_wild,hdelta_z_wild,
+     &     hnum_zslice,
+     &     hx_fp_wild(hmax_num_zslice),hy_fp_wild(hmax_num_zslice)
 
 *
 *
