@@ -3,6 +3,9 @@
 *     S.A. Wood              22 Jan 97
 
 * $Log$
+* Revision 1.2  1998/12/01 21:02:01  saw
+* (SAW) Checkin
+*
 * Revision 1.1  1997/05/23 19:07:39  saw
 * Initial revision
 *
@@ -20,9 +23,19 @@
 *
 *     CTPTYPE=parm
 *
+      integer*4 tmwpc_max_wires_per_plane
+      parameter (tmwpc_max_wires_per_plane=158)
+
       integer*4 tmwpc_num_planes        ! Actual number of mwpc planes - set in CTP
+      integer*4 tmwpc_num_chambers      ! Actual number of mwpc chambers - set in CTP
+      integer*4 tmwpc_tdc_min_win       ! mwpc tdc min value for good hit
+      integer*4 tmwpc_tdc_max_win       ! mwpc tdc max value for good hit
       common/T20_TRACKING/
-     $     tmwpc_num_planes
+     $     tmwpc_num_planes,
+     $     tmwpc_num_chambers,
+     $     tmwpc_tdc_min_win(tmax_num_mwpc_planes),
+     $     tmwpc_tdc_max_win(tmax_num_mwpc_planes)
+
 *
 *
 * MWPC CHAMBER DEBUGGING FLAGS/INFO.
@@ -38,3 +51,23 @@
      $     tdebugprintmwpcraw,
      $     tluno
 
+*----------------------------------------------------------------------
+* WIRE CHAMBER EFFICIENCY MEASUREMENTS.
+*
+*     CTPTYPE=parm
+*
+* warning levels for efficiency
+c      real*4 hdc_min_plane_eff(hmax_num_dc_planes)
+c      real*4 hdc_min_wire_eff
+*
+*     CTPTYPE=event
+*
+* multiple hits per wire statistics.
+
+      integer*4 twire_mult(tmwpc_max_wires_per_plane,tmax_num_mwpc_planes)
+      integer*4 twire_early_mult(tmwpc_max_wires_per_plane,tmax_num_mwpc_planes)
+      integer*4 twire_late_mult(tmwpc_max_wires_per_plane,tmax_num_mwpc_planes)
+      integer*4 twire_extra_mult(tmwpc_max_wires_per_plane,tmax_num_mwpc_planes)
+
+      common/t20_mwpc_stats/
+     &     twire_mult,twire_early_mult,twire_late_mult,twire_extra_mult

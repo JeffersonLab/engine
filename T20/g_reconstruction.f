@@ -14,44 +14,8 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
-* Revision 1.1  1997/05/23 20:31:31  saw
-* Initial revision
-*
-* Revision 1.13  1996/01/22 15:23:34  saw
-* (SAW) Add calls to analyze beam position
-*
-* Revision 1.12  1995/10/09 18:28:41  cdaq
-* (JRA) Only call spec analysis routines that correspond to trigger type
-*
-* Revision 1.11  1995/05/22 20:50:45  cdaq
-* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
-*
-* Revision 1.10  1995/04/01  19:50:22  cdaq
-* (JRA) Add pedestal event handling
-*
-* Revision 1.9  1994/11/22  20:13:39  cdaq
-* (SPB) Uncomment call to SOS code
-*
-* Revision 1.8  1994/10/11  20:03:27  cdaq
-* (JRA) Comment out call to SOS
-*
-* Revision 1.7  1994/08/04  03:46:31  cdaq
-* (SAW) Add call to Breuer's hack_anal
-*
-* Revision 1.6  1994/06/17  03:36:57  cdaq
-* (KBB) Upgrade error reporting
-*
-* Revision 1.5  1994/04/15  20:37:41  cdaq
-* (SAW) for ONLINE compatibility get event from argument instead of commmon.
-*
-* Revision 1.4  1994/02/02  19:58:47  cdaq
-* Remove some damn nulls at the end of the file
-*
-* Revision 1.3  1994/02/02  18:53:43  cdaq
-* Actually add call to g_decode_event_by_banks
-*
-* Revision 1.2  1994/02/01  21:28:48  cdaq
-* Add call to G_decode_event_by_banks
+* Revision 1.2  1998/12/01 20:59:06  saw
+* (SAW) Checkin
 *
 *-
 *- All standards are from "Proposal for Hall C Analysis Software
@@ -108,7 +72,7 @@
       ENDIF
 *
 *-Beamline reconstruction
-      IF(gen_event_type.ge.1 .and. gen_event_type.le.15 .and. gen_event_type.ne.4) then !HMS/SOS/COIN trig
+      IF((gen_event_type.ge.1).and.(gen_event_type.le.15).and.(gen_event_type.ne.4)) then !HMS/POLDER/COIN trig
         call g_trans_misc(FAIL,why)
         IF(err.NE.' ' .and. why.NE.' ') THEN
           call G_append(err,' & '//why)
@@ -126,7 +90,7 @@
       ENDIF
 *
 *-HMS reconstruction
-      IF(gen_event_type.ne.2 .and. gen_event_type.ne.4) then  !HMS/COIN trig
+      IF((gen_event_type.ne.2).and.(gen_event_type.ne.4)) then  !HMS/COIN trig
         call H_reconstruction(FAIL,why)
         IF(err.NE.' ' .and. why.NE.' ') THEN
           call G_append(err,' & '//why)
@@ -137,7 +101,7 @@
       ENDIF
 *
 *-POLDER reconstruction (T20 experiment)
-      IF(gen_event_type.ne.1 .and. gen_event_type.ne.4) then  !SOS/COIN trig
+      IF((gen_event_type.ne.1).and.(gen_event_type.ne.4)) then  !Polder/COIN trig
         call t_reconstruction(FAIL,why)
         IF(err.NE.' ' .and. why.NE.' ') THEN
           call G_append(err,' & '//why)

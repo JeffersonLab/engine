@@ -2,6 +2,9 @@
 *- 
 *-   Created   22-Apr-1994   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.2  1998/12/01 21:04:07  saw
+* (SAW) Checkin
+*
 * Revision 1.1  1997/05/01 13:41:24  saw
 * Initial revision
 *
@@ -62,7 +65,7 @@
      &     gen_run_hist_dump_interval
 *
 *-shorter names for command line input
-      integer grun,gstart,gstop,gdump,gtrig1,gtrig2,gtrig3,gtrig4 ! aliases
+      integer grun,gstart,gstop,gdump,gtrig1,gtrig2,gtrig3,gtrig4,gtrig5 ! aliases
       equivalence (grun,gen_run_number)
       equivalence (gstart,gen_run_starting_event)
       equivalence (gstop,gen_run_stopping_event)
@@ -71,13 +74,14 @@
       equivalence (gtrig2,gen_run_enable(1))
       equivalence (gtrig3,gen_run_enable(2))
       equivalence (gtrig4,gen_run_enable(3))
+      equivalence (gtrig5,gen_run_enable(4))
 
 *
 *     CTPTYPE=parm
 *
-      real*4 gps1,gps2,gps3  !prescale factors (1-hms,2-sos,3-coin)
-*
-      common/gen_prescales/ gps1,gps2,gps3
+      real*4 gps1,gps2,gps3,gps4,gps5  !prescale factors (1-hms,2-sos,3-coin)
+*                                      ! 4-ped,5-ed
+      common/gen_prescales/ gps1,gps2,gps3,gps4,gps5
 
 *
 *     CTPTYPE=parm

@@ -10,6 +10,9 @@
 *       setup for tracking...
 *     Based on simple FPP analysis routines for Hall A
 * $Log$
+* Revision 1.3  1998/12/01 20:55:11  saw
+* (SAW) Checkin
+*
 * Revision 1.2  1997/05/20 18:30:36  saw
 * (Ron Gilman) Code update
 *
@@ -202,11 +205,12 @@ c     ----------------------------------------------------------------------
       integer*4 i,n,oldwg,tim,ilete,oldtim
       integer*4 wgs(50),times(50),wids(50),straws(50),planes(50)
       integer*4 ioot1, nfp, idiff, kk, itype
+      integer*4 jiand
       
       if(
      +  ttst_reallyraw_out.gt.0 .and.
      +  ttst_reallyraw_out.gt.reallyraw_written ) then
-        type *, 't_test_straw_analyze called, tot_hits=',
+        print *, 't_test_straw_analyze called, tot_hits=',
      +    ttst_raw_tot_hits
         reallyraw_written = reallyraw_written + 1
       endif
@@ -230,14 +234,14 @@ c     combine edges into pairs of le/te edges...
          str_group = ttst_raw_group_num(i)
          str_ggroup = str_group + ttst_straw_plane_group_off(str_plane)
          tim = ttst_raw_tdc(i)
-         ilete = iand(tim,'10000'X)
+         ilete = jiand(tim,'10000'X)
          if(ilete.ne.0)ilete=1
-         tim = iand(tim,'FFFF'X)
+         tim = jiand(tim,'FFFF'X)
 c     iand generic, jiand 4 byte, iiand 2 byte
          if(
      +        ttst_reallyraw_out.gt.0 .and.
      +        ttst_reallyraw_out.gt.reallyraw_written ) then
-            type *,i,ttst_raw_plane_num(i),ttst_raw_group_num(i),
+            print *,i,ttst_raw_plane_num(i),ttst_raw_group_num(i),
      +           str_group,ilete,tim
          endif
          if(ilete.eq.0)then
@@ -657,9 +661,10 @@ c     ----------------------------------------------------------------------
       include 't20_test_histid.cmn'
       include 't20_reg_polder_structures.cmn'
 
-      integer*4 opened/0/
+      integer*4 opened
       integer*4 lun_calib               ! Set this somewhere else
       parameter (lun_calib=63)
+      data opened/0/
       
 c     need to compare tracks to polder tracks....
       ttst_good_comp = 0
@@ -1158,7 +1163,8 @@ c       subroutine track(nt,zt,xt,dxt,dxf,lrf,x0,tht,chi0,chif)
        real    slope, ctg, stg, rcept
        real    chisq, dx2, chibest
        real    chiterm(10), diff
-       real    sigma/1.0/, pi/3.1415926/
+       real    sigma, pi
+       data    sigma, pi /1.0, 3.1415926/
 
 c                     first move input data into local arrays
        j = 0

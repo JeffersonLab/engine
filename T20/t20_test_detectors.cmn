@@ -3,6 +3,9 @@
 *      R. Gilman December 1996, loosely based on HMS tracking code, ...
 *
 * $Log$
+* Revision 1.2  1998/12/01 21:02:25  saw
+* (SAW) Checkin
+*
 * Revision 1.1  1997/05/20 19:09:01  saw
 * Initial revision
 *
@@ -23,30 +26,37 @@
       integer*4 ttst_n_straw_wgs
       parameter (ttst_n_straw_wgs=40)
        
-      integer*4 ttst_straw_planes
-      integer*4 ttst_straw_groups
       integer*4 ttst_plane_group(ttst_n_straw_planes)
       integer*4 ttst_plane_of_group(ttst_n_straw_wgs)
       
-      real*4 ttst_straw_z(ttst_n_straw_planes)
-      real*4 ttst_straw_x1(ttst_n_straw_planes)
-      real*4 ttst_straw_x2(ttst_n_straw_planes)
-      real*4 ttst_straw_ywid(ttst_n_straw_planes)
-      real*4 ttst_straw_xwid(ttst_n_straw_planes)
-      real*4 ttst_straw_sctr(ttst_n_straw_planes)
+      real*8 ttst_straw_z(ttst_n_straw_planes)
+      real*8 ttst_straw_z0
+      real*8 ttst_straw_x1(ttst_n_straw_planes)
+      real*8 ttst_straw_x2(ttst_n_straw_planes)
+      real*8 ttst_straw_xoff(2)
+      real*8 ttst_rotate_ang(3)
+      real*8 ttst_rotate_xz
+      real*8 ttst_rotate_yz
+      real*8 ttst_rotate_xy
+      equivalence (ttst_rotate_ang(1), ttst_rotate_xz)
+      equivalence (ttst_rotate_ang(2), ttst_rotate_yz)
+      equivalence (ttst_rotate_ang(3), ttst_rotate_xy)
+      real*8 ttst_rotate_xyplane(8)
+      real*8 ttst_straw_sctr(ttst_n_straw_planes)
       integer*4 ttst_straw_nst(ttst_n_straw_planes)
 
-      real*4 ttst_scin_z(2)
-      real*4 ttst_scin_x(2)
-      real*4 ttst_scin_y(2)
-      real*4 ttst_scin_xwid(2)
-      real*4 ttst_scin_ywid(2)
+      real*8 ttst_scin_z(2)
+      real*8 ttst_straw_zchmbr
+      real*8 ttst_straw_zscint
+      real*8 ttst_scin_x(2)
+      real*8 ttst_scin_y(2)
+      real*8 ttst_scin_xwid(2)
+      real*8 ttst_scin_ywid(2)
 
-      real*4 ttst_scin_v_corr
-      real*4 ttst_straw_v_corr
+      integer*4 ttst_scin_peds(4)
+      real*8 ttst_scin_v_corr
+      real*8 ttst_straw_v_corr
       
-      integer*4 ttst_straw_num_wg(ttst_n_straw_planes)
-      integer*4 ttst_straws_per_plane(ttst_n_straw_planes)
       integer*4 ttst_straw_type(ttst_n_straw_planes)
       integer*4 ttst_type_order(ttst_n_straw_planes,2)
       integer*4 ttst_straw_plane_group_off(ttst_n_straw_planes)
@@ -57,22 +67,24 @@
       integer*4 ttst_TDC_max
       integer*4 ttst_t0(ttst_n_straw_wgs)
 
-      real*4 ttst_sigma
-      real*4 ttst_straw_spacing
-      real*4 ttst_drift_con
-      real*4 ttst_drift_max
-      real*4 ttst_drift_v
-      real*4 ttst_drift_t0
-      real*4 ttst_drift_table(400)
-
-      integer*4 ttst_track_ntuples_out
+      real*8 ttst_straw_spacing
+      real*8 ttst_drift_max
+      real*8 ttst_drift_v
+      real*8 ttst_drift_t0
+      real*8 ttst_drift_table(400)
+      real*8 ttst_track_distcut
+      real*8 ttst_track_chisqcut
 
       common /ttst_parms/
      $     ttst_straw_z,                ! Real*4
+     $     ttst_straw_z0,
+     $     ttst_straw_zchmbr,
+     $     ttst_straw_zscint,
      $     ttst_straw_x1,
      $     ttst_straw_x2,
-     $     ttst_straw_ywid,
-     $     ttst_straw_xwid,
+     $     ttst_straw_xoff,
+     $     ttst_rotate_ang,
+     $     ttst_rotate_xyplane,
      $     ttst_straw_sctr,
      $     ttst_straw_nst,
      $     ttst_scin_z,
@@ -80,20 +92,11 @@
      $     ttst_scin_y,
      $     ttst_scin_xwid,
      $     ttst_scin_ywid,
+     $     ttst_scin_peds,
      $     ttst_scin_v_corr,
      $     ttst_straw_v_corr,
-     $     ttst_sigma,
-     $     ttst_straw_spacing,
-     $     ttst_drift_con,
-     $     ttst_drift_max,
-     $     ttst_drift_v,
-     $     ttst_drift_t0,
-     $     ttst_drift_table,
-     $     ttst_straw_planes,           ! Integer*4
-     $     ttst_straw_groups,
      $     ttst_plane_group,
-     $     ttst_straw_num_wg,
-     $     ttst_straws_per_plane,
+     $     ttst_plane_of_group,
      $     ttst_straw_type,
      $     ttst_type_order,
      $     ttst_straw_plane_group_off,
@@ -101,7 +104,13 @@
      $     ttst_TDC_min,
      $     ttst_TDC_max, 
      $     ttst_t0,
-     $     ttst_track_ntuples_out
+     $     ttst_straw_spacing,
+     $     ttst_drift_max,
+     $     ttst_drift_v,
+     $     ttst_drift_t0,
+     $     ttst_drift_table,
+     $     ttst_track_distcut,
+     $     ttst_track_chisqcut
 
 
 *----------------------------------------------------------------------
@@ -109,35 +118,71 @@
 *
 *     CTPTYPE=event
 *
-      integer*4 ttst_scin_adc(4)
-      integer*4 ttst_scin_tdc(4)
-      integer*4 ttst_scin_timeoff(4)
-      integer*4 ttst_scin_tdccor(4)
-      integer*4 ttst_scin_pos1
-      integer*4 ttst_scin_pos2
-      integer*4 ttst_scin_pos
-      integer*4 ttst_scin_time1
-      integer*4 ttst_scin_time2
-      integer*4 ttst_scin_time
-      integer*4 ttst_scin_timecor1
-      integer*4 ttst_scin_timecor2
-      integer*4 ttst_scin_timecor
-      integer*4 ttst_t0_correction
+      integer*4 ttst_scin_rawadc(4)
+      integer*4 ttst_scin_adc1l
+      integer*4 ttst_scin_adc1r
+      integer*4 ttst_scin_adc2l
+      integer*4 ttst_scin_adc2r
+      equivalence (ttst_scin_rawadc(1), ttst_scin_adc1l)
+      equivalence (ttst_scin_rawadc(2), ttst_scin_adc2l)
+      equivalence (ttst_scin_rawadc(3), ttst_scin_adc1r)
+      equivalence (ttst_scin_rawadc(4), ttst_scin_adc2r)
+      integer*4 ttst_scin_psadc(4)
+      integer*4 ttst_scin_psadc1l
+      integer*4 ttst_scin_psadc1r
+      integer*4 ttst_scin_psadc2l
+      integer*4 ttst_scin_psadc2r
+      equivalence (ttst_scin_psadc(1), ttst_scin_psadc1l)
+      equivalence (ttst_scin_psadc(2), ttst_scin_psadc2l)
+      equivalence (ttst_scin_psadc(3), ttst_scin_psadc1r)
+      equivalence (ttst_scin_psadc(4), ttst_scin_psadc2r)
+      integer*4 ttst_scin_gmean_adc
+      integer*4 ttst_scin_amean_adc
+      integer*4 ttst_scin_nzadcs
+      integer*4 ttst_scin_adc1m
+      integer*4 ttst_scin_adc2m
+*      integer*4 ttst_scin_tdc(4)
+*      integer*4 ttst_scin_tdc1l
+*      integer*4 ttst_scin_tdc1r
+*      integer*4 ttst_scin_tdc2l
+*      integer*4 ttst_scin_tdc2r
+*      equivalence (ttst_scin_tdc(1), ttst_scin_tdc1l)
+*      equivalence (ttst_scin_tdc(2), ttst_scin_tdc1r)
+*      equivalence (ttst_scin_tdc(3), ttst_scin_tdc2l)
+*      equivalence (ttst_scin_tdc(4), ttst_scin_tdc2r)
+*      integer*4 ttst_scin_timeoff(4)
+*      integer*4 ttst_scin_tdccor(4)
+*      integer*4 ttst_scin_pos1
+*      integer*4 ttst_scin_pos2
+*      integer*4 ttst_scin_pos
+*      integer*4 ttst_scin_time1
+*      integer*4 ttst_scin_time2
+*      integer*4 ttst_scin_time
+*      integer*4 ttst_scin_timecor1
+*      integer*4 ttst_scin_timecor2
+*      integer*4 ttst_scin_timecor
+*      integer*4 ttst_t0_correction
       common /ttst_scin/ 
-     $     ttst_scin_adc,
-     $     ttst_scin_tdc,
-     $     ttst_scin_timeoff,
-     $     ttst_scin_tdccor,
-     $     ttst_scin_pos1,
-     $     ttst_scin_pos2,
-     $     ttst_scin_pos,
-     $     ttst_scin_time1,
-     $     ttst_scin_time2,
-     $     ttst_scin_time,
-     $     ttst_scin_timecor1,
-     $     ttst_scin_timecor2,
-     $     ttst_scin_timecor,
-     $     ttst_t0_correction
+     $     ttst_scin_rawadc,
+     $     ttst_scin_psadc,
+     $     ttst_scin_gmean_adc,
+     $     ttst_scin_amean_adc,
+     $     ttst_scin_nzadcs,
+     $     ttst_scin_adc1m,
+     $     ttst_scin_adc2m
+*     $     ttst_scin_tdc,
+*     $     ttst_scin_timeoff,
+*     $     ttst_scin_tdccor,
+*     $     ttst_scin_pos1,
+*     $     ttst_scin_pos2,
+*     $     ttst_scin_pos,
+*     $     ttst_scin_time1,
+*     $     ttst_scin_time2,
+*     $     ttst_scin_time,
+*     $     ttst_scin_timecor1,
+*     $     ttst_scin_timecor2,
+*     $     ttst_scin_timecor,
+*     $     ttst_t0_correction
 
 
 *----------------------------------------------------------------------
@@ -145,13 +190,12 @@
 *
 *     CTPTYPE=event
 *
-      integer*4 ttst_straw_tims(16,ttst_n_straw_wgs)
-      integer*4 ttst_straw_wids(16,ttst_n_straw_wgs)
-      integer*4 ttst_straw_straw(16,ttst_n_straw_wgs)
+      integer*4 ttst_straw_tdc(8,ttst_n_straw_wgs)
+      integer*4 ttst_straw_wid(8,ttst_n_straw_wgs)
+      integer*4 ttst_straw_num(8,ttst_n_straw_wgs)
       integer*4 ttst_straw_hits(ttst_n_straw_wgs)
-      integer*4 ttst_straw_goodedge
-      integer*4 ttst_straw_plane
-      integer*4 ttst_straw_ggroup
+c      integer*4 ttst_straw_goodedge
+c      integer*4 ttst_straw_plane
       integer*4 ttst_straw_goodhit
       integer*4 ttst_straw_gooddemux
       integer*4 ttst_straw_xygddmx(2)
@@ -181,19 +225,37 @@
       equivalence (ttst_straw_planes_hit(6), ttst_straw_plane6_hit)
       equivalence (ttst_straw_planes_hit(7), ttst_straw_plane7_hit)
       equivalence (ttst_straw_planes_hit(8), ttst_straw_plane8_hit)
+      integer*4 ttst_num_oot(2)
+      integer*4 ttst_num_oot1
+      integer*4 ttst_num_oot2
+      equivalence (ttst_num_oot1,ttst_num_oot(1))
+      equivalence (ttst_num_oot2,ttst_num_oot(2))
+      integer*4 ttst_avetim_oot(2)
+      integer*4 ttst_wg_oot(10,2)
+      integer*4 ttst_tim_oot(10,2)
+      integer*4 ttst_wid_oot(10,2)
+      integer*4 ttst_str_oot(10,2)
+      integer*4 ttst_pln_oot(10,2)
       common /ttst_straw/ 
-     $     ttst_straw_tims,
-     $     ttst_straw_wids,
-     $     ttst_straw_straw,
+     $     ttst_straw_tdc,
+     $     ttst_straw_wid,
+     $     ttst_straw_num,
      $     ttst_straw_hits,
-     $     ttst_straw_goodedge,
-     $     ttst_straw_plane,
-     $     ttst_straw_ggroup,
+c     $     ttst_straw_goodedge,
+c     $     ttst_straw_plane,
      $     ttst_straw_goodhit,
      $     ttst_straw_gooddemux,
-     $     ttst_straw_xgddmx,
-     $     ttst_straw_ygddmx,
+     $     ttst_straw_xygddmx,
+     $     ttst_straw_xyplnsht,
      $     ttst_straw_planes_hit
+      common/ttst_oot/
+     $ ttst_num_oot,
+     $ ttst_avetim_oot,
+     $ ttst_wg_oot,
+     $ ttst_tim_oot,
+     $ ttst_wid_oot,
+     $ ttst_str_oot,
+     $ ttst_pln_oot
 
 *----------------------------------------------------------------------
 * Straw Chamber Tracking variables
@@ -201,8 +263,13 @@
 *     CTPTYPE=event
 *
       integer*4 max_track_hit
-      parameter (max_track_hit=16)
+      parameter (max_track_hit=8)
 
+      real*4 ttst_track_pos_est(2)
+      real*4 ttst_track_pos_estx
+      real*4 ttst_track_pos_esty
+      equivalence (ttst_track_pos_est(1),ttst_track_pos_estx)
+      equivalence (ttst_track_pos_est(2),ttst_track_pos_esty)
       real*4 ttst_track_xpos(max_track_hit,ttst_n_straw_planes)
       real*4 ttst_track_dxpos(max_track_hit,ttst_n_straw_planes)
       real*4 ttst_track_dxpos2(max_track_hit,ttst_n_straw_planes)
@@ -215,13 +282,42 @@ c     info type, hit_on_plane, plane#
       real*4 ttst_track_byint
       equivalence (ttst_track_params(2,1),ttst_track_bxint)
       equivalence (ttst_track_params(2,2),ttst_track_byint)
+      real*4 ttst_track_xchisq
+      real*4 ttst_track_ychisq
+      equivalence (ttst_track_params(3,1),ttst_track_xchisq)
+      equivalence (ttst_track_params(3,2),ttst_track_ychisq)
       real*4 ttst_track_angle(2)
       real*4 ttst_track_theta
       real*4 ttst_track_phi
       equivalence (ttst_track_angle(1),ttst_track_theta)
       equivalence (ttst_track_angle(2),ttst_track_phi)
+      real*4 ttst_track_chmbrpos(2)
+      real*4 ttst_track_chmbrx
+      real*4 ttst_track_chmbry
+      equivalence  (ttst_track_chmbrpos(1),ttst_track_chmbrx)
+      equivalence  (ttst_track_chmbrpos(2),ttst_track_chmbry)
+      real*4 ttst_track_scintpos(2)
+      real*4 ttst_track_scintx
+      real*4 ttst_track_scinty
+      equivalence  (ttst_track_scintpos(1),ttst_track_scintx)
+      equivalence  (ttst_track_scintpos(2),ttst_track_scinty)
+      real*4 ttst_track_code
+      integer*4 ttst_nxytracktried(2)
+      integer*4 ttst_nxytrack(2)
+      integer*4 ttst_xtrack
+      integer*4 ttst_ytrack
+      equivalence (ttst_nxytrack(1),ttst_xtrack)
+      equivalence (ttst_nxytrack(2),ttst_ytrack)
+c     define some variables for difference between straws and front POLDER
+c     chambers
+      real*4 ttst_stpld_xposdiff
+      real*4 ttst_stpld_yposdiff
+      real*4 ttst_stpld_thposdiff
+      real*4 ttst_stpld_phposdiff
+      integer*4 ttst_good_comp
 
       common /ttst_track_strawchamber/
+     $     ttst_track_pos_est,
      $     ttst_track_xpos,
      $     ttst_track_dxpos,
      $     ttst_track_dxpos2,
@@ -229,8 +325,17 @@ c     info type, hit_on_plane, plane#
      $     ttst_track_hitarray,
      $     ttst_track_ntracks,
      $     ttst_track_params,
-     $     ttst_track_angle
-
+     $     ttst_track_angle,
+     $     ttst_track_chmbrpos,
+     $     ttst_track_scintpos,
+     $     ttst_track_code,
+     $     ttst_nxytracktried,
+     $     ttst_nxytrack,
+     $     ttst_stpld_xposdiff,
+     $     ttst_stpld_yposdiff,
+     $     ttst_stpld_thposdiff,
+     $     ttst_stpld_phposdiff,
+     $     ttst_good_comp
 *----------------------------------------------------------------------
 *
 *     CTPTYPE=param
@@ -239,6 +344,16 @@ c     info type, hit_on_plane, plane#
 *     standard ntuples are used.
 *
       integer*4 ttst_raw_ntuples_out
+      integer*4 ttst_reallyraw_out
+      integer*4 ttst_track_ntuples_out
+      integer*4 raw_ntuples_written
+      integer*4 reallyraw_written
+      integer*4 track_ntuples_written
       common /ttst_stuff/
-     $     ttst_raw_ntuples_out
-      
+     $     ttst_raw_ntuples_out,
+     $     ttst_reallyraw_out,
+     $     ttst_track_ntuples_out,
+     $     raw_ntuples_written,
+     $     reallyraw_written,
+     $     track_ntuples_written
+     
