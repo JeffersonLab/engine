@@ -8,7 +8,10 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.14  1994/09/20 17:13:25  cdaq
+* Revision 1.15  1994/10/12 18:16:13  cdaq
+* (DJM) Add good plane pattern arrays, add matrix inversion to initialization
+*
+* Revision 1.14  1994/09/20  17:13:25  cdaq
 * (SAW) Change HDC_HITS_PER_PLANE, HDC_SING_WCENTER, HDC_SING_WCOORD
 * to CTPTYPE=event registration
 *
@@ -112,10 +115,13 @@
 *
       integer*4 hnspace_points  ! number of space points in each chamber
       integer*4 hnspace_points_tot ! total number of space points after select.
+      integer*4 gplanehdc1,gplanehdc2   ! good plane pattern unit, set bit if respective plane hit
       real*4 hspace_points         ! array of x, y of space points
       real*4 hbeststub              ! array of stubs fit to each space point
       real*4 hdc_sing_drifttime ! array of fully corrected drift times for each plane
       real*4 hdc_sing_driftdis  ! array of final drift distances for each plane
+      real*8 aa3,aainv3         ! matrix AA and its inverse AAINV 
+      real*8 det3               ! array of determinants of AA
 
 *
 *     CTPTYPE=parm
@@ -184,7 +190,10 @@
      &     hdc_sing_driftdis(HMAX_NUM_DC_PLANES),
      &     HDC_HITS_PER_PLANE(HMAX_NUM_DC_PLANES),
      &     HDC_SING_WCENTER(HMAX_NUM_DC_PLANES),
-     &     HDC_SING_WCOORD(HMAX_NUM_DC_PLANES)
+     &     HDC_SING_WCOORD(HMAX_NUM_DC_PLANES),
+     &     gplanehdc1(hmax_space_points),gplanehdc2(hmax_space_points),
+     &     aa3(3,3),aainv3(3,3,14),det3(14)
+
 
 
 *
