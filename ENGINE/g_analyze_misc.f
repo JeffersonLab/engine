@@ -7,6 +7,12 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.9  2003/09/05 15:17:37  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.8.2.1  2003/08/14 00:23:36  cdaq
+* Get bpm3 x and y position data from correct part of  gmisc_dec_data  array (mkj)
+*
 * Revision 1.8  2002/12/27 21:57:50  jones
 *     a. delete variable n_use_bpm and only use variable n_use_bpms
 *     b. Comment out forced setting of guse_bpm_in_recon,gusefr,guse_frdefault
@@ -130,10 +136,10 @@
       ym(2) = gmisc_dec_data(12,2) - gbpm_ym_ped(2)
 
       if (n_use_bpms .eq. 3) then
-      xp(3) = gmisc_dec_data(1,2) - gbpm_xp_ped(3)
-      xm(3) = gmisc_dec_data(2,2) - gbpm_xm_ped(3)
-      yp(3) = gmisc_dec_data(3,2) - gbpm_yp_ped(3)
-      ym(3) = gmisc_dec_data(4,2) - gbpm_ym_ped(3)
+      xp(3) = gmisc_dec_data(17,2) - gbpm_xp_ped(3)
+      xm(3) = gmisc_dec_data(18,2) - gbpm_xm_ped(3)
+      yp(3) = gmisc_dec_data(19,2) - gbpm_yp_ped(3)
+      ym(3) = gmisc_dec_data(20,2) - gbpm_ym_ped(3)
       endif
 
 * calibration constants are set in replay/PARAM/gbeam.param.* 
