@@ -5,7 +5,10 @@
 *
 *     d.f. geesaman              17 feb 1994
 * $Log$
-* Revision 1.1  1994/02/21 16:08:30  cdaq
+* Revision 1.2  1994/03/24 19:52:20  cdaq
+* (DFG) Allow switch for monte carlo data
+*
+* Revision 1.1  1994/02/21  16:08:30  cdaq
 * Initial revision
 *
 *  
@@ -27,8 +30,17 @@
       external s_tdc_time_per_channel,s_tdc_zero
       real*4 s_tdc_time_per_channel,s_tdc_zero
 *
-      s_drift_time_calc = SSTART_TIME 
-     &      - FLOAT(tdc)*s_tdc_time_per_channel(plane,wire)
-     &      + s_tdc_zero(plane,wire)                     
+*     monte Carlo data does not set SSTART_TIME properly
+*     check debuging switch
+      if( sdebug_mc_start_time .ne. 0) then 
+         s_drift_time_calc = 0.
+     &        - FLOAT(tdc)*s_tdc_time_per_channel(plane,wire)
+     &        + s_tdc_zero(plane,wire)                     
+
+      else
+         s_drift_time_calc = SSTART_TIME 
+     &        - FLOAT(tdc)*s_tdc_time_per_channel(plane,wire)
+     &        + s_tdc_zero(plane,wire)                     
+      endif                             !  end check on monte carlo start time
       return
       end
