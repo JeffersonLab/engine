@@ -5,7 +5,10 @@
 *
 *     d.f. geesaman              17 feb 1994
 * $Log$
-* Revision 1.1  1994/02/21 16:44:09  cdaq
+* Revision 1.2  1994/03/24 20:04:21  cdaq
+* (DFG) allow for reverse wire ordering
+*
+* Revision 1.1  1994/02/21  16:44:09  cdaq
 * Initial revision
 *
 *  
@@ -22,7 +25,15 @@
 *
       real*4     s_wire_center_calc       !  wire center in cm
 *
-      s_wire_center_calc = (FLOAT(wire)-sdc_central_wire(plane))
-     &                     * sdc_pitch(plane)
+*     if sdc_sire_counting(plane) is 1 then wires are number in reverse order
+      if(sdc_wire_counting(plane).eq.0) then 
+*          normal ordering
+         s_wire_center_calc = (FLOAT(wire)-sdc_central_wire(plane))
+     &        * sdc_pitch(plane)
+      else        
+           s_wire_center_calc = 
+     &        ((sdc_nrwire(plane) + FLOAT(1 - wire))-
+     &        sdc_central_wire(plane))* sdc_pitch(plane)
+      endif
       return
       end
