@@ -19,7 +19,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.2  1994/06/14 03:49:49  cdaq
+* Revision 1.3  1994/09/13 19:51:03  cdaq
+* (JRA) Add HBETA_CHISQ
+*
+* Revision 1.2  1994/06/14  03:49:49  cdaq
 * (DFG) Calculate physics quantities
 *
 * Revision 1.1  1994/02/19  06:16:08  cdaq
@@ -47,7 +50,7 @@
 *
 *     local variables 
       integer*4 goodtrack,track
-      real*4    COSGAMMA,COSHSTHETA,SINHSTHETA,TANDELPHI,DELPHI,SINHPHI
+      real*4    COSGAMMA,COSHSTHETA,SINHSTHETA,TANDELPHI,SINHPHI
       real*4    p3, t1,ta,t3,hminv2,chi2min,chi2perdeg
 *--------------------------------------------------------
 *
@@ -58,6 +61,7 @@
          chi2min= 1e10
          goodtrack = 0
          do track = 1, HNTRACKS_FP
+
             if( HNFREE_FP(track).ge. hsel_ndegreesmin) then
                chi2perdeg = HCHI2_FP(track)/FLOAT(HNFREE_FP(track))
                if(chi2perdeg .lt. chi2min) then
@@ -76,6 +80,7 @@
          HSNUM_TARTRACK = goodtrack
          HSNUM_FPTRACK  = goodtrack
          if(goodtrack.eq.0) return      ! return if no valid tracks
+
 *     ! with zero set in HSNUM_...
          HSP = HP_TAR(HSNUM_TARTRACK)
          HSENERGY = SQRT(HSP*HSP+HPARTMASS*HPARTMASS)
@@ -90,6 +95,7 @@
          HSDEDX3   = HDEDX(HSNUM_FPTRACK,3)
          HSDEDX4   = HDEDX(HSNUM_FPTRACK,4)
          HSBETA   = HBETA(HSNUM_FPTRACK)
+         HSBETA_CHISQ = HBETA_CHISQ(HSNUM_FPTRACK)
          HSTRACK_ET   = HTRACK_ET(HSNUM_FPTRACK)
          HSTRACK_PRESHOWER_E   = HTRACK_PRESHOWER_E(HSNUM_FPTRACK)
          HSTIME_AT_FP   = HTIME_AT_FP(HSNUM_FPTRACK)
