@@ -23,7 +23,10 @@
 * the correction parameters.
 *
 * $Log$
-* Revision 1.7  1994/09/13 21:25:35  cdaq
+* Revision 1.8  1995/01/18 16:26:48  cdaq
+* (SAW) Catch negative ADC values in argument of square root
+*
+* Revision 1.7  1994/09/13  21:25:35  cdaq
 * (JRA) save extra diagnostic variables, require 2 hits/counter, add dedx
 *
 * Revision 1.6  1994/08/02  20:11:47  cdaq
@@ -192,9 +195,17 @@ c     Get time at focal plane
                 hscin_hit(trk,hnum_scin_hit(trk)) = hit
                 if (hgood_tdc_pos(hit)) then
                   if (hgood_tdc_neg(hit)) then
-                    hdedx(trk,hnum_scin_hit(trk)) = 
-     &                   sqrt(float(hscin_adc_pos(hit)*hscin_adc_neg(hit)
-     $                   ))
+ccc The following sometimes results in square roots of negative numbers
+ccc Supposedly, no one uses this right now (SAW 1/17/95), but it is used
+ccc in hphysics in the "goodtrack" figurer outer.
+                    if(hscin_adc_pos(hit) .ge. 0.0 .and.
+     $                   hscin_adc_neg(hit) .ge. 0.0) then
+                      hdedx(trk,hnum_scin_hit(trk)) = 
+     &                     sqrt(float(hscin_adc_pos(hit)*hscin_adc_neg(hit)
+     $                     ))
+                    else
+                      hdedx(trk,hnum_scin_hit(trk))= 0.0
+                    endif
                   else
                     hdedx(trk,hnum_scin_hit(trk))=float(hscin_adc_pos(hit
      $                   ))

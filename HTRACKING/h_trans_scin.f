@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.8  1994/09/13 21:40:06  cdaq
+* Revision 1.9  1995/01/18 16:28:08  cdaq
+* (SAW) Catch negative ADC values in argument of square root
+*
+* Revision 1.8  1994/09/13  21:40:06  cdaq
 * (JRA) remove obsolete code, fix check for 2 hits, fix hit position
 *
 * Revision 1.7  1994/08/19  03:41:21  cdaq
@@ -145,8 +148,13 @@
      $           /hscin_vel_light(ihit)
 
             hscin_cor_time(ihit) = ( postime(ihit) + negtime(ihit) )/2.
-            hscin_cor_adc(ihit) = sqrt( neg_ph(ihit) * pos_ph(ihit) )
-
+ccc The following sometimes results in square roots of negative numbers
+ccc Supposedly, no one uses this right now (SAW 1/17/95)
+            if(neg_ph(ihit) .ge. 0.0 .and. pos_ph(ihit) .ge. 0.0) then
+              hscin_cor_adc(ihit) = sqrt( neg_ph(ihit) * pos_ph(ihit))
+            else
+              hscin_cor_adc(ihit) = 0.0
+            endif
           else                          !only 1 tube fired
             hscin_cor_adc(ihit) = 0.
             hscin_cor_time(ihit) = 0.   !not a very good 'flag', but there is
