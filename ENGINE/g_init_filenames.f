@@ -23,9 +23,12 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 *-    $Log$
-*-    Revision 1.4  1994/03/24 22:02:21  cdaq
-*-    Reorganize for online compatibility
+*-    Revision 1.5  1994/06/16 03:47:57  cdaq
+*-    (SAW) Blank out filenames for reports
 *-
+* Revision 1.4  1994/03/24  22:02:21  cdaq
+* Reorganize for online compatibility
+*
 * Revision 1.3  1994/02/11  18:34:34  cdaq
 * Split off CTP variables registration from initialize routines
 *
@@ -47,6 +50,9 @@
       character*(*) env_var
 *
       include 'gen_filenames.cmn'
+      include 'hms_filenames.cmn'
+      include 'sos_filenames.cmn'
+      include 'coin_filenames.cmn'
       include 'gen_routines.dec'
 *
       integer ierr
@@ -63,6 +69,21 @@ c
       g_alias_filename = ' '
       g_histout_filename = ' '
       g_decode_map_filename = ' '
+*
+      s_recon_coeff_filename = ' '
+      h_recon_coeff_filename = ' '
+*
+      h_report_template_filename = ' '
+      s_report_template_filename = ' '
+      g_report_template_filename = ' '
+      c_report_template_filename = ' '
+*
+      g_report_output_filename = ' '
+*
+      h_report_blockname = ' '
+      s_report_blockname = ' '
+      g_report_blockname = ' '
+      c_report_blockname = ' '
 *
 *
       call getenv(env_var,g_config_filename)
