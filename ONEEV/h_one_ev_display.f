@@ -6,13 +6,16 @@
 * August, 1994, Pat Welch, Oregon State University, tpw@physics.orst.edu
 *
 * $Log$
-* Revision 1.1  1995/03/14 21:26:49  cdaq
+* Revision 1.2  1995/05/22 18:59:09  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
+*
+* Revision 1.1  1995/03/14  21:26:49  cdaq
 * Initial revision
 *
 
       implicit none
 
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hms_tracking.cmn'
       include 'hms_geometry.cmn'
       include 'hms_calorimeter.cmn'

@@ -11,7 +11,10 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
-* Revision 1.3  1995/05/12 12:23:46  cdaq
+* Revision 1.4  1995/05/22 19:07:42  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
+*
+* Revision 1.3  1995/05/12  12:23:46  cdaq
 * (JRA) Modify/add user histograms
 *
 * Revision 1.2  1994/08/05  21:05:04  cdaq
@@ -21,7 +24,7 @@
 * Revision 1.1  1994/04/12  21:16:27  cdaq
 * Initial revision
 *
-*%%   include 'gen_data_structures.cmn'
+*%%   include 'sos_data_structures.cmn'
 *%%   include 'sos_scin_parms.cmn'
 *
 *     The following don't need to be registered??

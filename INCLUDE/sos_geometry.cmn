@@ -18,7 +18,10 @@
 *                add     sdc_xcenter
 *                        sdc_ycenter
 * $Log$
-* Revision 1.6  1995/01/27 20:21:25  cdaq
+* Revision 1.7  1995/05/22 19:07:14  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
+*
+* Revision 1.6  1995/01/27  20:21:25  cdaq
 * (JRA) Remove no longer used drift time->distance parameters
 *
 * Revision 1.5  1994/11/22  18:44:30  cdaq
@@ -43,7 +46,7 @@
 *     directive to makereg to tell it to include the code in the program
 *     that it generates.
 *
-*%%   include 'gen_data_structures.cmn'
+*%%   include 'sos_data_structures.cmn'
 *
 *     CTPTYPE=parm             ! Probably don't really want the following registered
 *

@@ -5,7 +5,10 @@
 *                              change name to sos_tracking.cmn
 *                              put sluno and debugflags from parameters to CTP
 * $Log$
-* Revision 1.12  1995/04/06 20:30:04  cdaq
+* Revision 1.13  1995/05/22 19:01:16  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
+*
+* Revision 1.12  1995/04/06  20:30:04  cdaq
 * (SAW) Fix wc plane names.  Change residuals variable names
 *
 * Revision 1.11  1995/03/13  19:18:06  cdaq
@@ -49,7 +52,7 @@
 *     directive to makereg to tell it to include the code in the program
 *     that it generates.
 *
-*%%   include 'gen_data_structures.cmn'
+*%%   include 'sos_data_structures.cmn'
 *
 *     CTPTYPE=parm
 *
@@ -211,9 +214,10 @@
       integer*4 sdebuglinkstubs
       integer*4 sdebugtrackprint
       integer*4 sdebugstubchisq
-      integer*4 sdebugtartrackprint       ! call s_print_tar_track
-      integer*4 sdebug_mc_start_time      ! kludge for Monte Carlo start time
-      integer*4 ssingle_stub              ! switch to make tracks of all stubs
+      integer*4 sdebugtartrackprint     ! call s_print_tar_track
+      integer*4 sdebug_mc_start_time    ! kludge for Monte Carlo start time
+      integer*4 sdebugdumptof           ! dumps tof fitting data
+      integer*4 ssingle_stub            ! switch to make tracks of all stubs
       integer*4 sSmallAngleApprox       ! switch for alternate L/R determ. of Y,Yprime planes
       integer*4 s_wire_vel_correction   ! switch to correct drift times for wi--Mre propogation
       integer*4 s_hms_style_chambers    ! Using HMS style drift chambers
@@ -230,6 +234,7 @@
      &     sdebugprintrawdc,
      &     sdebugprintdecodeddc,
      &     sdebug_mc_start_time,
+     &     sdebugdumptof,
      &     ssingle_stub,
      &     sSmallAngleApprox,
      &     s_wire_vel_correction,

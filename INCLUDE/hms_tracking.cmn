@@ -8,7 +8,10 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.20  1995/04/06 20:19:58  cdaq
+* Revision 1.21  1995/05/22 19:01:32  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
+*
+* Revision 1.20  1995/04/06  20:19:58  cdaq
 * (JRA) Change residuals variable names
 *
 * Revision 1.19  1995/01/27  20:19:59  cdaq
@@ -79,7 +82,7 @@
 *     directive to makereg to tell it to include the code in the program
 *     that it generates.
 *
-*%%   include 'gen_data_structures.cmn'
+*%%   include 'hms_data_structures.cmn'
 *
 *      CTPTYPE=parm
 *
@@ -241,6 +244,7 @@
       integer*4 hdebugstubchisq
       integer*4 hdebugtartrackprint     ! call h_print_tar_track
       integer*4 hdebug_mc_start_time    ! kludge for monte carlo drift calc
+      integer*4 hdebugdumptof           ! dumps tof fitting data
       integer*4 hsingle_stub            ! switch to make tracks of all stubs
       integer*4 hSmallAngleApprox       ! switch for alternate L/R determ. of Y,Yprime planes
       integer*4 h_wire_vel_correction   ! switch to correct drift times for wi--Mre propogation
@@ -257,9 +261,11 @@
      &     hdebugprintrawdc,
      &     hdebugprintdecodeddc,
      &     hdebug_mc_start_time,
+     &     hdebugdumptof,
      &     hsingle_stub,
      &     hSmallAngleApprox,
      &     h_wire_vel_correction
+
 
 *
 *     CTPTYPE=parm

@@ -10,7 +10,10 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
-* Revision 1.5  1995/05/12 12:24:01  cdaq
+* Revision 1.6  1995/05/22 19:12:33  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
+*
+* Revision 1.5  1995/05/12  12:24:01  cdaq
 * (JRA) Modify/add user histograms
 *
 * Revision 1.4  1995/04/06  20:22:13  cdaq
@@ -31,7 +34,7 @@
 *     directive to makereg to tell it to include the code in the program
 *     that it generates.
 *
-*%%   include 'gen_data_structures.cmn'
+*%%   include 'sos_data_structures.cmn'
 *
 *     CTPTYPE=parm
 *

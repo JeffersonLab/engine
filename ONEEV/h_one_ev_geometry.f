@@ -9,7 +9,10 @@
 *	at least I didn't see a method around them.  So I have defined all
 *	the subvolumes explicitly. (TPW)
 * $Log$
-* Revision 1.2  1995/01/27 19:31:37  cdaq
+* Revision 1.3  1995/05/22 18:58:03  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
+*
+* Revision 1.2  1995/01/27  19:31:37  cdaq
 * (SAW) Change file names to be hms specific.
 *
 c Revision 1.1  1995/01/10  18:43:44  cdaq
@@ -18,7 +21,7 @@ c
 *
       implicit none
 
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hms_geometry.cmn'
       include 'hms_calorimeter.cmn'
       include 'hms_scin_parms.cmn'
