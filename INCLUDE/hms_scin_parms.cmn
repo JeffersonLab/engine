@@ -11,7 +11,10 @@
 *       Modified 23 March 1994   DFG
 *           Add definition of hnum_scin_elements and set parameter value
 * $Log$
-* Revision 1.3  1994/08/05 15:27:18  cdaq
+* Revision 1.4  1994/09/13 19:24:18  cdaq
+* (JRA) Remove hhodo_zpos, add staggering of scintillators
+*
+* Revision 1.3  1994/08/05  15:27:18  cdaq
 * (SAW) Add makereg directive with required include files
 *
 * Revision 1.2  1994/08/04  17:55:08  cdaq
@@ -46,6 +49,10 @@
       real*4 hscin_1y_zpos
       real*4 hscin_2x_zpos
       real*4 hscin_2y_zpos
+      real*4 hscin_1x_dzpos
+      real*4 hscin_1y_dzpos
+      real*4 hscin_2x_dzpos
+      real*4 hscin_2y_dzpos
       real*4 hscin_1x_left
       real*4 hscin_1y_top
       real*4 hscin_2x_left
@@ -68,6 +75,8 @@
      &     hscin_2x_nr, hscin_2y_nr,
      &     hscin_1x_zpos, hscin_1y_zpos, !z position of plane.
      &     hscin_2x_zpos, hscin_2y_zpos,
+     &     hscin_1x_dzpos, hscin_1y_dzpos,
+     &     hscin_2x_dzpos, hscin_2y_dzpos,
      &     hscin_1x_left, hscin_1y_top, !position of 'negative'(??) end.
      &     hscin_2x_left, hscin_2y_top,
      &     hscin_1x_right, hscin_1y_bot, !position of 'positive'(??) end.
@@ -85,7 +94,6 @@
 *     Physical paramteres of counters.  Use hhodo_* for arrays that include
 *     the entire hodoscope,  hscin_* for arrays that loop over hits.
       real*4 hnum_scin_counters(hnum_scin_planes)
-      real*4 hhodo_zpos(hnum_scin_planes)
       real*4 hhodo_center_coord(hnum_scin_planes,hnum_scin_elements)
       real*4 hhodo_width(hnum_scin_planes,hnum_scin_elements)
       real*4 hhodo_pos_coord(hnum_scin_planes,hnum_scin_elements)
@@ -107,7 +115,6 @@
 
       common/hms_tof_parms/
      &     hnum_scin_counters,
-     &     hhodo_zpos,
      &     hhodo_center_coord,
      &     hhodo_width,
      &     hhodo_pos_coord,
