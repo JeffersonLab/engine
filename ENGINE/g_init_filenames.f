@@ -23,6 +23,9 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 *-    $Log$
+*-    Revision 1.13  1995/10/09 18:37:52  cdaq
+*-    (SAW) Move g_ctp_database call to engine.f
+*-
 *-    Revision 1.12  1995/09/01 14:31:03  cdaq
 *-    (JRA) Blank out g_ctp_kinematics_filename
 *-
@@ -144,17 +147,6 @@
         call G_add_path(here,err)
       ELSE
         err= ' '
-      ENDIF
-*
-*     Now if there is a g_ctp_database_filename set, pass the run number
-*     to it to set CTP variables
-*
-      if(.not.ABORT.and.g_ctp_database_filename.ne.' ') then
-        call g_ctp_database(ABORT, err
-     $       ,gen_run_number, g_ctp_database_filename)
-        IF(ABORT) THEN
-          call G_add_path(here,err)
-        endif
       ENDIF
 *
       return
