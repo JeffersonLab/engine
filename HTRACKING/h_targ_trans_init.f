@@ -7,7 +7,10 @@
 *
 * Version:  0.1 (In development)
 * $Log$
-* Revision 1.1  1994/05/13 03:51:55  cdaq
+* Revision 1.2  1995/04/06 19:32:19  cdaq
+* (SAW) Put in ddutta's pre cosy x-x', y-y' transformation
+*
+* Revision 1.1  1994/05/13  03:51:55  cdaq
 * Initial revision
 *
 *
@@ -58,6 +61,10 @@
             h_recon_expon(i,j) = 0.
          enddo
       enddo
+      h_ang_slope_x=0.0
+      h_ang_slope_y=0.0
+      h_ang_offset_x=0.0
+      h_ang_offset_y=0.0
 
       istat = 1                         !Assume success.
 * Get an I/O unit to open datafiles.
@@ -71,11 +78,20 @@
 
       line = '!'
       do while (line(1:1).eq.'!')
-         read (chan,1001,err=94) line
+        read (chan,1001,err=94) line
       enddo
 
-* Read in coefficients and exponents.
-
+* Read in focal plane rotation coefficients.
+      do while (line(1:4).ne.' ---')
+        if(line(1:11).eq.'h_ang_slope_x')read(line,1201,err=94)h_ang_slope_x
+        if(line(1:11).eq.'h_ang_slope_y')read(line,1201,err=94)h_ang_slope_y
+        if(line(1:12).eq.'h_ang_offset_x')read(line,1201,err=94)h_ang_offset_x
+        if(line(1:12).eq.'h_ang_offset_y')read(line,1201,err=94)h_ang_offset_y
+        read (chan,1001,err=94) line
+      enddo
+* Read in reconstruction coefficients and exponents.
+      line=' '
+      read (chan,1001,err=94) line
       h_num_recon_terms = 0
       do while (line(1:4).ne.' ---')
          h_num_recon_terms = h_num_recon_terms + 1
@@ -119,5 +135,6 @@
 
  1001 format(a)
  1200 format(1x,4g16.9,1x,4i1)
-
+ 1201 format(15x,g16.9)
+      
       end

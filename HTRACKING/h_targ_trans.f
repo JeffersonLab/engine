@@ -16,7 +16,10 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
-* Revision 1.8  1995/03/22 16:22:40  cdaq
+* Revision 1.9  1995/04/06 19:31:54  cdaq
+* (SAW) Put in ddutta's pre cosy x-x', y-y' transformation
+*
+* Revision 1.8  1995/03/22  16:22:40  cdaq
 * (SAW) Previous change wrong.  COSY wants slopes.
 * Target track data is now slopes.
 *
@@ -86,7 +89,7 @@
       integer*4        i,j,k,l,m,n,
      $     itrk
 
-      real*8           sum(4),hut(4),term,temp
+      real*8           sum(4),hut(4),term,temp,hut_rot(4)
 
 *=============================Executable Code =============================
       ABORT= .FALSE.
@@ -113,25 +116,33 @@
          enddo
 
 * Load track data into local array, Converting to COSY units.
-* Note:  At this point, the focal plane variables hxp_fp and hyp_fp are
-* still slopes.  We convert them to angles before running them through the
-* COSY transport matrices.
 * It is assumed that the track coordinates are reported at
 * the same focal plane as the COSY matrix elements were calculated.
+* Also note that the COSY track slopes HUT(2) and HUT(4) are actually
+* the SINE of the track angle in the XZ and YZ planes.
 
-         hut(1) = hx_fp(itrk)/100.      !Meters.
-         hut(2) = hxp_fp(itrk)          !COSY wants slopes
-         hut(3) = hy_fp(itrk)/100.      !Meters.
-         hut(4) = hyp_fp(itrk)          !COSY wants slopes
+         hut(1) = hx_fp(itrk)           !cm
+         hut(2) = hxp_fp(itrk)          !radians
+         hut(3) = hy_fp(itrk)           !cm
+         hut(4) = hyp_fp(itrk)          !radians
 
 
+! now transform
+         hx_fp_rot(itrk)=  hut(1)   
+         hy_fp_rot(itrk)=  hut(3)   
+         hxp_fp_rot(itrk)= hut(2) + h_ang_offset_x + hut(1)*h_ang_slope_x
+         hyp_fp_rot(itrk)= hut(4) + h_ang_offset_y + hut(3)*h_ang_slope_y
+         hut_rot(1)= hx_fp_rot(itrk)
+         hut_rot(2)= hxp_fp_rot(itrk)
+         hut_rot(3)= hy_fp_rot(itrk)
+         hut_rot(4)= hyp_fp_rot(itrk)
 * Compute COSY sums.
 
          do i = 1,h_num_recon_terms
             term = 1.
             do j = 1,4
                temp = 1.0
-               if (h_recon_expon(j,i).ne.0.) temp = hut(j)
+               if (h_recon_expon(j,i).ne.0.) temp = hut_rot(j)
      $              **h_recon_expon(j,i)
                term = term*temp
             enddo
@@ -141,19 +152,20 @@
             sum(4) = sum(4) + term*h_recon_coeff(4,i)
          enddo
 * Protext against asin argument > 1.
-         if(sum(1).gt. 1.0) sum(1)=  0.99
-         if(sum(1).lt. -1.0) sum(1)= -.99
-         if(sum(3).gt. 1.0) sum(3)=  0.99
-         if(sum(3).lt. -1.0) sum(3)= -.99
+c         if(sum(1).gt. 1.0) sum(1)=  0.99
+c         if(sum(1).lt. -1.0) sum(1)= -.99
+c         if(sum(3).gt. 1.0) sum(3)=  0.99
+c         if(sum(3).lt. -1.0) sum(3)= -.99
 
      
 * Load output values.
 
-         hx_tar(itrk) = 0.              ! ** No beam raster **
-         hy_tar(itrk) = sum(2)*100.     !cm.
+         hx_tar(itrk) = 0.              ! ** No beam raster yet **
+         hy_tar(itrk) = sum(2)          !cm.
          hxp_tar(itrk) = sum(1)         !Slope xp
          hyp_tar(itrk) = sum(3)         !Slope yp
 
+         hz_tar(itrk) = 0.0             !Track is at origin
          hdelta_tar(itrk) = sum(4)*100. !percent.
          HP_TAR(itrk)  = HPCENTRAL*(1.0 + sum(4)) !Momentum in GeV
 
