@@ -65,6 +65,10 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.9.4.4  2004/07/01 15:14:13  jones
+* When previous change was made to allow segmenting coin rzdat files not
+* all variables where defined. Fixed this problem. This is for fpi-2 branch.
+*
 * Revision 1.9.4.3  2004/02/17 17:28:48  jones
 * Changes necessary to allow the possibility of segmenting rzdat files.
 *
@@ -118,14 +122,11 @@
 *
       character*80 default_name
       parameter (default_name= 'COINntuple')
-      integer default_bank,default_recL
-      parameter (default_bank= 8000)    !4 bytes/word
-      parameter (default_recL= 1024)    !record length
-      character*80 title,file
-      character*80 directory,name
+      character*80 file
+      character*80 name
       character*1000 pat,msg
-      integer status,size,io,id,bank,recL,iv(10),m
-      real rv(10)
+      integer ilo,fn_len,m
+      character*1 ifile
 *
       logical HEXIST           !CERNLIB function
 *
