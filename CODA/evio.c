@@ -23,6 +23,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.5  2002/10/02 15:59:25  saw
+ *   Fix gcc3 compatibity
+ *
  *   Revision 1.4  2002/07/31 20:24:29  saw
  *   Make local copy of filename passed in evOpen
  *
@@ -198,7 +201,7 @@ int evOpen(char *fname,char *flags,int *handle)
   int temp,blk_size;
   char *filename;
 
-  filename = malloc(strlen(fname)+1);
+  filename = (char *) malloc(strlen(fname)+1);
   strcpy(filename,fname);
   a = evGetStructure();		/* allocate control structure or quit */
   if (!a) {
@@ -206,7 +209,7 @@ int evOpen(char *fname,char *flags,int *handle)
     return(S_EVFILE_ALLOCFAIL);
   }
   while (*filename==' ') filename++; /* remove leading spaces */
- /* But don't fuck with any other spaces except for the trailing ones */
+ /* But don't frell with any other spaces except for the trailing ones */
 #if 0
   for (cp=filename;*cp!=NULL;cp++) {
     if ((*cp==' ') || !(isprint(*cp))) *cp='\0';
@@ -214,8 +217,8 @@ int evOpen(char *fname,char *flags,int *handle)
 #else
   kill_trailing(filename,' ');
 #endif
-  switch (*flags)
-  case NULL: case 'r': case 'R': {
+  switch (*flags) {
+  case '\0': case 'r': case 'R':
     a->rw = EV_READ;
     if(strcmp(filename,"-")==0) {
       a->file = stdin;
@@ -340,7 +343,7 @@ int evOpen(char *fname,char *flags,int *handle)
     *handle = (int) a;
     free(filename);
     return(S_SUCCESS);
-#endif BIT64
+#endif
   } else {
     free(a);
 #ifdef DEBUG
@@ -674,7 +677,7 @@ int evOpenSearch(int handle, int *b_handle)
 #else
   *b_handle = (int) b;
   return last_evn;
-#endif BIT64
+#endif
 }
   
 /*********************************************************************
