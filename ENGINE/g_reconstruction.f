@@ -14,9 +14,12 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 *-    $Log$
-*-    Revision 1.6  1994/06/17 03:36:57  cdaq
-*-    (KBB) Upgrade error reporting
+*-    Revision 1.7  1994/08/04 03:46:31  cdaq
+*-    (SAW) Add call to Breuer's hack_anal
 *-
+* Revision 1.6  1994/06/17  03:36:57  cdaq
+* (KBB) Upgrade error reporting
+*
 * Revision 1.5  1994/04/15  20:37:41  cdaq
 * (SAW) for ONLINE compatibility get event from argument instead of commmon.
 *
@@ -88,6 +91,8 @@
       ABORT= ABORT .or. FAIL
 *
       IF(ABORT .or. err.NE.' ') call G_add_path(here,err)
+*
+      call hack_anal(ABORT,err)
 *
       RETURN
       END
