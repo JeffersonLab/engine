@@ -1,4 +1,22 @@
       subroutine s_Ntuple_init(ABORT,err)
+* xucc comments begin
+*the following has been changed:
+*      s_Ntuple_tag(m)= 'ssbeta_notrk'   ! untracked BETA of chosen track
+*      s_Ntuple_tag(m)= 'ssshsum' ! untracked normalized total shower energy of chosen track
+*      s_Ntuple_tag(m)= 'bxbpm'
+*      s_Ntuple_tag(m)= 'bybpm'
+*      s_Ntuple_tag(m)= 'frx'
+*      s_Ntuple_tag(m)= 'fry'
+
+*      s_Ntuple_contents(m)= SBETA_NOTRK ! untracked BETA of chosen track
+*      s_Ntuple_contents(m)= SSSHSUM    ! untracked Norm. Total shower energy of chosen track
+*      s_Ntuple_contents(m)= gbpm_x(2)
+*      s_Ntuple_contents(m)= gbpm_y(2)
+*      s_Ntuple_contents(m)= gfrx_raw_adc
+*      s_Ntuple_contents(m)= gfry_raw_adc
+*     xucc added end
+
+
 *----------------------------------------------------------------------
 *
 *     Creates an SOS Ntuple
@@ -10,6 +28,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.7.4.1  2003/03/05 22:53:26  xu
+* new variables
+*
 * Revision 1.7  1996/09/04 15:18:02  saw
 * (JRA) Modify ntuple contents
 *
@@ -148,9 +169,22 @@
       m= m+1
       s_Ntuple_tag(m)= 'ssdedx1'  	! DEDX of chosen track in 1st scin plane
       m= m+1
-      s_Ntuple_tag(m)= 'ssbeta'		! BETA of chosen track
+*     xucc added begin
+      s_Ntuple_tag(m)= 'ssbeta_notrk'   ! untracked BETA of chosen track
       m= m+1
+*     xucc added end
+
+      s_Ntuple_tag(m)= 'ssbeta'		! tracked BETA of chosen track
+      m= m+1
+
+*    xucc added begin
+      s_Ntuple_tag(m)= 'ssshsum' ! untracked normalized total shower energy of chosen track
+      m= m+1
+*    xucc added end
+
       s_Ntuple_tag(m)= 'ssshtrk' ! 'SSTRACK_ET'	! Total shower energy of chosen track
+*  here ssshtrk means "tracked normalized total shower energy of chosen track"
+
       m= m+1
       s_Ntuple_tag(m)= 'ssprtrk'!'SSTRACK_PRESHOWER_E' ! preshower of chosen track
       m= m+1
@@ -176,6 +210,17 @@
 
 
 * Experiment dependent entries start here.
+* xucc  added begin
+      m= m+1
+      s_Ntuple_tag(m)= 'bxbpm'
+      m= m+1
+      s_Ntuple_tag(m)= 'bybpm'
+      m= m+1
+      s_Ntuple_tag(m)= 'frx'
+      m= m+1
+      s_Ntuple_tag(m)= 'fry'
+*  xucc added end
+
 
 
 * Open ntuple.

@@ -1,4 +1,24 @@
       subroutine h_Ntuple_keep(ABORT,err)
+
+* xucc comments begin
+* in addition to the comments in h_ntuple_init.f,
+* WE also
+* notice that HSSHTRK actually is the same as cvs's HSTRACK_ET
+* and HSPRTRK as cvs's HSTRACK_PRESHOWER_E
+* this is because in Volmer's include file, we have different names
+* for the same things.
+* of course, we can change back these two names, if we change back the names
+* in the include file and noptice where it is calculated in the code
+*
+* WE also added three include files as:
+*      include 'hms_calorimeter.cmn'
+*      include 'gen_run_info.cmn'
+*      include 'gen_data_structures.cmn'
+* that is because the cotents of added ntuple should be from these include 
+* files
+* xucc comments ended
+
+
 *----------------------------------------------------------------------
 *
 *     Purpose : Add entry to the HMS Ntuple
@@ -8,6 +28,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.8.4.1  2003/03/05 22:53:10  xu
+* new variables
+*
 * Revision 1.8  1996/09/04 14:43:17  saw
 * (JRA) Modify ntuple contents
 *
@@ -51,6 +74,12 @@
       INCLUDE 'hms_scin_tof.cmn'
       INCLUDE 'gen_scalers.cmn'
       include 'hms_track_histid.cmn'  !temp junk.
+*     xucc added begin
+      include 'hms_calorimeter.cmn'
+      include 'gen_run_info.cmn'
+      include 'gen_data_structures.cmn'
+*     xucc added end
+
 *
       logical HEXIST	!CERNLIB function
 *
@@ -90,12 +119,36 @@ c                                ! track with spectrometer ray
       m= m+1
       h_Ntuple_contents(m)= HSDEDX(1)	! DEDX of chosen track in 1st scin plane
       m= m+1
+*     xucc added begin
+      h_Ntuple_contents(m)= HBETA_NOTRK ! BETA of chosen track
+      m= m+1
+*     xucc added end    
+
       h_Ntuple_contents(m)= HSBETA	! BETA of chosen track
       m= m+1
-      h_Ntuple_contents(m)= HSTRACK_ET	! Total shower energy of chosen track
+
+*     xucc added begin?
+      h_Ntuple_contents(m)= HSSHSUM     ! Total shower energy of chosen track
       m= m+1
-      h_Ntuple_contents(m)= HSTRACK_PRESHOWER_E	! preshower of chosen track
+*     xucc added end?
+
+*      h_Ntuple_contents(m)= HSTRACK_ET	! Total shower energy of chosen track
+*      m= m+1
+*      h_Ntuple_contents(m)= HSTRACK_PRESHOWER_E	! preshower of chosen track
+*      m= m+1
+* xucc added begin
+* notice that HSSHTRK actually is the same as cvs's HSTRACK_ET 
+* and HSPRTRK as cvs's HSTRACK_PRESHOWER_E
+* this is because in Volmer's include file, we have different names
+* for the same things.
+* of course, we can change back these two names, if we change back the names
+* in the include file and noptice where it is calculated in the code
+      h_Ntuple_contents(m)= HSSHTRK     ! Total shower energy of chosen track
       m= m+1
+      h_Ntuple_contents(m)= HSPRTRK     ! preshower of chosen track
+      m= m+1
+* xucc added end
+
       h_Ntuple_contents(m)= HSX_FP		! X focal plane position 
       m= m+1
       h_Ntuple_contents(m)= HSY_FP
@@ -115,6 +168,17 @@ c                                ! track with spectrometer ray
       h_Ntuple_contents(m)= float(gen_event_ID_number)
 
 * Experiment dependent entries start here.
+*       xucc added begin
+        m= m+1
+        h_Ntuple_contents(m)= gbpm_x(2)       ! was bxbpm
+        m= m+1
+        h_Ntuple_contents(m)= gbpm_y(2)       ! was bybpm
+        m= m+1
+        h_Ntuple_contents(m)= gfrx_raw_adc    ! was frx
+        m= m+1
+        h_Ntuple_contents(m)= gfry_raw_adc    ! was fry
+*       xucc added end
+
 
 
 * Fill ntuple for this event

@@ -1,4 +1,59 @@
       subroutine c_Ntuple_init(ABORT,err)
+*  xucc comments begin
+*  In this file, only some new names of NTUPLE contents
+*  The actual meaning of these contents should be found 
+*  It will never be wrong to put it in common blocks
+*  Only beware that these new parameters may only make sense
+*  for FPI events. For other events, it may be like the eyes
+*  of a blind person
+* 
+*  So thge Users himself (herself) 
+*  should be responsible for usage of these new things
+*  These new things are
+*  
+*
+*      c_Ntuple_tag(m)= 'hsztar'        !  added by volmer
+*      c_Ntuple_tag(m)= 'ssztar'        ! SOS Target
+*      c_Ntuple_tag(m)= 'Eexc'
+*      c_Ntuple_tag(m)= 'Emx'
+*      c_Ntuple_tag(m)= 'mmx'
+*      c_Ntuple_tag(m)= 'Eexcx'
+*      c_Ntuple_tag(m)= 'Q2'
+*      c_Ntuple_tag(m)= 'W'
+*      c_Ntuple_tag(m)= 't'
+*      c_Ntuple_tag(m)= 'epsilon'
+*      c_ntuple_tag(m)= 'gamma_v'
+
+
+*  Of course, we will also see the correct order of new quantities
+*  filled as follows 
+*      c_Ntuple_contents(m)= ztar_dummy
+*      c_Ntuple_contents(m)= ztar_dummy
+*      c_Ntuple_contents(m)= ce_exc ! Excitation Energy
+*      c_Ntuple_contents(m)= cmex  ! missing energy
+*      c_Ntuple_contents(m)= cmmx ! missing mass
+*      c_Ntuple_contents(m)= ce_excx ! Excitation Energy
+*      c_Ntuple_contents(m)= c_bigq2  ! q2?
+*      c_Ntuple_contents(m)= c_invmass
+*      c_Ntuple_contents(m)= cmin_t
+*      c_Ntuple_contents(m)= c_epsilon
+*      c_Ntuple_contents(m)= c_gamma_v
+*  
+
+*    
+*   Another one which puzzled me is the quantity cphipq
+*   there is only one line like
+*c        cphipq=asin(p_rot_y/p_rot_mag_check)/deg_rad
+*   to tell us what it could be.
+*   I find that Volmer's cphipi:
+*   phipi = acos(p_new_x/sqrt(p_new_x**2+p_new_y**2))
+*   could be more useful for us. So I used this instead.
+*   although maybe this could be
+*   phipi = acos(p_new_x/sqrt(p_new_x**2+p_new_y**2))/deg_rad
+*   Of course, I also changed the tag phi_pq to phi_pi accordingly
+*  
+*  xucc comment end
+
 *----------------------------------------------------------------------
 *
 *     Creates an COIN Ntuple
@@ -10,6 +65,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.9.4.1  2003/03/05 22:51:31  xu
+* new variables
+*
 * Revision 1.9  1999/02/23 16:40:37  csa
 * Variable changes
 *
@@ -174,6 +232,12 @@
       m= m+1
       c_Ntuple_tag(m)= 'hsytar'        ! HMS Target
       m= m+1
+*  xucc added begin     
+      c_Ntuple_tag(m)= 'hsztar'        !  added by volmer
+      m= m+1
+*  it's not very hard to accept this 
+*  xucc added end
+
       c_Ntuple_tag(m)= 'hsxptar'       !
       m= m+1
       c_Ntuple_tag(m)= 'hsyptar'       ! 
@@ -182,6 +246,12 @@
       m= m+1
       c_Ntuple_tag(m)= 'ssytar'        ! SOS Target
       m= m+1
+*  xucc added begin 
+      c_Ntuple_tag(m)= 'ssztar'        ! SOS Target
+      m= m+1
+*   again add new infor on Z
+* xucc added end
+
       c_Ntuple_tag(m)= 'ssxptar'       ! 
       m= m+1
       c_Ntuple_tag(m)= 'ssyptar'       ! 
@@ -226,6 +296,19 @@ c      m= m+1
       m=m+1
       c_Ntuple_tag(m)= 'missmass'
       m=m+1
+
+*    xucc added begin
+      c_Ntuple_tag(m)= 'Eexc'
+      m=m+1
+      c_Ntuple_tag(m)= 'Emx'
+      m=m+1
+      c_Ntuple_tag(m)= 'mmx'
+      m=m+1
+      c_Ntuple_tag(m)= 'Eexcx'
+      m=m+1
+*  seems to add some new infor about excitation energy
+*     xucc added end
+
       c_Ntuple_tag(m)= 'Pm'
       m=m+1
       c_Ntuple_tag(m)= 'PmPar'
@@ -234,9 +317,30 @@ c      m= m+1
       m=m+1
       c_Ntuple_tag(m)= 'PmOop'
       m=m+1
+
+*     xucc added begin
+      c_Ntuple_tag(m)= 'Q2'
+      m=m+1
+      c_Ntuple_tag(m)= 'W'
+      m=m+1
+      c_Ntuple_tag(m)= 't'
+      m=m+1
+*    seems to add more infor on Q2, (Q the four momentum of virtual gamma from*    electrons)etc 
+*    xucc added end
+
+
       c_Ntuple_tag(m)= 'th_pq'
       m=m+1
       c_ntuple_tag(m)= 'phi_pq'
+
+*     xucc added begin
+      m=m+1
+      c_Ntuple_tag(m)= 'epsilon'
+      m=m+1
+      c_ntuple_tag(m)= 'gamma_v'
+* added more thing for fpi analysis
+*     xucc added end
+
 
 *      m=m+1
 *      c_Ntuple_tag(m)= 'HmsCorsi'

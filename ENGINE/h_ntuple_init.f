@@ -1,4 +1,29 @@
       subroutine h_Ntuple_init(ABORT,err)
+* xucc comment begin
+*the following is added into h_ntuple
+* in h_ntuple_init.f
+
+*   h_Ntuple_tag(m)= 'hsbeta_notrk'  ! untracked BETA of chosen track
+*   h_Ntuple_tag(m)= 'hsshsum'  ! Normalized untracked total shower energy of chosen track
+*        h_Ntuple_tag(m)= 'bxbpm'
+*        h_Ntuple_tag(m)= 'bybpm'
+*        h_Ntuple_tag(m)= 'frx'
+*        h_Ntuple_tag(m)= 'fry'
+
+*  in h_ntuple_keep.f      
+      
+*      h_Ntuple_contents(m)= HBETA_NOTRK ! BETA of chosen track
+*      h_Ntuple_contents(m)= HSSHSUM     ! Total shower energy of chosen track
+*      h_Ntuple_contents(m)= gbpm_x(2)       ! was bxbpm
+*        h_Ntuple_contents(m)= gbpm_y(2)       ! was bybpm
+*        h_Ntuple_contents(m)= gfrx_raw_adc    ! was frx  
+*        h_Ntuple_contents(m)= gfry_raw_adc    ! was fry  
+        
+*  xucc comments end
+
+
+
+
 *----------------------------------------------------------------------
 *
 *     Creates an HMS Ntuple
@@ -10,6 +35,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.9.4.1  2003/03/05 22:52:44  xu
+* new variables
+*
 * Revision 1.9  1996/09/04 14:42:44  saw
 * (JRA) Some changes to ntuple contents
 *
@@ -157,10 +185,20 @@
       h_Ntuple_tag(m)= 'hszbeam'! Lab Z coordinate of intersection of beam
                                 ! track with spectrometer ray
       m= m+1
-      h_Ntuple_tag(m)= 'hsdedx1'       ! DEDX of chosen track in 1st scin plane
+      h_Ntuple_tag(m)= 'hsdedx1'   ! DEDX of chosen track in 1st scin plane
       m= m+1
+*   xucc added begin
+      h_Ntuple_tag(m)= 'hsbeta_notrk'  ! untracked BETA of chosen track
+      m= m+1
+*   xucc added end
+
       h_Ntuple_tag(m)= 'hsbeta'        ! BETA of chosen track
       m= m+1
+*    xucc added begin
+      h_Ntuple_tag(m)= 'hsshsum'  ! Normalized untracked total shower energy of chosen track
+      m= m+1
+*    xucc added end
+
       h_Ntuple_tag(m)= 'hsshtrk'  ! 'HSTRACK_ET'       ! Total shower energy of chosen track
       m= m+1
       h_Ntuple_tag(m)= 'hsprtrk'   !'HSTRACK_PRESHOWER_E' ! preshower of chosen track
@@ -184,6 +222,17 @@
       h_Ntuple_tag(m)= 'eventID'
 
 * Experiment dependent entries start here.
+*  xucc added begin
+        m= m+1
+        h_Ntuple_tag(m)= 'bxbpm'
+        m= m+1
+        h_Ntuple_tag(m)= 'bybpm'
+        m= m+1
+        h_Ntuple_tag(m)= 'frx'
+        m= m+1
+        h_Ntuple_tag(m)= 'fry'
+*  xucc added end
+
 
 
 * Open ntuple

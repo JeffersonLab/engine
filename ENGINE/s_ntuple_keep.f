@@ -1,4 +1,24 @@
       subroutine s_Ntuple_keep(ABORT,err)
+* xucc comments begin
+* in additoon to comments on s_ntuple_init.f                         
+* we have three additional include files
+*      include 'sos_calorimeter.cmn'
+*      include 'gen_run_info.cmn'
+*      include 'gen_data_structures.cmn'
+* And we also notice that
+* SSSHTRK and SSPRTRK actually is SSTRACK_ET and SSTRACK_PRESHOWER_E
+* but since they have different names in our include files
+* we changed them here
+* 
+*  However we need check the difference on this guessing.
+* notice that we have tracked beta, and tracked deposit energy
+* as well as untracked ones? How about the original 
+* total information on SCAL?
+* the same question exists on HCAL.
+* xucc comments end
+
+
+
 *----------------------------------------------------------------------
 *
 *     Purpose : Add entry to the SOS Ntuple
@@ -8,6 +28,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.7.4.1  2003/03/05 22:53:52  xu
+* new variables
+*
 * Revision 1.7  1996/09/04 15:18:21  saw
 * (JRA) Modify ntuple contents
 *
@@ -48,6 +71,12 @@
       INCLUDE 'sos_scin_tof.cmn'
       include 'sos_track_histid.cmn'
       include 'sos_aero_parms.cmn'
+*     xucc added begin
+      include 'sos_calorimeter.cmn'
+      include 'gen_run_info.cmn'
+      include 'gen_data_structures.cmn'
+*     xucc added end
+
 *
       logical HEXIST    !CERNLIB function
 *
@@ -83,12 +112,35 @@
       m= m+1
       s_Ntuple_contents(m)= SSDEDX(1)	! DEDX of chosen track in 1st scin plane
       m= m+1
-      s_Ntuple_contents(m)= SSBETA	! BETA of chosen track
+* xucc added begin
+      s_Ntuple_contents(m)= SBETA_NOTRK ! untracked BETA of chosen track
       m= m+1
-      s_Ntuple_contents(m)= SSTRACK_ET	! Total shower energy of chosen track
+* xucc added end 
+
+      s_Ntuple_contents(m)= SSBETA	! tracked BETA of chosen track
       m= m+1
-      s_Ntuple_contents(m)= SSTRACK_PRESHOWER_E	! preshower of chosen track
+
+*  xucc added begin
+      s_Ntuple_contents(m)= SSSHSUM     ! untracked Norm. Total shower energy of chosen track
       m= m+1
+* xucc added end
+
+* xucc changing begin
+*      s_Ntuple_contents(m)= SSTRACK_ET	! Total shower energy of chosen track
+*      m= m+1
+*      s_Ntuple_contents(m)= SSTRACK_PRESHOWER_E	! preshower of chosen track
+*      m= m+1
+
+*   the following SSSHTRK and SSPRTRK actually is SSTRACK_ET and SSTRACK_PRESHOWER_E
+* but since they have different names in our include files
+* we changed them here
+      s_Ntuple_contents(m)= SSSHTRK     ! tracked Norm. Total shower energy of chosen track
+      m= m+1
+      s_Ntuple_contents(m)= SSPRTRK     ! tracked normalized preshower of chosen track
+      m= m+1
+* xucc changing end
+
+
       s_Ntuple_contents(m)= SSX_FP		! X focal plane position 
       m= m+1
       s_Ntuple_contents(m)= SSY_FP
@@ -111,6 +163,16 @@
 
 
 * Experiment dependent entries start here.
+* xucc added begin
+      m= m+1
+      s_Ntuple_contents(m)= gbpm_x(2)
+      m= m+1
+      s_Ntuple_contents(m)= gbpm_y(2)
+      m= m+1
+      s_Ntuple_contents(m)= gfrx_raw_adc
+      m= m+1
+      s_Ntuple_contents(m)= gfry_raw_adc
+* xucc added end
 
 
 * Fill ntuple for this event
