@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.10  1996/01/16 15:27:20  cdaq
+# (SAW) Add hash table name lookup
+#
 # Revision 1.9  1995/07/28 14:12:36  cdaq
 # (SAW) SGI/IRIX compatibility
 #
@@ -30,9 +33,9 @@
 include $(Csoft)/etc/Makefile
 
 ctp_sources = thTest.c thTestParse.c thTestExecute.c thHandlers.c thParm.c \
-	thUtils.c thLoad.c thHist.c thReport.c thGethit.c daVarRegister.c \
-	daVarRpcProc.c daVarHandlers.c daVarServ.c \
-	daVarRpc_svc.c daVarRpc_xdr.c
+       thUtils.c thLoad.c thGroup.c thHist.c thReport.c thGethit.c \
+       daVarRegister.c daVarRpcProc.c daVarHandlers.c daVarServ.c \
+       daVarRpc_svc.c daVarRpc_xdr.c daVarHashLib.c
 ctpclient_sources = daVarRpc_xdr.c daVarRpc_clnt.c thClient.c
 
 sources = $(ctp_sources) $(ctpclient_sources) makereg.c
@@ -54,6 +57,7 @@ endif
 ifeq ($(ARCH),HPUX)
   CC = gcc
   CFLAGS = -D_HPUX_SOURCE -Dextname -g
+#  CFLAGS = -D_HPUX_SOURCE -Dextname -g -pg # for gprof
   ARFLAGS = frv
   RPCCOM=rpcgen
   OSTYPE=HPUX
