@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard, HU
 *-    $Log$
-*-    Revision 1.2  1994/04/15 20:35:29  cdaq
-*-    (KBB) Add calls to thtstexe and thhstexe
+*-    Revision 1.3  1994/06/17 03:50:36  cdaq
+*-    (KBB) Upgrade error reporting
 *-
+* Revision 1.2  1994/04/15  20:35:29  cdaq
+* (KBB) Add calls to thtstexe and thhstexe
+*
 * Revision 1.1  1994/02/04  22:10:48  cdaq
 * Initial revision
 *
@@ -33,74 +36,55 @@
       INCLUDE 'gen_data_structures.cmn'
       include 'gen_routines.dec'
 *
-      logical HMS_ABORT,SOS_ABORT
-      character*1024 HMS_err,SOS_err
+      logical FAIL
+      character*1024 why
       character*80 msg
       integer ierr
-      real rv
 *
 *--------------------------------------------------------
 *
       err= ' '                                  !erase any old errors
 *
-*-HMS keep_results
-      call H_keep_results(HMS_ABORT,HMS_err)
-*
-*-SOS keep_results
-      call S_keep_results(SOS_ABORT,SOS_err)
-*
-      IF(.NOT.HMS_ABORT .and. .NOT.SOS_ABORT) THEN
-*
-*-COIN keep_results
-*
-         call C_keep_results(ABORT,err)
-*     
-      ELSEIF(HMS_ABORT) THEN
-*
-*-HMS only
-*
-         ABORT= SOS_ABORT                       !nonfatal error?
-         err= SOS_err                           !warning about SOS
-         call G_log_message('WARNING: '//err)
-*
-      ELSEIF(SOS_ABORT) THEN
-*
-*-SOS only
-*
-         ABORT= HMS_ABORT                       !nonfatal error?
-         err= HMS_err                           !warning about HMS
-         call G_log_message('WARNING: '//err)
-*     
+      ierr= thtstexe()
+      ABORT= ierr.NE.0
+      IF(ABORT) THEN
+        call G_build_note(':failure#$ in thtstexe',
+     &                                 '$',ierr,' ',0.,' ',err)
       ELSE
-*					error from both HMS and SOS
-         ABORT= .TRUE.
-         call G_prepend(HMS_err//' & '//SOS_err,err)
-*
+        ierr= thhstexe()
+        ABORT= ierr.NE.0
+        If(ABORT) call G_build_note(':failure#$ in thhstexe',
+     &                                 '$',ierr,' ',0.,' ',err)
       ENDIF
 *
-      IF(.NOT.ABORT) THEN
-         ierr= thtstexe()
-         ABORT= ierr.NE.0
-         If(ABORT) Then
-            call G_build_note(':failure#$ in thtstexe','$',ierr,
-     &           ' ',rv,' ',msg)
-         Else
-            ierr= thhstexe()
-            ABORT= ierr.NE.0
-            if(ABORT) then
-               call G_build_note(':failure#$ in thhstexe','$',ierr,
-     &              ' ',rv,' ',msg)
-            endif
-         EndIf
-         If(ABORT .and. err.NE.' ') Then
-            call G_prepend(msg//'&',err)
-         ElseIf(ABORT) Then
-            err= msg
-         EndIf
+*-HMS 
+      call H_keep_results(FAIL,why)
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+        call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+        err= why
       ENDIF
+      ABORT= ABORT .or. FAIL
 *
-      IF(ABORT) call G_add_path(here,err)
+*-SOS 
+      call S_keep_results(FAIL,why)
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+        call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+        err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL
+*
+*-COIN
+      call C_keep_results(ABORT,err)
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+        call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+        err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL
+*
+      IF(ABORT .or. err.NE.' ') call G_add_path(here,err)
 *
       RETURN
       END
-
