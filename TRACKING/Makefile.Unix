@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.10  1996/04/29 18:29:50  saw
+# (SAW) New makefile style
+#
 # Revision 1.9  1996/01/17 19:11:00  cdaq
 # (SAW) Add total_eloss
 #
@@ -27,6 +30,7 @@
 # Revision 1.1  1994/04/15  20:27:51  cdaq
 # Initial revision
 #
+NEWSTYLE=1
 include $(Csoft)/etc/Makefile
 
 sources = find_space_points.f select_space_points.f solve_four_by_four.f \
@@ -37,15 +41,7 @@ libsources = $(sources)
 lib_targets := $(patsubst %.f, libtracking.a(%.o), $(libsources))
 
 install-dirs := lib
-ifeq ($(ARCH),HPUX)
-##  lib_targets = libutils.a
-  bin_targets =
-endif
-
-ifeq ($(ARCH),ULTRIX)
-##  lib_targets = libutils.a
-  bin_targets =
-endif
+bin_targets =
 
 #default:
 #	@echo "nothing to make"
@@ -61,7 +57,8 @@ endif
 # Get include files from ENGINE directory
 #
 
-%.cmn :: ../INCLUDE/%.cmn
+%.cmn :: ../../INCLUDE/%.cmn
 	$(CP) $< $@
+	$(CP) $< ../$@
 
 include $(sources:.f=.d)

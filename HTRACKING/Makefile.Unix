@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.17  1996/04/29 18:29:23  saw
+# (SAW) New makefile style
+#
 # Revision 1.16  1996/01/16 21:32:55  cdaq
 # (SAW) Use $(CP) instead of cp.  Add h_cer_eff, h_cer_eff_shutdown, h_init_cer,
 #       h_trans_cer, h_dc_eff, h_dc_eff_shutdown, h_dump_peds, h_dump_cal,
@@ -51,7 +54,7 @@
 # Revision 1.1  1994/04/15  20:30:16  cdaq
 # Initial revision
 #
-
+NEWSTYLE = 1
 include $(Csoft)/etc/Makefile
 
 osources = h_cal.f h_cer.f h_chamnum.f h_dpsifun.f \
@@ -91,17 +94,8 @@ sources = $(osources) $(newstuff) $(newerstuff) $(makeregstuff)
 libsources = $(sources)
 
 lib_targets := $(patsubst %.f, libhtracking.a(%.o), $(libsources))
-
 install-dirs := lib
-ifeq ($(ARCH),HPUX)
-##  lib_targets = libutils.a
-  bin_targets =
-endif
-
-ifeq ($(ARCH),ULTRIX)
-##  lib_targets = libutils.a
-  bin_targets =
-endif
+bin_targets =
 
 #default:
 #	@echo "nothing to make"
@@ -110,7 +104,7 @@ endif
 # Rule for making the register subroutines
 #
 r_%.f : %.cmn $(MAKEREG)
-	$(MAKEREG) $< -o $@ -e /dev/null
+	(cd .. ; $(MAKEREG) $(<F) -o $(@F) -e /dev/null)
 
 .PRECIOUS: r_%.f
 
@@ -125,17 +119,21 @@ endif
 # Get include files from INCLUDE directory
 #
 
-%.cmn :: ../INCLUDE/%.cmn
+%.cmn :: ../../INCLUDE/%.cmn
 	$(CP) $< $@
+	$(CP) $< ../$@
 
-%.dec :: ../INCLUDE/%.dec
+%.dec :: ../../INCLUDE/%.dec
 	$(CP) $< $@
+	$(CP) $< ../$@
 
-%.par :: ../INCLUDE/%.par
+%.par :: ../../INCLUDE/%.par
 	$(CP) $< $@
+	$(CP) $< ../$@
 
-%.dte :: ../INCLUDE/%.dte
+%.dte :: ../../INCLUDE/%.dte
 	$(CP) $< $@
+	$(CP) $< ../$@
 
 include $(sources:.f=.d)
 

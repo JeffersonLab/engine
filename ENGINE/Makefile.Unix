@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.17  1996/04/29 18:30:05  saw
+# (SAW) New makefile style
+#
 # Revision 1.16  1996/01/22 15:56:58  saw
 # (JRA) Add g_analyze_beam_pedestal, g_analyze_misc,
 #       g_calc_beam_pedestal, g_calc_bpm_pedestal,
@@ -52,15 +55,13 @@
 # Revision 1.1  1994/04/15  20:27:32  cdaq
 # Initial revision
 #
+NEWSTYLE = 1
 include $(Csoft)/etc/Makefile
 
 decode_source = g_decode_clear.f g_decode_config.f g_decode_event_by_banks.f \
-	g_decode_fb_bank.f g_decode_fb_detector.f g_decode_getdid.f \
+	g_decode_fb_bank.f g_decode_fb_detector.f \
 	g_decode_init.f g_analyze_scalers.f
 general_source = $(decode_source) g_clear_event.f \
-	g_decode_clear.f g_decode_config.f g_decode_event_by_banks.f \
-	g_decode_fb_bank.f g_decode_fb_detector.f g_decode_getdid.f \
-	g_decode_init.f g_get_next_event.f \
 	g_init_filenames.f g_initialize.f g_keep_results.f \
 	g_open_source.f g_proper_shutdown.f g_reconstruction.f \
 	g_reset_event.f g_register_variables.f \
@@ -71,7 +72,7 @@ general_source = $(decode_source) g_clear_event.f \
 	g_examine_go_info.f g_kludgeup_kinematics.f \
 	g_analyze_beam_pedestal.f g_analyze_misc.f \
 	g_calc_beam_pedestal.f g_calc_bpm_pedestal.f g_calc_raster_pedestal.f \
-	g_target_initialize.f g_trans_misc.f
+	g_target_initialize.f g_trans_misc.f g_dump_peds.f g_get_next_event.f
 hms_source = h_clear_event.f h_initialize.f h_keep_results.f \
 	h_proper_shutdown.f h_reset_event.f \
 	h_register_variables.f
@@ -174,7 +175,7 @@ engine: $(DEPLIBS)
 # Rule for making the register subroutines
 #
 r_%.f : %.cmn $(MAKEREG)
-	$(MAKEREG) $< -o $@ -e /dev/null
+	(cd .. ; $(MAKEREG) $(<F) -o $(@F) -e /dev/null)
 
 .PRECIOUS: r_%.f
 
@@ -189,16 +190,20 @@ g_decode_config.f : $(NFSDIRECTORY)/ENGINE/g_decode_config.f
 .PRECIOUS: %.f
 endif
 
-%.cmn :: ../INCLUDE/%.cmn
+%.cmn :: ../../INCLUDE/%.cmn
 	$(CP) $< $@
+	$(CP) $< ../$@
 
-%.dec :: ../INCLUDE/%.dec
+%.dec :: ../../INCLUDE/%.dec
 	$(CP) $< $@
+	$(CP) $< ../$@
 
-%.par :: ../INCLUDE/%.par
+%.par :: ../../INCLUDE/%.par
 	$(CP) $< $@
+	$(CP) $< ../$@
 	
-%.dte :: ../INCLUDE/%.dte
+%.dte :: ../../INCLUDE/%.dte
 	$(CP) $< $@
+	$(CP) $< ../$@
 	
 include $(sources:.f=.d)

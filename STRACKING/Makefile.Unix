@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.15  1996/04/29 18:29:40  saw
+# (SAW) New makefile style
+#
 # Revision 1.14  1996/01/17 17:00:27  cdaq
 # (SAW) Use $(CP) instead of cp.  Add s_cer_eff, s_cer_eff_shutdown, s_init_cer,
 #       s_trans_cer, s_dc_eff, s_dc_eff_shutdown, s_dump_peds, s_dump_cal,
@@ -45,6 +48,7 @@
 # Revision 1.1  1994/04/15  20:28:07  cdaq
 # Initial revision
 #
+NEWSTYLE = 1
 include $(Csoft)/etc/Makefile
 
 osources = s_cal.f s_cer.f s_chamnum.f s_dpsifun.f s_drift_dist_calc.f \
@@ -72,12 +76,12 @@ newerstuff = s_fill_dc_target_hist.f s_targ_trans_init.f \
 	s_cer_eff.f s_cer_eff_shutdown.f s_init_cer.f s_trans_cer.f \
 	s_dc_eff.f s_dc_eff_shutdown.f s_dump_peds.f s_dump_cal.f \
 	s_report_bad_data.f s_dc_trk_eff.f s_dc_trk_eff_shutdown.f \
-	s_find_easy_space_point.f
+	s_find_easy_space_point.f s_aero.f
 makeregstuff = r_sos_filenames.f r_sos_tracking.f r_sos_geometry.f \
 	 r_sos_track_histid.f r_sos_recon_elements.f r_sos_physics_sing.f \
 	r_sos_scin_parms.f r_sos_scin_tof.f r_sos_calorimeter.f \
 	r_sos_id_histid.f r_sos_bypass_switches.f r_sos_statistics.f \
-	r_sos_pedestals.f r_sos_cer_parms.f
+	r_sos_pedestals.f r_sos_cer_parms.f r_sos_aero_parms.f
 
 sources = $(osources) $(newstuff) $(newerstuff) $(makeregstuff)
 libsources = $(sources)
@@ -85,13 +89,7 @@ libsources = $(sources)
 lib_targets := $(patsubst %.f, libstracking.a(%.o), $(libsources))
 
 install-dirs := lib
-ifeq ($(ARCH),HPUX)
-  bin_targets =
-endif
-
-ifeq ($(ARCH),ULTRIX)
-  bin_targets =
-endif
+bin_targets =
 
 #default:
 #	@echo "nothing to make"
@@ -100,7 +98,7 @@ endif
 # Rule for making the register subroutines
 #
 r_%.f : %.cmn $(MAKEREG)
-	$(MAKEREG) $< -o $@ -e /dev/null
+	(cd .. ; $(MAKEREG) $(<F) -o $(@F) -e /dev/null)
 
 .PRECIOUS: r_%.f
 
@@ -115,13 +113,16 @@ endif
 # Get include files from INCLUDE directory
 #
 
-%.cmn :: ../INCLUDE/%.cmn
+%.cmn :: ../../INCLUDE/%.cmn
 	$(CP) $< $@
+	$(CP) $< ../$@
 
-%.dec :: ../INCLUDE/%.dec
+%.dec :: ../../INCLUDE/%.dec
 	$(CP) $< $@
+	$(CP) $< ../$@
 
-%.par :: ../INCLUDE/%.par
+%.par :: ../../INCLUDE/%.par
 	$(CP) $< $@
+	$(CP) $< ../$@
 
 include $(sources:.f=.d)

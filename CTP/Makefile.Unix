@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.11  1996/04/29 18:28:53  saw
+# (SAW) New makefile style
+#
 # Revision 1.10  1996/01/16 15:27:20  cdaq
 # (SAW) Add hash table name lookup
 #
@@ -30,6 +33,7 @@
 # Revision 1.1  1994/04/15  20:28:27  cdaq
 # Initial revision
 #
+NEWSTYLE = 1
 include $(Csoft)/etc/Makefile
 
 ctp_sources = thTest.c thTestParse.c thTestExecute.c thHandlers.c thParm.c \
@@ -82,23 +86,23 @@ endif
 
 ##$(LIBROOT)/libctp.a: $(libctp_members)
 
-makereg: makereg.o
+#makereg: makereg.o
 
-daVarRpc_xdr.c: daVarRpc.x
+daVarRpc_xdr.c: ../daVarRpc.x
 	rm -f $@
-	$(RPCCOM) -o $@ -c daVarRpc.x
+	$(RPCCOM) -o $@ -c ../daVarRpc.x
 
-daVarRpc_svc.c: daVarRpc.x
+daVarRpc_svc.c: ../daVarRpc.x
 	rm -f $@
-	$(RPCCOM) -o $@ -m daVarRpc.x
+	$(RPCCOM) -o $@ -m ../daVarRpc.x
 
-daVarRpc_clnt.c: daVarRpc.x
+daVarRpc_clnt.c: ../daVarRpc.x
 	rm -f $@
-	$(RPCCOM) -o $@ -l daVarRpc.x
+	$(RPCCOM) -o $@ -l ../daVarRpc.x
 
-daVarRpc.h: daVarRpc.x
-	rm -f $@
-	$(RPCCOM) -o $@ -h daVarRpc.x
+daVarRpc.h: ../daVarRpc.x
+	rm -f $
+	$(RPCCOM) -o $@ -h ../daVarRpc.x
 
 daVarRpc_xdr.d: daVarRpc_xdr.c
 

@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.10  1996/04/29 18:30:19  saw
+# (SAW) New makefile style
+#
 # Revision 1.9  1996/01/17 19:25:01  cdaq
 # (SAW) Change cp -f to $(CP)
 #
@@ -27,6 +30,7 @@
 # Revision 1.1  1994/06/07  18:52:21  cdaq
 # Initial revision
 #
+NEWSTYLE = 1
 include $(Csoft)/etc/Makefile
 
 gsources = g_add_path.f g_build_note.f g_important_length.f g_int_sort.f \
@@ -58,16 +62,16 @@ ifdef NFSDIRECTORY
 .PRECIOUS: %.f
 endif
 
-%.cmn :: ../INCLUDE/%.cmn
+%.cmn :: ../../INCLUDE/%.cmn
 	$(CP) $< $@
+	$(CP) $< ../$@
+
+%.dec :: ../../INCLUDE/%.dec
+	$(CP) $< $@
+	$(CP) $< ../$@
+
+%.par :: ../../INCLUDE/%.par
+	$(CP) $< $@
+	$(CP) $< ../$@
 
 include $(sources:.f=.d)
-
-
-
-
-
-
-
-
-
