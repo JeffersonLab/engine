@@ -13,6 +13,9 @@
 *- 
 *-   Created 19-JAN-1994   D. F. Geesaman
 * $Log$
+* Revision 1.5  1996/09/04 13:37:02  saw
+* (JRA) Initialize hstubmin variables
+*
 * Revision 1.4  1995/10/11 12:19:50  cdaq
 * (JRA) Only call tracking routines when it is warranted
 *
@@ -63,6 +66,10 @@
             return
           endif
 *
+          hstubminx = 999999.
+          hstubminy = 999999.
+          hstubminxp = 999999.
+          hstubminyp = 999999.
           call H_LINK_STUBS(ABORT,err)
           if(ABORT) then
             call G_add_path(here,err)
