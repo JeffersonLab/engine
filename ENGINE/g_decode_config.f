@@ -21,9 +21,12 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton Univ.; rewrote parsing
 *-    $Log$
-*-    Revision 1.3  1994/06/18 02:47:38  cdaq
-*-    (SAW) Add code for miscleaneous data and uninstrumented channels
+*-    Revision 1.4  1994/06/21 20:42:37  cdaq
+*-    (SAW) Fix a bug interpreting comment lines
 *-
+* Revision 1.3  1994/06/18  02:47:38  cdaq
+* (SAW) Add code for miscleaneous data and uninstrumented channels
+*
 * Revision 1.2  1994/04/06  18:22:02  cdaq
 * (SAW) Revert to pre-initial version that doesn't use UTILSUBS string
 * manipulation routines.  Added BSUB keyword for # of bits to shift to get
@@ -114,9 +117,11 @@
 *
             if(llen.gt.0) then
                do while((line(llen:llen).eq.' '.or.line(llen:llen).eq.tab)
-     $              .and.llen.gt.1)
+     $              .and.llen.ge.1)
                   llen = llen - 1       ! Strip whitespace off end of string
+                  if(llen.le.0) goto 127 ! Prevent line(0:0)
                enddo
+ 127           continue
             endif
 *
             if(llen.gt.0) then
@@ -136,10 +141,8 @@
 *     
                   if(lpeq.gt.0) then
                      if(index(line(1:lpeq-1),'ROC').gt.0) then
-                        lastroc = roc
                         read(line(lpeq+1:llen),'(i10)') roc
                      else if(index(line(1:lpeq-1),'SLOT').gt.0) then
-                        lastslot = slot
                         read(line(lpeq+1:llen),'(i10)') slot
                      else if(index(line(1:lpeq-1),'DET').gt.0) then
                         read(line(lpeq+1:llen),'(i10)') did
@@ -171,6 +174,8 @@
                         g_decode_slotmask(roc+1,slot) = mask
                         g_decode_nextpointer = g_decode_nextpointer +
      &                       nsubadd
+                        lastroc = roc
+                        lastslot = slot
                      endif
                   EndIf
 *     
