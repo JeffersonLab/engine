@@ -13,7 +13,10 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
-* Revision 1.6  1994/06/06 17:13:37  cdaq
+* Revision 1.7  1994/06/17 17:46:36  cdaq
+* (KBB) Upgrade error reporting
+*
+* Revision 1.6  1994/06/06  17:13:37  cdaq
 * (DFG) add call to register bypass switches and statistics
 *
 * Revision 1.5  1994/03/24  19:41:33  cdaq
@@ -42,33 +45,44 @@
       INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_routines.dec'
 *
+      logical FAIL
+      character*1000 why
 *
 *--------------------------------------------------------
       err= ' '
       ABORT = .false.
 *
-*
 *     register tracking variables
       call h_register_track_param(ABORT,err)
-      IF(ABORT) THEN
-         call G_add_path(here,err)
-      ENDIF
 *
 *     register cal, tof and cer variables
-      call h_register_id_param(ABORT,err)
-      IF(ABORT) THEN
-         call G_add_path(here,err)
+      call h_register_id_param(FAIL,why)
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+         call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+         err = why
       ENDIF
+      ABORT= ABORT .or. FAIL
+*
 *     register bypass switches
-      call h_register_bypass(ABORT,err)
-      IF(ABORT) THEN
-         call G_add_path(here,err)
+      call h_register_bypass(FAIL,why)
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+         call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+         err = why
       ENDIF
+      ABORT= ABORT .or. FAIL
+*
 *     register hms statistics
-      call h_register_statistics(ABORT,err)
-      IF(ABORT) THEN
-         call G_add_path(here,err)
+      call h_register_statistics(FAIL,why)
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+         call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+         err = why
       ENDIF
+      ABORT= ABORT .or. FAIL
+*
+      IF(ABORT .or. err.NE.' ') call G_add_path(here,err)
 *
       RETURN
       END
