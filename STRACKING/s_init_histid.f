@@ -7,7 +7,11 @@
 *     Date:      9 April 1994
 *
 * $Log$
-* Revision 1.1  1995/05/22 18:32:10  cdaq
+* Revision 1.2  1995/07/20 18:57:12  cdaq
+* (JRA) Add per hit adc/tdc sums for hodo and calormeter
+* (SAW) Relocate data statements for f2c compatibility
+*
+* Revision 1.1  1995/05/22  18:32:10  cdaq
 * Initial revision
 *
 * Revision 1.6  1995/05/12  12:23:22  cdaq
@@ -52,39 +56,37 @@ c
   
       character*32 histname
       character*8 wiremap
-      data wiremap/'_wiremap'/       
       character*10 drifttime
-      data drifttime/'_drifttime'/
       character*9 driftdis
-      data driftdis /'_driftdis'/
       character*9 wirecent
-      data wirecent/'_wirecent'/
       character*9 residual
-      data residual/'_residual'/
       character*9 singres
-      data singres/'_sing_res'/
-
       character*6 posadc,negadc,postdc,negtdc
+      character*6 sdcplanename(smax_num_dc_planes)
+      character*1 sscinplanenum(SNUM_SCIN_PLANES)
+      character*10 sscinplane
+      character*7 sposadc,snegadc,spostdc,snegtdc
+      character*7 sscinplanename(SNUM_SCIN_PLANES)
+
+      data wiremap/'_wiremap'/       
+      data drifttime/'_drifttime'/
+      data driftdis /'_driftdis'/
+      data wirecent/'_wirecent'/
+      data residual/'_residual'/
+      data singres/'_sing_res'/
       data posadc /'posadc'/
       data negadc /'negadc'/
       data postdc /'postdc'/
       data negtdc /'negtdc'/       
-
-      character*6 sdcplanename(smax_num_dc_planes)
       data sdcplanename/'sdc1u1','sdc1u2','sdc1x1','sdc1x2','sdc1v1'
      $     ,'sdc1v2','sdc2u1','sdc2u2','sdc2x1','sdc2x2','sdc2v1','sdc2v2','
      $     sdc3u1','sdc3u2','sdc3x1','sdc3x2','sdc3v1','sdc3v2'/
-
-      character*1 sscinplanenum(SNUM_SCIN_PLANES)
       data sscinplanenum/'1','2','3','4'/
-      character*10 sscinplane
       data sscinplane /'sscinplane'/
-      character*7 sposadc,snegadc,spostdc,snegtdc
       data sposadc /'sposadc'/
       data snegadc /'snegadc'/
       data spostdc /'spostdc'/
       data snegtdc /'snegtdc'/
-      character*7 sscinplanename(SNUM_SCIN_PLANES)
       data sscinplanename/'sscin1x','sscin1y','sscin2x','sscin2y'/
 *     
       SAVE
@@ -151,6 +153,16 @@ c
         sidscinallposadc(plane) = thgetid(histname)
         histname = snegadc//sscinplanenum(plane)
         sidscinallnegadc(plane) = thgetid(histname)
+
+        histname = "ssumpostdc"//sscinplanenum(plane)
+        sidsumpostdc(plane) = thgetid(histname)
+        histname = "ssumnegtdc"//sscinplanenum(plane)
+        sidsumnegtdc(plane) = thgetid(histname)
+        histname = "ssumposadc"//sscinplanenum(plane)
+        sidsumposadc(plane) = thgetid(histname)
+        histname = "ssumnegadc"//sscinplanenum(plane)
+        sidsumnegadc(plane) = thgetid(histname)
+
         do counter = 1,snum_scin_counters(plane)
 *     this is probably very awkward character manipulation
 *     
@@ -186,6 +198,7 @@ c
       sidcalhits(2) = thgetid('scalbhits')
       sidcalhits(3) = thgetid('scalchits')
       sidcalhits(4) = thgetid('scaldhits')
+      sidcalsumadc = thgetid('scalsumadc')
 
       RETURN
       END
