@@ -5,6 +5,9 @@
 *
 *     d.f. geesaman         8 Sept 1993
 * $Log$
+* Revision 1.8  1996/01/17 18:56:08  cdaq
+* (JRA) Fill sdc_plane_wirecenter and sdc_plane_wirecoord arrays
+*
 * Revision 1.7  1995/10/11 18:15:12  cdaq
 * (JRA) Comment out MINUIT track fitting for now.
 *
@@ -197,6 +200,8 @@ c      endif
                 pln=sdc_plane_num(hit)
 
 * note chi2 is single precision
+                sdc_plane_wirecenter(itrk,pln)=sdc_wire_center(hit)
+                sdc_plane_wirecoord(itrk,pln)=sdc_wire_coord(hit)
 
                 sdc_single_residual(itrk,pln)=
      &              sdc_wire_coord(hit)-sdc_track_coord(itrk,pln)
