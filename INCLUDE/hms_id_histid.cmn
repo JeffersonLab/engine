@@ -11,10 +11,14 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
-* Revision 1.1  1994/04/12 21:11:59  cdaq
+* Revision 1.2  1994/08/04 20:51:58  cdaq
+* (SAW) Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
+*
+* Revision 1.1  1994/04/12  21:11:59  cdaq
 * Initial revision
 *
-*
+*     The following don't need to be registered??
+*     CTPTYPE=parm
       integer*4 hidscinrawtothits
       integer*4 hidscinplane
       integer*4 hidscincounters(HNUM_SCIN_PLANES)
@@ -32,6 +36,8 @@
      &     hidscinpostdc,
      &     hidscinnegtdc
 
+*
+*     CTPTYPE=parm
 *
 *      flags to turn on (.eq.1) or off (.eq. 0) hard coded histograms
        integer*4 hturnon_scin_raw_hist
