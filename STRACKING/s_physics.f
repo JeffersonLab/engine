@@ -19,7 +19,13 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.3  1994/11/23 13:55:03  cdaq
+* Revision 1.4  1995/01/18 20:57:12  cdaq
+* (SAW) Correct some trig and check for negative arg in elastic kin calculation
+*
+* Revision 1.4  1995/01/18  20:00:04  cdaq
+* (SAW) Correct some trig and check for negative arg in elastic kin calculation
+*
+* Revision 1.3  1994/11/23  13:55:03  cdaq
 * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.2  1994/06/14  03:41:10  cdaq
@@ -106,22 +112,22 @@
          SSCHI2PERDEG  = SCHI2_FP(SSNUM_FPTRACK)
      $        /FLOAT(SNFREE_FP(SSNUM_FPTRACK))
          SSNFREE_FP = SNFREE_FP(SSNUM_FPTRACK)
-         COSGAMMA = SQRT( 1. - SSXP_TAR**2 - SSYP_TAR**2)
-         COSSSTHETA = SINSTHETAS * SSYP_TAR + COSSTHETAS * COSGAMMA
-         if( ABS(COSSSTHETA) .LT. 1.) then
+         cosgamma = 1.0/sqrt(1.0 + ssxp_tar**2 - ssyp_tar**2)
+         cossstheta = cosgamma*(sinsthetas * ssyp_tar + cossthetas)
+ccc         if( ABS(COSSSTHETA) .LT. 1.) then
             SSTHETA = ACOS(COSSSTHETA)
-         else
-            SSTHETA = 0.
-         endif
+ccc         else
+ccc            SSTHETA = 0.
+ccc         endif
          SINSSTHETA = SIN(SSTHETA)
-         TANDELPHI = SSXP_TAR /
-     &        ( SINSTHETAS*COSGAMMA - COSSTHETAS*SSYP_TAR )
-         SSPHI = SPHI_LAB + TANDELPHI
-         SINSPHI = SIN(SSPHI)
+         tandelphi = ssxp_tar /
+     &        ( sinsthetas - cossthetas*ssyp_tar )
+         SSPHI = SPHI_LAB + TANDELPHI   ! PHI_LAB must be multpiple of
+         SINSPHI = SIN(SSPHI)           ! pi/2, or above is crap
 *     Calculate elastic scattering kinematics
          t1  = 2.*SPHYSICSA*CPBEAM*COSSSTHETA      
          ta  = 4*CPBEAM**2*COSSSTHETA**2 - SPHYSICSB**2
-         if(ta.eq.0) then
+         if(ta.eq.0 .or. ( SPHYSICAB2 + SPHYSICSM3B * ta).lt.0.0) then
             p3=0.       
          else
             t3  = ta-SPHYSICSB**2
