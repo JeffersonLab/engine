@@ -9,59 +9,90 @@
 *                                   Transfer ID in common block
 *                                   Implement flag to turn block on
 * $Log$
-* Revision 1.1  1994/04/13 15:38:48  cdaq
+* Revision 1.2  1994/08/18 02:35:36  cdaq
+* (DA) Add histograms for residuals
+*
+* Revision 1.1  1994/04/13  15:38:48  cdaq
 * Initial revision
 *
 *-
 *--------------------------------------------------------
-       IMPLICIT NONE
+      IMPLICIT NONE
 *
-       character*50 here
-       parameter (here= 'h_fill_dc_fp_hist')
+      character*50 here
+      parameter (here= 'h_fill_dc_fp_hist')
 *
-       logical ABORT
-       character*(*) err
-       real*4  histval
-       integer*4 itrk
+      logical ABORT
+      character*(*) err
+      real*4  histval
+      integer*4 itrk
 
 *
-       include 'gen_data_structures.cmn'
-       include 'hms_tracking_histid.cmn'
+      include 'gen_data_structures.cmn'
+      include 'hms_track_histid.cmn'
+      include 'hms_tracking.cmn'
 *
-       SAVE
+      SAVE
 *--------------------------------------------------------
 *
-       ABORT= .FALSE.
-       err= ' '
+      ABORT= .FALSE.
+      err= ' '
 *
 * Is this histogram flag turned on
-       if(hturnon_focal_plane_hist .ne. 0 ) then
+      if(hturnon_focal_plane_hist .ne. 0 ) then
 * Make sure there is at least 1 track
         if(HNTRACKS_FP .gt. 0 ) then
 * Loop over all hits
-           do itrk=1,HNTRACKS_FP
-             call hf1(hidhx_fp,HX_FP(itrk),1.)
-             call hf1(hidhy_fp,HY_FP(itrk),1.)
-             call hf1(hidhxp_fp,HXP_FP(itrk),1.)
-             call hf1(hidhyp_fp,HYP_FP(itrk),1.)
-             if(HCHI2_FP(itrk) .gt. 0 ) then
-               histval=log10(HCHI2_FP(itrk))            
-             else 
-               histval = 10.
-             endif
-             call hf1(hidhlogchi2_fp,histval,1.)
-             histval= HNFREE_FP(itrk)
-             call hf1(hidhnfree_fp,histval,1.)
-             if( HNFREE_FP(itrk) .ne.0) then
-               histval= HCHI2_FP(itrk) /  HNFREE_FP(itrk)
-             else
-               histval = -1.
+          do itrk=1,HNTRACKS_FP
+            call hf1(hidhx_fp,HX_FP(itrk),1.)
+            call hf1(hidhy_fp,HY_FP(itrk),1.)
+            call hf1(hidhxp_fp,HXP_FP(itrk),1.)
+            call hf1(hidhyp_fp,HYP_FP(itrk),1.)
+            if(HCHI2_FP(itrk) .gt. 0 ) then
+              histval=log10(HCHI2_FP(itrk))            
+            else 
+              histval = 10.
+            endif
+            call hf1(hidhlogchi2_fp,histval,1.)
+            histval= HNFREE_FP(itrk)
+            call hf1(hidhnfree_fp,histval,1.)
+            if( HNFREE_FP(itrk) .ne.0) then
+              histval= HCHI2_FP(itrk) /  HNFREE_FP(itrk)
+            else
+              histval = -1.
             endif
             call hf1(hidhchi2perdeg_fp,histval,1.)
-*
+*     
+*     The following is bad form (Ask Steve Wood why.)
+*     
+            call hf1(hidres_fp,hdc_residual(itrk,1),1.)
+            call hf1(hidres_fp+1,hdc_residual(itrk,2),1.)
+            call hf1(hidres_fp+2,hdc_residual(itrk,3),1.)
+            call hf1(hidres_fp+3,hdc_residual(itrk,4),1.)
+            call hf1(hidres_fp+4,hdc_residual(itrk,5),1.)
+            call hf1(hidres_fp+5,hdc_residual(itrk,6),1.)
+            call hf1(hidres_fp+6,hdc_residual(itrk,7),1.)
+            call hf1(hidres_fp+7,hdc_residual(itrk,8),1.)
+            call hf1(hidres_fp+8,hdc_residual(itrk,9),1.)
+            call hf1(hidres_fp+9,hdc_residual(itrk,10),1.)
+            call hf1(hidres_fp+10,hdc_residual(itrk,11),1.)
+            call hf1(hidres_fp+11,hdc_residual(itrk,12),1.)
+            
+            call hf1(hidsingres_fp,hdc_sing_res(itrk,1),1.)
+            call hf1(hidsingres_fp+1,hdc_sing_res(itrk,2),1.)
+            call hf1(hidsingres_fp+2,hdc_sing_res(itrk,3),1.)
+            call hf1(hidsingres_fp+3,hdc_sing_res(itrk,4),1.)
+            call hf1(hidsingres_fp+4,hdc_sing_res(itrk,5),1.)
+            call hf1(hidsingres_fp+5,hdc_sing_res(itrk,6),1.)
+            call hf1(hidsingres_fp+6,hdc_sing_res(itrk,7),1.)
+            call hf1(hidsingres_fp+7,hdc_sing_res(itrk,8),1.)
+            call hf1(hidsingres_fp+8,hdc_sing_res(itrk,9),1.)
+            call hf1(hidsingres_fp+9,hdc_sing_res(itrk,10),1.)
+            call hf1(hidsingres_fp+10,hdc_sing_res(itrk,11),1.)
+            call hf1(hidsingres_fp+11,hdc_sing_res(itrk,12),1.)
 * 
-         enddo   ! end loop over hits
-       endif     ! end test on zero hits       
-      endif      ! end test on histogramming flag
+          enddo                         ! end loop over hits
+        endif                           ! end test on zero hits       
+      endif                             ! end test on histogramming flag
       RETURN
       END
