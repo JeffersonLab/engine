@@ -7,6 +7,13 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.8  2002/12/27 21:57:50  jones
+*     a. delete variable n_use_bpm and only use variable n_use_bpms
+*     b. Comment out forced setting of guse_bpm_in_recon,gusefr,guse_frdefault
+*     c. only set xp(3),yp(3),xm(3),ym(3) when n_use_bpms .eq. 3
+*     d. gbpm_kappa is an array
+*     e. JRA added check of fasraster pedestals
+*
 * Revision 1.7  1999/11/04 20:35:14  saw
 * Linux/G77 compatibility fixes
 *
@@ -51,7 +58,9 @@
       real*4 bpm_y(gmax_num_bpms,gbpm_sample_max)
       real*4 bpm_meanx(gmax_num_bpms),bpm_meany(gmax_num_bpms)
       real*4 sum_x,sum_y,sum_z,sum_zx,sum_zy,sum_zz,denom
-      integer*4 n_use_bpm
+
+      integer*4 numfr
+      real*4 sumfry,sumfrx,avefry,avefrx
 
       real*4 small
       parameter (small = 1.e-6)
@@ -74,28 +83,29 @@
 
 *     In principle, the following needs to be done only once per run...
 
-      n_use_bpm = 3
-      if (guse_bpmc .ne. 1) n_use_bpm = 2
+      n_use_bpms = 3
+      if (guse_bpmc .ne. 1) n_use_bpms = 2
 
 *     csa 2/2/99 -- Until we understand the bpms we will not use the
 *     info in the analyzer. Once someone has done a reasonable analysis
 *     that convinces us we understand what we are getting, these defeats
 *     can be removed.
 
-      if(guse_bpm_in_recon .ne. 0) then
-*         write(6,*)' g_analyze_misc: forcing guse_bpm_in_recon to 0'
-         guse_bpm_in_recon = 0
-      endif
+* mkj 11/21/2001 Let the user have some intelligence to set these.
+*mkj      if(guse_bpm_in_recon .ne. 0) then
+*mkj         write(6,*)' g_analyze_misc: forcing guse_bpm_in_recon to 0'
+*mkj         guse_bpm_in_recon = 0
+*mkj      endif
 
-      if(gusefr .ne. 0) then
-*         write(6,*)' g_analyze_misc: forcing gusefr to 0 (NO Fast Raster corrections)'
-         gusefr = 0
-      endif
+*mkj      if(gusefr .ne. 0) then
+*mkj         write(6,*)' g_analyze_misc: forcing gusefr to 0 (NO Fast Raster corrections)'
+*mkj         gusefr = 0
+*mkj      endif
 
-      if(guse_frdefault .ne. 1) then
-*         write(6,*)' g_analyze_misc: forcing guse_frdefault to 1'
-         guse_frdefault = 1
-      endif
+*mkj      if(guse_frdefault .ne. 1) then
+*mkj         write(6,*)' g_analyze_misc: forcing guse_frdefault to 1'
+*mkj         guse_frdefault = 1
+*mkj      endif
 
 *     initialize beam coordinates
 
@@ -119,22 +129,26 @@
       yp(2) = gmisc_dec_data(11,2) - gbpm_yp_ped(2)
       ym(2) = gmisc_dec_data(12,2) - gbpm_ym_ped(2)
 
+      if (n_use_bpms .eq. 3) then
       xp(3) = gmisc_dec_data(1,2) - gbpm_xp_ped(3)
       xm(3) = gmisc_dec_data(2,2) - gbpm_xm_ped(3)
       yp(3) = gmisc_dec_data(3,2) - gbpm_yp_ped(3)
       ym(3) = gmisc_dec_data(4,2) - gbpm_ym_ped(3)
+      endif
 
-*     calibration constants are set in replay/PARAM/gbeam.param.* 
+* calibration constants are set in replay/PARAM/gbeam.param.* 
 
       do ibpm = 1,n_use_bpms
-         gbpm_yprime(ibpm) =  gbpm_kappa*(xp(ibpm)-gbpm_alpha_x(ibpm)*xm(ibpm))/
+         gbpm_yprime(ibpm) =  gbpm_kappa(ibpm)*
+     &        (xp(ibpm)-gbpm_alpha_x(ibpm)*xm(ibpm))/
      &        (xp(ibpm)+gbpm_alpha_x(ibpm)*xm(ibpm)+small)
-         gbpm_xprime(ibpm) = -gbpm_kappa*(yp(ibpm)-gbpm_alpha_y(ibpm)*ym(ibpm))/
+         gbpm_xprime(ibpm) = -gbpm_kappa(ibpm)*
+     &        (yp(ibpm)-gbpm_alpha_y(ibpm)*ym(ibpm))/
      &        (yp(ibpm)+gbpm_alpha_y(ibpm)*ym(ibpm)+small)
-         gbpm_x(ibpm)      = ( gbpm_xprime(ibpm)+gbpm_yprime(ibpm))/sqrt(2.)
-     $        +gbpm_x_off(ibpm)
-         gbpm_y(ibpm)      = (-gbpm_xprime(ibpm)+gbpm_yprime(ibpm))/sqrt(2.)
-     $        +gbpm_y_off(ibpm)
+         gbpm_x(ibpm) = ( gbpm_xprime(ibpm)+gbpm_yprime(ibpm))/sqrt(2.)+
+     &        gbpm_x_off(ibpm)
+         gbpm_y(ibpm) = (-gbpm_xprime(ibpm)+gbpm_yprime(ibpm))/sqrt(2.)+
+     &        gbpm_y_off(ibpm)
       enddo
 
 *     calculate the mean over the last 'gbpm_sample' events 
@@ -215,14 +229,45 @@
       gfrx_raw_adc = gmisc_dec_data(14,2)
       gfry_raw_adc = gmisc_dec_data(16,2)
 
-* gfrx_adc_mean and gfry_adc_mean calculation in g_calc_raster_pedestal.f does
-* not seem to work so I am hardwiring them here. One option is to enter them as
-* parameters in gbeam.param. djm 12/3/97 based on fpi run 17258
+* JRA: Code to check FR pedestals.  Since the raster is a fixed frequency
+* and the pedestals come at a fixed rate, it is possible to keep getting
+* the same value for each pedestal event, and get the wrong zero value.
+* (see HCLOG #28325).  So calculate pedestal from first 1000 REAL
+* events and compare to value from pedestal events.  Error on each
+* measurement is RMS/sqrt(1000), error on diff is *sqrt(2), so 3 sigma
+* check is 3*sqrt(2)*RMS/sqrt(1000) = .13*RMS
+!
+! Can't use RMS, since taking sum of pedestal**2 for these signals
+! gives rollover for integer*4.  Just assume signal is +/-2000
+! channels, gives sigma of 100 channels, so check for diff>130.
+! 
+* Note: this is (for some reason) called for pedestal events as well,
+* so we need to start counting only after gfrx_adc_ped is set.
 
-      gfrx_adc = gfrx_raw_adc - 3900.
-      gfry_adc = gfry_raw_adc - 3725.
-cdjm      gfrx_adc = gfrx_raw_adc - gfrx_adc_mean
-cdjm      gfry_adc = gfry_raw_adc - gfry_adc_mean
+      if (numfr.lt.1000 .and. gfrx_adc_ped.gt.1.0) then
+        numfr = numfr + 1
+        sumfrx = sumfrx + gfrx_raw_adc
+        sumfry = sumfry + gfry_raw_adc
+
+        if (numfr.eq.1000) then
+          avefrx = sumfrx / float(numfr)
+          avefry = sumfry / float(numfr)
+          if (abs(avefrx-gfrx_adc_ped).gt.130.) then
+            write(6,*) 'FRPED: peds give <frx>=',gfrx_adc_ped,
+     $          '  realevents give <frx>=',avefrx
+          endif
+          if (abs(avefry-gfry_adc_ped).gt.130.) then
+            write(6,*) 'FRPED: peds give <fry>=',gfry_adc_ped,
+     $          '  realevents give <fry>=',avefry
+          endif
+        endif
+
+      endif
+
+* calculate raster position from ADC value.
+
+      gfrx_adc = gfrx_raw_adc - gfrx_adc_ped
+      gfry_adc = gfry_raw_adc - gfry_adc_ped
       gfrx_sync = gmisc_dec_data(13,2) - gfrx_sync_mean !sign gives sync phase
       gfry_sync = gmisc_dec_data(15,2) - gfry_sync_mean
 
