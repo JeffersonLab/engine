@@ -12,9 +12,12 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.1  1994/02/04 22:13:26  cdaq
-*-    Initial revision
+*-    Revision 1.2  1994/02/17 21:43:39  cdaq
+*-    Add call to gmc_reset_event
 *-
+* Revision 1.1  1994/02/04  22:13:26  cdaq
+* Initial revision
+*
 *- 
 *-
 *- All standards are from "Proposal for Hall C Analysis Software
@@ -76,6 +79,17 @@
          call g_prepend(HMS_err,err)
 *     
       ENDIF
+
+      call gmc_reset_event(gmc_abort, gmc_err)
+      if(gmc_abort) then
+         if(abort) then
+            err = '&'//err
+            call g_prepend(gmc_err,err)
+         else
+            err = gmc_err
+         endif
+         abort = .true.
+      endif
 *     
       IF(ABORT) call G_add_path(here,err)
 *     
