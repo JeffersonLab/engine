@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.3  1994/06/29 03:43:27  cdaq
+* Revision 1.4  1994/07/27 19:25:56  cdaq
+* ??
+*
+* Revision 1.3  1994/06/29  03:43:27  cdaq
 * (JRA) Add call to h_strip_scin to get good hits from HSCIN_ALL arrays
 *
 * Revision 1.2  1994/04/13  18:03:14  cdaq
@@ -39,6 +42,8 @@
 
       integer*4 ihit, iset
       integer*4 setside
+      integer*4 time_num
+      integer*4 time_sum
       real*4 scint_center
       real*4 hit_position
       real*4 dist_from_center
@@ -135,14 +140,14 @@
 *     find hit location from difference in tdc.
                pos_ph(ihit) = float(hscin_adc_pos(ihit))
                postime(ihit) = hscin_tdc_pos(ihit) * hscin_tdc_to_time
-               postime(ihit) = postime(ihit) + hscin_pos_phc_coeff(ihit) * 
-     1              sqrt(max(pos_ph(ihit),hscin_minph))
+               postime(ihit) = postime(ihit) - hscin_pos_phc_coeff(ihit) * 
+     1              sqrt(max(0.,(pos_ph(ihit)/hscin_minph-1.)))
                postime(ihit) = postime(ihit) - hscin_pos_time_offset(ihit)
 
                neg_ph(ihit) = float(hscin_adc_neg(ihit))
                negtime(ihit) = hscin_tdc_neg(ihit) * hscin_tdc_to_time
-               negtime(ihit) = negtime(ihit) + hscin_neg_phc_coeff(ihit) * 
-     1              sqrt(max(neg_ph(ihit),hscin_minph))
+               negtime(ihit) = negtime(ihit) - hscin_neg_phc_coeff(ihit) * 
+     1              sqrt(max(0.,(neg_ph(ihit)/hscin_minph-1.)))
                negtime(ihit) = negtime(ihit) - hscin_neg_time_offset(ihit)
 
 *     Find hit position.  If postime larger, then hit was nearer negative
@@ -178,6 +183,7 @@
 *     to time at first plane, which requires track and tof measurement.
 *     For now, skip event and don't set hgood_start_plane flag true if
 *     1st plane didn't set timing.
+
          if (hscin_plane_num(iset) .eq. 1) then
             hgood_start_plane = .true.
          else
