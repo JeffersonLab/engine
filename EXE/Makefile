@@ -1,3 +1,6 @@
+# Comment out the following line if you want to include the CTP Root stuff.
+ROOTSYS=
+
 
 disp_objs = glvolu.o 
 
@@ -21,8 +24,15 @@ endif
 ONEEVLIB = $(LIBROOT)/liboneev.a
 ENGINELIB = $(LIBROOT)/libengine.a
 UTILLIB = $(LIBROOT)/libutils.a
-CTPLIB = $(LIBROOT)/libctp.a
-CTPCLIENTLIB = $(LIBROOT)/libctpclient.a
+ifdef ROOTSYS
+  CTPLIB = $(LIBROOT)/libctp.a $(LIBROOT)/libctp_root.a
+  CTPCLIENTLIB = $(LIBROOT)/libctpclient_root.a
+  OTHERLIBS = $(shell $(ROOTSYS)/bin/root-config --libs)
+else
+  CTPLIB = $(LIBROOT)/libctp.a
+  CTPCLIENTLIB = $(LIBROOT)/libctpclient.a
+  OTHERLIBS=
+endif
 TRACKINGLIB = $(LIBROOT)/libtracking.a
 HTRACKINGLIB = $(LIBROOT)/libhtracking.a
 STRACKINGLIB = $(LIBROOT)/libstracking.a
@@ -36,7 +46,7 @@ ifeq ($(MYOS),HPUX)
   FFLAGS=+U77 +ppu -C +es -O +Onolimit +FPVZOU -I$(Csoft)/INCLUDE
   DISPFLAGS=+U77 +ppu +es -O +Onolimit +FPVZOU -I$(Csoft)/INCLUDE
   LDFLAGS=-Wl,-a archive
-  OTHERLIBS = \
+  OTHERLIBS += \
 	-Wl,-L$(CODA)/HP_UX/lib \
 	-Wl,-L$(CERN_ROOT)/lib -lpacklib $(CERNLIBS) \
 	-Wl,-L/usr/lib/X11R5 -lX11 -lm 
@@ -48,7 +58,7 @@ ifeq ($(MYOS),ULTRIX)
   FFLAGS=-check_bounds
   DISPFLAGS=$(FFLAGS)
   LDFLAGS=
-  OTHERLIBS = -L$(CODA)/ULTRIX/lib \
+  OTHERLIBS += -L$(CODA)/ULTRIX/lib \
 	-lana -lmsg -lcoda -L$(CERN_ROOT)/lib -lpacklib
   OURLIBS := $(OURGENLIBS)
 endif
@@ -57,7 +67,7 @@ ifeq ($(MYOS),OSF1)
   FFLAGS=-non_shared -check_bounds -align dcommons
   DISPFLAGS=$(FFLAGS)
   LDFLAGS=
-  OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib
+  OTHERLIBS += -L$(CERN_ROOT)/lib -lpacklib
   OURLIBS := $(OURGENLIBS)
 endif
 
@@ -66,7 +76,7 @@ ifeq ($(MYOS),Linux)
    F77=g77
    FFLAGS=-g -I$(Csoft)/INCLUDE -ffixed-line-length-132
    DISPFLAGS=$(FFLAGS)
-   OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -lc -lm -lnsl
+   OTHERLIBS += -L$(CERN_ROOT)/lib -lpacklib -lc -lm -lnsl
    OURLIBS := $(OURGENLIBS) $(LIBROOT)/libport.a
 
 endif
@@ -75,9 +85,9 @@ ifeq ($(MYOS),SunOS)
   FFLAGS=-e -O -I$(Csoft)/INCLUDE
   DISPFLAGS=$(FFLAGS)
   ifeq ($(OSTYPE),SunOS4)
-    OTHERLIBS = -L$(CERN_ROOT)/lib $(CERNLIBS) -lnsl -lX11
+    OTHERLIBS += -L$(CERN_ROOT)/lib $(CERNLIBS) -lnsl -lX11
   else
-    OTHERLIBS = -L$(CERN_ROOT)/lib $(CERNLIBS) -lnsl -lsocket -lX11
+    OTHERLIBS += -L$(CERN_ROOT)/lib $(CERNLIBS) -lnsl -lsocket -lX11
   endif
   OURLIBS := $(OURGENLIBS)
   ifndef CERN_ROOT
@@ -89,7 +99,7 @@ ifeq ($(MYOS),AIX)
   F77=f77
   FFLAGS=-g -qfixed=132 -qextname -O -I$(Csoft)/INCLUDE
   DISPFLAGS=$(FFLAGS)
-  OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib $(CERNLIBS) -lX11
+  OTHERLIBS += -L$(CERN_ROOT)/lib -lpacklib $(CERNLIBS) -lX11
   OURLIBS := $(OURGENLIBS) $(LIBROOT)/libport.a
 endif
 
