@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13  1996/01/22 15:23:34  saw
+* (SAW) Add calls to analyze beam position
+*
 * Revision 1.12  1995/10/09 18:28:41  cdaq
 * (JRA) Only call spec analysis routines that correspond to trigger type
 *
@@ -99,6 +102,24 @@
       IF(update_peds) then
         call g_calc_pedestal(ABORT,err)
         update_peds = .false.
+      ENDIF
+*
+*-Beamline reconstruction
+      IF(gen_event_type.ge.1 .and. gen_event_type.le.3) then  !HMS/SOS/COIN trig
+        call g_trans_misc(FAIL,why)
+        IF(err.NE.' ' .and. why.NE.' ') THEN
+          call G_append(err,' & '//why)
+        ELSEIF(why.NE.' ') THEN
+          err= why
+        ENDIF
+        ABORT= ABORT .or. FAIL
+        call g_analyze_misc(FAIL,why)
+        IF(err.NE.' ' .and. why.NE.' ') THEN
+          call G_append(err,' & '//why)
+        ELSEIF(why.NE.' ') THEN
+          err= why
+        ENDIF
+        ABORT= ABORT .or. FAIL
       ENDIF
 *
 *-HMS reconstruction
