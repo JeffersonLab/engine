@@ -18,9 +18,12 @@
 *     Modified: 17-May-1994 Kevin B. Beard, Hampton U.
 *     Modified: 24-May-1994 K.B.Beard
 *
-*     $Log$
-*     Revision 1.10  1995/07/27 19:38:27  cdaq
-*     (SAW) Relocate data statements for f2c compatibility
+* $Log$
+* Revision 1.11  1996/01/16 17:08:55  cdaq
+* no change
+*
+* Revision 1.10  1995/07/27 19:38:27  cdaq
+* (SAW) Relocate data statements for f2c compatibility
 *
 * Revision 1.9  1994/10/11  18:39:59  cdaq
 * (SAW) Add some hacks for event dislpay

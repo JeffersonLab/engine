@@ -9,10 +9,14 @@
 *-         : err	- reason for failure, if any
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
-*-    $Log$
-*-    Revision 1.4  1995/07/27 19:40:29  cdaq
-*-    (JRA) Only add to ntuples when we have HNTRACKS_FP > 0
-*-
+*
+* $Log$
+* Revision 1.5  1996/01/16 17:03:06  cdaq
+* no change
+*
+* Revision 1.4  1995/07/27 19:40:29  cdaq
+* (JRA) Only add to ntuples when we have HNTRACKS_FP > 0
+*
 * Revision 1.3  1995/01/27  20:14:51  cdaq
 * (SAW) Add call to sieve slit ntuple keep routine
 *

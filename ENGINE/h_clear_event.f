@@ -10,13 +10,17 @@
 *-         : err	- reason for failure, if any
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
-*-    $Log$
-*-    Revision 1.12  1995/10/09 18:07:59  cdaq
-*-    (JRA) Add clear of HCER_RAW_ADC
-*-
-*-    Revision 1.11  1995/09/01 13:36:45  cdaq
-*-    (JRA) Clear some cerenkov variables
-*-
+*
+* $Log$
+* Revision 1.13  1996/01/16 17:05:05  cdaq
+* no change
+*
+* Revision 1.12  1995/10/09 18:07:59  cdaq
+* (JRA) Add clear of HCER_RAW_ADC
+*
+* Revision 1.11  1995/09/01 13:36:45  cdaq
+* (JRA) Clear some cerenkov variables
+*
 * Revision 1.10  1995/05/22  20:50:46  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
