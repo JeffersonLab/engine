@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.11  1996/09/05 20:44:53  saw
+# (SAW) Fixes for linux compatibility
+#
 # Revision 1.10  1996/04/29 18:30:19  saw
 # (SAW) New makefile style
 #
@@ -41,7 +44,8 @@ gsources = g_add_path.f g_build_note.f g_important_length.f g_int_sort.f \
 
 kbutils = get_values.f only_one_blank.f shiftall.f match.f no_tabs.f \
 	no_blanks.f no_comments.f no_leading_blanks.f squeeze.f sub_string.f \
-	up_case.f up_shift.f no_nulls.f string_length.f data_row.f
+	up_case.f up_shift.f no_nulls.f string_length.f data_row.f \
+	clear_after_null.f
 
 unused =
 
@@ -56,10 +60,10 @@ bin_targets =
 #	@echo "nothing to make"
 
 ifdef NFSDIRECTORY
-%.f : $(NFSDIRECTORY)/UTILSUBS/%.f
+../%.f : $(NFSDIRECTORY)/UTILSUBS/%.f
 	ln -s $< $@
 
-.PRECIOUS: %.f
+.PRECIOUS: ../%.f
 endif
 
 %.cmn :: ../../INCLUDE/%.cmn
