@@ -9,7 +9,11 @@
 *     space point.
 *     d. f. geesaman           31 August 1993
 * $Log$
-* Revision 1.2  1994/11/22 21:14:25  cdaq
+* Revision 1.3  1994/12/01 21:55:08  cdaq
+* (SAW) Generalize for variable # of chambers.
+*       Add Small Ang approx for Brookhaven chambers
+*
+* Revision 1.2  1994/11/22  21:14:25  cdaq
 * (SPB) Recopied from hms file and modified names for SOS
 * (SAW) Don't count on Mack's monster if statement working for
 *       sdc_num_chambers > 2
@@ -24,7 +28,7 @@
       include 'sos_tracking.cmn'
       include 'sos_geometry.cmn'
 *
-      externaljbit                            ! cernlib bit routine
+      external jbit                     ! cernlib bit routine
       integer*4 jbit
 *
 *     local variables
@@ -34,9 +38,9 @@
 *
       logical ABORT
       character*(*) err
-      integer*4 isp, ihit,iswhit, idummy, pmloop
+      integer*4 isp, ihit,iswhit, idummy, pmloop, ich
       integer*4 nplusminus
-      integer*4 numhits
+      integer*4 numhits,npaired,ihit2
       integer*4 hits(smax_hits_per_point), pl(smax_hits_per_point)
       integer*4 pindex
       real*4 wc(smax_hits_per_point)
@@ -55,118 +59,109 @@
 * initialize sdc_sing_wcoord (or else!)
       do plane=1,SMAX_NUM_DC_PLANES
         sdc_sing_wcoord(plane) = -100.
-      enddo
 
-*d    jm 10/2/94 added initialization/setting of gplanehdc1(isp)/2 pattern
+      enddo
+*     djm 10/2/94 added initialization/setting of gplanehdc1(isp)/2 pattern
 *     units. Presently we are accepting 5/6 or 6/6 planes per chamber. 
 
       do isp=1,snspace_points_tot       ! loop over all space points
-        gplanesdc1(isp) = 0
-        gplanesdc2(isp) = 0
+        do ich=1,sdc_num_chambers
+          gplanesdc(isp,ich) = 0
+        enddo
         minchi2=1e10
         smallAngOK = .FALSE.
         isa_y1 = 0
         isa_y2 = 0
         numhits=sspace_point_hits(isp,1)
         nplusminus=2**numhits
+*
+*     Identify which plane the space point is in.
+*
+        ich = (SDC_PLANE_NUM(sspace_point_hits(isp,2+1))-1)
+     $       /(sdc_planes_per_chamber)+1
         do ihit=1,numhits
           hits(ihit)=sspace_point_hits(isp,2+ihit)
           pl(ihit)=SDC_PLANE_NUM(hits(ihit))
           
-          if(pl(ihit).ge.1 .and. pl(ihit).le.6)then
-            gplanesdc1(isp)=jibset(gplanesdc1(isp),pl(ihit)-1)
-          else
-            gplanesdc2(isp)=jibset(gplanesdc2(isp),pl(ihit)-7)
-          endif
+          gplanesdc(isp,ich)=jibset(gplanesdc(isp,ich),pl(ihit)-
+     $         ((ich-1)*(sdc_planes_per_chamber)+1))
+
+c          if(pl(ihit).ge.1 .and. pl(ihit).le.6)then
+c            gplanesdc1(isp)=jibset(gplanesdc1(isp),pl(ihit)-1)
+c          else
+c            gplanesdc2(isp)=jibset(gplanesdc2(isp),pl(ihit)-7)
+c          endif
 
           wc(ihit)=SDC_WIRE_CENTER(hits(ihit))
           plusminusknown(ihit) = 0
-          if(pl(ihit).eq.2 .OR. pl(ihit).eq.8)  isa_y1 = ihit
-          if(pl(ihit).eq.5 .OR. pl(ihit).eq.11) isa_y2 = ihit
+          if(s_hms_style_chambers.eq.1) then
+            if(pl(ihit).eq.2 .OR. pl(ihit).eq.8)  isa_y1 = ihit
+            if(pl(ihit).eq.5 .OR. pl(ihit).eq.11) isa_y2 = ihit
+          endif
         enddo
           
 
 * djm 10/2/94 check bad sdc pattern units to set the index for the inverse
 * matrix SAAINV(i,j,pindex).
 *
-        if(pl(1).ge.1 .and. pl(1).le.6)then !use first hit to test if sdc1
-         
-          if(gplanesdc1(isp).eq.63)then
-            pindex=13                   !first 6 bits set, so 6 planes hit
-          else
-            if(gplanesdc1(isp).eq.62)then
-              pindex=1                  !missing lowest order bit, missing x1
-            else
-              if(gplanesdc1(isp).eq.61)then
-                pindex=2
-              else
-                if(gplanesdc1(isp).eq.59)then
-                  pindex=3
-                else
-                  if(gplanesdc1(isp).eq.55)then
-                    pindex=4
-                  else
-                    if(gplanesdc1(isp).eq.47)then
-                      pindex=5
-                    else
-                      if(gplanesdc1(isp).eq.31)then
-                        pindex=6
-                      else
-                        pindex=-1       !multiple missing planes or other problem
-                      end if
-                    end if
-                  end if
-                end if
-              end if
-            end if
-          end if
-
-        else                            !must be sdc2
-
-          if(gplanesdc2(isp).eq.63)then
-            pindex=14                   !first 6 bits set, so 6 planes hit
-          else
-            if(gplanesdc2(isp).eq.62)then
-              pindex=7                  !missing lowest order bit, missing x1
-            else
-              if(gplanesdc2(isp).eq.61)then
-                pindex=8
-              else
-                if(gplanesdc2(isp).eq.59)then
-                  pindex=9
-                else
-                  if(gplanesdc2(isp).eq.55)then
-                    pindex=10
-                  else
-                    if(gplanesdc2(isp).eq.47)then
-                      pindex=11
-                    else
-                      if(gplanesdc2(isp).eq.31)then
-                        pindex=12
-                      else
-                        pindex=-2       !multiple missing planes or other problem
-                      end if
-                    end if
-                  end if
-                end if
-              end if
-            end if
-          end if
-          
-        endif                           !end test whether sdc1 or sdc2
-
+        if(gplanesdc(isp,ich).eq.'3F'x) then
+          pindex=sdc_num_planes+ich
+        else if (gplanesdc(isp,ich).eq.'3E'x) then
+          pindex=(ich-1)*(sdc_planes_per_chamber) + 1
+        else if (gplanesdc(isp,ich).eq.'3D'x) then
+          pindex=(ich-1)*(sdc_planes_per_chamber) + 2
+        else if (gplanesdc(isp,ich).eq.'3B'x) then
+          pindex=(ich-1)*(sdc_planes_per_chamber) + 3
+        else if (gplanesdc(isp,ich).eq.'37'x) then
+          pindex=(ich-1)*(sdc_planes_per_chamber) + 4
+        else if (gplanesdc(isp,ich).eq.'2F'x) then
+          pindex=(ich-1)*(sdc_planes_per_chamber) + 5
+        else if (gplanesdc(isp,ich).eq.'1F'x) then
+          pindex=(ich-1)*(sdc_planes_per_chamber) + 6
+        else
+          pindex=-1
+        endif
 
 *     check if small angle L/R determination of Y and Y' planes is possible
-        if(isa_y1.gt.0 .AND. isa_y2.gt.0) smallAngOK = .TRUE.
-        if((sSmallAngleApprox.ne.0) .AND. (smallAngOK)) then
-          if(wc(isa_y2).le.wc(isa_y1)) then
-            plusminusknown(isa_y1) = -1
-            plusminusknown(isa_y2) = 1
-          else
-            plusminusknown(isa_y1) = 1
-            plusminusknown(isa_y2) = -1
+        if(sSmallAngleApprox.ne.0) then
+          if(s_hms_style_chambers.eq.1) then
+            if(isa_y1.gt.0 .AND. isa_y2.gt.0) then
+              if(wc(isa_y2).le.wc(isa_y1)) then
+                plusminusknown(isa_y1) = -1
+                plusminusknown(isa_y2) = 1
+              else
+                plusminusknown(isa_y1) = 1
+                plusminusknown(isa_y2) = -1
+              endif
+              nplusminus = 2**(numhits-2)
+            endif
           endif
-          nplusminus = 2**(numhits-2)
+        else                            ! SOS chambers
+*
+*     Brookhaven chamber L/R code
+*     Can we assume that hits are sorted by plane?  As best I (SAW) can
+*     tell, we can not.
+*
+          ihit = 1
+          npaired = 0
+          do ihit=1,numhits
+            if(pl(ihit)-2*(pl(ihit)/2) .eq. 1) then ! Odd plane
+              do ihit2=1,numhits        ! Look for the adjacent plane
+                if(pl(ihit2)-pl(ihit).eq.1) then ! Adjacent plane found
+                  if(wc(ihit2).le.wc(ihit)) then
+                    plusminusknown(ihit) = -1
+                    plusminusknown(ihit2) = -1
+                  else
+                    plusminusknown(ihit) = 1
+                    plusminusknown(ihit2) = 1
+                  endif
+                endif
+                npaired = npaired + 2
+              enddo
+            endif
+          enddo
+          nplusminus = 2**(numhits-npaired)
+*     Let's hope that following code will work with nplusminus = 1
         endif
 
 *     use bit value of integer word to set + or -
@@ -238,3 +233,5 @@
       return
       end
         
+
+
