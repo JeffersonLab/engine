@@ -12,9 +12,12 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 *-    $Log$
-*-    Revision 1.4  1994/06/22 20:53:59  cdaq
-*-    (SAW) zero the miscleaneous hits counter
+*-    Revision 1.5  1994/11/22 20:14:23  cdaq
+*-    (SPB) Bring up to date with h_clear_event
 *-
+* Revision 1.4  1994/06/22  20:53:59  cdaq
+* (SAW) zero the miscleaneous hits counter
+*
 * Revision 1.3  1994/03/01  20:14:32  cdaq
 * (SAW) Add zeroing of the raw total hits counter for the drift chambers
 *
@@ -39,12 +42,15 @@
       character*(*) err
 *     
       INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'sos_tracking.cmn'
+      INCLUDE 'sos_statistics.cmn'
+      INCLUDE 'sos_scin_tof.cmn'
+      INCLUDE 'sos_scin_parms.cmn'
+      INCLUDE 'sos_calorimeter.cmn'
 *     
-      INTEGER track,hit,block,i,j,plane
+      INTEGER plane
 *     
 *--------------------------------------------------------
-*     
-*     SOS DECODED DATA
 *     
       SDC_RAW_TOT_HITS = 0
 *
@@ -53,8 +59,6 @@
       DO plane= 1,SMAX_NUM_DC_PLANES
          SDC_HITS_PER_PLANE(plane)= 0
       ENDDO
-*     
-*     SOS SCINTILLATOR HITS
 *     
       SSCIN_TOT_HITS = 0
 *
@@ -66,6 +70,8 @@
 *     
       SCAL_TOT_HITS= 0
 *     
+      SCAL_NUM_HITS= 0
+*
 *     SOS CERENKOV HITS
 *     
       SCER_TOT_HITS= 0
@@ -82,6 +88,9 @@
 *     
       SNTRACKS_TAR= 0
 *     
+      SSNUM_FPTRACK = 0
+      SSNUM_TARTRACK = 0
+
       ABORT= .FALSE.
       err= ' '
       RETURN
