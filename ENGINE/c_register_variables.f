@@ -13,8 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.5  1994/06/17 03:19:44  cdaq
-*     (KBB) Execute all code despite registration errors
+*     Revision 1.6  1994/08/18 04:11:57  cdaq
+*     (SAW) Call makereg generated routines to register variables
+*
+* Revision 1.5  1994/06/17  03:19:44  cdaq
+* (KBB) Execute all code despite registration errors
 *
 * Revision 1.4  1994/06/16  03:41:41  cdaq
 * (SAW) Register filenames for reports
@@ -30,9 +33,7 @@
 *
 *----------------------------------------------------------------------
       implicit none
-      include 'gen_data_structures.cmn'
-      include 'coin_filenames.cmn'
-      include 'gen_routines.dec'
+
       save
 *
       character*20 here
@@ -48,50 +49,9 @@
 *
       ABORT = .false.
       err= ' '
-*
-*     Register variables in coin_beam
-      ierr= regparmreal('CEBEAM',CEBEAM,0)
-      IF(ierr.NE.0) call G_append(err,',CEBEAM')
-      ABORT= ierr.ne.0 .or. ABORT
-      ierr= regparmreal('CPBEAM',CPBEAM,0)
-      IF(ierr.NE.0) call G_append(err,',CPBEAM')
-      ABORT= ierr.ne.0 .or. ABORT
-      ierr= regparmreal('CXRAST',CXRAST,0)
-      IF(ierr.NE.0) call G_append(err,',CXRAST')
-      ABORT= ierr.ne.0 .or. ABORT
-      ierr= regparmreal('CYRAST',CYRAST,0)
-      IF(ierr.NE.0) call G_append(err,',CYRAST')
-      ABORT= ierr.ne.0 .or. ABORT
-*     Register variables in TARGET
-      ierr= regparmreal('TMASS_TARGET',TMASS_TARGET,0)
-      IF(ierr.NE.0) call G_append(err,',TMASS_TARGET')
-      ABORT= ierr.ne.0 .or. ABORT
-      ierr= regparmreal('TZ_TARGET',TZ_TARGET,0)
-      IF(ierr.NE.0) call G_append(err,',TZ_TARGET')
-      ABORT= ierr.ne.0 .or. ABORT
-      ierr= regparmreal('TA_TARGET',TA_TARGET,0)
-      IF(ierr.NE.0) call G_append(err,',TA_TARGET')
-      ABORT= ierr.ne.0 .or. ABORT
-      ierr= regparmreal('TTHETA_TAR',TTHETA_TAR,0)
-      IF(ierr.NE.0) call G_append(err,',TTHETA_TAR')
-      ABORT= ierr.ne.0 .or. ABORT
-      ierr= regparmreal('TPHI_TAR',TPHI_TAR,0)
-      IF(ierr.NE.0) call G_append(err,',TPHI_TAR')
-      ABORT= ierr.ne.0 .or. ABORT
-      ierr= regparmreal('TRAD_LENGTH',TRAD_LENGTH,0)
-      IF(ierr.NE.0) call G_append(err,',TRAD_LENGTH')
-      ABORT= ierr.ne.0 .or. ABORT
-*
-      ierr = regparmstring('c_report_template_filename'
-     $     ,c_report_template_filename,0)
-      if(ierr.ne.0) call g_append(err,',"c_report_template_filename"')
-      ABORT = ierr.ne.0.or.ABORT
-*
-      ierr = regparmstring('c_report_blockname'
-     $     ,c_report_blockname,0)
-      if(ierr.ne.0) call g_append(err,',"c_report_blockname"')
-      ABORT = ierr.ne.0.or.ABORT
-*
+
+      call r_coin_filenames
+
       IF(ABORT) THEN
         call G_prepend(':unable to register',err)
       ENDIF

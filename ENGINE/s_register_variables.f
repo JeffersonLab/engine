@@ -13,8 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.6  1994/06/17 03:27:31  cdaq
-*     (KBB) Execute all code despite registration errors
+*     Revision 1.7  1994/08/18 04:11:36  cdaq
+*     (SAW) Call makereg generated routines to register variables
+*
+* Revision 1.6  1994/06/17  03:27:31  cdaq
+* (KBB) Execute all code despite registration errors
 *
 * Revision 1.5  1994/06/16  03:45:21  cdaq
 * (SAW) Register filenames for reports
@@ -42,10 +45,6 @@
       logical ABORT
       character*(*) err
 *
-      INCLUDE 'gen_data_structures.cmn'
-      INCLUDE 'sos_filenames.cmn'
-      INCLUDE 'gen_routines.dec'
-*
       logical FAIL
       character*1000 why
 *
@@ -53,19 +52,8 @@
       err= ' '
       ABORT = .FALSE.
 *
-      call G_reg_C('s_recon_coeff_filename'
-     $     ,s_recon_coeff_filename,ABORT,err)
-*
-      call G_reg_C('s_report_template_filename'
-     $     ,s_report_template_filename,ABORT,err)
-*
-      call G_reg_C('s_report_blockname'
-     $     ,s_report_blockname,ABORT,err)
-*
-      if(ABORT) then
-         call G_prepend(':unable to register',err)
-      endif
-*
+      call r_sos_filenames
+
       call s_register_param(FAIL,why) ! TRACKING ROUTINE
       IF(err.NE.' ' .and. why.NE.' ') THEN   !keep warnings
         call G_append(err,' & '//why)
