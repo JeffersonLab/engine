@@ -2,6 +2,9 @@
 *- 
 *-   Created   22-Apr-1994   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.6  1996/01/17 15:57:28  cdaq
+* (JRA) Add some short equivalences for CTP convenience
+*
 * Revision 1.5  1995/03/13 19:01:03  cdaq
 * (SAW) Change gen_run_enable from logical to integer
 *
@@ -44,6 +47,18 @@
       integer gen_run_hist_dump_interval
 *      
       INTEGER gen_run_starting_event,gen_run_stopping_event
+      INTEGER grun,gstart,gstop,gdump,gtrig1,gtrig2,gtrig3,gtrig4
+
+*-shorter names for command line input
+      equivalence (grun,gen_run_number)
+      equivalence (gstart,gen_run_starting_event)
+      equivalence (gstop,gen_run_stopping_event)
+      equivalence (gdump,gen_run_hist_dump_interval)
+      equivalence (gtrig1,gen_run_enable(0))
+      equivalence (gtrig2,gen_run_enable(1))
+      equivalence (gtrig3,gen_run_enable(2))
+      equivalence (gtrig4,gen_run_enable(3))
+
       COMMON /gen_run_cntrl/ gen_run_starting_event,
      &                        gen_run_stopping_event,
      &                         gen_run_enable,gen_run_triggered
