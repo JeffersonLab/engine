@@ -1,6 +1,11 @@
        SUBROUTINE H_AERO(ABORT,err)
 *-
 * $Log$
+* Revision 1.3  2004/02/02 19:23:55  jones
+* 1) When filling haero_adc_pos_hits,haero_tot_good_hits,haero_adc_neg_hits
+* changed cut on npe from 0.1 to 0.3 .
+* 2) When filling haero_npe_sum changed cut on npe_sum from 0.1 to 0.5
+*
 * Revision 1.2  2003/09/05 16:48:01  jones
 * Merge in online03 changes (mkj)
 *
@@ -46,6 +51,7 @@
       INCLUDE 'hms_pedestals.cmn'
       INCLUDE 'hms_aero_parms.cmn'
 
+
 *
 *--------------------------------------------------------
 *
@@ -77,6 +83,8 @@ D      pause
         haero_neg_npe(ihit)=0.
 
       enddo
+
+
 
       do ihit = 1,haero_tot_hits
 
@@ -113,15 +121,19 @@ D      pause
         haero_neg_npe_sum = haero_neg_npe_sum + haero_neg_npe(npmt)
 
 *
+
+
+
+*
 * sum positive and negative hits 
 * To fill haero_tot_good_hits
 
-        if (haero_pos_npe(npmt).ge.0.1) then
+        if (haero_pos_npe(npmt).ge.0.3) then
             haero_adc_pos_hits = haero_adc_pos_hits + 1
             haero_tot_good_hits = haero_tot_good_hits + 1
         endif
 
-        if (haero_neg_npe(npmt).ge.0.1) then
+        if (haero_neg_npe(npmt).ge.0.3) then
             haero_adc_neg_hits = haero_adc_neg_hits + 1
             haero_tot_good_hits = haero_tot_good_hits + 1
         endif
@@ -134,7 +146,7 @@ D      pause
 
       enddo
 
-      if (haero_neg_npe_sum.ge.0.1.or.haero_pos_npe_sum.ge.0.1) then
+      if (haero_neg_npe_sum.ge.0.5.or.haero_pos_npe_sum.ge.0.5) then
          haero_npe_sum = haero_neg_npe_sum + haero_pos_npe_sum
       else
          haero_npe_sum = 0.0
@@ -148,8 +160,9 @@ D      pause
       endif
 
 
+
 * Next, fill the rawadc variables with the actual tube values
-*	mainly for diagnostic purposes.
+*       mainly for diagnostic purposes.
 
       do ihit=1,haero_tot_hits
 
@@ -171,3 +184,4 @@ D      pause
 
       return
       end
+
