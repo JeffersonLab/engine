@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.9  1999/02/23 16:40:37  csa
+* Variable changes
+*
 * Revision 1.8  1996/09/04 15:29:57  saw
 * (JRA) Modify ntuple contents
 *
@@ -137,13 +140,21 @@
       m=m+1
       c_Ntuple_tag(m)= 'cointime'      ! Corrected Coincidence Time
       m= m+1
-      c_Ntuple_tag(m)= 'beamx'         ! Beam X Position
+      c_Ntuple_tag(m)= 'bpmxmean'         ! Mean Beam X Position
       m= m+1
-      c_Ntuple_tag(m)= 'beamy'         ! Beam Y Position
+      c_Ntuple_tag(m)= 'bpmymean'         ! Mean Beam Y Position
       m= m+1
-      c_Ntuple_tag(m)= 'beamxp'        ! Beam X Angle
+      c_Ntuple_tag(m)= 'bpmx'         ! Beam X Position
       m= m+1
-      c_Ntuple_tag(m)= 'beamyp'        ! Beam Y Angle
+      c_Ntuple_tag(m)= 'bpmy'         ! Beam Y Position
+      m= m+1
+      c_Ntuple_tag(m)= 'frx'           ! Fast Raster X
+      m= m+1
+      c_Ntuple_tag(m)= 'fry'           ! Fast Raster Y
+      m= m+1
+      c_Ntuple_tag(m)= 'gbeam_x'           ! Fast Raster X
+      m= m+1
+      c_Ntuple_tag(m)= 'gbeam_y'           ! Fast Raster Y
       m= m+1
       c_Ntuple_tag(m)= 'hsxfp'         ! HMS Focal Plane
       m= m+1
@@ -167,7 +178,7 @@
       m= m+1
       c_Ntuple_tag(m)= 'hsyptar'       ! 
       m= m+1
-      c_Ntuple_tag(m)= 'hsdelta'        ! 
+      c_Ntuple_tag(m)= 'hsdelta'       ! 
       m= m+1
       c_Ntuple_tag(m)= 'ssytar'        ! SOS Target
       m= m+1
@@ -179,9 +190,13 @@
       m= m+1
       c_Ntuple_tag(m)= 'hcer_npe'       ! HMS Particle Id.
       m= m+1
+      c_Ntuple_tag(m)= 'hsshsum'        ! 
+      m= m+1
       c_Ntuple_tag(m)= 'hsshtrk'        ! 
       m= m+1
       c_Ntuple_tag(m)= 'hsprtrk'        ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'hsbeta_notrk'   ! 
       m= m+1
       c_Ntuple_tag(m)= 'hsbeta'         ! 
       m= m+1
@@ -189,11 +204,15 @@
       m= m+1
       c_Ntuple_tag(m)= 'scer_npe'       ! SOS Particle Id.
       m= m+1
-      c_Ntuple_tag(m)= 'saer_npe'       ! 
+c      c_Ntuple_tag(m)= 'saer_npe'       ! 
+c      m= m+1
+      c_Ntuple_tag(m)= 'ssshsum'        ! 
       m= m+1
       c_Ntuple_tag(m)= 'ssshtrk'        ! 
       m= m+1
       c_Ntuple_tag(m)= 'ssprtrk'        ! 
+      m= m+1
+      c_Ntuple_tag(m)= 'ssbeta_notrk'   ! 
       m= m+1
       c_Ntuple_tag(m)= 'ssbeta'         ! 
       m= m+1
@@ -201,11 +220,13 @@
       m= m+1
       c_Ntuple_tag(m)= 'charge'         ! Charge of last Scaler Event
       m=m+1
+      c_Ntuple_tag(m)= 'eventID' ! CODA event ID#
+      m=m+1
       c_Ntuple_tag(m)= 'Em'
       m=m+1
-      c_Ntuple_tag(m)= 'Pm'
+      c_Ntuple_tag(m)= 'missmass'
       m=m+1
-      c_Ntuple_tag(m)= 'eventID' ! CODA event ID#
+      c_Ntuple_tag(m)= 'Pm'
       m=m+1
       c_Ntuple_tag(m)= 'PmPar'
       m=m+1
@@ -213,9 +234,14 @@
       m=m+1
       c_Ntuple_tag(m)= 'PmOop'
       m=m+1
-      c_Ntuple_tag(m)= 'HmsCorsi'
+      c_Ntuple_tag(m)= 'th_pq'
       m=m+1
-      c_Ntuple_tag(m)= 'SosCorsi'
+      c_ntuple_tag(m)= 'phi_pq'
+
+*      m=m+1
+*      c_Ntuple_tag(m)= 'HmsCorsi'
+*      m=m+1
+*      c_Ntuple_tag(m)= 'SosCorsi'
       c_Ntuple_size= m
 ***********end insert description of contents of COIN tuple********
 *
