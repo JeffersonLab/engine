@@ -19,6 +19,9 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.15  1996/09/05 20:13:14  saw
+* (JRA) Improved track length calculation.  Photon E calc. for (gamma,p)
+*
 * Revision 1.14  1996/04/30 17:13:48  saw
 * (JRA) Add pathlength and rf calculations
 *
@@ -106,6 +109,7 @@
 *     
 *--------------------------------------------------------
 *
+      ierr=0
       sphi_lab=0.0
       if(ssnum_fptrack.gt.0) then       ! Good track has been selected
         itrkfp=ssnum_fptrack
@@ -121,6 +125,10 @@
         ssbeta_chisq = sbeta_chisq(itrkfp)
         sstime_at_fp   = stime_at_fp(itrkfp)
 
+        sstrack_e1   = strack_e1(itrkfp)
+        sstrack_e2   = strack_e2(itrkfp)
+        sstrack_e3   = strack_e3(itrkfp)
+        sstrack_e4   = strack_e4(itrkfp)
         sstrack_et   = strack_et(itrkfp)
         sstrack_preshower_e   = strack_preshower_e(itrkfp)
         p_nonzero = max(.0001,ssp)      !momentum (used to normalize calorim.)
@@ -132,6 +140,7 @@
         ssshsum = scal_et/p_nonzero
         ssprtrk = sstrack_preshower_e/p_nonzero
         ssshtrk = sstrack_et/p_nonzero
+        ssshtrk3 = (sstrack_e1+sstrack_e2+sstrack_e3)/p_nonzero
 
         ssx_sp1=sx_sp1(itrkfp)
         ssy_sp1=sy_sp1(itrkfp)
@@ -167,7 +176,12 @@
         ssy_cal = ssy_fp + ssyp_fp * scal_1pr_zpos
 
         ssbeta_p = ssp/max(ssenergy,.00001)
-        sspathlength = 2.78*ssxp_fp - 3.5*ssxp_fp**2 + 2.9e-3*ssy_fp
+C old 'fit' value for pathlen correction
+C        sspathlength = 2.78*ssxp_fp - 3.5*ssxp_fp**2 + 2.9e-3*ssy_fp
+C new 'modeled' value.
+        sspathlength = 2.923*ssxp_fp - 6.1065*ssxp_fp**2
+     &                +0.006908*ssx_fp*ssxp_fp + 0.001225*ssx_fp
+     &                -0.0000324*ssx_fp**2 -21.936*ssyp_fp**2
         sspath_cor = sspathlength/ssbeta_p -
      &      spathlength_central/speed_of_light*(1/max(.01,ssbeta_p) - 1)
 
@@ -228,6 +242,7 @@ c        cossstheta = cosgamma*(sinsthetas * ssyp_tar + cossthetas)
 c        sstheta = acos(cossstheta)
         sstheta = stheta_lab*TT/180. + ssyp_tar
         sinsstheta = sin(sstheta)
+        cossstheta = cos(sstheta)
         tandelphi = ssxp_tar /
      &       ( sinsthetas - cossthetas*ssyp_tar )
         ssphi = sphi_lab + atan(tandelphi)    ! phi_lab MUST BE MULTPIPLE OF
@@ -244,9 +259,9 @@ c        sstheta = acos(cossstheta)
           else
             sseloss=0.
           endif
-          sqx = -SSP*cos(SSxp_tar)*sin(SSTHETA)
+          sqx = -SSP*cos(SSxp_tar)*sinsstheta
           sqy = -SSP*sin(Ssxp_tar)
-          sqz = gpbeam - SSP*cos(SSxp_tar)*cos(SSTHETA)
+          sqz = gpbeam - SSP*cos(SSxp_tar)*cossstheta
           sqabs= sqrt(sqx**2+sqy**2+sqz**2)
           W2 = gtarg_mass(gtarg_num)**2 +
      $         2.*gtarg_mass(gtarg_num)*(gpbeam-ssp) - sqabs**2
@@ -332,14 +347,21 @@ c        sstheta = acos(cossstheta)
         endif
 
 *     Calculate photon energy in GeV(E89-012):
-        denom = sphoto_mtarget - ssenergy + ssp*cos(sstheta)
+        denom = sphoto_mtarget - ssenergy + ssp*cossstheta
         if (abs(denom).le.1.e-10) then
            ssegamma = -1000.0
         else
            ssegamma = ( ssenergy * sphoto_mtarget
-     &       - 0.5*(sphoto_mtarget**2 + sphoto_mparticle**2
+     &       - 0.5*(sphoto_mtarget**2 + spartmass**2
      &       - sphoto_mrecoil**2) ) / denom
         end if
+
+*     Photon energy (assuming D2 target, Proton detected).
+        denom = 1.87561 - sqrt(ssp**2 + 0.93827**2) + ssp*cossstheta
+        ssegamma_p= ( sqrt(ssp**2+0.93827**2) * 1.87561
+     &       - 0.5*(1.87561**2 + 0.93827**2 - 0.93957**2) )/denom
+
+
 *     
 *     Turn on to write raw timing information for fitting
         if(sdebugdumptof.ne.0) call s_dump_tof
