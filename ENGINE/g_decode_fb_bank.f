@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.26  1998/12/17 21:50:31  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.25  1998/12/01 15:54:26  saw
 * (SAW) Slight change in debugging output
 *
@@ -240,7 +243,7 @@ c      write(6,*) 'pointer,roc,slot=',pointer,roc,slot
      $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &           maxwords, did,
      $           HMAX_CAL_BLOCKS, HCAL_TOT_HITS, HCAL_COLUMN,
-     $           HCAL_ROW, 1, HCAL_ADC, 0, 0, 0)
+     $           HCAL_ROW, 2, HCAL_ADC_POS, HCAL_ADC_NEG, 0, 0)
 
           else if (did.eq.HCER_ID) then
 *

@@ -15,6 +15,9 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
+* Revision 1.14  1998/12/17 21:50:31  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.13  1996/09/04 15:14:56  saw
 * (JRA) Zero out some misc scalers
 *
@@ -71,9 +74,12 @@
       enddo
 
       do i=1,hmax_cal_blocks
-        hcal_ped_num(i)=0
-        hcal_ped_sum2(i)=0
-        hcal_ped_sum(i)=0
+        hcal_pos_ped_num(i)=0
+        hcal_pos_ped_sum2(i)=0
+        hcal_pos_ped_sum(i)=0
+        hcal_neg_ped_num(i)=0
+        hcal_neg_ped_sum2(i)=0
+        hcal_neg_ped_sum(i)=0
       enddo
 
       do i=1,hmax_cer_hits

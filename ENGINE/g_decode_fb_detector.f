@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.20  1998/12/17 21:50:31  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.19  1998/12/01 15:54:57  saw
 * (SAW) Slight change in debugging output
 *
@@ -230,8 +233,9 @@ c          endif
               counter = subadd
               signal = evfrag(pointer)
             endif
-            if(hitcount .lt. maxhits) then ! Don't overwrite arrays
-              if(signalcount .eq. 1) then ! single signal counter
+            if(hitcount .lt. maxhits .or.
+     $           (hitcount.eq.maxhits .and. signalcount .gt. 1)) then ! Don't overwrite arrays
+              if(signalcount .le. 1) then ! single signal counter
 *     
 *     Starting at end of hit list, search back until a hit earlier in
 *     the sort order is found.
@@ -253,7 +257,7 @@ c          endif
                 counterlist(h) = counter
                 signal0(h) = signal
                 hitcount = hitcount + 1
-              else if(signalcount.eq.4) then ! Multiple signal counter
+              else ! Multiple signal counter sigcount= 2 or 4 allowed
 *     
 *     Starting at the end of the hist list, search back until a hit on
 *     the same counter or earlier in the sort order is found.
@@ -270,22 +274,35 @@ c          endif
 *                
                 if(h.le.0.or.plane.ne.planelist(h) ! Plane and counter
      $               .or.counter.ne.counterlist(h)) then ! not found
-                  h = h + 1
-                  do hshift=hitcount,h,-1 ! Shift up to make room
-                    planelist(hshift+1) = planelist(hshift)
-                    counterlist(hshift+1) = counterlist(hshift)
-                    signal0(hshift+1) = signal0(hshift)
-                    signal1(hshift+1) = signal1(hshift)
-                    signal2(hshift+1) = signal2(hshift)
-                    signal3(hshift+1) = signal3(hshift)
-                  enddo
-                  planelist(h) = plane
-                  counterlist(h) = counter
-                  signal0(h) = -1
-                  signal1(h) = -1
-                  signal2(h) = -1
-                  signal3(h) = -1
-                  hitcount = hitcount + 1
+                  if(hitcount.lt.maxhits) then
+                    h = h + 1
+                    do hshift=hitcount,h,-1 ! Shift up to make room
+                      planelist(hshift+1) = planelist(hshift)
+                      counterlist(hshift+1) = counterlist(hshift)
+                      signal0(hshift+1) = signal0(hshift)
+                      signal1(hshift+1) = signal1(hshift)
+                      if(signalcount.eq.4) then
+                        signal2(hshift+1) = signal2(hshift)
+                        signal3(hshift+1) = signal3(hshift)
+                      endif
+                    enddo
+                    planelist(h) = plane
+                    counterlist(h) = counter
+                    signal0(h) = -1
+                    signal1(h) = -1
+                    if(signalcount.eq.4) then                  
+                      signal2(h) = -1
+                      signal3(h) = -1
+                    endif
+                    hitcount = hitcount + 1
+                  else                  ! Too many hits
+                    if(printerr) then
+                      print *,'g_decode_fb_detector: Max exceeded, did=',
+     $                     did,', max=',maxhits,': event',gen_event_id_number
+                      print *,'   roc,slot,cntr,sig,subadd=',roc,slot,counter,sigtyp,subadd
+                      printerr = .false.
+                    endif
+                  endif
                 endif
 *
                 sigtyp = g_decode_sigtypmap(mappointer+subadd)
