@@ -16,7 +16,10 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
-* Revision 1.3  1994/06/06 17:03:17  cdaq
+* Revision 1.4  1994/06/14 04:51:21  cdaq
+* (DFG) Add fill HLINK_TAR_FP 1 to 1
+*
+* Revision 1.3  1994/06/06  17:03:17  cdaq
 * (DFG) Protect against asin argument > 1.0
 *
 * Revision 1.2  1994/05/13  02:28:59  cdaq
@@ -86,6 +89,8 @@
 
       hntracks_tar = hntracks_fp
       do itrk = 1,hntracks_fp
+*     set link between target and focal plane track. Currently 1 to 1
+         HLINK_TAR_FP(itrk) = itrk
 
 * Reset COSY sums.
 
