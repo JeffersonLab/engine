@@ -11,6 +11,9 @@
 *-      Created 15 Mar 1994      Tsolak A. Amatuni
 *
 * $Log$
+* Revision 1.3  1999/06/10 17:04:19  csa
+* (JRA) Changed s_correct_cal_pos calculation
+*
 * Revision 1.2  1999/02/25 20:18:40  saw
 * Vardan Tadevosyan shower code updates
 *
@@ -39,13 +42,15 @@
 *
 *     Fit to MC data in the range of y [-30,+30].
 *
-      d=y-35.
-      al=alog(d)
-      s_correct_cal_pos=1./(a+b*al+c/al)
-
-ccc      s_correct_cal_pos=exp(y/200.) !200 cm atten length.
-ccc      s_correct_cal_pos=s_correct_cal_pos/(1. + y*y/8000.)
+!      d=y-35.		!need to insure d is never less than -35!!!
+!      al=alog(d)
+!      s_correct_cal_pos=1./(a+b*al+c/al)
 
 *
+*      Fit to data (run23121)
+*
+      s_correct_cal_pos=exp(-y/210.7) !~200 cm atten length.
+      s_correct_cal_pos=s_correct_cal_pos/(1.+y*y/22000.)
+
       return
       end
