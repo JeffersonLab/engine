@@ -8,7 +8,11 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.3  1994/06/06 16:40:04  cdaq
+* Revision 1.4  1994/06/15 21:19:17  cdaq
+* (DFG) Add hdc_tdc_min_win and hdc_tdc_max_win.
+*       Add hwire_early_mult, hwire_late_mult, hwire_extra_mult
+*
+* Revision 1.3  1994/06/06  16:40:04  cdaq
 * (DFG) add hsingle_stub
 *
 * Revision 1.2  1994/03/24  18:39:05  cdaq
@@ -50,6 +54,8 @@
 
       integer*4 hnum_fpray_param   ! number of ray parameters in focal plane
       parameter (hnum_fpray_param=4)
+      integer*4 hdc_tdc_min_win   ! drift chamber tdc min value for good hit
+      integer*4 hdc_tdc_max_win   ! drfit chamber tdc max value for good hit
 
       common/HMS_TRACKING/
      &     hbeststub(hmax_space_points,hnum_fpray_param),
@@ -61,7 +67,9 @@
      &     hnspace_points(hmax_num_chambers),hnspace_points_tot,
      &     hncham_hits(hmax_num_chambers),hmin_hit(hmax_num_chambers),
      &     hmin_combos(hmax_num_chambers),htrack_fit_num,
-     &     hdc_num_planes,hdc_num_chambers
+     &     hdc_num_planes,hdc_num_chambers,
+     &     hdc_tdc_min_win(HMAX_NUM_DC_PLANES), 
+     &     hdc_tdc_max_win(HMAX_NUM_DC_PLANES)
 
 *
 *     hms print routines logical unit number for output
@@ -100,6 +108,12 @@
       integer*4 hdc_max_wires_per_plane   ! maximum number of wires per plane
       parameter (hdc_max_wires_per_plane = 200)
       integer*4 hwire_mult(hdc_max_wires_per_plane,HMAX_NUM_DC_PLANES)
+      integer*4 hwire_early_mult(hdc_max_wires_per_plane,HMAX_NUM_DC_PLANES)
+      integer*4 hwire_late_mult(hdc_max_wires_per_plane,HMAX_NUM_DC_PLANES)
+      integer*4 hwire_extra_mult(hdc_max_wires_per_plane,HMAX_NUM_DC_PLANES)
 *
       common/HMS_WIRE_MULTIPLICITY/
-     &     hwire_mult
+     &     hwire_mult,
+     &     hwire_early_mult,
+     &     hwire_late_mult,
+     &     hwire_extra_mult
