@@ -1,41 +1,85 @@
-       SUBROUTINE H_TRANS_CAL(ABORT,err)
-*--------------------------------------------------------
+      subroutine h_trans_cal(abort,errmsg)
+*=======================================================================
 *-
-*-   Purpose and Methods : Translate HMS raw calorimeter 
-*-                                to decoded information 
+*-      Purpose: Computes the energy deposited in each of the hit
+*-               counters, the energy deposition in calorimeter
+*-               columns and the total energy deposition, using only
+*-               the calorimeter information.
+*-               The energy depositions are not corrected yet for
+*-               impact point coordinate dependence.
+*-               The subroutine also returns the X and Z coordinates
+*-               of the hit block centers.
 *-
-*-      Required Input BANKS     HMS_RAW_CAL
+*-      Input Banks: HMS_SPARSIFIED_CAL, HMS_CAL_CONST,HMS_CAL_MONITOR
 *-
-*-      Output BANKS             HMS_DECODED_CAL
+*-      Output Bank: HMS_DECODED_CAL
 *-
-*-   Output: ABORT           - success or failure
-*-         : err             - reason for failure, if any
-*- 
-*-   Created 19-JAN-1994   D. F. Geesaman
-*-                           Dummy Shell routine
+*-      Created: 15 Mar 1994      Tsolak A. Amatuni
 * $Log$
-* Revision 1.1  1994/02/19 06:21:11  cdaq
+* Revision 1.2  1994/04/13 17:36:40  cdaq
+* (DFG) Change name of print routine
+*
+* Revision 1.1  1994/02/19  06:21:11  cdaq
 * Initial revision
 *
-*-
-*-
 *--------------------------------------------------------
-       IMPLICIT NONE
-       SAVE
+      implicit none
+      save
 *
-       character*50 here
-       parameter (here= 'H_TRANS_CAL')
+      logical abort
+      character*(*) errmsg
+      character*11 here
+      parameter (here='H_TRANS_CAL')
 *
-       logical ABORT
-       character*(*) err
+      integer*4 nb      !Block number
+      integer*4 nh      !Hit number
+      integer*4 row     !Row number
+      integer*4 col     !Column number
+      real*4 adc        !ADC-PED value
 *
-       INCLUDE 'gen_data_structures.cmn'
-       INCLUDE 'gen_constants.par'
-       INCLUDE 'gen_units.par'
+      include 'gen_data_structures.cmn'
+      include 'hms_calorimeter.cmn'
 *
-*--------------------------------------------------------
+*      Sparsify the raw data
 *
-       ABORT= .FALSE.
-       err= ':dummy routine!'
-       RETURN
-       END
+      call h_sparsify_cal(abort,errmsg)
+      if(abort) then
+         call g_add_path(here,errmsg)
+         return
+      endif
+*
+      hnhits_cal =0
+      hcal_e1    =0.
+      hcal_e2    =0.
+      hcal_e3    =0.
+      hcal_e4    =0.
+      hcal_et    =0.
+      if(hcal_num_hits.le.0) go to 100   !Return
+*
+*      Loop over hits
+*
+      do nh=1,hcal_num_hits
+         row=hcal_rows(nh)
+         col=hcal_cols(nh)
+         adc=hcal_adcs(nh)
+         nb =row+hmax_cal_rows*(col-1)
+*
+*------Determine position and energy deposition for each block
+         hblock_xc(nh)=hcal_block_xc(nb)
+         hblock_zc(nh)=hcal_block_zc(nb)
+         hblock_de(nh)=adc*hcal_cal_const(nb)*hcal_gain_cor(nb)
+*
+*------Accumulate the integral energy depositions
+         if(col.eq.1) hcal_e1=hcal_e1+hblock_de(nh)
+         if(col.eq.2) hcal_e2=hcal_e2+hblock_de(nh)
+         if(col.eq.3) hcal_e3=hcal_e3+hblock_de(nh)
+         if(col.eq.4) hcal_e4=hcal_e4+hblock_de(nh)
+                      hcal_et=hcal_et+hblock_de(nh)
+      enddo      !End loop over hits
+      hnhits_cal=hcal_num_hits
+*
+  100 continue
+      if(hdbg_decoded_cal.gt.0) call h_prt_cal_decoded
+*
+      return
+      end
