@@ -18,7 +18,10 @@
 *                add     sdc_xcenter
 *                        sdc_ycenter
 * $Log$
-* Revision 1.1  1994/02/22 14:47:24  cdaq
+* Revision 1.2  1994/03/24 18:37:29  cdaq
+* (DFG) Additional parameters
+*
+* Revision 1.1  1994/02/22  14:47:24  cdaq
 * Initial revision
 *                   
 *
@@ -48,16 +51,16 @@
       parameter (SNUM_RAY_PARAM=4)
 *
       common/SOS_GEOMETRY/
-     & splane_coeff(SNUM_PLANE_COEFF,SMAX_NUM_DC_PLANES),
-     & szpsi(SMAX_NUM_DC_PLANES),szchi(SMAX_NUM_DC_PLANES),
-     & sxpsi(SMAX_NUM_DC_PLANES),sxchi(SMAX_NUM_DC_PLANES),
-     & sypsi(SMAX_NUM_DC_PLANES),sychi(SMAX_NUM_DC_PLANES),
-     & sz0(SMAX_NUM_DC_PLANES),spsi0(SMAX_NUM_DC_PLANES),
-     & schi0(SMAX_NUM_DC_PLANES),sphi0(SMAX_NUM_DC_PLANES),
-     & sstubcoef(SMAX_NUM_DC_PLANES,SNUM_RAY_PARAM),
-     & sxsp(SMAX_NUM_DC_PLANES),sysp(SMAX_NUM_DC_PLANES),
-     & stanbeta(SMAX_NUM_DC_PLANES),ssinbeta(SMAX_NUM_DC_PLANES),
-     & scosbeta(SMAX_NUM_DC_PLANES)
+     &     splane_coeff(SNUM_PLANE_COEFF,SMAX_NUM_DC_PLANES),
+     &     szpsi(SMAX_NUM_DC_PLANES),szchi(SMAX_NUM_DC_PLANES),
+     &     sxpsi(SMAX_NUM_DC_PLANES),sxchi(SMAX_NUM_DC_PLANES),
+     &     sypsi(SMAX_NUM_DC_PLANES),sychi(SMAX_NUM_DC_PLANES),
+     &     sz0(SMAX_NUM_DC_PLANES),spsi0(SMAX_NUM_DC_PLANES),
+     &     schi0(SMAX_NUM_DC_PLANES),sphi0(SMAX_NUM_DC_PLANES),
+     &     sstubcoef(SMAX_NUM_DC_PLANES,SNUM_RAY_PARAM),
+     &     sxsp(SMAX_NUM_DC_PLANES),sysp(SMAX_NUM_DC_PLANES),
+     &     stanbeta(SMAX_NUM_DC_PLANES),ssinbeta(SMAX_NUM_DC_PLANES),
+     &     scosbeta(SMAX_NUM_DC_PLANES)
 *
       real*4    sdc_zpos
       real*4    sdc_alpha_angle
@@ -73,24 +76,43 @@
       integer*4 sdc_chamber_planes
       character*16 sdc_plane_name
       common/SOS_PLANE_PARAMETERS/
-     & sdc_zpos(SMAX_NUM_DC_PLANES),
-     & sdc_alpha_angle(SMAX_NUM_DC_PLANES),
-     & sdc_beta_angle(SMAX_NUM_DC_PLANES),
-     & sdc_gamma_angle(SMAX_NUM_DC_PLANES),
-     & sdc_pitch(SMAX_NUM_DC_PLANES),
-     & sdc_central_wire(SMAX_NUM_DC_PLANES),
-     & sdc_nrwire(SMAX_NUM_DC_PLANES),
-     & sdc_sigma(SMAX_NUM_DC_PLANES),
-     & sdc_xcenter(SMAX_NUM_DC_PLANES),
-     & sdc_ycenter(SMAX_NUM_DC_PLANES),
-     & sdc_chamber_planes(SMAX_NUM_DC_PLANES),
-     & sdc_plane_name(SMAX_NUM_DC_PLANES) 
+     &     sdc_zpos(SMAX_NUM_DC_PLANES),
+     &     sdc_alpha_angle(SMAX_NUM_DC_PLANES),
+     &     sdc_beta_angle(SMAX_NUM_DC_PLANES),
+     &     sdc_gamma_angle(SMAX_NUM_DC_PLANES),
+     &     sdc_pitch(SMAX_NUM_DC_PLANES),
+     &     sdc_central_wire(SMAX_NUM_DC_PLANES),
+     &     sdc_nrwire(SMAX_NUM_DC_PLANES),
+     &     sdc_sigma(SMAX_NUM_DC_PLANES),
+     &     sdc_xcenter(SMAX_NUM_DC_PLANES),
+     &     sdc_ycenter(SMAX_NUM_DC_PLANES),
+     &     sdc_chamber_planes(SMAX_NUM_DC_PLANES),
+     &     sdc_plane_name(SMAX_NUM_DC_PLANES) 
 
 
       real*4 slocrayzt
       parameter (slocrayzt=0.)
 *
+**
+*     parameter file variables. Separate by type to make it easy to add
+*     at the end
+*     REAL*4
 *
       real*4 sdrift_velocity        ! sos drift velocity in cm/ns
-      common/SOS_CHAMBER_READOUT/
-     & sdrift_velocity
+      real*4 sdc_tdc_time_per_channel
+      real*4 sdc_1_zpos
+      real*4 sdc_2_zpos
+      real*4 sdc_3_zpos
+      common/SOS_CHAMBER_READOUT_REAL/
+     &     sdrift_velocity,
+     &     sdc_tdc_time_per_channel,
+     &     sdc_1_zpos,
+     &     sdc_2_zpos,
+     &     sdc_3_zpos
+*
+*    INTEGER*4
+*
+      integer*4 sdc_wire_counting     ! readout numbering order
+*
+      common/SOS_CHAMBER_READOUT_INT/
+     &     sdc_wire_counting(SMAX_NUM_DC_PLANES) 

@@ -17,7 +17,10 @@
 *                add     hdc_xcenter
 *                        hdc_ycenter
 * $Log$
-* Revision 1.1  1994/02/22 14:46:27  cdaq
+* Revision 1.2  1994/03/24 18:36:06  cdaq
+* (DFG) Additional parameters
+*
+* Revision 1.1  1994/02/22  14:46:27  cdaq
 * Initial revision
 *                    
 *
@@ -49,16 +52,16 @@
       parameter (HNUM_RAY_PARAM=4)
 *
       common/HMS_GEOMETRY/
-     & hplane_coeff(HNUM_PLANE_COEFF,HMAX_NUM_DC_PLANES),
-     & hzpsi(HMAX_NUM_DC_PLANES),hzchi(HMAX_NUM_DC_PLANES),
-     & hxpsi(HMAX_NUM_DC_PLANES),hxchi(HMAX_NUM_DC_PLANES),
-     & hypsi(HMAX_NUM_DC_PLANES),hychi(HMAX_NUM_DC_PLANES),
-     & hz0(HMAX_NUM_DC_PLANES),hpsi0(HMAX_NUM_DC_PLANES),
-     & hchi0(HMAX_NUM_DC_PLANES),hphi0(HMAX_NUM_DC_PLANES),
-     & hstubcoef(HMAX_NUM_DC_PLANES,HNUM_RAY_PARAM),
-     & hxsp(HMAX_NUM_DC_PLANES),hysp(HMAX_NUM_DC_PLANES),
-     & htanbeta(HMAX_NUM_DC_PLANES),hsinbeta(HMAX_NUM_DC_PLANES),
-     & hcosbeta(HMAX_NUM_DC_PLANES)
+     &     hplane_coeff(HNUM_PLANE_COEFF,HMAX_NUM_DC_PLANES),
+     &     hzpsi(HMAX_NUM_DC_PLANES),hzchi(HMAX_NUM_DC_PLANES),
+     &     hxpsi(HMAX_NUM_DC_PLANES),hxchi(HMAX_NUM_DC_PLANES),
+     &     hypsi(HMAX_NUM_DC_PLANES),hychi(HMAX_NUM_DC_PLANES),
+     &     hz0(HMAX_NUM_DC_PLANES),hpsi0(HMAX_NUM_DC_PLANES),
+     &     hchi0(HMAX_NUM_DC_PLANES),hphi0(HMAX_NUM_DC_PLANES),
+     &     hstubcoef(HMAX_NUM_DC_PLANES,HNUM_RAY_PARAM),
+     &     hxsp(HMAX_NUM_DC_PLANES),hysp(HMAX_NUM_DC_PLANES),
+     &     htanbeta(HMAX_NUM_DC_PLANES),hsinbeta(HMAX_NUM_DC_PLANES),
+     &     hcosbeta(HMAX_NUM_DC_PLANES)
 *
       real*4    hdc_zpos
       real*4    hdc_alpha_angle
@@ -73,26 +76,40 @@
       integer*4 hdc_chamber_planes
       character*16 hdc_plane_name
       common/HMS_PLANE_PARAMETERS/
-     & hdc_zpos(HMAX_NUM_DC_PLANES),
-     & hdc_alpha_angle(HMAX_NUM_DC_PLANES),
-     & hdc_beta_angle(HMAX_NUM_DC_PLANES),
-     & hdc_gamma_angle(HMAX_NUM_DC_PLANES),
-     & hdc_pitch(HMAX_NUM_DC_PLANES),
-     & hdc_central_wire(HMAX_NUM_DC_PLANES),
-     & hdc_nrwire(HMAX_NUM_DC_PLANES),
-     & hdc_sigma(HMAX_NUM_DC_PLANES),
-     & hdc_xcenter(HMAX_NUM_DC_PLANES),
-     & hdc_ycenter(HMAX_NUM_DC_PLANES),
-     & hdc_chamber_planes(HMAX_NUM_DC_PLANES),
-     & hdc_plane_name(HMAX_NUM_DC_PLANES) 
+     &     hdc_zpos(HMAX_NUM_DC_PLANES),
+     &     hdc_alpha_angle(HMAX_NUM_DC_PLANES),
+     &     hdc_beta_angle(HMAX_NUM_DC_PLANES),
+     &     hdc_gamma_angle(HMAX_NUM_DC_PLANES),
+     &     hdc_pitch(HMAX_NUM_DC_PLANES),
+     &     hdc_central_wire(HMAX_NUM_DC_PLANES),
+     &     hdc_nrwire(HMAX_NUM_DC_PLANES),
+     &     hdc_sigma(HMAX_NUM_DC_PLANES),
+     &     hdc_xcenter(HMAX_NUM_DC_PLANES),
+     &     hdc_ycenter(HMAX_NUM_DC_PLANES),
+     &     hdc_chamber_planes(HMAX_NUM_DC_PLANES),
+     &     hdc_plane_name(HMAX_NUM_DC_PLANES) 
 *
 *
       real*4 hlocrayzt
       parameter (hlocrayzt=0.)
 *
 *
+*     parameter file variables. Separate by type to make it easy to add
+*     at the end
+*     REAL*4
+*
       real*4 hdrift_velocity        ! hms drift velocity in cm/ns
-      integer*4 hdc_wire_counting(HMAX_NUM_DC_PLANES) ! readout numbering order
-      common/HMS_CHAMBER_READOUT/
-     & hdrift_velocity,
-     & hdc_wire_counting
+      real*4 hdc_tdc_time_per_channel ! hms drift chamber tdc calibration
+      real*4 hdc_1_zpos
+      real*4 hdc_2_zpos
+      common/HMS_CHAMBER_READOUT_REAL/
+     &     hdrift_velocity,
+     &     hdc_tdc_time_per_channel,
+     &     hdc_1_zpos,
+     &     hdc_2_zpos
+*
+*     INTEGER*4
+      integer*4 hdc_wire_counting               ! readout numbering order
+*
+      common/HMS_CHAMBER_READOUT_INT/
+     &     hdc_wire_counting(HMAX_NUM_DC_PLANES) 

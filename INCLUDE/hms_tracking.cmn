@@ -8,7 +8,10 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.1  1994/02/22 14:46:44  cdaq
+* Revision 1.2  1994/03/24 18:39:05  cdaq
+* (DFG) Additional parameters
+*
+* Revision 1.1  1994/02/22  14:46:44  cdaq
 * Initial revision
 *
 *
@@ -46,22 +49,24 @@
       parameter (hnum_fpray_param=4)
 
       common/HMS_TRACKING/
-     &   hbeststub(hmax_space_points,hnum_fpray_param),
-     &   hspace_point_criterion(hmax_num_chambers),
-     &   hxt_track_criterion,hyt_track_criterion,
-     &   hxpt_track_criterion,hypt_track_criterion,
-     &   hspace_points(hmax_space_points,2),
-     &   hspace_point_hits(hmax_space_points,hmax_hits_per_point+2),
-     &   hnspace_points(hmax_num_chambers),hnspace_points_tot,
-     &   hncham_hits(hmax_num_chambers),hmin_hit(hmax_num_chambers),
-     &   hmin_combos(hmax_num_chambers),htrack_fit_num,
-     &   hdc_num_planes,hdc_num_chambers
+     &     hbeststub(hmax_space_points,hnum_fpray_param),
+     &     hspace_point_criterion(hmax_num_chambers),
+     &     hxt_track_criterion,hyt_track_criterion,
+     &     hxpt_track_criterion,hypt_track_criterion,
+     &     hspace_points(hmax_space_points,2),
+     &     hspace_point_hits(hmax_space_points,hmax_hits_per_point+2),
+     &     hnspace_points(hmax_num_chambers),hnspace_points_tot,
+     &     hncham_hits(hmax_num_chambers),hmin_hit(hmax_num_chambers),
+     &     hmin_combos(hmax_num_chambers),htrack_fit_num,
+     &     hdc_num_planes,hdc_num_chambers
 
 *
 *     hms print routines logical unit number for output
       integer*4 hluno
 *     debug print flags
 *     if flags .ne. 0 then execute debug code
+      integer*4 hdebugprintrawdc
+      integer*4 hdebugprintdecodeddc
       integer*4 hdebugflagpsi          
       integer*4 hdebugflaggeometry
       integer*4 hdebugflagpr
@@ -70,16 +75,20 @@
       integer*4 hdebugtrackprint
       integer*4 hdebugstubchisq
       integer*4 hdebugtartrackprint       ! call h_print_tar_track
+      integer*4 hdebug_mc_start_time      ! kludge for monte carlo drift calc
       common/HMS_TRACKFLAGS/
-     &      hluno,
-     &      hdebugflagpsi,
-     &      hdebugflaggeometry,
-     &      hdebugflagpr,
-     &      hdebugflagstubs,
-     &      hdebuglinkstubs,
-     &      hdebugtrackprint,
-     &      hdebugstubchisq,
-     &      hdebugtartrackprint
+     &     hluno,
+     &     hdebugflagpsi,
+     &     hdebugflaggeometry,
+     &     hdebugflagpr,
+     &     hdebugflagstubs,
+     &     hdebuglinkstubs,
+     &     hdebugtrackprint,
+     &     hdebugstubchisq,
+     &     hdebugtartrackprint,
+     &     hdebugprintrawdc,
+     &     hdebugprintdecodeddc,
+     &     hdebug_mc_start_time
 *
 *     array to hold multiple hits per wire
       integer*4 hdc_max_wires_per_plane   ! maximum number of wires per plane
@@ -87,5 +96,4 @@
       integer*4 hwire_mult(hdc_max_wires_per_plane,HMAX_NUM_DC_PLANES)
 *
       common/HMS_WIRE_MULTIPLICITY/
-     & hwire_mult
-
+     &     hwire_mult

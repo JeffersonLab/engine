@@ -5,7 +5,10 @@
 *                              change name to sos_tracking.cmn
 *                              put sluno and debugflags from parameters to CTP
 * $Log$
-* Revision 1.1  1994/02/22 14:47:57  cdaq
+* Revision 1.2  1994/03/24 18:40:37  cdaq
+* (DFG) Additional parameters
+*
+* Revision 1.1  1994/02/22  14:47:57  cdaq
 * Initial revision
 *
 *
@@ -43,22 +46,24 @@
       parameter (snum_fpray_param=4)
 
       common/SOS_TRACKING/
-     &   sbeststub(smax_space_points,snum_fpray_param),
-     &   sspace_point_criterion(smax_num_chambers),
-     &   sxt_track_criterion,syt_track_criterion,
-     &   sxpt_track_criterion,sypt_track_criterion,
-     &   sspace_points(smax_space_points,2),
-     &   sspace_point_hits(smax_space_points,smax_hits_per_point+2),
-     &   snspace_points(smax_num_chambers),snspace_points_tot,
-     &   sncham_hits(smax_num_chambers),smin_hit(smax_num_chambers),
-     &   smin_combos(smax_num_chambers),strack_fit_num,
-     &   sdc_num_planes,sdc_num_chambers
+     &     sbeststub(smax_space_points,snum_fpray_param),
+     &     sspace_point_criterion(smax_num_chambers),
+     &     sxt_track_criterion,syt_track_criterion,
+     &     sxpt_track_criterion,sypt_track_criterion,
+     &     sspace_points(smax_space_points,2),
+     &     sspace_point_hits(smax_space_points,smax_hits_per_point+2),
+     &     snspace_points(smax_num_chambers),snspace_points_tot,
+     &     sncham_hits(smax_num_chambers),smin_hit(smax_num_chambers),
+     &     smin_combos(smax_num_chambers),strack_fit_num,
+     &     sdc_num_planes,sdc_num_chambers
 
-*
+*     
 *     sos print routines logical unit number for output
       integer*4 sluno
 *     debug print flags
 *     if flags .ne. 0 then execute debug code
+      integer*4 sdebugprintrawdc
+      integer*4 sdebugprintdecodeddc
       integer*4 sdebugflagpsi          
       integer*4 sdebugflaggeometry
       integer*4 sdebugflagpr
@@ -67,20 +72,25 @@
       integer*4 sdebugtrackprint
       integer*4 sdebugstubchisq
       integer*4 sdebugtartrackprint       ! call s_print_tar_track
+      integer*4 sdebug_mc_start_time      ! Kludge for Monte Carlo start time
       common/SOS_TRACKFLAGS/
-     &      sluno,
-     &      sdebugflagpsi,
-     &      sdebugflaggeometry,
-     &      sdebugflagpr,
-     &      sdebugflagstubs,
-     &      sdebuglinkstubs,
-     &      sdebugtrackprint,
-     &      sdebugstubchisq,
-     &      sdebugtartrackprint
+     &     sluno,
+     &     sdebugflagpsi,
+     &     sdebugflaggeometry,
+     &     sdebugflagpr,
+     &     sdebugflagstubs,
+     &     sdebuglinkstubs,
+     &     sdebugtrackprint,
+     &     sdebugstubchisq,
+     &     sdebugtartrackprint,
+     &     sdebugprintrawdc,
+     &     sdebugprintdecodeddc,
+     &     sdebug_mc_start_time
+*
 *     array to hold multiple hits per wire
       integer*4 sdc_max_wires_per_plane   ! maximum number of wires per plane
       parameter (sdc_max_wires_per_plane = 200)
       integer*4 swire_mult(sdc_max_wires_per_plane,SMAX_NUM_DC_PLANES)
 *
       common/sos_wire_multiplicity/
-     & swire_mult
+     &     swire_mult
