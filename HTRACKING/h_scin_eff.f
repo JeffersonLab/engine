@@ -15,7 +15,10 @@
 * h_scin_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
-* Revision 1.4  1995/07/19 19:03:27  cdaq
+* Revision 1.5  1995/08/31 14:44:42  cdaq
+* (JRA) Fill dpos (pos. track - pos. hit) histograms
+*
+* Revision 1.4  1995/07/19  19:03:27  cdaq
 * (SAW) Put nint around some things for Ultrix compat.  Put h in front of
 *       various *good variables.
 *
@@ -43,11 +46,13 @@
       include 'hms_scin_parms.cmn'
       include 'hms_scin_tof.cmn'
       include 'hms_statistics.cmn'
+      include 'hms_id_histid.cmn'
 
-      integer pln,cnt,dist
+      integer pln,cnt
       integer hit_cnt(hnum_scin_planes)
       integer nhit
-      real    hit_pos(hnum_scin_planes),hit_dist(hnum_scin_planes)
+      real dist, histval
+      real hit_pos(hnum_scin_planes),hit_dist(hnum_scin_planes)
       save
 
 * find counters on track, and distance from center.
@@ -74,24 +79,19 @@
       hit_cnt(4)=max(min(hit_cnt(4),nint(hnum_scin_counters(1))),1)
       hit_dist(4)=hit_pos(4)-(hhodo_center(4,1)-hscin_2y_spacing*(hit_cnt(4)-1))
 
+*   Fill dpos (pos. track - pos. hit) histograms
+      do nhit=1,hscin_tot_hits
+        pln=hscin_plane_num(nhit)
+        histval = hhodo_center(pln,hscin_counter_num(nhit))-hit_pos(pln)
+        call hf1(hidscindpos(pln),histval,1.)
+      enddo
+
 *   Record position differences between track and center of scin. and
 *   increment 'should have hit' counters
       do pln=1,hnum_scin_planes
         cnt=hit_cnt(pln)
         dist=hit_dist(pln)
-        if(abs(hit_dist(pln)).le.hscin_dpos_slop .and.  !track near scin.
-     &           hschi2perdeg.le.hscin_dpos_maxchisq) then
-          do nhit=1,hscin_tot_hits
-            if(hscin_plane_num(nhit).eq.pln .and.       !was the scint. hit?
-     &         hscin_counter_num(nhit).eq.cnt) then
-              hscin_dpos(pln,cnt)=dist
-              hscin_dpos_sum(pln,cnt)=hscin_dpos_sum(pln,cnt)+dist
-              hscin_dpos_sum2(pln,cnt)=hscin_dpos_sum2(pln,cnt)+dist*dist
-              hscin_num_dpos(pln,cnt)=hscin_num_dpos(pln,cnt)+1
-            endif
-          enddo
-        endif 
-        if(abs(hit_dist(pln)).le.hstat_slop .and.    !hit in middle of scin.
+        if(abs(dist).le.hstat_slop .and.    !hit in middle of scin.
      &           hschi2perdeg.le.hstat_maxchisq) then
           hstat_trk(pln,cnt)=hstat_trk(pln,cnt)+1
         endif
