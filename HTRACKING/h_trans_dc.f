@@ -13,7 +13,10 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
-* Revision 1.6  1994/08/16 13:24:58  cdaq
+* Revision 1.7  1994/09/14 14:10:49  cdaq
+* (JRA) Initialize hdc_center array first time.
+*
+* Revision 1.6  1994/08/16  13:24:58  cdaq
 * (DJA) Move call to h_fill_dc_dec_hist to h_pattern_recognition
 *
 * Revision 1.5  1994/06/15  20:35:59  cdaq
@@ -53,13 +56,22 @@
       external h_drift_time_calc
       external h_drift_dist_calc
       external h_wire_center_calc
-      integer*4 ihit,goodhit,old_wire,old_plane,wire,plane
+      integer*4 ihit,goodhit,old_wire,old_plane,wire,plane,chamber
 *
       ABORT= .FALSE.
       err= ' '
       old_wire = -1
       old_plane = -1
       goodhit = 0
+      
+      if (hdc_center(1).eq.0.) then   !initialize hdc_center if not yet set.
+        do plane = 1, hmax_num_dc_planes
+          chamber = hdc_chamber_planes(plane)
+          hdc_center(plane) = hdc_xcenter(chamber)*sin(hdc_alpha_angle(plane))+
+     &                        hdc_ycenter(chamber)*cos(hdc_alpha_angle(plane))
+        enddo
+      endif
+      
 *     Are there any raw hits
       if(HDC_RAW_TOT_HITS.gt.0) then
 *     loop over all raw hits
