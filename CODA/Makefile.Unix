@@ -16,6 +16,9 @@
 # 
 #  Revision History:
 #    $Log$
+#    Revision 1.2  1998/12/09 16:31:01  saw
+#    Remove dependence on Csoft environment variable
+#
 #    Revision 1.1  1998/12/07 22:11:04  saw
 #    Initial setup
 #
@@ -34,7 +37,7 @@
 #
 
 NEWSTYLE = 1
-include $(Csoft)/etc/Makefile
+include ../../etc/Makefile
 
   install-dirs := lib #include
 

@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.12  1998/12/09 16:31:17  saw
+# Remove dependence on Csoft environment variable
+#
 # Revision 1.11  1996/09/05 20:19:23  saw
 # (SAW) Linux compatibility fixes
 #
@@ -34,7 +37,7 @@
 # Initial revision
 #
 NEWSTYLE=1
-include $(Csoft)/etc/Makefile
+include ../../etc/Makefile
 
 sources = find_space_points.f select_space_points.f solve_four_by_four.f \
 	total_eloss.f

@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.21  1998/12/09 16:31:16  saw
+# Remove dependence on Csoft environment variable
+#
 # Revision 1.20  1998/12/07 22:11:16  saw
 # Initial setup
 #
@@ -65,7 +68,7 @@
 # Initial revision
 #
 NEWSTYLE = 1
-include $(Csoft)/etc/Makefile
+include ../../etc/Makefile
 
 decode_source = g_decode_clear.f g_decode_config.f g_decode_event_by_banks.f \
 	g_decode_fb_bank.f g_decode_fb_detector.f \
@@ -174,7 +177,7 @@ ifeq ($(ARCH),Linux)
   DEPLIBS := $(DEPLIBS) $(LIBROOT)/libport.a
 
 $(LIBROOT)/libport.a:
-	@make -C $(Csoft)/SRC/PORT 
+	@make -C ../../PORT 
 endif
 
 ifeq ($(ARCH),SunOS)
@@ -202,16 +205,22 @@ endif
 ##libengine.a: $(engine_members)
 
 $(LIBROOT)/libutils.a:
-	@make -C $(Csoft)/SRC/UTILSUBS csoft
-
-#$(LIBROOT)/libgmc.a:
-#	@make -C $(Csoft)/SRC/GMC csoft
+	@make -C ../../UTILSUBS
 
 $(LIBROOT)/libtracking.a:
-	@make -C $(Csoft)/SRC/TRACKING csoft
+	@make -C ../../TRACKING
+
+$(LIBROOT)/libhtracking.a:
+	@make -C ../../HTRACKING
+
+$(LIBROOT)/libstracking.a:
+	@make -C ../../STRACKING
 
 $(LIBROOT)/libctp.a:
-	@make -C $(Csoft)/SRC/CTP csoft
+	@make -C ../../CTP
+
+$(LIBROOT)/libhack.a:
+	@make -C ../../HACK
 
 ifeq ($(ARCH),OSF1)
 engine: $(DEPLIBS)

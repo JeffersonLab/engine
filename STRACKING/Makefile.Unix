@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.19  1998/12/09 16:31:16  saw
+# Remove dependence on Csoft environment variable
+#
 # Revision 1.18  1998/12/07 22:11:29  saw
 # Initial setup
 #
@@ -58,7 +61,7 @@
 # Initial revision
 #
 NEWSTYLE = 1
-include $(Csoft)/etc/Makefile
+include ../../etc/Makefile
 
 osources = s_cal.f s_cer.f s_chamnum.f s_dpsifun.f s_drift_dist_calc.f \
 	s_drift_time_calc.f s_fcnchisq.f s_find_best_stub.f \

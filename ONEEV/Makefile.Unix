@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.10  1998/12/09 16:31:16  saw
+# Remove dependence on Csoft environment variable
+#
 # Revision 1.9  1998/12/01 20:34:21  saw
 # (SAW) HPUX 10 fix
 #
@@ -28,7 +31,7 @@
 # Initial revision
 #
 NEWSTYLE = 1
-include $(Csoft)/etc/Makefile
+include ../../etc/Makefile
 
 oneev_sources = evdisplay.f revdis_getev.f revdis_init.f revdis_ask.f \
 	g_ugsvolu.f g_uglast.f glvolu.f
