@@ -8,7 +8,10 @@
 *- 
 *-   Created  14-Jun-1994   S.A. Wood
 * $Log$
-* Revision 1.1  1994/06/14 19:13:42  cdaq
+* Revision 1.2  1995/04/01 19:45:37  cdaq
+* (SAW) Allow %d for run number in filenames
+*
+* Revision 1.1  1994/06/14  19:13:42  cdaq
 * Initial revision
 *
 
@@ -22,6 +25,7 @@
       character*(*) err
 *
       INCLUDE 'gen_filenames.cmn'
+      INCLUDE 'gen_run_info.cmn'
 *     
       character*132 file
       character*80 default_histfile
@@ -35,6 +39,7 @@
       IO= G_LUN_TEMP               ! temporary IO channel
       file= g_histout_filename		! File to write histograms into
       if(file.EQ.' ') file= default_histfile
+      call g_sub_run_number(file,gen_run_number)
 *
 *      call G_open_HBOOK_file(IO,file,'NEW',ABORT,err) !FORTRAN file open
 *
@@ -51,8 +56,6 @@
 *
       return
       end
-
-
 
 
 
