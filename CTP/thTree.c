@@ -1,4 +1,3 @@
-#ifdef ROOTTREE
 /*-----------------------------------------------------------------------------
  * Copyright (c) 1999      Thomas Jefferson National Accelerator Facility
  *
@@ -16,6 +15,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.4  2004/07/08 20:07:00  saw
+ *   Supply dummy routines when ROOTSYS not defined
+ *
  *   Revision 1.3  2004/07/07 18:16:30  saw
  *   Use properly exported names from thRootStuff.cpp
  *
@@ -40,6 +42,7 @@
 #include "thInternal.h"
 #include "thUtils.h"
 
+#ifdef ROOTTREE
 extern daVarStatus thTreeRHandler();
 
 struct thLeafList {		/* Variable and index list */
@@ -492,5 +495,24 @@ int thtreewrite_()
   thRoot_Write();
 }
 */
+
+#else
+
+thStatus thBookTree(daVarStruct *var) {
+  return(S_SUCCESS);
+}
+
+thStatus thFillTreeV(daVarStruct *var) {
+  return(S_SUCCESS);
+}
+thStatus thClearTreeV(daVarStruct *var) {
+  return(S_SUCCESS);
+}
+thStatus thWriteTreeV(daVarStruct *var) {
+  return(S_SUCCESS);
+}
+thStatus thCloseTreeV(daVarStruct *var) {
+  return(S_SUCCESS);
+}
 
 #endif
