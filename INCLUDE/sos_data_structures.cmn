@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.9  1999/02/23 19:19:57  csa
+* Change some physics vars
+*
 * Revision 1.8  1999/01/29 17:34:23  saw
 * Add variables for second tubes on shower counter
 *
@@ -568,6 +571,8 @@
 *  
       REAL*4 SSP                   ! Lab momentum of chosen track in GeV/c
       REAL*4 SSENERGY              ! Lab total energy of chosen track in GeV
+      REAL*4 SSCORRP               ! electron momentum corrected for eloss
+      REAL*4 SSCORRE               ! electron energy corrected for eloss
       REAL*4 SSDELTA               ! Spectrometer delta of chosen track
       REAL*4 SSTHETA               ! Lab Scattering angle in radians
       REAL*4 SSPHI                 ! Lab Azymuthal angle in radians
@@ -594,17 +599,17 @@
       REAL*4 SSYP_TAR 
       REAL*4 SSBETA_CHISQ
 *
-      real*4 ssmass2               ! Mass squared
-      real*4 sst                   ! invariant t
-      real*4 ssu                   ! invariant u
-      real*4 sseloss
-      real*4 ssq3                  ! Lab frame momentum transfer
-      real*4 ssthetaq, ssphiq      ! Direction of q3
-      real*4 ssbigq2               ! Q**2
-      real*4 ssx                   ! fraction of nucleon p carried by quark
-      real*4 ssy                   ! fraction of lepton''s E lost in lab
-      real*4 ssw                   ! Invariant mass of recoil system
-      real*4 ssw2                  ! Invariant mass**2 of recoil system
+      REAL*4 SSMASS2               ! Mass squared
+      REAL*4 SST                   ! invariant t
+      REAL*4 SSU                   ! invariant u
+      REAL*4 SSELOSS
+      REAL*4 SSQ3                  ! Lab frame momentum transfer
+*      REAL*4 SSTHETAQ, SSPHIQ      ! Direction of q3
+      REAL*4 SSBIGQ2               ! Q**2
+      REAL*4 SSX                   ! fraction of nucleon p carried by quark
+      REAL*4 SSY                   ! fraction of lepton''s E lost in lab
+      REAL*4 SSW                   ! Invariant mass of recoil system
+      REAL*4 SSW2                  ! Invariant mass**2 of recoil system
 *
       INTEGER*4 SSNUM_FPTRACK      ! Index of focal plane track chosen
       INTEGER*4 SSNUM_TARTRACK     ! Index of target track chosen
@@ -641,7 +646,6 @@
      & SSU,
      & SSELOSS,
      & SSQ3,
-     & SSTHETAQ, SSPHIQ,
      & SSBIGQ2,
      & SSX,
      & SSY,
@@ -650,7 +654,10 @@
      & SSTRACK_E1,
      & SSTRACK_E2,
      & SSTRACK_E3,
-     & SSTRACK_E4
+     & SSTRACK_E4,
+     & SSCORRP,
+     & SSCORRE
+*     & SSTHETAQ, SSPHIQ,
 *
       COMMON/SOS_PHYSICS_I4/
      & SSNUM_FPTRACK,
