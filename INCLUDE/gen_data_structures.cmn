@@ -5,7 +5,10 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
-* Revision 1.14  1994/08/03 19:57:07  cdaq
+* Revision 1.15  1994/08/15 04:39:29  cdaq
+* (SAW) Change CTPTYPE to parm for some variables
+*
+* Revision 1.14  1994/08/03  19:57:07  cdaq
 * (SAW) Add "CTPTYPE=event" directive for auto generation of CTP reg calls
 *
 * Revision 1.13  1994/06/26  02:32:07  cdaq
@@ -81,6 +84,8 @@
      &     CXRAST,
      &     CYRAST
 *
+*     CTPTYPE=parm
+*
 *    BASIC TARGET PARAMETERS
 *
 *     TMASS_TARGET           TARGET MASS IN GEV
@@ -136,6 +141,8 @@
      &     SPCENTRAL,
      &     SBFIELD,
      &     SPARTMASS
+*
+*     CTPTYPE=event
 *
 *     HMS  DECODED DATA
 *
