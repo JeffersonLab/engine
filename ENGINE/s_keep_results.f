@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.2  1994/04/12 17:29:18  cdaq
-*-    (KBB) Add ntuple call
+*-    Revision 1.3  1995/07/27 19:43:52  cdaq
+*-    (JRA) Only add to ntuples when we have HNTRACKS_FP > 0
 *-
+* Revision 1.2  1994/04/12  17:29:18  cdaq
+* (KBB) Add ntuple call
+*
 * Revision 1.1  1994/02/04  22:18:31  cdaq
 * Initial revision
 *
@@ -22,6 +25,8 @@
 *--------------------------------------------------------
       IMPLICIT NONE
       SAVE
+*
+      include 'sos_data_structures.cmn'
 *
       character*50 here
       parameter (here= 'S_keep_results')
@@ -36,7 +41,8 @@
       ABORT= .FALSE.
       err= ' '
 *
-      call s_ntuple_keep(ABORT,err)
+      if(SNTRACKS_FP .gt. 0)call s_ntuple_keep(ABORT,err) ! check for tracks.
+* proceed only if tracks found is greater than zero.   
 *
       IF(ABORT) THEN
          call G_add_path(here,err)

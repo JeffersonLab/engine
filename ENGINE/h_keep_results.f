@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.3  1995/01/27 20:14:51  cdaq
-*-    (SAW) Add call to sieve slit ntuple keep routine
+*-    Revision 1.4  1995/07/27 19:40:29  cdaq
+*-    (JRA) Only add to ntuples when we have HNTRACKS_FP > 0
 *-
+* Revision 1.3  1995/01/27  20:14:51  cdaq
+* (SAW) Add call to sieve slit ntuple keep routine
+*
 * Revision 1.2  1994/04/12  17:21:58  cdaq
 * (KBB) Add ntuple call
 *
@@ -27,6 +30,8 @@
       IMPLICIT NONE
       SAVE
 *
+      include 'hms_data_structures.cmn'
+*
       character*50 here
       parameter (here= 'H_keep_results')
 *
@@ -40,7 +45,7 @@
       ABORT= .FALSE.
       err= ' '
 *
-      call h_ntuple_keep(ABORT,err)
+      if(HNTRACKS_FP .gt. 0)call h_ntuple_keep(ABORT,err) ! check for tracks
 *
       IF(ABORT) THEN
          call G_add_path(here,err)
@@ -50,7 +55,7 @@
 *
 * Need to fix up the bloody error reporting
 *
-      call h_sv_nt_keep(ABORT,err)
+      if(HNTRACKS_FP.gt.0)call h_sv_nt_keep(ABORT,err) ! at least one track
 *
       IF(ABORT) THEN
          call G_add_path(here,err)
