@@ -11,9 +11,12 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.3  1994/03/01 20:14:24  cdaq
-*-    (SAW) Add zeroing of the raw total hits counter for the drift chambers
+*-    Revision 1.4  1994/06/22 20:53:21  cdaq
+*-    (SAW) zero the miscleaneous hits counter
 *-
+* Revision 1.3  1994/03/01  20:14:24  cdaq
+* (SAW) Add zeroing of the raw total hits counter for the drift chambers
+*
 * Revision 1.2  1994/02/22  19:04:58  cdaq
 * (SAW) HNUM_DC_PLANES -> HMAX_NUM_DC_PLANES
 *
@@ -63,6 +66,10 @@
 *     HMS CERENKOV HITS
 *
       HCER_TOT_HITS= 0
+*
+*     HMS Miscleaneous hits
+*
+      HMISC_TOT_HITS = 0
 *
 *     HMS DETECTOR TRACK QUANTITIES
 *

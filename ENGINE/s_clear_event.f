@@ -12,9 +12,12 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 *-    $Log$
-*-    Revision 1.3  1994/03/01 20:14:32  cdaq
-*-    (SAW) Add zeroing of the raw total hits counter for the drift chambers
+*-    Revision 1.4  1994/06/22 20:53:59  cdaq
+*-    (SAW) zero the miscleaneous hits counter
 *-
+* Revision 1.3  1994/03/01  20:14:32  cdaq
+* (SAW) Add zeroing of the raw total hits counter for the drift chambers
+*
 * Revision 1.2  1994/02/22  19:04:02  cdaq
 * (SAW) SNUM_DC_PLANES  --> SMAX_NUM_DC_PLANES
 *
@@ -66,6 +69,10 @@
 *     SOS CERENKOV HITS
 *     
       SCER_TOT_HITS= 0
+*
+*     SOS Miscleaneous hits
+*
+      SMISC_TOT_HITS = 0
 *     
 *     SOS DETECTOR TRACK QUANTITIES
 *     
