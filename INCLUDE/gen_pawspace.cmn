@@ -1,13 +1,16 @@
 **************** begin: gen_pawspace.cmn **********************
 *     $Log$
-*     Revision 1.1  1994/02/07 19:41:18  cdaq
-*     Initial revision
+*     Revision 1.2  1994/04/12 20:46:15  cdaq
+*     Increase size of common to 1000000
+*
+* Revision 1.1  1994/02/07  19:41:18  cdaq
+* Initial revision
 *
 *    
 *-sizes of CERNLIB working space
 *
       INTEGER G_sizeHBOOK,G_sizeHIGZ,G_sizeKUIP,G_sizePAW
-      PARAMETER (G_sizeHBOOK= 100000)
+      PARAMETER (G_sizeHBOOK= 1000000)
       PARAMETER (G_sizeHIGZ=   50000)
       PARAMETER (G_sizeKUIP=   75000)
       PARAMETER (G_sizePAW=G_sizeHIGZ+G_sizeKUIP+
