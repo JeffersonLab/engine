@@ -5,6 +5,9 @@
 *
 *      Created:     D.F.Geesaman         22 May 1994
 * $Log$
+* Revision 1.4  1996/01/17 15:13:31  cdaq
+* (JRA) Add bypass switches for efficiency calculations
+*
 * Revision 1.3  1995/08/08 18:22:08  cdaq
 * (JRA) Add sbypass_trans_cer
 *
@@ -26,6 +29,10 @@
       integer*4 sbypass_cal
       integer*4 sbypass_cer
       integer*4 sbypass_physics
+      integer*4 sbypass_dc_eff
+      integer*4 sbypass_scin_eff
+      integer*4 sbypass_cal_eff
+      integer*4 sbypass_cer_eff
 *
       common/sos_bypass_switches/
      &     sbypass_trans_scin,
@@ -37,4 +44,8 @@
      &     sbypass_tof,
      &     sbypass_cal,
      &     sbypass_cer,
-     &     sbypass_physics
+     &     sbypass_physics,
+     &     sbypass_dc_eff,
+     &     sbypass_scin_eff,
+     &     sbypass_cal_eff,
+     &     sbypass_cer_eff
