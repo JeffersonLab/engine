@@ -9,9 +9,12 @@
 *-         : err             - reason for failure, if any
 *- 
 *-    $Log$
-*-    Revision 1.3  1994/04/13 18:30:40  cdaq
-*-    (DFG) add call to s_raw_dump_all and comment out some returns after ABORT's
+*-    Revision 1.4  1994/05/13 03:34:52  cdaq
+*-    (DFG) Put s_prt_track_tests here. Remove from s_tof
 *-
+* Revision 1.3  1994/04/13  18:30:40  cdaq
+* (DFG) add call to s_raw_dump_all and comment out some returns after ABORT's
+*
 * Revision 1.2  1994/02/22  15:56:17  cdaq
 * (DFG) Replace with real version
 * (SAW) Move to TRACKING directory
@@ -36,6 +39,7 @@
       INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
+      include 'sos_scin_parms.cmn'
 *
 *     local variables
       integer*4 istat
@@ -126,6 +130,10 @@
 *            return
          endif                                  ! end test of S_CER ABORT
 *
+*     Dump SOS_TRACK_TESTS if sdebugprinttracktests is set
+          if( sdebugprinttracktests .ne. 0 ) then
+            call s_prt_track_tests
+          endif
 *     Combine results in SOS physics analysis
 *     SOS_TARGET + SOS_TRACK_TESTS ====>  SOS_PHYSICS
 *
