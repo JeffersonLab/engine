@@ -5,7 +5,10 @@
 *                              change name to sos_tracking.cmn
 *                              put sluno and debugflags from parameters to CTP
 * $Log$
-* Revision 1.6  1994/08/16 03:57:09  cdaq
+* Revision 1.7  1994/11/21 18:02:58  cdaq
+* * (SPB) Recopied from hms file and modified names for SOS
+*
+* Revision 1.6  1994/08/16  03:57:09  cdaq
 * (SAW) Change some variables to parm CTPTYPE
 *
 * Revision 1.5  1994/08/05  20:06:27  cdaq
@@ -32,12 +35,45 @@
 *
 *     CTPTYPE=parm
 *
-      integer*4 sdc_num_planes      ! actual number of dc chambers - st in CTP
+*
+*     Parameters for drift time to distance calculation
+*
+      integer*4 sdriftbins_max          ! maximum number of bins for drift
+      parameter (sdriftbins_max=200)    ! lookup table time
+      real*4    sdriftbins              ! number of bins for drift time lookup table
+      real*4    sdriftbinsz             ! drift bin size in nsec of lookup
+      real*4    sdrift1stbin            ! drift time of 1st bin in nsec of lookup table
+      real*4     fract              !fraction of integrated time spectrum
+      real*4     fractinterp        !  interpolated fraction 
+      real*4 swc1x1fract(sdriftbins_max),swc1y1fract(sdriftbins_max),
+     &       swc1u1fract(sdriftbins_max),swc1v1fract(sdriftbins_max),
+     &       swc1y2fract(sdriftbins_max),swc1x2fract(sdriftbins_max),
+     &       swc2x1fract(sdriftbins_max),swc2y1fract(sdriftbins_max),
+     &       swc2u1fract(sdriftbins_max),swc2v1fract(sdriftbins_max),
+     &       swc2y2fract(sdriftbins_max),swc2x2fract(sdriftbins_max)
+
+      equivalence (swc1x1fract(1),fract(1,1))
+      equivalence (swc1y1fract(1),fract(1,2))
+      equivalence (swc1u1fract(1),fract(1,3))
+      equivalence (swc1v1fract(1),fract(1,4))
+      equivalence (swc1y2fract(1),fract(1,5))
+      equivalence (swc1x2fract(1),fract(1,6))
+      equivalence (swc2x1fract(1),fract(1,7))
+      equivalence (swc2y1fract(1),fract(1,8))
+      equivalence (swc2u1fract(1),fract(1,9))
+      equivalence (swc2v1fract(1),fract(1,10))
+      equivalence (swc2y2fract(1),fract(1,11))
+      equivalence (swc2x2fract(1),fract(1,12))
+
+      common/SOS_DRIFT/fract(sdriftbins_max,12),fractinterp,
+     $     sdriftbinsz,sdrift1stbin,sdriftbins
+
+      integer*4 sdc_num_planes   ! actual number of dc chambers - set in CTP
       integer*4 smax_num_chambers   ! maximum number of chambers
       parameter (smax_num_chambers=3)
       integer*4 sdc_num_chambers    ! actual number of chambers - set in CTP
       integer*4 smax_chamber_hits
-      parameter (smax_chamber_hits=100)
+      parameter (smax_chamber_hits=544)
       integer*4 smax_space_points   ! maximum number of space points
       integer*4 smax_hits_per_point ! maximum number of hits per point
       parameter (smax_space_points=50)
@@ -47,8 +83,14 @@
 *
       integer*4 snspace_points  ! number of space points in each chamber
       integer*4 snspace_points_tot ! total number of space points after select.
+      integer*4 gplanesdc1,gplanesdc2   ! good plane pattern unit, set bit if respective plane hit
       real*4 sspace_points         ! array of x, y of space points
       real*4 sbeststub              ! array of stubs fit to each space point
+      real*4 sdc_sing_drifttime ! array of fully corrected drift times for each plane
+      real*4 sdc_sing_driftdis  ! array of final drift distances for each plane
+      real*8 aa3,aainv3         ! matrix AA and its inverse AAINV 
+      real*8 det3               ! array of determinants of AA
+
 *
 *     CTPTYPE=parm
 *
@@ -80,17 +122,46 @@
       integer*4 snum_fpray_param   ! number of ray parameters in focal plane
       parameter (snum_fpray_param=4)
 
+*
+*     CTPTYPE=parm
+*
+      integer*4 sdc_tdc_min_win   ! drift chamber tdc min value for good hit
+      integer*4 sdc_tdc_max_win   ! drfit chamber tdc max value for good hit
+      integer*4 smax_pr_hits      ! max number of hits in each plane for
+                                  ! pattern recognition to be done in that pla
+      real*4 sdc_wire_velocity    ! propogation velocity of signal on wire (cm--M/ns)
+      real*4 sdc_x_central_time   ! time (ns) for signal to reach disc. card o--Mn XUVX' planes
+      real*4 sdc_y_central_time   ! time (ns) for signal to reach disc. card o--Mn YY' planes
+                                  ! (both times are from center of the chamber--M)
+*
+*     CTPTYPE=event
+*
+      INTEGER*4 SDC_HITS_PER_PLANE
+      REAL*4 SDC_SING_WCENTER
+      REAL*4 SDC_SING_WCOORD
+*
       common/SOS_TRACKING/
+     &     aa3(3,3),aainv3(3,3,14),det3(14),
      &     sbeststub(smax_space_points,snum_fpray_param),
      &     sspace_point_criterion(smax_num_chambers),
      &     sxt_track_criterion,syt_track_criterion,
      &     sxpt_track_criterion,sypt_track_criterion,
      &     sspace_points(smax_space_points,2),
      &     sspace_point_hits(smax_space_points,smax_hits_per_point+2),
-     &     snspace_points(smax_num_chambers),snspace_points_tot,
+     &     snspace_points(5),snspace_points_tot,
      &     sncham_hits(smax_num_chambers),smin_hit(smax_num_chambers),
      &     smin_combos(smax_num_chambers),strack_fit_num,
-     &     sdc_num_planes,sdc_num_chambers
+     &     sdc_num_planes,sdc_num_chambers,
+     &     sdc_tdc_min_win(SMAX_NUM_DC_PLANES), 
+     &     sdc_tdc_max_win(SMAX_NUM_DC_PLANES),
+     &     smax_pr_hits(smax_num_chambers),
+     &     sdc_wire_velocity,sdc_x_central_time,sdc_y_central_time,
+     &     sdc_sing_drifttime(SMAX_NUM_DC_PLANES),
+     &     sdc_sing_driftdis(SMAX_NUM_DC_PLANES),
+     &     SDC_HITS_PER_PLANE(SMAX_NUM_DC_PLANES),
+     &     SDC_SING_WCENTER(SMAX_NUM_DC_PLANES),
+     &     SDC_SING_WCOORD(SMAX_NUM_DC_PLANES),
+     &     gplanesdc1(smax_space_points),gplanesdc2(smax_space_points)
 
 *     
 *     CTPTYPE=parm
@@ -109,8 +180,10 @@
       integer*4 sdebugtrackprint
       integer*4 sdebugstubchisq
       integer*4 sdebugtartrackprint       ! call s_print_tar_track
-      integer*4 sdebug_mc_start_time      ! Kludge for Monte Carlo start time
+      integer*4 sdebug_mc_start_time      ! kludge for Monte Carlo start time
       integer*4 ssingle_stub              ! switch to make tracks of all stubs
+      integer*4 sSmallAngleApprox       ! switch for alternate L/R determ. of Y,Yprime planes
+      integer*4 s_wire_vel_correction   ! switch to correct drift times for wi--Mre propogation
       common/SOS_TRACKFLAGS/
      &     sluno,
      &     sdebugflagpsi,
@@ -124,12 +197,47 @@
      &     sdebugprintrawdc,
      &     sdebugprintdecodeddc,
      &     sdebug_mc_start_time,
-     &     ssingle_stub
+     &     ssingle_stub,
+     &     sSmallAngleApprox,
+     &     s_wire_vel_correction
+*
+*     CTPTYPE=parm
+*
+*     These arrays are presumably scalers to per run statistics
 *
 *     array to hold multiple hits per wire
       integer*4 sdc_max_wires_per_plane   ! maximum number of wires per plane
       parameter (sdc_max_wires_per_plane = 200)
       integer*4 swire_mult(sdc_max_wires_per_plane,SMAX_NUM_DC_PLANES)
+      integer*4 swire_early_mult(sdc_max_wires_per_plane,SMAX_NUM_DC_PLANES)
+      integer*4 swire_late_mult(sdc_max_wires_per_plane,SMAX_NUM_DC_PLANES)
+      integer*4 swire_extra_mult(sdc_max_wires_per_plane,SMAX_NUM_DC_PLANES)
 *
       common/sos_wire_multiplicity/
-     &     swire_mult
+     &     swire_mult,
+     &     swire_early_mult,
+     &     swire_late_mult,
+     &     swire_extra_mult
+*
+*     CTPTYPE=event
+*
+*  complete 2-D array for residuals in all planes over all tracks
+      real*4 sdc_residual(SNTRACKS_MAX,SMAX_NUM_DC_PLANES)
+      real*4 sdc_sing_res(SNTRACKS_MAX,SMAX_NUM_DC_PLANES)
+
+*     djm 8/26/94 arrays containing single and double residual arrays which can be
+*     histogrammed in the normal fashion (ie, not hardwired histograms).
+
+       real*4 sdc1_sing_res(SMAX_NUM_DC_PLANES)
+       real*4 sdc2_sing_res(SMAX_NUM_DC_PLANES)
+       real*4 sdc1_dbl_res(SMAX_NUM_DC_PLANES)
+       real*4 sdc2_dbl_res(SMAX_NUM_DC_PLANES)
+
+
+       common/SOS_RESIDUAL/
+     &   sdc_residual,
+     &   sdc_sing_res,
+     &   sdc1_sing_res,
+     &   sdc2_sing_res,
+     &   sdc1_dbl_res,
+     &   sdc2_dbl_res

@@ -12,7 +12,10 @@
 *           Add definition of snum_scin_elements and set parameter value
 *
 * $Log$
-* Revision 1.2  1994/08/05 21:00:21  cdaq
+* Revision 1.3  1994/11/21 18:01:35  cdaq
+* * (SPB) Recopied from hms file and modified names for SOS
+*
+* Revision 1.2  1994/08/05  21:00:21  cdaq
 * (SAW) Add makereg directive with required include files
 *       Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
 *
@@ -29,14 +32,14 @@
 *     CTPTYPE=parm
 *  
       integer*4 snum_scin_elements
-      parameter (snum_scin_elements=20)
+      parameter (snum_scin_elements=16)
 *
 * from parameter file
       integer*4 sscin_1x_nr
       integer*4 sscin_1y_nr
       integer*4 sscin_2x_nr
       integer*4 sscin_2y_nr
-      integer*4 sscin_num_counters(sNUM_SCIN_PLANES)
+      integer*4 sscin_num_counters(SNUM_SCIN_PLANES)
       integer*4 sdebugprintscinraw
       integer*4 sdebugprintscindec
       integer*4 sdebugprinttoftracks
@@ -45,6 +48,10 @@
       real*4 sscin_1y_zpos
       real*4 sscin_2x_zpos
       real*4 sscin_2y_zpos
+      real*4 sscin_1x_dzpos
+      real*4 sscin_1y_dzpos
+      real*4 sscin_2x_dzpos
+      real*4 sscin_2y_dzpos
       real*4 sscin_1x_left
       real*4 sscin_1y_top
       real*4 sscin_2x_left
@@ -61,12 +68,16 @@
       real*4 sscin_1y_size
       real*4 sscin_2x_size
       real*4 sscin_2y_size
-
+      integer*4 sscin_all_ped_pos(snum_scin_planes,snum_scin_elements)
+      integer*4 sscin_all_ped_neg(snum_scin_planes,snum_scin_elements)
+ 
       common/sos_scin_parms/            !variables from s_positions.parm
      &     sscin_1x_nr, sscin_1y_nr,    !Elements per plane
      &     sscin_2x_nr, sscin_2y_nr,
      &     sscin_1x_zpos, sscin_1y_zpos, !z position of plane.
      &     sscin_2x_zpos, sscin_2y_zpos,
+     &     sscin_1x_dzpos, sscin_1y_dzpos,
+     &     sscin_2x_dzpos, sscin_2y_dzpos,
      &     sscin_1x_left, sscin_1y_top, !position of 'negative'(??) end.
      &     sscin_2x_left, sscin_2y_top,
      &     sscin_1x_right, sscin_1y_bot, !position of 'positive'(??) end.
@@ -79,13 +90,13 @@
      &     sdebugprintscinraw,
      &     sdebugprintscindec,
      &     sdebugprinttoftracks,
-     &     sdebugprinttracktests
- 
+     &     sdebugprinttracktests,
+     &     sscin_all_ped_pos,
+     &     sscin_all_ped_neg
 
 * Physical paramteres of counters.  Use shodo_* for arrays that include
 *   the entire hodoscope,  sscin_* for arrays that loop over hits.
       real*4 snum_scin_counters(snum_scin_planes)
-      real*4 shodo_zpos(snum_scin_planes)
       real*4 shodo_center_coord(snum_scin_planes,snum_scin_elements)
       real*4 shodo_width(snum_scin_planes,snum_scin_elements)
       real*4 shodo_pos_coord(snum_scin_planes,snum_scin_elements)
@@ -107,7 +118,6 @@
 
       common/sos_tof_parms/
      &     snum_scin_counters,
-     &     shodo_zpos,
      &     shodo_center_coord,
      &     shodo_width,
      &     shodo_pos_coord,
