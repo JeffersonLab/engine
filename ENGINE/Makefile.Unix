@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.3  1994/06/14 19:30:33  cdaq
+# Revision 1.4  1994/06/22 21:04:29  cdaq
+# (SAW) Add g_analyze_scalers.f
+#
+# Revision 1.3  1994/06/14  19:30:33  cdaq
 # (SAW) Add g_dump_histograms, remove g_open_hbook_file
 #
 # Revision 1.2  1994/06/07  18:47:48  cdaq
@@ -12,7 +15,8 @@
 include $(Csoft)/etc/Makefile
 
 decode_source = g_decode_clear.f g_decode_config.f g_decode_event_by_banks.f \
-	g_decode_fb_bank.f g_decode_fb_detector.f g_decode_getdid.f g_decode_init.f
+	g_decode_fb_bank.f g_decode_fb_detector.f g_decode_getdid.f \
+	g_decode_init.f g_analyze_scalers.f
 general_source = $(decode_source) g_clear_event.f \
 	g_decode_clear.f g_decode_config.f g_decode_event_by_banks.f \
 	g_decode_fb_bank.f g_decode_fb_detector.f g_decode_getdid.f \
