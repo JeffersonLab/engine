@@ -9,7 +9,10 @@
 *                              remove minuit. Make fit linear
 *                              still does not do errors properly
 * $Log$
-* Revision 1.3  1994/08/18 02:45:53  cdaq
+* Revision 1.4  1994/09/01 12:29:07  cdaq
+* (DJM) Make registered versions of residuals
+*
+* Revision 1.3  1994/08/18  02:45:53  cdaq
 * (DM) Add calculation of residuals
 *
 * Revision 1.2  1994/02/22  05:25:00  cdaq
@@ -127,7 +130,11 @@
      &         -hplane_coeff(remap(4),plane)*ray(4))
            chi2=chi2+((hdc_sing_res(itrack,plane))**2
      &         )/(hdc_sigma(plane)*hdc_sigma(plane))
-
+*djm
+            if(itrack.eq.1 .and. plane.ge.1 .and. plane.le.6)
+     &        hdc1_sing_res(plane) = hdc_sing_res(itrack,plane)
+            if(itrack.eq.2 .and. plane.ge.7 .and. plane.le.12)
+     &        hdc2_sing_res(plane) = hdc_sing_res(itrack,plane)
         enddo
       endif
 
@@ -179,6 +186,8 @@
               plane=HDC_PLANE_NUM(hit)
               pos=H_DPSIFUN(ray1,plane)
               hdc_residual(itrack,plane)=HDC_WIRE_COORD(hit)-pos
+* djm 8/31/94 stuff this variable into 1d array we can register
+              hdc2_dbl_res(plane) = hdc_residual(1,plane)
 
             enddo
 
@@ -186,17 +195,19 @@
 * loop over hits in first chamber
             do ihit=1,HNTRACK_HITS(itrack-1,1)
 
-* calculate residual in first chamber form second chamber track
+* calculate residual in first chamber from second chamber track
               hit=HNTRACK_HITS(itrack-1,ihit+1)
               plane=HDC_PLANE_NUM(hit)
               pos=H_DPSIFUN(ray2,plane)
               hdc_residual(itrack,plane)=HDC_WIRE_COORD(hit)-pos
+* djm 8/31/94 stuff this variable into 1d array we can register
+              hdc1_dbl_res(plane) = hdc_residual(2,plane)
 
             enddo
-            endif
-          endif
-        endif
-      endif
+            endif                       ! end plane ge 7
+          endif                         ! end plane le 6
+        endif                           ! end HNTRACKS_FP eq 2
+      endif                             ! end hsignle_stub .ne. 0
 
 *     test if we want to dump out trackfit results
       if(hdebugtrackprint.ne.0) then
