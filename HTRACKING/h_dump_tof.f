@@ -18,6 +18,9 @@
 * for each signal.
 *
 * $Log$
+* Revision 1.5  1999/02/10 18:20:08  csa
+* Fixed format problem with ph > 10,000
+*
 * Revision 1.4  1995/10/09 20:20:00  cdaq
 * (JRA) Subtract hstart_time from tdc output
 *
@@ -51,12 +54,14 @@
 *
 *  Write out TOF fitting data.
 *
+
+*     In some circumstances you might also cut on
+*     hcer_npe_sum and/or hsshtrk:
       if (hsnum_pmt_hit.ge.4 .and. hsnum_pmt_hit.le.12) then
         betap=1.
         write(37,111) hsnum_pmt_hit,hsx_fp,hsxp_fp,
      $       hsy_fp,hsyp_fp,betap
  111    format(i3,f10.5,f8.5,f10.5,f8.5,f7.3)
-* 111    format(i4,5f10.5)
         do ind = 1, hsnum_scin_hit
           hit = hscin_hit(hsnum_fptrack,ind)
           if (hscin_tdc_pos(hit) .ge. hscin_tdc_min .and.  
@@ -80,7 +85,7 @@
             write(37,112) pmt,cnt,lay,dir,ph,tim
           endif
         enddo
- 112    format(i2,i3,i2,i2,f7.1,f8.3)
+ 112    format(i2," ",i3,2(" ",i2)," ",f7.1," ",f8.3)
       endif
       RETURN
       END
