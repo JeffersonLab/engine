@@ -11,10 +11,14 @@
 *       Modified 23 March 1994   DFG
 *           Add definition of hnum_scin_elements and set parameter value
 * $Log$
-* Revision 1.1  1994/04/12 21:10:43  cdaq
+* Revision 1.2  1994/08/04 17:55:08  cdaq
+* (SAW) Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
+*
+* Revision 1.1  1994/04/12  21:10:43  cdaq
 * Initial revision
 *
-*  
+*     CTPTYPE=parm
+*
       integer*4 hnum_scin_elements
       parameter (hnum_scin_elements=20)
 *
@@ -106,13 +110,3 @@
      &     hhodo_neg_phc_coeff,
      &     hhodo_pos_time_offset,
      &     hhodo_neg_time_offset
-
-
-
-
-
-
-
-
-
-
