@@ -10,9 +10,12 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.7  1994/08/04 03:08:11  cdaq
-*-    (SAW) Add call to Breuer's hack_initialize
+*-    Revision 1.8  1994/08/18 03:45:01  cdaq
+*-    (SAW) Correct typo in adding hack stuff
 *-
+* Revision 1.7  1994/08/04  03:08:11  cdaq
+* (SAW) Add call to Breuer's hack_initialize
+*
 * Revision 1.6  1994/06/22  20:55:14  cdaq
 * (SAW) Load report templates
 *
@@ -54,7 +57,7 @@
 *
       integer ierr
       logical HMS_ABORT,SOS_ABORT, HACK_ABORT
-      character*132 HMS_err,SOS_err, HACK_errhack
+      character*132 HMS_err,SOS_err, HACK_err
 *
       logical*4 first_time                      ! Allows routine to be called 
       data first_time /.true./                  ! by online code
