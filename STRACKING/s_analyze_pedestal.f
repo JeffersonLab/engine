@@ -1,6 +1,9 @@
       subroutine s_analyze_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.5  1995/10/09 20:07:55  cdaq
+* (JRA) Use scer_raw_adc instead of hcer_adc
+*
 * Revision 1.4  1995/07/20 14:45:42  cdaq
 * (???) Fix typo in Gas Cerenkov Pedestals section
 *
@@ -67,8 +70,9 @@
 *
       do ihit = 1 , scer_tot_hits
         pmt=scer_tube_num(ihit)       ! no sparsification yet - NEED TO FIX!!!!
-        scer_ped_sum2(pmt) = scer_ped_sum2(pmt) + scer_adc(ihit)*scer_adc(ihit)
-        scer_ped_sum(pmt) = scer_ped_sum(pmt) + scer_adc(ihit)
+        scer_ped_sum2(pmt) = scer_ped_sum2(pmt) +
+     $       scer_raw_adc(ihit)*scer_raw_adc(ihit)
+        scer_ped_sum(pmt) = scer_ped_sum(pmt) + scer_raw_adc(ihit)
         scer_ped_num(pmt) = scer_ped_num(pmt) + 1
       enddo
 *
