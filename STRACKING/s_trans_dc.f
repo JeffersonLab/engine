@@ -13,6 +13,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.10  1995/10/11 13:54:18  cdaq
+* (JRA) Cleanup, add bypass switch to s_dc_eff call
+*
 * Revision 1.9  1995/08/31 15:04:12  cdaq
 * (JRA) Add call to s_dc_eff, warn about invalid plane numbers
 *
@@ -26,7 +29,7 @@
 * (JRA) SMAX_NUM_DC_PLANES -> SDC_NUM_PLANES
 *
 * Revision 1.5  1994/11/23  15:08:04  cdaq
-* * (SPB) Recopied from hms file and modified names for SOS
+* (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.4  1994/04/13  18:56:40  cdaq
 * (DFG) Add call to s_fill_dc_dec_hist, remove s_raw_dump_all call
@@ -45,7 +48,7 @@
       IMPLICIT NONE
       SAVE
 *     
-      character*50 here
+      character*10 here
       parameter (here= 'S_TRANS_DC')
 *     
       logical ABORT
@@ -57,88 +60,99 @@
       include 'sos_tracking.cmn'
       include 'sos_geometry.cmn'
       include 'sos_track_histid.cmn'
+      include 'sos_bypass_switches.cmn'
 *     
 *--------------------------------------------------------
-      real*4 s_drift_time_calc,s_drift_dist_calc,s_wire_center_calc
-      external s_drift_time_calc
+      real*4 s_drift_dist_calc
       external s_drift_dist_calc
-      external s_wire_center_calc
-      integer*4 ihit,goodhit,old_wire,old_plane,wire,plane,chamber
+      integer*4 ihit,goodhit,old_wire,old_pln,wire,pln,chamber
       real*4 histval
 *     
       ABORT= .FALSE.
       err= ' '
       old_wire = -1
-      old_plane = -1
+      old_pln = -1
       goodhit = 0
       if (sdc_center(1).eq.0.) then   !initialize hdc_center if not yet set.
-        do plane = 1, sdc_num_planes
-          chamber = sdc_chamber_planes(plane)
-          sdc_center(plane) = sdc_xcenter(chamber)
-     $         *sin(sdc_alpha_angle(plane))+sdc_ycenter(chamber)
-     $         *cos(sdc_alpha_angle(plane))
+        do pln = 1, sdc_num_planes
+          chamber = sdc_chamber_planes(pln)
+          sdc_center(pln) = sdc_xcenter(chamber)
+     $         *sin(sdc_alpha_angle(pln))+sdc_ycenter(chamber)
+     $         *cos(sdc_alpha_angle(pln))
         enddo
       endif
 *     Are there any raw hits
-      if(SDC_RAW_TOT_HITS.gt.0) then
+      if(sdc_raw_tot_hits.gt.0) then
 *     loop over all raw hits
-        do ihit=1,SDC_RAW_TOT_HITS
-          plane = SDC_RAW_PLANE_NUM(ihit)
-          wire  = SDC_RAW_WIRE_NUM(ihit)
+        do ihit=1,sdc_raw_tot_hits
+          pln = sdc_raw_plane_num(ihit)
+          wire  = sdc_raw_wire_num(ihit)
 *     check valid plane and wire number
-          if(plane.gt.0 .and. plane.le. sdc_num_planes) then
+          if(pln.gt.0 .and. pln.le. sdc_num_planes) then
             histval=float(sdc_raw_tdc(ihit))
             call hf1(sidrawtdc,histval,1.)
 *     test if tdc value less than lower limit for good hits
-            if(SDC_RAW_TDC(ihit) .lt. sdc_tdc_min_win(plane))  then
-              swire_early_mult(wire,plane)
-     $             = swire_early_mult(wire,plane)+1
+            if(sdc_raw_tdc(ihit) .lt. sdc_tdc_min_win(pln))  then
+              swire_early_mult(wire,pln)
+     $             = swire_early_mult(wire,pln)+1
             else
-              if(SDC_RAW_TDC(ihit) .gt. sdc_tdc_max_win(plane))  then
-                swire_late_mult(wire,plane)
-     $               = swire_late_mult(wire,plane)+1
+              if(sdc_raw_tdc(ihit) .gt. sdc_tdc_max_win(pln))  then
+                swire_late_mult(wire,pln)
+     $               = swire_late_mult(wire,pln)+1
               else
 *     test for valid wire number
-                if(wire .gt. 0 .and. wire .le. sdc_nrwire(plane) ) then
+                if(wire.gt.0 .and. wire.le.sdc_nrwire(pln)) then
 *     test for multiple hit on the same wire
-                  if(plane .eq. old_plane .and. wire .eq. old_wire ) then
-                    swire_extra_mult(wire,plane) =
-     $                   swire_extra_mult(wire,plane)+1
+                  if(pln.eq.old_pln .and. wire.eq.old_wire) then
+                    swire_extra_mult(wire,pln) =
+     $                   swire_extra_mult(wire,pln)+1
                   else
 
 *     valid hit proceed with decoding
                     goodhit = goodhit + 1
-                    SDC_PLANE_NUM(goodhit) = SDC_RAW_PLANE_NUM(ihit)
-                    SDC_WIRE_NUM(goodhit) = SDC_RAW_WIRE_NUM(ihit)
-                    SDC_TDC(goodhit) = SDC_RAW_TDC(ihit)
-                    SDC_WIRE_CENTER(goodhit) = s_wire_center_calc(plane
-     $                   ,wire)
-                    SDC_DRIFT_TIME(goodhit) = 
-     &                   s_drift_time_calc(plane,wire,SDC_TDC(goodhit))
-                    SDC_DRIFT_DIS(goodhit) =
-     &                   s_drift_dist_calc(plane,wire
-     $                   ,SDC_DRIFT_TIME(goodhit))
-                    SDC_HITS_PER_PLANE(plane) = SDC_HITS_PER_PLANE(plane)
-     $                   + 1
+                    sdc_plane_num(goodhit) = sdc_raw_plane_num(ihit)
+                    sdc_wire_num(goodhit) = sdc_raw_wire_num(ihit)
+                    sdc_tdc(goodhit) = sdc_raw_tdc(ihit)
+
+* if sdc_wire_counting(pln) is 1 then wires are number in reverse order
+                    if(sdc_wire_counting(pln).eq.0) then !normal ordering
+                      sdc_wire_center(goodhit) = sdc_pitch(pln)
+     &                  * (float(wire) - sdc_central_wire(pln))
+     &                  - sdc_center(pln)
+                    else
+                      sdc_wire_center(goodhit) = sdc_pitch(pln)
+     &                  * ( (sdc_nrwire(pln) + float(1 - wire))
+     &                  - sdc_central_wire(pln) ) - sdc_center(pln)
+                    endif
+
+                    sdc_drift_time(goodhit) = sstart_time
+     &                  - float(sdc_tdc(goodhit))*sdc_tdc_time_per_channel
+     &                  + sdc_plane_time_zero(pln)
+
+*  find dist in pattern_recognition, after apply propogation correction.
+*                    sdc_drift_dis(goodhit) =
+*     &                  s_drift_dist_calc(pln,wire,sdc_drift_time(goodhit))
+                    sdc_hits_per_plane(pln)=sdc_hits_per_plane(pln)+1
                   endif                 ! end test on duplicate wire
-                  old_plane = plane
-                  old_wire  = wire
+                  old_pln = pln
+                  old_wire = wire
                 endif                   ! end test on valid wire number
               endif                     ! end test on hdc_tdc_max_win
             endif                       ! end test on hdc_tdc_min_win
           else                          ! if not a valid plane number
-            write(6,*) 'S_TRANS_DC: invalid plane number = ',plane
+            write(6,*) 'S_TRANS_DC: invalid plane number = ',pln
           endif                         ! end test on valid plane number
         enddo                           ! end loop over raw hits
 
 *     
 *     set total number of good hits
 *     
-        SDC_TOT_HITS = goodhit
+        sdc_tot_hits = goodhit
 *
-        call s_dc_eff           ! require at least 1 hit to find efficiency
+        if (sbypass_dc_eff.eq.0) call s_dc_eff !only call if there was a hit.
 *
-      endif                     !  end test on SDC_RAW_TOT_HITS.gt.0
+      endif                     !  end test on sdc_raw_tot_hits.gt.0
+*
 *
 *     Dump decoded banks if flag is set
       if(sdebugprintdecodeddc.ne.0) then
