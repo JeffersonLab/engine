@@ -12,10 +12,11 @@
 *-   Output: ABORT           - success or failure
 *-         : err             - reason for failure, if any
 *- 
-*-   Created 19-JAN-1994   D. F. Geesaman
-*-                           Dummy Shell routine
 * $Log$
-* Revision 1.3  1994/03/24 19:48:48  cdaq
+* Revision 1.4  1994/04/13 17:59:46  cdaq
+* (DFG) add histogram call and remove raw dump
+*
+* Revision 1.3  1994/03/24  19:48:48  cdaq
 * (DFG) add print routines and flags
 *       check plane number and wire number for validity
 *
@@ -50,10 +51,6 @@
 *
        ABORT= .FALSE.
        err= ' '
-*      Dump raw bank if debug flag set
-       if(hdebugprintrawdc.ne.0) then
-          call h_print_raw_dc(ABORT,err)
-       endif
        old_wire = -1
        old_plane = -1
        goodhit = 0
@@ -93,10 +90,13 @@
 *
 *      set total number of good hits
 *
-            HDC_TOT_HITS = goodhit
+         HDC_TOT_HITS = goodhit
 
+*     Histogram HDC_DECODED_DC
+         call h_fill_dc_dec_hist(ABORT,err)
                 
        endif                !  end test on HDC_RAW_TOT_HITS.gt.0
+*
 *      Dump decoded banks if flag is set
        if(hdebugprintdecodeddc.ne.0) then
           call h_print_decoded_dc(ABORT,err)
