@@ -17,6 +17,9 @@
 *-    Created   1-Dec-1995  Rolf Ent
 *
 * $Log$
+* Revision 1.5  1999/06/10 16:59:37  csa
+* (CSA) Removed debugging statement
+*
 * Revision 1.4  1999/02/10 17:34:41  csa
 * Numerous corrections and improvements (D. Mack, K. Vansyoc, J. Volmer)
 *
@@ -205,7 +208,7 @@
 ***********************END SETUP******************************
 
 *******************************************************************************
-* With the adaptation of a new, beta-dependent energy loss correction formula
+* With the adoption of a new, beta-dependent energy loss correction formula
 * for electrons, it became necessary to give the velocity of electrons in terms
 * of log_10(beta*gamma), since REAL*4 was not good enough to distinguish the
 * beta of electrons from 1. For hadrons, nothing will change.
@@ -227,8 +230,6 @@
          else
             write(6,*) 'total_eloss: no arm specified for electron velocity'
          endif
-
-         if (p_temp.lt.1.e-4) write(6,*) 'total_eloss: p_temp=0, use 0.1 GeV/c'
 
          p_temp=max(p_temp,.1)
          frac_temp=mass_electron/p_temp
