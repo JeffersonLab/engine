@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.2  1994/08/04 03:51:30  cdaq
+# Revision 1.3  1995/01/27 21:09:22  cdaq
+# (SAW) Remove RCS from include file rules
+#
+# Revision 1.2  1994/08/04  03:51:30  cdaq
 # (SAW) Add libhack.a to library list
 #
 # Revision 1.1  1994/07/07  15:25:03  cdaq
@@ -57,7 +60,7 @@ $(LIBROOT)/libctp.a:
 engine_online: $(objects) $(DEPLIBS)
 	$(F77) $(FFLAGS) -o engine_online $(objects) $(DEPLIBS) $(OTHERLIBS)
 
-%.cmn : ../INCLUDE/RCS/%.cmn,v
-	$(CO) $(COFLAGS) $<
+%.cmn :: ../INCLUDE/%.cmn,v
+	cp $< $@
 
 include $(sources:.f=.d)

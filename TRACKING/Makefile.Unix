@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.4  1994/11/23 15:37:02  cdaq
+# Revision 1.5  1995/01/27 21:10:12  cdaq
+# (SAW) Remove RCS from include file rules
+#
+# Revision 1.4  1994/11/23  15:37:02  cdaq
 # (SAW) Remove solve_3by3_hdc.f
 #
 # Revision 1.3  1994/10/12  18:44:22  cdaq
@@ -38,7 +41,7 @@ endif
 #
 # Get include files from ENGINE directory
 #
-%.cmn : ../INCLUDE/RCS/%.cmn,v
-	$(CO) $(COFLAGS) $<
+%.cmn :: ../INCLUDE/%.cmn
+	cp $< $@
 
 include $(sources:.f=.d)
