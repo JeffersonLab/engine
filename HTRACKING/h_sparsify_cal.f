@@ -13,6 +13,9 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to h_raw_dump_all
 * $Log$
+* Revision 1.12  1999/06/10 16:51:25  csa
+* (JRA) Removed adc_max, added adc sign test, structural and cosmetic changes
+*
 * Revision 1.11  1999/02/25 20:10:48  saw
 * Vardan Tadevosyan shower code updates
 *
@@ -48,35 +51,31 @@
 *
 *-----------------------------------------------------------------------
 *
-*
       implicit none
       save
-*
+
       logical abort
       character*(*) errmsg
       character*14 here
       parameter (here='H_SPARSIFY_CAL')
-*
+
       integer*4 nh        !Loop variable for raw hits
       integer*4 nb        !Block number
       integer*4 row,col   !Row & column numbers
       integer*4 adc_pos    !ADC value
       integer*4 adc_neg    !ADC value
-      integer*4 adc_max   !Max. channel #
-      parameter (adc_max=4095)
-*
+
       include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
       include 'hms_id_histid.cmn'
-*
-*
-*
+
+
       errmsg=' '
       if(hcal_tot_hits.lt.0.or.hcal_tot_hits.gt.hmax_cal_blocks) then
-         write(6,*) here,':hcal_tot_hits = ',hcal_tot_hits
-         return
+        write(6,*) here,':hcal_tot_hits = ',hcal_tot_hits
+        return
       endif
-*
+
       hcal_num_hits=0
       do nb = 1 , hmax_cal_blocks
         hcal_realadc_pos(nb)=-100
@@ -87,74 +86,49 @@
 *      Loop over raw hits
 *
       do nh=1,hcal_tot_hits      
-         row=hcal_row(nh)
-         col=hcal_column(nh)
-         adc_pos=hcal_adc_pos(nh)
-         adc_neg=hcal_adc_neg(nh)
-*
-*------Check the validity of raw data
-c         abort=row.le.0.or.row.gt.hmax_cal_rows
-c         if(abort) then
-c         write(90,*) 'row=',row,' : aborting'
-c            write(errmsg,*) ':hcal_row(',nh,') = ',row
-c            call g_prepend(here,errmsg)
-c            return
-c         endif
-*
-c         abort=col.le.0.or.col.gt.hmax_cal_columns
-c         if(abort) then
-c         write(90,*) 'col=',col,' : aborting'
-c            write(errmsg,*) ':hcal_column(',nh,') = ',col
-c            call g_prepend(here,errmsg)
-c            return
-c         endif
-*
-c         abort=adc.le.0.or.adc.gt.adc_max
-c         write(90,*) 'row,col,adc=',row,col,adc
-c         if(abort) then
-c         write(90,*) 'adc=',adc,' : aborting'
-c            write(errmsg,*) ':hcal_adc(',nh,') = ',adc
-c            call g_prepend(here,errmsg)
-c            return
-c         endif
-*
-*------Sparsify the raw data
-         nb =row+hmax_cal_rows*(col-1)
+        row=hcal_row(nh)
+        col=hcal_column(nh)
+        nb =row+hmax_cal_rows*(col-1)
+        adc_pos=hcal_adc_pos(nh)
+        adc_neg=hcal_adc_neg(nh)
 
-ccc         hcal_realadc_pos(nb) = 1.0
-ccc         hcal_realadc_neg(nb) = 1.0
-*     Need to do this right
-         hcal_realadc_pos(nb) = float(adc_pos) - hcal_pos_ped_mean(nb)
-         hcal_realadc_neg(nb) = float(adc_neg) - hcal_neg_ped_mean(nb)
-ccc Ask Vardan if there should be both a pos and neg call
-         if (hcal_realadc_pos(nb).le.200)
+        if (adc_pos.ge.0) then        ! =-1 if no ADC value was read.
+          hcal_realadc_pos(nb) = float(adc_pos) - hcal_pos_ped_mean(nb)
+          if (hcal_realadc_pos(nb).le.200)
      &        call hf1(hidcalsumadc,hcal_realadc_pos(nb),1.)
-         if (hcal_realadc_neg(nb).le.200)
+        endif
+
+        if (adc_neg.ge.0) then
+          hcal_realadc_neg(nb) = float(adc_neg) - hcal_neg_ped_mean(nb)
+          if (hcal_realadc_neg(nb).le.200)
      &        call hf1(hidcalsumadc,hcal_realadc_neg(nb),1.)
-* ??
-         if(hcal_realadc_pos(nb).gt.hcal_pos_threshold(nb) .or.
-     &        hcal_realadc_neg(nb).gt.hcal_neg_threshold(nb)) then
-            hcal_num_hits           =hcal_num_hits+1
-            hcal_rows(hcal_num_hits)=row
-            hcal_cols(hcal_num_hits)=col
-ccc            if(adc_pos.lt.0) then
-            if(hcal_realadc_pos(nb).lt.hcal_pos_threshold(nb)) then
-               hcal_adcs_pos(hcal_num_hits)= 0.0
-            else
-               hcal_adcs_pos(hcal_num_hits)=hcal_realadc_pos(nb)
-            endif
-ccc            if(adc_neg.lt.0) then
-            if(hcal_realadc_neg(nb).lt.hcal_neg_threshold(nb)) then
-               hcal_adcs_neg(hcal_num_hits)= 0.0
-            else
-               hcal_adcs_neg(hcal_num_hits)=hcal_realadc_neg(nb)
-            endif
-         endif
+        endif
+*
+*      Sparsify the raw data
+*
+        if(hcal_realadc_pos(nb).gt.hcal_pos_threshold(nb) .or.
+     &      hcal_realadc_neg(nb).gt.hcal_neg_threshold(nb)) then
+
+           hcal_num_hits=hcal_num_hits+1
+           hcal_rows(hcal_num_hits)=row
+           hcal_cols(hcal_num_hits)=col
+           if(hcal_realadc_pos(nb).lt.hcal_pos_threshold(nb)) then
+              hcal_adcs_pos(hcal_num_hits)=0.0
+           else
+              hcal_adcs_pos(hcal_num_hits)=hcal_realadc_pos(nb)
+           endif
+
+           if(hcal_realadc_neg(nb).lt.hcal_neg_threshold(nb)) then
+              hcal_adcs_neg(hcal_num_hits)=0.0
+           else
+              hcal_adcs_neg(hcal_num_hits)=hcal_realadc_neg(nb)
+           endif
+        endif
       enddo                      !End loop over raw hits
-*
+
       if(hdbg_sparsified_cal.gt.0) call h_prt_cal_sparsified
-*
+
       call h_fill_cal_hist(abort,errmsg)
-*
+
       return
       end
