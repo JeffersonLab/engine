@@ -16,7 +16,10 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
-* Revision 1.5  1994/08/18 04:29:59  cdaq
+* Revision 1.6  1994/10/11 19:11:33  cdaq
+* (SAW) Are the target traceback calculations right now???
+*
+* Revision 1.5  1994/08/18  04:29:59  cdaq
 * (SAW) Arrington's changes??
 *
 * Revision 1.4  1994/06/14  04:51:21  cdaq
@@ -137,6 +140,8 @@
      
 * Load output values.
 
+**ROLF         hxp_tar(itrk) = atan(sum(1))	!Slope (dX/dZ)
+**ROLF         hyp_tar(itrk) = atan(sum(3))   !Slope (dY/dZ)
          hx_tar(itrk) = sum(2)*100.     !cm.
          hxp_tar(itrk) = tan(asin(sum(1))) !Slope (dX/dZ)
          hy_tar(itrk) = 0.              ! ** No beam raster **
