@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.18  1996/09/04 14:29:35  saw
+# (SAW) Add new routines, OSD switches, and Linux compatibility fixes
+#
 # Revision 1.17  1996/04/29 18:30:05  saw
 # (SAW) New makefile style
 #
@@ -72,7 +75,9 @@ general_source = $(decode_source) g_clear_event.f \
 	g_examine_go_info.f g_kludgeup_kinematics.f \
 	g_analyze_beam_pedestal.f g_analyze_misc.f \
 	g_calc_beam_pedestal.f g_calc_bpm_pedestal.f g_calc_raster_pedestal.f \
-	g_target_initialize.f g_trans_misc.f g_dump_peds.f g_get_next_event.f
+	g_target_initialize.f g_trans_misc.f g_dump_peds.f g_get_next_event.f \
+	g_preproc_event.f g_preproc_open.f g_write_event.f \
+	g_examine_epics_event.f
 hms_source = h_clear_event.f h_initialize.f h_keep_results.f \
 	h_proper_shutdown.f h_reset_event.f \
 	h_register_variables.f
@@ -132,13 +137,18 @@ ifeq ($(ARCH),ULTRIX)
 	-L$(RPCLIBDIR) -lrpclib
 endif
 
+ifeq ($(ARCH),OSF1)
+  OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib
+  FLDFLAGS= -g -Wl,-taso
+endif
+
 ifeq ($(ARCH),IRIX)
   RPCLIBDIR = /usr/lib
   OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -L$(RPCLIBDIR) -lrpcsvc
 endif
 
 ifeq ($(ARCH),Linux)
-  CERN_ROOT = /usr/local/cernlib/95a
+  CERN_ROOT = /usr/local/cernlib/95b
   OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -lc -lm
   DEPLIBS := $(DEPLIBS) $(LIBROOT)/libf2c.a
 
@@ -166,28 +176,34 @@ $(LIBROOT)/libtracking.a:
 $(LIBROOT)/libctp.a:
 	@make -C $(Csoft)/SRC/CTP csoft
 
+ifeq ($(ARCH),OSF1)
+engine: $(DEPLIBS)
+	$(AR) x $(LIBROOT)/libengine.a engine.o
+	$(F77) $(FLDFLAGS) -o engine engine.o $(DEPLIBS) $(OTHERLIBS)
+	$(RM) engine.o
+else
 engine: $(DEPLIBS)
 	$(AR) x $(LIBROOT)/libengine.a engine.o
 	$(F77) $(FFLAGS) -o engine engine.o $(DEPLIBS) $(OTHERLIBS)
 	$(RM) engine.o
-
+endif
 #
 # Rule for making the register subroutines
 #
-r_%.f : %.cmn $(MAKEREG)
+../r_%.f : ../%.cmn $(MAKEREG)
 	(cd .. ; $(MAKEREG) $(<F) -o $(@F) -e /dev/null)
 
-.PRECIOUS: r_%.f
+.PRECIOUS: ../r_%.f
 
 ifdef NFSDIRECTORY
-%.f : $(NFSDIRECTORY)/ENGINE/%.f
+../%.f : $(NFSDIRECTORY)/ENGINE/%.f
 	ln -s $< $@
 
 # F2C doesn't know about READONLY
-g_decode_config.f : $(NFSDIRECTORY)/ENGINE/g_decode_config.f
+../g_decode_config.f : $(NFSDIRECTORY)/ENGINE/g_decode_config.f
 	sed -e "s/,READONLY//" $< > $@
 
-.PRECIOUS: %.f
+.PRECIOUS: ../%.f
 endif
 
 %.cmn :: ../../INCLUDE/%.cmn
