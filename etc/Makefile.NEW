@@ -32,7 +32,7 @@ endif
 #	DEC Alphastation 200 4/166 with DEC Unix V4.0B (Rev 564)
 ifeq ($(MYOS),OSF1)
   OSTYPE = $(MYOS)
-  SUBDIRNAME = O.osf1
+  SUBDIRNAME = O.OSF1
   OSEXT =
 endif
 
