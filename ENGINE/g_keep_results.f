@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard, HU
 *-    $Log$
-*-    Revision 1.3  1994/06/17 03:50:36  cdaq
-*-    (KBB) Upgrade error reporting
+*-    Revision 1.4  1994/07/21 19:51:14  cdaq
+*-    (SAW) Add call to thgethit
 *-
+* Revision 1.3  1994/06/17  03:50:36  cdaq
+* (KBB) Upgrade error reporting
+*
 * Revision 1.2  1994/04/15  20:35:29  cdaq
 * (KBB) Add calls to thtstexe and thhstexe
 *
@@ -45,16 +48,22 @@
 *
       err= ' '                                  !erase any old errors
 *
-      ierr= thtstexe()
+      ierr= thgethit()
       ABORT= ierr.NE.0
       IF(ABORT) THEN
-        call G_build_note(':failure#$ in thtstexe',
+         call G_build_note(':failure#$ in thgethit',
      &                                 '$',ierr,' ',0.,' ',err)
-      ELSE
-        ierr= thhstexe()
-        ABORT= ierr.NE.0
-        If(ABORT) call G_build_note(':failure#$ in thhstexe',
-     &                                 '$',ierr,' ',0.,' ',err)
+         ierr= thtstexe()
+         ABORT= ierr.NE.0
+         IF(ABORT) THEN
+            call G_build_note(':failure#$ in thtstexe',
+     &           '$',ierr,' ',0.,' ',err)
+         ELSE
+            ierr= thhstexe()
+            ABORT= ierr.NE.0
+            If(ABORT) call G_build_note(':failure#$ in thhstexe',
+     &           '$',ierr,' ',0.,' ',err)
+         ENDIF
       ENDIF
 *
 *-HMS 
