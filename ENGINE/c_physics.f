@@ -7,6 +7,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.10.2.4  2004/05/13 22:05:53  jones
+* add calculation of zpi and zka
+*
 * Revision 1.10.2.3  2004/03/05 18:46:24  jones
 * Modify pt2 equation to pt2= p_h*p_h*(1-(dot/(cqabs*p_h))**2)
 *
@@ -80,6 +83,7 @@
 *     xucc added begin
       real*4 mp,mp2,mn,mn2,md,md2,mpi0,mpi02,meta,meta2,mpi,mpi2
       real*4 deg_rad,amu,alpha,c_pi
+      real*4 mka,mka2
       parameter (mp   = 0.93827231)           ! all masses in GeV/c^2
       parameter (mp2  = mp*mp)
       parameter (mn   = 0.93956563)
@@ -88,6 +92,8 @@
       parameter (md2  = md*md)
       parameter (mpi0 = 0.1349764)
       parameter (mpi02  = mpi0*mpi0)
+      parameter (mka = 0.493677)
+      parameter (mka2 = mka*mka)
       parameter (meta = 0.54745)
       parameter (meta2  = meta*meta)
       parameter (deg_rad = 3.1415927/180.)
@@ -306,6 +312,8 @@ c        write(6,*)'c_phys: at 3'
       X_bj = c_bigq2/(2.0*mp*c_omega)
       qabs = sqrt(c_bigq2+c_omega*c_omega)
       z_m = hsenergy/c_omega 
+      zpi = sqrt(p_h*p_h + mpi2)/c_omega
+      zka = sqrt(p_h*p_h + mka2)/c_omega
 c      pt2 = cmissing_mom_perp*cmissing_mom_perp
 
       c_w2 = targmass**2 + 2*targmass*c_omega - c_bigq2
