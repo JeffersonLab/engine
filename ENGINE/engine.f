@@ -8,6 +8,31 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.32.4.1  2003/08/20 18:40:53  xu
+* *** empty log message ***
+*
+* Revision 1.32.2.6  2003/06/26 12:38:11  cdaq
+* add write statement when genable_sos_satcorr .ne. 0  (mkj)
+*
+* Revision 1.32.2.5  2003/04/21 23:45:58  cdaq
+* Modified so only one message about scaler kludge is printed. (MKJ)
+*
+* Revision 1.32.2.4  2003/04/14 18:02:06  jones
+* Modified so that engine will not analyze events until after first scaler read.
+*
+* Revision 1.32.2.3  2003/04/09 02:47:00  cdaq
+* Update readout code to ignore HV and EPICS events when searching for run_info event
+*
+* Revision 1.32.2.2  2003/04/03 01:02:44  cdaq
+* match main branch apr-02-2003
+*
+* Revision 1.32.2.1  2003/03/25 03:03:40  cdaq
+*  match main brach mar-24-2003
+*
+* Revision 1.33  2003/03/24 22:49:41  jones
+* Changes for HMS calo calibration. Include hms_calorimeter.cmn and add call
+* to h_cal_calib at end of run if hdbg_tracks_cal .lt. 0
+*
 * Revision 1.32  2003/02/21 14:51:13  jones
 * Added line to call s_fieldcorr subroutine
 *
@@ -134,6 +159,8 @@ c
       include 'gen_data_structures.cmn'
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
+      include 'hms_calorimeter.cmn' !for HMS calorimeter calibration
+      include 'sos_calorimeter.cmn' !for SOS calorimeter calibration
 
       logical problems, finished_extracting
       integer total_event_count
@@ -144,8 +171,11 @@ c
       integer sum_recorded
       integer num_events_skipped
       integer i,since_cnt,lastdump
+      integer mkj
       integer rpc_pend                  ! # Pending asynchronous RPC requests
-
+c
+      common /aevents/ analyzed_events
+c
       character*80 g_config_environmental_var
       parameter (g_config_environmental_var= 'ENGINE_CONFIG_FILE')
 
@@ -164,6 +194,8 @@ c
       integer time
       integer*4 preprocessor_keep_event
       external time
+c
+      integer*4 skipped_events_scal
 *
 *
 *--------------------------------------------------------
@@ -175,6 +207,7 @@ c
 
       total_event_count= 0                      ! Need to register this
       lastdump=0
+      skipped_events_scal = 0      
       do i=0,gen_max_trigger_types
         analyzed_events(i)=0
         recorded_events(i)=0
@@ -238,6 +271,7 @@ c
          If(ABORT) STOP
          err= ' '
       endif
+c
 *
 * if preprocessor on, open event file
 *
@@ -286,7 +320,7 @@ c
 * Check if this is a physics event or a CODA control event.
 *
         if(.not.problems) then
-          gen_event_type = jishft(craw(2),-16)
+           gen_event_type = jishft(craw(2),-16)
           if(gen_event_type.le.gen_MAX_trigger_types) then
             recorded_events(gen_event_type)=recorded_events(gen_event_type)+1
             if (gen_event_type.ne.0) sum_recorded=sum_recorded+1
@@ -327,16 +361,16 @@ c
             stheta_lab=abs(tsos)
             write(6,*) '   gtarg_num  =',abs(ntarg)
             gtarg_num=ntarg
+          else if (gen_event_type.eq.131 .or. gen_event_type.eq.132) then! EPICS event
+            call g_examine_epics_event
           else if (gen_event_type.eq.133) then  !SAW's new go_info events
              call g_examine_go_info(CRAW,ABORT,err)
+          else if (gen_event_type.eq.141 .or. gen_event_type.eq.142 .or.
+     &             gen_event_type.eq.144) then
+*             write(6,*) 'HV information event, event type=',gen_event_type
           else
             call g_examine_control_event(CRAW,ABORT,err)
           endif
-
-!          if (gen_event_type.eq.131.or.gen_event_type.eq.132.or.gen_event_type.eq.133) then !past run info event. must be missing
-!            write(6,*) "no run information event found"
-!            finished_extracting=.true.
-!          endif
 
 ! Go event is last 'nice tag' for point where we should have already seen
 ! run-info event.
@@ -379,7 +413,13 @@ c    parameter genable_hms_fieldcorr is switch to determine
 c    whether fix is applied.
 c
       call s_fieldcorr(ABORT,err)
-
+c
+      if (genable_sos_satcorr.ne.0) then
+         write(*,*) '*************'
+         write(*,*) ' SOS saturation correction enabled'
+         write(*,*) ' Delta modified for each event'
+         write(*,*) '*************'
+       endif
 c
       call G_apply_offsets(ABORT,err)  
 c
@@ -501,8 +541,13 @@ c
 
           if(jieor(jiand(CRAW(2),'FFFF'x),'10CC'x).eq.0) then ! Physics event
 	    if (gen_event_type.eq.0) then          !scaler event.
-              call g_analyze_scalers_by_banks(CRAW,ABORT,err)
               analyzed_events(gen_event_type)=analyzed_events(gen_event_type)+1
+               call g_analyze_scalers_by_banks(CRAW,ABORT,err)
+               if (analyzed_events(0) .le. 1 ) then
+                  write(*,*) '************'
+                  write(*,*) ' Will not analyze events until after first scaler read'
+                  write(*,*) '************'
+               endif
 *
 * if preprocessor is on write trig type 0 (scaler events)
 *
@@ -520,9 +565,19 @@ c
      &             physics_events," events"
  112            format (a,i8,a)
               endif
-
             else				!REAL physics event.
-
+c
+               if (analyzed_events(0) .le. 1 .and. gen_event_type .le. 3) then
+                  if (skipped_events_scal .eq. 0 ) then
+                  write(*,*) '************'
+                  write(*,*) ' Kludge, will not analyze SOS,HMS or coin events until after first scaler read'
+                  write(*,*) ' Analyzed events :',(analyzed_events(mkj),mkj=1,4)
+                  write(*,*) '************'
+                  endif
+                  skipped_events_scal = skipped_events_scal + 1
+                  goto 868      ! kludge mkj
+               endif
+c
               if(gen_event_type.le.gen_MAX_trigger_types .and.
      $           gen_run_enable(gen_event_type-1).ne.0) then
 
@@ -643,6 +698,11 @@ c
             mss = err
           EndIf
         endif
+c
+c kludge mkj to not analyze data until after first scaler read
+ 868    continue
+c
+c
 *
 *Now write the statistics report every 2 sec...
 *
@@ -677,6 +737,14 @@ c
 *- from another process for CTP to interpret
 *
       ENDDO                             !found a problem or end of run
+
+c...  Calibrate HMS and SOS calorimeters.
+
+      if(hdbg_tracks_cal.lt.0) call h_cal_calib(1)
+
+      if(sdbg_tracks_cal.lt.0) call s_cal_calib(1)
+
+c...
 
       print *,'    -------------------------------------'
 
