@@ -1,5 +1,8 @@
       SUBROUTINE GLVOLU (NLEV, LNAM, LNUM, IER)
 * $Log$
+* Revision 1.2  1996/09/04 19:46:28  saw
+* (SAW) Comment out debugging statement
+*
 * Revision 1.1  1996/01/17 16:30:34  cdaq
 * Initial revision
 *
@@ -108,7 +111,7 @@ C.    ------------------------------------------------------------------
 * *** Special case, first volume
 *
    20 IF (JVOLUM.EQ.0)    GO TO 920
-      print *,jvolum
+c      print *,jvolum
       IF (IQ(JVOLUM+1).EQ.LNAM(1)) THEN
          IVO = 1
       ELSE
