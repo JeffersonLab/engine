@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.6  1994/08/03 14:42:39  cdaq
+* Revision 1.7  1994/08/19 03:41:21  cdaq
+* (SAW) Remove a debugging statement that was left in (type *,fptime)
+*
+* Revision 1.6  1994/08/03  14:42:39  cdaq
 * (JRA) Remove outliers from start time calculation
 *
 * Revision 1.5  1994/08/02  20:34:00  cdaq
@@ -191,7 +194,7 @@
         do ihit = 1 , hscin_tot_hits
           if (htwo_good_times(ihit)) then
             fptime  = hscin_cor_time(ihit) - hscin_zpos(ihit)/29.989
-            type *,fptime
+***            type *,fptime
             if (abs(fptime-67.).le.10) then
               time_sum = time_sum + fptime
               time_num = time_num + 1
