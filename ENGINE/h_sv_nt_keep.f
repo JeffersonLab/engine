@@ -8,6 +8,9 @@
 *
 *     Created: 1-Nov-1994  
 * $Log$
+* Revision 1.3  1996/04/29 19:49:35  saw
+* (JRA) Add HCAL_ET
+*
 * Revision 1.2  1995/05/22 20:50:47  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -60,7 +63,8 @@
       h_sieve_Ntuple_contents(m)= HSXP_TAR
       m= m+1
       h_sieve_Ntuple_contents(m)= HSYP_TAR
-
+      m= m+1
+      h_sieve_Ntuple_contents(m)= HCAL_ET
 
 
 *

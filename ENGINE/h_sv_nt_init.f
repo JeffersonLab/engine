@@ -10,6 +10,9 @@
 *
 *     Created: 1-Nov-1994  
 * $Log$
+* Revision 1.4  1996/04/29 19:49:21  saw
+* (JRA) Add HCAL_ET
+*
 * Revision 1.3  1995/07/27 19:43:22  cdaq
 * (SAW) Relocate data statements for f2c compatibility
 *
@@ -147,6 +150,8 @@
       h_sieve_Ntuple_tag(m)= 'HSXP_TAR'
       m= m+1
       h_sieve_Ntuple_tag(m)= 'HSYP_TAR'
+      m= m+1
+      h_sieve_Ntuple_tag(m)= 'HCAL_ET'
     
 
 *
