@@ -7,6 +7,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.7.4.3  2003/08/26 17:23:04  xu
+* change hstheta into inplane
+*
 * Revision 1.7.4.2  2003/08/20 16:56:55  xu
 * t sign modification
 *
@@ -172,8 +175,11 @@ c      write(6,*)'c_phys: at 2'
          energy_h    = ssenergy
          xp_e_tar    = hsxp_tar + hphicentral_offset
          xp_h_tar    = ssxp_tar + sphicentral_offset
-         theta_e     = hstheta
-         theta_h     = -sstheta
+
+c         theta_e     = hstheta
+c         theta_h     = -sstheta
+         theta_e     = hsinplane 
+         theta_h     = -ssinplane 
          phi_e       = hsphi
          phi_h       = ssphi
          m_hadron    = spartmass
@@ -187,8 +193,10 @@ c      write(6,*)'c_phys: at 2'
          energy_h    = hsenergy
          xp_e_tar    = ssxp_tar + sphicentral_offset
          xp_h_tar    = hsxp_tar + hphicentral_offset
-         theta_e     = -sstheta
-         theta_h     = hstheta
+c         theta_e     = -sstheta
+c         theta_h     = hstheta
+         theta_e     =  -ssinplane       
+         theta_h     =   hsinplane
          phi_e       = ssphi
          phi_h       = hsphi
          m_hadron    = hpartmass
