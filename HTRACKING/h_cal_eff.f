@@ -15,6 +15,9 @@
 * h_cal_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
+* Revision 1.4  1996/08/30 19:52:12  saw
+* (JRA) Require more than one photoelectron
+*
 * Revision 1.3  1995/08/31 14:55:37  cdaq
 * (JRA) Fill dpos (pos. track - pos. hit) histograms
 *
@@ -50,7 +53,7 @@
 
 * find counters on track, and distance from center.
 
-      if (hschi2perdeg.le.hstat_cal_maxchisq)
+      if (hschi2perdeg.le.hstat_cal_maxchisq .and. hcer_npe_sum.ge.1.)
      &       hstat_cal_numevents=hstat_cal_numevents+1
 
       hit_pos(1)=hsx_fp + hsxp_fp*(hcal_1pr_zpos+0.5*hcal_1pr_thick)
@@ -84,7 +87,7 @@
 *   increment 'should have hit' counters
       do col=1,hmax_cal_columns
         if(abs(hit_dist(col)).le.hstat_cal_slop .and.    !hit in middle of blk.
-     &           hschi2perdeg.le.hstat_cal_maxchisq) then
+     &           hschi2perdeg.le.hstat_cal_maxchisq .and. hcer_npe_sum.ge.1.) then
           hstat_cal_trk(col,hit_row(col))=hstat_cal_trk(col,hit_row(col))+1
         endif
       enddo
@@ -104,7 +107,7 @@
 *  Record the hits if track is near center of block and the chisquared of the 
 *  track is good
         if(abs(hit_dist(col)).le.hstat_cal_slop .and. row.eq.hit_row(col)) then
-          if (hschi2perdeg.le.hstat_cal_maxchisq) then
+          if (hschi2perdeg.le.hstat_cal_maxchisq .and. hcer_npe_sum.ge.1.) then
             hstat_cal_hit(col,hit_row(col))=hstat_cal_hit(col,hit_row(col))+1
           endif     !was it a good track.
         endif     !if hit was on track.
