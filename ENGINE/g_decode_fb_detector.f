@@ -5,9 +5,12 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.5  1994/06/21 16:02:54  cdaq
-*-    (SAW) Ignore DCFF0000 headers from Arrington's CRL's
+*-    Revision 1.6  1994/06/22 20:07:37  cdaq
+*-    (SAW) Fix problems with filling of hodoscope type hit lists (multiple signal)
 *-
+* Revision 1.5  1994/06/21  16:02:54  cdaq
+* (SAW) Ignore DCFF0000 headers from Arrington's CRL's
+*
 * Revision 1.4  1994/06/18  02:48:04  cdaq
 * (SAW) Add code for miscleaneous data and uninstrumented channels
 *
@@ -37,7 +40,7 @@
       include 'gen_decode_common.cmn'
       include 'gen_detectorids.par'
 *
-      integer oslot,h
+      integer oslot,h,hshift
       integer subaddbit
 *
       oslot = -1                     !illegal old slot
@@ -87,12 +90,12 @@
                 counter = subadd
                 signal = evfrag(pointer)
               endif
-              h = hitcount
               if(signalcount .eq. 1) then ! single signal counter
 *     
 *     Starting at end of hit list, search back until a hit earlier in
 *     the sort order is found.
 *     
+                h = hitcount
                 do while(h .gt. 0 .and. (plane .lt. planelist(h)
      $               .or.(plane .eq. planelist(h).and. counter .lt.
      $               counterlist(h))))
@@ -114,25 +117,34 @@
 *     Starting at the end of the hist list, search back until a hit on
 *     the same counter or earlier in the sort order is found.
 *     
+                h = hitcount
                 do while(h .gt. 0 .and. (plane .lt. planelist(h)
      $               .or.(plane .eq. planelist(h).and. counter .lt.
      $               counterlist(h))))
-                  planelist(h+1) = planelist(h)
-                  counterlist(h+1) = counterlist(h)
-                  signal0(h+1) = signal0(h)
-                  signal1(h+1) = signal1(h)
-                  signal2(h+1) = signal2(h)
-                  signal3(h+1) = signal3(h)
                   h = h - 1
                 enddo
-                sigtyp = g_decode_sigtypmap(mappointer+subadd)
-                if(h.lt.1 .or. plane.ne.planelist(h)
-     $               .or. counter .ne. counterlist(h)) then
+*
+*     If plane/counter match is not found, then need to shift up the array
+*     to make room for the new hit.
+*                
+                if(h.le.0.or.plane.ne.planelist(h) ! Plane and counter
+     $               .or.counter.ne.counterlist(h)) then ! not found
                   h = h + 1
+                  do hshift=hitcount,h,-1 ! Shift up to make room
+                    planelist(hshift+1) = planelist(hshift)
+                    counterlist(hshift+1) = counterlist(hshift)
+                    signal0(hshift+1) = signal0(hshift)
+                    signal1(hshift+1) = signal1(hshift)
+                    signal2(hshift+1) = signal2(hshift)
+                    signal3(hshift+1) = signal3(hshift)
+                  enddo
                   planelist(h) = plane
                   counterlist(h) = counter
                   hitcount = hitcount + 1
                 endif
+*
+                sigtyp = g_decode_sigtypmap(mappointer+subadd)
+*
                 if(sigtyp.eq.0) then
                   signal0(h) = signal
                 else if (sigtyp.eq.1) then
@@ -144,6 +156,7 @@
                 endif
               endif
             else
+              type *,'Max exceeded, did=',did,', max=',maxhits
 *     
 *     Print/generate some kind of error that the hit array has been
 *     exceeded.
