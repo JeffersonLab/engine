@@ -15,7 +15,10 @@
 *-   Created 22-FEB-1994   John Arrington
 *
 * $Log$
-* Revision 1.3  1994/04/13 05:34:55  cdaq
+* Revision 1.4  1994/05/13 03:55:14  cdaq
+* (DFG) Remove s_prt_track_tests call
+*
+* Revision 1.3  1994/04/13  05:34:55  cdaq
 * (SAW) Fix typo
 *
 * Revision 1.2  1994/04/13  05:30:02  cdaq
@@ -190,10 +193,6 @@
                call s_prt_tof(trk)
             endif
 *     
-*     Dump SOS_TRACK_TESTS if sdebugprinttracktests is set
-            if( sdebugprinttracktests .ne. 0 ) then
-               call s_prt_track_tests
-            endif
 *     
          enddo                          !end of loop over tracks
 *     
