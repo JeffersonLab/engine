@@ -11,7 +11,10 @@
 *                                Add CTP flag to turn on histogramming
 *                                id's in hms_id_histid
 * $Log$
-* Revision 1.1  1994/04/13 20:08:03  cdaq
+* Revision 1.2  1995/02/02 13:13:46  cdaq
+* (JRA) Make hscin_all_adc_pos/neg floating
+*
+* Revision 1.1  1994/04/13  20:08:03  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -58,9 +61,9 @@
 * Fill ADC and TDC histograms
             if((counter .gt. 0) .and. (counter.le.hscin_num_counters(plane)))
      &           then
-              histval = FLOAT(HSCIN_ADC_POS(ihit))
+              histval = HSCIN_ADC_POS(ihit)
               call hf1(hidscinposadc(plane,counter),histval,1.)
-              histval = FLOAT(HSCIN_ADC_NEG(ihit))
+              histval = HSCIN_ADC_NEG(ihit)
               call hf1(hidscinnegadc(plane,counter),histval,1.)
               histval = FLOAT(HSCIN_TDC_POS(ihit))
               call hf1(hidscinpostdc(plane,counter),histval,1.)
