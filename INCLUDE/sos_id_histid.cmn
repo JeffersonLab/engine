@@ -11,7 +11,10 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
-* Revision 1.6  1995/08/11 16:31:11  cdaq
+* Revision 1.7  1995/09/01 13:02:48  cdaq
+* (JRA) Add dpos histid's
+*
+* Revision 1.6  1995/08/11  16:31:11  cdaq
 * (JRA) Add dpos (track pos - hit pos) histograms
 *
 * Revision 1.5  1995/07/28  14:27:26  cdaq
@@ -56,6 +59,7 @@
       integer*4 sidcalsumadc
       integer*4 sidscindpos(SNUM_SCIN_PLANES)
       integer*4 sidcaldpos
+      integer*4 siddcdposx,siddcdposy,siddcdposxp,siddcdposyp
 *
       common/sos_id_histid/
      &     sidscinrawtothits,
@@ -78,7 +82,9 @@
      &     sidsumnegtdc,
      &     sidcalsumadc,
      &     sidscindpos,
-     &     sidcaldpos
+     &     sidcaldpos,
+     &     siddcdposx,siddcdposy,siddcdposxp,siddcdposyp
+
 *
 *     CTPTYPE=parm
 *
