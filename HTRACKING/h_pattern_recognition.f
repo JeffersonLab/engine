@@ -14,7 +14,11 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
-* Revision 1.5  1994/08/22 19:54:11  cdaq
+* Revision 1.6  1994/08/31 19:39:43  cdaq
+* (DJM) Stuff drift time and distance into histogrammable and testable
+*       registered variables.
+*
+* Revision 1.5  1994/08/22  19:54:11  cdaq
 * (DJA) Correct sign errors in wire velocity correction
 *
 * Revision 1.4  1994/08/16  13:08:50  cdaq
@@ -162,6 +166,14 @@
             HDC_DRIFT_DIS(hit) = h_drift_dist_calc
      &           (plane,wire,HDC_DRIFT_TIME(hit))
 *     write(hluno,*)ihit,hit,HDC_DRIFT_TIME(hit),HDC_DRIFT_DIS(hit)
+
+* djm 8/25/94
+* Stuff drift time and distance into registered variables for histogramming and tests.
+* In the case of two separated hits per plane, the last one will be histogrammed.
+
+            hdc_sing_drifttime(plane) = HDC_DRIFT_TIME(hit)
+            hdc_sing_driftdis(plane) = HDC_DRIFT_DIS(hit)
+
           enddo
         enddo
       endif
