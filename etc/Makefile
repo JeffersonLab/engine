@@ -16,6 +16,9 @@
 #
 #  Revision History:
 #    $Log$
+#    Revision 1.5  2002/12/20 21:58:57  jones
+#    reduce output echoing
+#
 #    Revision 1.4  1999/11/04 20:37:27  saw
 #    Linux/G77 compatibility fixes
 #
@@ -82,11 +85,11 @@ COMPILE_RULE.c = $(CC) $(CFLAGS) -c $< -o $@
 
 ifdef NEWSTYLE
 %.d: ../%.c
-	echo remaking $@
+#	echo remaking $@
 	$(DEPENDS_RULE.c)
 
 %.d: ../%.cpp
-	echo remaking $@
+#	echo remaking $@
 	$(DEPENDS_RULE.c)
 
 #r_%.d:
@@ -104,11 +107,11 @@ ifdef NEWSTYLE
 
 else
 %.d: %.c
-	echo remaking $@
+#	echo remaking $@
 	$(DEPENDS_RULE.c)
 
 %.d: %.cpp
-	echo remaking $@
+#	echo remaking $@
 	$(DEPENDS_RULE.c)
 
 #%.d: %.f .os$(OSTYPE)
@@ -128,7 +131,7 @@ endif
 #	$(F77) -F $<
 
 (%.o): %.o
-	@echo Adding $*.o to $@
+#	@echo Adding $*.o to $@
 	$(AR) $(ARFLAGS) $@ $*.o
 ifdef RANLIB
 	$(RANLIB) $@
