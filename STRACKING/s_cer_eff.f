@@ -14,6 +14,9 @@
 * author: Chris Cothran
 * created: 5/25/95
 * $Log$
+* Revision 1.2  1995/10/09 20:14:50  cdaq
+* (JRA) Move calculation of hit position on mirror to s_physics
+*
 * Revision 1.1  1995/08/31 15:04:48  cdaq
 * Initial revision
 *
@@ -29,9 +32,9 @@
 *
       include 'sos_data_structures.cmn'
       include 'sos_cer_parms.cmn'
+      include 'sos_physics_sing.cmn'
 
       integer*4 nr
-      real*4    mirror_x,mirror_y
 *
 * test for a good electron
 *
@@ -42,20 +45,15 @@
      &  .and. ssbeta .lt. scer_beta_max
      &  .and. sstrack_et .gt. scer_et_min
      &  .and. sstrack_et .lt. scer_et_max) then
-*
-* find hit location "on" the mirror
-*
-        mirror_x = ssx_fp + scer_mirror_zpos*ssxp_fp
-        mirror_y = ssy_fp + scer_mirror_zpos*ssyp_fp
 
         do nr = 1, scer_num_regions
 *
 * hit must be inside the region in order to continue
 *
-          if (abs(scer_region(nr,1)-mirror_x).lt.scer_region(nr,5)
-     >  .and. abs(scer_region(nr,2)-mirror_y).lt.scer_region(nr,6)
-     >  .and. abs(scer_region(nr,3)-ssxp_fp) .lt.scer_region(nr,7)
-     >  .and. abs(scer_region(nr,4)-ssyp_fp) .lt.scer_region(nr,8))
+          if (abs(scer_region(nr,1)-ssx_cer).lt.scer_region(nr,5)
+     >  .and. abs(scer_region(nr,2)-ssy_cer).lt.scer_region(nr,6)
+     >  .and. abs(scer_region(nr,3)-ssxp_fp).lt.scer_region(nr,7)
+     >  .and. abs(scer_region(nr,4)-ssyp_fp).lt.scer_region(nr,8))
      >    then
 *
 * increment the 'should have fired' counters

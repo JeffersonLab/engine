@@ -14,6 +14,9 @@
 * author: Chris Cothran
 * created: 5/25/95
 * $Log$
+* Revision 1.2  1995/10/09 20:15:08  cdaq
+* (JRA) Move calculation of hit position on mirror to s_physics
+*
 * Revision 1.1  1995/08/31 14:54:09  cdaq
 * Initial revision
 *
@@ -29,9 +32,9 @@
 *
       include 'hms_data_structures.cmn'
       include 'hms_cer_parms.cmn'
+      include 'hms_physics_sing.cmn'
 
       integer*4 nr
-      real*4    mirror_x,mirror_y
 *
 * test for a good electron
 *
@@ -42,21 +45,15 @@
      &  .and. hsbeta .lt. hcer_beta_max
      &  .and. hstrack_et .gt. hcer_et_min
      &  .and. hstrack_et .lt. hcer_et_max) then
-*
-* find hit location "on" the mirror
-*
-        mirror_x = hsx_fp + hcer_mirror_zpos*hsxp_fp
-        mirror_y = hsy_fp + hcer_mirror_zpos*hsyp_fp
-
         do nr = 1, hcer_num_regions
 *
 * hit must be inside the region in order to continue
 *
-          if (abs(hcer_region(nr,1)-mirror_x).lt.hcer_region(nr,5)
-     >  .and. abs(hcer_region(nr,2)-mirror_y).lt.hcer_region(nr,6)
-     >  .and. abs(hcer_region(nr,3)-hsxp_fp) .lt.hcer_region(nr,7)
-     >  .and. abs(hcer_region(nr,4)-hsyp_fp) .lt.hcer_region(nr,8))
-     >    then
+          if (abs(hcer_region(nr,1)-hsx_cer).lt.hcer_region(nr,5)
+     >         .and. abs(hcer_region(nr,2)-hsy_cer).lt.hcer_region(nr,6)
+     >         .and. abs(hcer_region(nr,3)-hsxp_fp).lt.hcer_region(nr,7)
+     >         .and. abs(hcer_region(nr,4)-hsyp_fp).lt.hcer_region(nr,8))
+     >         then
 *
 * increment the 'should have fired' counters
 *
