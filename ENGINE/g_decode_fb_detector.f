@@ -5,9 +5,12 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.8  1994/06/27 02:14:18  cdaq
-*-    (SAW) Ignore all words that start with DC
+*-    Revision 1.9  1994/10/20 12:34:55  cdaq
+*-    (SAW) Only print out "Max exceeded, did=" meesage once
 *-
+* Revision 1.8  1994/06/27  02:14:18  cdaq
+* (SAW) Ignore all words that start with DC
+*
 * Revision 1.7  1994/06/22  20:21:24  cdaq
 * (SAW) Put -1 in hodoscope signals that don't get any data
 *
@@ -165,7 +168,7 @@
                   signal3(h) = signal
                 endif
               endif
-            else
+            else if(hitcount.eq.maxhits) then ! Only print this message once
               type *,'g_decode_fb_detector: Max exceeded, did=',
      $             did,', max=',maxhits
 *     
