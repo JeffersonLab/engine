@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.12  1998/12/01 21:19:55  saw
+# (SAW) Remove g_sort
+#
 # Revision 1.11  1996/09/05 20:44:53  saw
 # (SAW) Fixes for linux compatibility
 #
@@ -38,7 +41,7 @@ include $(Csoft)/etc/Makefile
 
 gsources = g_add_path.f g_build_note.f g_important_length.f g_int_sort.f \
 	g_log_message.f g_normalize.f g_prepend.f g_rep_err.f \
-	g_sort.f g_sph_xyz.f g_wrap_note.f g_xyz_sph.f g_shift_len.f \
+	g_sph_xyz.f g_wrap_note.f g_xyz_sph.f g_shift_len.f \
 	g_io_control.f g_append.f g_utc_date.f g_reg_c.f g_rep_where.f \
 	regparmstringarray.f g_sub_run_number.f
 
