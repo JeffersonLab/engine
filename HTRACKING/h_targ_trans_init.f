@@ -1,0 +1,123 @@
+      subroutine h_targ_trans_init(ABORT,err,istat)
+*______________________________________________________________________________
+*
+* Facility: CEBAF Hall-C software.
+*
+* Module:   h_targ_trans_init
+*
+* Version:  0.1 (In development)
+* $Log$
+* Revision 1.1  1994/05/13 03:51:55  cdaq
+* Initial revision
+*
+*
+* Abstract: Temporary routine to initialize HMS reconstruction coefficients
+*           from a datafile.
+*
+* Output arguments:
+*
+*   istat   (integer) Status flag. Value returned indicates the following:
+*            = 1      Normal return.
+*            = 2      Datafile could not be opened.
+*            = 4      Error reading datafile.
+*            = 6      Datafile overflowed the internal arrays.
+*
+* Author:   David H. Potterveld, Argonne National Lab, Nov. 1993
+* Modified: D. F. Geesaman   Add Abort, err arguments
+*                            Use G_IO_CONTROL to get LUN
+*______________________________________________________________________________
+
+      implicit none
+
+* Argument definitions.
+      logical ABORT
+      character*(*) err
+
+      integer         istat
+
+* Include files.
+
+      include 'hms_recon_elements.cmn'  !Recon coefficients.
+ 
+* Misc. variables.
+
+      integer*4       i,j,k,l,m,n,chan
+      logical*4       opened
+
+      character*132   line
+
+*============================= Executable Code ================================
+
+* Reset flag, and zero arrays.
+      err= ' '
+      ABORT = .FALSE.
+      h_recon_initted = 0
+      do j = 1,hmax_recon_elements
+         do i = 1,4
+            h_recon_coeff(i,j) = 0.
+            h_recon_expon(i,j) = 0.
+         enddo
+      enddo
+
+      istat = 1                         !Assume success.
+* Get an I/O unit to open datafiles.
+      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
+
+* Open and read in coefficients.
+
+      open (unit=chan,status='old',name='hms_recon_coeff.dat',err=92)
+
+* Read header comments.
+
+      line = '!'
+      do while (line(1:1).eq.'!')
+         read (chan,1001,err=94) line
+      enddo
+
+* Read in coefficients and exponents.
+
+      h_num_recon_terms = 0
+      do while (line(1:4).ne.' ---')
+         h_num_recon_terms = h_num_recon_terms + 1
+         if (h_num_recon_terms.gt.hmax_recon_elements) goto 96
+         read (line,1200,err=94) (h_recon_coeff(i,h_num_recon_terms),i=1,4)
+     $        ,(h_recon_expon(j,h_num_recon_terms),j=1,4)
+         read (chan,1001,err=94) line
+      enddo
+
+* Data read in OK.
+
+      h_recon_initted = 1
+      goto 100
+
+* File reading or data processing errors.
+
+ 92   istat = 2                         !Error opening file.
+* If file does not exist, report err and then continue for development
+      err = 'error opening file hms_recon_elements.dat'
+      call g_rep_err(ABORT,err)
+      goto 100
+
+ 94   istat = 4                         !Error reading or processing data.
+      ABORT=.true.
+      err = 'error processing file hms_recon_elements.dat'
+      goto 100
+
+ 96   istat = 6                         !Too much data in file for arrays.
+      ABORT=.true.
+      err = 'too much data in file hms_recon_elements.dat'
+      goto 100
+
+* Done with open file.
+
+ 100  close (unit=chan)
+*     free lun
+      call G_IO_control(chan,'FREE',ABORT,err) !"FINISH"="FREE"
+      return
+
+*============================ Format Statements ===============================
+
+ 1001 format(a)
+ 1200 format(1x,4g16.9,1x,4i1)
+
+      end
