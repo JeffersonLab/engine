@@ -5,7 +5,10 @@
 *
 *     d.f. geesaman         8 Sept 1993
 * $Log$
-* Revision 1.4  1995/05/22 19:46:01  cdaq
+* Revision 1.5  1995/07/20 19:06:05  cdaq
+* (SAW) Move data statements for f2c compatibility
+*
+* Revision 1.4  1995/05/22  19:46:01  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.3  1995/04/06  19:45:16  cdaq
@@ -43,17 +46,19 @@
       real*8 error(snum_fpray_param)
       real*8 initialray(snum_fpray_param)
       real*8 initialsteps(snum_fpray_param)
-      data initialray/0.D0,0.D0,.5D-2,.5D-2/     ! starting ray values
-      data initialsteps/1.D0,1.D0,.5E-2,.5D-2/
       real*8 zero
-      data zero/0.0D0/
       real*8 arglis(10)
       real*8 bnd1,bnd2                     ! unused MUNUIT output variables
       real*8 chi2
       real*8 fedm,errder                   ! unused MUNUIT output variables
       integer*4 npari,nparz,istat          ! unused MUNUIT output variables
       character*10 fitnames(4)
+
+      data initialray/0.D0,0.D0,.5D-2,.5D-2/     ! starting ray values
+      data initialsteps/1.D0,1.D0,.5E-2,.5D-2/
+      data zero/0.0D0/
       data fitnames/' x_t ',' y_t ','tan(xp)','tan(yp)'/
+
       save initialray,initialsteps,fitnames   ! starting ray, steps, names
 *
       ABORT= .FALSE.
