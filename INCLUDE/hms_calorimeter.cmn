@@ -2,7 +2,10 @@
 *      HMS calorimeter. Parameters from hms_positions.parm
 *
 * $Log$
-* Revision 1.2  1994/08/05 15:35:42  cdaq
+* Revision 1.3  1994/10/11 19:44:44  cdaq
+* (SAW) Add hcal_slop
+*
+* Revision 1.2  1994/08/05  15:35:42  cdaq
 * (SAW) Add makereg directive with required include files
 *       Add "CTPTYPE=event" directive for auto generation of CTP reg calls
 *
@@ -46,6 +49,7 @@
       real*4 hcal_4ta_left      ! Y position, column #4
       real*4 hcal_4ta_right     !
       real*4 hcal_4ta_top       ! X positions, column #4
+      REAL*4 HCAL_SLOP          !SLOP IN DISTANCE BETWEEN TRACK AND BLOCK
       common/hms_cal_parms/
      &       hcal_1pr_zpos,
      &       hcal_2ta_zpos,
@@ -70,7 +74,8 @@
      &       hcal_3ta_top(hmax_cal_rows),
      &       hcal_4ta_left,
      &       hcal_4ta_right,
-     &       hcal_4ta_top(hmax_cal_rows)
+     &       hcal_4ta_top(hmax_cal_rows),
+     &       hcal_slop
 *
 *      HMS calorimeter. Geometrical constants filled by h_init_cal
 *
