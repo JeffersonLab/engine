@@ -5,29 +5,31 @@
 *
 *      Created:     D.F.Geesaman         22 May 1994
 * $Log$
-* Revision 1.1  1994/06/07 02:03:11  cdaq
+* Revision 1.2  1994/08/05 21:18:39  cdaq
+* (SAW) Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
+*
+* Revision 1.1  1994/06/07  02:03:11  cdaq
 * Initial revision
 *
+*     CTPTYPE=parm
 *
-       integer*4 sbypass_trans_scin
-       integer*4 sbypass_trans_cal
-       integer*4 sbypass_trans_dc
-       integer*4 sbypass_track
-       integer*4 sbypass_targ_trans
-       integer*4 sbypass_tof
-       integer*4 sbypass_cal
-       integer*4 sbypass_cer
-       integer*4 sbypass_physics
+      integer*4 sbypass_trans_scin
+      integer*4 sbypass_trans_cal
+      integer*4 sbypass_trans_dc
+      integer*4 sbypass_track
+      integer*4 sbypass_targ_trans
+      integer*4 sbypass_tof
+      integer*4 sbypass_cal
+      integer*4 sbypass_cer
+      integer*4 sbypass_physics
 *
-       common/sos_bypass_switches/
-     &   sbypass_trans_scin,
-     &   sbypass_trans_cal,
-     &   sbypass_trans_dc,
-     &   sbypass_track,
-     &   sbypass_targ_trans,
-     &   sbypass_tof,
-     &   sbypass_cal,
-     &   sbypass_cer,
-     &   sbypass_physics
-
-
+      common/sos_bypass_switches/
+     &     sbypass_trans_scin,
+     &     sbypass_trans_cal,
+     &     sbypass_trans_dc,
+     &     sbypass_track,
+     &     sbypass_targ_trans,
+     &     sbypass_tof,
+     &     sbypass_cal,
+     &     sbypass_cer,
+     &     sbypass_physics
