@@ -11,6 +11,9 @@
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *
 * $Log$
+* Revision 1.6.2.1  2003/06/26 12:39:53  cdaq
+* changes for e01-001  (mkj)
+*
 * Revision 1.6  1996/09/04 15:17:33  saw
 * (JRA) Make SSNUM_FPTRACK.gt.0 instead of SNTRACKS_FP .gt. 0 the
 *       criteria for adding to ntuples
@@ -38,6 +41,7 @@
       SAVE
 *
       include 'sos_data_structures.cmn'
+      INCLUDE 'sos_calorimeter.cmn'
 *
       character*50 here
       parameter (here= 'S_keep_results')
@@ -52,7 +56,7 @@
       ABORT= .FALSE.
       err= ' '
 *
-      if(SSNUM_FPTRACK.gt.0) call s_ntuple_keep(ABORT,err)! check for good tracks.
+      if(SSNUM_FPTRACK.gt.0 .and. ssshtrk .gt. 0.5) call s_ntuple_keep(ABORT,err)! check for good tracks.
 * proceed only if tracks found is greater than zero.   
 *
 *

@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.7.2.2  2003/06/26 12:39:55  cdaq
+* changes for e01-001  (mkj)
+*
 * Revision 1.7.2.1  2003/04/04 12:54:42  cdaq
 * add beam parameters to ntuple
 *
@@ -52,6 +55,8 @@
       INCLUDE 'sos_scin_tof.cmn'
       include 'sos_track_histid.cmn'
       include 'sos_aero_parms.cmn'
+      include 'sos_scin_parms.cmn'
+      INCLUDE 'sos_calorimeter.cmn'
 *
       logical HEXIST    !CERNLIB function
 *
@@ -89,7 +94,7 @@
       m= m+1
       s_Ntuple_contents(m)= SSBETA	! BETA of chosen track
       m= m+1
-      s_Ntuple_contents(m)= SSTRACK_ET	! Total shower energy of chosen track
+      s_Ntuple_contents(m)= SSSHTRK	! Total shower energy / momentum
       m= m+1
       s_Ntuple_contents(m)= SSTRACK_PRESHOWER_E	! preshower of chosen track
       m= m+1
@@ -133,6 +138,24 @@ c
       s_Ntuple_contents(m)= gbpm_x(3)
       m= m+1
       s_Ntuple_contents(m)= gbpm_y(3)
+      m= m+1
+      s_Ntuple_contents(m)= smisc_dec_data(2,2)
+      m= m+1
+      s_Ntuple_contents(m)= smisc_dec_data(3,2) 
+      m= m+1
+      s_Ntuple_contents(m)= smisc_dec_data(4,2) 
+      m= m+1
+c      s_Ntuple_contents(m)= smisc_dec_data(7,1) 
+       s_Ntuple_contents(m)= scer_adc(1)
+      m= m+1
+c      s_Ntuple_contents(m)= smisc_dec_data(8,1) 
+       s_Ntuple_contents(m)= scer_adc(2)
+      m= m+1
+c      s_Ntuple_contents(m)= smisc_dec_data(5,2) 
+       s_Ntuple_contents(m)= scer_adc(3)
+      m= m+1
+c      s_Ntuple_contents(m)= smisc_dec_data(6,2) 
+       s_Ntuple_contents(m)= scer_adc(4)
 
 
 * Experiment dependent entries start here.

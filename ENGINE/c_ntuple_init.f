@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.9.2.1  2003/06/26 12:39:54  cdaq
+* changes for e01-001  (mkj)
+*
 * Revision 1.9  1999/02/23 16:40:37  csa
 * Variable changes
 *
@@ -224,7 +227,7 @@ c      m= m+1
       m=m+1
       c_Ntuple_tag(m)= 'Em'
       m=m+1
-      c_Ntuple_tag(m)= 'missmass'
+      c_Ntuple_tag(m)= 'mmass2'
       m=m+1
       c_Ntuple_tag(m)= 'Pm'
       m=m+1
@@ -237,6 +240,46 @@ c      m= m+1
       c_Ntuple_tag(m)= 'th_pq'
       m=m+1
       c_ntuple_tag(m)= 'phi_pq'
+      m=m+1
+      c_Ntuple_tag(m)= 'hpvec0'
+      m=m+1
+      c_ntuple_tag(m)= 'hpvecx'
+      m=m+1
+      c_Ntuple_tag(m)= 'hpvecy'
+      m=m+1
+      c_ntuple_tag(m)= 'hpvecz'
+      m=m+1
+      c_Ntuple_tag(m)= 'spvec0'
+      m=m+1
+      c_ntuple_tag(m)= 'spvecx'
+      m=m+1
+      c_Ntuple_tag(m)= 'spvecy'
+      m=m+1
+      c_ntuple_tag(m)= 'spvecz'
+      m=m+1
+      c_ntuple_tag(m)= 'W'
+      m=m+1
+      c_ntuple_tag(m)= 'Q2'
+      m=m+1
+      c_ntuple_tag(m)= 'cos_thetacm'
+      m=m+1
+      c_ntuple_tag(m)= 'phicm'
+      m=m+1
+      c_ntuple_tag(m)= 'ebeam'
+      m=m+1
+      c_ntuple_tag(m)= 'hsp'
+      m=m+1
+      c_ntuple_tag(m)= 'ssp'
+      m=m+1
+      c_ntuple_tag(m)= 'haeronpe'
+      m= m+1
+      c_Ntuple_tag(m)= 'tdcmu_yp'
+      m= m+1
+      c_Ntuple_tag(m)= 'tdcmu_ym'
+      m= m+1
+      c_Ntuple_tag(m)= 'adcmu_yp'
+      m= m+1
+      c_Ntuple_tag(m)= 'adcmu_ym'
 
 *      m=m+1
 *      c_Ntuple_tag(m)= 'HmsCorsi'

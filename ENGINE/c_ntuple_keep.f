@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.9.2.1  2003/06/26 12:39:54  cdaq
+* changes for e01-001  (mkj)
+*
 * Revision 1.9  1999/02/23 16:41:08  csa
 * Variable changes
 *
@@ -51,6 +54,7 @@
       INCLUDE 'gen_run_info.cmn'
       INCLUDE 'coin_data_structures.cmn'
       INCLUDE 'hms_data_structures.cmn'
+      INCLUDE 'sos_physics_sing.cmn'
       INCLUDE 'hms_physics_sing.cmn'
       INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'hms_scin_parms.cmn'
@@ -65,6 +69,7 @@
       INCLUDE 'sos_calorimeter.cmn'
       INCLUDE 'hms_scin_tof.cmn'
       INCLUDE 'sos_scin_tof.cmn'
+      INCLUDE 'hms_aero_parms.cmn'
 *
       logical HEXIST    !CERNLIB function
 *
@@ -177,6 +182,49 @@
       c_Ntuple_contents(m)= cthetapq
       m= m+1
       c_Ntuple_contents(m)= cphipq
+      m= m+1
+      c_Ntuple_contents(m)= hs_kpvec(1)
+      m= m+1
+      c_Ntuple_contents(m)= hs_kpvec(2)
+      m= m+1
+      c_Ntuple_contents(m)= hs_kpvec(3)
+      m= m+1
+      c_Ntuple_contents(m)= hs_kpvec(4)
+      m= m+1
+      c_Ntuple_contents(m)= ss_kpvec(1)
+      m= m+1
+      c_Ntuple_contents(m)= ss_kpvec(2)
+      m= m+1
+      c_Ntuple_contents(m)= ss_kpvec(3)
+      m= m+1
+      c_Ntuple_contents(m)= ss_kpvec(4)
+      m= m+1
+      c_Ntuple_contents(m)= c_invmass
+      m= m+1
+      c_Ntuple_contents(m)= c_bigq2
+      m= m+1
+      c_Ntuple_contents(m)= c_costhcm
+      m= m+1
+      c_Ntuple_contents(m)= c_phicm
+      m= m+1
+      c_Ntuple_contents(m)= gebeam
+      m= m+1
+      c_Ntuple_contents(m)= hsp
+      m= m+1
+      c_Ntuple_contents(m)= ssp
+      m= m+1
+      c_Ntuple_contents(m)= haero_npe_sum
+      m= m+1
+      c_Ntuple_contents(m)= smisc_dec_data(7,1) 
+      m= m+1
+      c_Ntuple_contents(m)= smisc_dec_data(8,1) 
+      m= m+1
+      c_Ntuple_contents(m)= smisc_dec_data(5,2) 
+      m= m+1
+      c_Ntuple_contents(m)= smisc_dec_data(6,2) 
+
+
+
 
 *      m= m+1
 *      c_Ntuple_contents(m)= P_HMS_CORR  ! Corrected hms singles

@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.7.2.2  2003/06/26 12:39:52  cdaq
+* changes for e01-001  (mkj)
+*
 * Revision 1.7.2.1  2003/04/04 12:54:42  cdaq
 * add beam parameters to ntuple
 *
@@ -199,6 +202,20 @@
       s_Ntuple_tag(m)= 'bpmc_x'
       m= m+1
       s_Ntuple_tag(m)= 'bpmc_y'
+      m= m+1
+      s_Ntuple_tag(m)= 'MPSclock'
+      m= m+1
+      s_Ntuple_tag(m)= 'hplus'
+      m= m+1
+      s_Ntuple_tag(m)= 'hminus'
+      m= m+1
+      s_Ntuple_tag(m)= 'sceradc1'
+      m= m+1
+      s_Ntuple_tag(m)= 'sceradc2'
+      m= m+1
+      s_Ntuple_tag(m)= 'sceradc3'
+      m= m+1
+      s_Ntuple_tag(m)= 'sceradc4'
 
 
 * Open ntuple.

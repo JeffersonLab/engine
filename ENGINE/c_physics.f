@@ -7,6 +7,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.7.2.1  2003/06/26 12:39:54  cdaq
+* changes for e01-001  (mkj)
+*
 * Revision 1.7  1996/09/04 15:31:12  saw
 * (JRA) Add phi_offset to calculation of q 3 vector
 *
@@ -91,6 +94,7 @@
          ekinrec = sqrt(cmissing_mom**2 + m_rec**2)-m_rec
         endif      
         cmissing_e= omega -(ssenergy - mass_nucleon) - ekinrec
+        cmissing_mass = cmissing_e*cmissing_e - cmissing_mom*cmissing_mom
         p_hms_corr = hsenergy - gebeam/(1+gebeam/0.938272*(1-cos(hstheta)))
         p_sos_corr = ssp -2.*mass_nucleon*gebeam*cos(sstheta)/
      >     (gebeam+mass_nucleon)/(1-(gebeam*cos(sstheta)/
@@ -118,16 +122,26 @@
          ekinrec = sqrt(cmissing_mom**2 + m_rec**2)-m_rec
         endif      
         cmissing_e= omega -(hsenergy - mass_nucleon) - ekinrec
+        cmissing_mass = cmissing_e*cmissing_e - cmissing_mom*cmissing_mom
         p_sos_corr = ssenergy - gebeam/(1+gebeam/0.938272*(1-cos(sstheta))) 
         p_hms_corr = hsp -2.*mass_nucleon*gebeam*cos(hstheta)/
      >       (gebeam+mass_nucleon)/(1-(gebeam*cos(hstheta)/
      >       (gebeam+mass_nucleon))**2)
+c
+        c_invmass = sinvmass
+        c_BIGQ2 = ssbigq2
+        call delta_physics(gebeam,hpartmass,ssp,ss_kpvec,hsenergy
+     >    ,hs_kpvec,sinvmass,ssbigq2,C_costhcm,C_phicm)
        endif
 
 * Coincidence timing.
+c      offset_ctime = - (hstime_at_fp-hstart_time_center)
+c     &               + (sstime_at_fp-sstart_time_center)
+c     &               - hspath_cor + sspath_cor + 10
+
       offset_ctime = - (hstime_at_fp-hstart_time_center)
      &               + (sstime_at_fp-sstart_time_center)
-     &               - hspath_cor + sspath_cor + 10
+     &               - hspath_cor + sspath_cor + 42
       ccointime_hms = (hmisc_dec_data(10,1)-2450)/9.46 + offset_ctime
       ccointime_sos = (smisc_dec_data(9,1)-1570)/9.68 - offset_ctime
 *      
