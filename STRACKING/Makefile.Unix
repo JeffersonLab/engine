@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.8  1995/01/27 20:49:07  cdaq
+# Revision 1.9  1995/03/08 20:34:23  cdaq
+# (SAW) Add new routines, add -f to include file copy statements
+#
+# Revision 1.8  1995/01/27  20:49:07  cdaq
 # (SAW) Remove RCS from include file rules
 #
 # Revision 1.7  1994/11/23  15:36:04  cdaq
@@ -35,7 +38,6 @@ osources = s_cal.f s_cer.f s_chamnum.f s_dpsifun.f s_drift_dist_calc.f \
 	s_tdc_time_per_channel.f s_tdc_zero.f s_tof.f s_track.f s_track_fit.f \
 	s_trans_cal.f s_trans_dc.f s_trans_scin.f s_wire_center_calc.f \
 	s_print_decoded_dc.f s_print_raw_dc.f
-# s_register_id_param.f
 newstuff = s_cal.f s_clusters_cal.f s_correct_cal.f s_fill_dc_dec_hist.f \
 	s_fill_dc_fp_hist.f s_init_cal.f s_init_scin.f s_prt_cal_clusters.f \
 	s_prt_cal_decoded.f s_prt_cal_raw.f s_prt_cal_sparsified.f \
@@ -45,7 +47,10 @@ newstuff = s_cal.f s_clusters_cal.f s_correct_cal.f s_fill_dc_dec_hist.f \
 	s_trans_cal.f s_trans_scin.f s_fill_scin_raw_hist.f
 newerstuff = s_fill_dc_target_hist.f s_targ_trans_init.f s_register_bypass.f \
 	s_register_statistics.f s_init_physics.f s_physics_stat.f \
-	s_strip_scin.f s_choose_single_hit.f s_solve_3by3.f
+	s_strip_scin.f s_choose_single_hit.f s_solve_3by3.f \
+	s_dump_tof.f s_select_best_track.f s_scin_eff.f s_scin_eff_shutdown.f \
+	s_cal_eff.f s_cal_eff_shutdown.f
+
 makeregstuff = r_sos_filenames.f r_sos_tracking.f r_sos_geometry.f \
 	 r_sos_track_histid.f r_sos_recon_elements.f r_sos_physics_sing.f \
 	r_sos_scin_parms.f r_sos_scin_tof.f r_sos_calorimeter.f \
@@ -80,12 +85,12 @@ r_%.f : %.cmn $(MAKEREG)
 # Get include files from INCLUDE directory
 #
 %.cmn :: ../INCLUDE/%.cmn
-	cp $< $@
+	cp -f $< $@
 
 %.dec :: ../INCLUDE/%.dec
-	cp $< $@
+	cp -f $< $@
 
 %.par :: ../INCLUDE/%.par
-	cp $< $@
+	cp -f $< $@
 
 include $(sources:.f=.d)
