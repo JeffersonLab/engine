@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard, Hampton U.
 *-   Modified 19-Nov-1993   Kevin B. Beard for new error standards
 *-      $Log$
+*-      Revision 1.10  1996/09/04 14:33:10  saw
+*-      (SAW) Don't use gmc_abort since gmc stuff not called
+*-
 *-      Revision 1.9  1996/01/22 15:14:48  saw
 *-      (JRA) Put BPM/Raster data into MISC data structures
 *-
@@ -77,7 +80,7 @@
 *
 **      call gmc_mc_clear(gmc_abort,gmc_err)
 *
-      ABORT= HMS_ABORT .or. SOS_ABORT .or. COIN_ABORT .or. gmc_abort
+      ABORT= HMS_ABORT .or. SOS_ABORT .or. COIN_ABORT !.or. gmc_abort
 *
       IF(ABORT) THEN
          err= COIN_err
