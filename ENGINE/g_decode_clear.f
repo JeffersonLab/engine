@@ -1,8 +1,6 @@
       subroutine g_decode_clear(ABORT, error)
 *
-*     Purpose and Methods:
-*
-*     Clear the decoding maps.
+*     Purpose and Methods: clear decoding arrays AT THE START OF EACH EVENT
 *
 *     Inputs:
 *
@@ -16,10 +14,13 @@
 *-
 *-     by Steve Wood
 *-      modified by Kevin Beard Dec.3,1993
-*-    $Log$
-*-    Revision 1.2  1994/06/18 02:46:58  cdaq
-*-    (SAW) Add code for miscleaneous data and uninstrumented channels
-*-
+* $Log$
+* Revision 1.3  1996/01/16 20:31:54  cdaq
+* (SAW) Start "roc" index at zero instead of one.
+*
+* Revision 1.2  1994/06/18 02:46:58  cdaq
+* (SAW) Add code for miscleaneous data and uninstrumented channels
+*
 * Revision 1.1  1994/02/04  21:49:17  cdaq
 * Initial revision
 *
@@ -35,11 +36,11 @@
 *
 *     Clear out slotpointer and subaddcount and mask arrays.
 *
-      do roc=0, G_DECODE_MAXROCS-1
+      do roc=0, G_DECODE_MAXROCS
          do slot=1, G_DECODE_MAXSLOTS
-            g_decode_slotpointer(roc+1,slot) = -1 ! Uninstrumented SLOT
-            g_decode_subaddcnt(roc+1,slot) = 16 ! Dflt for "uninstrmntd" slots
-            g_decode_slotmask(roc+1,slot) = 'FFF'x         ! Default mask
+            g_decode_slotpointer(roc,slot) = -1 ! Uninstrumented SLOT
+            g_decode_subaddcnt(roc,slot) = 16 ! Dflt for "uninstrmntd" slots
+            g_decode_slotmask(roc,slot) = 'FFF'x         ! Default mask
          enddo
       enddo
 *
