@@ -1,4 +1,4 @@
-        subroutine s_tof_init(abort,errmsg)
+        subroutine s_tof_init(abort,err)
 
 *-------------------------------------------------------------------
 * author: John Arrington
@@ -9,7 +9,10 @@
 *
 * modifications: 31 Mar 1994    DFG  Check for 0 hits
 * $Log$
-* Revision 1.1  1994/04/13 18:45:03  cdaq
+* Revision 1.2  1994/06/01 15:40:08  cdaq
+* (SAW) Change declaration of err to *(*)
+*
+* Revision 1.1  1994/04/13  18:45:03  cdaq
 * Initial revision
 *
 *-------------------------------------------------------------------
@@ -21,7 +24,7 @@
         include 'sos_scin_tof.cmn'
 
         logical abort
-        character*1024 errmsg
+        character*(*) err
         character*20 here
         parameter (here = 's_tof_init')
 
@@ -65,8 +68,8 @@
             sscin_width(ihit) = sscin_2y_size
           else
               abort = .true.
-              write(errmsg,*) 'Trying to init. sos hodoscope plane',plane
-              call g_prepend(here,errmsg)
+              write(err,*) 'Trying to init. sos hodoscope plane',plane
+              call g_prepend(here,err)
               return
           endif
 
