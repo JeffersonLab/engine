@@ -5,6 +5,9 @@
 *
 *     d.f. geesaman              17 feb 1994
 * $Log$
+* Revision 1.7  1996/04/30 12:35:14  saw
+* (JRA) Add drift time correction for disc card
+*
 * Revision 1.6  1995/10/10 13:01:04  cdaq
 * (JRA) Remove check for zero drift bin size
 *
@@ -63,7 +66,8 @@ c      endif
           if( ihi.gt.hdriftbins )fractinterp = 1.0
         endif
       endif
-      h_drift_dist_calc = 0.5*fractinterp
+      h_drift_dist_calc = 0.5*fractinterp -
+     $     hdc_card_delay(hdc_card_no(wire,plane))
 
       return
       end
