@@ -1,4 +1,4 @@
-       SUBROUTINE S_initialize(ABORT,err)
+      SUBROUTINE S_initialize(ABORT,err)
 *--------------------------------------------------------
 *-       Prototype C analysis routine
 *-
@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 *-    $Log$
-*-    Revision 1.8  1994/05/13 03:13:45  cdaq
-*-    (DFG) Add call to s_targ_trans_init
+*-    Revision 1.9  1994/06/14 04:03:48  cdaq
+*-    (DFG) Add call to s_init_physics
 *-
+* Revision 1.8  1994/05/13  03:13:45  cdaq
+* (DFG) Add call to s_targ_trans_init
+*
 * Revision 1.7  1994/04/13  18:15:23  cdaq
 * (DFG) Add scin and cal init
 *
@@ -77,7 +80,11 @@
          call g_rep_err(ABORT,err)
          call g_add_path(here,err)
       endif
-      ABORT = .FALSE.
+*     calculate physics singles constants
+      call s_init_physics(ABORT,err)
+      if(ABORT) then
+         call g_add_path(here,err)
+      endif       *
 *
       call s_ntuple_init(ABORT,err)
 *
