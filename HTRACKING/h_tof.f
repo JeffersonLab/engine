@@ -23,7 +23,11 @@
 * the correction parameters.
 *
 * $Log$
-* Revision 1.11  1995/01/31 21:49:32  cdaq
+* Revision 1.12  1995/02/02 16:35:25  cdaq
+* (JRA) Zero out some variables at start, minph variables now per pmt,
+*       hscin_adc_pos/neg change to floats.
+*
+* Revision 1.11  1995/01/31  21:49:32  cdaq
 * (JRA) Added count of pmt's firing and cosmetic changes.
 *
 * Revision 1.10  1995/01/30  22:09:24  cdaq
@@ -88,9 +92,19 @@
 *
       ABORT= .FALSE.
       errmsg = ' '
+
+      if(hntracks_fp.le.0 .or. hscin_tot_hits.le.0) then
+        do trk = 1 , hntracks_fp
+          hnum_scin_hit(trk) = 0
+          hnum_pmt_hit(trk) = 0
+          hbeta(trk) = 0
+          hbeta_chisq(trk) = -2
+          htime_at_fp(trk) = 0
+        enddo
+        goto 666
+      endif
+ 
 **MAIN LOOP:  Loop over all tracks and get corrected time, tof, beta...
-      if(hntracks_fp.le.0 .or. hscin_tot_hits.le.0) goto 666
-        
       do trk = 1 , hntracks_fp
 
 ** Initialize counter,flags...
@@ -148,7 +162,7 @@
 **    Calculate time for each tube with a good tdc. 'pos' side first.
               hgood_tdc_pos(hit) = .true.
               hntof = hntof + 1
-              adc_ph = float(hscin_adc_pos(hit))
+              adc_ph = hscin_adc_pos(hit)
               path = hscin_pos_coord(hit) - hscin_long_coord(hit)
 
 *     Convert TDC value to time, do pulse height correction, correction for
@@ -156,7 +170,7 @@
               time = hscin_tdc_pos(hit) * hscin_tdc_to_time
               time = time -
      1             hscin_pos_phc_coeff(hit) *
-     $             sqrt(max(0.,(adc_ph/hscin_minph-1.)))
+     $             sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
               time = time - path/hscin_vel_light(hit)
               hscin_pos_time(hit) = time
      $             - hscin_pos_time_offset(hit)
@@ -173,7 +187,7 @@
               time = hscin_tdc_neg(hit) * hscin_tdc_to_time
               time = time - 
      1             hscin_neg_phc_coeff(hit) *
-     $             sqrt(max(0.,(adc_ph/hscin_minph-1.)))
+     $             sqrt(max(0.,(adc_ph/hscin_neg_minph(hit)-1.)))
               time = time - path/hscin_vel_light(hit)
               hscin_neg_time(hit) = time
      $             - hscin_neg_time_offset(hit)
@@ -223,17 +237,15 @@ c     Get time at focal plane
               if (hgood_tdc_pos(hit)) then
                 if (hgood_tdc_neg(hit)) then
                   hdedx(trk,hnum_scin_hit(trk)) = sqrt(max(0.,
-     $                 float(hscin_adc_pos(hit)*hscin_adc_neg(hit))))
+     $                 hscin_adc_pos(hit)*hscin_adc_neg(hit)))
                 else
-                  hdedx(trk,hnum_scin_hit(trk))=max(0.
-     $                 ,float(hscin_adc_pos(hit)))
+                  hdedx(trk,hnum_scin_hit(trk))=max(0.,hscin_adc_pos(hit))
                 endif
               else
                 if (hgood_tdc_neg(hit)) then
-                  hdedx(trk,hnum_scin_hit(trk))=max(0.
-     $                 ,float(hscin_adc_neg(hit)))
+                  hdedx(trk,hnum_scin_hit(trk))=max(0.,hscin_adc_neg(hit))
                 else
-                  hdedx(trk,hnum_scin_hit(trk)) = 0
+                  hdedx(trk,hnum_scin_hit(trk)) = 0.
                 endif
               endif
             endif
@@ -248,17 +260,17 @@ c     Get time at focal plane
         enddo                           !end of loop over hit scintillators
 
 
-**    Fit beta if there are enough time measurements (one upper, one lower)
-***   if ((hgood_plane_time(1) .or. hgood_plane_time(2)) .and.
-***   1           (hgood_plane_time(3) .or. hgood_plane_time(4))) then
+c**    For now, require at least 3 planes, to avoid bad fits.
+c        numplanes=0
+c        if (hgood_plane_time(1)) numplanes=numplanes+1
+c        if (hgood_plane_time(2)) numplanes=numplanes+1
+c        if (hgood_plane_time(3)) numplanes=numplanes+1
+c        if (hgood_plane_time(4)) numplanes=numplanes+1
+c        if (numplanes.ge.3) then
 
-**    For now, require at least 3 planes, to avoid bad fits.
-        numplanes=0
-        if (hgood_plane_time(1)) numplanes=numplanes+1
-        if (hgood_plane_time(2)) numplanes=numplanes+1
-        if (hgood_plane_time(3)) numplanes=numplanes+1
-        if (hgood_plane_time(4)) numplanes=numplanes+1
-        if (numplanes.ge.3) then
+**    Fit beta if there are enough time measurements (one upper, one lower)
+        if ((hgood_plane_time(1) .or. hgood_plane_time(2)) .and.
+     1       (hgood_plane_time(3) .or. hgood_plane_time(4))) then
           call h_tof_fit(abort,errmsg,trk) !fit velocity of particle
           if (abort) then
             call g_prepend(here,errmsg)
