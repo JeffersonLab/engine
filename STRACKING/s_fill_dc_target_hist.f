@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman
 *     Date:     3 May 1994
 * $Log$
+* Revision 1.4  2002/07/31 20:20:58  saw
+* Only try to fill user hists that are defined
+*
 * Revision 1.3  1995/05/22 19:45:38  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -40,13 +43,20 @@
       if(SNTRACKS_FP .gt. 0 ) then
 * Loop over all hits
         do itrk=1,SNTRACKS_FP
-          call hf1(sidsx_tar,SX_TAR(itrk),1.)
-          call hf1(sidsy_tar,SY_TAR(itrk),1.)
-          call hf1(sidsz_tar,SZ_TAR(itrk),1.)
-          call hf1(sidsxp_tar,SXP_TAR(itrk),1.)
-          call hf1(sidsyp_tar,SYP_TAR(itrk),1.)
-          call hf1(sidsdelta_tar,SDELTA_TAR(itrk),1.)
-          call hf1(sidsp_tar,SP_TAR(itrk),1.)
+          if (sidsx_tar.gt.0)
+     $         call hf1(sidsx_tar,SX_TAR(itrk),1.)
+          if (sidsy_tar.gt.0)
+     $         call hf1(sidsy_tar,SY_TAR(itrk),1.)
+          if (sidsz_tar.gt.0)
+     $         call hf1(sidsz_tar,SZ_TAR(itrk),1.)
+          if (sidsxp_tar.gt.0)
+     $         call hf1(sidsxp_tar,SXP_TAR(itrk),1.)
+          if (sidsyp_tar.gt.0)
+     $         call hf1(sidsyp_tar,SYP_TAR(itrk),1.)
+          if (sidsdelta_tar.gt.0)
+     $         call hf1(sidsdelta_tar,SDELTA_TAR(itrk),1.)
+          if (sidsp_tar.gt.0)
+     $         call hf1(sidsp_tar,SP_TAR(itrk),1.)
 *     
 * 
         enddo                           ! end loop over hits

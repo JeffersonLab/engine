@@ -8,6 +8,9 @@
 *                                 Put id's in sos_tracking_histid
 *                                 implement flag to turn block off
 * $Log$
+* Revision 1.6  2002/07/31 20:20:58  saw
+* Only try to fill user hists that are defined
+*
 * Revision 1.5  1996/04/30 17:12:04  saw
 * (JRA) Comment out SDC_DRIFT_DIS and SDC_DRIFT_TIME histograms
 *
@@ -55,7 +58,8 @@
             histval=SDC_WIRE_NUM(ihit)
 * Is plane number valid
             if( (plane .gt. 0) .and. (plane.le. sdc_num_planes)) then
-              call hf1(siddcwiremap(plane),histval,1.)
+              if(siddcwiremap(plane).gt.0)
+     $             call hf1(siddcwiremap(plane),histval,1.)
 c              call hf1(siddcwirecent(plane),SDC_WIRE_CENTER(ihit),1.)
 c              call hf1(siddcdriftdis(plane),SDC_DRIFT_DIS(ihit),1.)
 c              call hf1(siddcdrifttime(plane),SDC_DRIFT_TIME(ihit),1.)

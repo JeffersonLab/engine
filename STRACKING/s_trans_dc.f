@@ -13,6 +13,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.13  2002/07/31 20:20:58  saw
+* Only try to fill user hists that are defined
+*
 * Revision 1.12  1996/09/04 20:18:35  saw
 * (??) Cosmetic
 *
@@ -96,7 +99,7 @@
 *     check valid plane and wire number
           if(pln.gt.0 .and. pln.le. sdc_num_planes) then
             histval=float(sdc_raw_tdc(ihit))
-            call hf1(sidrawtdc,histval,1.)
+            if(sidrawtdc.gt.0) call hf1(sidrawtdc,histval,1.)
 *     test if tdc value less than lower limit for good hits
             if(sdc_raw_tdc(ihit) .lt. sdc_tdc_min_win(pln))  then
               swire_early_mult(wire,pln)

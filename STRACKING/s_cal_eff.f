@@ -15,6 +15,9 @@
 * s_cal_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
+* Revision 1.7  2002/07/31 20:20:57  saw
+* Only try to fill user hists that are defined
+*
 * Revision 1.6  1999/01/29 17:34:56  saw
 * Add variables for second tubes on shower counter
 *
@@ -109,7 +112,8 @@
 * fill the dpos histograms.
         if (col .eq. 1) then
           histval=(scal_block_xc(1)+scal_block_xsize*(row-1))-hit_pos(1)
-          call hf1(sidcaldpos,histval,1.)
+          if (sidcaldpos.gt.0)
+     $         call hf1(sidcaldpos,histval,1.)
         endif
 
 *  Record the hits if track is near center of block and the chisquared of the 

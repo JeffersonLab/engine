@@ -23,6 +23,9 @@
 * (which contains G. Warren's cleanups).
 *
 * $Log$
+* Revision 1.18  2002/07/31 20:20:58  saw
+* Only try to fill user hists that are defined
+*
 * Revision 1.17  1999/02/10 17:46:15  csa
 * Cleanup and bugfixes (mostly G. Warren)
 *
@@ -169,11 +172,13 @@
       ssxp_sp2     = sxp_sp2(itrkfp)
 
       do ihit=1,snum_scin_hit(itrkfp)
-        call hf1(sidscintimes,sscin_fptime(itrkfp,ihit),1.)
+        if (sidscintimes.gt.0)
+     $       call hf1(sidscintimes,sscin_fptime(itrkfp,ihit),1.)
       enddo
 
       do ihit=1,sntrack_hits(itrkfp,1)
-        call hf1(sidcuttdc,
+        if (sidcuttdc.gt.0)
+     $       call hf1(sidcuttdc,
      &       float(sdc_tdc(sntrack_hits(itrkfp,ihit+1))),1.)
       enddo
 

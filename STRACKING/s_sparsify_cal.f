@@ -13,6 +13,9 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to s_raw_dump_all
 * $Log$
+* Revision 1.13  2002/07/31 20:20:58  saw
+* Only try to fill user hists that are defined
+*
 * Revision 1.12  1999/06/10 16:57:38  csa
 * (JRA) Removed adc_max, added adc sign test, structural and cosmetic changes
 *
@@ -94,13 +97,13 @@
 
         if (adc_pos.ge.0) then        ! =-1 if no ADC value was read.
           scal_realadc_pos(nb) = float(adc_pos) - scal_pos_ped_mean(nb)
-          if (scal_realadc_pos(nb).le.200)
+          if (scal_realadc_pos(nb).le.200.and.sidcalsumadc.gt.0)
      &        call hf1(sidcalsumadc,scal_realadc_pos(nb),1.)
 	endif
 
         if (adc_neg.ge.0) then        ! =-1 if no ADC value was read.
           scal_realadc_neg(nb) = float(adc_neg) - scal_neg_ped_mean(nb)
-          if (scal_realadc_neg(nb).le.200)
+          if (scal_realadc_neg(nb).le.200.and.sidcalsumadc.gt.0)
      &        call hf1(sidcalsumadc,scal_realadc_neg(nb),1.)
 	endif
 *
