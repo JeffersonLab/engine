@@ -5,13 +5,17 @@
 *     use symbolic names instead of numbers.
 *
 *     $Log$
-*     Revision 1.1  1994/02/07 19:37:01  cdaq
-*     Initial revision
+*     Revision 1.2  1994/04/11 15:11:25  cdaq
+*     (SAW) Add uninstrumented channel "detector" id
+*
+* Revision 1.1  1994/02/07  19:37:01  cdaq
+* Initial revision
 *
 *
-      integer MAXID, HDC_ID, HSCIN_ID, HCAL_ID, HCER_ID, SDC_ID, 
-     &                                     SSCIN_ID, SCAL_ID, SCER_ID
+      integer MAXID, UNINST, HDC_ID, HSCIN_ID, HCER_ID, HCAL_ID, SDC_ID,
+     $     SSCIN_ID, SCER_ID, SCAL_ID
       parameter (MAXID=15)
+      parameter (UNINST=0)              ! Uninstrumented channels
       parameter (HDC_ID=1)
       parameter (HSCIN_ID=2)
       parameter (HCER_ID=3)
