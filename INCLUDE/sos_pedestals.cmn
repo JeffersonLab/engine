@@ -2,7 +2,11 @@
 *                      of pedestal events at the beginning of each run.
 *
 * $Log$
-* Revision 1.1  1995/04/06 20:18:01  cdaq
+* Revision 1.2  1995/05/22 19:09:30  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
+* Fix conflicting common block names.  Add Cerenkov and Aerogel pedestals
+*
+* Revision 1.1  1995/04/06  20:18:01  cdaq
 * Initial revision
 *
 *
@@ -11,7 +15,7 @@
 *     directive to makereg to tell it to include the code in the program
 *     that it generates.
 *
-*%%   include 'gen_data_structures.cmn'
+*%%   include 'sos_data_structures.cmn'
 *
 *     CTPTYPE=event
 *
@@ -41,7 +45,7 @@
 * CALORIMETER PEDESTALS
 * replace scal_ped_mean with float(scal_ped_sum/scal_ped_num),
 *         scal_ped_rms  with (appropriate formula),
-*    and  scal_ped_threshold with (something like) min(10.,3.*scal_ped_rms)
+*    and  scal_threshold with (something like) min(10.,3.*scal_ped_rms)
 * if scal_num > scal_min_peds.
 *
       integer*4 scal_ped_sum2(smax_cal_blocks)
@@ -49,9 +53,68 @@
       integer*4 scal_ped_num(smax_cal_blocks)
       integer*4 scal_min_peds
 *
-      common/sos_cal_pedestals/
+      common/sos_cal_ped_stats/
      &   scal_ped_sum2,       !sum of squares
      &   scal_ped_sum,        !sum of peds
      &   scal_ped_num,        !number of peds
      &   scal_min_peds        !# of peds required to override default pedestals
+*
+* GAS CERENKOV PEDESTALS
+* replace scer_ped_mean with float(scer_ped_sum/scer_ped_num),
+*         scer_ped_rms  with (appropriate formula),
+*    and  scer_threshold with (something like) min(10.,3.*scer_ped_rms)
+*         scer_ped_rms  with (appropriate formula),if scer_num > scer_min_peds.
+      integer*4 scer_ped_sum2(smax_cer_hits)
+      integer*4 scer_ped_sum(smax_cer_hits)
+      integer*4 scer_ped_num(smax_cer_hits)
+      integer*4 scer_min_peds
+      real*4 scer_ped_mean(smax_cer_hits)
+      real*4 scer_ped_rms(smax_cer_hits)
+      real*4 scer_threshold(smax_cer_hits)
+*
+      common/sos_cer_pedestals/
+     &   scer_ped_sum2,       !sum of squares
+     &   scer_ped_sum,        !sum of peds
+     &   scer_ped_num,        !number of peds
+     &   scer_min_peds,       !# of peds required to override default pedestals
+     &   scer_ped_mean,
+     &   scer_ped_rms,                  ! calculated pedestal value
+     &   scer_threshold                 ! calculated pedestal width
+*
+*
+* AEROGEL CERENKOV PEDESTALS
+* replace saer_ped_mean with float(saer_ped_sum/saer_ped_num),
+*         saer_ped_rms  with (appropriate formula),
+*    and  saer_threshold with (something like) min(10.,3.*saer_ped_rms)
+*         saer_ped_rms  with (appropriate formula),if saer_num > saer_min_peds.
+*
+      integer*4 saer_pos_ped_sum2(smax_aer_hits)
+      integer*4 saer_neg_ped_sum2(smax_aer_hits)
+      integer*4 saer_pos_ped_sum(smax_aer_hits)
+      integer*4 saer_neg_ped_sum(smax_aer_hits)
+      integer*4 saer_pos_ped_num(smax_aer_hits)
+      integer*4 saer_neg_ped_num(smax_aer_hits)
+      integer*4 saer_min_peds
+      real*4 saer_pos_ped_mean(smax_aer_hits)
+      real*4 saer_neg_ped_mean(smax_aer_hits)
+      real*4 saer_pos_ped_rms(smax_aer_hits)
+      real*4 saer_neg_ped_rms(smax_aer_hits)
+      real*4 saer_pos_threshold(smax_aer_hits)
+      real*4 saer_neg_threshold(smax_aer_hits)
+*
+      common/sos_aero_pedestals/
+     &   saer_pos_ped_sum2,       !sum of squares
+     &   saer_neg_ped_sum2,       !sum of squares
+     &   saer_pos_ped_sum,        !sum of peds
+     &   saer_neg_ped_sum,        !sum of peds
+     &   saer_pos_ped_num,        !number of peds
+     &   saer_neg_ped_num,        !number of peds
+     &   saer_min_peds,           !# of peds required to override default pedestals
+     &   saer_pos_ped_mean,       !calculated pedestal value
+     &   saer_neg_ped_mean,
+     &   saer_pos_ped_rms,        !calculated pedestal width
+     &   saer_neg_ped_rms,
+     &   saer_pos_threshold,
+     &   saer_neg_threshold
+
 
