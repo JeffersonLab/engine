@@ -1,6 +1,10 @@
        SUBROUTINE H_AERO(ABORT,err)
 *-
 * $Log$
+* Revision 1.1.2.4  2003/07/18 18:22:49  cdaq
+* Fix bug that haero_adc_neg was compared to  instead
+* of haero_new_threshold_neg (Vardan)
+*
 * Revision 1.1.2.3  2003/04/15 21:47:35  cdaq
 * Changed ind to ihit for better readability
 * add checks on haero_npe_sum  (MKJ)
@@ -38,6 +42,11 @@
 *
 *--------------------------------------------------------
 *
+
+D      print*,'h_aero: haero_pos_gain =',haero_pos_gain
+D      print*,'h_aero: haero_neg_gain =',haero_neg_gain
+D      pause
+
       ABORT= .FALSE.
       err= ' '
 
@@ -45,9 +54,9 @@
       haero_pos_npe_sum = 0.0
       haero_npe_sum = 0.0
 
-      aero_pos = 0.0
-      aero_neg = 0.0
-      aero_tot = 0.0
+***      aero_pos = 0.0            !not in use any more
+***      aero_neg = 0.0            !not in use any more
+***      aero_tot = 0.0            !not in use any more
 
       haero_tot_good_hits = 0
       haero_adc_pos_hits = 0
@@ -84,7 +93,8 @@
            endif
         endif
         
-        if (haero_adc_neg(ihit).gt.haero_new_threshold_pos(npmt)) then
+***BUG        if (haero_adc_neg(ihit).gt.haero_new_threshold_pos(npmt)) then
+        if (haero_adc_neg(ihit).gt.haero_new_threshold_neg(npmt)) then
            if (haero_adc_neg(ihit).lt.8000.) then
               haero_neg_npe(npmt) = haero_neg_gain(npmt) * 
      &             (haero_adc_neg(ihit)-haero_neg_ped_mean(npmt))
@@ -154,6 +164,3 @@
 
       return
       end
-
-
-
