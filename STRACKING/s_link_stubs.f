@@ -10,6 +10,9 @@
 *
 *     d.f. geesaman           7-September 1993
 * $Log$
+* Revision 1.7  1996/09/05 19:55:23  saw
+* (DVW) Added some track tests
+*
 * Revision 1.6  1996/01/17 19:01:38  cdaq
 * (JRA)
 *
@@ -46,6 +49,9 @@
       include 'sos_id_histid.cmn'
       include 'sos_geometry.cmn'
       INCLUDE 'sos_track_histid.cmn'    ! TEMP. JUNK
+*Derek added these next lines
+      include 'sos_bypass_switches.cmn'
+      INCLUDE 'gen_event_info.cmn'
       external s_chamnum
       integer*4 s_chamnum
       
@@ -68,6 +74,12 @@
       integer*4  newtrack            ! make a new track
       real*4 dposx,dposy,dposxp,dposyp
       real*4 y1,y2
+*Derek added these next lines
+      if (sbypass_track_eff_files.eq.0) then
+       open(unit=16,file='scalers/strackstubs.txt',status='unknown',
+     $      access='append')
+      endif
+      sstubtest = 0
 *
       ABORT= .FALSE.
       err=' '
@@ -106,12 +118,40 @@
             dposy=y2-y1
             dposxp= sbeststub(isp2,3)-sbeststub(isp1,3)
             dposyp= sbeststub(isp2,4)-sbeststub(isp1,4)
+******************************************************
+* Derek added this for track tests...
+            if (abs(dposx).LT.abs(sstubminx)) sstubminx = dposx
+            if (abs(dposy).LT.abs(sstubminy)) sstubminy = dposy
+            if (abs(dposxp).LT.abs(sstubminxp)) sstubminxp = dposxp
+            if (abs(dposyp).LT.abs(sstubminyp)) sstubminyp = dposyp
+            if (sbypass_track_eff_files.eq.0) then
+             if (abs(sstubminx) .gt. sxt_track_criterion) then
+              write(16,*) 'event # ',gen_event_ID_number,
+     $             ' sstubminx = ',sstubminx
+             endif
+             if (abs(sstubminy) .gt. syt_track_criterion) then
+              write(16,*) 'event # ',gen_event_ID_number,
+     $             '  sstubminy =            ',sstubminy
+             endif
+             if (abs(sstubminxp) .gt. sxpt_track_criterion) then
+              write(16,*) 'event # ',gen_event_ID_number,
+     $             ' sstubminxp =                      ',sstubminxp
+             endif
+             if (abs(sstubminyp) .gt. sypt_track_criterion) then
+              write(16,*) 'event # ',gen_event_ID_number,
+     $             ' sstubminyp =                                 ',sstubminyp
+             endif
+             close(16)
+            endif
+******************************************************
 
             if      (abs(dposx) .lt. sxt_track_criterion
-     $         .and. abs(dposy) .lt. syt_track_criterion
-     $         .and. abs(dposxp).lt. sxpt_track_criterion
-     $         .and. abs(dposyp).lt. sypt_track_criterion) then
+     $           .and. abs(dposy) .lt. syt_track_criterion
+     $           .and. abs(dposxp).lt. sxpt_track_criterion
+     $           .and. abs(dposyp).lt. sypt_track_criterion) then
              if(newtrack.eq.1) then
+*Derek add this next line
+              sstubtest=1
 
 *     make a new track
               if(SNTRACKS_FP.lt.SNTRACKS_MAX) then ! are there too many 
