@@ -11,10 +11,13 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
-*-    $Log$
-*-    Revision 1.8  1995/07/27 19:39:25  cdaq
-*-    (SAW) Disable monte carlo (GMC)
-*-
+* $Log$
+* Revision 1.9  1995/10/09 18:45:20  cdaq
+* (JRA) Add scaler event reset call.  Remove monte carlo stuff.
+*
+* Revision 1.8  1995/07/27 19:39:25  cdaq
+* (SAW) Disable monte carlo (GMC)
+*
 * Revision 1.7  1995/04/01  19:50:55  cdaq
 * (SAW) Add BPM hitlist
 *
@@ -52,8 +55,8 @@
       logical ABORT
       character*(*) err
 *
-      logical HMS_ABORT,SOS_ABORT,COIN_ABORT,gmc_abort
-      character*132 HMS_err,SOS_err,COIN_err,gmc_err
+      logical HMS_ABORT,SOS_ABORT,COIN_ABORT,SCAL_ABORT
+      character*132 HMS_err,SOS_err,COIN_err,SCAL_err
 *
       integer hit
 *
@@ -64,7 +67,6 @@
       err = ' '
       hms_err = ' '
       sos_err = ' '
-      gmc_err = ' '
 *
 *     Uninstrumented hits
 *
@@ -82,21 +84,21 @@
       enddo
       CBPM_TOT_HITS = 0
 *
+      call g_scaler_reset_event(SCAL_ABORT,SCAL_err)
+*
       call H_reset_event(HMS_ABORT,HMS_err)
 *     
       call S_reset_event(SOS_ABORT,SOS_err)
 *     
       call C_reset_event(COIN_ABORT,COIN_err)
 *     
-*      call gmc_mc_reset(gmc_abort, gmc_err)
-*     
-      abort = hms_abort.or.sos_abort.or.coin_abort.or.gmc_abort
+      abort = hms_abort.or.sos_abort.or.coin_abort.or.scal_abort
 *
       IF(ABORT) then
          err= COIN_err
          call G_prepend(SOS_err,err)
          call G_prepend(HMS_err,err)
-         call g_prepend(gmc_err,err)
+         call G_prepend(SCAL_err,err)
          call G_add_path(here,err)
       else
          err = ' '
