@@ -10,6 +10,9 @@
 *-   Created  2-Dec-1992   Kevin B. Beard 
 *-   Modified for hall C 9/1/93: KBB
 *     $Log$
+*     Revision 1.4  1996/09/05 21:07:18  saw
+*     (SAW) Watch for Null's
+*
 *     Revision 1.3  1994/06/17 03:05:37  cdaq
 *     (SAW) Get correct copy of improved line wrapping from KBB
 *
@@ -41,6 +44,7 @@
 *----------------------------------------------------------------------
 *
       msg= note				!truncate after 1024 characters
+      call clear_after_null(msg)        !clear out string after a null character.
       call NO_tabs(msg)			!replace tabs w/ blanks (if any)
       call NO_leading_blanks(msg)	!remove leading blanks (if any)
       call only_one_blank(msg)		!leave only 1 consecutive blank 
