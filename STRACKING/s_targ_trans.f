@@ -19,7 +19,10 @@
 *-Modified 21-JAN-94  D.F.Geesaman
 *-            Add ABORT and err
 * $Log$
-* Revision 1.2  1994/05/13 03:45:52  cdaq
+* Revision 1.3  1994/06/07 01:58:56  cdaq
+* (DFG) Protect against asin argument > 1.0
+*
+* Revision 1.2  1994/05/13  03:45:52  cdaq
 * (DFG) Add call to s_fill_dc_target_hist
 *       Add calculation of SP_TAR
 * (SAW) Cosmetic changes to source
@@ -112,7 +115,12 @@
             sum(3) = sum(3) + term*s_recon_coeff(3,i)
             sum(4) = sum(4) + term*s_recon_coeff(4,i)
          enddo
-     
+* Protext against asin argument > 1.
+         if(sum(1).gt. 1.0)  sum(1)= 0.99
+         if(sum(1).lt. -1.0) sum(1)= -.99
+         if(sum(3).gt. 1.0) sum(3)=  0.99
+         if(sum(3).lt. -1.0) sum(3)= -.99
+   
 * Load output values.
 
          sx_tar(itrk) = sum(2)*100.     !cm.
