@@ -1,5 +1,8 @@
 **************** begin: GEN_routines.DEC ***************************
 * $Log$
+* Revision 1.8  1996/01/17 15:46:25  cdaq
+* (SAW) Add CTP group routines
+*
 * Revision 1.7  1994/10/18 20:34:06  cdaq
 * (SAW) Add several new CTP routines (RPC stuff)
 *
@@ -78,14 +81,10 @@
       EXTERNAL thbook
       INTEGER thwhalias
       EXTERNAL thwhalias
-      INTEGER thtstexe
-      EXTERNAL thtstexe
-      INTEGER thtstexeb
-      EXTERNAL thtstexeb
-      INTEGER thhstexe
-      EXTERNAL thhstexe
-      INTEGER thhstexeb
-      EXTERNAL thhstexeb
+      INTEGER thtstexe, thtstexeb, thtstexeg
+      EXTERNAL thtstexe, thtstexeb, thtstexeg
+      INTEGER thhstexe, thhstexeb, thhstexeg
+      EXTERNAL thhstexe, thhstexeb, thhstexeg
       INTEGER thtstins
       EXTERNAL thtstins
       INTEGER thtstinsb
@@ -96,8 +95,8 @@
       EXTERNAL thtstclsb
       INTEGER threp, threpa
       EXTERNAL threp, threpa
-      INTEGER thgethit, thgethitb
-      EXTERNAL thgethit, thgethitb
+      INTEGER thgethit, thgethitb, thgethitg
+      EXTERNAL thgethit, thgethitb, thgethitg
 *-
       integer  clnt_create
       external clnt_create
