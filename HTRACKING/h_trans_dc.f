@@ -13,6 +13,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.13  1996/01/16 21:37:13  cdaq
+* (JRA) Change sign on hstart_time
+*
 * Revision 1.12  1995/10/11 13:51:04  cdaq
 * (JRA) Cleanup, add bypass switch to h_dc_eff call
 *
@@ -128,7 +131,7 @@
      &                     - hdc_central_wire(pln)) - hdc_center(pln)
                     endif
 
-                    hdc_drift_time(goodhit) = hstart_time
+                    hdc_drift_time(goodhit) = - hstart_time
      &                   - float(hdc_tdc(goodhit))*hdc_tdc_time_per_channel
      &                   + hdc_plane_time_zero(pln)
 *  find dist in pattern_recognition, after apply propogation correction.
