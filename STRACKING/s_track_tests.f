@@ -13,6 +13,9 @@
 *  the tests there!!
 *
 * $Log$
+* Revision 1.2  1996/09/04 20:19:12  saw
+* (JRA) Treat logicals as logicals
+*
 * Revision 1.1  1996/05/02 14:38:55  saw
 * Initial revision
 *
@@ -148,10 +151,10 @@
 *we now fill in the chamber part of the track tests.
 
        sfoundtrack = (sntracks_fp.NE.0)
-       if (sfoundtrack.EQ.0) then
-          stestbeta=0.0
-       else
+       if (sfoundtrack) then
           stestbeta=ssbeta
+       else
+          stestbeta=0.0
        endif
        scleantrack = (ssnum_fptrack.NE.0).AND.(ssbeta.GT.(0.1))
 *shitslt is less than max allowed hits in both chambers
@@ -161,7 +164,7 @@
 *sspacepoints is finding at least one space point in both chambers
        sspacepoints = ((snspace_points(1).GE.1).AND.(snspace_points(2).GE.1))
 *sstublt is passing the stub criteria for at least one spacepoint in both chambers
-       sstublt = sstubtest
+       sstublt = (sstubtest.ne.0)
 *shitsplanes is passing not too many hits and not too few planes
        shitsplanes = shitslt.AND.splanesgt
 *shitsplanessps is that and finding a spacepoint
@@ -344,20 +347,20 @@
           if (sgoodscinhits.EQ.1) then
              write(15,*) 'sweet spot hit, event number           ',gen_event_ID_number
           endif
-          if (shitslt.EQ.0) then
+          if (.not.shitslt) then
              write(15,*) 'too many hits, event number           ',gen_event_ID_number
           endif
-          if (splanesgt.EQ.0) then
+          if (.not.splanesgt) then
              write(15,*)  'too few planes event number                    ',
      $            gen_event_ID_number
           endif
-          if ((shitsplanes.EQ.1).AND.(sspacepoints.EQ.0)) then
+          if (shitsplanes.AND.(.not.sspacepoints)) then
              write(15,*) 'p sits/planes, f sp # = ',gen_event_ID_number
           endif
-          if ((sfoundtrack.EQ.0).AND.(shitsplanessps.EQ.1)) then
+          if ((.not.sfoundtrack).AND.shitsplanessps) then
              write(15,*) 'p sits/planes/sps, f track # = ',gen_event_ID_number
           endif
-          if ((sspacepoints.EQ.1).AND.(sstublt.EQ.0)) then
+          if (sspacepoints.AND.(.not.sstublt)) then
              write(15,*) 'p sp, f stubs # = ',gen_event_ID_number
           endif
        endif
