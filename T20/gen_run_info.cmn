@@ -1,0 +1,89 @@
+**************************begin: gen_run_info.cmn ***********************
+*- 
+*-   Created   22-Apr-1994   Kevin B. Beard, Hampton Univ.
+* $Log$
+* Revision 1.1  1997/05/01 13:41:24  saw
+* Initial revision
+*
+* Revision 1.7  1996/09/04 15:46:13  saw
+* (JRA) Add prescale factors and some a debugging  flag
+*
+* Revision 1.6  1996/01/17 15:57:28  cdaq
+* (JRA) Add some short equivalences for CTP convenience
+*
+* Revision 1.5  1995/03/13 19:01:03  cdaq
+* (SAW) Change gen_run_enable from logical to integer
+*
+* Revision 1.4  1995/01/31  15:52:04  cdaq
+* (SAW) Add gen_run_hist_dump_interval for in run hist dumping
+*
+* Revision 1.3  1994/10/20  14:19:12  cdaq
+* (SAW) Add accumulators for analyzed event counts ("May process")
+*
+* Revision 1.2  1994/08/03  20:11:50  cdaq
+* (SAW) Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
+*
+* Revision 1.1  1994/05/27  15:12:47  cdaq
+* Initial revision
+*
+*........................................................................
+*- Misc. info. about a run
+*
+*     CTPTYPE=parm
+*
+      INTEGER gen_run_number,gen_run_type
+      INTEGER gen_run_total_events             !reported by CODA
+      INTEGER gen_run_UTC_start,gen_run_UTC_stop,gen_run_UTC_last
+      CHARACTER*80 gen_run_date_start,gen_run_date_stop
+      CHARACTER*80 gen_run_date_last
+      CHARACTER*800 gen_run_comment
+*
+      COMMON /gen_run_info/ gen_run_number,gen_run_type,
+     &     gen_run_total_events,gen_run_UTC_start,gen_run_UTC_stop,
+     &     gen_run_UTC_last,gen_run_date_start,gen_run_date_stop,
+     &     gen_run_date_last,gen_run_comment
+*
+*
+*     CTPTYPE=parm
+*
+      INTEGER gen_MAX_trigger_types
+      PARAMETER (gen_MAX_trigger_types= 15)
+      INTEGER gen_run_enable(0:gen_MAX_trigger_types)    !1=process, 0=ignore
+      INTEGER gen_run_triggered(0:gen_MAX_trigger_types) !triggers found
+      INTEGER gen_run_analyzed(0:gen_MAX_trigger_types)  ! NOT USED ANYWHERE
+      INTEGER gen_run_hist_dump_interval
+      INTEGER gen_run_starting_event,gen_run_stopping_event
+*
+      COMMON /gen_run_cntrl/ gen_run_starting_event,
+     &     gen_run_stopping_event,
+     &     gen_run_enable,
+     &     gen_run_triggered,
+     &     gen_run_analyzed,
+     &     gen_run_hist_dump_interval
+*
+*-shorter names for command line input
+      integer grun,gstart,gstop,gdump,gtrig1,gtrig2,gtrig3,gtrig4 ! aliases
+      equivalence (grun,gen_run_number)
+      equivalence (gstart,gen_run_starting_event)
+      equivalence (gstop,gen_run_stopping_event)
+      equivalence (gdump,gen_run_hist_dump_interval)
+      equivalence (gtrig1,gen_run_enable(0))
+      equivalence (gtrig2,gen_run_enable(1))
+      equivalence (gtrig3,gen_run_enable(2))
+      equivalence (gtrig4,gen_run_enable(3))
+
+*
+*     CTPTYPE=parm
+*
+      real*4 gps1,gps2,gps3  !prescale factors (1-hms,2-sos,3-coin)
+*
+      common/gen_prescales/ gps1,gps2,gps3
+
+*
+*     CTPTYPE=parm
+*
+      integer gdebugdumpepics
+*
+      common/gen_debuggingstuff/ gdebugdumpepics
+
+****************************end: gen_run_info.cmn ***********************
