@@ -7,7 +7,10 @@
 * h_strip_scin converts the raw hits to arrays over hits
 * with good TDC values.
 * $Log$
-* Revision 1.1  1994/06/27 02:41:12  cdaq
+* Revision 1.2  1994/06/29 03:42:15  cdaq
+* (JRA) Clear and set nscin_hits_per_plane array
+*
+* Revision 1.1  1994/06/27  02:41:12  cdaq
 * Initial revision
 *
 *-------------------------------------------------------------------
@@ -28,6 +31,9 @@
         
       igoodhit = 0
       hscin_tot_hits = 0
+      do ind = 1, hnum_scin_planes
+         hscin_hits_per_plane(ind) = 0
+      enddo
         
       do ihit = 1 , hscin_all_tot_hits  ! pick out 'good' hits.
 
@@ -45,6 +51,8 @@
             hscin_adc_neg(igoodhit) = hscin_all_adc_neg(ihit)
             hscin_tdc_pos(igoodhit) = hscin_all_tdc_pos(ihit)
             hscin_tdc_neg(igoodhit) = hscin_all_tdc_neg(ihit)
+            hscin_hits_per_plane(hscin_plane_num(igoodhit)) = 
+     $           hscin_hits_per_plane(hscin_plane_num(igoodhit)) + 1
          endif
       enddo
       abort = .false.
