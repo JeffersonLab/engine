@@ -13,8 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.10  1995/05/11 18:57:25  cdaq
-*     (SAW) Add calls to register h_ntuple.cmn and h_sieve_ntuple.cmn
+*     Revision 1.11  1995/05/22 13:31:38  cdaq
+*     * (SAW) Add call to register hms_data_structures.cmn variables
+*
+* Revision 1.10  1995/05/11  18:57:25  cdaq
+* (SAW) Add calls to register h_ntuple.cmn and h_sieve_ntuple.cmn
 *
 * Revision 1.9  1995/01/27  20:15:54  cdaq
 * (SAW) Add call to sieve slit register routine
@@ -60,6 +63,8 @@
       err= ' '
       ABORT = .FALSE.
 *
+      call r_hms_data_structures
+
       call r_hms_filenames
 
       call r_h_ntuple
