@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.16  1996/04/29 19:46:19  saw
+* (JRA) Tweak diagnostic messages
+*
 * Revision 1.15  1996/01/16 20:51:55  cdaq
 * (SAW) Fixes:  Forgot why
 *
@@ -115,9 +118,8 @@
         slot = jiand(JISHFT(evfrag(pointer),-27),'1F'X)
         if(slot.ne.oslot.or.firsttime) then
           if (slot.le.0 .or. slot.ge.26 .or. roc.le.0 .or. roc.ge.9) then
-            write (6,*) 'roc,slot=',roc,slot
-            write (6,'(a,z8)') 'evfrag(pointer)=',evfrag(pointer)
-            write (6,*) 'gen_event_id_number=',gen_event_id_number
+            write (6,'(a,i2,i3,z10,a,i8)') '       roc,slot,evfrag=',roc,
+     &           slot,evfrag(pointer),'  for event #',gen_event_id_number
             pointer = pointer + 1
             goto 987
           else
