@@ -9,7 +9,10 @@
 *
 *      Created 9 April 1994	D. F. Geesaman
 * $Log$
-* Revision 1.1  1994/04/12 21:08:57  cdaq
+* Revision 1.2  1994/05/13 02:59:26  cdaq
+* (DFG) Add h_fill_dc_target_hist id's
+*
+* Revision 1.1  1994/04/12  21:08:57  cdaq
 * Initial revision
 *
       integer*4 hiddcwiremap(hmax_num_dc_planes)
@@ -18,6 +21,8 @@
       integer*4 hiddcwirecent(hmax_num_dc_planes)
       integer*4 hidhx_fp,hidhy_fp,hidhxp_fp,hidhyp_fp,hidhlogchi2_fp,
      &     hidhnfree_fp,hidhchi2perdeg_fp
+      integer*4 hidhx_tar, hidhy_tar, hidhz_tar, hidhxp_tar, hidhyp_tar,
+     &     hidhdelta_tar, hidhp_tar
 
 
       common/hms_tracking_histid/
@@ -31,12 +36,21 @@
      &     hidhyp_fp,
      &     hidhlogchi2_fp,
      &     hidhnfree_fp,
-     &     hidhchi2perdeg_fp
+     &     hidhchi2perdeg_fp,
+     &     hidhx_tar,
+     &     hidhy_tar,
+     &     hidhz_tar,
+     &     hidhxp_tar,
+     &     hidhyp_tar,
+     &     hidhdelta_tar,
+     &     hidhp_tar
 
       integer*4 hturnon_decoded_dc_hist
       integer*4 hturnon_focal_plane_hist
+      integer*4 hturnon_target_hist
       common/hms_hist_flags/
      &     hturnon_decoded_dc_hist,
-     &     hturnon_focal_plane_hist
+     &     hturnon_focal_plane_hist,
+     &     hturnon_target_hist
 
 
