@@ -8,7 +8,10 @@
 *- note: units are hall C standard units: GeV, cm, nSec
 *        ID numbers are as given by "g_decode" package.
 * $Log$
-* Revision 1.1  1994/02/17 21:01:14  cdaq
+* Revision 1.2  1994/06/08 19:49:44  cdaq
+* (KBB) Modified to change storage (24-Feb-1994)
+*
+* Revision 1.1  1994/02/17  21:01:14  cdaq
 * Initial revision
 *
 *-
@@ -21,102 +24,94 @@
 *-
 *-                   each of 4 bytes unique!
       PARAMETER (mc_TEST_C4= 'gMc_')             !program pkg
-      PARAMETER (mc_TEST_R4= 2.07)               !version
-      PARAMETER (mc_TEST_I4= '7feb1994'x)        !date
+      PARAMETER (mc_TEST_R4= 2.24)               !version
+      PARAMETER (mc_TEST_I4= '23fb1994'x)        !date
 *-
 *- identifing status and ROC integer
       INTEGER mc_status_and_ROC
       PARAMETER (mc_status_and_ROC= 'FFFF'x)
 *-
-      LOGICAL mc_READY                       !status of MonteCarlo info.
-
-*-target quantities are in appropriate SPECTROMETER SYSTEM
+*- status of all subsequent Monte Carlo info.
+      LOGICAL mc_READY
 *-
-*- All target tracks put in sequentially (don't start over with 1 for
-*- 2nd arm)
+*- All tracks are put in sequentially (don't start over with #1 for 2nd arm)
 *-
-      INTEGER mc_MAX_TarTrks                  !upper limit on target tracks
-      PARAMETER (mc_MAX_TarTrks= 10)
-      INTEGER mc_N_TarTrks                    !present # of target tracks
+      INTEGER mc_MAX_Trks                  !upper limit on tracks
+      PARAMETER (mc_MAX_Trks= 1000)
 *
-*- values "HMS ","SOS ","HNSS","NPOL",....
+      INTEGER mc_N_Trks                       !present # of target tracks
+      INTEGER mc_Trk_ancestor(mc_MAX_Trks)    !ancestor track ID (0=none)
+      CHARACTER*4 mc_Trk_system(mc_MAX_Trks)  !name trk coord. (LAB,HMS,SOS..)
+      REAL mc_Trk_X(mc_MAX_Trks)
+      REAL mc_Trk_Y(mc_MAX_Trks)              !position[cm]
+      REAL mc_Trk_Z(mc_MAX_Trks)
+      REAL mc_Trk_T(mc_MAX_Trks)              !time[nS]
+      REAL mc_Trk_Px(mc_MAX_Trks)
+      REAL mc_Trk_Py(mc_MAX_Trks)             !momentum[GeV/c]
+      REAL mc_Trk_Pz(mc_MAX_Trks)
+      REAL mc_Trk_M(mc_MAX_Trks)              !mass[GeV/c2]
+      REAL mc_Trk_path(mc_MAX_Trks)           !distance to end of track[cm]
+      INTEGER mc_Trk_geantID(mc_MAX_Trks)     !GEANT particle type ID
+      CHARACTER*4 mc_Trk_comment(mc_MAX_Trks) !very brief comment (optional)
+      INTEGER mc_Trk_extra(mc_MAX_Trks)       !resv'd for additional information
 *
-      CHARACTER*4 mc_TarTrk_arm(mc_MAX_TarTrks) !spectrometer name
-*
-      INTEGER mc_TarTrk_type(mc_MAX_TarTrks)    !GEANT particle ID
-      REAL mc_TarTrk_X(mc_MAX_TarTrks)
-      REAL mc_TarTrk_Y(mc_MAX_TarTrks)        !position[cm]
-      REAL mc_TarTrk_Z(mc_MAX_TarTrks)
-      REAL mc_TarTrk_T(mc_MAX_TarTrks)        !time[nS]
-      REAL mc_TarTrk_Px(mc_MAX_TarTrks)
-      REAL mc_TarTrk_Py(mc_MAX_TarTrks)       !momentum[GeV/c]
-      REAL mc_TarTrk_Pz(mc_MAX_TarTrks)
-*
-*- focal plane quantities are in appropriate DETECTOR SYSTEM
 *-
-*- All focal plane tracks put in sequentially (don't start over with 1 for
-*- 2nd arm; relevant target track determines which arm)
+*- All hits are put in sequentially (relevant trackk ID# and detector ID#
+*- determine which arm (don't start over with 1 for 2nd arm).
 *-
-      INTEGER mc_MAX_FocTrks            !upper limit on focal plane tracks
-      PARAMETER (mc_MAX_FocTrks= 50)
-      INTEGER mc_N_FocTrks              !present # of focal plane tracks
+      INTEGER mc_MAX_Hits                    !upper limit on # of hits
+      PARAMETER (mc_MAX_Hits= 1000)
 *
-*-assume TarTrks and FocTrks numbered sequentially
+*- standare hall C detector,plane|row,wire|element|column ID numbers 
+*- assigned according to those specified in "gen_detectorids.cmn"
 *
-      INTEGER mc_FocTrk_TarTrk(mc_MAX_FocTrks)    !relevant target track#
-*
-      INTEGER mc_FocTrk_type(mc_MAX_FocTrks)      !GEANT particle ID
-      REAL mc_FocTrk_X(mc_MAX_FocTrks)
-      REAL mc_FocTrk_Y(mc_MAX_FocTrks)            !position[cm]
-      REAL mc_FocTrk_Z(mc_MAX_FocTrks)
-      REAL mc_FocTrk_T(mc_MAX_FocTrks)            !time[nS]
-      REAL mc_FocTrk_Px(mc_MAX_FocTrks)
-      REAL mc_FocTrk_Py(mc_MAX_FocTrks)           !momentum[GeV/c]
-      REAL mc_FocTrk_Pz(mc_MAX_FocTrks)
-      REAL mc_FocTrk_path(mc_MAX_FocTrks)         !distance to end of track[cm]
-*-
-*- detector quantities are in appropriate DETECTOR SYSTEM
-*-
-*- All detector hits tracks put in sequentially (detector ID# and relevant
-*- focal plane track determine which arm; don't start over with 1 for
-*- 2nd arm)
-*-
-      INTEGER mc_MAX_DetHits                   !upper limit on # of Det hits
-      PARAMETER (mc_MAX_DetHits= 2000)
-      INTEGER mc_N_DetHits                        !present # of Det hits
-      INTEGER mc_DetHit_FocTrk(mc_MAX_DetHits)    !relevant focal plane track#
-*
-*- ID numbers assigned according to those specified in
-*-"gen_detectorids.cmn"
-*
-      INTEGER mc_DetHit_detector(mc_MAX_DetHits)  !detector ID
-      INTEGER mc_DetHit_plane(mc_MAX_DetHits)     !plane-row ID
-      INTEGER mc_DetHit_element(mc_MAX_DetHits)   !wire-element-column ID
-*
-      REAL mc_DetHit_X(mc_MAX_DetHits)
-      REAL mc_DetHit_Y(mc_MAX_DetHits)          !position[cm]
-      REAL mc_DetHit_Z(mc_MAX_DetHits)
-      REAL mc_DetHit_T(mc_MAX_DetHits)          !time[nS]
-      REAL mc_DetHit_Px(mc_MAX_DetHits)
-      REAL mc_DetHit_Py(mc_MAX_DetHits)         !momentum[GeV/c]
-      REAL mc_DetHit_Pz(mc_MAX_DetHits)
-      REAL mc_DetHit_dE(mc_MAX_DetHits)         !energy loss[GeV]
+      INTEGER mc_N_Hits                      !present # of hits
+      INTEGER mc_Hit_ancestor(mc_MAX_Hits)   !relevant track ID#
+      CHARACTER*4 mc_Hit_system(mc_MAX_Hits) !name hit coord. (HMSf,SOSf,...)
+      REAL mc_Hit_X(mc_MAX_Hits)
+      REAL mc_Hit_Y(mc_MAX_Hits)             !position[cm]
+      REAL mc_Hit_Z(mc_MAX_Hits) 
+      REAL mc_Hit_T(mc_MAX_Hits)             !time[nS]
+      REAL mc_Hit_Px(mc_MAX_Hits)
+      REAL mc_Hit_Py(mc_MAX_Hits)            !momentum[GeV/c]
+      REAL mc_Hit_Pz(mc_MAX_Hits)
+      REAL mc_Hit_dE(mc_MAX_Hits)            !energy loss[GeV]
+      INTEGER mc_Hit_detector(mc_MAX_Hits)   !detector ID#
+      INTEGER mc_Hit_plane(mc_MAX_Hits)      !plane-row ID#
+      INTEGER mc_Hit_element(mc_MAX_Hits)    !wire-element-column ID#
+      INTEGER mc_Hit_extra(mc_MAX_Hits)      !resv'd for additional information
 *-
       COMMON /Mc_status/ mc_READY
 *-
-      COMMON /Mc_target_track_info/ mc_TarTrk_X,mc_TarTrk_Y,
-     &      mc_TarTrk_Z,mc_TarTrk_T,mc_TarTrk_Px,mc_TarTrk_Py, 
-     &      mc_TarTrk_Pz,mc_N_TarTrks,mc_TarTrk_type, 
-     &      mc_TarTrk_arm
-*-
-      COMMON /Mc_focal_plane_info/ mc_FocTrk_X,mc_FocTrk_Y,
-     &      mc_FocTrk_Z,mc_FocTrk_T,mc_FocTrk_Px,mc_FocTrk_Py,
-     &      mc_FocTrk_Pz,mc_FocTrk_path,mc_N_FocTrks,mc_FocTrk_TarTrk,
-     &      mc_FocTrk_type
-*-
-      COMMON /Mc_Det_info/ mc_DetHit_X,mc_DetHit_Y,mc_DetHit_Z,
-     &      mc_DetHit_T,mc_DetHit_Px,mc_DetHit_Py,mc_DetHit_Pz,
-     &      mc_DetHit_dE,mc_N_DetHits,mc_DetHit_FocTrk,
-     &      mc_DetHit_detector,mc_DetHit_plane,mc_DetHit_element
-*-
+      COMMON /Mc_tracks/ mc_N_Trks,mc_Trk_ancestor,mc_Trk_system,
+     &    mc_Trk_X,mc_Trk_Y,mc_Trk_Z,mc_Trk_T,mc_Trk_Px,mc_Trk_Py,
+     &    mc_Trk_Pz,mc_Trk_M,mc_Trk_path,mc_Trk_geantID,mc_Trk_comment,
+     &    mc_Trk_extra
+*
+      COMMON /Mc_hits/ mc_N_Hits,mc_Hit_ancestor,mc_Hit_system,
+     &    mc_Hit_X,mc_Hit_Y,mc_Hit_Z,mc_Hit_T,mc_Hit_Px,mc_Hit_Py,
+     &    mc_Hit_Pz,mc_Hit_dE,mc_Hit_detector,mc_Hit_plane,
+     &    mc_Hit_element,mc_Hit_extra
+*
+*-reported coordinate systems used in simulation
+*
+      INTEGER mcCo_MAX_coords
+      PARAMETER (mcCo_MAX_coords= 20)
+*                                                  !note: "LAB" always exists!
+      INTEGER mcCo_N_coords                        !# of coordinates to follow
+      CHARACTER*4 mcCo_NAME(mcCo_MAX_coords)       !name of coordinate system
+      CHARACTER*4 mcCo_reference(mcCo_MAX_coords)  !system define w.r.t.
+*-first translate
+      REAL mcCo_Lo_to_Xo(mcCo_MAX_coords)
+      REAL mcCo_Lo_to_Yo(mcCo_MAX_coords)          !from LAB to system
+      REAL mcCo_Lo_to_Zo(mcCo_MAX_coords)
+*-next Euler rotatation
+      REAL mcCo_Lo_THETA_rot(mcCo_MAX_coords)      !about Z
+      REAL mcCo_Lo_PHI_rot(mcCo_MAX_coords)        !about Y'
+      REAL mcCo_Lo_THETAprime_rot(mcCo_MAX_coords) !about Z'
+*
+      COMMON /mcCo_systems/ mcCo_N_coords,mcCo_NAME,mcCo_reference,
+     &   mcCo_Lo_to_Xo,mcCo_Lo_to_Yo,mcCo_Lo_to_Zo,
+     &   mcCo_Lo_THETA_rot,mcCo_Lo_PHI_rot,mcCo_Lo_THETAprime_rot
+*
 *******************end: mc_structures.cmn*************************
