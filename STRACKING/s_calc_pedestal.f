@@ -1,6 +1,9 @@
       subroutine s_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.13.2.2  2003/04/10 12:41:18  cdaq
+* Add comment character to line writing out to threshold file
+*
 * Revision 1.13.2.1  2003/04/09 02:45:38  cdaq
 * hardwire gas cerenkov thresholds to zero
 *
@@ -274,7 +277,7 @@ c        type *,num,scal_min_peds
         open(unit=SPAREID,file=file,status='unknown')
 
         write(SPAREID,*) '# This is the ADC threshold file generated automatically'
-        write(SPAREID,*) 'from the pedestal data from run number ',gen_run_number
+        write(SPAREID,*) '# from the pedestal data from run number ',gen_run_number
 
         roc=3
 
