@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.29  2005/03/23 16:33:32  jones
+# Add new code s_select_best_track_prune.f (P Bosted)
+#
 # Revision 1.28  2004/02/26 22:19:33  jones
 # add h_select_best_track_using_scin.o
 #
@@ -121,7 +124,8 @@ newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f \
 	h_correct_cal_pos.f h_correct_cal_neg.f \
 	h_satcorr.f \
         h_cal_calib.f h_aero.f h_fill_aero_raw_hist.f \
-        h_sp_multiwire.f h_sp_destroy.f
+        h_sp_multiwire.f h_sp_destroy.f \
+	h_select_best_track_prune.f
 makeregstuff =	r_hms_filenames.f r_hms_scin_parms.f r_hms_scin_tof.f \
 	r_hms_calorimeter.f r_hms_id_histid.f r_hms_tracking.f \
 	r_hms_geometry.f r_hms_track_histid.f r_hms_recon_elements.f \
