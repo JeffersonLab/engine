@@ -1,6 +1,9 @@
        SUBROUTINE H_AERO(ABORT,err)
 *-
 * $Log$
+* Revision 1.1.2.1  2003/04/06 06:20:40  cdaq
+* updated variables for haero, cleaned up a few of the tests
+*
 * Revision 1.1  2002/12/20 21:54:29  jones
 * New files by Hamlet for new HMS aerogel
 *
@@ -63,72 +66,51 @@
 * an input that is too large. Tubes with this characteristic will
 * be assigned NPE = 100.0.
 
-         npmt=haero_pair_num(ind)
+        npmt=haero_pair_num(ind)
 
-         if (haero_adc_pos(ind).lt.8000.and.(haero_adc_pos(ind)-
-     &    haero_pos_adc_threshold(npmt)).ge.0) then
-
-            haero_pos_npe(npmt) =
-     &          (haero_adc_pos(ind)-haero_pos_ped_mean(npmt))
-     $          *haero_pos_gain(npmt)
-            endif
-
-         if (haero_adc_pos(ind).gt.8000.and.(haero_adc_pos(ind)-
-     &    haero_pos_adc_threshold(npmt)).ge.0) then
-
-           haero_pos_npe(npmt) = 100.0 
+        if (haero_adc_pos(int).gt.haero_pos_adc_threshold(npmt)) then
+           if (haero_adc_pos(int).lt.8000.) then
+              haero_pos_npe(npmt) = haero_pos_gain(npmt) *
+     &             (haero_adc_pos(ind)-haero_pos_ped_mean(npmt))
+           else
+              haero_pos_npe(npmt) = 100.
            endif
-
-         if (haero_adc_neg(ind).lt.8000.and.(haero_adc_neg(ind)-
-     &    haero_neg_adc_threshold(npmt)).ge.0) then
-
-            haero_neg_npe(npmt) = 
-     &          (haero_adc_neg(ind)-haero_neg_ped_mean(npmt))
-     $          *haero_neg_gain(npmt)
-          endif
-
-         if (haero_adc_neg(ind).gt.8000.and.(haero_adc_neg(ind)-
-     &    haero_neg_adc_threshold(npmt)).ge.0) then
-
-           haero_neg_npe(npmt) = 100.0
+        endif
+        
+        if (haero_adc_neg(ind).gt.haero_neg_adc_threshold(npmt)) then
+           if (haero_adc_neg(ind).lt.8000.) then
+              haero_neg_npe(npmt) = haero_neg_gain(npmt) * 
+     &             (haero_adc_neg(ind)-haero_neg_ped_mean(npmt))
+           else
+              haero_neg_npe(npmt) = 100.
            endif
-* 
-         haero_pos_npe_sum = haero_pos_npe_sum + haero_pos_npe(npmt)
-         haero_neg_npe_sum = haero_neg_npe_sum + haero_neg_npe(npmt)
+        endif
+        haero_pos_npe_sum = haero_pos_npe_sum + haero_pos_npe(npmt)
+        haero_neg_npe_sum = haero_neg_npe_sum + haero_neg_npe(npmt)
+
 *
 * sum positive and negative hits 
 * To fill haero_tot_good_hits
 
-         if (haero_pos_npe(npmt).ge.0.1) 
-     &        haero_adc_pos_hits = haero_adc_pos_hits + 1
-             haero_tot_good_hits = haero_tot_good_hits + 1
+        if (haero_pos_npe(npmt).ge.0.1) then
+            haero_adc_pos_hits = haero_adc_pos_hits + 1
+            haero_tot_good_hits = haero_tot_good_hits + 1
+        endif
 
-         if (haero_neg_npe(npmt).ge.0.1) 
-     &        haero_adc_neg_hits = haero_adc_neg_hits + 1
-             haero_tot_good_hits = haero_tot_good_hits + 1
+        if (haero_neg_npe(npmt).ge.0.1) then
+            haero_adc_neg_hits = haero_adc_neg_hits + 1
+            haero_tot_good_hits = haero_tot_good_hits + 1
+        endif
+
+        if (haero_tdc_pos(npmt).ge.0.and.haero_tdc_pos(npmt).le.8000.)
+     &       haero_tdc_pos_hits = haero_tdc_pos_hits + 1 
         
-         if (haero_tdc_pos(npmt).ge.0.and.haero_tdc_pos(npmt).le.8000.) 
-     &        haero_tdc_pos_hits = haero_tdc_pos_hits + 1 
-                
-         if (haero_tdc_neg(npmt).ge.0.and.haero_tdc_neg(npmt).le.8000.) 
-     &        haero_tdc_neg_hits = haero_tdc_neg_hits + 1
-        
-*
+        if (haero_tdc_neg(npmt).ge.0.and.haero_tdc_neg(npmt).le.8000.)
+     &       haero_tdc_neg_hits = haero_tdc_neg_hits + 1
+
       enddo
 
-      if (haero_neg_npe_sum.ge.0.1.or.haero_pos_npe_sum.ge.0.1) then
-
-         haero_npe_sum = haero_neg_npe_sum + haero_pos_npe_sum
-           else
-         haero_npe_sum = 0.0
-      endif
-
-* If the total hits are 0, then give a noticable ridiculous NPE.
-
-      if (haero_tot_hits.lt.1) then
-
-         haero_npe_sum=0.0
-      endif
+      haero_npe_sum = haero_neg_npe_sum + haero_pos_npe_sum
 
 * Next, fill the rawadc variables with the actual tube values
 *	mainly for diagnostic purposes.
@@ -152,9 +134,6 @@
       enddo
 
       return
-
-*        print *,' '
-
       end
 
 
