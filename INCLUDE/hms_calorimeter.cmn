@@ -2,6 +2,9 @@
 *      HMS calorimeter. Parameters from hms_positions.parm
 *
 * $Log$
+* Revision 1.11  1999/01/21 21:40:30  saw
+* Extra shower counter tube modifications
+*
 * Revision 1.10  1998/12/17 22:02:40  saw
 * Support extra set of tubes on HMS shower counter
 *
@@ -157,6 +160,12 @@
       real*4 hcluster_e3      !                            #3
       real*4 hcluster_e4      !                            #4
       real*4 hcluster_et      !Total energy deposition
+
+      real*4 hcluster_e1_pos      !Energy deposition in column #POS_1
+      real*4 hcluster_e1_neg      !Energy deposition in column #NEG_1
+*
+      real*4 hcluster_e2_pos      !Energy deposition in column #POS_2
+      real*4 hcluster_e2_neg      !Energy deposition in column #NEG_2
       common/hms_clusters_cal/
      &       hcluster_hit(HMAX_CAL_BLOCKS),
      &       hcluster_size(hnclusters_max),
@@ -165,6 +174,10 @@
      &       hcluster_e2(hnclusters_max),
      &       hcluster_e3(hnclusters_max),
      &       hcluster_e4(hnclusters_max),
+     &       hcluster_e1_pos(hnclusters_max),
+     &       hcluster_e1_neg(hnclusters_max),
+     &       hcluster_e2_pos(hnclusters_max),
+     &       hcluster_e2_neg(hnclusters_max),
      &       hcluster_et(hnclusters_max),
      &       hnclusters_cal
 *

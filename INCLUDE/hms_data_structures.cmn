@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.7  1999/01/21 21:40:31  saw
+* Extra shower counter tube modifications
+*
 * Revision 1.6  1998/12/17 22:02:41  saw
 * Support extra set of tubes on HMS shower counter
 *
@@ -237,6 +240,8 @@
       INTEGER*4 HMAX_CAL_COLUMNS      !Number of calorimeter columns
       PARAMETER (HMAX_CAL_COLUMNS=4)
       INTEGER*4 HCAL_TOT_HITS
+      INTEGER*4 HCAL_POS_HITS
+      INTEGER*4 HCAL_NEG_HITS
       INTEGER*4 HCAL_COLUMN(HMAX_CAL_BLOCKS)
       INTEGER*4 HCAL_ROW(HMAX_CAL_BLOCKS)
       INTEGER*4 HCAL_ADC_POS(HMAX_CAL_BLOCKS)
@@ -255,7 +260,9 @@
      &     HCAL_ADC_NEG,
      &     HCAL_REALADC_POS,
      &     HCAL_REALADC_NEG,
-     &     HCAL_TOT_HITS
+     &     HCAL_TOT_HITS,
+     &     HCAL_POS_HITS,
+     &     HCAL_NEG_HITS
 *
 *    DECODED CALORIMETER QUANTITIES
 *    FILLED BY H_TRANS_CAL USING ONLY THE CALORIMETER INFORMATION
@@ -277,6 +284,12 @@
       REAL*4 HCAL_E3            !                            #3
       REAL*4 HCAL_E4            !                            #4
       REAL*4 HCAL_ET            !TOTAL ENERGY IN THE CALORIMETER
+      REAL*4 HCAL_E1_POS
+      REAL*4 HCAL_E1_NEG
+      REAL*4 HCAL_E2_POS
+      REAL*4 HCAL_E2_NEG
+      REAL*4 HBLOCK_DE_POS
+      REAL*4 HBLOCK_DE_NEG
       COMMON/HMS_DECODED_CAL/
      &     HBLOCK_XC(HMAX_CAL_BLOCKS),
      &     HBLOCK_ZC(HMAX_CAL_BLOCKS),
@@ -286,6 +299,12 @@
      &     HCAL_E3,
      &     HCAL_E4,
      &     HCAL_ET,
+     &     HCAL_E1_POS,
+     &     HCAL_E1_NEG,
+     &     HCAL_E2_POS,
+     &     HCAL_E2_NEG,
+     &     HBLOCK_DE_POS(HMAX_CAL_BLOCKS),
+     &     HBLOCK_DE_NEG(HMAX_CAL_BLOCKS),
      &     HNHITS_CAL
 *
 *     HMS CERENKOV HITS
@@ -428,6 +447,10 @@
       REAL*4    HTRACK_E4(HNTRACKS_MAX)
       REAL*4    HTRACK_ET(HNTRACKS_MAX)
       REAL*4    HTRACK_PRESHOWER_E(HNTRACKS_MAX)
+      REAL*4    HTRACK_E1_POS(HNTRACKS_MAX)
+      REAL*4    HTRACK_E1_NEG(HNTRACKS_MAX)
+      REAL*4    HTRACK_E2_POS(HNTRACKS_MAX)
+      REAL*4    HTRACK_E2_NEG(HNTRACKS_MAX)
 *
       INTEGER*4 HSCIN_HIT(HNTRACKS_MAX,HMAX_SCIN_HITS)
       INTEGER*4 HNUM_SCIN_HIT(HNTRACKS_MAX)
@@ -439,7 +462,7 @@
       REAL*4 HSCIN_FPTIME(HNTRACKS_MAX,HMAX_SCIN_HITS)
 *
       COMMON/HMS_TRACK_TESTS/
-     1     HTRACK_E1,                   ! ENERGY IN FIRST CALORIMETER COLUMN NEAR TRACK
+     1     HTRACK_E1,                   ! ENERGY IN FIRST COLUMN NEAR TRACK
      2     HTRACK_E2,                   !           SECOND COLUMN
      3     HTRACK_E3,                   !           THIRD COLUMN
      4     HTRACK_E4,                   !           FOURTH COLUMN
@@ -454,7 +477,11 @@
      D                                  ! EACH TRACK
      E     HNUM_SCIN_HIT,               ! NUMBER OF HITS FOR EACH TRACK
      F     HNUM_PMT_HIT,                ! NUMBER OF PMT HITS FOR EACH TRACK
-     G     HSCIN_FPTIME
+     G     HSCIN_FPTIME,
+     H     HTRACK_E1_POS,
+     I     HTRACK_E1_NEG,
+     J     HTRACK_E2_POS,
+     K     HTRACK_E2_NEG
 *                                          
 *     HMS SINGLES PHYSICS COMMON BLOCKS
 *     THESE ARE FILLED BY H_PHYSICS
@@ -472,6 +499,10 @@
       REAL*4 HSBETA           ! BETA of chosen track
       REAL*4 HSTRACK_ET      ! Total shower energy of chosen track
       REAL*4 HSTRACK_PRESHOWER_E  ! preshower of chosen track
+      REAL*4 HSTRACK_E1_POS      ! Shower energy E1_POS of chosen track
+      REAL*4 HSTRACK_E1_NEG      ! Shower energy E1_NEG of chosen track
+      REAL*4 HSTRACK_E2_POS      ! Shower energy E2_POS of chosen track
+      REAL*4 HSTRACK_E2_NEG      ! Shower energy E2_NEG of chosen track
       REAL*4 HSTIME_AT_FP 
       REAL*4 HSX_FP           ! X focal plane position 
       REAL*4 HSY_FP 
@@ -515,6 +546,10 @@
      & HSBETA,
      & HSTRACK_ET,
      & HSTRACK_PRESHOWER_E, 
+     & HSTRACK_E1_POS,
+     & HSTRACK_E1_NEG,
+     & HSTRACK_E2_POS,
+     & HSTRACK_E2_NEG,
      & HSTIME_AT_FP,
      & HSX_FP ,
      & HSY_FP ,

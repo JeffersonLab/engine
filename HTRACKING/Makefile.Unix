@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.21  1999/01/21 21:40:13  saw
+# Extra shower counter tube modifications
+#
 # Revision 1.20  1998/12/07 22:11:21  saw
 # Initial setup
 #
@@ -91,7 +94,8 @@ newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f \
 	h_cer_eff.f h_cer_eff_shutdown.f h_init_cer.f h_trans_cer.f \
 	h_dc_eff.f h_dc_eff_shutdown.f h_dump_peds.f h_dump_cal.f \
 	h_report_bad_data.f h_dc_trk_eff.f h_dc_trk_eff_shutdown.f \
-	h_find_easy_space_point.f h_track_tests.f
+	h_find_easy_space_point.f h_track_tests.f \
+	h_correct_cal_pos.f h_correct_cal_neg.f h_correct_cal_two.f
 makeregstuff =	r_hms_filenames.f r_hms_scin_parms.f r_hms_scin_tof.f \
 	r_hms_calorimeter.f r_hms_id_histid.f r_hms_tracking.f \
 	r_hms_geometry.f r_hms_track_histid.f r_hms_recon_elements.f \
@@ -138,18 +142,14 @@ endif
 
 %.cmn ../%.cmn:: ../../INCLUDE/%.cmn
 	$(CP) $< $@
-	$(CP) $< ../$@
 
-%.dec:: ../../INCLUDE/%.dec
+%.dec ../%.dec:: ../../INCLUDE/%.dec
 	$(CP) $< $@
-	$(CP) $< ../$@
 
-%.par:: ../../INCLUDE/%.par
+%.par ../%.par:: ../../INCLUDE/%.par
 	$(CP) $< $@
-	$(CP) $< ../$@
 
-%.dte:: ../../INCLUDE/%.dte
+%.dte ../%.dte:: ../../INCLUDE/%.dte
 	$(CP) $< $@
-	$(CP) $< ../$@
 
 include $(sources:.f=.d)
