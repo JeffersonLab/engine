@@ -1,6 +1,9 @@
 **************** begin: GEN_routines.DEC ***************************
 * $Log$
-* Revision 1.6  1994/07/21 19:49:27  cdaq
+* Revision 1.7  1994/10/18 20:34:06  cdaq
+* (SAW) Add several new CTP routines (RPC stuff)
+*
+* Revision 1.6  1994/07/21  19:49:27  cdaq
 * (SAW) Add thgethit and thgethitb
 *
 * Revision 1.5  1994/06/22  21:03:51  cdaq
@@ -95,6 +98,19 @@
       EXTERNAL threp, threpa
       INTEGER thgethit, thgethitb
       EXTERNAL thgethit, thgethitb
+*-
+      integer  clnt_create
+      external clnt_create
+      integer  thcrlist, thaddlist, thgetlist, thcgetlist, thremlist
+      external  thcrlist, thaddlist, thgetlist, thcgetlist, thremlist
+      integer  itheval,thevalchk
+      external itheval,thevalchk
+      integer thservone,thcallback
+      external thservone,thcallback
+      real*4 ftheval
+      external ftheval
+      real*8 dtheval
+      external dtheval
 *-
 ****************** end: GEN_routines.DEC ***************************
 *     Local Variables:
