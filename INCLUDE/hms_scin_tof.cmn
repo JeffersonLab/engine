@@ -1,7 +1,12 @@
 * hms_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the hms time of flight.
 * $Log$
-* Revision 1.8  1995/01/27 21:03:16  cdaq
+* Revision 1.9  1995/03/13 19:13:03  cdaq
+* (JRA) Change hscin_minph to hscin_???_minph arrays.  Add tracks index to
+*       hgood_tdc_pos, hgood_tdc_neg, hgood_scin_time, hgood_plane_time,
+*       and hgood_beta.
+*
+* Revision 1.8  1995/01/27  21:03:16  cdaq
 * (SAW) Add htof_debugging common
 *
 * Revision 1.7  1994/09/13  19:29:50  cdaq
@@ -31,6 +36,7 @@
 *     that it generates.
 *
 *%%   include 'gen_data_structures.cmn'
+*%%   include 'hms_scin_parms.cmn'
 *
 *     CTPTYPE=event
 *
@@ -56,18 +62,19 @@
 *
 *     CTPTYPE=parm
 *
-      real*4 hscin_minph
+      real*4 hscin_pos_minph(hmax_scin_hits) ! ADC Offset for PH correction
+      real*4 hscin_neg_minph(hmax_scin_hits) ! ADC Offset for PH correction
       real*4 hscin_tdc_min
       real*4 hscin_tdc_max
       real*4 hscin_tdc_to_time
 *
 *     CTPTYPE=event
 *
-      logical*4 hgood_tdc_pos(hmax_scin_hits)
-      logical*4 hgood_tdc_neg(hmax_scin_hits)
-      logical*4 hgood_scin_time(hmax_scin_hits)
-      logical*4 hgood_plane_time(hnum_scin_planes)
-      logical*4 hgood_beta
+      logical*4 hgood_tdc_pos(hntracks_max,hmax_scin_hits)
+      logical*4 hgood_tdc_neg(hntracks_max,hmax_scin_hits)
+      logical*4 hgood_scin_time(hntracks_max,hmax_scin_hits)
+      logical*4 hgood_plane_time(hntracks_max,hnum_scin_planes)
+      logical*4 hgood_beta(hntracks_max)
       logical*4 hscin_on_track(hntracks_max,hmax_scin_hits)
 
       common/hms_scin_tof/
@@ -82,7 +89,7 @@
      &     hscin_vel_light,
      &     hscin_pos_phc_coeff,hscin_neg_phc_coeff,
      &     hscin_pos_time_offset,hscin_neg_time_offset,
-     &     hscin_minph,
+     &     hscin_pos_minph, hscin_neg_minph,
      &     hscin_tdc_min,
      &     hscin_tdc_max,
      &     hscin_tdc_to_time,
@@ -98,7 +105,30 @@
 *
       real*4 h_fptime(hnum_scin_planes)    !time at fp from all hits in 1 plane
       real*4 h_fptimedif(6)                !fp time differences
+      real*4 hbeta_notrk
+      real*4 hbeta_chisq_notrk
 
-      common/htof_debugging/
+      common/htof_notrk/
      &  h_fptime,
-     &  h_fptimedif
+     &  h_fptimedif,
+     &  hbeta_notrk,
+     &  hbeta_chisq_notrk
+
+c      integer*4 hscin_pos_did(hnum_scin_planes,hnum_scin_elements)
+c      integer*4 hscin_neg_did(hnum_scin_planes,hnum_scin_elements)
+c      integer*4 hscin_pos_should(hnum_scin_planes,hnum_scin_elements)
+c      integer*4 hscin_neg_should(hnum_scin_planes,hnum_scin_elements)
+c      real*4 hscin_pos_eff(hnum_scin_planes,hnum_scin_elements)
+c      real*4 hscin_neg_eff(hnum_scin_planes,hnum_scin_elements)
+c      real*4 hscin_pos_solo(hnum_scin_planes,hnum_scin_elements)
+c      real*4 hscin_neg_solo(hnum_scin_planes,hnum_scin_elements)
+c
+c      common/hmore_debugging/
+c     &  hscin_pos_eff,
+c     &  hscin_neg_eff,
+c     &  hscin_pos_solo,
+c     &  hscin_neg_solo,
+c     &  hscin_pos_did,
+c     &  hscin_neg_did,
+c     &  hscin_pos_should,
+c     &  hscin_neg_should
