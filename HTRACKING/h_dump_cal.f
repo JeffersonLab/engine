@@ -17,6 +17,9 @@
 * block.
 *
 * $Log$
+* Revision 1.2  1996/01/17 18:17:47  cdaq
+* (SAW) Remove extra () pair around implied do loop in write statement
+*
 * Revision 1.1  1995/10/09 20:16:45  cdaq
 * Initial revision
 *
@@ -40,7 +43,7 @@
 *  Write out cal fitting data.
 *
       write(35,'(1x,52f7.1,1x,e11.4)') 
-     &      ((hcal_realadc(blk),blk=1,hmax_cal_blocks),hsp)
+     &      (hcal_realadc(blk),blk=1,hmax_cal_blocks),hsp
 
       RETURN
       END
