@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.3  1996/01/17 15:12:27  cdaq
+* (JRA) ADD SCER_RAW_ADC and SSCIN_FPTIME
+*
 * Revision 1.2  1995/08/11 16:29:08  cdaq
 * (CC) Add structure for # of photoelectrons in Cerenkov
 *
@@ -286,11 +289,11 @@
       PARAMETER(SMAX_CER_HITS=4)
       INTEGER*4 SCER_TOT_HITS
       INTEGER*4 SCER_TUBE_NUM
-      INTEGER*4 SCER_ADC
+      INTEGER*4 SCER_RAW_ADC
       INTEGER*4 SCER_PLANE
       COMMON/SOS_RAW_CER/
      &     SCER_TUBE_NUM(SMAX_CER_HITS),
-     &     SCER_ADC(SMAX_CER_HITS),
+     &     SCER_RAW_ADC(SMAX_CER_HITS),
      &     SCER_PLANE(SMAX_CER_HITS),
      &     SCER_TOT_HITS
 *
@@ -301,10 +304,12 @@
       INTEGER*4 SCER_NUM_HITS      ! NUMBER OF CERENKOV HITS ABOVE THRESHOLD
       REAL*4 SCER_NPE              ! ADC CONVERTED TO NUMBER OF PHOTOELECTRONS
       REAL*4 SCER_NPE_SUM          ! SUM OVER TUBES OF NPE'S
+      REAL*4 SCER_ADC              ! PED SUBTRACTED ADC FOR EACH *TUBE*
       COMMON/SCER_DECODED_CER/
      &     SCER_NUM_HITS,
      &     SCER_NPE(SMAX_CER_HITS),
-     &     SCER_NPE_SUM
+     &     SCER_NPE_SUM,
+     &     SCER_ADC(SMAX_CER_HITS)
 *
 *
 *
@@ -313,6 +318,9 @@
 *
 *     THERE ARE 14 AEROGEL PHOTOTUBES. We will pair tubes on the left and
 *     right side so that are 7 "counters"
+*** for evalutation of the amplifier/adder prototype there follow 8 left +
+*** 8 right adc values, 7 each are ampliefied signals, the 8th is sum of 7
+*** each
 *          TUBE Row
 *          ADC Left VALUE
 *          ADC Right VALUE
@@ -320,7 +328,8 @@
 *    HOWEVER TO MAKE THE DECODERS SYMMETRICAL TO A SCINT WE MUST ADD
 *    A DUMMY PLANE NUMBER.
       INTEGER*4 SMAX_AER_HITS
-      PARAMETER(SMAX_AER_HITS=8)
+***      PARAMETER(SMAX_AER_HITS=8)
+      PARAMETER(SMAX_AER_HITS=16)
       INTEGER*4 SAER_TOT_HITS
       INTEGER*4 SAER_PAIR_NUM
       INTEGER*4 SAER_ADC_LEFT
@@ -447,6 +456,7 @@
       REAL*4 SBETA(SNTRACKS_MAX)
       REAL*4 SBETA_CHISQ(SNTRACKS_MAX)
       REAL*4 STIME_AT_FP(SNTRACKS_MAX)
+      REAL*4 SSCIN_FPTIME(SNTRACKS_MAX,SMAX_SCIN_HITS)
 *
 *
       COMMON/SOS_TRACK_TESTS/
@@ -464,7 +474,8 @@
      C     SSCIN_HIT,              ! ARRAY OF SCIN HITS ASSOCIATED WITH
      D                             ! EACH TRACK
      E     SNUM_SCIN_HIT,          ! NUMBER OF HITS FOR EACH TRACK
-     F     SNUM_PMT_HIT            ! NUMBER OF PMT HITS FOR EACH TRACK
+     F     SNUM_PMT_HIT,           ! NUMBER OF PMT HITS FOR EACH TRACK
+     G     SSCIN_FPTIME
 *
 *
 *     SOS SINGLES PHYSICS COMMON BLOCKS
