@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 *-    $Log$
-*-    Revision 1.9  1995/05/22 19:39:25  cdaq
-*-    (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*-    Revision 1.10  1995/08/31 14:46:06  cdaq
+*-    (JRA) Add call to h_trans_cer
 *-
+* Revision 1.9  1995/05/22  19:39:25  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
 * Revision 1.8  1995/05/11  19:05:48  cdaq
 * (JRA) Add call to h_trans_misc
 *
@@ -99,6 +102,17 @@
 *     return
          endif                          ! end test on SCIN ABORT
       endif                             ! end test on hbypass_trans_scin
+*
+*     TRANSLATE CERENKOV
+*     HMS_RAW_CER ====> HMS_DECODED_CER
+*
+      If(hbypass_trans_cer.eq.0) then
+         call H_TRANS_CER(ABORT,err)
+         if(ABORT)  then
+            call G_add_path(here,err)
+*     return
+         endif                          ! end test on CER ABORT
+      endif                             ! end test on hbypass_trans_cer
 *
 *     TRANSLATE CALORIMETER 
 *     HMS_RAW_CAL ====> HMS_DECODED_CAL
