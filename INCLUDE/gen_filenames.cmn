@@ -2,6 +2,9 @@
 *
 *-Common block with filenames
 *     $Log$
+*     Revision 1.13.2.2  2003/08/14 16:13:15  cdaq
+*     Corrected mistake in setting G_LUN_WRITEOUT_SCALER ( mkj)
+*
 *     Revision 1.13.2.1  2003/08/14 00:44:13  cdaq
 *     Modify to be able to write scaler rates for each read to a file (mkj)
 *
@@ -60,7 +63,7 @@
       parameter (G_LUN_EPICS_OUTPUT=G_LUN_CHARGE_SCALER+1)
 *
       integer G_LUN_WRITEOUT_SCALER
-      parameter (G_LUN_WRITEOUT_SCALER=G_LUN_TEMP+1)
+      parameter (G_LUN_WRITEOUT_SCALER=G_LUN_EPICS_OUTPUT+1)
 *
 
       character*80 g_config_filename
