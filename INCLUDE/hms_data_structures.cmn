@@ -5,9 +5,18 @@
 *     Author:   D. F. Geesaman          1 September 1993
 *
 * $Log$
+* Revision 1.12  2003/09/05 20:39:18  jones
+* Merge in online03 changes (mkj)
+*
 * Revision 1.11  2003/04/01 13:55:08  jones
 * Add variables hntracks_max_fp and h_remove_sppt_if_one_y_plane to
 * hms_tracking.cmn
+*
+* Revision 1.10.2.2  2003/07/15 19:04:03  cdaq
+* add hsinplane
+*
+* Revision 1.10.2.1  2003/04/10 12:36:56  cdaq
+* comments added
 *
 * Revision 1.10  2003/01/02 18:34:51  jones
 * change HNTRACKS_MAX from 5 to 20
@@ -551,6 +560,7 @@
       REAL*4 HSDELTA             ! Spectrometer delta of chosen track
       REAL*4 HSTHETA             ! Lab Scattering angle in radians
       REAL*4 HSPHI               ! Lab Azymuthal angle in radians
+      REAL*4 HSINPLANE           ! In plane angle
       REAL*4 HSMINV              ! Invariant Mass of remaing hadronic system
       REAL*4 HSZBEAM             ! Lab Z coordinate of intersection of beam
                                  ! track with spectrometer ray
@@ -599,6 +609,7 @@
      & HSDELTA,
      & HSTHETA,
      & HSPHI,
+     & HSINPLANE,
      & HSMINV,
      & HSZBEAM,
      & HSDEDX,

@@ -4,6 +4,15 @@
 *     quantities calculated from the scaler events (time, current, etc...)
 *
 * $Log$
+* Revision 1.12  2003/09/05 20:29:03  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.11.2.2  2003/09/05 14:12:17  jones
+* Updates for using syncfilter (mkj)
+*
+* Revision 1.11.2.1  2003/08/14 00:44:13  cdaq
+* Modify to be able to write scaler rates for each read to a file (mkj)
+*
 * Revision 1.11  1999/02/23 19:07:06  csa
 * (JRA) Add WEIRD_CLEARS common
 *
@@ -43,6 +52,10 @@
       parameter (MAX_NUM_SCALERS=500)
       integer*4 MAX_NUM_EVSCALERS
       parameter (MAX_NUM_EVSCALERS=16)
+      integer*4 MAX_WRITEOUT_SCALERS
+      parameter (MAX_WRITEOUT_SCALERS=10)
+      integer*4 INDEX_WRITEOUT_SCALERS(10)
+      integer*4 NUM_WRITEOUT_SCALERS
 
       integer*4 gclock_index      !index of hardware scaler clock.
       real*4 gclock_rate          ! rate of hardware scaler clock.
@@ -53,14 +66,20 @@
       real*8 gscaler(MAX_NUM_SCALERS)         ! Current scaler values
       real*8 gscaler_old(MAX_NUM_SCALERS)     ! Scaler values at last event
       real*8 gscaler_change(MAX_NUM_SCALERS)  ! prev_scalers - scalers
+      real*8 gscaler_skipped(MAX_NUM_SCALERS)  ! prev_scalers - scalers
+      real*8 gscaler_saved(MAX_NUM_SCALERS)  ! prev_scalers - scalers
       real*4 g_run_time                       !time of run at most recent scaler event
-      real*4 g_beam_on_run_time               ! accumulated time of run for which
+      real*4 g_beam_on_run_time(2)               ! accumulated time of run for which
                                               ! beam current exceeded beam_on_thresh_cur.
+      real*8 ave_current_bcm(3)
       integer g_replay_time                   !time since start of run (from cpu clock) 
+      logical syncfilter_on
+      integer insync 
 *
       common /SCALERS/ gscaler, gscaler_old, gscaler_change,
+     $     ave_current_bcm,gscaler_skipped,gscaler_saved,
      $     gclock_rate, g_run_time, gclock_index, g_replay_time,
-     $     gscaler_nroll, g_beam_on_run_time
+     $     gscaler_nroll, g_beam_on_run_time,syncfilter_on,insync 
 
 c For Gen it is noticed that some scaler channels are randomly clearing
 c themselves.  The following is to
@@ -88,6 +107,7 @@ c themselves.  The following is to
       integer*4 gbcm2_index
       integer*4 gbcm3_index
       integer*4 gunser_index
+      integer*4 bcm_for_threshold_cut
       real*8 gbcm1_gain
       real*8 gbcm2_gain
       real*8 gbcm3_gain
@@ -96,7 +116,7 @@ c themselves.  The following is to
       real*8 gbcm2_offset
       real*8 gbcm3_offset
       real*8 gunser_offset
-      real*8 g_beam_on_thresh_cur     ! threshold for beam to be on.
+      real*8 g_beam_on_thresh_cur(2)     ! threshold for beam to be on.
 *
 *     CTPTYPE=event
 *
@@ -104,13 +124,15 @@ c themselves.  The following is to
       real*8 gbcm2_charge
       real*8 gbcm3_charge
       real*8 gunser_charge
-      real*8 g_beam_on_bcm_charge   ! "beam on" accumulated charge
+      real*8 g_beam_on_bcm_charge(2)   ! "beam on" accumulated charge
       integer*4 gscaler_event_num
 *
       common/BEAMCURRENT/
-     &    gbcm1_index, gbcm2_index, gbcm3_index, gunser_index,
      &    gbcm1_gain, gbcm2_gain, gbcm3_gain, gunser_gain,
      &    gbcm1_offset, gbcm2_offset, gbcm3_offset, gunser_offset,
      &    gbcm1_charge, gbcm2_charge, gbcm3_charge, gunser_charge,
      &    g_beam_on_bcm_charge, g_beam_on_thresh_cur,
+     &    gbcm1_index, gbcm2_index, gbcm3_index, gunser_index,bcm_for_threshold_cut,
      &    gscaler_event_num
+      common/ WRITESCALERS/
+     & NUM_WRITEOUT_SCALERS,INDEX_WRITEOUT_SCALERS

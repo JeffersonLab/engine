@@ -5,6 +5,15 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.10  2003/09/05 20:37:14  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.9.2.2  2003/08/12 17:35:57  cdaq
+* Add variables for e00-108 (hamlet)
+*
+* Revision 1.9.2.1  2003/07/15 19:04:15  cdaq
+* add ssinplane
+*
 * Revision 1.9  1999/02/23 19:19:57  csa
 * Change some physics vars
 *
@@ -576,6 +585,7 @@
       REAL*4 SSDELTA               ! Spectrometer delta of chosen track
       REAL*4 SSTHETA               ! Lab Scattering angle in radians
       REAL*4 SSPHI                 ! Lab Azymuthal angle in radians
+      REAL*4 SSINPLANE             ! In plane scattering angle
       REAL*4 SSMINV                ! Invariant Mass of remaing hadronic system
       REAL*4 SSZBEAM               ! Lab Z coordinate of intersection of beam
                                    ! track with spectrometer ray
@@ -610,6 +620,10 @@
       REAL*4 SSY                   ! fraction of lepton''s E lost in lab
       REAL*4 SSW                   ! Invariant mass of recoil system
       REAL*4 SSW2                  ! Invariant mass**2 of recoil system
+
+      REAL*4 SSOMEGA
+      REAL*4 SSTHET_GAMMA
+      REAL*4 SSX_bj
 *
       INTEGER*4 SSNUM_FPTRACK      ! Index of focal plane track chosen
       INTEGER*4 SSNUM_TARTRACK     ! Index of target track chosen
@@ -624,6 +638,7 @@
      & SSDELTA,
      & SSTHETA,
      & SSPHI,
+     & SSINPLANE,
      & SSMINV,
      & SSZBEAM,
      & SSDEDX,
@@ -656,7 +671,10 @@
      & SSTRACK_E3,
      & SSTRACK_E4,
      & SSCORRP,
-     & SSCORRE
+     & SSCORRE,
+     & SSOMEGA,
+     & SSTHET_GAMMA,
+     & SSX_bj
 *     & SSTHETAQ, SSPHIQ,
 *
       COMMON/SOS_PHYSICS_I4/

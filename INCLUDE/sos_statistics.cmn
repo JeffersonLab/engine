@@ -1,6 +1,12 @@
 *      sos_statistics.cmn
 *      common blocks containing event statistics for s_reconstruction
 * $Log$
+* Revision 1.13  2003/09/05 20:41:27  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.12.2.1  2003/04/02 22:26:28  cdaq
+* added some variables for scint. effic tests (from oct 1999 online) - JRA
+*
 * Revision 1.12  1996/09/04 16:31:47  saw
 * (SAW) Change ' to '' in comments
 *
@@ -168,3 +174,20 @@
      &   sdc_plane_eff,
      &   sdc_cham_hits,
      &   sdc_cham_eff
+
+* The logical variables just record if that particular event passed the test
+* for 'plane should have fired' and 'plane did fire'.  In CTP tests, we'll
+* apply additional cuts and check the efficiency.
+* 'Should' = event where other 3 hodoscope planes fired.
+* 'Did' = 'Should' && plane in question did fire.
+
+*
+*     CTPTYPE=event
+*
+      logical*4 strig_hodoshouldflag(snum_scin_planes)
+      logical*4 strig_hododidflag(snum_scin_planes)
+                                                  !(based on s1x,s1y... signals)
+      common/strig_hodostatistics/
+     &   strig_hodoshouldflag,
+     &   strig_hododidflag
+
