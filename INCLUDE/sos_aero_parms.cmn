@@ -1,4 +1,8 @@
 * $Log$
+* Revision 1.2  1996/10/02 19:56:46  saw
+* (RMM) Add rawadc arrays for diagnostic purposes and saer_sumA/B
+* variables
+*
 * Revision 1.1  1996/04/30 13:44:22  saw
 * Initial revision
 *
@@ -14,7 +18,11 @@
 *      CTPTYPE = event
 *
       integer*4 saer_tot_good_hits
-
+      integer*4 saer_rawadc_neg(smax_aer_hits)
+      integer*4 saer_rawadc_pos(smax_aer_hits)
+      integer*4 saer_sumA
+      integer*4 saer_sumB
+ 
       real*4 saer_pos_npe(smax_aer_hits)
       real*4 saer_neg_npe(smax_aer_hits)
       real*4 saer_neg_npe_sum
@@ -23,6 +31,10 @@
 
       common /aero_calib/
      &  saer_tot_good_hits,
+     &  saer_rawadc_neg,
+     &  saer_rawadc_pos,
+     &  saer_sumA,
+     &  saer_sumB,
      &  saer_pos_npe,
      &  saer_neg_npe,
      &  saer_pos_gain,
