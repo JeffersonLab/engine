@@ -9,44 +9,31 @@
 *     Purpose: decode straw chamber data, prepare for histogramming raw quantites,
 *       setup for tracking...
 *     Based on simple FPP analysis routines for Hall A
-c>    File : fpp_diagnose.f       
-c>    Authors :   E.J. Brash and M.K. Jones
-c>                July, 1996
-c>    Revised extensively 11/25/96 - 12/13/96 by R. Gilman and M. Jones
-c>    to generalize analysis routines, treating all plane groups with
-c>    same code rather than as special cases
-c>    Revised 12/14/96 by RG to include some autocalibration types of hists
-c>
-c>    Called by:  dplotana.f
-c>    Description:  Diagnosis of FPP data.
 * $Log$
+* Revision 1.2  1997/05/20 18:30:36  saw
+* (Ron Gilman) Code update
+*
 * Revision 1.1  1997/05/20 18:28:49  saw
 * Initial revision
 *
 *
 *     include files...
-      include 't20_data_structures.cmn'
       include 't20_test_detectors.cmn'
       include 't20_test_histid.cmn'
+      include 't20_reg_polder_structures.cmn'
+      include 't20_data_structures.cmn'
 
-      integer*4 LUN_CALIB               ! Set this somewhere else
-      parameter (LUN_CALIB=63)
+      integer*4 lun_calib               ! Set this somewhere else
+      parameter (lun_calib=62)
 
-*     local variablesu
-      integer*4 oldwiregroup, ngroup, tim
-      integer*4 nplane, itype, idiff, tdiff
-      integer*4 i, j, n, kk, ilete, ihit, noff, itot, iok
-      integer*4 raw_ntuples_written
-      integer*4 track_ntuples_written
-      integer*4 drift_time
-      real*4 degr, pos
-      real*4 slope, bint, pos1, pos2, dpos
+*     local variables
+      integer*4 nplane, idiff
+      integer*4 i, j, n, kk, ihit, noff, iok
+      real*4 pos
+*      real*4 slope, bint, pos1, pos2, dpos
 
-      data degr/0.01745329252/
 *     most intializations have been moved into ctp file
 *         terplay/PARAM/t20_test_detectors.param
-
-c     philosophy: planes are grouped together, each group is analyzed together
 
 *     first get hits out of input array and group into local plane hit
 *     structures the TDC appears to be LIFO (info from Glen Collins) but the
@@ -57,290 +44,670 @@ c     philosophy: planes are grouped together, each group is analyzed together
 *     IF THIS IS NOT THE CASE, JUST GET ELEMENTS OUT OF THE INPUT ARRAYS
 *     FROM LAST TO FIRST!
 *
-*     Here we assume the time scale is ns; probably it is 0.5 ns and we need
-*     to divide everything by 2 in the end...
+*     The time scale is in 1/2 ns! and is left in those units...
+*     positions will be in cm and angles will be in radians
 
-      oldwiregroup = 0
-      ttst_straw_goodedge = 0
+*     look through the raw data to associate the edges into hits,
+*     the way the decoder works, should get le hit immediately followed by
+*     te hit - the decoder reverses the readout order
+
+      call t_test_scint_analyze
+      call t_test_straw_initialize
+      call t_test_straw_gethits
+      if(ttst_raw_tot_hits.le.0)then
+        return
+      endif
+      call t_test_setup_track_input
+c      call t_test_throwout_hits
+      call t_test_set_trackcode
+
+*     if hits distributed okay, get track and do things with it...
+
+      noff = -3
+      do i = 1, 2
+         ttst_track_ntracks = 0
+         noff = noff + 4
+         ttst_nxytrack(i) = 0
+         ttst_nxytracktried(i) = 0
+        
+         if(ttst_straw_xygddmx(i).gt.2 .and.
+     +        ttst_straw_xygddmx(i).lt.6 .and.
+     +        ttst_straw_xyplnsht(i).gt.2) then
+
+            ttst_nxytracktried(i) = 1
+            call trk4(ttst_straw_planes_hit(noff),
+     +           ttst_track_hitarray(1,1,noff),
+     +           ttst_track_ntracks,
+     +           ttst_track_params(1,i) )
+            ttst_nxytrack(i) = ttst_track_ntracks
+            if(ttst_track_ntracks.eq.1)then
+c     increment a single chisq (resolution) histogram
+               call hf1(ttst_hid_strawres,ttst_track_params(3,i),1.)
+c     work out the good,bad,missing wire hists
+               do j = 1, 4
+                  nplane = j + noff - 1
+                  pos = ttst_track_params(2,i) + 
+     +                 ttst_track_params(1,i) *
+     +                 (ttst_straw_z0+ttst_straw_z(nplane))
+                  pos = pos - ttst_straw_x1(nplane)
+                  idiff = nint(pos/ttst_straw_spacing +
+     +                 ttst_straw_sctr(nplane))
+                  if(i.eq.1)kk = 56*(j-1)
+                  if(i.eq.2)kk = 224 + 24*(j-1)
+                  if(ttst_straw_planes_hit(nplane).eq.0)then
+                     call hf1(ttst_hid_strawhitms,float(kk+idiff),1.)
+                  else
+                     iok = 0
+                     do ihit = 1, ttst_straw_planes_hit(nplane)
+                        n = ttst_track_hitarray(1,ihit,nplane)
+c     if(n.eq.idiff)then
+                        if(n.le.idiff+1 .and. n.ge.idiff-1)then
+                           iok = 1
+                           call hf1(ttst_hid_strawhitgd,float(kk+n),1.)
+c     call hf1(ttst_hid_planeoffs(nplane),0.,1.)
+                        else
+                           call hf1(ttst_hid_strawhitbd,float(kk+n),1.)
+                           n = n-idiff
+c     call hf1(ttst_hid_planeoffs(nplane),
+c     +                float(n),1.)
+                        endif                   !if there are hits on planes
+                     enddo                      !loop over hits in plane
+                     if(iok.eq.0)then
+                        call hf1(ttst_hid_strawhitms,float(kk+idiff),1.)
+                     endif                      !if no hit where expected
+                  endif                         !if there are hits in plane
+               enddo                            !loop over planes
+            endif                               !if there is track
+         endif                                  !if okay #hits to try to track
+      enddo                                     !loop over two coordinates
+
+c     rotate track if needed
+      call t_test_project_track
+
+c     work out the track codes from the arrays...
+      call hf1(ttst_hid_trackcode, 0., 1.)
+      do i = 1, 2
+         j = 2*i - 1
+         if(ttst_nxytracktried(i).eq.1)then
+            call hf1(ttst_hid_trackcode, float(j), 1.)
+c            type *, i, ttst_track_chisqcut, ttst_track_params(3,i)
+            if(ttst_nxytrack(i).gt.0 .and. 
+     +           ttst_track_params(3,i).le.0.2)
+     +           call hf1(ttst_hid_trackcode, float(j+1), 1.)
+         endif
+      enddo
+      if(ttst_nxytracktried(1).eq.1 .and. 
+     +     ttst_nxytracktried(2).eq.1) then
+         call hf1(ttst_hid_trackcode, float(5), 1.)
+         if(ttst_nxytrack(1).eq.1 .and. ttst_nxytrack(2).eq.1.and.
+     +        ttst_track_params(3,1).le.0.2 .and.
+     +        ttst_track_params(3,2).le.0.2 )
+     +        call hf1(ttst_hid_trackcode, float(6), 1.)
+      endif
+
+      return
+      end
+c     ----------------------------------------------------------------------
+      subroutine t_test_straw_initialize
+      implicit none
+      save
+      include 't20_test_detectors.cmn'
+      integer*4 i, j
+     
+c      ttst_straw_goodedge = 0
+      ttst_straw_goodhit = 0
       ttst_straw_gooddemux = 0
-      do i = 1, ttst_n_straw_wgs
-        ttst_straw_hits(i) = 0
-      enddo
-c      write(6,*)' '
-c      write(6,*)'ttst_raw_tot_hits =', ttst_raw_tot_hits
-      do i = ttst_raw_tot_hits, 1, -1
-        ttst_straw_plane = ttst_raw_plane_num(i)
-        ttst_straw_ggroup = 
-     +       ttst_straw_plane_group_off(ttst_straw_plane)
-     +       + ttst_raw_group_num(i)
-        tim = ttst_raw_tdc(i)
-c        write(6,*)'hit ',i,' plane ',ttst_straw_plane,' wg ',
-c     +       ttst_straw_ggroup
-c        write(6,*)'tim =',tim,' g-grp=',ttst_straw_ggroup,' old-grp=',
-c     +    oldwiregroup
-        ilete = iand(tim,'10000'X)
-        tim = iand(tim,'FFFF'X)
-        if(ilete.eq.0)then            !leading edge when bit 16 = 0, later doc
-c		iand generix, jiand 4 byte, iiand 2 byte
-c          write(6,*)' LE time =',tim,' for g-grp=',ttst_straw_ggroup
-          if(tim.ge.ttst_TDC_min .and. tim.le.ttst_TDC_max)then
-c          if(tim.ge.2000 .and. tim.le.2400)then
-            n = ttst_straw_hits(ttst_straw_ggroup) + 1
-            if(n.gt.16)n = 16
-            oldwiregroup = ttst_straw_ggroup
-            ttst_straw_tims(n,oldwiregroup) = tim
-          endif
-
-        else                !get trailing edge immediately after a LE only
-
-          if(ttst_straw_ggroup.eq.oldwiregroup)then !same group :)
-c            write(6,*)' matching g-grp for TE! TE tim=',tim
-            n = ttst_straw_hits(ttst_straw_ggroup) + 1
-            if(n.gt.16)n = 16
-            ttst_straw_hits(ttst_straw_ggroup) = n
-            ttst_straw_wids(n,oldwiregroup) =
-     +           ttst_straw_tims(n,oldwiregroup) - tim
-            ttst_straw_goodedge = ttst_straw_goodedge + 2
-c            write(6,*)' now ',ttst_straw_goodedge,' good edges'
-            call hf1(ttst_hid_straw_letdc,
-     +               float(ttst_straw_tims(n,oldwiregroup)),1.)
-            call hf1(ttst_hid_straw_width,
-     +               float(ttst_straw_wids(n,oldwiregroup)),1.)
-            call hf1(ttst_hid_wg,
-     +               float(oldwiregroup),1.)
-            if(ttst_raw_ntuples_out.gt.0)then
-              if(raw_ntuples_written.lt.ttst_raw_ntuples_out) then
-                raw_ntuples_written = raw_ntuples_written + 1
-                write(lun_calib,*) oldwiregroup,
-     +               ttst_straw_tims(n,oldwiregroup),
-     +               ttst_straw_wids(n,oldwiregroup)
-              endif
-              if(raw_ntuples_written.eq.ttst_raw_ntuples_out)then
-                write(6,*)' t_test_straw_analyze wrote',
-     +               raw_ntuples_written,' ntuples'
-                raw_ntuples_written = raw_ntuples_written + 1
-              endif
-            else
-              raw_ntuples_written = 0
-            endif
-          endif
-          oldwiregroup = 0
-        endif
-      enddo
-      ttst_straw_goodhit = ttst_straw_goodedge/2
-c      write(6,*)ttst_straw_goodhit,' good hits found of',
-c     +  ttst_raw_tot_hits
-
-
-*      now have captured into the arrays the pairs of hits...
-*      count up planes hit, also work out demultiplex and straws hit...
-*      have also ordered everything by global wiregroup, and thus
-*      by  plane number
-
-      do i = 1, ttst_n_straw_planes
-        ttst_straw_planes_hit(i) = 0
-      enddo
-
-      do ngroup=1, ttst_n_straw_wgs
-c         if (debug_flag) write(*,*) ' Straw Chambers planes',
-c     +                              name(ngroup)
-c         if(debug_flag) write(*,*) ' PLANE   NHITS   WG   LE (ns)',
-c     +                        '   TE (ns)   WID (ns)  STRAW   WIRE'
-
-        if(ttst_straw_hits(ngroup).gt.0)then
-          nplane = ttst_plane_of_group(ngroup)
-          noff = ngroup - ttst_straw_plane_group_off(nplane) - 1
-          noff = 8*noff
-          itype = ttst_straw_type(nplane)
-          do i = 1, ttst_straw_hits(ngroup)
-            tdiff = ttst_straw_wids(i,ngroup)
-            idiff = 0
-            ttst_straw_straw(i,ngroup) = 0
-            do kk = 1, 9
-              if(tdiff.gt.ttst_dmx(kk,ngroup)) idiff=kk
-            enddo
-            if(idiff.gt.0.and.idiff.le.8) then
-              idiff = ttst_type_order(idiff,itype)
-              ttst_straw_straw(i,ngroup) = noff + idiff
-            call hf1(ttst_hid_strawmap(nplane),
-     +               float(ttst_straw_straw(i,ngroup)),1.)
-              ttst_straw_planes_hit(nplane) =
-     +          ttst_straw_planes_hit(nplane) + 1
-              ihit = ttst_straw_planes_hit(nplane)
-              if(ihit.gt.max_track_hit) ihit=max_track_hit
-              ttst_straw_gooddemux = ttst_straw_gooddemux + 1
-c     have a good hit and a good demux, so store it for tracking!
-c     following line is just sample of what will be needed
-              ttst_track_hitarray(3,ihit,nplane) =
-     +          ttst_straw_z(nplane)
-              ttst_track_hitarray(1,ihit,nplane) =
-     +          ttst_straw_straw(i,ngroup)
-              ttst_track_hitarray(4,ihit,nplane) =
-     +        (ttst_straw_straw(i,ngroup)-ttst_straw_sctr(nplane))
-     +         * ttst_straw_spacing + ttst_straw_x1(nplane)
-              drift_time = ttst_straw_tims(i,ngroup)-ttst_TDC_min
-              ttst_track_hitarray(2,ihit,nplane) = 
-     +        ttst_drift_max * ttst_drift_table(drift_time)
-              call hf1(ttst_hid_driftdist,
-     +          ttst_track_hitarray(2,ihit,nplane),1.)
-              call hf1(ttst_hid_drifttime,float(drift_time),1.)
-              drift_time = ttst_drift_t0-ttst_straw_tims(i,ngroup)
-              ttst_track_dxpos2(ihit,nplane) =
-     +        ttst_drift_v * drift_time
-              if(ttst_track_dxpos2(ihit,nplane).gt.ttst_drift_max)
-     +           ttst_track_dxpos2(ihit,nplane) = ttst_drift_max
-              if(ttst_track_dxpos2(ihit,nplane).lt. 0.)
-     +           ttst_track_dxpos2(ihit,nplane) = 0.
-              call hf1(ttst_hid_driftdistv0,
-     +          ttst_track_dxpos2(ihit,nplane),1.)
-              call hf1(ttst_hid_drifttimet0,float(drift_time),1.)
-            endif      ! if   idiff 
-          enddo        ! loop over # hits      
-        endif          ! if   any straws in group hit
-      enddo            ! loop over wiregroups in plane
-
-*       write out ntuple if needed, count total number of hits
-      itot = 0
-      do i = 1, ttst_n_straw_planes
-        itot = itot + ttst_straw_planes_hit(i)
-      enddo
-
-*       cont up number of x, y hits, xyplaneshit
       ttst_straw_xgddmx = 0
       ttst_straw_ygddmx = 0
       ttst_straw_xplnsht = 0
       ttst_straw_yplnsht = 0
-      do i = 1, 4
-       ttst_straw_xgddmx = ttst_straw_xgddmx + 
-     +     ttst_straw_planes_hit(i)
-       if(ttst_straw_planes_hit(i).gt.0)
-     +  ttst_straw_xplnsht = ttst_straw_xplnsht + 1
-       ttst_straw_ygddmx = ttst_straw_ygddmx +
-     +     ttst_straw_planes_hit(i+4)
-       if(ttst_straw_planes_hit(i+4).gt.0)
-     +  ttst_straw_yplnsht = ttst_straw_yplnsht + 1
+      do i = 1, ttst_n_straw_planes
+        ttst_straw_planes_hit(i) = 0
+      enddo
+      do i = 1, ttst_n_straw_wgs
+        ttst_straw_hits(i) = 0
       enddo
 
-*     write out nutples only for 8 hit events?
-      if(ttst_track_ntuples_out.gt.0.and.itot.gt.0
-     +   .and. ttst_straw_xgddmx.eq.4
-     +   .and. ttst_straw_ygddmx.eq.4
-     +   .and. ttst_straw_xplnsht.eq.4 
-     +   .and. ttst_straw_yplnsht.eq.4 )then
-        if(track_ntuples_written.lt.ttst_track_ntuples_out) then
-          track_ntuples_written = track_ntuples_written + 1
-          write(lun_calib,'(i5,16f7.3)')itot,
-     +      (ttst_straw_z(nplane),ttst_track_hitarray(1,1,nplane),
-     +       nplane=1,8)
-c          do nplane = 1, ttst_n_straw_planes
-c            if(ttst_straw_planes_hit(nplane).gt.0)then
-c              do ihit = 1, ttst_straw_planes_hit(nplane)
-c                write(lun_calib,'(2i5,3f10.4)')
-c     +                 nplane, ttst_track_straw(ihit,nplane),
-c     +                 ttst_straw_z(nplane),
-c     +                 ttst_track_xpos(ihit,nplane),
-c     +                 ttst_track_dxpos(ihit,nplane)
-c              enddo
-c            endif
-c          enddo
-        endif
-        if(track_ntuples_written.eq.ttst_track_ntuples_out)then
-          write(6,*)' t_test_straw_analyze wrote',
-     +      track_ntuples_written,' track ntuples'
-          endif
-      else
-        track_ntuples_written = 0
+      do i = 1, 2
+         ttst_num_oot(i) = 0
+         do j = 1, 3
+            ttst_track_params(j,i) = -9999.
+         enddo
+         ttst_track_pos_est(i) = 0.
+         ttst_track_angle(i) = -9999.
+         ttst_nxytrack(i) = 0
+         ttst_num_oot(i) = 0
+         ttst_avetim_oot(i) = 0
+      enddo
+      ttst_track_ntracks = 0
+
+      ttst_stpld_xposdiff = -9999.
+      ttst_stpld_yposdiff = -9999.
+      ttst_stpld_thposdiff = -9999.
+      ttst_stpld_phposdiff = -9999.
+
+      return
+      end
+
+c     ----------------------------------------------------------------------
+      subroutine t_test_straw_gethits
+      implicit none
+      save
+      include 't20_data_structures.cmn'
+      include 't20_test_histid.cmn'
+      include 't20_test_detectors.cmn'
+      integer*4 lun_calib               ! Set this somewhere else
+      parameter (lun_calib=62)
+      integer*4 str_group,str_plane,str_ggroup
+      integer*4 i,n,oldwg,tim,ilete,oldtim
+      integer*4 wgs(50),times(50),wids(50),straws(50),planes(50)
+      integer*4 ioot1, nfp, idiff, kk, itype
+      
+      if(
+     +  ttst_reallyraw_out.gt.0 .and.
+     +  ttst_reallyraw_out.gt.reallyraw_written ) then
+        type *, 't_test_straw_analyze called, tot_hits=',
+     +    ttst_raw_tot_hits
+        reallyraw_written = reallyraw_written + 1
+      endif
+      if(ttst_raw_tot_hits.le.0)then
+        return
       endif
 
-*     if enough hits, move into tracking arrays and get track...
-      noff = -3
-      do i = 1, 2
-        ttst_track_ntracks = 0
-        noff = noff + 4
-        if(ttst_straw_xygddmx(i).gt.2 .and.
-     +     ttst_straw_xygddmx(i).lt.6 .and.
-     +     ttst_straw_xyplnsht(i).gt.2) then
+      if( 
+     +  ttst_raw_ntuples_out.gt.0 .and. 
+     +  raw_ntuples_written.eq.0 .and.
+     +  ttst_raw_tot_hits.gt.0 ) then
+        open(unit=lun_calib,file='t20_test_hits.ntuple',status='new')
+      endif
+     
+c     combine edges into pairs of le/te edges...
 
-          call trk4(ttst_straw_planes_hit(noff),
-     +              ttst_track_hitarray(1,1,noff),
-     +              ttst_track_ntracks,
-     +              ttst_track_params(1,i) )
-        endif
-c     histogram crude efficiency spectrum
-        call hf1(ttst_hid_xoryhits,
-     +       float(ttst_straw_xygddmx(i)),1.)
-        if(ttst_track_ntracks.gt.0)then
-          call hf1(ttst_hid_evtstrcked,
-     +       float(ttst_straw_xygddmx(i)),1.)
-c     some housekeeping so ctp histograms intercepts and angles
-          ttst_track_angle(i) = atan(ttst_track_params(1,i))/degr
-c     increment a single resolution histogram
-          call hf1(ttst_hid_strawres,
-     +       ttst_track_params(3,i),1.)
-c     work out the good,bad,missing wire hists
-          do j = 1, 4
-            nplane = j + noff - 1
-            pos = ttst_track_params(2,i) + 
-     +            ttst_track_params(1,i)*ttst_straw_z(nplane)
-            if(j.eq.1)then
-              pos1 = ttst_track_hitarray(4,1,nplane)
-              if(pos.gt.pos1)then
-                pos1 = pos1 + ttst_track_hitarray(2,1,nplane)
-              else
-                pos1 = pos1 - ttst_track_hitarray(2,1,nplane)
-              endif
-            endif
-            if(j.eq.2)then
-              pos2 = ttst_track_hitarray(4,1,nplane)
-              if(pos.gt.pos2)then
-                pos2 = pos2 + ttst_track_hitarray(2,1,nplane)
-              else
-                pos2 = pos2 - ttst_track_hitarray(2,1,nplane)
-              endif
-              slope = (pos2 - pos1) / 
-     +          (ttst_straw_z(2)-ttst_straw_z(1))
-              bint = pos2 - ttst_straw_z(2)*slope
-            endif
-            pos = pos - ttst_straw_x1(nplane)
-            idiff = nint(pos/ttst_straw_spacing + ttst_straw_sctr(nplane))
-            if(i.eq.1)kk = 56*(j-1)
-            if(i.eq.2)kk = 224 + 24*(j-1)
-            if(ttst_straw_planes_hit(nplane).eq.0)then
-              call hf1(ttst_hid_strawhitms,float(kk+idiff),1.)
-            else
-              iok = 0
-              do ihit = 1, ttst_straw_planes_hit(nplane)
-                n = ttst_track_hitarray(1,ihit,nplane)
-                  if(j.eq.3 .or. j.eq.4)then
-                    dpos = slope*ttst_straw_z(nplane) + bint
-     +                 - ttst_track_hitarray(4,1,nplane)
-                    if(dpos.lt.0.)then
-                      dpos = dpos + ttst_track_hitarray(2,1,nplane)
-                    else
-                      dpos = dpos - ttst_track_hitarray(2,1,nplane)
-                    endif
-                    call hf1(ttst_hid_linoff(nplane),dpos,1.)
+      nfp = 0
+      oldwg = 0
+      do i =  ttst_raw_tot_hits, 1, -1
+         str_plane = ttst_raw_plane_num(i)
+         str_group = ttst_raw_group_num(i)
+         str_ggroup = str_group + ttst_straw_plane_group_off(str_plane)
+         tim = ttst_raw_tdc(i)
+         ilete = iand(tim,'10000'X)
+         if(ilete.ne.0)ilete=1
+         tim = iand(tim,'FFFF'X)
+c     iand generic, jiand 4 byte, iiand 2 byte
+         if(
+     +        ttst_reallyraw_out.gt.0 .and.
+     +        ttst_reallyraw_out.gt.reallyraw_written ) then
+            type *,i,ttst_raw_plane_num(i),ttst_raw_group_num(i),
+     +           str_group,ilete,tim
+         endif
+         if(ilete.eq.0)then
+            oldwg = str_ggroup
+            oldtim = tim
+         else
+c     only get trailing edge immediately after a LE
+            if(str_ggroup.eq.oldwg)then          !same group :)
+               nfp = nfp + 1
+               if(nfp.gt.50)nfp = 50
+               planes(nfp) = str_plane
+               wgs(nfp) = oldwg
+               times(nfp) = oldtim
+               wids(nfp) = oldtim - tim
+c     demux here and now!
+               idiff = 0
+               do kk = 1, 9
+                  if(wids(nfp).gt.ttst_dmx(kk,str_ggroup)) idiff=kk
+               enddo
+               if(idiff.gt.0.and.idiff.le.8) then
+                  itype = ttst_straw_type(str_plane)
+                  idiff = ttst_type_order(idiff,itype)
+                  straws(nfp) = 8*(str_group-1) + idiff
+               else
+                  nfp = nfp - 1
+               endif
+c     done demux!
+               if(
+     +              ttst_raw_ntuples_out.gt.0 .and.
+     +              raw_ntuples_written.lt.ttst_raw_ntuples_out ) then
+                  raw_ntuples_written = raw_ntuples_written + 1
+                  write(lun_calib,'(3f6.0)') float(oldwg),
+     +                 float(oldtim),float(wids(nfp))
+                  if(raw_ntuples_written.eq.ttst_raw_ntuples_out)then
+                     write(6,*)' t_test_straw_analyze wrote',
+     +                    raw_ntuples_written,' ntuples'
+                     raw_ntuples_written = raw_ntuples_written + 1
                   endif
-                if(n.eq.idiff)then
-                  iok = 1
-                  call hf1(ttst_hid_strawhitgd,float(kk+n),1.)
-                  call hf1(ttst_hid_planeoffs(nplane),0.,1.)
-                else
-                  call hf1(ttst_hid_strawhitbd,float(kk+n),1.)
-                  n = n-idiff
-                  call hf1(ttst_hid_planeoffs(nplane),
-     +                float(n),1.)
-                endif     !if there are hits on planes
-              enddo       !loop over hits in plane
-              if(iok.eq.0)then
-                call hf1(ttst_hid_strawhitms,float(kk+idiff),1.)
-c               write(6,*)' no hit where epected: wire,off=',
-c     +           ihit,kk
-              endif       !if no hit where expected
-            endif         !if there are hits in plane
-          enddo           !loop over planes
-        endif             !if there is track
-      enddo               !loop over two coordinates
+               endif
+               call hf1(ttst_hid_straw_wletdc,float(oldtim),1.)
+               call hf1(ttst_hid_straw_letdc,float(oldtim),1.)
+            endif
+         endif
+      enddo
+
+c     have found all le/te pairs, save good and bad (oot=out of time) hits
+
+      do i =  1, nfp
+         if(times(i).ge.ttst_TDC_min .and. times(i).le.ttst_TDC_max)then
+            n = ttst_straw_hits(wgs(i)) + 1
+            if(n.gt.8)n = 8
+            ttst_straw_hits(wgs(i)) = n
+            ttst_straw_tdc(n,wgs(i)) = times(i)
+            ttst_straw_wid(n,wgs(i)) = wids(i)
+            ttst_straw_num(n,wgs(i)) = straws(i)
+            ttst_straw_goodhit = ttst_straw_goodhit + 1
+            call hf2(ttst_hid_dmxchck,float(wgs(i)),float(wids(i)),1.)
+            call hf1(ttst_hid_straw_width,float(wids(i)),1.)
+            call hf1(ttst_hid_wg,float(wgs(i)),1.)
+            n = 8*ttst_straw_plane_group_off(planes(i)) + straws(i)
+            call hf1(ttst_hid_strawmap,float(n),1.)
+         else
+            ioot1 = 0
+            do n = 1, 2
+               if(ioot1.eq.0)then
+                  if(ttst_num_oot(n).eq.0)then
+                     ttst_num_oot(n) = 1
+                     ttst_avetim_oot(n) = times(i)
+                     ttst_wg_oot(1,n) = wgs(i)
+                     ttst_tim_oot(1,n) = times(i)
+                     ttst_wid_oot(1,n) = wids(i)
+                     ttst_str_oot(1,n) = straws(i)
+                     ttst_pln_oot(1,n) = planes(i)
+                     ioot1 = 1
+	          else
+                     if(times(i).gt.ttst_avetim_oot(n)-200 .and.
+     +	                times(i).lt.ttst_avetim_oot(n)+200) then
+                        ttst_num_oot(n) = ttst_num_oot(n) + 1
+                        if(ttst_num_oot(n).lt.11)then
+                           ttst_wg_oot(ttst_num_oot(n),n) = wgs(i)
+                           ttst_tim_oot(ttst_num_oot(n),n) = times(i)
+                           ttst_wid_oot(ttst_num_oot(n),n) = wids(i)
+                           ttst_str_oot(ttst_num_oot(n),n) = straws(i)
+                           ttst_pln_oot(ttst_num_oot(n),n) = planes(i)
+                        endif
+                        ioot1 = 1
+                     endif
+                  endif
+               endif
+            enddo
+         endif
+      enddo
+
+      call t_test_oot_track
+      
+      return
+      end
+c     ----------------------------------------------------------------------
+      subroutine t_test_oot_track
+      implicit none
+      save
+      include 't20_test_detectors.cmn'
+      include 't20_test_histid.cmn'
+      integer*4 i, j, k, np
+      integer*4 nxy(8), nxyt(2), ntf
+      real*4 z(8), xy(8), t, avexy(2)
+      real*4 rcept(2), slope(2)
+      real*4 xbar, ybar, xsqbar, xybar, diff
+    
+*     this routine attempts to track 1-2 oot tracks using wire positions only
+*     try to track oot hits if a likely-to-be-trackable number of them
+*     cannot get hits out quite like do for usual tracking...
+
+
+      do i = 1, 2
+         if(ttst_num_oot(i).gt.10)ttst_num_oot(i)=10
+         if(ttst_num_oot(i).gt.6)then
+            do j = 1, 8
+               nxy(j) = 0
+               xy(j) = 0.
+               enddo
+            do j = 1, ttst_num_oot(i)
+               np = ttst_pln_oot(j,i)
+               if(nxy(np).eq.0)then
+                  nxy(np) = 1
+                  z(np) = ttst_straw_z(np) + ttst_straw_z0
+                  xy(np) = 
+     +                 (ttst_str_oot(j,i)-ttst_straw_sctr(np)) *
+     +                 ttst_straw_spacing + ttst_straw_x1(np)
+               else                             !boot, 1 hit/plane unless close
+                  t = (ttst_str_oot(j,i)-ttst_straw_sctr(np)) *
+     +                 ttst_straw_spacing + ttst_straw_x1(np)
+                  if(abs(t-xy(np)).gt.2.5) then
+                     if(nxy(np).eq.1) nxy(np) = 0
+                  else
+                     xy(np) = xy(np)*nxy(np) + t
+                     nxy(np) = nxy(np)+1
+                     xy(np) = xy(np) / nxy(np)
+                  endif
+               endif
+            enddo
+c     have accumulated all of the x and y hits... make sure all
+co    hits close together, and if enough try to track...
+c            type *,'accumulated all oots into tracking arrays...'
+c            type *,'num_oots=',ttst_num_oot(i)
+c            type *,(nxy(j),j=1,8)
+c            type *,(z(j),j=1,8)
+c            type *,(xy(j),j=1,8)
+            ntf = 0
+            do j = 1, 2
+               slope(j) = -999.
+               rcept(j) = -99999999.
+               avexy(j) = 0.
+               nxyt(j) = 0
+               do k = 4*j-3, 4*j
+                  if(nxy(k).gt.0)then
+                     avexy(j) = avexy(j) + xy(k)
+                     nxyt(j) = nxyt(j) + 1
+                  endif
+               enddo
+               if(nxyt(j).gt.0)avexy(j) = avexy(j)/nxyt(j)
+               nxyt(j) = 0
+               do k = 4*j-3, 4*j
+                  if(abs(xy(k)-avexy(j)).gt.2.0)nxy(k) = 0
+                  if(nxy(k).gt.0)nxyt(j) = nxyt(j) + 1
+               enddo
+c               type *,'nxyt=',nxyt(j)
+               if(nxyt(j).gt.2)then
+                  xbar   = 0
+                  ybar   = 0
+                  xsqbar = 0
+                  xybar  = 0
+                  do k = 4*j-3, 4*j
+                     if(nxy(k).gt.0)then
+                        xbar   = xbar + z(k)
+                        xsqbar = xsqbar + z(k)**2
+                        ybar   = ybar + xy(k)
+                        xybar  = xybar + z(k)*xy(k)
+                     endif
+                  enddo
+                  diff   = nxyt(j)*xsqbar - xbar**2
+                  if(diff.ne.0.)then
+                     slope(j)  = (nxyt(j)*xybar - xbar*ybar) / diff
+                     rcept(j)  = -1.*(xybar*xbar-xsqbar*ybar) / diff
+                     ntf = ntf + 1
+c     histogram x, y here!
+                     xbar = rcept(j) + slope(j)*
+     +                    (ttst_straw_z0+ttst_straw_zchmbr)
+                     if(j.eq.1)then
+                        call hf2(ttst_hid_oot_thvx,xbar,slope(j),1.)
+                     else
+                        call hf2(ttst_hid_oot_phvy,xbar,slope(j),1.)
+                     endif
+                  endif
+               endif
+            enddo
+            if(ntf.eq.2)then
+c     histogram x_vs_y here
+               call hf2(ttst_hid_oot_yvx,rcept(1),rcept(2),1.)
+            endif
+         endif
+      enddo
+
+      return
+      end
+c     ----------------------------------------------------------------------
+      subroutine t_test_setup_track_input
+      implicit none
+      save
+      include 't20_test_detectors.cmn'
+      include 't20_test_histid.cmn'
+      integer*4 i, j, k, ihit, drift_time
+      integer*4 ngroup, nplane, noff, itype
+      real*8 avepos(8), ave, driftdistance
+
+*      now have captured into the arrays the pairs of hits...
+*      count up planes hit, also work out demultiplex and straws hit...
+*      increment the arrays that will be used for tracking
+*      have also ordered everything by global wiregroup, and thus
+*      by  plane number
+
+      do i = 1, 8
+         avepos(i) = 0.
+      enddo
+      do ngroup=1, ttst_n_straw_wgs
+         if(ttst_straw_hits(ngroup).gt.0)then
+            nplane = ttst_plane_of_group(ngroup)
+            noff = 8*(ngroup-ttst_straw_plane_group_off(nplane)-1)
+            itype = ttst_straw_type(nplane)
+            do i = 1, ttst_straw_hits(ngroup)
+               ttst_straw_planes_hit(nplane) =
+     +              ttst_straw_planes_hit(nplane) + 1
+               ihit = ttst_straw_planes_hit(nplane)
+               if(ihit.gt.max_track_hit) ihit=max_track_hit
+               ttst_straw_gooddemux = ttst_straw_gooddemux + 1
+c     have a good hit and a good demux, so store it for tracking!
+c     hitarray 1=straw #, 2=drift distance 3=z of plane 4=x/y of straw wire
+               ttst_track_hitarray(1,ihit,nplane) =
+     +              ttst_straw_num(i,ngroup)
+               ttst_track_hitarray(3,ihit,nplane) =
+     +              ttst_straw_z(nplane) + ttst_straw_z0
+               ttst_track_hitarray(4,ihit,nplane) =
+     +              (ttst_straw_num(i,ngroup)-ttst_straw_sctr(nplane))
+     +              * ttst_straw_spacing + ttst_straw_x1(nplane)
+               avepos(nplane) = avepos(nplane) + 
+     +            ttst_track_hitarray(4,ihit,nplane)
+*     readjust tim with tim offset... 
+*     do not do above, affects writing raw ntuples
+*     the readjustment could move us out of the drift table range, so ensure
+*     it does not!
+               ttst_straw_tdc(i,ngroup) = ttst_straw_tdc(i,ngroup)
+     +              - ttst_t0(ngroup)
+               drift_time = ttst_straw_tdc(i,ngroup)-ttst_TDC_min
+               if(drift_time.lt.1)drift_time = 1
+               if(drift_time.gt.400)drift_time = 400
+               driftdistance = 
+     +              ttst_drift_max * ttst_drift_table(drift_time)
+               ttst_track_hitarray(2,ihit,nplane) = driftdistance
+               call hf1(ttst_hid_driftdist,
+     +              ttst_track_hitarray(2,ihit,nplane),1.)
+               call hf1(ttst_hid_drifttime,float(drift_time),1.)
+*     find ``real'' drift time, and use simple constant velocity, for
+*     comparison to better table algoithym
+               drift_time = ttst_drift_t0-ttst_straw_tdc(i,ngroup)
+               ttst_track_dxpos2(ihit,nplane) =
+     +              ttst_drift_v * drift_time
+               if(ttst_track_dxpos2(ihit,nplane).gt.ttst_drift_max)
+     +              ttst_track_dxpos2(ihit,nplane) = ttst_drift_max
+               if(ttst_track_dxpos2(ihit,nplane).lt. 0.)
+     +              ttst_track_dxpos2(ihit,nplane) = 0.
+               call hf1(ttst_hid_driftdistv0,
+     +              ttst_track_dxpos2(ihit,nplane),1.)
+               call hf1(ttst_hid_drifttimet0,float(drift_time),1.)
+*     last chance to remove hit if drift time/distance not sufficiently
+*     good... keep it in center 99% of te drift range... or  remove
+               if(driftdistance.lt.0.005*ttst_drift_max .or.
+     +              driftdistance.gt.0.995*ttst_drift_max) then
+                  ttst_straw_planes_hit(nplane) =
+     +                 ttst_straw_planes_hit(nplane) - 1
+                  ttst_straw_gooddemux = ttst_straw_gooddemux - 1
+               endif
+            enddo                               ! loop over # hits      
+         endif                                  ! if   any straws in group hit
+      enddo                                     ! loop over wiregroups in plane
+
+*     work out average position in x, y, and
+*     make new summary plot of hits on planes...
+*     add up # of x, y hits, xyplaneshit, total # of hits: for later use
+
+      do i = 1, 2
+        ave = 0
+        j = 0
+        do nplane = 4*i-3, 4*i
+          j = j + ttst_straw_planes_hit(nplane)
+          ave = ave + avepos(nplane)
+          k = 10*(nplane-1)+ ttst_straw_planes_hit(nplane)
+          call hf1(ttst_hid_numhitsonplanes,float(k),1.)
+          ttst_straw_xygddmx(i) = ttst_straw_xygddmx(i) + 
+     +         ttst_straw_planes_hit(nplane)
+          if(ttst_straw_planes_hit(nplane).gt.0)
+     +         ttst_straw_xyplnsht(i) = ttst_straw_xyplnsht(i) + 1
+        enddo
+        if(j.ne.0)ttst_track_pos_est(i) = ave/j
+        call hf1(ttst_hid_xoryhits,float(ttst_straw_xygddmx(i)),1.)
+      enddo
+
+*     adjust positions os x,y's to account for plane to plane rotations...
+*     assume small angle ==> theta = sin(theta) = tan(theta)
+*     (correction good to 0.3% even for 100 mr)
+
+      do i = 1, 2
+         do nplane = 4*i-3, 4*i
+            if(ttst_straw_planes_hit(nplane).gt.0)then
+               do ihit = 1, ttst_straw_planes_hit(nplane)
+                  ave = 0.001 * ttst_rotate_xyplane(nplane) *
+     +                 ttst_track_pos_est(3-i)
+c                  if(ttst_straw_xygddmx(i).le.5)
+c     +              type *,nplane,ttst_track_hitarray(4,ihit,nplane),ave
+                  ttst_track_hitarray(4,ihit,nplane) =
+     +                 ttst_track_hitarray(4,ihit,nplane) + ave
+               enddo
+            endif
+         enddo
+      enddo
+
+      return
+      end
+
+c     ----------------------------------------------------------------------
+      subroutine t_test_set_trackcode
+      implicit none
+      save
+      include 't20_test_detectors.cmn'
+      include 't20_test_histid.cmn'
+c      integer*4 i
+
+c      do i = 1, 2
+
+c        ttst_track_code = 0
+c        if(ttst_straw_xygddmx(i).lt.3)ttst_track_code = 1
+c        if(ttst_straw_xygddmx(i).eq.3)then
+c          if(ttst_straw_xyplnsht(i).lt.3)then
+c            ttst_track_code = 2
+c          else
+c            ttst_track_code = 3
+c          endif
+c        endif
+        
+c        if(ttst_straw_xygddmx(i).eq.4)then
+c          if(ttst_straw_xyplnsht(i).lt.4)then
+c            ttst_track_code = 4
+c          else
+c            ttst_track_code = 5
+c          endif
+c        endif
+        
+c        if(ttst_straw_xygddmx(i).eq.5)then
+c          if(ttst_straw_xyplnsht(i).lt.4)then
+c            ttst_track_code = 6
+c          else
+c            ttst_track_code = 7
+c          endif
+c        endif
+        
+c        if(ttst_track_code.eq.0)ttst_track_code = 8
+c        ttst_track_code = ttst_track_code + 10*(i-1)
+c        call hf1(ttst_hid_trackcode, float(ttst_track_code), 1.)
+c      enddo
+        
+      return
+      end
+c     ----------------------------------------------------------------------
+c     rotate / offset chamber track into polder coordinate system...
+      subroutine t_test_project_track
+      implicit none
+      save
+      include 't20_test_detectors.cmn'
+      integer*4 i
+      real*8 xych(2)
+
+      do i = 1, 2
+         ttst_track_angle(i) = atan(ttst_track_params(1,i))
+     +        + ttst_rotate_ang(i)
+         ttst_track_chmbrpos(i) = ttst_track_params(2,i) +
+     +        ttst_track_params(1,i) *
+     +        (ttst_straw_zchmbr+ttst_straw_z0) +
+     +        ttst_straw_xoff(i)
+      enddo
+      xych(1) = cos(ttst_rotate_ang(3)) * ttst_track_chmbrpos(1) +
+     +     sin(ttst_rotate_ang(3)) * ttst_track_chmbrpos(2)
+      xych(2) = cos(ttst_rotate_ang(3)) * ttst_track_chmbrpos(2) -
+     +     sin(ttst_rotate_ang(3)) * ttst_track_chmbrpos(1)
+      do i = 1, 2
+         ttst_track_chmbrpos(i) = xych(i)
+         ttst_track_params(1,i) = tan(ttst_track_angle(i))
+         ttst_track_params(2,i) = ttst_track_chmbrpos(i) -
+     +        ttst_track_params(1,i) *
+     +        (ttst_straw_zchmbr+ttst_straw_z0)
+         ttst_track_scintpos(i) = ttst_track_params(2,i) +
+     +        ttst_track_params(1,i) * ttst_straw_zscint
+      enddo
+
+c     note that chamber pos is measured in z relative to the _z0 parameter,
+c     but scintillator position (POLDER start scntillator that is) is measured
+c     relative to the origin of the coordinate system, the POLDER target
+
+      return
+      end
+
+c     ----------------------------------------------------------------------
+
+      subroutine t_test_stpld_comp
+      implicit none
+      save
+      include 't20_data_structures.cmn'
+      include 't20_test_detectors.cmn'
+      include 't20_test_histid.cmn'
+      include 't20_reg_polder_structures.cmn'
+
+      integer*4 opened/0/
+      integer*4 lun_calib               ! Set this somewhere else
+      parameter (lun_calib=63)
+      
+c     need to compare tracks to polder tracks....
+      ttst_good_comp = 0
+      ttst_stpld_xposdiff = ttst_track_params(2,1) - tdeuton1_x(3)
+      ttst_stpld_yposdiff = ttst_track_params(2,2) - tdeuton1_y(3)
+      ttst_stpld_thposdiff = ttst_track_angle(1) - atan(tdeuton1_dir(1))
+      ttst_stpld_phposdiff = ttst_track_angle(2) - atan(tdeuton1_dir(2))
+      
+*     write out track nutples only for 4x + 4y = 8 hit events?
+c      type *,'nt trk write:',ttst_straw_xgddmx,ttst_straw_ygddmx
+c      type *,ttst_straw_xplnsht,ttst_straw_yplnsht
+c      type *,tdeuton1_x(1),tdeuton1_dir(1)
+c      type *,tdeuton1_y(1),tdeuton1_dir(2)
+      if(ttst_straw_xgddmx.lt.4)return
+      if(ttst_straw_ygddmx.lt.4)return
+      if(ttst_straw_xplnsht.lt.4)return
+      if(ttst_straw_yplnsht.lt.4)return
+c     if the polder chambers do not track, they will give positions of 0.,0.
+c     so let's make sure as first step that neither chamber gives 0's in
+c     both x and y...
+c     the way the algorithym appears to work, an angle is calculated even if
+c     a chamber does not track
+      if(tdeuton1_x(1).eq.0. .and. tdeuton1_y(1).eq.0.)return
+      if(tdeuton1_x(2).eq.0. .and. tdeuton1_y(2).eq.0.)return
+      if(tnbpartch.ge.2)return	  !looks like >= 2 particles in polder mwpcs
+      if(abs(tdeuton1_x(1)).gt.10.)return
+      if(abs(tdeuton1_x(2)).gt.10.)return
+
+      ttst_good_comp = 1
+
+      if( ttst_track_ntuples_out.le.0) return
+      if( track_ntuples_written.gt.ttst_track_ntuples_out) return
+      if( track_ntuples_written.eq.ttst_track_ntuples_out) then
+        write(6,*)' t_test_straw_analyze wrote',
+     +    track_ntuples_written,'track ntuples'
+        track_ntuples_written = track_ntuples_written + 1
+      endif
+      if( opened.eq.0 ) then
+        opened = 1
+      open(unit=lun_calib,file='t20_test_track.ntuple',status='new')
+      endif
+
+      track_ntuples_written = track_ntuples_written + 1
+c      type *,track_ntuples_written,' trks written'
+      write(lun_calib,'(4(f7.2,f7.4))')
+     +  tdeuton1_x(1),tdeuton1_dir(1),tdeuton1_y(1),tdeuton1_dir(2),
+     +  ttst_track_chmbrpos(1),ttst_track_params(1,1),
+     +  ttst_track_chmbrpos(2),ttst_track_params(1,2)
 
       return
       end
@@ -381,13 +748,9 @@ c       local variables:
        integer*4 iok3, iok43, iok4, utra(10), nwtra(10), nptra(10)
        integer*4 ufnd(10,3), lrfnd(10,3), lrf3(10)
        real*4    chfnd(3), sfnd(3), xfnd(3)
-c       real*4    x(4), z(4)
        real*4    ztra(10), xtra(10), dxtra(10), dxfit(10)
        real*4    chi0, chif, chf3(10)
        real*4    xmin, xmax
-c       real*4    zoff/2.03/
-c       real*4    zplane(4)
-c       data    zplane/0.0, 3.333, 6.667, 10.0/
        integer*4 nhitx
 c
 c       initialize
@@ -397,6 +760,9 @@ c       initialize
        chif = -1.
        xat0 = -1000.
        slope = -1000.
+       track(1) = slope
+       track(2) = xat0
+       track(3) = chif
 c
 c       start analysis
        ntrack = 0
@@ -510,7 +876,7 @@ c       analyze 4 hit / 4 plane events
            chi0 = 0.
            endif
 c       if chisq large, see if should eliminate one of the hits
-         if(chif.gt.3.0)then              !more than four x's nominal chisq
+         if(chif.gt.0.15)then              !more than four x's nominal chisq
            nhitx = 3
            chmin = 9999999.
            nmin = 0
@@ -566,7 +932,7 @@ c                     try for nhitx hit track if same plane hits adjacent
            else
            chi0 = 0.
            endif
-         if(chif.lt.1.5)go to 3
+         if(chif.lt.0.15)go to 3
 c                     try for 4 hit track otherwise, or if 5 hit chisq bad
 5         nhitx = nhitx - 1
          chmin = 1.5
@@ -792,7 +1158,7 @@ c       subroutine track(nt,zt,xt,dxt,dxf,lrf,x0,tht,chi0,chif)
        real    slope, ctg, stg, rcept
        real    chisq, dx2, chibest
        real    chiterm(10), diff
-       real    sigma/0.1/, pi/3.1415926/
+       real    sigma/1.0/, pi/3.1415926/
 
 c                     first move input data into local arrays
        j = 0
@@ -982,3 +1348,118 @@ c
          enddo
        return
        end
+       
+ccccccccccccc put scintillator analysis here....
+      subroutine t_test_scint_analyze
+      implicit none
+
+
+*	subroutine: t_test_scint_analyze.f
+*	written: R. Gilman, Dec 20 1996
+*	purpose: Use raw scintillator times to get positions in scintillators,
+*		recalibrate scintillators, and get time offsets to improve
+*		chamber resolution.
+*               The 4th phototube is assumed to be the self timing one.
+***************************************************************************
+* Local Variables
+
+      include 't20_test_detectors.cmn'
+      include 't20_data_structures.cmn'
+      include 't20_misc.cmn'
+
+      integer*4 i,j
+      real*4 t,f
+
+c     the test scintillators are plugged into adcs 7 - 10 of the polder
+c     strat adc, thus the addr1 is 1 and the addr2 is 7 - 10...
+c     by initializing all the values to -10000, any valu not found will cause
+c     a negative mean value, making it clear the event is not a proper
+c     average
+c     at some point the histograms should be used to determine pedestal
+c     values, but we need to look at the pedestals or hope this is auto-done
+c     by hall c software...
+
+      do j = 1, 4
+        ttst_scin_rawadc(j) = -10000
+        ttst_scin_psadc(j) = -10000
+      enddo
+
+      i = 1
+      do i = 1, tmisc_tot_hits
+        if(tmisc_raw_addr1(i).eq.1)then
+          if(tmisc_raw_addr2(i).gt.6 .and. tmisc_raw_addr2(i).lt.11)then
+            j = tmisc_raw_addr2(i) - 6
+            ttst_scin_rawadc(j) = tmisc_raw_data(i)
+            ttst_scin_psadc(j) = tmisc_raw_data(i)
+     +                         - ttst_scin_peds(j)
+          endif
+        endif
+      enddo
+
+*     work out geo and arith means for sintillators
+      ttst_scin_amean_adc = 0
+      ttst_scin_nzadcs = 0
+      f = 1.
+      do j = 1, 4
+        if(ttst_scin_psadc(j).gt.0.)then
+          ttst_scin_nzadcs = ttst_scin_nzadcs + 1
+          ttst_scin_amean_adc = ttst_scin_amean_adc +
+     +                          ttst_scin_psadc(j)  
+          f = f * ttst_scin_psadc(j)
+        endif
+      enddo
+      t = ttst_scin_nzadcs
+      if(ttst_scin_nzadcs.gt.0)then
+        ttst_scin_amean_adc = ttst_scin_amean_adc / ttst_scin_nzadcs
+        ttst_scin_gmean_adc = nint(f ** (1./t))
+        else
+        ttst_scin_amean_adc = -1
+        ttst_scin_gmean_adc = -1
+      endif
+      
+*     work out means of two signals for scint 1 and for scint 2
+      ttst_scin_adc1m = (ttst_scin_psadc(1) + ttst_scin_psadc(3))/2
+      ttst_scin_adc2m = (ttst_scin_psadc(2) + ttst_scin_psadc(4))/2
+         
+*     work out scintillator times
+*       call ttst_scinadccor
+*       do i = 1, 4
+*         ttst_scin_tdccor(i) = ttst_scin_tdc(i) + ttst_scin_timeoff(i)
+*         if(ttst_scin_off_parm.eq.1)
+*           ttst_scin_tdccor(i) = ttst_scin_tdccor(i) + ttst_scin_adccor(i)
+*         enddo
+*         
+*       ttst_scin_time1 = 0.5*(ttst_scint_tdc(1) + ttst_scint_tdc(2))
+*       ttst_scin_time2 = 0.5*(ttst_scint_tdc(3) + ttst_scint_tdc(4))
+*       ttst_scin_tim = 0.5*(ttst_scin_time1 + ttst_scin_time2)
+*       ttst_scin_timecor1 = 
+*     +   0.5*(ttst_scint_tdccor(1) + ttst_scint_tdccor(2))
+*       ttst_scin_timecor2 = 
+*     +   0.5*(ttst_scint_tdccor(3) + ttst_scint_tdccor(4))
+*       ttst_scin_timcor = 
+*     +   0.5*(ttst_scin_timecor1 + ttst_scin_timecor2)
+ 
+*      work out scintillator positions
+*      The factor of 1/2 corrects for the fact
+*      that one tube is earlier and the other is later, due to position offset.
+*      The sign of the subtraction in the following equation must be checked.     
+*       ttst_scin_pos1 = ttst_scin_v_corr * 0.5 *
+*     +     (ttst_scint_tdccor(1) - ttst_scint_tdccor(2))
+*       ttst_scin_pos2 = ttst_scin_v_corr * 0.5 *
+*     +   (ttst_scint_tdccor(3) - ttst_scint_tdccor(4))
+*       ttst_scin_pos = 0.5*(ttst_scin_pos1 + ttst_scin_pos2)
+
+*      calculate t0 offset correction for this event...
+*      t0 is the time the particle actually passes through the chamber,
+*      relative to the trigger time, this varies from event to event due
+*      to positions, ...
+*      in this routine calculate the time the p[article passes through the
+*      scintilator, based on the scintillator measure of position... a
+*      0th order track from the chamber wires would probably give a better
+*      measure, so leave as 0 for now...
+*       ttst_t0_correction = 0.
+       
+       return
+       end
+
+
