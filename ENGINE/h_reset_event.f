@@ -15,6 +15,9 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
+* Revision 1.13  1996/09/04 15:14:56  saw
+* (JRA) Zero out some misc scalers
+*
 * Revision 1.12  1995/10/09 18:08:46  cdaq
 * (JRA) Add clear of HCER_RAW_ADC
 *
@@ -50,6 +53,7 @@
       INCLUDE 'hms_data_structures.cmn'
       include 'hms_tracking.cmn'
       include 'hms_pedestals.cmn'
+      include 'hms_scin_parms.cmn'
 *
       INTEGER hit,track,block,i,j,plane
 *
@@ -61,8 +65,8 @@
           hhodo_pos_ped_sum2(i,j) = 0
           hhodo_pos_ped_sum(i,j) = 0
           hhodo_neg_ped_num(i,j) = 0
-           hhodo_neg_ped_sum2(i,j) = 0
-         hhodo_neg_ped_sum(i,j) = 0
+          hhodo_neg_ped_sum2(i,j) = 0
+          hhodo_neg_ped_sum(i,j) = 0
         enddo
       enddo
 
@@ -148,6 +152,9 @@
          HMISC_RAW_ADDR1(hit) = 0
          HMISC_RAW_ADDR2(hit) = 0
          HMISC_RAW_DATA(hit) = 0
+         do plane=1,hnum_misc_planes
+           hmisc_scaler(hit,plane)=0
+         enddo
       enddo
       hmisc_tot_hits = 0
 *     

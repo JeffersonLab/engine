@@ -12,6 +12,9 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-      $Log$
+*-      Revision 1.12  1996/09/04 15:18:54  saw
+*-      (JRA) Zero out some misc scalers
+*-
 *-      Revision 1.11  1996/04/30 12:29:55  saw
 *-      (JRA) Change SAER_ADC_LEFT/RIGHT to POS/NEG
 *-
@@ -63,7 +66,8 @@
 *
       INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'sos_tracking.cmn'
-      INCLUDE 'sos_pedestals.cmn'      
+      INCLUDE 'sos_pedestals.cmn'
+      include 'sos_scin_parms.cmn'
 *
       INTEGER track,hit,block,i,j,plane
 *
@@ -184,6 +188,9 @@
          SMISC_RAW_ADDR1(hit) = 0
          SMISC_RAW_ADDR2(hit) = 0
          SMISC_RAW_DATA(hit) = 0
+         do plane=1,snum_misc_planes
+           smisc_scaler(hit,plane)=0
+         enddo
       enddo
       smisc_tot_hits = 0
 *     
