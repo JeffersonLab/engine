@@ -7,6 +7,9 @@
 * h_strip_scin converts the raw hits to arrays over hits
 * with good TDC values.
 * $Log$
+* Revision 1.11  1999/02/23 18:49:18  csa
+* (JRA) Remove hdebugcalcpeds stuff
+*
 * Revision 1.10  1996/01/16 21:59:35  cdaq
 * (JRA) Add hdebugcalcpeds flag
 *
@@ -92,16 +95,6 @@
           plane = HSCIN_PLANE_NUM(igoodhit)
           counter = HSCIN_COUNTER_NUM(igoodhit)
           if(plane.ge.1.and.plane.le.4) hscin_sing_counter(plane) = counter
-
-        else                            !not a real event, calc. pedestals
-
-          if (hdebugcalcpeds.ne.0) then
-            ip = hscin_all_plane_num(ihit)
-            ic = hscin_all_counter_num(ihit)
-            hscin_zero_pos(ip,ic)=hscin_zero_pos(ip,ic)+hscin_all_adc_pos(ihit)
-            hscin_zero_neg(ip,ic)=hscin_zero_neg(ip,ic)+hscin_all_adc_neg(ihit)
-            hscin_zero_num(ip,ic)=hscin_zero_num(ip,ic)+1
-          endif
         endif
       enddo
 
