@@ -16,6 +16,10 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.2  2004/07/02 18:46:29  saw
+ *   Update ugly cpp routine for gcc 3.2.3.  Need to find a better way to
+ *   reference C++ routines.
+ *
  *   Revision 1.1  2002/07/31 20:07:48  saw
  *   Add files for ROOT Trees
  *
@@ -184,15 +188,15 @@ thStatus thBookTree(daVarStruct *var)
       
       if(fname) {
 	/*printf("Opening Root file %s\n",fname);*/
-	treedef->file = (void *) thRoot_TFile__FPc(fname);
+	treedef->file = (void *) _Z12thRoot_TFilePc(fname);
 	free(fname);
       } else {
 	/*printf("Opening Root file %s\n","ctp.tree");*/
-	treedef->file = (void *) thRoot_TFile__FPc("ctp.root");
+	treedef->file = (void *) _Z12thRoot_TFilePc("ctp.root");
       }
     
       /*printf("Call to TTree(\"%s\",\"title\") goes here\n",blockname);*/
-      treedef->treeptr = (void *) thRoot_TTree__FPc(blockname);
+      treedef->treeptr = (void *) _Z12thRoot_TTreePc(blockname);
 
       if(strcasestr(lines,BEGINSTR) != 0){
 	/*	printf("Is a begin\n");*/
@@ -405,7 +409,7 @@ thStatus thBookaBranch(thTreeOpaque *treedef, char *line, thTreeBranchList **thB
   */
 
   /*printf("Branch=%s  Leafs=%s\n",Branch->branchname,brancharg);*/
-  thRoot_Branch__FP5TTreePcPvT1(treedef->treeptr,Branch->branchname,(Branch->evstruct),brancharg);
+  _Z13thRoot_BranchP5TTreePcPvS1_(treedef->treeptr,Branch->branchname,(Branch->evstruct),brancharg);
 
   free(brancharg);
   /*printf("Exiting book a branch\n");*/
@@ -446,7 +450,7 @@ thStatus thFillTreeV(daVarStruct *var){
     }
     thisbranch = thisbranch->next;
   }
-  thRoot_Fill__FP5TTree(treedef->treeptr);
+  _Z11thRoot_FillP5TTree(treedef->treeptr);
 
   (*((DAINT *)var->varptr))++; /* Increment block counter */
   return(S_SUCCESS);
@@ -461,7 +465,7 @@ thStatus thClearTreeV(daVarStruct *var){
 thStatus thWriteTreeV(daVarStruct *var){
   
   printf("Writing Tree %s\n",var->name);
-  thRoot_Write__FP14thRootFileList(((thTreeOpaque *)(var->opaque))->file);
+  _Z12thRoot_WriteP14thRootFileList(((thTreeOpaque *)(var->opaque))->file);
 
   (*((DAINT *)var->varptr)) = 0; /* Increment block counter */
   return(S_SUCCESS);
@@ -469,7 +473,7 @@ thStatus thWriteTreeV(daVarStruct *var){
 thStatus thCloseTreeV(daVarStruct *var){
   
   printf("Closing Tree %s\n",var->name);
-  thRoot_Close__FP14thRootFileList(((thTreeOpaque *)(var->opaque))->file);
+  _Z12thRoot_CloseP14thRootFileList(((thTreeOpaque *)(var->opaque))->file);
 
   (*((DAINT *)var->varptr)) = 0; /* Increment block counter */
   return(S_SUCCESS);
