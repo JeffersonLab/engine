@@ -1,0 +1,68 @@
+* hms_scin_tof.cmn:   common block used by the subroutines that
+*       calculate the hms time of flight.
+* $Log$
+* Revision 1.1  1994/04/13 18:06:20  cdaq
+* Initial revision
+*
+
+        integer*4 hntof
+
+        real*4 hscin_long_coord(hmax_scin_hits)
+        real*4 hscin_trans_coord(hmax_scin_hits)
+        real*4 hscin_pos_coord(hmax_scin_hits)
+        real*4 hscin_neg_coord(hmax_scin_hits)
+        real*4 hscin_pos_sigma(hmax_scin_hits)
+        real*4 hscin_neg_sigma(hmax_scin_hits)
+        real*4 hscin_pos_time(hmax_scin_hits)
+        real*4 hscin_neg_time(hmax_scin_hits)
+        real*4 hscin_sigma(hmax_scin_hits)
+        real*4 hscin_time(hmax_scin_hits)
+        real*4 hscin_vel_light(hmax_scin_hits)
+        real*4 hscin_pos_phc_coeff(hmax_scin_hits)
+        real*4 hscin_neg_phc_coeff(hmax_scin_hits)
+        real*4 hscin_pos_time_offset(hmax_scin_hits)
+        real*4 hscin_neg_time_offset(hmax_scin_hits)
+
+
+*****************************************
+* TEMPORARY SECTION: these will be read in from parameter file
+*                    and only the real*4 statements will remain.
+        real*4 hscin_minph
+        parameter (hscin_minph=0)
+        real*4 hscin_tdc_min
+        parameter (hscin_tdc_min=0)
+        real*4 hscin_tdc_max
+        parameter (hscin_tdc_max=99999)      !not sure what range is.
+        real*4 hscin_tdc_to_time
+        parameter (hscin_tdc_to_time=.050)   !50 ps / channel
+* TEMPORARY SECTION
+*****************************************
+
+        logical*4 hgood_tdc_pos(hmax_scin_hits)
+        logical*4 hgood_tdc_neg(hmax_scin_hits)
+        logical*4 hgood_scin_time(hmax_scin_hits)
+        logical*4 hgood_plane_time(hnum_scin_planes)
+        logical*4 hgood_beta
+
+        common/hms_scin_tof/
+     &    hntof,
+     &    hscin_long_coord,
+     &    hscin_trans_coord,
+     &    hscin_pos_coord,hscin_neg_coord, !position of tubes
+     &    hscin_pos_sigma,hscin_neg_sigma, !time resolution for tubes
+     &    hscin_pos_time, hscin_neg_time,  !time for 'pos' and 'neg' tubes.
+     &    hscin_sigma,                       !time resolution for scin.
+     &    hscin_time,                        !time for scin. (ave of tubes)
+     &    hscin_vel_light,
+     &    hscin_pos_phc_coeff,hscin_neg_phc_coeff,
+     &    hscin_pos_time_offset,hscin_neg_time_offset,
+* the next 4 lines are commented out since these variables are temporarily
+* being set as parameters rather than being read in.
+*     &    hscin_minph,
+*     &    hscin_tdc_min,
+*     &    hscin_tdc_max,
+*     &    hscin_tdc_to_time,
+     &    hgood_tdc_pos, hgood_tdc_neg,    !did pos/neg tube had good tdc?
+     &    hgood_scin_time,                   !was a time found for the hit?
+     &    hgood_plane_time,                  !was a time found for the plane?
+     &    hgood_beta                         !was a value of beta found?
