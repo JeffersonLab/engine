@@ -13,8 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.6  1994/08/18 04:11:57  cdaq
-*     (SAW) Call makereg generated routines to register variables
+*     Revision 1.7  1995/05/11 14:50:17  cdaq
+*     (SAW) Add call to register variables from c_ntuple.cmn
+*
+* Revision 1.6  1994/08/18  04:11:57  cdaq
+* (SAW) Call makereg generated routines to register variables
 *
 * Revision 1.5  1994/06/17  03:19:44  cdaq
 * (KBB) Execute all code despite registration errors
@@ -52,11 +55,13 @@
 
       call r_coin_filenames
 
+      call r_c_ntuple
+
       IF(ABORT) THEN
         call G_prepend(':unable to register',err)
       ENDIF
 *
-      call c_ntuple_register(FAIL,why)
+      call c_ntuple_register(FAIL,why)  ! Remove this when ctp files fixed
       IF(err.NE.' ' .and. why.NE.' ') THEN
         call G_append(err,' & '//why)
       ELSEIF(why.NE.' ') THEN
