@@ -13,11 +13,12 @@
 *- 
 *-   Created 19-JAN-1994   D. F. Geesaman
 * $Log$
-* Revision 1.1  1994/02/19 06:20:31  cdaq
+* Revision 1.2  1994/04/13 17:07:57  cdaq
+* (DFG) Added histograming call (h_fill_dc_fp_hist)
+*
+* Revision 1.1  1994/02/19  06:20:31  cdaq
 * Initial revision
 *
-*-
-*-
 *--------------------------------------------------------
        IMPLICIT NONE
        SAVE
@@ -61,6 +62,7 @@
            call G_add_path(here,err)
            return
       endif
+
 *     Check for internal error in H_TRACK_FIT
       if(ierr.ne.0) then
            line_err=' '
@@ -69,6 +71,17 @@
            call G_add_path(here,err)
            call G_LOG_MESSAGE(err)
       endif                    
+*     histogram focal plane tracks
+*
+      call h_fill_dc_fp_hist(ABORT,err)
+      if(ABORT) then
+         call g_add_path(here,err)
+         return
+      endif
+*
       return
       end
+
+
+
 
