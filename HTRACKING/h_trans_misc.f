@@ -6,7 +6,10 @@
 * h_trans_misc fills the hms_decoded_misc common block
 *
 * $Log$
-* Revision 1.2  1995/05/22 19:39:32  cdaq
+* Revision 1.3  1995/07/20 14:26:00  cdaq
+* (JRA) Add second index (TDC/ADC) to hmisc_dec_data
+*
+* Revision 1.2  1995/05/22  19:39:32  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.1  1995/04/12  03:59:32  cdaq
@@ -30,18 +33,19 @@
       save
 
       do ihit = 1 , 48
-         hmisc_dec_data(ihit) = 0
+        hmisc_dec_data(ihit,1) = -1     ! Clear TDC's
+        hmisc_dec_data(ihit,2) = -1     ! Clear ADC's
       enddo
       
       do ihit = 1 , hmisc_tot_hits
 c        write(50,*) ihit, hmisc_raw_addr1(ihit), hmisc_raw_addr2(ihit), hmisc_raw_data(ihit)
 c        write(51,*) ihit, hmisc_raw_addr2(ihit), hmisc_raw_data(ihit)
-        hmisc_dec_data(hmisc_raw_addr2(ihit)) = hmisc_raw_data(ihit)
+        hmisc_dec_data(hmisc_raw_addr2(ihit),hmisc_raw_addr1(ihit)) = hmisc_raw_data(ihit)
       enddo
 
-      do ihit = 1 , 48
-c        write(52,*) ihit, hmisc_dec_data(ihit)
-      enddo
+c      do ihit = 1 , 48
+c        write(52,*) ihit, hmisc_dec_data(ihit,1), hmisc_dec_data(ihit,2)
+c      enddo
 
       return
       end
