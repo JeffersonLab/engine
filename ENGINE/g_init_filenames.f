@@ -22,13 +22,16 @@
 *-    Created               Steve Wood, CEBAF
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
-*-    $Log$
-*-    Revision 1.13  1995/10/09 18:37:52  cdaq
-*-    (SAW) Move g_ctp_database call to engine.f
-*-
-*-    Revision 1.12  1995/09/01 14:31:03  cdaq
-*-    (JRA) Blank out g_ctp_kinematics_filename
-*-
+* $Log$
+* Revision 1.14  1996/01/16 18:31:26  cdaq
+* (JRA) Add file for tcl stats display, add files for thresholds and pedestals
+*
+* Revision 1.13  1995/10/09 18:37:52  cdaq
+* (SAW) Move g_ctp_database call to engine.f
+*
+* Revision 1.12  1995/09/01 14:31:03  cdaq
+* (JRA) Blank out g_ctp_kinematics_filename
+*
 * Revision 1.11  1995/07/27  19:35:15  cdaq
 * (SAW) Add call to g_ctp_database to set ctp vars by run number
 *
@@ -107,16 +110,24 @@
       s_report_template_filename = ' '
       g_report_template_filename = ' '
       c_report_template_filename = ' '
+      g_stats_template_filename = ' '
 *
       h_report_output_filename = ' '
       s_report_output_filename = ' '
       g_report_output_filename = ' '
       c_report_output_filename = ' '
+      g_stats_output_filename = ' '
 *
       h_report_blockname = ' '
       s_report_blockname = ' '
       g_report_blockname = ' '
       c_report_blockname = ' '
+      g_stats_blockname = ' '
+*
+      h_threshold_output_filename = ' '
+      s_threshold_output_filename = ' '
+      h_pedestal_output_filename = ' '
+      s_pedestal_output_filename = ' '
 *
       g_label = ' '                     ! Label for reports etc.
 *
