@@ -19,7 +19,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.5  1995/02/23 13:39:13  cdaq
+* Revision 1.6  1995/04/06 19:37:30  cdaq
+* (SAW) Fix typo
+*
+* Revision 1.5  1995/02/23  13:39:13  cdaq
 * (SAW) Moved best track selection code into S_SELECT_BEST_TRACK (new)
 *
 * Revision 1.4  1995/01/18  20:57:12  cdaq
@@ -85,8 +88,8 @@
         SSTIME_AT_FP   = STIME_AT_FP(SSNUM_FPTRACK)
         SSX_FP   = SX_FP(SSNUM_FPTRACK)
         SSY_FP   = SY_FP(SSNUM_FPTRACK)
-        SSXP_FP   = SXP_FP(SSNUM_FPTRACK)
-        SSYP_FP   = SYP_FP(SSNUM_FPTRACK)
+        SSXP_FP   = SXP_FP(SSNUM_FPTRACK) ! This is a slope (dx/dz)
+        SSYP_FP   = SYP_FP(SSNUM_FPTRACK) ! This is a slope (dy/dz)
 
 c     ssx_dc1 = ssx_fp + ssxp_fp * sdc_zpos(1)
 c     ssy_dc1 = ssy_fp + ssyp_fp * sdc_zpos(1)
@@ -120,7 +123,7 @@ c     ?????
         SSCHI2PERDEG  = SCHI2_FP(SSNUM_FPTRACK)
      $       /FLOAT(SNFREE_FP(SSNUM_FPTRACK))
         SSNFREE_FP = SNFREE_FP(SSNUM_FPTRACK)
-        cosgamma = 1.0/sqrt(1.0 + ssxp_tar**2 - ssyp_tar**2)
+        cosgamma = 1.0/sqrt(1.0 + ssxp_tar**2 + ssyp_tar**2)
         cossstheta = cosgamma*(sinsthetas * ssyp_tar + cossthetas)
         SSTHETA = ACOS(COSSSTHETA)
         SINSSTHETA = SIN(SSTHETA)

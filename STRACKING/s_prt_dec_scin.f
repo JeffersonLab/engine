@@ -10,7 +10,10 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
-* Revision 1.4  1995/02/10 19:57:47  cdaq
+* Revision 1.5  1995/04/06 19:40:51  cdaq
+* (SAW) Fix typo
+*
+* Revision 1.4  1995/02/10  19:57:47  cdaq
 * (JRA) Make sscin_all_adc_pos/neg floating
 *
 * Revision 1.4  1995/02/10  19:13:11  cdaq
@@ -63,9 +66,9 @@
          write(sluno,'('' Plane  '',10i4)') (j,j=1,SNUM_SCIN_PLANES)   
          write(sluno,'('' Number '',10i4)') 
      &        (SSCIN_HITS_PER_PLANE(j),j=1,SNUM_SCIN_PLANES)
-         write(sluno,'('' Num    ZPOS   CENTER  HIT_COORD WIDTH  SLOPE''
+         write(sluno,'('' Num    ZPOS   CENTER  HIT_COORD WIDTH  SLOP'',
      &        ''   COR_ADC  COR_TDC  TWO_GOOD'')')
-         write(sluno,'(1x,i2,2x,5f8.3,2f10.3,4x,l2)')
+         write(sluno,'(1x,i2,2x,4f9.3,2f10.3,4x,l2)')
      &        (j,SSCIN_ZPOS(j),SSCIN_CENTER_COORD(j),
      &        SSCIN_DEC_HIT_COORD(j),
      &        SSCIN_SLOP(j),SSCIN_COR_ADC(j),SSCIN_COR_TIME(j),
