@@ -15,6 +15,9 @@
 * s_scin_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
+* Revision 1.7  1996/01/17 18:59:15  cdaq
+* (JRA) Fix typos
+*
 * Revision 1.6  1995/08/31 15:08:15  cdaq
 * (JRA) Fill dpos (pos. track - pos. hit) histograms
 *
@@ -69,17 +72,17 @@
 
       hit_pos(2)=ssy_fp + ssyp_fp*(sscin_1y_zpos+0.5*sscin_1y_dzpos)
       hit_cnt(2)=nint((shodo_center(2,1)-hit_pos(2))/sscin_1y_spacing)+1
-      hit_cnt(2)=max(min(hit_cnt(2),nint(snum_scin_counters(1))),1)
+      hit_cnt(2)=max(min(hit_cnt(2),nint(snum_scin_counters(2))),1)
       hit_dist(2)=hit_pos(2)-(shodo_center(2,1)-sscin_1y_spacing*(hit_cnt(2)-1))
 
       hit_pos(3)=ssx_fp + ssxp_fp*(sscin_2x_zpos+0.5*sscin_2x_dzpos)
       hit_cnt(3)=nint((hit_pos(3)-shodo_center(3,1))/sscin_2x_spacing)+1
-      hit_cnt(3)=max(min(hit_cnt(3),nint(snum_scin_counters(1))),1)
+      hit_cnt(3)=max(min(hit_cnt(3),nint(snum_scin_counters(3))),1)
       hit_dist(3)=hit_pos(3)-(sscin_2x_spacing*(hit_cnt(3)-1)+shodo_center(3,1))
 
       hit_pos(4)=ssy_fp + ssyp_fp*(sscin_2y_zpos+0.5*sscin_2y_dzpos)
       hit_cnt(4)=nint((shodo_center(4,1)-hit_pos(4))/sscin_2y_spacing)+1
-      hit_cnt(4)=max(min(hit_cnt(4),nint(snum_scin_counters(1))),1)
+      hit_cnt(4)=max(min(hit_cnt(4),nint(snum_scin_counters(4))),1)
       hit_dist(4)=hit_pos(4)-(shodo_center(4,1)-sscin_2y_spacing*(hit_cnt(4)-1))
 
 *   Fill dpos (pos. track - pos. hit) histograms
