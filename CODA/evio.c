@@ -13,9 +13,20 @@
  *	Event I/O routines
  *	
  * Author:  Chip Watson, CEBAF Data Acquisition Group
+ * Modified: Stephen A. Wood, TJNAF Hall C
+ *      Works on ALPHA 64 bit machines if BIT64 is defined
+ *      Will read input from standard input if filename is "-"
+ *      If input filename is "|command" will take data from standard output
+ *                        of command.
+ *      If input file is compressed and unconpressible with gunzip, it will
+ *                        decompress the data on the fly.
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.2  1998/12/01 13:54:12  saw
+ *   (saw) Alpha 64 bit fixes, input from std input, pipes and compressed
+ *   files
+ *
  *   Revision 1.1  1996/12/19 14:05:02  saw
  *   Initial revision
  *
@@ -128,7 +139,21 @@ extern  int  swapped_fread();
 extern  void swapped_intcpy();
 extern  void swapped_memcpy();
 
-int evopen_(char *filename,char *flags,int *handle,int fnlen,int flen)
+#if defined(__osf__) && defined(__alpha)
+#define BIT64
+#endif
+
+#ifdef BIT64
+#define MAXHANDLES 10
+EVFILE *handle_list[10]={0,0,0,0,0,0,0,0,0,0};
+#endif
+
+#ifdef AbsoftUNIXFortran
+int evopen
+#else
+int evopen_
+#endif
+(char *filename,char *flags,int *handle,int fnlen,int flen)
 {
   char *fn, *fl;
   int status;
@@ -156,6 +181,9 @@ static char *kill_trailing(char *s, char t)
 }
 int evOpen(char *filename,char *flags,int *handle)
 {
+#ifdef BIT64
+  int ihandle;
+#endif
   EVFILE *a;
   char *cp;
   int header[EV_HDSIZ];
@@ -270,8 +298,21 @@ int evOpen(char *filename,char *flags,int *handle)
     a->magic = EV_MAGIC;
     a->blksiz = a->buf[EV_HD_BLKSIZ];
     a->blknum = a->buf[EV_HD_BLKNUM];
+#ifdef BIT64
+    for(ihandle=0;ihandle<MAXHANDLES;ihandle++){
+      if(handle_list[ihandle]==0) {
+       handle_list[ihandle] = a;
+       *handle = ihandle+1;
+       return(S_SUCCESS);
+      }
+    }
+    *handle = 0;               /* No slots left */
+    free(a);
+    return(S_EVFILE_BADHANDLE);        /* A better error code would help */
+#else
     *handle = (int) a;
     return(S_SUCCESS);
+#endif BIT64
   } else {
     free(a);
 #ifdef DEBUG
@@ -284,7 +325,12 @@ int evOpen(char *filename,char *flags,int *handle)
   }
 }
 
-int evread_(int *handle,int *buffer,int *buflen)
+#ifdef AbsoftUNIXFortran
+int evread
+#else
+int evread_
+#endif
+(int *handle,int *buffer,int *buflen)
 {
   return(evRead(*handle,buffer,*buflen));
 }
@@ -295,7 +341,11 @@ int evRead(int handle,int *buffer,int buflen)
   int nleft,ncopy,error,status;
   int *temp_buffer,*temp_ptr;
 
+#ifdef BIT64
+  a = handle_list[handle-1];
+#else
   a = (EVFILE *)handle;
+#endif
   if (a->byte_swapped){
     temp_buffer = (int *)malloc(buflen*sizeof(int));
     temp_ptr = temp_buffer;
@@ -374,7 +424,12 @@ int evGetNewBuffer(a)
     return(status);
 }
 
-int evwrite_(int *handle,int *buffer)
+#ifdef AbsoftUNIXFortran
+int evwrite
+#else
+int evwrite_
+#endif
+(int *handle,int *buffer)
 {
   return(evWrite(*handle,buffer));
 }
@@ -383,7 +438,11 @@ int evWrite(int handle,int *buffer)
 {
   EVFILE *a;
   int nleft,ncopy,error;
+#ifdef BIT64
+  a = handle_list[handle-1];
+#else
   a = (EVFILE *)handle;
+#endif
   if (a->magic != EV_MAGIC) return(S_EVFILE_BADHANDLE);
   if (a->buf[EV_HD_START]==0) a->buf[EV_HD_START] = a->next - a->buf;
   a->evnum = a->evnum + 1;      /* increase ev number every time you call evWrite */
@@ -427,7 +486,12 @@ int evFlush(a)
   return(S_SUCCESS);
 }
 
-int evioctl_(int *handle,char *request,void *argp,int reqlen)
+#ifdef AbsoftUNIXFortran
+int evioctl
+#else
+int evioctl_
+#endif
+(int *handle,char *request,void *argp,int reqlen)
 {
   char *req;
   int status;
@@ -442,7 +506,11 @@ int evioctl_(int *handle,char *request,void *argp,int reqlen)
 int evIoctl(int handle,char *request,void *argp)
 {
   EVFILE *a;
+#ifdef BIT64
+  a = handle_list[handle-1];
+#else
   a = (EVFILE *)handle;
+#endif
   if (a->magic != EV_MAGIC) return(S_EVFILE_BADHANDLE);
   switch (*request) {
   case 'b': case 'B':
@@ -473,7 +541,12 @@ int evIoctl(int handle,char *request,void *argp)
   return(S_SUCCESS);
 }
 
-int evclose_(int *handle)
+#ifdef AbsoftUNIXFortran
+int evclose
+#else
+int evclose_
+#endif
+(int *handle)
 {
   return(evClose(*handle));
 }
@@ -482,7 +555,11 @@ int evClose(int handle)
 {
   EVFILE *a;
   int status, status2;
+#ifdef BIT64
+  a = handle_list[handle-1];
+#else
   a = (EVFILE *)handle;
+#endif
   if (a->magic != EV_MAGIC) return(S_EVFILE_BADHANDLE);
   if(a->rw == EV_WRITE)
     status = evFlush(a);
@@ -491,6 +568,9 @@ int evClose(int handle)
   } else {
     status2 = fclose(a->file);
   }
+#ifdef BIT64
+  handle_list[handle-1] = 0;
+#endif
   free((char *)(a->buf));
   free((char *)a);
   if (status==0) status = status2;
@@ -506,13 +586,20 @@ int evClose(int handle)
  *****************************************************************/
 int evOpenSearch(int handle, int *b_handle)
 {
+#ifdef BIT64
+  int ihandle;
+#endif
   EVFILE *a;
   EVBSEARCH *b;
   int    found = 0, temp, status, i = 1;
   int    last_evn,  ev_type, bknum;
   int    header[EV_HDSIZ];
-  
+
+#ifdef BIT64
+  a = handle_list[handle-1];
+#else
   a = (EVFILE *)handle;
+#endif
   b = (EVBSEARCH *)malloc(sizeof(EVBSEARCH));
   if(b == NULL){
     fprintf(stderr,"Cannot allocate memory for EVBSEARCH structure!\n");
@@ -542,8 +629,21 @@ int evOpenSearch(int handle, int *b_handle)
   b->found_bk = -1;
   b->found_evn = -1;
   b->last_evn = last_evn;
-  *b_handle = (int)b;
+#ifdef BIT64
+  for(ihandle=0;ihandle<MAXHANDLES;ihandle++){
+    if(handle_list[ihandle]==0) {
+      handle_list[ihandle] = (EVFILE *)b;
+      *b_handle = ihandle+1;
+      return last_evn;
+    }
+  }
+  *b_handle = 0;               /* No slots left */
+  free(b);
+  return(-1);  /* A better error code would help */
+#else
+  *b_handle = (int) b;
   return last_evn;
+#endif BIT64
 }
   
 /*********************************************************************
@@ -629,8 +729,13 @@ int evSearch(int handle, int b_handle, int evn, int *buffer, int buflen, int *si
   int       start,end, mid;
   int       found;
 
+#ifdef BIT64
+  a = handle_list[handle-1];
+  b = (EVBSEARCH *)handle_list[b_handle-1];
+#else
   a = (EVFILE *)handle;
   b = (EVBSEARCH *)b_handle;
+#endif
 
   if(evn > b->last_evn)
     return -1;
@@ -959,8 +1064,12 @@ static int copySingleEvent(EVFILE *a, int *buffer, int buflen, int ev_size)
 int evCloseSearch(int b_handle)
 {
   EVBSEARCH *b;
-
+#ifdef BIT64
+  b = (EVBSEARCH *)handle_list[b_handle-1];
+  handle_list[b_handle-1] = 0;
+#else
   b = (EVBSEARCH *)b_handle;
+#endif
   free((char *)b);
 }
 
