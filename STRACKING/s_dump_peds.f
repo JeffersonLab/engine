@@ -1,6 +1,9 @@
       subroutine s_dump_peds(ABORT,err)
 *
 * $Log$
+* Revision 1.6.16.2  2004/07/06 21:14:23  cdaq
+* undid last change (cerenkov pedestals)
+*
 * Revision 1.6.16.1  2004/07/06 16:55:54  cdaq
 * commented out s_cer pedestal write statements at the very end
 *
@@ -142,9 +145,9 @@
 *
 * GAS CERENKOV PEDESTALS
 *
-*      write(SPAREID,*) 'scer_ped = '
-*      write(SPAREID,113) (scer_ped(pmt),pmt=1,smax_cer_hits)
-*113   format (3(f5.1,','),f5.1)
+      write(SPAREID,*) 'scer_ped = '
+      write(SPAREID,113) (scer_ped(pmt),pmt=1,smax_cer_hits)
+113   format (3(f5.1,','),f5.1)
 
       close(SPAREID)
 
