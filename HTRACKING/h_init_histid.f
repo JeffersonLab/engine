@@ -7,7 +7,10 @@
 *     Date:      9 April 1994
 *
 * $Log$
-* Revision 1.2  1995/07/19 18:20:41  cdaq
+* Revision 1.3  1995/08/31 14:53:47  cdaq
+* (JRA) Add dpos (pos. track - pos. hit) histograms
+*
+* Revision 1.2  1995/07/19  18:20:41  cdaq
 * (JRA) Add per hit adc/tdc sums for hodo and calormeter
 * (SAW) Relocate data statements for f2c compatibility
 *
@@ -142,6 +145,12 @@ c
       hnum_scin_counters(3) = hscin_2x_nr
       hnum_scin_counters(4) = hscin_2y_nr
 
+      hiddcdposx = thgetid('hdcdposx')
+      hiddcdposy = thgetid('hdcdposy')
+      hiddcdposxp = thgetid('hdcdposxp')
+      hiddcdposyp = thgetid('hdcdposyp')
+      hidcaldpos = thgetid('hcaldpos')
+
       do plane = 1, HNUM_SCIN_PLANES
         histname = hscinplane//hscinplanenum(plane)
         hidscincounters(plane) = thgetid(histname)
@@ -162,6 +171,10 @@ c
         hidsumposadc(plane) = thgetid(histname)
         histname = "hsumnegadc"//hscinplanenum(plane)
         hidsumnegadc(plane) = thgetid(histname)
+
+        histname = "hscindpos"//hscinplanenum(plane)
+        hidscindpos(plane) = thgetid(histname)
+
         do counter = 1,hnum_scin_counters(plane)
 *     this is probably very awkward character manipulation
 *     
