@@ -11,6 +11,9 @@
 *       Modified 23 March 1994   DFG
 *           Add definition of hnum_scin_elements and set parameter value
 * $Log$
+* Revision 1.10  1996/01/24 16:19:42  saw
+* (JRA) Cosmetic change
+*
 * Revision 1.9  1995/08/11 16:32:51  cdaq
 * (JRA) Remove old dpos stuff
 *       Add hscin_zero accumulators
@@ -169,7 +172,7 @@
 *     CTPTYPE=parm
 *
       integer*4 hnum_misc_planes
-      parameter(hnum_misc_planes=2)
+      parameter(hnum_misc_planes=2)     !(1=TDC, 2=ADC)
 *
 *     CTPTYPE=event
 *

@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.4  1996/01/24 16:18:59  saw
+* (JRA) Cosmetic change
+*
 * Revision 1.3  1996/01/17 16:00:02  cdaq
 * (JRA) ADD HCER_RAW_ADC and HSCIN_FPTIME
 *
@@ -535,7 +538,7 @@
       INTEGER HMAX_MISC_HITS
       PARAMETER(HMAX_MISC_HITS=100)
       INTEGER*4 HMISC_TOT_HITS
-      INTEGER*4 HMISC_RAW_ADDR1    ! "Plane"
+      INTEGER*4 HMISC_RAW_ADDR1    ! "Plane" (1=TDC,2=ADC)
       INTEGER*4 HMISC_RAW_ADDR2    ! "Counter"
       INTEGER*4 HMISC_RAW_DATA
       COMMON/H_RAW_MISC/
