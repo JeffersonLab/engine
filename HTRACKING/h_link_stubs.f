@@ -10,6 +10,9 @@
 *
 *     d.f. geesaman           17 January 1994
 * $Log$
+* Revision 1.7  1996/08/30 19:58:15  saw
+* (DVW) Added some track tests
+*
 * Revision 1.6  1996/01/16 22:02:16  cdaq
 * (JRA)
 *
@@ -45,6 +48,8 @@
       include "hms_tracking.cmn"
       include "hms_id_histid.cmn"
       INCLUDE 'hms_track_histid.cmn'    !TEMP. JUNK
+      include 'hms_bypass_switches.cmn'
+      INCLUDE 'gen_event_info.cmn'
       external h_chamnum
       integer*4 h_chamnum
       
@@ -66,6 +71,11 @@
       integer*4  tryflag             ! flag to loop over rest of points
       integer*4  newtrack            ! make a new track
       real*4 dposx,dposy,dposxp,dposyp
+      if (hbypass_track_eff_files.eq.0) then
+       open(unit=13,file='scalers/htrackstubs.txt',status='unknown',
+     $      access='append')
+      endif
+      hstubtest = 0
 *
       ABORT= .FALSE.
       err=' '
@@ -100,11 +110,37 @@
             dposxp= hbeststub(isp2,3)-hbeststub(isp1,3)
             dposyp= hbeststub(isp2,4)-hbeststub(isp1,4)
 
+******************************************************
+            if (abs(dposx).LT.abs(hstubminx)) hstubminx = dposx
+            if (abs(dposy).LT.abs(hstubminy)) hstubminy = dposy
+            if (abs(dposxp).LT.abs(hstubminxp)) hstubminxp = dposxp
+            if (abs(dposyp).LT.abs(hstubminyp)) hstubminyp = dposyp
+      if (hbypass_track_eff_files.eq.0) then
+       if (abs(hstubminx) .gt. hxt_track_criterion) then
+        write(13,*) 'event # ',gen_event_ID_number,
+     $       ' hstubminx = ',hstubminx
+       endif
+       if (abs(hstubminy) .gt. hyt_track_criterion) then
+        write(13,*) 'event # ',gen_event_ID_number,
+     $       ' hstubminy =            ',hstubminy
+       endif
+       if (abs(hstubminxp) .gt. hxpt_track_criterion) then
+        write(13,*) 'event # ',gen_event_ID_number,
+     $       ' hstubminxp =                      ',hstubminxp
+       endif
+       if (abs(hstubminyp) .gt. hypt_track_criterion) then
+        write(13,*) 'event # ',gen_event_ID_number,
+     $       ' hstubminyp =                                 ',hstubminyp
+       endif
+       close(13)
+      endif
+******************************************************
             if      (abs(dposx) .lt. hxt_track_criterion
      &         .and. abs(dposy) .lt. hyt_track_criterion
      &         .and. abs(dposxp).lt. hxpt_track_criterion
      &         .and. abs(dposyp).lt. hypt_track_criterion) then
              if(newtrack.eq.1) then         
+             hstubtest=1
 *     make a new track
               if(hntracks_fp.lt.hntracks_max) then ! are there too many 
                hntracks_fp=hntracks_fp+1 ! increment the number of tracks
