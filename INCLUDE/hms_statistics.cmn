@@ -1,0 +1,11 @@
+*     hms_statistics.cmn
+*     common blocks containing event statistics for h_reconstruction
+* $Log$
+* Revision 1.1  1994/06/06 16:52:57  cdaq
+* Initial revision
+*
+*
+      integer*4 h_recon_num             ! Number of calls to h_reconstruction
+*     
+      common/hms_statistics/
+     &     h_recon_num
