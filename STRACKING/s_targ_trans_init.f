@@ -8,6 +8,11 @@
 * Version:  0.1 (In development)
 *
 * $Log$
+* Revision 1.5  2004/02/19 16:42:13  jones
+* Can set filename for the SOS matrix elements using the parameter
+* s_recon_coeff_filename . If parameter is not set then uses
+* sos_recon_coeff.dat
+*
 * Revision 1.4  1996/09/04 20:57:23  saw
 * (JRA) Add target x to track definition
 *
@@ -48,6 +53,7 @@
 
       include 'sos_recon_elements.cmn'  !Recon coefficients.
       include 'gen_filenames.cmn'
+      include 'sos_filenames.cmn'
  
 ! Misc. variables.
 
@@ -84,7 +90,14 @@ c      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
 
 ! Open and read in coefficients.
 
-      open (unit=chan,status='old',name='sos_recon_coeff.dat',err=92)
+      if ( s_recon_coeff_filename .eq. ' ' ) then
+         s_recon_coeff_filename = 'sos_recon_coeff.dat'
+       else
+      endif
+      write(*,*) '*******'
+       write(*,*) ' Opening SOS matrix element file ',s_recon_coeff_filename
+      write(*,*) '*******'
+      open (unit=chan,status='old',name=s_recon_coeff_filename,err=92)
 
 ! Read header comments.
 
@@ -126,18 +139,21 @@ c      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
 
  92   istat = 2                         !Error opening file.
 * If file does not exist, report err and then continue for development
-      err = 'error opening file sos_recon_coeff.dat'
+      err = 'error opening file '//s_recon_coeff_filename
       call g_rep_err(ABORT,err)
+      stop
       goto 100
 
  94   istat = 4                         !Error reading or processing data.
       ABORT=.true.
-      err = 'error processing file sos_recon_coeff.dat'
+      err = 'error processing file'//s_recon_coeff_filename
+      stop
       goto 100
 
  96   istat = 6                         !Too much data in file for arrays.
       ABORT=.true.
-      err = 'too much data in file sos_recon_coeff.dat'
+      err = 'too much data in file '//s_recon_coeff_filename
+      stop
       goto 100
 
 ! Done with open file.
