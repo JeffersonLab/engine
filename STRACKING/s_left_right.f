@@ -9,6 +9,9 @@
 *     space point.
 *     d. f. geesaman           31 August 1993
 * $Log$
+* Revision 1.9  1995/10/10 15:59:06  cdaq
+* (JRA) Remove sdc_sing_wcoord stuff
+*
 * Revision 1.8  1995/08/31 18:44:23  cdaq
 * (JRA) Fix some logic in small angle L/R determination loop
 *
@@ -49,8 +52,8 @@
 *
 *     local variables
 *
-      character*50 here
-      parameter (here= 'S_LEFT_RIGHT')
+      character*12 here
+      parameter (here= 's_left_right')
 *
       logical ABORT
       character*(*) err
@@ -68,18 +71,9 @@
       real*4 minchi2
       real*4 stub(4)
       logical smallAngOk
-      integer*4 hit1,hit2
 *
       ABORT= .FALSE.
-      err=':'
-
-* initialize sdc_sing_wcoord (or else!)
-      do plane=1,SDC_NUM_PLANES
-        sdc_sing_wcoord(plane) = -100.
-
-      enddo
-*     djm 10/2/94 added initialization/setting of gplanehdc1(isp)/2 pattern
-*     units. Presently we are accepting 5/6 or 6/6 planes per chamber. 
+      err=' '
 
       do isp=1,snspace_points_tot       ! loop over all space points
         do ich=1,sdc_num_chambers
@@ -242,21 +236,6 @@ c          endif
 
 *
       enddo                             ! end loop over space points
-*
-*
-c      do isp=1,snspace_points_tot
-c        do hit1=1,sspace_point_hits(isp,1)-1
-c          do hit2=hit1,sspace_point_hits(isp,1)
-c            if (2*int(hit1/2).ne.hit1 .and. hit2.eq.(hit1+1)) then
-c              write(98,*) (hit2/2),sdc_wire_coord(sspace_point_hits(isp,2+hit1)),
-c     &                    sdc_wire_coord(sspace_point_hits(isp,2+hit2))
-c            else if (2*int(hit2/2).ne.hit2 .and. hit1.eq.(hit2+1)) then
-c              write(98,*) (hit1/2),sdc_wire_coord(sspace_point_hits(isp,2+hit2)),
-c     &                    sdc_wire_coord(sspace_point_hits(isp,2+hit1))
-c            endif
-c          enddo
-c        enddo
-c      enddo
 *
 *     write out results if sdebugflagstubs is set
       if(sdebugflagstubs.ne.0) then
