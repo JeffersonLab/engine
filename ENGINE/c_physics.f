@@ -7,6 +7,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.10  2003/12/19 19:21:04  jones
+* Use ssinplane and hsinplane in calculating cqx,cqz and cmissing_momx,cmissing_momz
+*
 * Revision 1.9  2003/11/28 15:49:41  jones
 * Go back to adding h_oopcentral_offset and s_oopcentral_offset to hsxp_tar and
 * ssxp_tar since this in no longer done in h_physics.f and s_physics.f (MKJ)
@@ -76,13 +79,13 @@
         tar_amin1= gtarg_a(gtarg_num)-1.0
         m_rec = tar_amin1*m_amu
       if(hpartmass .lt. 2*mass_electron) then ! Less than 1 MeV, HMS is elec
-        cqx = -hsp*cos(hsxp_tar+h_oopcentral_offset)*sin(hstheta)
+        cqx = -hsp*cos(hsxp_tar+h_oopcentral_offset)*sin(hsinplane)
         cqy = -hsp*sin(hsxp_tar+h_oopcentral_offset)
-        cqz = gpbeam - hsp*cos(hsxp_tar+h_oopcentral_offset)*cos(hstheta)
+        cqz = gpbeam - hsp*cos(hsxp_tar+h_oopcentral_offset)*cos(hsinplane)
         cqabs= sqrt(cqx**2+cqy**2+cqz**2)
-        cmissing_momx = cqx + ssp*cos(ssxp_tar+s_oopcentral_offset)*sin(sstheta)
+        cmissing_momx = cqx + ssp*cos(ssxp_tar+s_oopcentral_offset)*sin(ssinplane)
         cmissing_momy = cqy - ssp*sin(ssxp_tar+s_oopcentral_offset)
-        cmissing_momz = cqz - ssp*cos(ssxp_tar+s_oopcentral_offset)*cos(sstheta)
+        cmissing_momz = cqz - ssp*cos(ssxp_tar+s_oopcentral_offset)*cos(ssinplane)
         cmissing_mom    = sqrt(cmissing_momx**2 + cmissing_momy**2 
      >                         + cmissing_momz**2)
         cmissing_mom_par = (cmissing_momx*cqx+cmissing_momz*cqz)/cqabs
@@ -103,13 +106,13 @@
      >     (gebeam+mass_nucleon)/(1-(gebeam*cos(sstheta)/
      >     (gebeam+mass_nucleon))**2) 
       else                              ! SOS is the electron
-        cqx = -ssp*cos(ssxp_tar+s_oopcentral_offset)*sin(sstheta)
+        cqx = -ssp*cos(ssxp_tar+s_oopcentral_offset)*sin(ssinplane)
         cqy = -ssp*sin(ssxp_tar+s_oopcentral_offset)
-        cqz = gpbeam - ssp*cos(ssxp_tar+s_oopcentral_offset)*cos(sstheta)
+        cqz = gpbeam - ssp*cos(ssxp_tar+s_oopcentral_offset)*cos(ssinplane)
         cqabs= sqrt(cqx**2+cqy**2+cqz**2)
-        cmissing_momx = cqx + hsp*cos(hsxp_tar+h_oopcentral_offset)*sin(hstheta)
+        cmissing_momx = cqx + hsp*cos(hsxp_tar+h_oopcentral_offset)*sin(hsinplane)
         cmissing_momy = cqy - hsp*sin(hsxp_tar+h_oopcentral_offset)
-        cmissing_momz = cqz - hsp*cos(hsxp_tar+h_oopcentral_offset)*cos(hstheta)
+        cmissing_momz = cqz - hsp*cos(hsxp_tar+h_oopcentral_offset)*cos(hsinplane)
         cmissing_mom    = sqrt(cmissing_momx**2 + cmissing_momy**2 
      >       + cmissing_momz**2)
         cmissing_mom_par = (cmissing_momx*cqx+cmissing_momz*cqz)/cqabs
