@@ -5,9 +5,12 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.6  1994/06/22 20:07:37  cdaq
-*-    (SAW) Fix problems with filling of hodoscope type hit lists (multiple signal)
+*-    Revision 1.7  1994/06/22 20:21:24  cdaq
+*-    (SAW) Put -1 in hodoscope signals that don't get any data
 *-
+* Revision 1.6  1994/06/22  20:07:37  cdaq
+* (SAW) Fix problems with filling of hodoscope type hit lists (multiple signal)
+*
 * Revision 1.5  1994/06/21  16:02:54  cdaq
 * (SAW) Ignore DCFF0000 headers from Arrington's CRL's
 *
@@ -140,6 +143,10 @@
                   enddo
                   planelist(h) = plane
                   counterlist(h) = counter
+                  signal0(h) = -1
+                  signal1(h) = -1
+                  signal2(h) = -1
+                  signal3(h) = -1
                   hitcount = hitcount + 1
                 endif
 *
