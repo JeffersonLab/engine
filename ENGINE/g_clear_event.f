@@ -12,9 +12,12 @@
 *-   Created  29-Oct-1993   Kevin B. Beard, Hampton U.
 *-   Modified 19-Nov-1993   Kevin B. Beard for new error standards
 *-      $Log$
-*-      Revision 1.6  1995/04/01 19:44:31  cdaq
-*-      (SAW) Add clear of BPM hit counter
+*-      Revision 1.7  1995/07/27 19:06:40  cdaq
+*-      (SAW) Disable monte carlo (GMC)
 *-
+* Revision 1.6  1995/04/01  19:44:31  cdaq
+* (SAW) Add clear of BPM hit counter
+*
 * Revision 1.5  1994/06/22  20:23:47  cdaq
 * (SAW) Clear the uninstrumented channel hit counter
 *
@@ -66,7 +69,7 @@
 *
       call C_clear_event(COIN_ABORT,COIN_err)
 *
-      call gmc_mc_clear(gmc_abort,gmc_err)
+**      call gmc_mc_clear(gmc_abort,gmc_err)
 *
       ABORT= HMS_ABORT .or. SOS_ABORT .or. COIN_ABORT .or. gmc_abort
 *
