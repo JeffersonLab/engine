@@ -2,7 +2,10 @@
 *      HMS calorimeter. Parameters from hms_positions.parm
 *
 * $Log$
-* Revision 1.4  1995/01/04 17:09:32  cdaq
+* Revision 1.5  1995/03/13 19:01:46  cdaq
+* (JRA) Move hmax_cal_rows and hmax_cal_columns to gen_data_structures
+*
+* Revision 1.4  1995/01/04  17:09:32  cdaq
 * (HGM) Increase hmax_cal_rows to 13
 *
 * Revision 1.3  1994/10/11  19:44:44  cdaq
@@ -24,10 +27,6 @@
 *
 *     CTPTYPE=parm
 *
-      integer*4 hmax_cal_rows           !Number of calorimeter rows
-      parameter (hmax_cal_rows=13)
-      integer*4 hmax_cal_columns      !Number of calorimeter columns
-      parameter (hmax_cal_columns=4)
       real*4 hcal_1pr_zpos      ! Z positions of front of shower counter layers
       real*4 hcal_2ta_zpos      !
       real*4 hcal_3ta_zpos      !
