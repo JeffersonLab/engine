@@ -12,6 +12,9 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log$
+*- Revision 1.4.16.2  2005/03/23 16:56:02  jones
+*-  new code STRACKING/s_select_best_track_prune.f
+*-
 *- Revision 1.4.16.1  2004/08/20 17:32:50  cdaq
 *- updated to include _select_using_scin codes
 *-
@@ -48,7 +51,7 @@ c
       INCLUDE 'sos_tracking.cmn'
 *
 *     local variables 
-      integer*4 goodtrack,track
+      integer*4 goodtrack,track,trk,savegood
       logical first
       real*4 chi2perdeg,chi2min
 c
@@ -61,6 +64,14 @@ c
 *     Need to test to chose the best track
       SSNUM_FPTRACK = 0
       SSNUM_TARTRACK = 0
+
+* adding choice to use scintillators to choose best track...
+      if ( ssel_using_prune .eq. 1) then
+         if (first) write(*,*) ' SOS track selection using Pruning'
+         first = .false.
+         call S_SELECT_BEST_TRACK_PRUNE(ABORT,err)
+        return
+      endif
 
 * adding choice to use scintillators to choose best track...
       if ( ssel_using_scin .eq. 1) then

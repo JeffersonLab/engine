@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.25.12.2  2005/03/23 16:56:02  jones
+#  new code STRACKING/s_select_best_track_prune.f
+#
 # Revision 1.25.12.1  2004/08/20 17:32:39  cdaq
 # updated to include _select_using_scin codes
 #
@@ -112,7 +115,7 @@ newerstuff = s_fill_dc_target_hist.f s_targ_trans_init.f \
 	s_report_bad_data.f s_dc_trk_eff.f s_dc_trk_eff_shutdown.f \
 	s_find_easy_space_point.f s_aero.f s_track_tests.f s_lucite.f \
 	s_correct_cal_pos.f s_correct_cal_neg.f s_cal_calib.f \
-	s_satcorr.f
+	s_satcorr.f  s_select_best_track_prune.f
 makeregstuff = r_sos_filenames.f r_sos_tracking.f r_sos_geometry.f \
 	 r_sos_track_histid.f r_sos_recon_elements.f r_sos_physics_sing.f \
 	r_sos_scin_parms.f r_sos_scin_tof.f r_sos_calorimeter.f \
