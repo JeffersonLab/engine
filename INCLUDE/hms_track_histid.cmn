@@ -9,6 +9,9 @@
 *
 *      Created 9 April 1994	D. F. Geesaman
 * $Log$
+* Revision 1.8  1996/01/17 16:04:21  cdaq
+* (JRA) Add hidcuttdc and a temporary junk common block
+*
 * Revision 1.7  1995/05/22 19:12:18  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
 *
@@ -51,6 +54,7 @@
       integer*4 hidres_fp(hmax_num_dc_planes)
       integer*4 hidsingres_fp(hmax_num_dc_planes)
       integer*4 hidrawtdc
+      integer*4 hidcuttdc
 
       common/hms_tracking_histid/
      &     hiddcwiremap,
@@ -73,7 +77,8 @@
      &     hidhp_tar,
      &     hidres_fp,
      &     hidsingres_fp,
-     &     hidrawtdc
+     &     hidrawtdc,
+     &     hidcuttdc
 
 *
 *     CTPTYPE=parm
@@ -85,3 +90,15 @@
      &     hturnon_decoded_dc_hist,
      &     hturnon_focal_plane_hist,
      &     hturnon_target_hist
+
+*  temporary junk common block.
+*
+*     CTPTYPE=event
+*
+      real*4 hx_sp1(hntracks_max),hy_sp1(hntracks_max),hxp_sp1(hntracks_max)
+      real*4 hx_sp2(hntracks_max),hy_sp2(hntracks_max),hxp_sp2(hntracks_max)
+      real*4 hsx_sp1,hsy_sp1,hsxp_sp1
+      real*4 hsx_sp2,hsy_sp2,hsxp_sp2
+*
+      common/htemp_junk_cb/hx_sp1,hy_sp1,hxp_sp1,hx_sp2,hy_sp2,hxp_sp2,
+     &     hsx_sp1,hsy_sp1,hsxp_sp1,hsx_sp2,hsy_sp2,hsxp_sp2
