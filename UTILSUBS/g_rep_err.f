@@ -10,6 +10,9 @@
 *-   Modified for hall C 9/1/93: KBB
 *-   Modified 11/19/93 for warning: KBB
 *     $Log$
+*     Revision 1.4  1996/11/22 17:08:00  saw
+*     (SAW) Cleanup
+*
 *     Revision 1.3  1995/03/21 15:35:48  cdaq
 *     (SAW) Replace variable min with minute
 *
@@ -29,11 +32,13 @@
       INCLUDE 'gen_output_info.cmn'
       INCLUDE 'gen_run_info.cmn'
       INCLUDE 'gen_event_info.cmn'
+      INCLUDE 'gen_routines.dec'
 *
       logical warning,valid_run_info
       character*80 msg,time
       integer iv(10),dy,mth,yr,hr,minute,sec
       real rv(10)
+      integer lentemp
 *
 *----------------------------------------------------------------------
 *
@@ -66,13 +71,16 @@
 *     
       ENDIF
 *     
+      lentemp = g_important_length(note)
       IF(ABORT) THEN
 *     
-         call G_wrap_note(G_OUTPUT_tty,'ERROR: '//note)
+        call g_prepend('ERROR: ',note)
+        call G_wrap_note(G_OUTPUT_tty,note)
 *     
       ELSE
 *     
-         call G_wrap_note(G_OUTPUT_tty,'WARNING: '//note)
+        call g_prepend('WARNING: ',note)
+        call G_wrap_note(G_OUTPUT_tty,note)
 *     
       ENDIF
 *     
