@@ -1,6 +1,9 @@
       subroutine h_one_ev_wc
 *
 * $Log$
+* Revision 1.2  1996/01/17 16:39:33  cdaq
+* (DVW) Fixes
+*
 * Revision 1.1  1995/09/14 15:42:40  cdaq
 * Initial revision
 *
@@ -15,7 +18,6 @@
       real origin(3),factor(3)
       integer i
 
-      character*10 chambername
       character*4 wire
       integer ichamber
       integer isector
@@ -23,6 +25,8 @@
       integer iplane
       
       character*4 specname
+      character*4 wcname(3)
+      character*1 sectorthingy
       integer nchambers
       integer nplanes
       character*1 planenames(4)
@@ -44,17 +48,27 @@
       enddo
 
       do ichamber=1,nchambers
-        write (44,'(a,i1)') "      subroutine h_one_ev_wc",ichamber
+        write (wcname(1),'("WCH",a1)') char(64 + ichamber)
         do iplane=1,nplanes
           do isector=1,sectors(iplane)
+            sectorthingy = 'A'
+*
+*     There is only one U and one V plane per chamber
+*
+            if(planenames(iplane).ne.'U'.and.planenames(iplane).ne.'V'
+     $           .and.isector.gt.sectors(iplane)/2) then
+              sectorthingy = 'B'
+            endif
+            write(wcname(2),'("W",3a1)')  char(64 + ichamber)
+     $           ,sectorthingy,planenames(iplane)
             do iwire = 1,wires(iplane)
               write (wire,'(a,a,a,a)') char(64 + ichamber)
      $             ,planenames(iplane),char(64 + isector)
      $             ,char(64 + iwire)
-              write (chambername,'(a,a,a)') 'WC',wire,'NAME'
-              call gsdet(specname,wire,3,chambername,chambits,
+              wcname(3) = wire
+              call gsdet(specname,wire,3,wcname,chambits,
      $             2, 100, 100, iset, idet)
-              call gsdeth(specname,wire,varinames,varibits,origin,factor)
+              call gsdeth(specname,wire,3,varinames,varibits,origin,factor)
             enddo
           enddo
         enddo
