@@ -11,8 +11,12 @@
 *- 
 *-   Created  17-May-1994   Kevin B. Beard, Hampton U.
 * $Log$
-* Revision 1.1  1994/06/07 18:19:03  cdaq
-* Initial revision
+* Revision 1.2  1995/07/27 19:11:15  cdaq
+* (SAW) Use specific bit manipulation routines for f2c compatibility
+*       Remove event number limit checking
+*
+*Revision 1.1  1994/06/07  18:19:03  cdaq
+*Initial revision
 *
 *-
 *- All standards are from "Proposal for Hall C Analysis Software
@@ -26,7 +30,8 @@
       parameter (here= 'G_examine_physics_event')
 
       INTEGER buffer(*)
-      LOGICAL process,ABORT
+ccc      LOGICAL process
+      LOGICAL ABORT
       CHARACTER*(*) err
 *
       INCLUDE 'gen_run_info.cmn'
@@ -36,18 +41,20 @@
       logical eventidbank, nontrivial
       integer EventIDbank_size,EventIDbank_desc
 *
+      integer*4 jiand,jishft
+*
       parameter (EventIDbank_size= 4)
       parameter (EventIDbank_desc= 'C0000100'x)  !from CODA manual
 *
       gen_event_sequence_N= gen_event_sequence_N+1  !from beginning
 *
-      if(iand(buffer(2),'FFFF'x).ne.'10CC'x) then
+      if(jiand(buffer(2),'FFFF'x).ne.'10CC'x) then
          err = 'Event is not a physics event'
          ABORT = .true.
          call g_add_path(here,err)
          return
       endif
-      EvType = ISHFT(buffer(2),-16)
+      EvType = jISHFT(buffer(2),-16)
 *
       gen_run_total_events= gen_run_total_events+1
       gen_event_type= EvType
@@ -60,7 +67,7 @@
          RETURN
       EndIf
 *
-      process= gen_run_enable(EvType)
+ccc      process= gen_run_enable(EvType)
 *
       gen_run_triggered(EvType)= gen_run_triggered(EvType)+1
 *     
@@ -81,14 +88,14 @@
             gen_event_ROC_summary= buffer(7)
 *
 *-see if event_ID within limits of interest
-            IF(gen_run_starting_event.GT.0) THEN
-               process= gen_event_ID_number.GE.gen_run_starting_event
-            ENDIF
+ccc            IF(gen_run_starting_event.GT.0) THEN
+ccc               process= gen_event_ID_number.GE.gen_run_starting_event
+ccc            ENDIF
 *
-            IF(gen_run_stopping_event.GE.gen_run_starting_event
-     &           .and. gen_run_stopping_event.GT.0) THEN
-               process= gen_event_ID_number.LE.gen_run_stopping_event
-            ENDIF
+ccc            IF(gen_run_stopping_event.GE.gen_run_starting_event
+ccc     &           .and. gen_run_stopping_event.GT.0) THEN
+ccc               process= gen_event_ID_number.LE.gen_run_stopping_event
+ccc            ENDIF
 *
          else                           !1st bank NOT eventID bank-must look later
 *
