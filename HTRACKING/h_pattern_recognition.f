@@ -14,35 +14,37 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
-* Revision 1.3  1994/06/30 02:27:48  cdaq
+* Revision 1.4  1994/08/16 13:08:50  cdaq
+* (DJA) Add wire velocity correction
+*
+* Revision 1.3  1994/06/30  02:27:48  cdaq
 * (DFG) Place a limit on total nubmer of hits in each chamber
 *       Add filter to get minimum drift time in each plane
 *
 * Revision 1.2  1994/02/21  03:17:53  cdaq
 * (SAW) Removed reference to 3rd chamber in hnspace_points
 *
-c Revision 1.1  1994/02/19  06:15:47  cdaq
-c Initial revision
-c
+* Revision 1.1  1994/02/19  06:15:47  cdaq
+* Initial revision
+*
 *-
-
 *
 *     This routine finds the space points in each chamber using wire center
 *     locations.
 *
 *--------------------------------------------------------
-       IMPLICIT NONE
-       SAVE
+      IMPLICIT NONE
+      SAVE
 *
-       character*50 here
-       parameter (here= 'H_PATTERN_RECOGNITION')
+      character*50 here
+      parameter (here= 'H_PATTERN_RECOGNITION')
 *
-       logical ABORT
-       character*(*) err
+      logical ABORT
+      character*(*) err
 *
-       INCLUDE 'gen_data_structures.cmn'
-       INCLUDE 'gen_constants.par'
-       INCLUDE 'gen_units.par'
+      INCLUDE 'gen_data_structures.cmn'
+      INCLUDE 'gen_constants.par'
+      INCLUDE 'gen_units.par'
 *
 *
       include "hms_tracking.cmn"
@@ -52,6 +54,11 @@ c
       real*4 space_points(hmax_space_points,2)
       integer*4 space_point_hits(hmax_space_points,hmax_hits_per_point+2)
       integer*4 i,j,k
+*
+      integer*4 plane, wire, isp, ihit, hit
+      real*4 x_pos, x_drifttime_corr, y_pos, y_drifttime_corr
+      real*4 h_drift_dist_calc
+      external h_drift_dist_calc
 *
 *     temporary initialization
       ABORT= .FALSE.
@@ -94,43 +101,75 @@ c
 *     chamber 2
       hnspace_points(2)=0
       hncham_hits(2)=HDC_HITS_PER_PLANE(7)+HDC_HITS_PER_PLANE(8)
-     &          +HDC_HITS_PER_PLANE(9)+HDC_HITS_PER_PLANE(10)
-     &          +HDC_HITS_PER_PLANE(11)+HDC_HITS_PER_PLANE(12)
+     &     +HDC_HITS_PER_PLANE(9)+HDC_HITS_PER_PLANE(10)
+     &     +HDC_HITS_PER_PLANE(11)+HDC_HITS_PER_PLANE(12)
       if(hncham_hits(2).gt.2  .and. hncham_hits(2).lt. hmax_pr_hits(2))  then
-          do i=hncham_hits(1)+1,hncham_hits(1)+hncham_hits(2)
-*             type *,hncham_hits(1),hncham_hits(2),i
-             hit_number(i)=i
-          enddo
-         call find_space_points(hncham_hits(2),hit_number(hncham_hits(1)+1),
-     &        HDC_WIRE_CENTER(hncham_hits(1)+1),
-     &        HDC_PLANE_NUM(hncham_hits(1)+1),hspace_point_criterion(2),
-     &        hxsp(1),hysp(1),hmax_space_points,
-     &        hnspace_points(2), space_points, space_point_hits)
+        do i=hncham_hits(1)+1,hncham_hits(1)+hncham_hits(2)
+*     type *,hncham_hits(1),hncham_hits(2),i
+          hit_number(i)=i
+        enddo
+        call find_space_points(hncham_hits(2),hit_number(hncham_hits(1)+1),
+     &       HDC_WIRE_CENTER(hncham_hits(1)+1),
+     &       HDC_PLANE_NUM(hncham_hits(1)+1),hspace_point_criterion(2),
+     &       hxsp(1),hysp(1),hmax_space_points,
+     &       hnspace_points(2), space_points, space_point_hits)
 *    
 *    If two hits in same plane, choose one with minimum drift time
-         call h_choose_single_hit(ABORT,err,hnspace_points(2),
-     &        space_point_hits)
+        call h_choose_single_hit(ABORT,err,hnspace_points(2),
+     &       space_point_hits)
 *     select on minimum number of combinations and hits
-         call select_space_points(hmax_space_points,
-     &        hnspace_points(2), space_points, space_point_hits,
-     &        hmin_hit(2),hmin_combos(2))
-          do i=1,hnspace_points(2)
-             k=hnspace_points(1)+i
-             hspace_points(k,1)=space_points(i,1)
-             hspace_points(k,2)=space_points(i,2)
-             hspace_point_hits(k,1)=space_point_hits(i,1)
-             hspace_point_hits(k,2)=space_point_hits(i,2)
-             do j=1,space_point_hits(i,1)
-              hspace_point_hits(k,j+2)=space_point_hits(i,j+2)
-             enddo
+        call select_space_points(hmax_space_points,
+     &       hnspace_points(2), space_points, space_point_hits,
+     &       hmin_hit(2),hmin_combos(2))
+        do i=1,hnspace_points(2)
+          k=hnspace_points(1)+i
+          hspace_points(k,1)=space_points(i,1)
+          hspace_points(k,2)=space_points(i,2)
+          hspace_point_hits(k,1)=space_point_hits(i,1)
+          hspace_point_hits(k,2)=space_point_hits(i,2)
+          do j=1,space_point_hits(i,1)
+            hspace_point_hits(k,j+2)=space_point_hits(i,j+2)
           enddo
+        enddo
       endif      
 *     calculate total numbe of space points
       hnspace_points_tot=hnspace_points(1)+hnspace_points(2)
+*
+*     Now we know rough hit positions in the chambers so we can
+*     Make wire velocity drift time corrections for each hit in the space
+*     point
+      if(h_wire_vel_correction.ne.0 .and. hnspace_points_tot.gt.0) then
+        do isp=1,hnspace_points_tot
+*     write(hluno,*)' ** space point',isp
+          x_pos = hspace_points(isp,1)
+          y_pos = hspace_points(isp,2)
+          x_drifttime_corr = -hdc_x_central_time + y_pos/hdc_wire_velocity
+          y_drifttime_corr = -hdc_y_central_time + x_pos/hdc_wire_velocity
+*     write(hluno,*)x_pos,x_drifttime_corr,y_pos,y_drifttime_corr
+          do ihit=1,hspace_point_hits(isp,1)
+            hit = hspace_point_hits(isp,ihit+2)
+            plane = HDC_PLANE_NUM(hit)
+            wire = HDC_WIRE_NUM(hit)
+            if(plane.eq.2 .or. plane.eq.5 .or. 
+     &           plane.eq.8 .or. plane.eq.11) then ! Y or Y'  plane
+              HDC_DRIFT_TIME(hit)=HDC_DRIFT_TIME(hit) - y_drifttime_corr
+            else                        ! X,U,V,X' plane
+              HDC_DRIFT_TIME(hit)=HDC_DRIFT_TIME(hit) + x_drifttime_corr
+            endif
+            HDC_DRIFT_DIS(hit) = h_drift_dist_calc
+     &           (plane,wire,HDC_DRIFT_TIME(hit))
+*     write(hluno,*)ihit,hit,HDC_DRIFT_TIME(hit),HDC_DRIFT_DIS(hit)
+          enddo
+        enddo
+      endif
+*     
+*     Histogram HDC_DECODED_DC
+      call h_fill_dc_dec_hist(ABORT,err)
+*     
 *     write out results if debugflagpr is set
       if(hdebugflagpr.ne.0) then
         call h_print_pr
       endif
-*
+*     
       return
       end
