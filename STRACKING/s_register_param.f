@@ -1,4 +1,4 @@
-       SUBROUTINE s_register_param(ABORT,err)
+      SUBROUTINE s_register_param(ABORT,err)
 *--------------------------------------------------------
 *-
 *-   Purpose and Methods : Initializes SOS quantities 
@@ -13,7 +13,10 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
-* Revision 1.6  1994/06/07 03:01:22  cdaq
+* Revision 1.7  1994/08/18 03:59:50  cdaq
+* (SAW) Call makereg generated routines to register variables
+*
+* Revision 1.6  1994/06/07  03:01:22  cdaq
 * (DFG) add call to register bypass switches and statistics
 *
 * Revision 1.5  1994/03/24  19:54:54  cdaq
@@ -42,36 +45,38 @@
       logical ABORT
       character*(*) err
 *
-      INCLUDE 'gen_data_structures.cmn'
-      INCLUDE 'gen_routines.dec'
-*
-*
 *--------------------------------------------------------
       err= ' '
       ABORT = .false.
 *
-*
 *     register tracking variables
-      call s_register_track_param(ABORT,err)
-      IF(ABORT) THEN
-         call G_add_path(here,err)
-      ENDIF
+*
+
+      call r_sos_tracking
+      call r_sos_geometry
+      call r_sos_track_histid
+      call r_sos_recon_elements
+      call r_sos_physics_sing
 *
 *     register cal, tof and cer variables
-      call s_register_id_param(ABORT,err)
-      IF(ABORT) THEN
-         call G_add_path(here,err)
-      ENDIF
-*     register bypass switches
-      call s_register_bypass(ABORT,err)
-      IF(ABORT) THEN
-          call G_add_path(here,err)
-      ENDIF
-*     register sos statistics
-      call s_register_statistics(ABORT,err)
-      IF(ABORT) THEN
-          call G_add_path(here,err)
-      ENDIF
 *
-      RETURN
-      END
+
+      call r_sos_scin_parms
+      call r_sos_scin_tof
+      call r_sos_calorimeter
+      call r_sos_id_histid
+
+*
+*     register bypass switches
+*
+
+      call r_sos_bypass_switches
+
+*
+*     register sos statistics
+*
+
+      call r_sos_statistics
+*
+      return
+      end
