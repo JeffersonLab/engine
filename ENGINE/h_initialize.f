@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-    $Log$
-*-    Revision 1.6  1994/04/12 17:20:27  cdaq
-*-    (KBB) Add ntuple call
+*-    Revision 1.7  1994/04/13 04:31:00  cdaq
+*-    (DFG) Add initialize for scin and cal
 *-
+* Revision 1.6  1994/04/12  17:20:27  cdaq
+* (KBB) Add ntuple call
+*
 * Revision 1.5  1994/02/22  15:12:37  cdaq
 * (DFG) Add call call to h_generate_geometry
 *
@@ -43,6 +46,12 @@
       ABORT = .FALSE.
 *
       call h_generate_geometry          ! Tracking routine
+*
+*     calculate secondary scintillator and time of flight parameters
+      call h_init_scin(ABORT,err)
+*
+*     calculate secondary calorimeter parameters
+      call h_init_cal(ABORT,err)
 *
       call h_ntuple_init(ABORT,err)
 *
