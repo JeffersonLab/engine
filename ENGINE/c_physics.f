@@ -7,7 +7,10 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
-* Revision 1.1  1995/05/11 15:17:36  cdaq
+* Revision 1.2  1995/05/13 02:44:07  cdaq
+* (SAW) Remove some debugging
+*
+* Revision 1.1  1995/05/11  15:17:36  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -108,9 +111,9 @@ c      type *,g_beam_target_s,cs
      $     ((CEBEAM+TMASS_TARGET)*(CEBEAM+he-qe)
      $     - CPBEAM*(CPBEAM+hp*cos(htheta)-qp*cos(qtheta)))
       if(temp.lt.0) then
-        type *,hsenergy,hsp,hstheta,hsphi
-        type *,ssenergy,hsp,sstheta,ssphi
-        type *,temp
+*        type *,hsenergy,hsp,hstheta,hsphi
+*        type *,ssenergy,hsp,sstheta,ssphi
+*        type *,temp
         cmissing_mass = -TMASS_RECOIL
       else
         cmissing_mass = sqrt(temp) - TMASS_RECOIL
