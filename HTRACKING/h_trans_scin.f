@@ -9,6 +9,9 @@
 *
 * modifications:
 * $Log$
+* Revision 1.18  1996/04/30 12:46:50  saw
+* (JRA) Clean up
+*
 * Revision 1.17  1996/01/16 21:35:37  cdaq
 * (JRA) Misc. fixes.
 *
@@ -185,14 +188,14 @@
         endif
       enddo                             !loop over hits to find ave time,adc.
 
-* TEMPORARY START TIME CALCULATION.  ASSUME XP=YP=0 RADIANS.  PROJECT ALL
-*     TIME VALUES TO FOCAL PLANE.  USE AVERAGE FOR START TIME.
-*   WORKS FOR ELECTRONS ONLY NOW
+* START TIME CALCULATION.  ASSUME XP=YP=0 RADIANS.  PROJECT ALL
+*  TIME VALUES TO FOCAL PLANE.  USE AVERAGE FOR START TIME.
       time_num = 0
       time_sum = 0.
       do ihit = 1 , hscin_tot_hits
         if (htwo_good_times(ihit)) then
-          fptime  = hscin_cor_time(ihit) - hscin_zpos(ihit)/29.989
+          fptime  = hscin_cor_time(ihit)
+     $         - hscin_zpos(ihit)/(hbeta_pcent*29.989)
           call hf1(hidscinalltimes,fptime,1.)
           if (abs(fptime-hstart_time_center).le.hstart_time_slop) then
             time_sum = time_sum + fptime
