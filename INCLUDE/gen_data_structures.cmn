@@ -4,14 +4,16 @@
 *
 *     Author:	D. F. Geesaman		1 September 1993
 *
-*     Revisions: 15 Dec 1993    DFG   
-*                     Add HMS_TRACK_TESTS and SOS_TRACK_TESTS
-*                     for particle ID information
+* $Log$
+* Revision 1.6  1994/04/12 18:38:15  cdaq
+* (DFG) Change dimension of HNTRACK_HITS(HNTRACKS_MAX,HNTRACKHITS_MAX+1)
+*                           SNTRACK_HITS(SNTRACKS_MAX,SNTRACKHITS_MAX+1)
+*                           to allow space for number of hits.
+* (SAW) Remove craw common to gen_craw.cmn
 *
-*     $Log$
-*     Revision 1.5  1994/03/24 17:02:03  cdaq
-*     DFG change decoded scin to arrington format in both hms and sos
-*         change track tests to amatouni format
+* Revision 1.5  1994/03/24  17:02:03  cdaq
+* DFG change decoded scin to arrington format in both hms and sos
+*     change track tests to amatouni format
 *
 * Revision 1.4  1994/02/21  02:54:22  cdaq
 * DFG Separate dimensioning parameters from actual number
@@ -28,17 +30,6 @@
 *
 * Revision 1.1  1994/02/07  17:05:43  cdaq
 * Initial revision
-*
-*     RAW DATA 
-*
-*     ARRAY NAME     CRAW
-*     DIMENSION LENGTH   LENGTH_CRAW
-*      
-      INTEGER*4 LENGTH_CRAW
-      PARAMETER (LENGTH_CRAW=20000)
-      INTEGER*4 CRAW
-*      
-      COMMON/COIN_CRAW/ CRAW(LENGTH_CRAW)
 *
 *
 *    BASIC BEAM PARAMETERS
@@ -367,7 +358,7 @@
      5      HYP_FP(HNTRACKS_MAX),
      6      HCHI2_FP(HNTRACKS_MAX),
      7      HDEL_FP(4,4,HNTRACKS_MAX),
-     8      HNTRACK_HITS(HNTRACKS_MAX,HNTRACKHITS_MAX),
+     8      HNTRACK_HITS(HNTRACKS_MAX,HNTRACKHITS_MAX+1),
      9      HNFREE_FP(HNTRACKS_MAX),
      A      HNTRACKS_FP
  
@@ -587,6 +578,8 @@
      &    SSCIN_COR_TIME,
      &    SSTART_TIME,
      &    SSCIN_HITS_PER_PLANE,
+     &    SSTART_HITNUM,
+     &    SSTART_HITSIDE,
      &    STWO_GOOD_TIMES,
      &    SGOOD_START_TIME,
      &    SGOOD_START_PLANE
@@ -620,7 +613,7 @@
 *    FILLED BY S_TRANS_CAL USING ONLY THE CALORIMETER INFORMATION
 * 
 *         X COORDINATE OF BLOCK CENTER
-*         Y COORDINATE OF BLOCK CENTER
+*         Z COORDINATE OF BLOCK CENTER
 *         ENERGY DEPOSITED IN THE BLOCK
 *         ENERGY DEPOSITED IN COLUMN #1
 *                                    #2
@@ -705,7 +698,7 @@
      5      SYP_FP(SNTRACKS_MAX),
      6      SCHI2_FP(SNTRACKS_MAX),
      7      SDEL_FP(4,4,SNTRACKS_MAX),
-     8      SNTRACK_HITS(SNTRACKS_MAX,SNTRACKHITS_MAX),
+     8      SNTRACK_HITS(SNTRACKS_MAX,SNTRACKHITS_MAX+1),
      9      SNFREE_FP(SNTRACKS_MAX),
      A      SNTRACKS_FP
  
