@@ -1,7 +1,10 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
-* Revision 1.3  1994/07/07 15:24:24  cdaq
+* Revision 1.4  1995/04/06 20:04:33  cdaq
+* (JRA) Handle overflows and save them in real variables
+*
+* Revision 1.3  1994/07/07  15:24:24  cdaq
 * (SAW) Fix bugs
 *
 c Revision 1.2  1994/07/07  15:23:16  cdaq
@@ -12,6 +15,7 @@ c Initial revision
 c
 *
       implicit none
+      save
       integer*4 event(*)
 *
       character*17 here
@@ -22,12 +26,22 @@ c
 *
       INCLUDE 'gen_scalers.cmn'
 *
+      integer nroll(max_num_scalers)
+      integer index
+      real*4 realscal
+*
 *     Scaler events have a header in from of each scaler.  High 16 bits
 *     will contain the address (the switch settings).  Address for hall C
 *     will be of the form DANN, where NN is the scaler number.  The low 16
 *     bits will contain the number of scaler values to follow (this should
 *     be no larger than 16, but we will allow more.)
 *
+*
+*     NOTE that the variables scalers(i) is REAL!!!!!
+*     this is so that we can record the correct value when the 
+*     hardware scalers (32 bit <> I*4) overflow.
+*
+
       integer evtype, evlen, pointer
       integer scalid, countinmod, address, counter
       
@@ -56,7 +70,20 @@ c
 *
             address = scalid*16
             do counter = 1,countinmod
-               scalers(address+counter) = event(pointer + counter)
+              index=address+counter
+              realscal=float(event(pointer+counter))
+              if (realscal.lt.-0.5) then
+c                  type *,realscal
+                  realscal=realscal+4294967296.
+c                  type *,realscal
+              endif
+              if ( (realscal+float(nroll(index))*4294967296.) .ge.
+     &              scalers(index) ) then       ! 2**32 = 4.295e+9
+                scalers(index) = realscal + nroll(index)*4294967296.
+              else                              !32 bit scaler rolled over.
+                nroll(index)=nroll(index)+1
+                scalers(index) = realscal + nroll(index)*4294967296.
+              endif
             enddo
             pointer = pointer + countinmod + 1 ! Add 17 to pointer
          enddo
