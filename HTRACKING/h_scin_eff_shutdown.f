@@ -16,7 +16,10 @@
 * h_scin_eff_shutdown does some final manipulation of the numbers.
 *
 * $Log$
-* Revision 1.4  1995/05/22 19:39:26  cdaq
+* Revision 1.5  1995/07/19 19:04:02  cdaq
+* (SAW) Move data statement for f2c compatibility
+*
+* Revision 1.4  1995/05/22  19:39:26  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.3  1995/05/17  13:58:29  cdaq
@@ -49,11 +52,13 @@
       real p1,p2,p3,p4         !prob. of having both tubes fire for planes1-4
       real p1234,p123,p124,p134,p234 !prob. of having combos fire
       integer lunout
-      character*4 planename(HNUM_SCIN_PLANES)
-      data planename/'hS1X','hS1Y','hS2X','hS2Y'/
       real*4 peff,neff
       real*4 mineff
       parameter (mineff=.95)
+
+      character*4 planename(HNUM_SCIN_PLANES)
+      data planename/'hS1X','hS1Y','hS2X','hS2Y'/
+
       save
 
       write(lunout,*)
