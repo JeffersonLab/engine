@@ -16,6 +16,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.3  2004/07/08 20:06:09  saw
+ *   Always have CTP Tree routines (perhaps dummy) available
+ *
  *   Revision 1.2  1999/11/04 20:34:06  saw
  *   Alpha compatibility.
  *   New RPC call needed for root event display.
@@ -66,13 +69,11 @@ thStatus thIncTestScalersV(daVarStruct *var);
 thStatus thExecuteHistsV(daVarStruct *var);
 thStatus thClearHistsV(daVarStruct *var);
 thStatus thExecuteaGethitBlock(daVarStruct *var);
-#ifdef ROOTTREE
 thStatus thBookTree(daVarStruct *var);
 thStatus thFillTreeV(daVarStruct *var);
 thStatus thClearTreeV(daVarStruct *var);
 thStatus thWriteTreeV(daVarStruct *var);
 thStatus thCloseTreeV(daVarStruct *var);
-#endif
 
 extern daVarStatus thWHandler();
 extern daVarStatus thRHandler();
