@@ -1,6 +1,9 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
+* Revision 1.9  1996/01/22 15:10:03  saw
+* (JRA) Extract event number from scaler events
+*
 * Revision 1.8  1996/01/16 18:39:17  cdaq
 * (CB,SAW) Add current monitor calculations.  Make compatible with SAW's new
 *          scaler header format.
@@ -58,7 +61,7 @@ c
 *     hardware scalers (32 bit <> I*4) overflow.
 *
 
-      integer evtype, evlen, pointer
+      integer evtype, evnum, evlen, pointer
       integer scalid, countinmod, address, counter
 *
 *     Temporary variables for beam current and charge calculations
@@ -69,6 +72,8 @@ c
       hmscrate=.false.
 *
       evtype = jishft(event(2),-16)
+*
+      evnum = jiand(event(2),'FF'x)  ! last 2 bytes give event number (mod 256)
 *
 *     Should check against list of known scaler events
 *
