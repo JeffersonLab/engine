@@ -14,7 +14,10 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
-* Revision 1.3  1994/12/06 15:33:06  cdaq
+* Revision 1.4  1995/04/06 19:36:53  cdaq
+* (SAW) Hopefully improve wire velocity correction for SOS chambers
+*
+* Revision 1.3  1994/12/06  15:33:06  cdaq
 * (SAW) First pass at wire velocity correction for Brookhaven chambers
 *
 * Revision 1.2  1994/11/22  21:48:45  cdaq
@@ -67,6 +70,7 @@
 *
 *   
       ihit = 0
+      snspace_points_tot = 0
       do ich=1,SDC_NUM_CHAMBERS
         snspace_points(ich)=0        
         sncham_hits(ich)=0
@@ -100,7 +104,7 @@
      &         snspace_points(ich), space_points, space_point_hits,
      &         smin_hit(ich),smin_combos(ich))
           do i=1,snspace_points(ich)
-            k=ihit+i
+            k=snspace_points_tot+i
             sspace_points(k,1)=space_points(i,1)
             sspace_points(k,2)=space_points(i,2)
             sspace_point_hits(k,1)=space_point_hits(i,1)
@@ -110,17 +114,13 @@
             enddo
           enddo
         endif
+        snspace_points_tot = snspace_points_tot+ snspace_points(ich)
         ihit = ihit + sncham_hits(ich)
       enddo
 
       do plane=1,SDC_NUM_PLANES
         sdc_sing_wcenter(plane)=-100.
       enddo
-      
-*     calculate total number of space points
-      snspace_points_tot=snspace_points(1)+snspace_points(2)+snspace_points(3)
-
-
 *
 *     Now we know rough hit positions in the chambers so we can
 *     Make wire velocity drift time corrections for each hit in the space
@@ -129,8 +129,8 @@
         if(s_hms_style_chambers.eq.1) then
           do isp=1,snspace_points_tot
 *     write(sluno,*)' ** space point',isp
-            x_pos = sspace_points(isp,1)
-            y_pos = sspace_points(isp,2)
+            x_pos = sspace_points(isp,1) ! Assume that these are
+            y_pos = sspace_points(isp,2) ! transport coordinates
             x_drifttime_corr = sdc_x_central_time + y_pos/sdc_wire_velocity
             y_drifttime_corr = sdc_y_central_time + x_pos/sdc_wire_velocity
 *     write(sluno,*)x_pos,x_drifttime_corr,y_pos,y_drifttime_corr
@@ -169,12 +169,19 @@
 *
 *  These depend on which side the wire are read out on
 *
-* The following is probably wrong.  I do not yet have the right information
-* about which planes are x, u, and v, and which ends they are read out on.
-* The information in the standard .param files is probably wrong too.
+*     The following is probably wrong.  I may not have properly used the
+*     correct information about which planes are u, x, and v as well as
+*     which side they are read out on.
 *
+*     The U & V don't have wire lengths that are uniform across a plane.
+*     Furthermore, the lengths of the traces on the PC board vary with each
+*     wire.  For now, I'll just assume that all wires have the same length,
+*     using the longest wire for all wires.  This is not a completely off
+*     base approximation as generally, the shorter wires have longer traces.
+*
+
             up_pos = x_pos*cosd(30.0) + y_pos*sind(60.0) ! perp to u direction
-            vp_pos = x_pos*cosd(30.0) - y_pos*sind(30.0) ! perp to v direction
+            vp_pos = -x_pos*cosd(30.0) + y_pos*sind(30.0) ! perp to v direction
 *
             x_drifttime_corr = sdc_x_central_time + y_pos/sdc_wire_velocity
             u_drifttime_corr = sdc_u_central_time + up_pos/sdc_wire_velocity
@@ -185,12 +192,24 @@
               hit = sspace_point_hits(isp,ihit+2)
               plane = SDC_PLANE_NUM(hit)
               wire = SDC_WIRE_NUM(hit)
-              if(plane.eq.1.or.plane.eq.2) then
-                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) - x_drifttime_corr
-              else if(plane.eq.3.or.plane.eq.4) then
-                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) - u_drifttime_corr
-              else if(plane.eq.5.or.plane.eq.6) then
-                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) - v_drifttime_corr
+              if(plane.eq.1) then
+                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) -
+     $               sdc_u_central_time + u_drifttime_corr
+              else if (plane.eq.2) then
+                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) -
+     $               sdc_u_central_time - u_drifttime_corr
+              else if(plane.eq.3) then
+                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) -
+     $               sdc_x_central_time + x_drifttime_corr
+              else if(plane.eq.4) then
+                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) -
+     $               sdc_x_central_time - x_drifttime_corr
+              else if(plane.eq.5) then
+                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) -
+     $               sdc_v_central_time + v_drifttime_corr
+              else if(plane.eq.6) then
+                SDC_DRIFT_TIME(hit)=SDC_DRIFT_TIME(hit) -
+     $               sdc_v_central_time - v_drifttime_corr
               endif
               SDC_DRIFT_DIS(hit) = s_drift_dist_calc
      &             (plane,wire,SDC_DRIFT_TIME(hit))
