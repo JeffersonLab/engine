@@ -11,6 +11,9 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 * $Log$
+* Revision 1.15  1996/01/16 16:12:41  cdaq
+* (JRA) Comment out SOS minuit initialization
+*
 * Revision 1.14  1995/10/09 18:47:01  cdaq
 * (SAW) Move ntuple initialization into g_ntuple_init
 *
@@ -80,7 +83,7 @@
 *
       call s_generate_geometry          ! Tracking routine
 *
-      call s_initialize_fitting         ! Minuit initialization
+c      call s_initialize_fitting         ! Minuit initialization
 *
 *-calculate secondary scintillator and time of flight parameters
       call s_init_scin(FAIL,why)
