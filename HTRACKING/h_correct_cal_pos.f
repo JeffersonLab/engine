@@ -11,11 +11,10 @@
 *-      Created 15 Mar 1994      Tsolak A. Amatuni
 *
 * $Log$
-* Revision 1.4  1999/06/10 17:03:42  csa
-* (JRA) Changed h_correct_cal_pos calculation
-*
-* Revision 1.3  1999/02/25 20:10:48  saw
-* Vardan Tadevosyan shower code updates
+* Revision 1.5  2002/09/26 14:41:36  jones
+*    Different parameters a,b,c
+*    Fit to pion data of run 23121
+*    Different formula for h_correct_cal_pos
 *
 * Revision 1.2  1999/01/29 17:33:56  saw
 * Cosmetic changes
@@ -48,7 +47,7 @@
       character*17 here
       parameter (here='H_CORRECT_CAL_POS')
       real*4 a,b,c	! Fit parameters.
-      parameter (a=2.3926,b=-0.371375,c=-0.25401)
+      parameter (a=1.8904,b=-0.2289,c=-0.2724)
 *
       real*4 x,y         !Impact point coordinates
       real*4 h_correct_cal_pos
@@ -57,17 +56,19 @@
       include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
 *
-*      Fit to the MC data in the range of y [-30,+30].
+*      Fit to stright through pion data of run # 23121.
 *
-!      d=y+35.		!need to insure d is never less than -35!!!
-!      al=alog(d)
-!      h_correct_cal_pos=1./(a+b*al+c/al)
+
+      if(y.lt.hcal_fv_ymin) y=hcal_fv_ymin
+      if(y.gt.hcal_fv_ymax) y=hcal_fv_ymax
+
+       d=y-hcal_ymin
+       al=alog(d)
+       h_correct_cal_pos=1./(a+b*al+c/al)
+
+ccc      h_correct_cal_pos=exp(y/200.) !200 cm atten length.
+ccc      h_correct_cal_pos=h_correct_cal_pos/(1. + y*y/8000.)
 
 *
-*     Fit to data (run23121)
-*
-      h_correct_cal_pos=exp(y/165.4) !~200 cm atten length.
-      h_correct_cal_pos=h_correct_cal_pos/(1.+y*y/50000.)
-
       return
       end
