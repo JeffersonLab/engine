@@ -10,7 +10,10 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
-* Revision 1.4  1995/04/06 20:22:13  cdaq
+* Revision 1.5  1995/05/12 12:24:01  cdaq
+* (JRA) Modify/add user histograms
+*
+* Revision 1.4  1995/04/06  20:22:13  cdaq
 * (SAW) Add residuals histogram ids
 *
 * Revision 1.3  1994/08/05  20:38:26  cdaq
@@ -42,6 +45,7 @@
      &     sidsdelta_tar, sidsp_tar
       integer*4 sidres_fp(smax_num_dc_planes)
       integer*4 sidsingres_fp(smax_num_dc_planes)
+      integer*4 sidrawtdc
       
       common/sos_tracking_histid/
      &     siddcwiremap,
@@ -63,7 +67,8 @@
      &     sidsdelta_tar,
      &     sidsp_tar,
      &     sidres_fp,
-     &     sidsingres_fp
+     &     sidsingres_fp,
+     &     sidrawtdc
 
 *
 *     CTPTYPE=parm

@@ -9,7 +9,10 @@
 *
 *      Created 9 April 1994	D. F. Geesaman
 * $Log$
-* Revision 1.5  1994/08/18 03:14:21  cdaq
+* Revision 1.6  1995/05/12 12:23:53  cdaq
+* (JRA) Modify/add user histograms
+*
+* Revision 1.5  1994/08/18  03:14:21  cdaq
 * * (SAW) Use arrays of histids for residuals
 *
 * Revision 1.4  1994/08/18  01:59:15  cdaq
@@ -44,7 +47,7 @@
      &     hidhdelta_tar, hidhp_tar
       integer*4 hidres_fp(hmax_num_dc_planes)
       integer*4 hidsingres_fp(hmax_num_dc_planes)
-
+      integer*4 hidrawtdc
 
       common/hms_tracking_histid/
      &     hiddcwiremap,
@@ -66,7 +69,8 @@
      &     hidhdelta_tar,
      &     hidhp_tar,
      &     hidres_fp,
-     &     hidsingres_fp
+     &     hidsingres_fp,
+     &     hidrawtdc
 
 *
 *     CTPTYPE=parm
