@@ -1,6 +1,9 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
+* Revision 1.14.2.1  2003/04/11 13:25:11  cdaq
+* Remove old hardwire check on run number
+*
 * Revision 1.14  1999/11/04 20:35:14  saw
 * Linux/G77 compatibility fixes
 *
@@ -198,13 +201,18 @@ c
         ave_current_unser = gunser_gain*((gscaler_change(gunser_index)
      &       /delta_time) - gunser_offset)
 
-        if (gen_run_number.le.6268) then
-          ave_current_bcm2 = gbcm2_gain*sqrt(max(0.0D00,
-     &         (gscaler_change(gbcm2_index)/delta_time)-gbcm2_offset))
-        else
           ave_current_bcm2 = gbcm2_gain*((gscaler_change(gbcm2_index)
      &         /delta_time) - gbcm2_offset)
-        endif
+*
+* Remove old, hardwired check on run number.
+*
+*        if (gen_run_number.le.6268) then
+*          ave_current_bcm2 = gbcm2_gain*sqrt(max(0.0D00,
+*     &         (gscaler_change(gbcm2_index)/delta_time)-gbcm2_offset))
+*        else
+*          ave_current_bcm2 = gbcm2_gain*((gscaler_change(gbcm2_index)
+*     &         /delta_time) - gbcm2_offset)
+*        endif
 
         if (delta_time.gt.0.0001) then
           gbcm1_charge = gbcm1_charge + ave_current_bcm1*delta_time
