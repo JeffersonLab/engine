@@ -1,52 +1,57 @@
 *    This include file contains all the variables required for s_physics
 * $Log$
-* Revision 1.1  1994/06/14 03:25:37  cdaq
+* Revision 1.2  1994/08/05 20:44:48  cdaq
+* (SAW) Add "CTPTYPE=event,parm" directive for auto generation of CTP reg calls
+*
+* Revision 1.1  1994/06/14  03:25:37  cdaq
 * Initial revision
 *
+*     CTPTYPE=event
+*
 *     Event varaibles to calculate
-      REAL*4 SSELAS_COR               ! Difference between momentum measured
-                                      ! by tracking and elastic kinematics
+      REAL*4 SSELAS_COR                 ! Difference between momentum measured
+                                        ! by tracking and elastic kinematics
       COMMON/SOS_PHYSICS_SING/
-     & SSELAS_COR
+     &     SSELAS_COR
+*
+*     CTPTYPE=parm
 *
 *     initializiation paramters
-      REAL*4  SPHYSICSA              !   Coefficients of p3 in elastic cal
-      REAL*4  SPHYSICSB              !
-      REAL*4  SPHYSICAB2             !
-      REAL*4  SPHYSICSM3B            !
-      REAL*4  COSSTHETAS              !   COS(STHETA_LAB)
-      REAL*4  SINSTHETAS              !   SIN(STHETA_LAB)
+      REAL*4  SPHYSICSA                 !   Coefficients of p3 in elastic cal
+      REAL*4  SPHYSICSB                 !
+      REAL*4  SPHYSICAB2                !
+      REAL*4  SPHYSICSM3B               !
+      REAL*4  COSSTHETAS                !   COS(STHETA_LAB)
+      REAL*4  SINSTHETAS                !   SIN(STHETA_LAB)
       COMMON/SOS_PHYSICS_PARAM_R4/
-     &   SPHYSICSA,
-     &   SPHYSICSB,
-     &   SPHYSICAB2,
-     &   SPHYSICSM3B,
-     &   COSSTHETAS,
-     &   SINSTHETAS
-*
-*       Parameters that select the best track. Note these should be
-*       loose cuts to make sure we select one track. The final 
-*       tighter cuts should be made with tests.
-        REAL*4 ssel_chi2_fpperdegmax    ! Maximun chi2 per degree of freedom
+     &     SPHYSICSA,
+     &     SPHYSICSB,
+     &     SPHYSICAB2,
+     &     SPHYSICSM3B,
+     &     COSSTHETAS,
+     &     SINSTHETAS
+*     
+*     Parameters that select the best track. Note these should be
+*     loose cuts to make sure we select one track. The final 
+*     tighter cuts should be made with tests.
+      REAL*4 ssel_chi2_fpperdegmax      ! Maximun chi2 per degree of freedom
                                         ! at the focal plane
-        REAL*4 ssel_dedx1min            ! Minimum dedx in chamber 1
-        REAL*4 ssel_dedx1max            ! Maximum dedx in chamber 1
-        REAL*4 ssel_betamin             ! Minimum beta 
-        REAL*4 ssel_betamax             ! Maximum beta
-        REAL*4 ssel_etmin               ! Minimum track et
-        REAL*4 ssel_etmax               ! Maximum track et
-        INTEGER*4 ssel_ndegreesmin      ! Minimum number of degrees of freedom
+      REAL*4 ssel_dedx1min              ! Minimum dedx in chamber 1
+      REAL*4 ssel_dedx1max              ! Maximum dedx in chamber 1
+      REAL*4 ssel_betamin               ! Minimum beta 
+      REAL*4 ssel_betamax               ! Maximum beta
+      REAL*4 ssel_etmin                 ! Minimum track et
+      REAL*4 ssel_etmax                 ! Maximum track et
+      INTEGER*4 ssel_ndegreesmin        ! Minimum number of degrees of freedom
+*     
+      COMMON/sos_chose_one_track_r4/
+     &     ssel_chi2_fpperdegmax,
+     &     ssel_dedx1min,
+     &     ssel_dedx1max,
+     &     ssel_betamin,
+     &     ssel_betamax,
+     &     ssel_etmin,
+     &     ssel_etmax
 *
-        COMMON/sos_chose_one_track_r4/
-     &  ssel_chi2_fpperdegmax,
-     &  ssel_dedx1min,
-     &  ssel_dedx1max,
-     &  ssel_betamin,
-     &  ssel_betamax,
-     &  ssel_etmin,
-     &  ssel_etmax
-*
-        COMMON/sos_chose_one_track_i4/
-     &  ssel_ndegreesmin      
-     
-
+      COMMON/sos_chose_one_track_i4/
+     &     ssel_ndegreesmin      
