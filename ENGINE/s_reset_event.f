@@ -12,9 +12,12 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-      $Log$
-*-      Revision 1.2  1994/02/11 04:12:30  cdaq
-*-      Change var names to reflect current gen_data_structures
+*-      Revision 1.3  1994/02/22 19:43:15  cdaq
+*-      (SAW) SNUM_DC_PLANES  --> SMAX_NUM_DC_PLANES
 *-
+* Revision 1.2  1994/02/11  04:12:30  cdaq
+* Change var names to reflect current gen_data_structures
+*
 * Revision 1.1  1994/02/04  22:16:02  cdaq
 * Initial revision
 *
@@ -54,7 +57,7 @@
          SDC_WIRE_NUM(hit)= 0.
          SDC_TDC(hit)= 0.
       ENDDO
-      DO plane= 1,SNUM_DC_PLANES
+      DO plane= 1,SMAX_NUM_DC_PLANES
          SDC_HITS_PER_PLANE(plane)= 0
       ENDDO
       SDC_TOT_HITS= 0
