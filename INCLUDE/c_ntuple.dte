@@ -1,0 +1,21 @@
+**************************begin: c_ntuple.dte ***********************
+*- 
+*-   Created    15-Jun-1994   Kevin B. Beard, Hampton Univ.
+*........................................................................
+*- leave clean field for HMS Ntuple
+* $Log$
+* Revision 1.1  1994/06/17 02:05:04  cdaq
+* Initial revision
+*
+      data c_Ntuple_exists/.FALSE./
+      data c_Ntuple_ID/0/
+      data c_Ntuple_file/' '/
+      data c_Ntuple_name/' '/
+      data c_Ntuple_title/' '/
+      data c_Ntuple_directory/' '/
+      data c_Ntuple_IOchannel/0/
+      data c_Ntuple_size/0/
+      data c_Ntuple_tag/CMAX_Ntuple_size*' '/
+      data c_Ntuple_contents/CMAX_Ntuple_size*0/
+*
+****************************end: c_ntuple.dte ***********************
