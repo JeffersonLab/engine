@@ -9,6 +9,9 @@
 *- 
 *-   Created 6-6-94          D. F. Geesaman
 * $Log$
+* Revision 1.6  1999/02/10 18:15:58  csa
+* Bug fix in sin/coshthetas calculations
+*
 * Revision 1.5  1996/08/30 19:56:13  saw
 * (JRA) avoid setting p=0??
 *
@@ -54,8 +57,8 @@
         hpcentral = hpcentral * hmomentum_factor
       endif
 *
-      coshthetas = cos(htheta_lab)
-      sinhthetas = sin(htheta_lab)
+      coshthetas = cos(htheta_lab*degree)
+      sinhthetas = sin(htheta_lab*degree)
 *     Constants for elastic kinematics calcultion
       hphysicsa = 2.*gebeam*gtarg_mass(gtarg_num) -
      $     mass_electron**2 - hpartmass**2
