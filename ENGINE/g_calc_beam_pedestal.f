@@ -1,9 +1,13 @@
       subroutine g_calc_beam_pedestal(ABORT,err)
 *
 * $Log$
-* Revision 1.2  1996/09/04 14:32:27  saw
-* (JRA) ??
+* Revision 1.3  1996/12/12 22:10:20  saw
+* (SAW) Remove disabling of inputs  3 and 4 in slot 15 (Adds the slow
+* raster)
 *
+c Revision 1.2  96/09/04  14:32:27  14:32:27  saw (Stephen A. Wood)
+c (JRA) ??
+c 
 * Revision 1.1  1996/01/22 15:10:14  saw
 * Initial revision
 *
@@ -78,8 +82,8 @@
         signalcount=1
         write(SPAREID,*) 'slot=',slot
 
-        gmisc_dum_adc_threshold(3,2)=4000   !empty slots after blm.
-        gmisc_dum_adc_threshold(4,2)=4000
+ccc        gmisc_dum_adc_threshold(3,2)=4000   !empty slots after blm.
+ccc        gmisc_dum_adc_threshold(4,2)=4000
 
         call g_output_thresholds(SPAREID,roc,slot,signalcount,gmax_misc_hits,
      &      gmisc_dum_adc_threshold,0,gmisc_new_rms,0)
