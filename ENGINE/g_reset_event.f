@@ -12,9 +12,12 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.5  1994/04/12 18:42:05  cdaq
-*-    (SAW) Remove clearing of CRAW event buffer to online compatibility
+*-    Revision 1.6  1994/06/22 20:24:23  cdaq
+*-    (SAW) Zero out uninstrumented channel hit data structure
 *-
+* Revision 1.5  1994/04/12  18:42:05  cdaq
+* (SAW) Remove clearing of CRAW event buffer to online compatibility
+*
 * Revision 1.4  1994/02/22  19:47:36  cdaq
 * Change gmc_reset_event to gmc_mc_reset
 *
@@ -45,7 +48,8 @@
 *
       logical HMS_ABORT,SOS_ABORT,COIN_ABORT,gmc_abort
       character*132 HMS_err,SOS_err,COIN_err,gmc_err
-      integer i
+*
+      integer hit
 *
       INCLUDE 'gen_data_structures.cmn'
 *
@@ -55,6 +59,15 @@
       hms_err = ' '
       sos_err = ' '
       gmc_err = ' '
+*
+*     Uninstrumented hits
+*
+      do hit=1,GMAX_UNINST_HITS
+         GUNINST_RAW_ROCSLOT(hit) = 0
+         GUNINST_RAW_SUBADD(hit) = 0
+         GUNINST_RAW_DATAWORD(hit) = 0
+      enddo
+      GUNINST_TOT_HITS = 0
 *
       call H_reset_event(HMS_ABORT,HMS_err)
 *     
