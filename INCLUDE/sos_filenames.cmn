@@ -2,6 +2,9 @@
 *
 *-Common block with filenames
 * $Log$
+* Revision 1.4  1996/01/17 15:10:02  cdaq
+* (JRA) Add threshold and pedestal output filenames
+*
 * Revision 1.3  1995/04/06 20:20:19  cdaq
 * (SAW) Add report output filename
 *
@@ -17,10 +20,14 @@
       character*80 s_report_template_filename    ! CTP file with sos report
       character*80 s_report_blockname   ! Name of block for sos report template
       character*80 s_report_output_filename
+      character*80 s_threshold_output_filename
+      character*80 s_pedestal_output_filename
 *
       common /sos_filenames/
      $     s_recon_coeff_filename,
      $     s_report_template_filename,
      $     s_report_blockname,
-     $     s_report_output_filename
+     $     s_report_output_filename,
+     $     s_threshold_output_filename,
+     $     s_pedestal_output_filename
 *
