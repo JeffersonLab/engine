@@ -1,5 +1,8 @@
       subroutine g_extract_kinematics(ebeam,phms,thms,psos,tsos,ntarg)
 * $Log$
+* Revision 1.5.2.2  2003/04/10 00:41:51  cdaq
+* Have the engine take the spectrometer angles from the typed field of the run_info event rather than the epics field
+*
 * Revision 1.5.2.1  2003/04/09 02:47:57  cdaq
 * Update code to look for Target Material instead of Target NUMBER in run info event
 *
@@ -61,11 +64,11 @@ c
           else if (name(1:12).eq.'HMS Momentum') then
             phms=typed_value
           else if (name(1:9).eq.'HMS Angle') then
-            thms=epics_value
+            thms=typed_value
           else if (name(1:12).eq.'SOS Momentum') then
             psos=typed_value
           else if (name(1:9).eq.'SOS Angle') then
-            tsos=epics_value
+            tsos=typed_value
           else if (name(1:15).eq.'Target Material') then
             ntarg=typed_value
           endif
