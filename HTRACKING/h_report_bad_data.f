@@ -17,6 +17,10 @@
 * author: John Arrington
 * created: 8/17/95
 * $Log$
+* Revision 1.3  1996/08/30 20:34:49  saw
+* (JRA) Don't report difference between input pedestals and pedestals from
+*       pedestal events
+*
 * Revision 1.2  1996/01/16 21:56:20  cdaq
 * (JRA) Warn when pedestals change too much
 *
@@ -61,39 +65,42 @@
 
       data mir/'hcer1','hcer2'/
 
+! Remove reporting of difference between pedestals and input pedestals
+! from parameter files now that we always use the pedestal events.
+!
 * report channels where the pedestal analysis differs from the param file.
-      if ((hhodo_num_ped_changes+hcal_num_ped_changes+hcer_num_ped_changes)
-     &     .gt. 0) then
-
-        write(lunout,*) '  HMS detectors with large (>2sigma) pedestal changes'
-        write(lunout,*)
-        write(lunout,*) ' Signal  Pedestal change(new-old)'
-
-        if (hhodo_num_ped_changes.gt.0) then
-          do ind=1,hhodo_num_ped_changes
-            write(lunout,'(2x,a4,a2,a1,f9.1)')
-     $           pln(hhodo_changed_plane(ind))
-     $           ,cnt(hhodo_changed_element(ind))
-     $           ,sgn(hhodo_changed_sign(ind)),hhodo_ped_change(ind)
-          enddo
-        endif
-
-        if (hcal_num_ped_changes.gt.0) then
-          do ind=1,hcal_num_ped_changes
-            icol=(hcal_changed_block(ind)-0.5)/hmax_cal_rows + 1
-            irow=hcal_changed_block(ind)-hmax_cal_rows*(icol-1)
-            write(lunout,'(4x,a2,a2,f9.1)') col(icol),row(irow),
-     &           hcal_ped_change(ind)
-          enddo
-        endif
-
-        if (hcer_num_ped_changes.gt.0) then
-          do ind=1,hcer_num_ped_changes
-            write(lunout,'(3x,a4,f9.1)') mir(hcer_changed_tube(ind)),
-     &           hcer_ped_change(ind)
-          enddo
-        endif
-      endif              ! are there pedestal changes to report?
+!      if ((hhodo_num_ped_changes+hcal_num_ped_changes+hcer_num_ped_changes)
+!     &     .gt. 0) then
+!
+!        write(lunout,*) '  HMS detectors with large (>2sigma) pedestal changes'
+!        write(lunout,*)
+!        write(lunout,*) ' Signal  Pedestal change(new-old)'
+!
+!        if (hhodo_num_ped_changes.gt.0) then
+!          do ind=1,hhodo_num_ped_changes
+!            write(lunout,'(2x,a4,a2,a1,f9.1)')
+!     $           pln(hhodo_changed_plane(ind))
+!     $           ,cnt(hhodo_changed_element(ind))
+!     $           ,sgn(hhodo_changed_sign(ind)),hhodo_ped_change(ind)
+!          enddo
+!        endif
+!
+!        if (hcal_num_ped_changes.gt.0) then
+!          do ind=1,hcal_num_ped_changes
+!            icol=(hcal_changed_block(ind)-0.5)/hmax_cal_rows + 1
+!            irow=hcal_changed_block(ind)-hmax_cal_rows*(icol-1)
+!            write(lunout,'(4x,a2,a2,f9.1)') col(icol),row(irow),
+!     &           hcal_ped_change(ind)
+!          enddo
+!        endif
+!
+!        if (hcer_num_ped_changes.gt.0) then
+!          do ind=1,hcer_num_ped_changes
+!            write(lunout,'(3x,a4,f9.1)') mir(hcer_changed_tube(ind)),
+!     &           hcer_ped_change(ind)
+!          enddo
+!        endif
+!      endif              ! are there pedestal changes to report?
 
       return
       end
