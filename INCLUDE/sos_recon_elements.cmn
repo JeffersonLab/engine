@@ -1,0 +1,28 @@
+*      sos_recon_elements.cmn
+******************** Cosy reconstruction matrix elements. **********************
+*                          Short Orbit Spectrometer                            *
+*                         Version 1.0,   18-Nov-1993                           *
+*                   David Potterveld, Argonne National Lab.                    *
+*   Modified:    21-JAN-94   DFG    change max_ to smax_
+* $Log$
+* Revision 1.1  1994/02/22 14:47:47  cdaq
+* Initial revision
+*
+********************************************************************************
+
+        integer*4        smax_recon_elements
+        parameter       (smax_recon_elements = 1000)       !Max # coeff elements
+
+        real*4           s_recon_coeff(4,smax_recon_elements)
+        integer*4        s_recon_expon(4,smax_recon_elements)
+        integer*4        s_num_recon_terms
+        integer*4        s_recon_initted
+
+        common /sos_recon_elements/
+     >                   s_recon_initted,                 !Initialization flag.
+     >                   s_num_recon_terms,               !Number of terms.
+     >                   s_recon_coeff,                   !Coefficients.
+     >                   s_recon_expon                    !Exponents.
+
+********************************************************************************
+

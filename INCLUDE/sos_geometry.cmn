@@ -1,0 +1,96 @@
+*     sos_geometry.cmn
+*
+*     This include file has all the geometrical coefficients for the
+*     SOS wire chambers.
+*
+*     d.f. geesaman        1 September 1993
+*     
+*     modifed    dfg       14 Feb 1994
+*                change SPLANE_PARAM(2,)  to sdc_zpos
+*                change SPLANE_PARAM(3,)  to sdc_alpha_angle
+*                change SPLANE_PARAM(4,)  to sdc_beta_angle
+*                change SPLANE_PARAM(5,)  to sdc_gamma_angle
+*                change SPLANE_PARAM(6,)  to sdc_pitch
+*                change SPLANE_PARAM(7,)  to sdc_nrwire
+*                change SPLANE_PARAM(8,)  to sdc_central_wire
+*                change SPLANE_PARAM(9,)  to sdc_sigma
+*                change SPLANE_LABEL      to sdc_plane_name
+*                add     sdc_xcenter
+*                        sdc_ycenter
+* $Log$
+* Revision 1.1  1994/02/22 14:47:24  cdaq
+* Initial revision
+*                   
+*
+      real*4 szchi,szpsi       ! geometrical coefficients defining z-z0
+      real*4 sxchi,sxpsi       ! x and y for each wire plane. 
+      real*4 sychi,sypsi
+*
+      real*4 sz0               ! z coordinate of intersection of chamber with
+                               ! z axis
+      real*4 spsi0,schi0,sphi0 ! psi, chi and phi  coordinates  where a 
+                               ! chamber normal passing through the origin
+                               ! intersects the chamber. Used in stub fits
+      
+      real*4 sstubcoef         ! coefficents used in stub fits
+                               ! note these contain one power of sigma
+
+      real*4 stanbeta,ssinbeta,scosbeta
+*
+      real*4 sxsp              ! coefficents used in space point fits.
+      real*4 sysp
+*
+      real*8 splane_coeff      ! coefficients used in final track fit
+*
+      integer*4 SNUM_PLANE_COEFF   ! number of plane track fit coefficients
+      parameter (SNUM_PLANE_COEFF=9)
+      integer*4 SNUM_RAY_PARAM     ! number of ray parameters
+      parameter (SNUM_RAY_PARAM=4)
+*
+      common/SOS_GEOMETRY/
+     & splane_coeff(SNUM_PLANE_COEFF,SMAX_NUM_DC_PLANES),
+     & szpsi(SMAX_NUM_DC_PLANES),szchi(SMAX_NUM_DC_PLANES),
+     & sxpsi(SMAX_NUM_DC_PLANES),sxchi(SMAX_NUM_DC_PLANES),
+     & sypsi(SMAX_NUM_DC_PLANES),sychi(SMAX_NUM_DC_PLANES),
+     & sz0(SMAX_NUM_DC_PLANES),spsi0(SMAX_NUM_DC_PLANES),
+     & schi0(SMAX_NUM_DC_PLANES),sphi0(SMAX_NUM_DC_PLANES),
+     & sstubcoef(SMAX_NUM_DC_PLANES,SNUM_RAY_PARAM),
+     & sxsp(SMAX_NUM_DC_PLANES),sysp(SMAX_NUM_DC_PLANES),
+     & stanbeta(SMAX_NUM_DC_PLANES),ssinbeta(SMAX_NUM_DC_PLANES),
+     & scosbeta(SMAX_NUM_DC_PLANES)
+*
+      real*4    sdc_zpos
+      real*4    sdc_alpha_angle
+      real*4    sdc_beta_angle
+      real*4    sdc_gamma_angle
+      real*4    sdc_pitch
+      real*4    sdc_nrwire
+      real*4    sdc_central_wire
+      real*4    sdc_sigma
+      real*4    sdc_xcenter
+      real*4    sdc_ycenter
+      real*4 SPLANE_PARAM
+      integer*4 sdc_chamber_planes
+      character*16 sdc_plane_name
+      common/SOS_PLANE_PARAMETERS/
+     & sdc_zpos(SMAX_NUM_DC_PLANES),
+     & sdc_alpha_angle(SMAX_NUM_DC_PLANES),
+     & sdc_beta_angle(SMAX_NUM_DC_PLANES),
+     & sdc_gamma_angle(SMAX_NUM_DC_PLANES),
+     & sdc_pitch(SMAX_NUM_DC_PLANES),
+     & sdc_central_wire(SMAX_NUM_DC_PLANES),
+     & sdc_nrwire(SMAX_NUM_DC_PLANES),
+     & sdc_sigma(SMAX_NUM_DC_PLANES),
+     & sdc_xcenter(SMAX_NUM_DC_PLANES),
+     & sdc_ycenter(SMAX_NUM_DC_PLANES),
+     & sdc_chamber_planes(SMAX_NUM_DC_PLANES),
+     & sdc_plane_name(SMAX_NUM_DC_PLANES) 
+
+
+      real*4 slocrayzt
+      parameter (slocrayzt=0.)
+*
+*
+      real*4 sdrift_velocity        ! sos drift velocity in cm/ns
+      common/SOS_CHAMBER_READOUT/
+     & sdrift_velocity
