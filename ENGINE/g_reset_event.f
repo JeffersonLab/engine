@@ -12,9 +12,12 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.2  1994/02/17 21:43:39  cdaq
-*-    Add call to gmc_reset_event
+*-    Revision 1.3  1994/02/17 21:49:57  cdaq
+*-    Simplify error handling to be like g_clear_event
 *-
+* Revision 1.2  1994/02/17  21:43:39  cdaq
+* Add call to gmc_reset_event
+*
 * Revision 1.1  1994/02/04  22:13:26  cdaq
 * Initial revision
 *
@@ -34,64 +37,44 @@
       logical ABORT
       character*(*) err
 *
-      logical OK,HMS_ABORT,SOS_ABORT
-      character*132 HMS_err,SOS_err
+      logical HMS_ABORT,SOS_ABORT,COIN_ABORT,gmc_abort
+      character*132 HMS_err,SOS_err,COIN_err,gmc_err
       integer i
 *
       INCLUDE 'gen_data_structures.cmn'
 *
 *--------------------------------------------------------
 *
+      err = ' '
+      hms_err = ' '
+      sos_err = ' '
+      gmc_err = ' '
+*
 *-zero entire event buffer
+*
       DO i=1,LENGTH_CRAW
          CRAW(i)= 0
       ENDDO
 *
-*-    HMS reset
       call H_reset_event(HMS_ABORT,HMS_err)
 *     
-*-    SOS reset
       call S_reset_event(SOS_ABORT,SOS_err)
 *     
-      ABORT= HMS_ABORT.and.SOS_ABORT
+      call C_reset_event(COIN_ABORT,COIN_err)
 *     
-*-    COIN reset
-      IF(.NOT.HMS_ABORT .and. .NOT.SOS_ABORT) THEN
-*     
-*-    try coincidence
-         call C_reset_event(ABORT,err)
-*     
-      ELSEIF(HMS_ABORT) THEN
-*     
-*-    SOS only
-         err= HMS_err
-         call G_add_path(here,err)              !warning only
-*     
-      ELSEIF(SOS_ABORT) THEN
-*-    HMS only
-         ABORT= HMS_ABORT
-         call G_add_path(here,err)              !warning only
-*     
-      ELSE
-*-    BOTH error
-         ABORT= .TRUE.
-         err = '&'//SOS_err    
-         call g_prepend(HMS_err,err)
-*     
-      ENDIF
-
       call gmc_reset_event(gmc_abort, gmc_err)
-      if(gmc_abort) then
-         if(abort) then
-            err = '&'//err
-            call g_prepend(gmc_err,err)
-         else
-            err = gmc_err
-         endif
-         abort = .true.
-      endif
 *     
-      IF(ABORT) call G_add_path(here,err)
+      abort = hms_abort.or.sos_abort.or.coin_abort.or.gmc_abort
+*
+      IF(ABORT) then
+         err= COIN_err
+         call G_prepend(SOS_err,err)
+         call G_prepend(HMS_err,err)
+         call g_prepend(gmc_err,err)
+         call G_add_path(here,err)
+      else
+         err = ' '
+      endif
 *     
       RETURN
       END
