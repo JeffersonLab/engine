@@ -1,5 +1,9 @@
 *    This include file contains all the variables required for s_physics
 * $Log$
+* Revision 1.10  2005/03/23 16:16:28  jones
+* Add variable ssel_using_scin . Set ssel_using_scin = 1 in param files and new code
+* used to select best track for SOS.
+*
 * Revision 1.9  2003/09/08 21:03:18  jones
 * Change s_phicentral_offset to s_oopcentral_offset (mkj)
 *
@@ -66,6 +70,8 @@
       REAL*4 ssel_etmin                 ! Minimum track et
       REAL*4 ssel_etmax                 ! Maximum track et
       INTEGER*4 ssel_ndegreesmin        ! Minimum number of degrees of freedom
+       INTEGER*4 ssel_using_scin       ! =1 select best track using scin info
+                                      ! = 0 select best track suing just chi2
 *     
       COMMON/sos_chose_one_track_r4/
      &     ssel_chi2_fpperdegmax,
@@ -77,7 +83,8 @@
      &     ssel_etmax
 *
       COMMON/sos_chose_one_track_i4/
-     &     ssel_ndegreesmin      
+     &     ssel_ndegreesmin,
+     &     ssel_using_scin
 
 *
 *     CTPTYPE=event
