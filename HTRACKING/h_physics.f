@@ -19,7 +19,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.4  1995/01/18 16:29:26  cdaq
+* Revision 1.5  1995/01/27 20:24:14  cdaq
+* (JRA) Add some useful physics quantities
+*
+* Revision 1.4  1995/01/18  16:29:26  cdaq
 * (SAW) Correct some trig and check for negative arg in elastic kin calculation
 *
 * Revision 1.3  1994/09/13  19:51:03  cdaq
@@ -50,9 +53,12 @@
       INCLUDE 'gen_units.par'
       INCLUDE 'hms_physics_sing.cmn'
       INCLUDE 'mc_structures.cmn'
+      INCLUDE 'hms_calorimeter.cmn'
+      INCLUDE 'hms_scin_tof.cmn'
+      INCLUDE 'hms_scin_parms.cmn'
 *
 *     local variables 
-      integer*4 goodtrack,track
+      integer*4 goodtrack,track,i,ip
       real*4    COSGAMMA,COSHSTHETA,SINHSTHETA,TANDELPHI,SINHPHI
       real*4    p3, t1,ta,t3,hminv2,chi2min,chi2perdeg
 *--------------------------------------------------------
@@ -106,6 +112,31 @@
          HSY_FP   = HY_FP(HSNUM_FPTRACK)
          HSXP_FP   = HXP_FP(HSNUM_FPTRACK)
          HSYP_FP   = HYP_FP(HSNUM_FPTRACK)
+
+c         hsx_dc1 = hsx_fp + hsxp_fp * hdc_zpos(1)
+c         hsy_dc1 = hsy_fp + hsyp_fp * hdc_zpos(1)
+c         hsx_dc2 = hsx_fp + hsxp_fp * hdc_zpos(2)
+c         hsy_dc2 = hsy_fp + hsyp_fp * hdc_zpos(2)
+         hsx_s1 = hsx_fp + hsxp_fp * hscin_1x_zpos
+         hsy_s1 = hsy_fp + hsyp_fp * hscin_1x_zpos
+         hsx_s2 = hsx_fp + hsxp_fp * hscin_2x_zpos
+         hsy_s2 = hsy_fp + hsyp_fp * hscin_2x_zpos
+         hsx_cal = hsx_fp + hsxp_fp * hcal_1pr_zpos
+         hsy_cal = hsy_fp + hsyp_fp * hcal_1pr_zpos
+         htrue_x_fp = hsx_fp / sind(85.0) / (1/tand(85.0) - hsxp_fp)
+
+         do ip=1,4
+           hsscin_elem_hit(ip)=0
+         enddo
+         do i=1,hnum_scin_hit(hsnum_fptrack)
+           ip=hscin_plane_num(hscin_hit(hsnum_fptrack,i))
+           if (hsscin_elem_hit(ip).eq.0) then
+             hsscin_elem_hit(ip)=hscin_counter_num(hscin_hit(hsnum_fptrack,i))
+           else                      ! more than 1 hit in plane
+             hsscin_elem_hit(ip)=18
+           endif
+         enddo                             
+
          HSCHI2PERDEG  = HCHI2_FP(HSNUM_FPTRACK)
      $        /FLOAT(HNFREE_FP(HSNUM_FPTRACK))
          HSNFREE_FP = HNFREE_FP(HSNUM_FPTRACK)
