@@ -8,7 +8,10 @@
 * needed for the drift chamber and tof analysis.
 *
 * $Log$
-* Revision 1.4  1994/11/23 15:08:24  cdaq
+* Revision 1.5  1995/01/18 21:00:24  cdaq
+* (SAW) Catch negative ADC values in argument of square root
+*
+* Revision 1.4  1994/11/23  15:08:24  cdaq
 * * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.3  1994/04/13  20:07:02  cdaq
@@ -134,7 +137,13 @@
      $           /sscin_vel_light(ihit)
 
             sscin_cor_time(ihit) = ( postime(ihit) + negtime(ihit) )/2.
-            sscin_cor_adc(ihit) = sqrt( neg_ph(ihit) * pos_ph(ihit) )
+ccc The following sometimes results in square roots of negative numbers
+ccc Supposedly, no one uses this right now (SAW 1/17/95)
+            if(neg_ph(ihit) .ge. 0.0 .and. pos_ph(ihit) .ge. 0.0) then
+              sscin_cor_adc(ihit) = sqrt( neg_ph(ihit) * pos_ph(ihit))
+            else
+              sscin_cor_adc(ihit) = 0.0
+            endif
 
           else                          !only 1 tube fired
             sscin_cor_adc(ihit) = 0.
