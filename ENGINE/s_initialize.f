@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 *-    $Log$
-*-    Revision 1.4  1994/02/11 18:36:35  cdaq
-*-    Split off CTP variables registration from initialize routines
+*-    Revision 1.5  1994/02/22 15:14:03  cdaq
+*-    (DFG) Add calls to s_generate_geometry and s_initialize_fitting
 *-
+* Revision 1.4  1994/02/11  18:36:35  cdaq
+* Split off CTP variables registration from initialize routines
+*
 * Revision 1.3  1994/02/04  20:47:40  cdaq
 * Add read titles to regpar calls
 *
@@ -40,6 +43,10 @@
 *
 *--------------------------------------------------------
       err= ' '
+*
+      call s_generate_geometry                  ! Tracking routine
+*
+      call s_initialize_fitting                 ! Minuit initialization
 *
       ABORT = .FALSE.
 *
