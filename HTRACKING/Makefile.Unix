@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.5  1994/07/07 15:17:45  cdaq
+# Revision 1.6  1994/08/04 03:50:37  cdaq
+# (SAW) Add rule for .dte files
+#
+# Revision 1.5  1994/07/07  15:17:45  cdaq
 # (SAW) Fix a bug so that all sources not get compiled
 #
 # Revision 1.4  1994/06/14  05:02:00  cdaq
@@ -67,6 +70,9 @@ default:
 	$(CO) $(COFLAGS) $<
 
 %.par : ../INCLUDE/RCS/%.par,v
+	$(CO) $(COFLAGS) $<
+
+%.dte : ../INCLUDE/RCS/%.dte,v
 	$(CO) $(COFLAGS) $<
 
 include $(sources:.f=.d)
