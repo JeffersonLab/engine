@@ -1,6 +1,9 @@
       SUBROUTINE G_klugeup_kinematics(ABORT,err)
 *--------------------------------------------------------
 * $Log$
+* Revision 1.2  1996/01/22 15:11:46  saw
+* (JRA) Change cpbeam to gpbeam
+*
 * Revision 1.1  1995/12/08 20:12:00  cdaq
 * Initial revision
 *
@@ -67,9 +70,9 @@ c          write(6,*) 'evtype=',evtype
 
           if (evtype.eq.130) then       !run info event (get e,p,theta)
             call g_extract_kinematics(ebeam,phms,thms,psos,tsos)
-            if (cpbeam .ge. 7. .and. ebeam.le.7.) then !sometimes ebeam in MeV
-              cpbeam=abs(ebeam)
-              write(6,*) 'cpbeam=',abs(ebeam),' GeV'
+            if (gpbeam .ge. 7. .and. ebeam.le.7.) then !sometimes ebeam in MeV
+              gpbeam=abs(ebeam)
+              write(6,*) 'gpbeam=',abs(ebeam),' GeV'
             endif
             if (hpcentral .ge. 7.) then
               write(6,*) 'hpcentral=',abs(phms),' GeV/c'
