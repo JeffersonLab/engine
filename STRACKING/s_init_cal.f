@@ -6,7 +6,10 @@
 *-
 *-      Created: 20 Mar 1994      Tsolak A. Amatuni
 * $Log$
-* Revision 1.1  1994/04/13 18:18:40  cdaq
+* Revision 1.2  1994/06/14 04:30:27  cdaq
+* (DFG) Remove hardwired parameters
+*
+* Revision 1.1  1994/04/13  18:18:40  cdaq
 * Initial revision
 *
 *-----------------------------------------------------------------------
@@ -23,8 +26,6 @@
       integer*4 block      !Block number
       integer*4 row        !Row number
       integer*4 column     !Column number
-      real*4 xi   !Temporary
-      real*4 zi   !Temporary
 *
       include 'gen_data_structures.cmn'
       include 'sos_calorimeter.cmn'
@@ -53,51 +54,23 @@
             endif
          enddo   !End loop over rows
       enddo   !End loop over columns
-******Temporary Section
-      do block=1,smax_cal_blocks
-         scal_ped_mean(block) =0.
-         scal_ped_rms(block)  =0.
-         scal_threshold(block)=0.
 *
-         scal_cal_const(block)=1.
 *
-         scal_gain_ini(block)=1.
-         scal_gain_cur(block)=1.
-         scal_gain_cor(block)=1.
-      enddo
-*
-*      set by CTP
-*      slun_dbg_cal=6
-*      open(slun_dbg_cal,file='sos_calorimeter.dbg',status='new')
-*
-      scal_block_xsize=10.
-      scal_block_ysize=70.
-      scal_block_zsize=10.
-      scal_xmax=+60.
-      scal_xmin=-60.
-      scal_ymax=+35
-      scal_ymin=-35.
-      scal_zmin=325.
-      scal_zmax=365.
+      scal_block_xsize= scal_4ta_top(2) - scal_4ta_top(1)
+      scal_block_ysize= scal_4ta_left - scal_4ta_right
+      scal_block_zsize= scal_4ta_thick
+      scal_xmax= scal_4ta_top(scal_4ta_nr) + scal_block_xsize
+      scal_xmin= scal_4ta_top(1)
+      scal_ymax= scal_4ta_left
+      scal_ymin= scal_4ta_right
+      scal_zmin= scal_1pr_zpos
+      scal_zmax= scal_4ta_zpos
       scal_fv_xmin=scal_xmin+5.
       scal_fv_xmax=scal_xmax-5.
       scal_fv_ymin=scal_ymin+5.
       scal_fv_ymax=scal_ymax-5.
       scal_fv_zmin=scal_zmin
       scal_fv_zmax=scal_zmax
-*
-      do row=1,smax_cal_rows
-      do column=1,smax_cal_columns
-         block=row+smax_cal_rows*(column-1)
-         xi   =scal_block_xsize*(float(row)-0.5)
-         zi   =scal_block_zsize*(float(column)-0.5)
-         scal_block_xc(block)=scal_xmin+xi
-         scal_block_yc(block)=0.
-         scal_block_zc(block)=scal_zmin+zi
-      enddo
-      enddo
-******Temporary Section
-*      write(6,'('' Completed s_init_cal'')')
 *
       return
       end
