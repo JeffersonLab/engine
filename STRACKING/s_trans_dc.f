@@ -13,6 +13,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.11  1996/01/17 18:44:30  cdaq
+* (JRA) Change sign on sstart_time
+*
 * Revision 1.10  1995/10/11 13:54:18  cdaq
 * (JRA) Cleanup, add bypass switch to s_dc_eff call
 *
@@ -125,7 +128,7 @@
      &                  - sdc_central_wire(pln) ) - sdc_center(pln)
                     endif
 
-                    sdc_drift_time(goodhit) = sstart_time
+                    sdc_drift_time(goodhit) = - sstart_time
      &                  - float(sdc_tdc(goodhit))*sdc_tdc_time_per_channel
      &                  + sdc_plane_time_zero(pln)
 
