@@ -11,7 +11,10 @@
 *       Modified 23 March 1994   DFG
 *           Add definition of hnum_scin_elements and set parameter value
 * $Log$
-* Revision 1.4  1994/09/13 19:24:18  cdaq
+* Revision 1.5  1994/09/13 21:01:55  cdaq
+* (JRA) Include arrays for scintillator pedestals
+*
+* Revision 1.4  1994/09/13  19:24:18  cdaq
 * (JRA) Remove hhodo_zpos, add staggering of scintillators
 *
 * Revision 1.3  1994/08/05  15:27:18  cdaq
@@ -33,7 +36,7 @@
 *     CTPTYPE=parm
 *
       integer*4 hnum_scin_elements
-      parameter (hnum_scin_elements=20)
+      parameter (hnum_scin_elements=16)
 *
 * from parameter file
       integer*4 hscin_1x_nr
@@ -69,6 +72,8 @@
       real*4 hscin_1y_size
       real*4 hscin_2x_size
       real*4 hscin_2y_size
+      integer*4 hscin_all_ped_pos(hnum_scin_planes,hnum_scin_elements)
+      integer*4 hscin_all_ped_neg(hnum_scin_planes,hnum_scin_elements)
 
       common/hms_scin_parms/            !variables from h_positions.parm
      &     hscin_1x_nr, hscin_1y_nr,    !Elements per plane
@@ -89,7 +94,9 @@
      &     hdebugprintscinraw,
      &     hdebugprintscindec,
      &     hdebugprinttoftracks,
-     &     hdebugprinttracktests
+     &     hdebugprinttracktests,
+     &     hscin_all_ped_pos,
+     &     hscin_all_ped_neg
 
 *     Physical paramteres of counters.  Use hhodo_* for arrays that include
 *     the entire hodoscope,  hscin_* for arrays that loop over hits.
