@@ -8,7 +8,10 @@
 *
 *
 * $Log$
-* Revision 1.2  1995/05/22 19:45:37  cdaq
+* Revision 1.3  1995/07/20 14:49:57  cdaq
+* (JRA) Add calorimeter adc sum per hit histogram
+*
+* Revision 1.2  1995/05/22  19:45:37  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.1  1995/04/27  20:40:22  cdaq
@@ -44,6 +47,8 @@
           call hf1(sidcalplane,histval,1.)
           histval=float(row)
           call hf1(sidcalhits(col),histval,1.)
+          histval=scal_realadc(ihit)
+          call hf1(sidcalsumadc,histval,1.)
         enddo
       endif
 
