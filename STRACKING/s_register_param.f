@@ -13,7 +13,10 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
-* Revision 1.7  1994/08/18 03:59:50  cdaq
+* Revision 1.8  1995/05/17 16:43:28  cdaq
+* (JRA) Register pedestal variables
+*
+* Revision 1.7  1994/08/18  03:59:50  cdaq
 * (SAW) Call makereg generated routines to register variables
 *
 * Revision 1.6  1994/06/07  03:01:22  cdaq
@@ -77,6 +80,7 @@
 *
 
       call r_sos_statistics
+      call r_sos_pedestals
 *
       return
       end
