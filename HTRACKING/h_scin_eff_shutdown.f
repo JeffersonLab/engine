@@ -1,4 +1,4 @@
-      SUBROUTINE H_SCIN_EFF_SHUTDOWN(ABORT,errmsg)
+      SUBROUTINE H_SCIN_EFF_SHUTDOWN(lunout,ABORT,errmsg)
 *--------------------------------------------------------
 *-
 *-   Purpose and Methods : Analyze scintillator information for each track 
@@ -16,7 +16,10 @@
 * h_scin_eff_shutdown does some final manipulation of the numbers.
 *
 * $Log$
-* Revision 1.2  1995/05/11 20:27:13  cdaq
+* Revision 1.3  1995/05/17 13:58:29  cdaq
+* (JRA) Write out list of potential PMT problems
+*
+* Revision 1.2  1995/05/11  20:27:13  cdaq
 * (JRA) Add position calibration variables
 *
 * Revision 1.1  1995/02/23  13:31:36  cdaq
@@ -42,7 +45,16 @@
       real ave,ave2,num        !intermediate variables for sigma(position)
       real p1,p2,p3,p4         !prob. of having both tubes fire for planes1-4
       real p1234,p123,p124,p134,p234 !prob. of having combos fire
+      integer lunout
+      character*4 planename(HNUM_SCIN_PLANES)
+      data planename/'hS1X','hS1Y','hS2X','hS2Y'/
+      real*4 peff,neff
+      real*4 mineff
+      parameter (mineff=.95)
       save
+
+      write(lunout,*)
+      write(lunout,*) ' scintilators with effic. < ',mineff
 
 ! fill sums over counters
       do pln=1,hnum_scin_planes
@@ -68,6 +80,19 @@
      &            hscin_tot_dpos_sum(pln)+hscin_dpos_sum(pln,cnt)
           hscin_tot_num_dpos(pln)=
      &            hscin_tot_num_dpos(pln)+hscin_num_dpos(pln,cnt)
+*
+* write out list of possible problms
+*
+          if (hstat_trk(pln,cnt).ge.50) then
+            peff=float(hstat_poshit(pln,cnt))/float(hstat_trk(pln,cnt))
+           if (peff.le.mineff) then
+              write(lunout,'(5x,a4,i2,a,f7.4)') planename(pln),cnt,'+',peff
+            endif
+            neff=float(hstat_neghit(pln,cnt))/float(hstat_trk(pln,cnt))
+           if (neff.le.mineff) then
+              write(lunout,'(5x,a4,i2,a,f7.4)') planename(pln),cnt,'-',neff
+            endif
+          endif
         enddo
         hstat_poseff(pln)=hstat_possum(pln)/max(1.,float(hstat_trksum(pln)))
         hstat_negeff(pln)=hstat_negsum(pln)/max(1.,float(hstat_trksum(pln)))
@@ -76,6 +101,8 @@
         hscin_tot_dpos_ave(pln)=
      &        hscin_tot_dpos_sum(pln)/max(1.,float(hscin_tot_num_dpos(pln)))
       enddo
+
+      write(lunout,*) ' '
 
       p1=hstat_andeff(1)
       p2=hstat_andeff(2)
