@@ -18,7 +18,11 @@
 *                add     sdc_xcenter
 *                        sdc_ycenter
 * $Log$
-* Revision 1.4  1994/08/05 20:36:42  cdaq
+* Revision 1.5  1994/11/22 18:44:30  cdaq
+* (SPB) Brought up to date with hms_geometry.cmn
+* (SAW) Cleaned up ?DC_NUM_CHAMBERS and ?MAX_NUM_CHAMBERS stuff
+*
+* Revision 1.4  1994/08/05  20:36:42  cdaq
 * * (SAW) Add makereg directive with required include files
 *         Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
 *
@@ -87,7 +91,8 @@
       real*4    sdc_sigma
       real*4    sdc_xcenter
       real*4    sdc_ycenter
-      real*4 SPLANE_PARAM
+      real*4    sdc_center
+*      real*4 SPLANE_PARAM
       integer*4 sdc_chamber_planes
       character*16 sdc_plane_name
       common/SOS_PLANE_PARAMETERS/
@@ -99,11 +104,11 @@
      &     sdc_central_wire(SMAX_NUM_DC_PLANES),
      &     sdc_nrwire(SMAX_NUM_DC_PLANES),
      &     sdc_sigma(SMAX_NUM_DC_PLANES),
-     &     sdc_xcenter(SMAX_NUM_DC_PLANES),
-     &     sdc_ycenter(SMAX_NUM_DC_PLANES),
+     &     sdc_xcenter(SMAX_NUM_CHAMBERS),
+     &     sdc_ycenter(SMAX_NUM_CHAMBERS),
      &     sdc_chamber_planes(SMAX_NUM_DC_PLANES),
-     &     sdc_plane_name(SMAX_NUM_DC_PLANES) 
-
+     &     sdc_plane_name(SMAX_NUM_DC_PLANES),
+     &     sdc_center(SMAX_NUM_DC_PLANES)
 
       real*4 slocrayzt
       parameter (slocrayzt=0.)
