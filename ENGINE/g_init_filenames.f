@@ -23,6 +23,9 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
+* Revision 1.16  1996/09/04 14:36:59  saw
+* (JRA) Add read of command line parameters
+*
 * Revision 1.15  1996/04/29 19:47:11  saw
 * (JRA) Add g_pedestal_output_filename
 *
@@ -105,6 +108,7 @@
       g_decode_map_filename = ' '
       g_ctp_database_filename = ' '
       g_ctp_kinematics_filename = ' '
+      g_charge_scaler_filename = ' '
 *
       s_recon_coeff_filename = ' '
       h_recon_coeff_filename = ' '
@@ -120,6 +124,7 @@
       g_report_output_filename = ' '
       c_report_output_filename = ' '
       g_stats_output_filename = ' '
+      g_bad_output_filename = ' '
 *
       h_report_blockname = ' '
       s_report_blockname = ' '
@@ -138,6 +143,8 @@
       if(g_config_filename.eq.' '.or.
      $     ichar(g_config_filename(1:1)).eq.0) ! Only if not already set
      $     call getenv(env_var,g_config_filename)
+*
+      call engine_command_line(.false.)
 *
       ABORT= g_config_filename.EQ.' '
       IF(ABORT) THEN
