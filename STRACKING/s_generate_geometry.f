@@ -8,6 +8,9 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change SPLANE_PARAM to individual arrays
 * $Log$
+* Revision 1.5  1995/10/10 14:21:21  cdaq
+* (JRA) Calculate wire velocity correction parameters.  Cosmetics and comments
+*
 * Revision 1.4  1995/05/22 19:45:40  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -28,107 +31,109 @@
       include "sos_geometry.cmn"
 *
 *     local variables
-      integer*4 iplane,i,j,k,pindex,ich
+      integer*4 pln,i,j,k,pindex,ich
       real*4 cosalpha,sinalpha,cosbeta,sinbeta,cosgamma,singamma,z0
       real*4 stubxchi,stubxpsi,stubychi,stubypsi
       real*4 sumsqupsi,sumsquchi,sumcross,denom
 *
 *     read basic parameters from CTP input file
-*     sdc_zpos(iplane) = Z0
-*     sdc_alpha_angle(iplane) = ALPHA
-*     sdc_beta_angle(iplane)  = BETA
-*     sdc_gamma_angle(iplane) = GAMMA
-*     sdc_pitch(iplane)       = Wire spacing
-*     sdc_nrwire(iplane)      = Number of wires
-*     sdc_central_wire(iplane) = Location of center of wire 1
-*     sdc_sigma(iplane)       = sigma
+*     sdc_zpos(pln) = Z0
+*     sdc_alpha_angle(pln) = ALPHA
+*     sdc_beta_angle(pln)  = BETA
+*     sdc_gamma_angle(pln) = GAMMA
+*     sdc_pitch(pln)       = Wire spacing
+*     sdc_nrwire(pln)      = Number of wires
+*     sdc_central_wire(pln) = Location of center of wire 1
+*     sdc_sigma(pln)       = sigma
 *
       sdc_planes_per_chamber = sdc_num_planes / sdc_num_chambers
 *
 *     loop over all planes
 *
-      do iplane=1,sdc_num_planes
-        sdc_plane_num(iplane)=iplane
-        z0=sdc_zpos(iplane)
-        cosalpha = cos(sdc_alpha_angle(iplane))
-        sinalpha = sin(sdc_alpha_angle(iplane))
-        cosbeta  = cos(sdc_beta_angle(iplane))
-        sinbeta  = sin(sdc_beta_angle(iplane))
-        cosgamma = cos(sdc_gamma_angle(iplane))
-        singamma = sin(sdc_gamma_angle(iplane))
+      do pln=1,sdc_num_planes
+        sdc_plane_num(pln)=pln
+        z0=sdc_zpos(pln)
+        cosalpha = cos(sdc_alpha_angle(pln))
+        sinalpha = sin(sdc_alpha_angle(pln))
+        cosbeta  = cos(sdc_beta_angle(pln))
+        sinbeta  = sin(sdc_beta_angle(pln))
+        cosgamma = cos(sdc_gamma_angle(pln))
+        singamma = sin(sdc_gamma_angle(pln))
 *
-        ssinbeta(iplane) = sinbeta
-        scosbeta(iplane) = cosbeta
+        ssinbeta(pln) = sinbeta
+        scosbeta(pln) = cosbeta
 *     make sure cosbeta is not zero
         if(abs(cosbeta).lt.1e-10) then
           write(sluno,'('' unphysical beta rotation in sos plane'',i4,
-     &      ''    beta='',f10.5)') iplane,sdc_beta_angle(iplane)
+     &      ''    beta='',f10.5)') pln,sdc_beta_angle(pln)
         endif
-        stanbeta(iplane) = sinbeta / cosbeta
+        stanbeta(pln) = sinbeta / cosbeta
 *
-*     compute chi,psi to x,y,z transformation coefficient
-        szchi(iplane) = -cosalpha*sinbeta + sinalpha*cosbeta*singamma
-        szpsi(iplane) =  sinalpha*sinbeta + cosalpha*cosbeta*singamma
-        sxchi(iplane) = -cosalpha*cosbeta - sinalpha*sinbeta*singamma
-        sxpsi(iplane) =  sinalpha*cosbeta - cosalpha*sinbeta*singamma
-        sychi(iplane) =  sinalpha*cosgamma
-        sypsi(iplane) =  cosalpha*cosgamma
+* compute chi,psi to x,y,z transformation coefficient(comments are beta=gamma=0)
+        szchi(pln) = -cosalpha*sinbeta + sinalpha*cosbeta*singamma   !  =0.
+        szpsi(pln) =  sinalpha*sinbeta + cosalpha*cosbeta*singamma   !  =0.
+        sxchi(pln) = -cosalpha*cosbeta - sinalpha*sinbeta*singamma   !-cos(a)
+        sxpsi(pln) =  sinalpha*cosbeta - cosalpha*sinbeta*singamma   ! sin(a)
+        sychi(pln) =  sinalpha*cosgamma                                     ! sin(a)
+        sypsi(pln) =  cosalpha*cosgamma                                     ! cos(a)
 *
-*     stub transfromations are done in beta=gamma=0 system
-        stubxchi = -cosalpha
-        stubxpsi =  sinalpha
-        stubychi =  sinalpha
-        stubypsi =  cosalpha
-*
+*     stub transformations are done in beta=gamma=0 system
+        stubxchi = -cosalpha                                   !-cos(a)
+        stubxpsi =  sinalpha                                   ! sin(a)
+        stubychi =  sinalpha                                   ! sin(a)
+        stubypsi =  cosalpha                                   ! cos(a)
+
+* parameters for wire propogation correction. dt=distance from centerline of
+* chamber = ( xcoeff*x + ycoeff*y )*corr / veloc.
+        if (cosalpha .le. 0.707) then  !x-like wire, need dist. from x=0 line
+          sdc_readout_x(pln) = .true.
+          sdc_readout_corr(pln) = 1./sinalpha
+        else                           !y-like wire, need dist. from y=0 line
+          sdc_readout_x(pln) = .false.
+          sdc_readout_corr(pln) = 1./cosalpha
+        endif
 *
 *     fill spsi0,schi0,sz0  used in stub fit
 *
-        sumsqupsi = szpsi(iplane)**2 + sxpsi(iplane)**2 + sypsi(iplane)**2
-        sumsquchi = szchi(iplane)**2 + sxchi(iplane)**2 + sychi(iplane)**2
-        sumcross =   szpsi(iplane)*szchi(iplane) + sxpsi(iplane)*sxchi(iplane)
-     &             + sypsi(iplane)*sychi(iplane)
-        denom = sumsqupsi*sumsquchi-sumcross**2 
-        spsi0(iplane) = (-z0*szpsi(iplane)*sumsquchi
-     &                   +z0*szchi(iplane)*sumcross) / denom
-        schi0(iplane) = (-z0*szchi(iplane)*sumsqupsi
-     &                   +z0*szpsi(iplane)*sumcross) / denom
-*     calculate magnitude of sphi0
-        sphi0(iplane) = sqrt(
-     &         (z0+szpsi(iplane)*spsi0(iplane)+szchi(iplane)*schi0(iplane))**2
-     &          + (sxpsi(iplane)*spsi0(iplane)+sxchi(iplane)*schi0(iplane))**2
-     &          + (sypsi(iplane)*spsi0(iplane)+sychi(iplane)*schi0(iplane))**2 )
-        if(z0.lt.0) sphi0(iplane)=-sphi0(iplane)        
+        sumsqupsi = szpsi(pln)**2 + sxpsi(pln)**2 + sypsi(pln)**2 ! =1.
+        sumsquchi = szchi(pln)**2 + sxchi(pln)**2 + sychi(pln)**2 ! =1.
+        sumcross =   szpsi(pln)*szchi(pln) + sxpsi(pln)*sxchi(pln)
+     &             + sypsi(pln)*sychi(pln)                       ! =0.
+        denom = sumsqupsi*sumsquchi-sumcross**2                           ! =1.
+        spsi0(pln) = (-z0*szpsi(pln)*sumsquchi                   ! =0.
+     &                   +z0*szchi(pln)*sumcross) / denom
+        schi0(pln) = (-z0*szchi(pln)*sumsqupsi                   ! =0.
+     &                   +z0*szpsi(pln)*sumcross) / denom
+* calculate magnitude of sphi0                                   ! =z0
+        sphi0(pln) = sqrt(
+     &         (z0+szpsi(pln)*spsi0(pln)+szchi(pln)*schi0(pln))**2
+     &          + (sxpsi(pln)*spsi0(pln)+sxchi(pln)*schi0(pln))**2
+     &          + (sypsi(pln)*spsi0(pln)+sychi(pln)*schi0(pln))**2 )
+        if(z0.lt.0) sphi0(pln)=-sphi0(pln)        
 *
-*     sstubcoef used in stub fits
-*     check these   I don't think they are correct
-        denom = stubxpsi*stubychi 
-     &          - stubxchi*stubypsi
-        sstubcoef(iplane,1)= stubychi/(sdc_sigma(iplane)*denom)
-        sstubcoef(iplane,2)= -stubxchi/(sdc_sigma(iplane)*denom)
-        sstubcoef(iplane,3)= sphi0(iplane)*sstubcoef(iplane,1)
-        sstubcoef(iplane,4)= sphi0(iplane)*sstubcoef(iplane,2)
+* sstubcoef used in stub fits. check these.  I don't think they are correct
+        denom = stubxpsi*stubychi - stubxchi*stubypsi          !  =1.
+        sstubcoef(pln,1)= stubychi/(sdc_sigma(pln)*denom)      !sin(a)/sigma
+        sstubcoef(pln,2)= -stubxchi/(sdc_sigma(pln)*denom)     !cos(a)/sigma
+        sstubcoef(pln,3)= sphi0(pln)*sstubcoef(pln,1)          !z0*sin(a)/sig
+        sstubcoef(pln,4)= sphi0(pln)*sstubcoef(pln,2)          !z0*cos(a)/sig
 *
 *     xsp and ysp used in space point pattern recognition
 *
-        sxsp(iplane) = sychi(iplane) / denom
-        sysp(iplane) = -sxchi(iplane) / denom
+        sxsp(pln) = sychi(pln) / denom  !sin(a)
+        sysp(pln) = -sxchi(pln) / denom !cos(a)
 *
 *     compute track fitting coefficients
 *
-        splane_coeff(1,iplane) =  szchi(iplane)
-        splane_coeff(2,iplane) = -szchi(iplane)
-        splane_coeff(3,iplane) =  sychi(iplane)*
-     &                            (sdc_zpos(iplane)-slocrayzt)
-        splane_coeff(4,iplane) =  sxchi(iplane)*
-     &                            (slocrayzt-sdc_zpos(iplane))
-        splane_coeff(5,iplane) =  sychi(iplane)
-        splane_coeff(6,iplane) = -sxchi(iplane)
-        splane_coeff(7,iplane) =  szchi(iplane)*sypsi(iplane)
-     &                          - sychi(iplane)*szpsi(iplane)
-        splane_coeff(8,iplane) = -szchi(iplane)*sxpsi(iplane)
-     &                          + sxchi(iplane)*szpsi(iplane)
-        splane_coeff(9,iplane) =  sychi(iplane)*sxpsi(iplane)
-     &                          - sxchi(iplane)*sypsi(iplane)
+        splane_coeff(1,pln)= szchi(pln)                                  !  =0.
+        splane_coeff(2,pln)=-szchi(pln)                                  !  =0.
+        splane_coeff(3,pln)= sychi(pln)*(sdc_zpos(pln)-slocrayzt) !sin(a)*(z-slocrayzt)
+        splane_coeff(4,pln)= sxchi(pln)*(slocrayzt-sdc_zpos(pln)) !cos(a)*(z-slocrayzt)
+        splane_coeff(5,pln)= sychi(pln)                                  !sin(a)
+        splane_coeff(6,pln)=-sxchi(pln)                                  !cos(a)
+        splane_coeff(7,pln)= szchi(pln)*sypsi(pln) - sychi(pln)*szpsi(pln) !0.
+        splane_coeff(8,pln)=-szchi(pln)*sxpsi(pln) + sxchi(pln)*szpsi(pln) !0.
+        splane_coeff(9,pln)= sychi(pln)*sxpsi(pln) - sxchi(pln)*sypsi(pln) !1.
 *
       enddo                  !  end loop over all planes
       
