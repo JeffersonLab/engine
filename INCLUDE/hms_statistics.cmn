@@ -1,7 +1,10 @@
 *     hms_statistics.cmn
 *     common blocks containing event statistics for h_reconstruction
 * $Log$
-* Revision 1.4  1994/08/05 19:40:20  cdaq
+* Revision 1.5  1995/03/13 19:15:31  cdaq
+* (JRA) Add many new statistics
+*
+* Revision 1.4  1994/08/05  19:40:20  cdaq
 * * (SAW) Add makereg directive with required include files
 *         Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
 *
@@ -27,24 +30,98 @@
       integer*4 hgoodtracksctr          ! number of good tracks in h_physics
       integer*4 hplanehitctr(HMAX_NUM_DC_PLANES) ! number of hits in each plane
 *                                       for good tracks
-      integer*4 hscinplanehitctr(HNUM_SCIN_PLANES) ! hits in each plane in
-*                                                    good tracks
 *     
       common/hms_statistics/
      &     h_recon_num,
      &     hgoodtracksctr,
-     &     hplanehitctr,
-     &     hscinplanehitctr
+     &     hplanehitctr
 
 
       real*4 hplanesigmasq(HMAX_NUM_DC_PLANES) ! sum of 
 *                                        (position - fit position)**2 /sigma**2
       real*4 hmeasuredsigma(HMAX_NUM_DC_PLANES) ! hplanesigmasq/ hgoodtracksctr
       real*4 hchambereff(HMAX_NUM_DC_PLANES)  ! chamber efficencies
-      real*4 hscinplaneeff(HNUM_SCIN_PLANES)   ! Scin plane efficiencies
 *
       common/hms_statistisc_r4/
      & hplanesigmasq,
      & hmeasuredsigma,
-     & hchambereff,
-     & hscinplaneeff
+     & hchambereff
+
+*
+*     CTPTYPE=parm
+*
+      real*4 hstat_maxchisq
+      real*4 hstat_slop
+*
+*     CTPTYPE=event
+*
+      integer*4 hstat_numevents
+      integer*4 hstat_trk(hnum_scin_planes,hnum_scin_elements)
+      integer*4 hstat_poshit(hnum_scin_planes,hnum_scin_elements)
+      integer*4 hstat_neghit(hnum_scin_planes,hnum_scin_elements)
+      integer*4 hstat_orhit(hnum_scin_planes,hnum_scin_elements)
+      integer*4 hstat_andhit(hnum_scin_planes,hnum_scin_elements)
+      integer*4 hstat_trksum(hnum_scin_planes)
+      integer*4 hstat_possum(hnum_scin_planes)
+      integer*4 hstat_negsum(hnum_scin_planes)
+      integer*4 hstat_orsum(hnum_scin_planes)
+      integer*4 hstat_andsum(hnum_scin_planes)
+      real*4 hstat_poseff(hnum_scin_planes)
+      real*4 hstat_negeff(hnum_scin_planes)
+      real*4 hstat_oreff(hnum_scin_planes)
+      real*4 hstat_andeff(hnum_scin_planes)
+      real*4 heff_s1
+      real*4 heff_s2
+      real*4 heff_stof
+      real*4 heff_4_of_4
+      real*4 heff_3_of_4
+
+      common/hscin_statistics/
+     &  hstat_numevents,
+     &  hstat_trk,         !# of times track points near center of scin.
+     &  hstat_poshit,      !# of times the pos tube on scintillator fired
+     &  hstat_neghit,      !# of times the pos tube on scintillator fired
+     &  hstat_orhit,       !# of times either tube fired
+     &  hstat_andhit,      !# of times both tubes fired
+     &  hstat_trksum,      !summed over all counters on plane
+     &  hstat_possum,      !summed over all counters on plane
+     &  hstat_negsum,      !summed over all counters on plane
+     &  hstat_orsum,       !summed over all counters on plane
+     &  hstat_andsum,      !summed over all counters on plane
+     &  hstat_poseff,      !efficiency over all counters on plane
+     &  hstat_negeff,      !efficiency over all counters on plane
+     &  hstat_oreff,       !efficiency over all counters on plane
+     &  hstat_andeff,      !efficiency over all counters on plane
+     &  hstat_slop,        !distance allowed from center of scintillator.
+     &  hstat_maxchisq,    !maximum chisq allowed to use track for eff. calc.
+     &  heff_s1,           !calculated trigger eff. for s1 =(s1x .or. s1y).
+     &  heff_s2,           !calculated trigger eff. for s2 =(s2x .or. s2y).
+     &  heff_stof,         !calculated trigger eff. for stof =(s1 .and. s2).
+     &  heff_4_of_4,       !calculated trigger eff. for 4/4 planes.
+     &  heff_3_of_4        !calculated trigger eff. for 3/4 planes.
+
+
+*
+*     CTPTYPE=parm
+*
+      real*4 hstat_cal_maxchisq
+      real*4 hstat_cal_slop
+*
+*     CTPTYPE=event
+*
+      integer*4 hstat_cal_numevents
+      integer*4 hstat_cal_trk(hmax_cal_columns,hmax_cal_rows)
+      integer*4 hstat_cal_hit(hmax_cal_columns,hmax_cal_rows)
+      integer*4 hstat_cal_trksum(hmax_cal_columns)
+      integer*4 hstat_cal_hitsum(hmax_cal_columns)
+      real*4 hstat_cal_eff(hmax_cal_columns)
+
+      common/hscin_statistics/
+     &  hstat_cal_numevents,
+     &  hstat_cal_trk,         !# of times track points near center of block.
+     &  hstat_cal_hit,         !# of times the tube on block was over threshold.
+     &  hstat_cal_trksum,      !summed over all blocks on plane.
+     &  hstat_cal_hitsum,      !summed over all blocks on plane.
+     &  hstat_cal_eff,         !efficiency over all counters on plane.
+     &  hstat_cal_slop,        !distance allowed from center of block.
+     &  hstat_cal_maxchisq     !maximum chisq allowed to use track for eff. calc.
