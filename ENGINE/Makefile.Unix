@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.10  1995/03/08 20:32:52  cdaq
+# Revision 1.11  1995/04/06 20:05:30  cdaq
+# (SAW) Add pedestal routines
+#
+# Revision 1.10  1995/03/08  20:32:52  cdaq
 # (SAW) Add -f switch on include file copy commands
 #
 # Revision 1.9  1995/01/27  20:48:08  cdaq
@@ -43,7 +46,8 @@ general_source = $(decode_source) g_clear_event.f \
 	g_open_source.f g_proper_shutdown.f g_reconstruction.f \
 	g_reset_event.f g_register_variables.f \
 	g_examine_control_event.f \
-	g_examine_physics_event.f g_dump_histograms.f
+	g_examine_physics_event.f g_dump_histograms.f g_analyze_pedestal.f \
+	g_calc_pedestal.f
 hms_source = h_clear_event.f h_initialize.f h_keep_results.f \
 	h_proper_shutdown.f h_reset_event.f \
 	h_register_variables.f

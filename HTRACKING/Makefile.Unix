@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.12  1995/03/08 20:33:52  cdaq
+# Revision 1.13  1995/04/06 20:07:31  cdaq
+# (SAW) Add pedestal routines
+#
+# Revision 1.12  1995/03/08  20:33:52  cdaq
 # (SAW) Add h_scin_eff, h_scin_eff_shutdown, h_cal_eff, and h_cal_eff_shutdown
 #
 # Revision 1.11  1995/02/02  16:37:23  cdaq
@@ -55,11 +58,11 @@ newstuff = h_clusters_cal.f h_correct_cal.f \
 	h_prt_cal_tracks.f h_prt_dec_scin.f h_prt_raw_scin.f h_prt_tof.f \
 	h_prt_track_tests.f h_raw_dump_all.f h_sparsify_cal.f h_tof_fit.f \
 	h_tof_init.f h_tracks_cal.f h_fill_scin_raw_hist.f
-newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f h_register_bypass.f \
-	h_register_statistics.f h_init_physics.f h_physics_stat.f \
+newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f \
+	h_init_physics.f h_physics_stat.f \
 	h_strip_scin.f h_choose_single_hit.f h_solve_3by3.f \
 	h_dump_tof.f h_select_best_track.f h_scin_eff.f h_scin_eff_shutdown.f \
-	h_cal_eff.f h_cal_eff_shutdown.f
+	h_cal_eff.f h_cal_eff_shutdown.f h_analyze_pedestal.f h_calc_pedestal.f
 makeregstuff =	r_hms_filenames.f r_hms_scin_parms.f r_hms_scin_tof.f \
 	r_hms_calorimeter.f r_hms_id_histid.f r_hms_tracking.f \
 	r_hms_geometry.f r_hms_track_histid.f r_hms_recon_elements.f \
