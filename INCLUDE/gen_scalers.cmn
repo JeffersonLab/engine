@@ -2,7 +2,10 @@
 *     gen_data_structures.cmn or be separate.
 *
 * $Log$
-* Revision 1.3  1994/12/18 04:04:53  cdaq
+* Revision 1.4  1995/04/06 20:16:52  cdaq
+* (SAW) Make scalers real
+*
+* Revision 1.3  1994/12/18  04:04:53  cdaq
 * (SAW) Add array and common for event by event scalers
 *
 * Revision 1.2  1994/08/03  20:13:12  cdaq
@@ -18,10 +21,10 @@
       integer*4 MAX_NUM_EVSCALERS
       parameter (MAX_NUM_EVSCALERS=16)
 *
-      integer*4 scalers(MAX_NUM_SCALERS)
+      real*4 scalers(MAX_NUM_SCALERS)
 *
       common /SCALERS/ scalers
 *
-      integer*4 evscalers(MAX_NUM_EVSCALERS)
+      real*4 evscalers(MAX_NUM_EVSCALERS)
 *
       common /EVSCALERS/ evscalers
