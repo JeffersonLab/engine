@@ -1,0 +1,23 @@
+**************************begin: gen_run_pref.cmn ***********************
+*- 
+*-   Created   24-May-1994   Kevin B. Beard, Hampton Univ.
+*-   Modified  3-Jun-1994  KBB
+* $Log$
+* Revision 1.1  1994/06/04 04:53:28  cdaq
+* Initial revision
+*
+*........................................................................
+*- Misc. display controls 
+*
+      LOGICAL gen_show_progress
+      INTEGER gen_show_interval
+*
+      COMMON /gen_run_show/ gen_show_progress,gen_show_interval,
+     &                       gen_show_muddleON
+*
+*- Misc. preferences 
+*
+      LOGICAL gen_pref_muddleON
+      COMMON /gen_run_pref/ gen_pref_muddleON
+*
+****************************end: gen_run_pref.cmn ***********************
