@@ -12,9 +12,21 @@
 *           Add definition of snum_scin_elements and set parameter value
 *
 * $Log$
-* Revision 1.1  1994/04/12 21:15:29  cdaq
+* Revision 1.2  1994/08/05 21:00:21  cdaq
+* (SAW) Add makereg directive with required include files
+*       Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
+*
+* Revision 1.1  1994/04/12  21:15:29  cdaq
 * Initial revision
 *
+*     The following include statments must precede the inclusion of this
+*     file in each routine that uses it.  The *%% syntax is also a
+*     directive to makereg to tell it to include the code in the program
+*     that it generates.
+*
+*%%   include 'gen_data_structures.cmn'
+*
+*     CTPTYPE=parm
 *  
       integer*4 snum_scin_elements
       parameter (snum_scin_elements=20)

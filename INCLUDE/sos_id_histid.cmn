@@ -11,10 +11,18 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
-* Revision 1.1  1994/04/12 21:16:27  cdaq
+* Revision 1.2  1994/08/05 21:05:04  cdaq
+* (SAW) Add makereg directive with required include files
+*       Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
+*
+* Revision 1.1  1994/04/12  21:16:27  cdaq
 * Initial revision
 *
+*%%   include 'gen_data_structures.cmn'
+*%%   include 'sos_scin_parms.cmn'
 *
+*     The following don't need to be registered??
+*     CTPTYPE=parm
       integer*4 sidscinrawtothits
       integer*4 sidscinplane
       integer*4 sidscincounters(SNUM_SCIN_PLANES)
@@ -32,6 +40,8 @@
      &     sidscinpostdc,
      &     sidscinnegtdc
       
+*
+*     CTPTYPE=parm
 *
 *      flags to turn on (.eq.1) or off (.eq. 0) hard coded histograms
        integer*4 sturnon_scin_raw_hist
