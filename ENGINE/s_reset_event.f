@@ -12,6 +12,9 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-      $Log$
+*-      Revision 1.10  1995/10/09 18:09:01  cdaq
+*-      (JRA) Add clear of SCER_RAW_ADC
+*-
 *-      Revision 1.9  1995/07/27 19:44:17  cdaq
 *-      (JRA) Zero out pedestal arrays
 *-
@@ -156,6 +159,7 @@
 *     
       DO hit= 1,SMAX_CER_HITS
          SCER_TUBE_NUM(hit) = 0
+         SCER_RAW_ADC(hit) = 0
          SCER_ADC(hit) = 0
          SCER_PLANE(hit) = 0
       ENDDO

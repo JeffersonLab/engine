@@ -12,6 +12,9 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 * $Log$
+* Revision 1.10  1995/10/09 18:08:15  cdaq
+* (JRA) Add clear of SCER_RAW_ADC
+*
 * Revision 1.9  1995/09/01 13:40:55  cdaq
 * (JRA) Clear some cerenkov variables
 *
@@ -90,6 +93,7 @@
 *     
       SCER_TOT_HITS= 0
       do tube = 1, SMAX_CER_HITS
+        SCER_RAW_ADC(tube) = 0
         SCER_ADC(tube) = 0
         SCER_NPE(tube) = 0.
       enddo
