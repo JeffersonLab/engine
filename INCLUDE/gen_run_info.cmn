@@ -2,11 +2,16 @@
 *- 
 *-   Created   22-Apr-1994   Kevin B. Beard, Hampton Univ.
 * $Log$
-* Revision 1.1  1994/05/27 15:12:47  cdaq
+* Revision 1.2  1994/08/03 20:11:50  cdaq
+* (SAW) Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
+*
+* Revision 1.1  1994/05/27  15:12:47  cdaq
 * Initial revision
 *
 *........................................................................
 *- Misc. info. about a run
+*
+*     CTPTYPE=parm
 *
       INTEGER gen_run_number,gen_run_type
       INTEGER gen_run_total_events             !reported by CODA

@@ -2,9 +2,13 @@
 *     gen_data_structures.cmn or be separate.
 *
 * $Log$
-* Revision 1.1  1994/06/21 16:36:57  cdaq
+* Revision 1.2  1994/08/03 20:13:12  cdaq
+* (SAW) Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
+*
+* Revision 1.1  1994/06/21  16:36:57  cdaq
 * Initial revision
 *
+*     CTPTYPE=parm
 *
       integer*4 MAX_NUM_SCALERS
       parameter (MAX_NUM_SCALERS=500)
