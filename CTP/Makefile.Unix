@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.7  1995/03/13 19:46:01  cdaq
+# Revision 1.8  1995/04/06 20:08:28  cdaq
+# (SAW) Fix typo in a RPCGEN line
+#
+# Revision 1.7  1995/03/13  19:46:01  cdaq
 # (SAW) Add linux compile flags
 #
 # Revision 1.6  1994/11/23  15:35:29  cdaq
@@ -75,7 +78,7 @@ daVarRpc_svc.c: daVarRpc.x
 
 daVarRpc_clnt.c: daVarRpc.x
 	rm -f $@
-	$(RPCCOM) -o $@ -m daVarRpc.x
+	$(RPCCOM) -o $@ -l daVarRpc.x
 
 daVarRpc.h: daVarRpc.x
 	rm -f $@
