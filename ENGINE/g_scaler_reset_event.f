@@ -15,6 +15,9 @@
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 *
 * $Log$
+* Revision 1.3  1996/04/29 19:48:45  saw
+* (JRA) Add gscaler, gscaler_old, gscaler_nroll, gscaler_change initialization
+*
 * Revision 1.2  1996/01/16 17:06:35  cdaq
 * (CB) Clear out current monitor variables
 *
@@ -42,15 +45,19 @@
       enddo
 *     
       do ind = 1 , max_num_scalers
-        scalers(ind) = 0.
+        gscaler(ind) = 0.
+        gscaler_old(ind) = 0.
+        gscaler_nroll(ind) = 0
+        gscaler_change(ind) = 0.
       enddo
-*     
-*     
-      g_bcm1_charge = 0.
-      g_bcm2_charge = 0.
-      g_bcm3_charge = 0.
-      g_unser_charge = 0.
 *
+      gscal_lastevnum(1)=0
+      gscal_lastevnum(2)=0
+*     
+      gbcm1_charge = 0.
+      gbcm2_charge = 0.
+      gbcm3_charge = 0.
+      gunser_charge = 0.
 *
       ABORT= .FALSE.
       err= ' '
