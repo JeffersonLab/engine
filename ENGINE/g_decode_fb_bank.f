@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.20  1995/12/06 19:04:24  cdaq
+* (SAW) What is this version?  Two bank banks processing lost.
+*
 * Revision 1.19  1995/11/28 18:50:03  cdaq
 * (SAW) Quick hack to accept banks with 2 rocs (from parallel link)
 *
@@ -90,12 +93,12 @@
 *     processed.
 *
       include 'gen_detectorids.par'
-
       include 'gen_data_structures.cmn'
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
       include 'gen_decode_common.cmn'
       include 'mc_structures.cmn'
+      include 'gen_event_info.cmn'
 
       integer*4 pointer                 ! Pointer FB data word
       integer*4 banklength,maxwords
@@ -103,19 +106,17 @@
       integer*4 stat_roc
       integer*4 slotp                   ! temp variable
       integer*4 did                     ! Detector ID
-*      integer*4 g_decode_getdid         ! Get detector ID routine
       integer*4 g_decode_fb_detector    ! Detector unpacking routine
-      integer*4 last_first
 *
       integer*4 jiand, jishft           ! Declare to help f2c
 
-      banklength = bank(1) + 1          ! Bank length including count
-      last_first = banklength
 
-c      stat_roc = ishft(bank(2),-16)
+
+      banklength = bank(1) + 1          ! Bank length including count
+
       stat_roc = jishft(bank(2),-16)
-c      roc = iand(stat_roc,'1F'X)                ! Get ROC from header
       roc = jiand(stat_roc,'1F'X)                ! Get ROC from header
+
 *
 *     First look for special Monte Carlo Banks
 *
@@ -129,8 +130,7 @@ c      roc = iand(stat_roc,'1F'X)                ! Get ROC from header
         return
       endif
 *
-*      if(roc.gt.G_DECODE_MAXROCS) then
-      if(roc.gt.9) then
+      if(roc.gt.G_DECODE_MAXROCS .and. roc.ne.9) then
         ABORT = .false.                 ! Just warn
         write(error,*) ':ROC out of range, ROC#=',roc
         call g_add_path(here,error)
@@ -138,10 +138,7 @@ c      roc = iand(stat_roc,'1F'X)                ! Get ROC from header
       endif
 *
       pointer = 3                               ! First word of bank
-*      if(roc.ge.7.and.roc.le.9) then
-*        write(6,'(7z9)') (bank(i),i=1,7)
-*        write(6,'(7z9),/') (bank(i),i=8,14)
-*      endif
+*
       if (roc.eq.7 .or. roc.eq.8 .or. roc.eq.9) then
 *
 *     These 3 rocs are VME front ends for fastbus crates.  At present
@@ -151,140 +148,133 @@ c      roc = iand(stat_roc,'1F'X)                ! Get ROC from header
 *     fbch1 and fbch2.  But it should work for runs up through
 *     at least 5/31/95.
 *
-        last_first = bank(pointer)+2+1  ! New Bank length including parallel header
-c        stat_roc = ishft(bank(pointer+1),-16)!2 words are fb roc header.
-        stat_roc = jishft(bank(pointer+1),-16)!2 words are fb roc header.
+        pointer=pointer+2               !using parallel link, so next
+        stat_roc = jishft(bank(pointer-1),-16)!2 words are fb roc header.
         roc = jiand(stat_roc,'1F'X)
-        pointer=pointer+2               ! First data after real header
-*        print *,iand(ishft(bank(2),-16),'1F'X),'->',roc
       endif
-c      if (roc.eq.7) then                ! Change || link ROC #'s into ROC #'s
-c        roc = 2                         ! used by the FB crates
-c      else if(roc.eq.8) then            ! so that only one map file is
-c        roc = 1                         ! needed.  (SAW 12/11/94)
-c      else if(roc.eq.9) then            ! FBSOS
-c        roc = 4
-c      endif
       lastslot = -1
       do while (pointer .le. banklength)
-
-        if(pointer.eq.(last_first+1)) then  ! Second bank in a two bank bank
-          last_first = banklength       ! Reset to end of bank
-          stat_roc = jishft(bank(pointer+1),-16) !2 words are fb roc header.
-          roc = jiand(stat_roc,'1F'X)   ! New roc
+*
+*     Look for and report empty ROCs.
+*
+      if (bank(pointer).eq.'DCFF0000'X) then
+	if (roc.eq.1 .or. roc.eq.2) then    !missing hms data
+          if (gen_event_type.ne.2) then     !event type 2 is sos only event.
+            write(6,'(a,i3,a,i8,a,z8)') 'roc',roc,' has no data for event'
+     &        ,gen_event_id_number,' scanmask=',bank(pointer+1)
+          endif
+        else                                !missing sos data
+          if (gen_event_type.ne.1) then     !event type 1 is hms only data.
+            write(6,'(a,i3,a,i8,a,z8)') 'roc',roc,' has no data for event'
+     &        ,gen_event_id_number,' scanmask=',bank(pointer+1)
+          endif
         endif
-          
-c        slot = iand(ishft(bank(pointer),-27),'1F'X)
-        slot = jiand(jishft(bank(pointer),-27),'1F'X)
-        if(slot.gt.0.and.slot.le.G_DECODE_MAXSLOTS) then
-c          subadd = iand(ishft(bank(pointer),
-          subadd = jiand(jishft(bank(pointer),
-     $         -g_decode_subaddbit(roc,slot)),'7F'X)
-***         subadd = iand(ishft(bank(pointer),-17),'7F'X)
-***         subadd = iand(ishft(bank(pointer),-16),'7F'X)
+      endif
+*
+      slot = jiand(jishft(bank(pointer),-27),'1F'X)
+      if(slot.gt.0.and.slot.le.G_DECODE_MAXSLOTS) then
+        subadd = jiand(jishft(bank(pointer),
+     $       -g_decode_subaddbit(roc,slot)),'7F'X)
 
-          if (subadd .lt. '7F'X) then   ! Only valid subaddress
+        if (subadd .lt. '7F'X) then     ! Only valid subaddress
                                         ! This skips module headers
 
-***   replace call with explicit calculation.
-***            did = g_decode_getdid(roc,slot,subadd) ! Map into detector ID
-            slotp = g_decode_slotpointer(roc,slot)
-            if (slotp.gt.0) then
-              did = g_decode_didmap(slotp+subadd)
-            else
-              did = UNINST_ID
-            endif
+          slotp = g_decode_slotpointer(roc,slot)
+          if (slotp.gt.0) then
+            did = g_decode_didmap(slotp+subadd)
+          else
+            did = UNINST_ID
+          endif
 
-c            maxwords = banklength - pointer + 1
-            maxwords = last_first - pointer + 1
+          maxwords = banklength - pointer + 1
 *
 *        1         2         3         4         5         6         7
 *23456789012345678901234567890123456789012345678901234567890123456789012
 *
-            if(did.eq.HDC_ID) then
-              pointer = pointer +
-     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
-     &             maxwords, did, 
-     $             HMAX_DC_HITS, HDC_RAW_TOT_HITS, HDC_RAW_PLANE_NUM,
-     $             HDC_RAW_WIRE_NUM,1 ,HDC_RAW_TDC,0, 0, 0)
+          if(did.eq.HDC_ID) then
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &           maxwords, did, 
+     $           HMAX_DC_HITS, HDC_RAW_TOT_HITS, HDC_RAW_PLANE_NUM,
+     $           HDC_RAW_WIRE_NUM,1 ,HDC_RAW_TDC,0, 0, 0)
 
-            else if (did.eq.HSCIN_ID) then
-              pointer = pointer +
-     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
-     &             maxwords, did, 
-     $             HMAX_ALL_SCIN_HITS, HSCIN_ALL_TOT_HITS, 
-     $             HSCIN_ALL_PLANE_NUM, HSCIN_ALL_COUNTER_NUM, 4,
-     $             HSCIN_ALL_ADC_POS, HSCIN_ALL_ADC_NEG,
-     $             HSCIN_ALL_TDC_POS, HSCIN_ALL_TDC_NEG)
+          else if (did.eq.HSCIN_ID) then
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &           maxwords, did, 
+     $           HMAX_ALL_SCIN_HITS, HSCIN_ALL_TOT_HITS, 
+     $           HSCIN_ALL_PLANE_NUM, HSCIN_ALL_COUNTER_NUM, 4,
+     $           HSCIN_ALL_ADC_POS, HSCIN_ALL_ADC_NEG,
+     $           HSCIN_ALL_TDC_POS, HSCIN_ALL_TDC_NEG)
 
-            else if (did.eq.HCAL_ID) then
-              pointer = pointer +
-     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
-     &             maxwords, did,
-     $             HMAX_CAL_BLOCKS, HCAL_TOT_HITS, HCAL_COLUMN,
-     $             HCAL_ROW, 1, HCAL_ADC, 0, 0, 0)
+          else if (did.eq.HCAL_ID) then
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &           maxwords, did,
+     $           HMAX_CAL_BLOCKS, HCAL_TOT_HITS, HCAL_COLUMN,
+     $           HCAL_ROW, 1, HCAL_ADC, 0, 0, 0)
 
-            else if (did.eq.HCER_ID) then
+          else if (did.eq.HCER_ID) then
 *
 *     Cerenkov has no plane array.  Pass it HCER_COR_ADC.  Unpacker will
 *     fill it with zeros or ones.  (Or whatever we tell the unpacker the
 *     plane number is.)
 *     
-              pointer = pointer +
-     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
-     &             maxwords, did, 
-     $             HMAX_CER_HITS, HCER_TOT_HITS, HCER_PLANE,
-     $             HCER_TUBE_NUM, 1, HCER_RAW_ADC, 0, 0, 0)
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &           maxwords, did, 
+     $           HMAX_CER_HITS, HCER_TOT_HITS, HCER_PLANE,
+     $           HCER_TUBE_NUM, 1, HCER_RAW_ADC, 0, 0, 0)
 
-            else if (did.eq.HMISC_ID) then
+          else if (did.eq.HMISC_ID) then
 *
 *     This array is for data words that don't belong to a specific
 *     detector counter.  Things like energy sums, and TDC's from various
 *     points in the logic will go here.  Most likely we will set ADDR1
 *     always to 1, and ADDR2 will start at 1.
 *     
-              pointer = pointer +
-     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
-     &             maxwords, did, 
-     $             HMAX_MISC_HITS, HMISC_TOT_HITS, HMISC_RAW_ADDR1,
-     $             HMISC_RAW_ADDR2, 1, HMISC_RAW_DATA, 0, 0, 0)
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &           maxwords, did, 
+     $           HMAX_MISC_HITS, HMISC_TOT_HITS, HMISC_RAW_ADDR1,
+     $           HMISC_RAW_ADDR2, 1, HMISC_RAW_DATA, 0, 0, 0)
 
 *
 *        1         2         3         4         5         6         7
 *23456789012345678901234567890123456789012345678901234567890123456789012
 *
-            else if(did.eq.SDC_ID) then
-              pointer = pointer +
-     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
-     &             maxwords, did,
-     $             SMAX_DC_HITS, SDC_RAW_TOT_HITS, SDC_RAW_PLANE_NUM,
-     $             SDC_RAW_WIRE_NUM,1 ,SDC_RAW_TDC,0, 0, 0)
+          else if(did.eq.SDC_ID) then
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &           maxwords, did,
+     $           SMAX_DC_HITS, SDC_RAW_TOT_HITS, SDC_RAW_PLANE_NUM,
+     $           SDC_RAW_WIRE_NUM,1 ,SDC_RAW_TDC,0, 0, 0)
 
-            else if (did.eq.SSCIN_ID) then
-              pointer = pointer +
-     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
-     &             maxwords, did,
-     $             SMAX_ALL_SCIN_HITS, SSCIN_ALL_TOT_HITS,
-     $             SSCIN_ALL_PLANE_NUM, SSCIN_ALL_COUNTER_NUM, 4,
-     $             SSCIN_ALL_ADC_POS, SSCIN_ALL_ADC_NEG,
-     $             SSCIN_ALL_TDC_POS, SSCIN_ALL_TDC_NEG)
+          else if (did.eq.SSCIN_ID) then
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &           maxwords, did,
+     $           SMAX_ALL_SCIN_HITS, SSCIN_ALL_TOT_HITS,
+     $           SSCIN_ALL_PLANE_NUM, SSCIN_ALL_COUNTER_NUM, 4,
+     $           SSCIN_ALL_ADC_POS, SSCIN_ALL_ADC_NEG,
+     $           SSCIN_ALL_TDC_POS, SSCIN_ALL_TDC_NEG)
 
-            else if (did.eq.SCAL_ID) then
-              pointer = pointer +
-     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
-     &             maxwords, did, 
-     $             SMAX_CAL_BLOCKS, SCAL_TOT_HITS, SCAL_COLUMN, 
-     $             SCAL_ROW, 1, SCAL_ADC, 0, 0, 0)
+          else if (did.eq.SCAL_ID) then
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &           maxwords, did, 
+     $           SMAX_CAL_BLOCKS, SCAL_TOT_HITS, SCAL_COLUMN, 
+     $           SCAL_ROW, 1, SCAL_ADC, 0, 0, 0)
 
-            else if (did.eq.SCER_ID) then
+          else if (did.eq.SCER_ID) then
 *
-              pointer = pointer +
-     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
-     &             maxwords, did,
-     $             SMAX_CER_HITS, SCER_TOT_HITS, SCER_PLANE,
-     $             SCER_TUBE_NUM, 1, SCER_RAW_ADC, 0, 0, 0)
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &           maxwords, did,
+     $           SMAX_CER_HITS, SCER_TOT_HITS, SCER_PLANE,
+     $           SCER_TUBE_NUM, 1, SCER_RAW_ADC, 0, 0, 0)
 
-            else if (did.eq.SAER_ID) then
+          else if (did.eq.SAER_ID) then
 *
 *     Aerogel has two tubes for each "counter".  Since there are no
 *     TDC's, we will tell the decoder that we have 4 signals, but pass
@@ -292,61 +282,61 @@ c            maxwords = banklength - pointer + 1
 *
 *     SAER_PLANE is a dummy array.
 *     
-              pointer = pointer +
-     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
-     &             maxwords, did,
-     $             SMAX_AER_HITS, SAER_TOT_HITS, SAER_PLANE,
-     $             SAER_PAIR_NUM, 4, SAER_ADC_LEFT, SAER_ADC_RIGHT,
-     $             SAER_DUMMY, SAER_DUMMY)
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &           maxwords, did,
+     $           SMAX_AER_HITS, SAER_TOT_HITS, SAER_PLANE,
+     $           SAER_PAIR_NUM, 4, SAER_ADC_LEFT, SAER_ADC_RIGHT,
+     $           SAER_DUMMY, SAER_DUMMY)
 
-            else if (did.eq.SMISC_ID) then
+          else if (did.eq.SMISC_ID) then
 *
 *     This array is for data words that don't belong to a specific
 *     detector counter.  Things like energy sums, and TDC's from various
 *     points in the logic will go here.  Most likely we will set ADDR1
 *     always to 1, and ADDR2 will start at 1.
 *     
-              pointer = pointer +
-     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
-     &             maxwords, did, 
-     $             SMAX_MISC_HITS, SMISC_TOT_HITS, SMISC_RAW_ADDR1,
-     $             SMISC_RAW_ADDR2, 1, SMISC_RAW_DATA, 0, 0, 0)
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &           maxwords, did, 
+     $           SMAX_MISC_HITS, SMISC_TOT_HITS, SMISC_RAW_ADDR1,
+     $           SMISC_RAW_ADDR2, 1, SMISC_RAW_DATA, 0, 0, 0)
 
 *
 *     BPM/Raster ADC values. 
 *
-            else if (did.eq.CBPM_ID) then
-              pointer = pointer +
-     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
-     &             maxwords, did,
-     $             CMAX_BPM_HITS, CBPM_TOT_HITS, CBPM_DEVICE,
-     $             CBPM_ADCNUM, 1, CBPM_ADCVAL, 0, 0, 0)
+          else if (did.eq.CBPM_ID) then
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &           maxwords, did,
+     $           CMAX_BPM_HITS, CBPM_TOT_HITS, CBPM_DEVICE,
+     $           CBPM_ADCNUM, 1, CBPM_ADCVAL, 0, 0, 0)
               
 *
 *     Data from Uninstrumented channels and slots go into a special array
 *
-            else if (did.eq.UNINST_ID) then
-              pointer = pointer +
-     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
-     &             maxwords, did, 
-     $             GMAX_UNINST_HITS, GUNINST_TOT_HITS, GUNINST_RAW_ROCSLOT,
-     $             GUNINST_RAW_SUBADD, 1, GUNINST_RAW_DATAWORD, 0, 0, 0)
+          else if (did.eq.UNINST_ID) then
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &           maxwords, did, 
+     $           GMAX_UNINST_HITS, GUNINST_TOT_HITS, GUNINST_RAW_ROCSLOT,
+     $           GUNINST_RAW_SUBADD, 1, GUNINST_RAW_DATAWORD, 0, 0, 0)
 
-            else
+          else
 *     Should never get here.  Unknown detector ID's or did=-1 for bad ROC#
 *     or SLOT# will come here.
 *
-              print *,"BAD DID, unknown ROC,SLOT",roc,slot
-              pointer = pointer + 1     ! Skip unknown detector id's
-            endif
-          else
-            lastslot = slot
-            pointer = pointer + 1       ! Skip Bad subaddresses (module header)
+            print *,"BAD DID, unknown ROC,SLOT",roc,slot
+            pointer = pointer + 1       ! Skip unknown detector id's
           endif
-*
         else
-          pointer = pointer + 1         ! Skip bad slots
+          lastslot = slot
+          pointer = pointer + 1         ! Skip Bad subaddresses (module header)
         endif
+*
+      else
+        pointer = pointer + 1           ! Skip bad slots
+      endif
 *
       enddo
       ABORT= .FALSE.
