@@ -14,7 +14,10 @@
 *    HACK_SHUTDOWN.F is called to allow final manipulations, e.g.
 *    printed output.
 * $Log$
-* Revision 1.2  1994/07/26 21:03:02  cdaq
+* Revision 1.3  1995/07/28 14:21:57  cdaq
+* (SAW) Use specific bit manipulation routines for f2c compatibility
+*
+* Revision 1.2  1994/07/26  21:03:02  cdaq
 * (SAW) Remove event argument.
 *
 * Revision 1.1  94/07/25  18:03:25  18:03:25  cdaq (Data Acquisition Account)
@@ -59,12 +62,14 @@
       include 'gen_data_structures.cmn'
       include 'hack_.cmn'
 **      include 'hack_collect.cmn'
+      integer*4 jiand                   ! To help f2c
 *
 c-----------------------------------------------------------------------------
       ABORT = .FALSE.                !needed as default
       err = ' '                      !needed as default
       if (hack_enable.eq.0) return   !hack stuff not enabled
-      if((event(2).and.'FFFF'X).ne.'10CC'X) return ! valid physics event?
+c      if((event(2).and.'FFFF'X).ne.'10CC'X) return ! valid physics event?
+      if(jiand(event(2),'FFFF'X).ne.'10CC'X) return ! valid physics event?
 *-----------------------------------------------------------------
 *-- copy HMS scintillator data for one event into arrays hack_hmssc*(j,k)
 *   *=au,ad,tu,td,go [adcup/do,tdcup/do,good data index (-1 to +2) ]
