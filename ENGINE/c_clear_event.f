@@ -13,6 +13,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  6-Dec-1993   K.B.Beard: adopt new errors
 * $Log$
+* Revision 1.4  1999/02/10 17:44:35  csa
+* Added call to c_ntuple_clear
+*
 * Revision 1.3  1996/01/16 20:59:10  cdaq
 * no change
 *
@@ -43,6 +46,13 @@
 *
       ABORT= .FALSE.
       err= ' '
+
+*     csa 4/15/97
 *
+*     added c_ntuple_clear.f to set ntuple vars to 
+*     zero so all events can go to ntuple
+*
+      call c_ntuple_clear
+
       RETURN
       END
