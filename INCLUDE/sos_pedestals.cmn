@@ -2,6 +2,9 @@
 *                      of pedestal events at the beginning of each run.
 *
 * $Log$
+* Revision 1.6  1996/09/04 16:30:06  saw
+* (JRA) Add thresholds for aerogel
+*
 * Revision 1.5  1996/04/30 14:02:09  saw
 * (JRA) Make aerogel parameters PARM type
 *
@@ -164,6 +167,8 @@
       real*4 saer_neg_ped_rms(smax_aer_hits)
       real*4 saer_pos_threshold(smax_aer_hits)
       real*4 saer_neg_threshold(smax_aer_hits)
+      integer*4 saer_pos_adc_threshold(smax_aer_hits)
+      integer*4 saer_neg_adc_threshold(smax_aer_hits)
 *
       common/sos_aero_pedestals/
      &   saer_pos_ped_sum2,       !sum of squares
@@ -178,7 +183,9 @@
      &   saer_pos_ped_rms,        !calculated pedestal width
      &   saer_neg_ped_rms,
      &   saer_pos_threshold,
-     &   saer_neg_threshold
+     &   saer_neg_threshold,
+     &   saer_pos_adc_threshold,
+     &   saer_neg_adc_threshold
 
 *
 *     CTPTYPE=event
