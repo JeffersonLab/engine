@@ -10,7 +10,10 @@
 *- 
 *-   Created  17-May-1994   Kevin B. Beard, Hampton U.
 * $Log$
-* Revision 1.5  1994/06/28 20:04:49  cdaq
+* Revision 1.6  1995/07/27 19:37:29  cdaq
+* (SAW) Use specific bit manipulation routines for f2c compatibility
+*
+* Revision 1.5  1994/06/28  20:04:49  cdaq
 * *** empty log message ***
 *
 * Revision 1.4  1994/06/24  19:11:26  cdaq
@@ -44,6 +47,8 @@
       integer dy,mth,yr,hr,minute,sec,m,EvType,status,nth
       logical control,bad_sync
       character*160 msg,note
+      integer*4 jiand,jishft
+      logical*4 bjtest
 *
       integer SYNC_EvType,PRESTART_EvType,GO_EvType,END_EvType
       integer PAUSE_EvType
@@ -58,13 +63,13 @@
 *
       gen_event_sequence_N= gen_event_sequence_N+1  !from beginning
 *
-      if(iand(buffer(2),'FFFF'x).ne.'01CC'x) then
+      if(jiand(buffer(2),'FFFF'x).ne.'01CC'x) then
          err = 'Event is not a control event'
          ABORT = .true.
          call g_add_path(here,err)
          return
       endif
-      EvType = ISHFT(buffer(2),-16)
+      EvType = jISHFT(buffer(2),-16)
       
       gen_event_ID_number= 0
       gen_event_type= EvType
@@ -83,7 +88,7 @@
          if(bad_sync) then
             err= ' '
             DO nth=0,31
-               If(BTEST(status,nth)) Then
+               If(BjTEST(status,nth)) Then
                   write(msg,'(", ROC #",i3)') nth
                   call G_append(err,msg)
                EndIf
