@@ -16,6 +16,9 @@
 *   using the tracking information.
 *
 * $Log$
+* Revision 1.2  1996/01/17 18:19:40  cdaq
+* (JRA) Change array sizes from hdc_num_planes to HMAX_NUM_DC_PLANES
+*
 * Revision 1.1  1995/10/09 20:01:28  cdaq
 * Initial revision
 *
@@ -35,10 +38,10 @@
       include 'hms_geometry.cmn'
 
       integer*4 pln,hit,ihit
-      integer*4 iwire(hdc_num_planes)
+      integer*4 iwire(HMAX_NUM_DC_PLANES)
       integer*4 ihitwire
       real*4 hitwire
-      real*4 hitdist(hdc_num_planes)
+      real*4 hitdist(HMAX_NUM_DC_PLANES)
 
       save
 
