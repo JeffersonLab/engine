@@ -23,10 +23,13 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 *-    $Log$
-*-    Revision 1.9  1995/05/11 16:16:11  cdaq
-*-    (SAW) Don't get g_config_filename from environment if it is already set
-*-          from the command line and allow %d run number substitution in it.
+*-    Revision 1.10  1995/05/11 19:01:29  cdaq
+*-    (SAW) Check 0 in g_config_filename in case user doesn't update engine.f
 *-
+* Revision 1.9  1995/05/11  16:16:11  cdaq
+* (SAW) Don't get g_config_filename from environment if it is already set
+*       from the command line and allow %d run number substitution in it.
+*
 * Revision 1.8  1995/04/01  19:46:13  cdaq
 * (SAW) One report file for each of g, h, s, c instead of a single report file
 *
@@ -106,7 +109,8 @@
 *
       g_label = ' '                     ! Label for reports etc.
 *
-      if(g_config_filename.eq.' ')      ! Only if not already set
+      if(g_config_filename.eq.' '.or.
+     $     ichar(g_config_filename(1:1)).eq.0) ! Only if not already set
      $     call getenv(env_var,g_config_filename)
 *
       ABORT= g_config_filename.EQ.' '
