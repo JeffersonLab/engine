@@ -2,6 +2,9 @@
 *                      of pedestal events at the beginning of each run.
 *
 * $Log$
+* Revision 1.5  1999/02/23 19:16:02  csa
+* (JRA) Add vars for improved pedestal calcs
+*
 * Revision 1.4  1998/12/17 22:02:41  saw
 * Support extra set of tubes on HMS shower counter
 *
@@ -55,6 +58,8 @@
 *     CTPTYPE=parm
 *
       integer*4 hhodo_min_peds
+      integer*4 hhodo_pos_ped_limit(hnum_scin_planes,hnum_scin_elements)
+      integer*4 hhodo_neg_ped_limit(hnum_scin_planes,hnum_scin_elements)
 *
       common/hms_scin_pedestals/
      &   hhodo_pos_ped_sum2,  !sum of squares
@@ -63,6 +68,8 @@
      &   hhodo_neg_ped_sum,   !sum of peds
      &   hhodo_pos_ped_num,   !number of peds
      &   hhodo_neg_ped_num,   !number of peds
+     &   hhodo_pos_ped_limit,   !max. allowed ped (reject hits during ped trig)
+     &   hhodo_neg_ped_limit,   !max. allowed ped
      &   hhodo_min_peds,      !# of peds required to override default pedestals
      &   hhodo_new_sig_pos,
      &   hhodo_new_sig_neg,
@@ -104,6 +111,8 @@
 *     CTPTYPE=parm
 *
       integer*4 hcal_min_peds
+      integer*4 hcal_pos_ped_limit(hmax_cal_blocks)
+      integer*4 hcal_neg_ped_limit(hmax_cal_blocks)
 *
       common/hms_cal_ped_stats/
      &   hcal_pos_ped_sum2,       !sum of squares
@@ -112,6 +121,8 @@
      &   hcal_neg_ped_sum,        !sum of peds
      &   hcal_pos_ped_num,        !number of peds
      &   hcal_neg_ped_num,        !number of peds
+     &   hcal_pos_ped_limit,      !max. allowed ped (reject hits during ped trig)
+     &   hcal_neg_ped_limit,      !max. allowed ped
      &   hcal_min_peds,       !# of peds required to override default pedestals
      &   hcal_new_ped_pos,        !(new) calculated pedestals.
      &   hcal_new_ped_neg,        !(new) calculated pedestals.
@@ -143,11 +154,13 @@
 *     CTPTYPE=parm
 *
       integer*4 hcer_min_peds
+      integer*4 hcer_ped_limit(hmax_cer_hits)
 *
       common/hms_cer_pedestals/
      &   hcer_ped_sum2,       !sum of squares
      &   hcer_ped_sum,        !sum of peds
      &   hcer_ped_num,        !number of peds
+     &   hcer_ped_limit,      !max. allowed ped (reject hits during ped trig)
      &   hcer_min_peds,       !# of peds required to override default pedestals
      &   hcer_ped_mean,
      &   hcer_ped_rms,
@@ -177,12 +190,14 @@
 *     CTPTYPE=parm
 *
       integer*4 hmisc_min_peds
+      integer*4 hmisc_ped_limit(hmax_misc_hits)
 *
       common/hms_misc_pedestals/
      &   hmisc_ped,
      &   hmisc_ped_sum2,       !sum of squares
      &   hmisc_ped_sum,        !sum of peds
      &   hmisc_ped_num,        !number of peds
+     &   hmisc_ped_limit,      !max. allowed ped (reject hits during ped trig)
      &   hmisc_min_peds,       !# of peds required to override default pedestals
      &   hmisc_ped_mean,
      &   hmisc_ped_rms,
