@@ -15,7 +15,10 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
-* Revision 1.7  1994/07/07 21:16:38  cdaq
+* Revision 1.8  1994/09/20 17:29:33  cdaq
+* (SAW) Add include of hms_tracking.cmn
+*
+* Revision 1.7  1994/07/07  21:16:38  cdaq
 * (JRA) Clear additional variables
 *
 * Revision 1.6  1994/06/28  20:07:00  cdaq
@@ -33,6 +36,7 @@
       character*(*) err
 *
       INCLUDE 'gen_data_structures.cmn'
+      include 'hms_tracking.cmn'
 *
       INTEGER hit,track,block,i,j,plane
 *

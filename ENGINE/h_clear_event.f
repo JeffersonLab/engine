@@ -11,9 +11,12 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.6  1994/07/07 21:16:57  cdaq
-*-    (JRA) Clear additional variables
+*-    Revision 1.7  1994/09/20 17:29:41  cdaq
+*-    (SAW) Add include of hms_tracking.cmn
 *-
+* Revision 1.6  1994/07/07  21:16:57  cdaq
+* (JRA) Clear additional variables
+*
 * Revision 1.5  1994/06/28  20:05:20  cdaq
 * (SAW) Add clear of hscin_all_tot_hits
 *
@@ -46,6 +49,7 @@
       character*(*) err
 *
       INCLUDE 'gen_data_structures.cmn'
+      include 'hms_tracking.cmn'
 *
       INTEGER hit,track,block,i,j,plane
 *
