@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.11  1995/02/02 16:37:23  cdaq
+# Revision 1.12  1995/03/08 20:33:52  cdaq
+# (SAW) Add h_scin_eff, h_scin_eff_shutdown, h_cal_eff, and h_cal_eff_shutdown
+#
+# Revision 1.11  1995/02/02  16:37:23  cdaq
 # (SAW) Add -f flag on copy of include files
 #
 # Revision 1.10  1995/01/27  20:49:23  cdaq
@@ -55,7 +58,8 @@ newstuff = h_clusters_cal.f h_correct_cal.f \
 newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f h_register_bypass.f \
 	h_register_statistics.f h_init_physics.f h_physics_stat.f \
 	h_strip_scin.f h_choose_single_hit.f h_solve_3by3.f \
-	h_dump_tof.f h_select_best_track.f
+	h_dump_tof.f h_select_best_track.f h_scin_eff.f h_scin_eff_shutdown.f \
+	h_cal_eff.f h_cal_eff_shutdown.f
 makeregstuff =	r_hms_filenames.f r_hms_scin_parms.f r_hms_scin_tof.f \
 	r_hms_calorimeter.f r_hms_id_histid.f r_hms_tracking.f \
 	r_hms_geometry.f r_hms_track_histid.f r_hms_recon_elements.f \
