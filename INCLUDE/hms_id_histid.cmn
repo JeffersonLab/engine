@@ -11,7 +11,10 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
-* Revision 1.5  1995/05/22 19:07:28  cdaq
+* Revision 1.6  1995/07/28 14:26:52  cdaq
+* (JRA) Add hidsum histogram id holders
+*
+* Revision 1.5  1995/05/22  19:07:28  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
 *
 * Revision 1.4  1995/05/12  12:23:39  cdaq
@@ -50,6 +53,11 @@
       integer*4 hidcalplane
       integer*4 hidcalhits(HMAX_CAL_COLUMNS)
       integer*4 hidscinalltimes
+      integer*4 hidsumposadc(HNUM_SCIN_PLANES)
+      integer*4 hidsumnegadc(HNUM_SCIN_PLANES)
+      integer*4 hidsumpostdc(HNUM_SCIN_PLANES)
+      integer*4 hidsumnegtdc(HNUM_SCIN_PLANES)
+      integer*4 hidcalsumadc
 *
       common/hms_id_histid/
      &     hidscinrawtothits,
@@ -65,7 +73,12 @@
      &     hidscinnegtdc,
      &     hidcalplane,
      &     hidcalhits,
-     &     hidscinalltimes
+     &     hidscinalltimes,
+     &     hidsumposadc,
+     &     hidsumnegadc,
+     &     hidsumpostdc,
+     &     hidsumnegtdc,
+     &     hidcalsumadc
 
 *
 *     CTPTYPE=parm
