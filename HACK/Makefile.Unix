@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.3  1995/03/13 18:43:38  cdaq
+# Revision 1.4  1995/07/28 14:19:08  cdaq
+# (SAW) Add NFSDIRECTORY stuff
+#
+# Revision 1.3  1995/03/13  18:43:38  cdaq
 # (SAW) Add -f switch on include file copy commands
 #
 # Revision 1.2  1995/01/27  20:51:03  cdaq
@@ -22,8 +25,15 @@ lib_targets := $(patsubst %.f, libhack.a(%.o), $(sources))
 
 install-dirs := lib
 
-default:
-	@echo "nothing to make"
+#default:
+#	@echo "nothing to make"
+
+ifdef NFSDIRECTORY
+%.f : $(NFSDIRECTORY)/HACK/%.f
+	ln -s $< $@
+
+.PRECIOUS: %.f
+endif
 
 %.cmn :: ../INCLUDE/%.cmn
 	cp -f $< $@
