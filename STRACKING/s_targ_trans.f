@@ -19,7 +19,11 @@
 *-Modified 21-JAN-94  D.F.Geesaman
 *-            Add ABORT and err
 * $Log$
-* Revision 1.6  1994/11/23 14:03:27  cdaq
+* Revision 1.7  1995/02/23 16:03:05  cdaq
+* (SAW) Convert focal plane slopes to angles before COSY transport.
+* Target track data is now angles.
+*
+* Revision 1.6  1994/11/23  14:03:27  cdaq
 * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.5  1994/08/18  04:35:28  cdaq
@@ -101,15 +105,16 @@
          enddo
          
 * Load track data into local array, Converting to COSY units.
+* Note:  At this point, the focal plane variables sxp_fp and syp_fp are
+* still slopes.  We convert them to angles before running them through the
+* COSY transport matrices.
 * It is assumed that the track coordinates are reported at
 * the same focal plane as the COSY matrix elements were calculated.
-* Also note that the COSY track slopes HUT(2) and HUT(4) are actually
-* the SINE of the track angle in the XZ and YZ planes.
 
          hut(1) = sx_fp(itrk)/100.      !Meters.
-         hut(2) = sin(atan(sxp_fp(itrk))) !SINE.
+         hut(2) = atan(sxp_fp(itrk))   !Convert slope to angle
          hut(3) = sy_fp(itrk)/100.      !Meters.
-         hut(4) = sin(atan(syp_fp(itrk))) !SINE.
+         hut(4) = atan(syp_fp(itrk)) !Convert slope to angle
          
 
 * Compute COSY sums.
@@ -136,11 +141,11 @@
 * Load output values.
 **ROLF         sxp_tar(itrk) = atan(sum(1))    !Slope (dX/dZ)
 **ROLF         syp_tar(itrk) = atan(sum(3))   !Slope (dY/dZ)
-         sx_tar(itrk) = sum(2)*100.     !cm.
-         sxp_tar(itrk) = tan(asin(sum(1))) !Slope (dX/dZ)
-         sy_tar(itrk) = 0.              ! ** No beam raster **
-         syp_tar(itrk) = tan(asin(sum(3))) !Slope (dY/dZ)
-         sz_tar(itrk) = 0.              !Track is at origin.
+         sx_tar(itrk) = 0               ! ** No beam raster **
+         sy_tar(itrk) = sum(2)*100.     !cm.
+         sxp_tar(itrk) = sum(1)         !Angle xp
+         syp_tar(itrk) = sum(3)         !Angle yp
+
          sdelta_tar(itrk) = sum(4)*100. !percent.
          SP_TAR(itrk)  = SPCENTRAL*(1.0 + sum(4)) !Momentum in GeV
 *
