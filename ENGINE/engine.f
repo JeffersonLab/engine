@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42  2004/07/08 20:10:01  saw
+* Close CTP Root trees
+*
 * Revision 1.41  2004/05/27 23:51:28  jones
 * Initialize EoF = .false.
 *
@@ -921,6 +924,8 @@ c...
         ENDIF
       ENDDO
       endif
+
+      ierr=thtreecloseg('all')
 
 * Comment out the following two lines if they cause trouble
       call system
