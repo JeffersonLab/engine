@@ -1,5 +1,5 @@
 *=======================================================================
-      function h_correct_cal_neg(x,y,abort,errmsg)
+      function h_correct_cal_neg(x,y)
 *=======================================================================
 *-
 *-      Purpose: Returns the impact point correction factor. This
@@ -13,6 +13,11 @@
 *-      Created 09 October 1997      H. Mkrtchyan
 *
 * $Log$
+* Revision 1.5  2003/03/21 22:33:22  jones
+* Subroutines had arguments with abort,errmsg . But these arguments were not
+* used when the subroutine was called. Also abort ,errmsg were not used in the
+* subroutines. So eliminate abort,errmsg. (E. Brash)
+*
 * Revision 1.4  2002/09/26 14:43:17  jones
 *    Different parameters a,b,c
 *    Fit to pion data of run 23121
@@ -31,8 +36,8 @@
       implicit none
       save
 *
-      logical abort
-      character*(*) errmsg
+*      logical abort
+*      character*(*) errmsg
       character*17 here
       parameter (here='H_CORRECT_CAL_NEG')
       real*4 a,b,c	! Fit parameters.

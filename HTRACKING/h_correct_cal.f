@@ -1,5 +1,5 @@
 *=======================================================================
-      function h_correct_cal(x,y,abort,errmsg)
+      function h_correct_cal(x,y)
 *=======================================================================
 *-
 *-      Purpose: Returns the impact point correction factor. This
@@ -11,6 +11,11 @@
 *-      Created 15 Mar 1994      Tsolak A. Amatuni
 *
 * $Log$
+* Revision 1.6  2003/03/21 22:33:22  jones
+* Subroutines had arguments with abort,errmsg . But these arguments were not
+* used when the subroutine was called. Also abort ,errmsg were not used in the
+* subroutines. So eliminate abort,errmsg. (E. Brash)
+*
 * Revision 1.5  1996/01/16 21:46:10  cdaq
 * (JRA) Yet another sign change of quadratic term in attenuation correction
 *
@@ -31,8 +36,8 @@
       implicit none
       save
 *
-      logical abort
-      character*(*) errmsg
+*      logical abort
+*      character*(*) errmsg
       character*13 here
       parameter (here='H_CORRECT_CAL')
 *

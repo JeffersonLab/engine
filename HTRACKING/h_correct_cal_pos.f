@@ -1,5 +1,5 @@
 *=======================================================================
-      function h_correct_cal_pos(x,y,abort,errmsg)
+      function h_correct_cal_pos(x,y)
 *=======================================================================
 *-
 *-      Purpose: Returns the impact point correction factor. This
@@ -11,6 +11,11 @@
 *-      Created 15 Mar 1994      Tsolak A. Amatuni
 *
 * $Log$
+* Revision 1.6  2003/03/21 22:33:22  jones
+* Subroutines had arguments with abort,errmsg . But these arguments were not
+* used when the subroutine was called. Also abort ,errmsg were not used in the
+* subroutines. So eliminate abort,errmsg. (E. Brash)
+*
 * Revision 1.5  2002/09/26 14:41:36  jones
 *    Different parameters a,b,c
 *    Fit to pion data of run 23121
@@ -42,8 +47,8 @@
       implicit none
       save
 *
-      logical abort
-      character*(*) errmsg
+*      logical abort
+*      character*(*) errmsg
       character*17 here
       parameter (here='H_CORRECT_CAL_POS')
       real*4 a,b,c	! Fit parameters.
