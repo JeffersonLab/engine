@@ -3,6 +3,9 @@
 //    C++ wrapper routines to interface between CTP and Root libraries
 //
 // $Log$
+// Revision 1.3  2005/02/22 16:25:51  saw
+// Make sure next pointer is zeroed in rootfilelist
+//
 // Revision 1.2  2004/07/07 18:16:55  saw
 // use extern "C" to export names needed in thTree.c
 //
@@ -70,6 +73,7 @@ void *thRoot_TFile(char *filename)
   thisfile->tfile = new TFile(filename,"RECREATE","CTP ROOT file with trees");
   thisfile->count = 1;
   thisfile->filename = (char *)malloc(strlen(filename)+1);
+  thisfile->next = (thRootFileList *) 0;
   strcpy(thisfile->filename,filename);
   return((void *) thisfile);
 }
