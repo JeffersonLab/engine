@@ -4,7 +4,10 @@
      &  nspace_points,space_points,space_point_hits)
 *       Created D.F. Geesaman     Sept 1993       
 * $Log$
-* Revision 1.3  1994/04/12 20:23:53  cdaq
+* Revision 1.4  1994/10/11 20:00:44  cdaq
+* (JRA) Remove bug that allowed double counting of hits
+*
+* Revision 1.3  1994/04/12  20:23:53  cdaq
 * (DFG) Change dim of combos from max_number_pairs to max_number_comb
 *
 * Revision 1.2  1994/02/23  13:34:09  cdaq
@@ -56,6 +59,7 @@
       integer*4 ncombo
       integer*4 combos(max_number_comb,2)   ! pair1 and pair2 of each combo
       real*4 sqdistance_test
+      integer*4 j,k,itmp
 *                           
       nspace_points=0
       ntest_points=0
@@ -140,6 +144,12 @@
                    endif
                   enddo         ! end loop on i  
                  enddo           ! end loop over hits in space point
+*  if 2 hits in the combo are identicle, both might get in. Remove all but one
+                 do i=1,3
+                   do j=i+1,4
+                     if (hit(j).eq.hit(i)) iflag(j)=1
+                   enddo
+                 enddo
                  do i=1,4
                   if(iflag(i).eq.0) then
                      hit_point=space_point_hits(loopsp,1)+1
@@ -200,6 +210,18 @@
          endif                    ! end check on 0 space points
         enddo                     ! end loop over combos
       endif                       ! end check if no valid combos
+
+      do i=1,nspace_points
+       do j=3,(space_point_hits(i,1)+1)
+        do k=j+1,(space_point_hits(i,1)+2)
+         if (space_point_hits(i,j).eq.space_point_hits(i,k)) then
+           type *,'Space point ',i,' has hit ',space_point_hits(i,k),
+     &        'as hits',j,k
+         endif
+        enddo
+       enddo
+      enddo
+
       return
       end
      
