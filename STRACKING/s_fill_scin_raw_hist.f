@@ -10,7 +10,10 @@
 *                                Add CTP flag to turn on histogramming
 *                                id's in sos_id_histid
 * $Log$
-* Revision 1.1  1994/04/13 20:07:48  cdaq
+* Revision 1.2  1995/02/10 19:11:36  cdaq
+* (JRA) Change sscin_num_counters to snum_scin_counters
+*
+* Revision 1.1  1994/04/13  20:07:48  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -55,11 +58,11 @@
             histval = FLOAT(SSCIN_COUNTER_NUM(ihit))
             call hf1(sidscincounters(plane),histval,1.)
 * Fill ADC and TDC histograms
-            if((counter .gt. 0) .and. (counter.le.sscin_num_counters(plane)))
+            if((counter .gt. 0) .and. (counter.le.snum_scin_counters(plane)))
      &           then
-              histval = FLOAT(SSCIN_ADC_POS(ihit))
+              histval = SSCIN_ADC_POS(ihit)
               call hf1(sidscinposadc(plane,counter),histval,1.)
-              histval = FLOAT(SSCIN_ADC_NEG(ihit))
+              histval = SSCIN_ADC_NEG(ihit)
               call hf1(sidscinnegadc(plane,counter),histval,1.)
               histval = FLOAT(SSCIN_TDC_POS(ihit))
               call hf1(sidscinpostdc(plane,counter),histval,1.)
