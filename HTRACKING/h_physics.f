@@ -19,7 +19,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.11  1995/05/22 19:39:15  cdaq
+* Revision 1.12  1995/07/19 20:53:26  cdaq
+* (SAW) Declare sind and tand for f2c compatibility
+*
+* Revision 1.11  1995/05/22  19:39:15  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.10  1995/05/11  17:15:07  cdaq
@@ -81,6 +84,7 @@
       real*4 cosgamma,tandelphi,sinhphi,coshstheta,sinhstheta
       real*4 t1,ta,p3,t3,hminv2
       real*4 coshsthetaq
+      real*4 sind,tand                  ! For f2c
 *
 *--------------------------------------------------------
 *
