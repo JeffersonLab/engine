@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.26  1999/06/10 14:30:35  csa
+* (JRA) Cleanup, handling of go_info event
+*
 * Revision 1.25  1999/02/23 16:47:30  csa
 * (JRA) Changes to scaler event handling and cleanup
 *
@@ -189,8 +192,7 @@
 * to it to set CTP variables
 *
       if(.not.ABORT.and.g_ctp_database_filename.ne.' ') then
-        call g_ctp_database(ABORT, err
-     $       ,gen_run_number, g_ctp_database_filename)
+        call g_ctp_database(ABORT, err ,gen_run_number, g_ctp_database_filename)
         IF(ABORT) THEN
           call G_add_path(here,err)
         endif
@@ -205,7 +207,6 @@
          If(ABORT) STOP
          err= ' '
       endif
-
 
 
       g_data_source_opened = .false.     !not opened yet
@@ -287,17 +288,14 @@
 *
           if(gen_event_type.eq.0 .and. g_preproc_on.ne.0) then
             call g_write_event(ABORT,err)
-          endif
-
-          if (gen_event_type.eq.130) then !run info event (get e,p,theta)
+          else if (gen_event_type.eq.130) then !run info event (get e,p,theta)
             finished_extracting=.true.
             write(6,'(a)') 'COMMENTS FROM RUN INFO EVENT'
             call g_extract_kinematics(ebeam,phms,thms,psos,tsos,ntarg)
             write(6,'(a)') 'KINEMATICS FROM RUN INFO EVENT'
-c  beam energy no longer in runinfo event.
-c            if (ebeam.gt.10.) ebeam=ebeam/1000. !usually in MeV
-c            write(6,*) '   gpbeam     =',abs(ebeam),' GeV'
-c            gpbeam=abs(ebeam)
+            if (ebeam.gt.10.) ebeam=ebeam/1000. !usually in MeV
+            write(6,*) '   gpbeam     =',abs(ebeam),' GeV'
+            gpbeam=abs(ebeam)
             write(6,*) '   hpcentral  =',abs(phms),' GeV/c'
             hpcentral=abs(phms)
             write(6,*) '   htheta_lab =',abs(thms),' deg.'
@@ -308,12 +306,25 @@ c            gpbeam=abs(ebeam)
             stheta_lab=abs(tsos)
             write(6,*) '   gtarg_num  =',abs(ntarg)
             gtarg_num=ntarg
+          else if (gen_event_type.eq.133) then  !SAW's new go_info events
+            call g_examine_go_info(CRAW,ABORT,err)
+          else
+            call g_examine_control_event(CRAW,ABORT,err)
           endif
 
-          if (gen_event_type.eq.131.or.gen_event_type.eq.133) then !past run info event. must be missing
+!          if (gen_event_type.eq.131.or.gen_event_type.eq.132.or.gen_event_type.eq.133) then !past run info event. must be missing
+!            write(6,*) "no run information event found"
+!            finished_extracting=.true.
+!          endif
+
+! Go event is last 'nice tag' for point where we should have already seen
+! run-info event.
+
+          if (gen_event_type.eq.18) then
             write(6,*) "no run information event found"
             finished_extracting=.true.
           endif
+
 
         endif                           !if .not.problems
       enddo                             !do while .not.finished_extracting
@@ -439,29 +450,34 @@ c      endif
      &      call g_write_event(ABORT,err)
 
           if (gen_event_type.eq.130) then       !run info event (get e,p,theta)
-            call g_extract_kinematics(ebeam,phms,thms,psos,tsos)
-            if (gpbeam .ge. 7. .and. ebeam.le.7.) then !sometimes ebeam in MeV
-              gpbeam=abs(ebeam)
-              write(6,*) 'gpbeam=',abs(ebeam),' GeV'
-            endif
-            if (hpcentral .ge. 7.) then
-              write(6,*) 'hpcentral=',abs(phms),' GeV/c'
-              hpcentral=abs(phms)
-            endif
-            if (htheta_lab .le. 0.) then
-              write(6,*) 'htheta_lab=',abs(thms),' deg.'
-              htheta_lab=abs(thms)*3.14159265/180.
-            endif
-            if (spcentral .ge. 7.) then
-              write(6,*) 'spcentral=',abs(psos),' GeV/c'
-              spcentral=abs(psos)
-            endif
-            if (stheta_lab .le. 0.) then
-              write(6,*) 'stheta_lab=',abs(tsos),' deg.'
-              stheta_lab=abs(tsos)*3.14159265/180.
-            endif
-          endif
+!            call g_extract_kinematics(ebeam,phms,thms,psos,tsos)
+!            if (gpbeam .ge. 7. .and. ebeam.le.7.) then !sometimes ebeam in MeV
+!              gpbeam=abs(ebeam)
+!              write(6,*) 'gpbeam=',abs(ebeam),' GeV'
+!            endif
+!            if (hpcentral .ge. 7.) then
+!              write(6,*) 'hpcentral=',abs(phms),' GeV/c'
+!              hpcentral=abs(phms)
+!            endif
+!            if (htheta_lab .le. 0.) then
+!              write(6,*) 'htheta_lab=',abs(thms),' deg.'
+!              htheta_lab=abs(thms)*3.14159265/180.
+!            endif
+!            if (spcentral .ge. 7.) then
+!              write(6,*) 'spcentral=',abs(psos),' GeV/c'
+!              spcentral=abs(psos)
+!            endif
+!            if (stheta_lab .le. 0.) then
+!              write(6,*) 'stheta_lab=',abs(tsos),' deg.'
+!              stheta_lab=abs(tsos)*3.14159265/180.
+!            endif
 
+            write(6,*) "Dave,"
+            write(6,*) "I just thought you should know that Ive hit the run info event."
+            write(6,*) "I was expecting a physics event."
+            write(6,*) "I dont handle disappointment very well."
+ 	    stop
+          endif
 
           if(jiand(CRAW(2),'FFFF'x).eq.'10CC'x) then ! Physics event
 
@@ -579,7 +595,7 @@ c      endif
                   endif
 
                 endif
-              else if (gen_event_type.eq.131) then ! EPICS event
+              else if (gen_event_type.eq.131 .or. gen_event_type.eq.132) then ! EPICS event
                 call g_examine_epics_event
               endif
 
@@ -587,9 +603,9 @@ c      endif
 
           Else
               if(gen_event_type.eq.129) then
-              write(6,*) 'CODA 1.4 SCALER EVENT - event type 129!!!!!'
-              write(6,*) 'I DONT THINK THAT THIS SHOULD BE HAPPENING, AND I AM AFRAID'
-!              call g_analyze_scalers(CRAW,ABORT,err)
+!              write(6,*) 'CODA 1.4 SCALER EVENT - event type 129!!!!!'
+!              write(6,*) 'I DONT THINK THAT THIS SHOULD BE HAPPENING, AND I AM AFRAID'
+              call g_analyze_scalers(CRAW,ABORT,err)
 !* Dump report at first scaler event AFTER hist_dump_interval to keep hardware
 !* and software scalers in sync.
 !              if((physics_events-lastdump).ge.gen_run_hist_dump_interval.and.
@@ -622,7 +638,7 @@ c      endif
         endif
 
         since_cnt= since_cnt+1
-        if(since_cnt.GE.5000) then
+        if(since_cnt.GE.10000) then
           print *,' event#',total_event_count,'      trigger#',physics_events
           since_cnt= 0
         endif
