@@ -4,6 +4,9 @@
 *........................................................................
 *- Misc. info. required for COIN Ntuple
 * $Log$
+* Revision 1.4  2004/02/17 16:41:45  jones
+* Add parameters and variables needed for segmenting rzdat files
+*
 * Revision 1.3  1995/05/22 19:05:06  cdaq
 * (SAW) Correct some CTP class types
 *
@@ -30,14 +33,19 @@
       character*132 c_Ntuple_directory
       character*256 c_Ntuple_file
       character*8 c_Ntuple_tag(CMAX_Ntuple_size)
+      integer c_Ntuple_max_segmentevents
 *
 *     CTPTYPE=event
 *
+      integer c_Ntuple_segmentevents
+      integer c_Ntuple_filesegments
       real c_Ntuple_contents(CMAX_Ntuple_size)
 *
       COMMON /COIN_Ntuple/ c_Ntuple_exists,c_Ntuple_ID,
      &                     c_Ntuple_size,c_Ntuple_IOchannel,
      &                      c_Ntuple_name,c_Ntuple_title,
      &                       c_Ntuple_directory,c_Ntuple_file,
-     &                        c_Ntuple_tag,c_Ntuple_contents
+     &                        c_Ntuple_tag,c_Ntuple_contents,
+     >                    c_Ntuple_max_segmentevents,c_Ntuple_segmentevents,
+     >                    c_Ntuple_filesegments
 *****************************end: c_ntuple.cmn ***********************

@@ -4,6 +4,9 @@
 *........................................................................
 *- Misc. info. required for SOS Ntuple
 * $Log$
+* Revision 1.4  2004/02/17 16:41:45  jones
+* Add parameters and variables needed for segmenting rzdat files
+*
 * Revision 1.3  1995/05/22 19:05:27  cdaq
 * (SAW) Correct some CTP class types
 *
@@ -30,15 +33,20 @@
       character*132 s_Ntuple_directory
       character*256 s_Ntuple_file
       character*8 s_Ntuple_tag(SMAX_Ntuple_size)
+      integer s_Ntuple_max_segmentevents
 *
 *     CTPTYPE=event
 *
+      integer s_Ntuple_segmentevents
+      integer s_Ntuple_filesegments
       real s_Ntuple_contents(SMAX_Ntuple_size)
 *
       COMMON /SOS_Ntuple/ s_Ntuple_exists,s_Ntuple_ID,
      &                     s_Ntuple_size,s_Ntuple_IOchannel,
      &                      s_Ntuple_name,s_Ntuple_title,
      &                       s_Ntuple_directory,s_Ntuple_file,
-     &                        s_Ntuple_tag,s_Ntuple_contents
+     &                        s_Ntuple_tag,s_Ntuple_contents,
+     >                    s_Ntuple_max_segmentevents,s_Ntuple_segmentevents,
+     >                    s_Ntuple_filesegments
 *
 ****************************end: s_ntuple.cmn ***********************

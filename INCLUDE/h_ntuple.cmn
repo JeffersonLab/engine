@@ -4,6 +4,9 @@
 *........................................................................
 *- Misc. info. required for HMS Ntuple
 * $Log$
+* Revision 1.4  2004/02/17 16:41:45  jones
+* Add parameters and variables needed for segmenting rzdat files
+*
 * Revision 1.3  1995/05/22 19:05:38  cdaq
 * (SAW) Correct some CTP class types
 *
@@ -30,16 +33,21 @@
       character*132 h_Ntuple_directory
       character*256 h_Ntuple_file
       character*8 h_Ntuple_tag(HMAX_Ntuple_size)
+      integer h_Ntuple_max_segmentevents
 *
 *     CTPTYPE=event
 *
+      integer h_Ntuple_segmentevents
+      integer h_Ntuple_filesegments
       real h_Ntuple_contents(HMAX_Ntuple_size)
 *
       COMMON /HMS_Ntuple/ h_Ntuple_exists,h_Ntuple_ID,
      &                     h_Ntuple_size,h_Ntuple_IOchannel,
      &                      h_Ntuple_name,h_Ntuple_title,
      &                       h_Ntuple_directory,h_Ntuple_file,
-     &                        h_Ntuple_tag,h_Ntuple_contents
+     &                        h_Ntuple_tag,h_Ntuple_contents,
+     >                    h_Ntuple_max_segmentevents,h_Ntuple_segmentevents,
+     >                    h_Ntuple_filesegments
 *
 ****************************end: h_ntuple.cmn ***********************
 
