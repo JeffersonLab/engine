@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.39  2004/05/19 21:33:52  jones
+* Initialize physics_events=0
+*
 * Revision 1.38  2004/05/11 18:29:27  jones
 * Add ability when using syncfilter to skip events if "skip_event"
 * is set to true in g_analyze_scaler_bank.f
@@ -232,6 +235,7 @@ c
 
       total_event_count= 0                      ! Need to register this
       lastdump=0
+      physics_events=0
       skipped_events_scal = 0      
       do i=0,gen_max_trigger_types
         analyzed_events(i)=0
