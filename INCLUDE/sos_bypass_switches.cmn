@@ -5,6 +5,9 @@
 *
 *      Created:     D.F.Geesaman         22 May 1994
 * $Log$
+* Revision 1.6  1996/09/04 16:25:51  saw
+* (JRA) Add bypass of tracking efficiency flags
+*
 * Revision 1.5  1996/04/30 13:45:23  saw
 * (JRA) Add bypass switch for Aerogel
 *
@@ -37,6 +40,8 @@
       integer*4 sbypass_scin_eff
       integer*4 sbypass_cal_eff
       integer*4 sbypass_cer_eff
+      integer*4 sbypass_track_eff
+      integer*4 sbypass_track_eff_files
 *
       common/sos_bypass_switches/
      &     sbypass_trans_scin,
@@ -53,4 +58,6 @@
      &     sbypass_scin_eff,
      &     sbypass_cal_eff,
      &     sbypass_cer_eff,
-     &     sbypass_aero
+     &     sbypass_aero,
+     &     sbypass_track_eff,
+     &     sbypass_track_eff_files
