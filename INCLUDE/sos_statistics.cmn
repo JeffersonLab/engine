@@ -1,6 +1,9 @@
 *      sos_statistics.cmn
 *      common blocks containing event statistics for s_reconstruction
 * $Log$
+* Revision 1.11  1996/01/17 15:07:45  cdaq
+* (JRA) Remove some obsolete common blocks
+*
 * Revision 1.10  1995/09/01 13:04:45  cdaq
 * (JRA) Add counter efficiency variables
 *
@@ -39,29 +42,6 @@
 *     that it generates.
 *
 *%%   include 'sos_data_structures.cmn'
-*
-*     CTPTYPE=parm
-*
-      integer*4 s_recon_num             ! Number of calls to s_reconstruction
-      integer*4 sgoodtracksctr          ! number of good tracks in s_physics
-      integer*4 splanehitctr(SMAX_NUM_DC_PLANES) ! number of hits in each plane
-*                                       for good tracks
-*     
-      common/sos_statistics/
-     &     s_recon_num,
-     &     sgoodtracksctr,
-     &     splanehitctr
-
-
-      real*4 splanesigmasq(SMAX_NUM_DC_PLANES) ! sum of 
-*                                        (position - fit position)**2 /sigma**2
-      real*4 smeasuredsigma(SMAX_NUM_DC_PLANES) ! splanesigmasq/ sgoodtracksctr
-      real*4 schambereff(SMAX_NUM_DC_PLANES)  ! chamber efficencies
-*
-      common/sos_statistisc_r4/
-     & splanesigmasq,
-     & smeasuredsigma,
-     & schambereff
 
 *
 *     CTPTYPE=parm
