@@ -1,7 +1,11 @@
 * hms_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the hms time of flight.
 * $Log$
-* Revision 1.9  1995/03/13 19:13:03  cdaq
+* Revision 1.10  1995/05/22 19:04:27  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
+* Add some varaibles.
+*
+* Revision 1.9  1995/03/13  19:13:03  cdaq
 * (JRA) Change hscin_minph to hscin_???_minph arrays.  Add tracks index to
 *       hgood_tdc_pos, hgood_tdc_neg, hgood_scin_time, hgood_plane_time,
 *       and hgood_beta.
@@ -35,7 +39,7 @@
 *     directive to makereg to tell it to include the code in the program
 *     that it generates.
 *
-*%%   include 'gen_data_structures.cmn'
+*%%   include 'hms_data_structures.cmn'
 *%%   include 'hms_scin_parms.cmn'
 *
 *     CTPTYPE=event
@@ -67,6 +71,8 @@
       real*4 hscin_tdc_min
       real*4 hscin_tdc_max
       real*4 hscin_tdc_to_time
+      real*4 hstart_time_center    ! center of time window on scin. hits
+      real*4 hstart_time_slop      ! 1/2 width of time window on scin. hits
 *
 *     CTPTYPE=event
 *
@@ -97,8 +103,10 @@
      &     hgood_scin_time,             !was a time found for the hit?
      &     hgood_plane_time,            !was a time found for the plane?
      &     hgood_beta,                  !was a value of beta found?
-     &     hscin_on_track,              !list of which scins. were on each track.
-     &     hscin_time_fp                !scin time (ave) projected to fp
+     &     hscin_on_track,              !list of scins on each track.
+     &     hscin_time_fp,               !scin time (ave) projected to fp
+     &     hstart_time_center,
+     &     hstart_time_slop
 
 *
 *     CTPTYPE=event
