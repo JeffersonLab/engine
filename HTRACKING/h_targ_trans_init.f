@@ -7,7 +7,10 @@
 *
 * Version:  0.1 (In development)
 * $Log$
-* Revision 1.3  1995/05/11 19:13:27  cdaq
+* Revision 1.4  1995/08/08 16:01:37  cdaq
+* (DD) Add detector and angular offsets
+*
+* Revision 1.3  1995/05/11  19:13:27  cdaq
 * (JRA) Fix errors in reading of focal plane rot coeffs
 *
 * Revision 1.2  1995/04/06  19:32:19  cdaq
@@ -68,6 +71,9 @@
       h_ang_slope_y=0.0
       h_ang_offset_x=0.0
       h_ang_offset_y=0.0
+      h_det_offset_x=0.0
+      h_det_offset_y=0.0
+      h_z_true_focus=0.0
 
       istat = 1                         !Assume success.
 * Get an I/O unit to open datafiles.
@@ -90,6 +96,9 @@
         if(line(1:13).eq.'h_ang_slope_y')read(line,1201,err=94)h_ang_slope_y
         if(line(1:14).eq.'h_ang_offset_x')read(line,1201,err=94)h_ang_offset_x
         if(line(1:14).eq.'h_ang_offset_y')read(line,1201,err=94)h_ang_offset_y
+        if(line(1:14).eq.'h_det_offset_x')read(line,1201,err=94)h_det_offset_x
+        if(line(1:14).eq.'h_det_offset_y')read(line,1201,err=94)h_det_offset_y
+        if(line(1:14).eq.'h_z_true_focus')read(line,1201,err=94)h_z_true_focus
         read (chan,1001,err=94) line
       enddo
 * Read in reconstruction coefficients and exponents.

@@ -16,7 +16,10 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
-* Revision 1.10  1995/05/22 19:39:28  cdaq
+* Revision 1.11  1995/08/08 16:01:17  cdaq
+* (DD) Add detector and angular offsets
+*
+* Revision 1.10  1995/05/22  19:39:28  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.9  1995/04/06  19:31:54  cdaq
@@ -124,17 +127,22 @@
 * Also note that the COSY track slopes HUT(2) and HUT(4) are actually
 * the SINE of the track angle in the XZ and YZ planes.
 
-         hut(1) = hx_fp(itrk)           !cm
-         hut(2) = hxp_fp(itrk)          !radians
-         hut(3) = hy_fp(itrk)           !cm
-         hut(4) = hyp_fp(itrk)          !radians
+         hut(1) = hx_fp(itrk)/100. + h_z_true_focus*hxp_fp(itrk)     !m
+! includes transformation to actual focus if not at Z=0.
+ 
+         hut(2) = hxp_fp(itrk) + h_ang_offset_x           !radians
+
+         hut(3) = hy_fp(itrk)/100. + h_z_true_focus*hyp_fp(itrk)     !m
+! again icludes transformation to true focus.
+
+         hut(4) = hyp_fp(itrk) + h_ang_offset_y           !radians
 
 
-! now transform
-         hx_fp_rot(itrk)=  hut(1)   
-         hy_fp_rot(itrk)=  hut(3)   
-         hxp_fp_rot(itrk)= hut(2) + h_ang_offset_x + hut(1)*h_ang_slope_x
-         hyp_fp_rot(itrk)= hut(4) + h_ang_offset_y + hut(3)*h_ang_slope_y
+! now transform 
+         hx_fp_rot(itrk)=  hut(1) + h_det_offset_x    ! include detector offset
+         hy_fp_rot(itrk)=  hut(3) + h_det_offset_y 
+         hxp_fp_rot(itrk)= hut(2) + hut(1)*h_ang_slope_x
+         hyp_fp_rot(itrk)= hut(4) + hut(3)*h_ang_slope_y
          hut_rot(1)= hx_fp_rot(itrk)
          hut_rot(2)= hxp_fp_rot(itrk)
          hut_rot(3)= hy_fp_rot(itrk)
@@ -164,7 +172,7 @@ c         if(sum(3).lt. -1.0) sum(3)= -.99
 * Load output values.
 
          hx_tar(itrk) = 0.              ! ** No beam raster yet **
-         hy_tar(itrk) = sum(2)          !cm.
+         hy_tar(itrk) = sum(2)*100.     !cm.
          hxp_tar(itrk) = sum(1)         !Slope xp
          hyp_tar(itrk) = sum(3)         !Slope yp
 

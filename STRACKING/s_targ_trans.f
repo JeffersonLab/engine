@@ -19,7 +19,10 @@
 *-Modified 21-JAN-94  D.F.Geesaman
 *-            Add ABORT and err
 * $Log$
-* Revision 1.9  1995/05/22 19:45:57  cdaq
+* Revision 1.10  1995/08/08 16:01:57  cdaq
+* (DD) Add detector and angular offsets
+*
+* Revision 1.9  1995/05/22  19:45:57  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.8  1995/03/23  16:51:57  cdaq
@@ -139,15 +142,13 @@
             sum(3) = sum(3) + term*s_recon_coeff(3,i)
             sum(4) = sum(4) + term*s_recon_coeff(4,i)
          enddo
-* Protext against asin argument > 1.
+* Protect against asin argument > 1.
          if(sum(1).gt. 1.0)  sum(1)= 0.99
          if(sum(1).lt. -1.0) sum(1)= -.99
          if(sum(3).gt. 1.0) sum(3)=  0.99
          if(sum(3).lt. -1.0) sum(3)= -.99
    
 * Load output values.
-**ROLF         sxp_tar(itrk) = atan(sum(1))    !Slope (dX/dZ)
-**ROLF         syp_tar(itrk) = atan(sum(3))   !Slope (dY/dZ)
          sx_tar(itrk) = 0               ! ** No beam raster **
          sy_tar(itrk) = sum(2)*100.     !cm.
          sxp_tar(itrk) = sum(1)         !Slope xp
