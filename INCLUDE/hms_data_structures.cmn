@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.3  1996/01/17 16:00:02  cdaq
+* (JRA) ADD HCER_RAW_ADC and HSCIN_FPTIME
+*
 * Revision 1.2  1995/08/11 16:28:46  cdaq
 * (CC) Add structure for # of photoelectrons in Cerenkov
 *
@@ -280,11 +283,11 @@
       PARAMETER(HMAX_CER_HITS=2)
       INTEGER*4 HCER_TOT_HITS
       INTEGER*4 HCER_TUBE_NUM
-      INTEGER*4 HCER_ADC
+      INTEGER*4 HCER_RAW_ADC
       INTEGER*4 HCER_PLANE
       COMMON/HMS_RAW_CER/
      &     HCER_TUBE_NUM(HMAX_CER_HITS),
-     &     HCER_ADC(HMAX_CER_HITS),
+     &     HCER_RAW_ADC(HMAX_CER_HITS),
      &     HCER_PLANE(HMAX_CER_HITS),
      &     HCER_TOT_HITS
 *
@@ -294,10 +297,12 @@
       INTEGER*4 HCER_NUM_HITS      ! NUMBER OF CERENKOV HITS ABOVE THRESHOLD
       REAL*4 HCER_NPE              ! ADC CONVERTED TO NUMBER OF PHOTOELECTRONS
       REAL*4 HCER_NPE_SUM          ! SUM OVER TUBES OF NPE'S
+      REAL*4 HCER_ADC              ! PED SUBTRACTED ADC FOR EACH *TUBE*
       COMMON/HCER_DECODED_CER/
      &     HCER_NUM_HITS,
      &     HCER_NPE(HMAX_CER_HITS),
-     &     HCER_NPE_SUM
+     &     HCER_NPE_SUM,
+     &     HCER_ADC(HMAX_CER_HITS)
 *
 *
 *
@@ -413,6 +418,7 @@
       REAL*4 HBETA(HNTRACKS_MAX)
       REAL*4 HBETA_CHISQ(HNTRACKS_MAX)
       REAL*4 HTIME_AT_FP(HNTRACKS_MAX)
+      REAL*4 HSCIN_FPTIME(HNTRACKS_MAX,HMAX_SCIN_HITS)
 *
       COMMON/HMS_TRACK_TESTS/
      1     HTRACK_E1,                   ! ENERGY IN FIRST CALORIMETER COLUMN NEAR TRACK
@@ -429,7 +435,8 @@
      C     HSCIN_HIT,                   ! ARRAY OF SCIN HITS ASSOCIATED WITH
      D                                  ! EACH TRACK
      E     HNUM_SCIN_HIT,               ! NUMBER OF HITS FOR EACH TRACK
-     F     HNUM_PMT_HIT                 ! NUMBER OF PMT HITS FOR EACH TRACK
+     F     HNUM_PMT_HIT,                ! NUMBER OF PMT HITS FOR EACH TRACK
+     G     HSCIN_FPTIME
 *                                          
 *     HMS SINGLES PHYSICS COMMON BLOCKS
 *     THESE ARE FILLED BY H_PHYSICS
@@ -526,7 +533,7 @@
 *     (Energy SUMS, logic timing,...)
 *
       INTEGER HMAX_MISC_HITS
-      PARAMETER(HMAX_MISC_HITS=50)
+      PARAMETER(HMAX_MISC_HITS=100)
       INTEGER*4 HMISC_TOT_HITS
       INTEGER*4 HMISC_RAW_ADDR1    ! "Plane"
       INTEGER*4 HMISC_RAW_ADDR2    ! "Counter"
