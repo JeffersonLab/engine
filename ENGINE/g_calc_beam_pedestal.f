@@ -1,6 +1,9 @@
       subroutine g_calc_beam_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.2  1996/09/04 14:32:27  saw
+* (JRA) ??
+*
 * Revision 1.1  1996/01/22 15:10:14  saw
 * Initial revision
 *
@@ -74,6 +77,10 @@
         slot=15
         signalcount=1
         write(SPAREID,*) 'slot=',slot
+
+        gmisc_dum_adc_threshold(3,2)=4000   !empty slots after blm.
+        gmisc_dum_adc_threshold(4,2)=4000
+
         call g_output_thresholds(SPAREID,roc,slot,signalcount,gmax_misc_hits,
      &      gmisc_dum_adc_threshold,0,gmisc_new_rms,0)
 
