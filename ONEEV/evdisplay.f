@@ -3,6 +3,9 @@
 *- standalone DISPLAY for hall C
 *
 * $Log$
+* Revision 1.6  1996/11/22 15:53:10  saw
+* (SAW) Fix typo
+*
 * Revision 1.5  1996/09/04 16:40:13  saw
 * (SAW) Reorder data statements for f2c compatibility
 *
@@ -84,7 +87,7 @@ c        gen_display_server_RPCprgmID = '2c0da005'x   !default online
       PRINT *
       PRINT *,' 0: to choose events manually (default)'
       PRINT *,' 1:  to display every 10 seconds'
-      READ(5,'(i)'), dispmode
+      READ(5,'(i)') dispmode
       IF (dispmode.NE.1) dispmode=0
 
       PRINT *
