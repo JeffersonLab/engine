@@ -13,8 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.7  1994/08/18 04:11:36  cdaq
-*     (SAW) Call makereg generated routines to register variables
+*     Revision 1.8  1995/05/11 18:59:39  cdaq
+*     (SAW) Add register call for s_ntuple.cmn
+*
+* Revision 1.7  1994/08/18  04:11:36  cdaq
+* (SAW) Call makereg generated routines to register variables
 *
 * Revision 1.6  1994/06/17  03:27:31  cdaq
 * (KBB) Execute all code despite registration errors
@@ -54,6 +57,8 @@
 *
       call r_sos_filenames
 
+      call r_s_ntuple
+
       call s_register_param(FAIL,why) ! TRACKING ROUTINE
       IF(err.NE.' ' .and. why.NE.' ') THEN   !keep warnings
         call G_append(err,' & '//why)
@@ -62,7 +67,7 @@
       ENDIF
       ABORT= ABORT .or. FAIL
 *
-      call s_ntuple_register(FAIL,why)
+      call s_ntuple_register(FAIL,why)  ! Remove this when ctp files fixed
       IF(err.NE.' ' .and. why.NE.' ') THEN   !keep warnings
         call G_append(err,' & '//why)
       ELSEIF(why.NE.' ') THEN
