@@ -3,27 +3,27 @@
 *- standalone DISPLAY for hall C
 *
 * $Log$
-* Revision 1.1  1995/03/14 21:25:27  cdaq
+* Revision 1.2  1995/09/18 13:47:44  cdaq
+* (DVW, SAW) Reorganize
+*
+* Revision 1.1  1995/03/14  21:25:27  cdaq
 * Initial revision
 *
 *--------------------------------------------------------------
       IMPLICIT NONE
 *
-      character*6 here
-      parameter (here= 'revdis')
+      character*9 here
+      parameter (here= 'evdisplay')
 *
       INCLUDE 'gen_pawspace.cmn'
-      INCLUDE 'one_ev_io.cmn'
 *
       INCLUDE 'gen_filenames.cmn'
 *
       INCLUDE 'gen_run_info.cmn'
       INCLUDE 'gen_event_info.cmn'
 *
-      INCLUDE 'gen_display_info.cmn'
-      INCLUDE 'gen_display_info.dte'
-*
-      include 'params.inc'
+      INCLUDE 'gen_one_ev_info.cmn'
+      INCLUDE 'gen_one_ev_info.dte'
 *
       logical FAIL,QUIT
       character*800 why
@@ -32,17 +32,25 @@
       character*800 err
       integer i,j
 *
+      character*1 spect
 *******************************************************************
 *
       PRINT *
-      PRINT *,'    standalone DISPLAY for hall C'
+      PRINT *,'       Standalone DISPLAY for hall C'
       PRINT *,'     R.Ent,S.Wood, & K.Beard  Oct.1994'
+      PRINT *,'     und Derek von der Westrum Jul 1995'
       PRINT *
-      PRINT *,' You need to specify the process and the machine you'
-      PRINT *,' with which you want to connect this display process.'
-      PRINT *,' Also, if you are using an Xwindow display'
-      PRINT *,' you may need to run PAW once/session to get things to '
-      PRINT *,' work correctly.'
+      PRINT *,'**************************************************'
+      PRINT *,'*                                                *'
+      PRINT *,'*       Confused?  Don''t be.  Read the file      *'
+      PRINT *,'*   "~cdaq/documents/evdisplay/evdisplay.help"   *'
+      PRINT *,'*                                                *'
+      PRINT *,'**************************************************'
+*      PRINT *,' You need to specify the process and the machine you'
+*      PRINT *,' with which you want to connect this display process.'
+*      PRINT *,' Also, if you are using an Xwindow display'
+*      PRINT *,' you may need to run PAW once/session to get things to '
+*      PRINT *,' work correctly.'
       PRINT *
       PRINT *
       PRINT *,' Enter the name of the machine running "engine" or CODA:'
@@ -90,7 +98,20 @@
       PRINT *
 *      CALL r_one_ev_io
 
-      call revdis_init(FAIL,why)     ! Build lists of variables to get
+*
+*
+ 100  print *
+      print *, 'Type "h" for the HMS, or "s" for the SOS:'
+      read *, spect
+      if(spect.eq.'S') spect='s'
+      if(spect.eq.'H') spect='h'
+      if ((spect .ne. 's') .and. (spect .ne. 'h')) then
+        print*, 'Invalid option.  Please type "h" or "s".'
+        goto 100
+      endif
+*
+*
+      call revdis_init(FAIL,why)  ! Build lists of variables to get
 
       IF(FAIL) THEN
         call G_add_path(here,why)
@@ -107,14 +128,27 @@
 *
 *     Do the initialization that g_initialize was supposed to do
 *
-
       call GZEBRA(NGBANK)
-      call hlimit (-NHBOOK)         ! init HBOOK memory
-      call h_initialize(ABORT,err)
-c      call s_initialize(ABORT,err)
+      call hlimit (-NHBOOK)             ! init HBOOK memory
+      if (spect .eq. 'h') then
+        call h_initialize(ABORT,err)
+      elseif (spect .eq. 's') then
+        call s_initialize(ABORT,err)
+      endif
       call c_initialize(ABORT,err)
       call g_reset_event(ABORT,err)
-      CALL h_one_ev_init
+*     
+      if(graph_io_dev .ne. 0) call hplint(graph_io_dev)
+      if (graph_io_dev .eq. 0) then
+        call hplint(0)                  ! init graphics
+        call igmeta(-8,-111)            ! init HIGZ meta junk
+      endif
+
+      if (spect .eq. 'h') then
+        CALL h_uginit
+      elseif (spect .eq. 's') then
+        CALL s_uginit
+      endif
 *
       PRINT *,' Connected to a Hall C analyzer at '
      $     ,gen_display_server_machine(1:30)
@@ -141,14 +175,18 @@ c      call s_initialize(ABORT,err)
             Else
               write(6,'("Run",i6,", event ID",i7," sequence",i7)')
      $             gen_run_number,gen_event_ID_number, gen_event_sequence_N
-              call h_one_ev_display
+              if(spect.eq.'h') then
+                call h_one_ev_display
+              else if(spect.eq.'s') then
+                call s_one_ev_display
+              endif
             EndIf
           endif
         endif
-*
+*     
       ENDDO
 *
  99   continue
-      call IGEND                !properly terminate HIGZ and any&all metafiles
+      call IGEND                        !properly terminate HIGZ and any&all metafiles
       STOP
       END
