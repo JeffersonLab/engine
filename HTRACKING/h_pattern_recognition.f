@@ -14,6 +14,10 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
+* Revision 1.14  2003/04/01 13:49:27  jones
+* Modifications to tracking codes.
+* Mainly fix problems at high rates. (M. E. Christy)
+*
 * Revision 1.13  1996/11/05 21:51:08  saw
 * (JRA) Initialize hdc_sing_drifttime elements to -100
 *
@@ -107,6 +111,12 @@
         easy_space_point = .false.
         hnspace_points(ich)=0
         hncham_hits(ich)=0
+         
+        do i = 1,hmax_space_points  !!  Initialize - MEC  !!   
+         space_points(i,1) = 0
+         space_points(i,2) = 0
+        enddo
+
 *
 *     For this loop to work, hdc_planes_per_chamber must be
 *     the number of planes per chamber.  (And all chambers must have the
@@ -149,6 +159,15 @@
 *
           if (hnspace_points(ich).gt.0) then
 *    If two hits in same plane, choose one with minimum drift time
+
+             if ( h_remove_sppt_if_one_y_plane .eq. 1) then
+             call h_sp_destroy(ABORT,err,hnspace_points(ich),
+     &           space_point_hits,space_points,ich)
+             endif
+c
+             call h_sp_multiwire(ABORT,err,hnspace_points(ich),
+     &           space_point_hits,space_points)
+c
             call h_choose_single_hit(ABORT,err,hnspace_points(ich),
      &           space_point_hits)
 * Select on minimum number of combinations and hits
