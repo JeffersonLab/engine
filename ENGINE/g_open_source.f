@@ -8,10 +8,14 @@
 *-         : err        - reason for failure, if any
 *- 
 *-   Created  30-Nov-1993   Kevin B. Beard
-*-    $Log$
-*-    Revision 1.3  1995/05/11 16:18:51  cdaq
-*-    (SAW) Allow %d run number substitution in data source filename
-*-
+*
+* $Log$
+* Revision 1.4  1996/01/16 18:16:01  cdaq
+* no change
+*
+* Revision 1.3  1995/05/11 16:18:51  cdaq
+* (SAW) Allow %d run number substitution in data source filename
+*
 * Revision 1.2  1995/01/27  20:11:48  cdaq
 * (SAW) Add setting of ABORT
 *
