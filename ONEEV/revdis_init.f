@@ -1,6 +1,9 @@
       subroutine revdis_init(ABORT,err)
 *--------------------------------------------------------
 * $Log$
+* Revision 1.4  2003/02/14 18:27:22  jones
+* minor change to run on  Alpha OSF1 systems (E. Brash)
+*
 * Revision 1.3  1996/01/17 16:34:52  cdaq
 * (SAW) Change an include file name
 *
@@ -54,8 +57,7 @@
         call G_append(here,err)
         RETURN
       ELSE
-        write(err,'(":clnt_create OK for RPC program ID#",i10
-     $       ," [0x",z8,"] on machine ",a,)') 
+        write(err,'(":clnt_create OK for RPC program ID#",i10," [0x",z8,"] on machine ",a)')
      $       gen_display_server_RPCprgmID,gen_display_server_RPCprgmID
      $       ,gen_display_server_machine
         call G_add_path(here,err)
