@@ -13,6 +13,9 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
+* Revision 1.11  1996/11/07 19:53:37  saw
+* (WH) Add lucite parameters
+*
 * Revision 1.10  1996/04/30 17:15:12  saw
 * (JRA) Register Aerogel variables
 *
@@ -74,6 +77,7 @@
       call r_sos_scin_tof
       call r_sos_cer_parms
       call r_sos_aero_parms
+      call r_sos_lucite_parms
       call r_sos_calorimeter
       call r_sos_id_histid
 *
