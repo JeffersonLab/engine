@@ -10,7 +10,10 @@
 *- 
 *-   Created  17-May-1994   Kevin B. Beard, Hampton U.
 * $Log$
-* Revision 1.3  1994/06/09 04:29:44  cdaq
+* Revision 1.4  1994/06/24 19:11:26  cdaq
+* (KBB) Fill in gen_event_type with the event type
+*
+* Revision 1.3  1994/06/09  04:29:44  cdaq
 * (SAW) Replace g_build_note calls with write(var, ... calls
 *
 * Revision 1.2  1994/06/07  18:18:45  cdaq
@@ -62,7 +65,7 @@
       EvType = ISHFT(buffer(2),-16)
       
       gen_event_ID_number= 0
-      gen_event_type= 0
+      gen_event_type= EvType
       gen_event_class= 0
 *     
       If(EvType.EQ.SYNC_EvType) Then
