@@ -1,6 +1,9 @@
       subroutine s_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.9  1996/09/05 13:15:15  saw
+* (JRA) Slight increase in threshold above pedestal
+*
 * Revision 1.8  1996/01/24 16:06:55  saw
 * (JRA) Adjust which channels are disabled on Areogel
 *
@@ -69,9 +72,7 @@
           sig2 = float(shodo_pos_ped_sum2(pln,cnt))/num -
      $           shodo_new_ped_pos(pln,cnt)**2
           shodo_new_sig_pos(pln,cnt) = sqrt(max(0.,sig2))
-c          shodo_new_threshold_pos(pln,cnt) = shodo_new_ped_pos(pln,cnt)+
-c     &            2.*shodo_new_sig_pos(pln,cnt)
-          shodo_new_threshold_pos(pln,cnt) = shodo_new_ped_pos(pln,cnt)+10.
+          shodo_new_threshold_pos(pln,cnt) = shodo_new_ped_pos(pln,cnt)+15.
 
 *note channels with 2 sigma difference from paramter file values.
           if (abs(sscin_all_ped_pos(pln,cnt)-shodo_new_ped_pos(pln,cnt))
@@ -95,9 +96,7 @@ c     &            2.*shodo_new_sig_pos(pln,cnt)
           sig2 = float(shodo_neg_ped_sum2(pln,cnt))/num -
      $           shodo_new_ped_neg(pln,cnt)**2
           shodo_new_sig_neg(pln,cnt) = sqrt(max(0.,sig2))
-c          shodo_new_threshold_neg(pln,cnt) = shodo_new_ped_neg(pln,cnt)+
-c     &            2.*shodo_new_sig_neg(pln,cnt)
-          shodo_new_threshold_neg(pln,cnt) = shodo_new_ped_neg(pln,cnt)+10.
+          shodo_new_threshold_neg(pln,cnt) = shodo_new_ped_neg(pln,cnt)+15.
 
           if (abs(sscin_all_ped_neg(pln,cnt)-shodo_new_ped_neg(pln,cnt))
      &            .ge.(2.*shodo_new_sig_neg(pln,cnt))) then
@@ -127,7 +126,7 @@ c     &            2.*shodo_new_sig_neg(pln,cnt)
         sig2 = float(scal_ped_sum2(blk))/num - scal_new_ped(blk)**2
         scal_new_rms(blk) = sqrt(max(0.,sig2))
 c        scal_new_adc_threshold(blk) = scal_new_ped(blk)+2.*scal_new_rms(blk)
-        scal_new_adc_threshold(blk) = scal_new_ped(blk)+10.
+        scal_new_adc_threshold(blk) = scal_new_ped(blk)+15.
 
         if (abs(scal_ped_mean(blk)-scal_new_ped(blk))
      &                 .ge.(2.*scal_new_rms(blk))) then
@@ -155,18 +154,17 @@ c        scal_new_adc_threshold(blk) = scal_new_ped(blk)+2.*scal_new_rms(blk)
         scer_new_ped(pmt) = float(scer_ped_sum(pmt)) / num
         sig2 = float(scer_ped_sum2(pmt))/ num - scer_new_ped(pmt)**2
         scer_new_rms(pmt) = sqrt(max(0.,sig2))
-c        scer_new_adc_threshold(pmt) = scer_new_ped(pmt)+2.*scer_new_rms(pmt)
-        scer_new_adc_threshold(pmt) = scer_new_ped(pmt)+10.
-      if (abs(scer_ped(pmt)-scer_new_ped(pmt))
+        scer_new_adc_threshold(pmt) = scer_new_ped(pmt)+15.
+        if (abs(scer_ped(pmt)-scer_new_ped(pmt))
      &              .ge.(2.*scer_new_rms(pmt))) then
-        ind = ind + 1
-        scer_changed_tube(ind)=pmt
-        scer_ped_change(ind)=scer_new_ped(pmt)-scer_ped(pmt)
-      endif
+          ind = ind + 1
+          scer_changed_tube(ind)=pmt
+          scer_ped_change(ind)=scer_new_ped(pmt)-scer_ped(pmt)
+        endif
 
-      if (num.gt.scer_min_peds .and. scer_min_peds.ne.0) then
-        scer_ped(pmt)=scer_new_ped(pmt)
-      endif
+        if (num.gt.scer_min_peds .and. scer_min_peds.ne.0) then
+          scer_ped(pmt)=scer_new_ped(pmt)
+        endif
 
       enddo
       scer_num_ped_changes = ind
@@ -182,9 +180,7 @@ c        scer_new_adc_threshold(pmt) = scer_new_ped(pmt)+2.*scer_new_rms(pmt)
           sig2 = float(saer_pos_ped_sum2(pmt))/
      &            float(saer_pos_ped_num(pmt))-
      &            saer_pos_ped_mean(pmt)**2
-!          if (sig2.le.0) write(6,*) 'aer pos ped(',pmt,') =',sig2
           saer_pos_ped_rms(pmt) = sqrt(max(0.,sig2))
-          saer_pos_threshold(pmt) = max(4.,3.*saer_pos_ped_rms(pmt))
         endif
         if (saer_neg_ped_num(pmt) .ge. saer_min_peds .and.
      &      saer_min_peds .ne. 0) then
@@ -193,9 +189,11 @@ c        scer_new_adc_threshold(pmt) = scer_new_ped(pmt)+2.*scer_new_rms(pmt)
           sig2 = float(saer_neg_ped_sum2(pmt))/
      &            float(saer_neg_ped_num(pmt))-
      &            saer_neg_ped_mean(pmt)**2
-!          if (sig2.le.0) write(6,*) 'aer neg ped(',pmt,') =',sig2
           saer_neg_ped_rms(pmt) = sqrt(max(0.,sig2))
-          saer_neg_threshold(pmt) = max(4.,3.*saer_neg_ped_rms(pmt))
+
+          saer_neg_adc_threshold(pmt) = saer_neg_ped_mean(pmt)+15.
+          saer_pos_adc_threshold(pmt) = saer_pos_ped_mean(pmt)+15.
+
         endif
       enddo
 
@@ -230,13 +228,16 @@ c
         slot=3
         write(SPAREID,*) 'slot=',slot
         do ind=1,4
-          write(SPAREID,*) '0'
+          write(SPAREID,*) int(scer_new_adc_threshold(ind))
         enddo
         do ind=5,34
           write(SPAREID,*) '4000'
         enddo
-        do ind=35,48
-          write(SPAREID,*) '0'
+        do pmt=1,7
+          write(SPAREID,*) saer_pos_adc_threshold(pmt)
+        enddo
+        do pmt=1,7
+          write(SPAREID,*) saer_neg_adc_threshold(pmt)
         enddo
         do ind=49,64
           write(SPAREID,*) '4000'
