@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.17  1996/11/07 19:54:28  saw
+# (SAW) Add Lucite Cerenkov routines and AIX support
+#
 # Revision 1.16  1996/09/04 20:15:59  saw
 # (SAW) Add routines.  Linux compatibility updates
 #
@@ -79,14 +82,23 @@ newerstuff = s_fill_dc_target_hist.f s_targ_trans_init.f \
 	s_cer_eff.f s_cer_eff_shutdown.f s_init_cer.f s_trans_cer.f \
 	s_dc_eff.f s_dc_eff_shutdown.f s_dump_peds.f s_dump_cal.f \
 	s_report_bad_data.f s_dc_trk_eff.f s_dc_trk_eff_shutdown.f \
-	s_find_easy_space_point.f s_aero.f s_track_tests.f
+	s_find_easy_space_point.f s_aero.f s_track_tests.f s_lucite.f
 makeregstuff = r_sos_filenames.f r_sos_tracking.f r_sos_geometry.f \
 	 r_sos_track_histid.f r_sos_recon_elements.f r_sos_physics_sing.f \
 	r_sos_scin_parms.f r_sos_scin_tof.f r_sos_calorimeter.f \
 	r_sos_id_histid.f r_sos_bypass_switches.f r_sos_statistics.f \
-	r_sos_pedestals.f r_sos_cer_parms.f r_sos_aero_parms.f
+	r_sos_pedestals.f r_sos_cer_parms.f r_sos_aero_parms.f \
+	r_sos_lucite_parms.f
 
 sources = $(osources) $(newstuff) $(newerstuff) $(makeregstuff)
+
+ifeq ($(ARCH),AIX)
+xsources := $(filter-out s_link_stubs.f s_track_tests.f ,$(sources))
+sources = s_link_stubs_aix.f s_track_tests_aix.f $(xsources)
+../s_%_aix.f : ../s_%.f
+	sed -e "s/access=.append./position='append'/"< $< > $@	
+endif
+
 libsources = $(sources)
 
 lib_targets := $(patsubst %.f, libstracking.a(%.o), $(libsources))
@@ -97,6 +109,13 @@ bin_targets =
 #default:
 #	@echo "nothing to make"
 
+
+ifdef NFSDIRECTORY
+../%.f : $(NFSDIRECTORY)/STRACKING/%.f
+	ln -s $< $@
+
+.PRECIOUS: ../%.f
+else
 #
 # Rule for making the register subroutines
 #
@@ -104,12 +123,6 @@ bin_targets =
 	(cd .. ; $(MAKEREG) $(<F) -o $(@F) -e /dev/null)
 
 .PRECIOUS: ../r_%.f
-
-ifdef NFSDIRECTORY
-../%.f : $(NFSDIRECTORY)/STRACKING/%.f
-	ln -s $< $@
-
-.PRECIOUS: ../%.f
 endif
 
 #
