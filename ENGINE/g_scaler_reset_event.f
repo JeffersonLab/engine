@@ -15,6 +15,9 @@
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 *
 * $Log$
+* Revision 1.4  1999/02/10 18:17:57  csa
+* Added beam-on variable initialization (D. McKee)
+*
 * Revision 1.3  1996/04/29 19:48:45  saw
 * (JRA) Add gscaler, gscaler_old, gscaler_nroll, gscaler_change initialization
 *
@@ -58,6 +61,10 @@
       gbcm2_charge = 0.
       gbcm3_charge = 0.
       gunser_charge = 0.
+*
+      g_beam_on_run_time = 0.    ! Have to do this, because I have to accumlate
+                                 ! this value (unlike g_run_time)
+      g_beam_on_bcm_charge = 0.
 *
       ABORT= .FALSE.
       err= ' '
