@@ -10,7 +10,10 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, HU: added Ntuples
 * $Log$
-* Revision 1.2  1994/06/17 02:57:45  cdaq
+* Revision 1.3  1994/06/29 03:30:25  cdaq
+* (KBB) Remove HDELET call
+*
+* Revision 1.2  1994/06/17  02:57:45  cdaq
 * (KBB) Upgrade
 *
 * Revision 1.1  1994/04/12  16:16:53  cdaq
@@ -88,7 +91,7 @@
       cycle= 0                                !dummy for HROUT
       call HROUT(id,cycle,' ')                !flush CERNLIB buffers
       call HREND(name)                        !CERNLIB close file
-      call HDELET(id)                         !CERNLIB delete tuple
+*      call HDELET(id)                         !CERNLIB delete tuple
       call G_IO_control(io,'FREE',ABORT,err)  !free up IO channel
       CLOSE(io)                               !close IO channel
 *
