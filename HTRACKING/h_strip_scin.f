@@ -7,7 +7,10 @@
 * h_strip_scin converts the raw hits to arrays over hits
 * with good TDC values.
 * $Log$
-* Revision 1.4  1994/10/12 18:59:37  cdaq
+* Revision 1.5  1994/10/17 20:47:03  cdaq
+* (DJM) Change hscin_sing_counter index from ihit (wrong) to igoodhit (correct)
+*
+* Revision 1.4  1994/10/12  18:59:37  cdaq
 * (DJM) Fill hscin_sing_counter hit patterns for hodoscope
 *
 * Revision 1.3  1994/10/11  19:05:59  cdaq
@@ -41,6 +44,7 @@
       hscin_tot_hits = 0
       do ind = 1, hnum_scin_planes
         hscin_hits_per_plane(ind) = 0
+        hscin_sing_counter(ind) = -1
       enddo
         
       do ihit = 1 , hscin_all_tot_hits  ! pick out 'good' hits.
@@ -69,13 +73,9 @@
 * only the last one will be histogrammed. this will bias events which have more
 * than one hit per plane, so it's only really useful for looking at single hits.
 * if you need to see all the hits, then hardwire it. 
-          plane = HSCIN_PLANE_NUM(ihit)
-          counter = HSCIN_COUNTER_NUM(ihit)
-          if(plane.eq.1)hscin_sing_counter(plane) = counter
-          if(plane.eq.2)hscin_sing_counter(plane) = counter
-          if(plane.eq.3)hscin_sing_counter(plane) = counter
-          if(plane.eq.4)hscin_sing_counter(plane) = counter
-
+          plane = HSCIN_PLANE_NUM(igoodhit)
+          counter = HSCIN_COUNTER_NUM(igoodhit)
+          if(plane.ge.1.and.plane.le.4) hscin_sing_counter(plane) = counter
         endif
       enddo
 
