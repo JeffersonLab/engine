@@ -14,7 +14,10 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
-* Revision 1.6  1994/08/31 19:39:43  cdaq
+* Revision 1.7  1994/09/19 20:31:39  cdaq
+* (DJM) add some histogrammable wire positions and fine positions for each plane
+*
+* Revision 1.6  1994/08/31  19:39:43  cdaq
 * (DJM) Stuff drift time and distance into histogrammable and testable
 *       registered variables.
 *
@@ -139,6 +142,12 @@
           enddo
         enddo
       endif      
+
+      do plane=1,HMAX_NUM_DC_PLANES
+        hdc_sing_wcenter(plane)=-100.
+        hdc_sing_wcoord(plane)=-100.
+      enddo
+
 *     calculate total numbe of space points
       hnspace_points_tot=hnspace_points(1)+hnspace_points(2)
 *
@@ -173,6 +182,10 @@
 
             hdc_sing_drifttime(plane) = HDC_DRIFT_TIME(hit)
             hdc_sing_driftdis(plane) = HDC_DRIFT_DIS(hit)
+* djm 9/16/94
+* add some wire positions and fine positions for each plane 
+            hdc_sing_wcenter(plane) = HDC_WIRE_CENTER(hit)
+            hdc_sing_wcoord(plane) = HDC_WIRE_COORD(hit)
 
           enddo
         enddo
