@@ -50,8 +50,8 @@
       ENDDO
 *
       DO hit= 1,HMAX_SCIN_HITS
-         HSCIN_SCIN_POS(hit)= 0
-         HSCIN_HIT_POS(hit)= 0
+         HSCIN_SCIN_COORD(hit)= 0
+         HSCIN_HIT_COORD(hit)= 0
          HSCIN_COR_ADC(hit)= 0
          HSCIN_COR_TIME(hit)= 0
          HSCIN_PLANE_NUM(hit)= 0
@@ -81,9 +81,9 @@
 *     HMS CERENKOV HITS
 *
       DO hit= 1,HMAX_CER_HITS
-         HCER_COR_ADC(hit)= 0
          HCER_TUBE_NUM(hit)= 0
          HCER_ADC(hit)= 0
+         HCER_PLANE(hit)= 0
       ENDDO
       HCER_TOT_HITS= 0
 *     

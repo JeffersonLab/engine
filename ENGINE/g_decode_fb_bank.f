@@ -101,7 +101,7 @@
                pointer = pointer +
      $              g_decode_fb_detector(roc, bank(pointer), 
      &              maxwords, did, 
-     $              HMAX_CER_HITS, HCER_TOT_HITS, HCER_COR_ADC,
+     $              HMAX_CER_HITS, HCER_TOT_HITS, HCER_PLANE,
      $              HCER_TUBE_NUM, 1, HCER_ADC, 0, 0, 0)
 
 *
@@ -139,7 +139,7 @@
                pointer = pointer +
      $              g_decode_fb_detector(roc, bank(pointer), 
      &              maxwords, did,
-     $              SMAX_CER_HITS, SCER_TOT_HITS, SCER_COR_ADC,
+     $              SMAX_CER_HITS, SCER_TOT_HITS, SCER_PLANE,
      $              SCER_TUBE_NUM, 1, SCER_ADC, 0, 0, 0)
 
 *

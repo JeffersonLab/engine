@@ -12,9 +12,12 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-      $Log$
-*-      Revision 1.1  1994/02/04 22:16:02  cdaq
-*-      Initial revision
+*-      Revision 1.2  1994/02/11 04:12:30  cdaq
+*-      Change var names to reflect current gen_data_structures
 *-
+* Revision 1.1  1994/02/04  22:16:02  cdaq
+* Initial revision
+*
 *- 
 *-
 *- All standards are from "Proposal for Hall C Analysis Software
@@ -59,16 +62,16 @@
 *     SOS SCINTILLATOR HITS
 *     
       DO hit= 1,SMAX_SCIN_HITS
-         SSCIN_SCIN_POS(hit)= 0.
-         SSCIN_HIT_POS(hit)= 0.
-         SSCIN_COR_ADC(hit)= 0.
-         SSCIN_COR_TIME(hit)= 0.
-         SSCIN_PLANE_NUM(hit)= 0.
-         SSCIN_COUNTER_NUM(hit)= 0.
-         SSCIN_ADC_POS(hit)= 0.
-         SSCIN_ADC_NEG(hit)= 0.
-         SSCIN_TDC_POS(hit)= 0.
-         SSCIN_TDC_NEG(hit)= 0.
+         SSCIN_SCIN_COORD(hit)= 0.0
+         SSCIN_HIT_COORD(hit)= 0.0
+         SSCIN_COR_ADC(hit)= 0.0
+         SSCIN_COR_TIME(hit)= 0.0
+         SSCIN_PLANE_NUM(hit)= 0
+         SSCIN_COUNTER_NUM(hit)= 0
+         SSCIN_ADC_POS(hit)= 0
+         SSCIN_ADC_NEG(hit)= 0
+         SSCIN_TDC_POS(hit)= 0
+         SSCIN_TDC_NEG(hit)= 0
       ENDDO
       DO plane= 1,SNUM_SCIN_PLANES
          SSCIN_HITS_PER_PLANE(plane)= 0
@@ -78,21 +81,21 @@
 *     SOS CALORIMETER HITS
 *     
       DO block= 1,SMAX_CAL_BLOCKS
-         SCAL_XPOS(block)= 0.
-         SCAL_YPOS(block)= 0.
-         SCAL_COR_ADC(block)= 0.
-         SCAL_ROW(block)= 0.
-         SCAL_COLUMN(block)= 0.
-         SCAL_ADC(block)= 0.
+         SCAL_XPOS(block) = 0.
+         SCAL_YPOS(block) = 0.
+         SCAL_COR_ADC(block) = 0.
+         SCAL_ROW(block) = 0
+         SCAL_COLUMN(block) = 0
+         SCAL_ADC(block) = 0
       ENDDO
       SCAL_TOT_HITS= 0
 *     
 *     SOS CERENKOV HITS
 *     
       DO hit= 1,SMAX_CER_HITS
-         SCER_COR_ADC(hit)= 0.
-         SCER_TUBE_NUM(hit)= 0.
-         SCER_ADC(hit)= 0.
+         SCER_TUBE_NUM(hit) = 0
+         SCER_ADC(hit) = 0
+         SCER_PLANE(hit) = 0
       ENDDO
       SCER_TOT_HITS= 0
 *     
