@@ -8,10 +8,15 @@
 *- Loops through data until it encounters an error.
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
-*-    $Log$
-*-    Revision 1.16  1995/07/27 19:45:40  cdaq
-*-    (SAW) f2c compatibility changes.  Only shutdown ntuples at very end.
-*-          ctp command line variables override at every oportunity
+* $Log$
+* Revision 1.17  1995/09/22 19:39:13  cdaq
+* (SAW) Move g_ctp_database from g_init_filenames to here.  Process all
+* CTP command line vars after every ctp file read so that command line
+* overrides everything.
+*
+* Revision 1.16  1995/07/27 19:45:40  cdaq
+* (SAW) f2c compatibility changes.  Only shutdown ntuples at very end.
+*       ctp command line variables override at every oportunity
 *-
 * Revision 1.15  1995/05/11  19:02:23  cdaq
 * (SAW) Add ability to set CTP variables from the command line
@@ -68,7 +73,7 @@
       character*6 here
       parameter (here= 'Engine')
 *
-      logical ABORT,EoF,break
+      logical ABORT,EoF
       character*800 err,mss
 *
       include 'gen_filenames.cmn'
@@ -85,8 +90,6 @@
       integer evtype
       integer rpc_pend                  ! # Pending asynchronous RPC requests
       integer ierr
-      integer nargs,nextarg
-      character*132 arg
 *      integer SPAREID
 *      parameter (SPAREID=67)
 *
@@ -104,9 +107,6 @@
       err= ' '
       print *
 *
-      nargs = iargc()
-      nextarg = 1
-*
       total_event_count= 0                      ! Need to register this
 *
       rpc_on=0                          ! RPC servicing off by default
@@ -122,18 +122,7 @@
 *
       g_config_filename = ' '
 *
-*     Process command line args that set CTP variables
-*
-      break = .false.
-      do while(nextarg .le. nargs.and..not.break)
-        call getarg(nextarg,arg)
-        nextarg = nextarg + 1
-        if(index(arg,'=').gt.0) then
-          call thpset(arg)
-        else
-          break = .true.
-        endif
-      enddo
+      call engine_command_line          ! Set CTP vars from command line
 *       
       call G_init_filenames(ABORT,err,g_config_environmental_var)
       if(ABORT.or.err.ne.' ') then
@@ -143,19 +132,21 @@
          err= ' '
       ENDIF
 *
-*     Process command line args that set CTP variables
+      call engine_command_line          ! Set CTP vars from command line
 *
-      break = .false.
-      do while(nextarg .le. nargs.and..not.break)
-        call getarg(nextarg,arg)
-        nextarg = nextarg + 1
-        if(index(arg,'=').gt.0) then
-          call thpset(arg)
-        else
-          break = .true.
+*     If there is a g_ctp_database_filename set, pass the run number
+*     to it to set CTP variables
+*
+      if(.not.ABORT.and.g_ctp_database_filename.ne.' ') then
+        call g_ctp_database(ABORT, err
+     $       ,gen_run_number, g_ctp_database_filename)
+        IF(ABORT) THEN
+          call G_add_path(here,err)
         endif
-      enddo
+      ENDIF
 *       
+      call engine_command_line          ! Set CTP vars from command line
+*
       call G_decode_init(ABORT,err)
       if(ABORT.or.err.ne.' ') then
          call G_add_path(here,err)
@@ -184,18 +175,7 @@
          err= ' '
       ENDIF
 *
-*     Process command line args that set CTP variables
-*
-      break = .false.
-      do while(nextarg .le. nargs.and..not.break)
-        call getarg(nextarg,arg)
-        nextarg = nextarg + 1
-        if(index(arg,'=').gt.0) then
-          call thpset(arg)
-        else
-          break = .true.
-        endif
-      enddo
+      call engine_command_line          ! Set CTP vars from command line
 *
 *-zero entire event buffer
 *
@@ -423,7 +403,23 @@ cc              endif
 *
       END
 
-
+      subroutine engine_command_line
+*
+      implicit none
+      integer iarg
+      character*132 arg
+*
+*     Process command line args that set CTP variables
+*
+      do iarg=1,iargc()
+        call getarg(iarg,arg)
+        if(index(arg,'=').gt.0) then
+          call thpset(arg)
+        endif
+      enddo
+*
+      return
+      end
 
 
 
