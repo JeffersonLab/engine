@@ -7,6 +7,9 @@
 *     Date:      9 April 1994
 *
 * $Log$
+* Revision 1.5  1996/09/05 19:53:39  saw
+* (JRA) Get id for misc. TDC's
+*
 * Revision 1.4  1996/01/17 19:02:45  cdaq
 * (JRA) Add sidcuttdc, sidscinalltimes, and sidscintimes
 *
@@ -83,10 +86,9 @@ c
       data posadc /'posadc'/
       data negadc /'negadc'/
       data postdc /'postdc'/
-      data negtdc /'negtdc'/       
+      data negtdc /'negtdc'/
       data sdcplanename/'sdc1u1','sdc1u2','sdc1x1','sdc1x2','sdc1v1'
-     $     ,'sdc1v2','sdc2u1','sdc2u2','sdc2x1','sdc2x2','sdc2v1','sdc2v2','
-     $     sdc3u1','sdc3u2','sdc3x1','sdc3x2','sdc3v1','sdc3v2'/
+     $     ,'sdc1v2','sdc2u1','sdc2u2','sdc2x1','sdc2x2','sdc2v1','sdc2v2'/
       data sscinplanenum/'1','2','3','4'/
       data sscinplane /'sscinplane'/
       data sposadc /'sposadc'/
@@ -217,6 +219,8 @@ c
       sidcalhits(3) = thgetid('scalchits')
       sidcalhits(4) = thgetid('scaldhits')
       sidcalsumadc = thgetid('scalsumadc')
+
+      sidmisctdcs = thgetid('smisctdcs')
 
       RETURN
       END
