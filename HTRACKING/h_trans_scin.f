@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.11  1995/01/31 21:51:13  cdaq
+* Revision 1.12  1995/02/02 16:36:22  cdaq
+* (JRA) minph variables now per pmt, hscin_adc_pos/neg change to floats
+*
+* Revision 1.11  1995/01/31  21:51:13  cdaq
 * (JRA) Put hit in center of scint if only one tube fired
 *
 * Revision 1.10  1995/01/27  19:28:48  cdaq
@@ -126,16 +129,16 @@
 
 *     Correct time for everything except veloc. correction in order to
 *     find hit location from difference in tdc.
-            pos_ph(ihit) = float(hscin_adc_pos(ihit))
+            pos_ph(ihit) = hscin_adc_pos(ihit)
             postime(ihit) = hscin_tdc_pos(ihit) * hscin_tdc_to_time
             postime(ihit) = postime(ihit) - hscin_pos_phc_coeff(ihit) * 
-     1           sqrt(max(0.,(pos_ph(ihit)/hscin_minph-1.)))
+     1           sqrt(max(0.,(pos_ph(ihit)/hscin_pos_minph(ihit)-1.)))
             postime(ihit) = postime(ihit) - hscin_pos_time_offset(ihit)
 
-            neg_ph(ihit) = float(hscin_adc_neg(ihit))
+            neg_ph(ihit) = hscin_adc_neg(ihit)
             negtime(ihit) = hscin_tdc_neg(ihit) * hscin_tdc_to_time
             negtime(ihit) = negtime(ihit) - hscin_neg_phc_coeff(ihit) * 
-     1           sqrt(max(0.,(neg_ph(ihit)/hscin_minph-1.)))
+     1           sqrt(max(0.,(neg_ph(ihit)/hscin_neg_minph(ihit)-1.)))
             negtime(ihit) = negtime(ihit) - hscin_neg_time_offset(ihit)
 
 * Find hit position.  If postime larger, then hit was nearer negative side.
