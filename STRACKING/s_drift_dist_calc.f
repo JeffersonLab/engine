@@ -5,6 +5,9 @@
 *
 *     d.f. geesaman              17 feb 1994
 * $Log$
+* Revision 1.5  1996/04/30 17:01:21  saw
+* (JRA) Add drift time correction for disc card
+*
 * Revision 1.4  1995/10/10 13:02:39  cdaq
 * (JRA) Remove check for zero drift bin size
 *
@@ -56,7 +59,8 @@ c      endif
         endif
       endif
 
-      s_drift_dist_calc = 0.5*fractinterp
+      s_drift_dist_calc = 0.5*fractinterp -
+     $     sdc_card_delay(sdc_card_no(wire,plane))
 
       return
       end
