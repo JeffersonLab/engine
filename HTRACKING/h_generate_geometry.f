@@ -8,7 +8,10 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change HPLANE_PARAM to individual arrays
 * $Log$
-* Revision 1.1  1994/02/19 06:14:45  cdaq
+* Revision 1.2  1994/10/12 18:23:47  cdaq
+* (DJM) Calculate 3x3 matrices and inverses
+*
+* Revision 1.1  1994/02/19  06:14:45  cdaq
 * Initial revision
 *
 *
@@ -18,9 +21,9 @@
       include "hms_geometry.cmn"
 *
 *     local variables
-      integer*4 iplane,i,j
+      integer*4 iplane,i,j,k,hitormiss,pindex
       real*4 cosalpha,sinalpha,cosbeta,sinbeta,cosgamma,singamma,z0
-      real*4 stubzchi,stubzpsi,stubxchi,stubxpsi,stubychi,stubypsi
+      real*4 stubxchi,stubxpsi,stubychi,stubypsi
       real*4 sumsqupsi,sumsquchi,sumcross,denom
 *
 *     read basic parameters from CTP input file
@@ -120,7 +123,78 @@
         hplane_coeff(9,iplane) =  hychi(iplane)*hxpsi(iplane)
      &                          - hxchi(iplane)*hypsi(iplane)
 *
-      enddo                  !  end loop over all planes
+      enddo                  !  end hdc_num_planes
+
+* djm 10/2/94 generate/store the inverse matrices AAINV3(i,j,pindex) used in solve_3by3_hdc
+* pindex = 1    plane 1 missing from hdc1
+* pindex = 2    plane 2 missing from hdc1
+*   etc.
+* pindex = 7    plane 1 missing from hdc2
+* pindex = 8    plane 2 missing from hdc2
+*   etc.
+* pindex = 13   hdc1 no missing planes
+* pindex = 14   hdc2 no missing planes
+
+      do pindex=1,14
+
+* generate the matrix AA3 for an hdc missing a particular plane
+      do i=1,3
+        do j=1,3
+        AA3(i,j)=0.
+         if(j.lt.i)then      ! AA3 is symmetric so only calculate 6 terms
+          AA3(i,j)=AA3(j,i)
+          else
+
+* AA for hdc1          
+         if(pindex.ge.1 .and. pindex.le.6 .or. pindex.eq.13)then        
+          do k=1,6            
+           if(pindex.ne.k .or. pindex.eq.13)then   
+           hitormiss=1
+           else
+           hitormiss=0
+           endif
+           AA3(i,j)=AA3(i,j) + hitormiss*hstubcoef(k,i)*hstubcoef(k,j)
+          enddo
+         endif
+* AA for hdc2         
+         if(pindex.ge.7 .and. pindex.le.12 .or. pindex.eq.14)then       
+          do k=7,12            
+           if(pindex.ne.k .or. pindex.eq.14)then   
+           hitormiss=1
+           else
+           hitormiss=0
+           endif
+           AA3(i,j)=AA3(i,j) + hitormiss*hstubcoef(k,i)*hstubcoef(k,j)
+          enddo
+         endif
+
+        endif  !end test j lt i
+        enddo  !end j loop
+      enddo    !end i loop
+
+* form the inverse matrix AAINV3 for each configuration
+      AAINV3(1,1,pindex)=(AA3(2,2)*AA3(3,3)-AA3(2,3)**2)
+      AAINV3(1,2,pindex)=-(AA3(1,2)*AA3(3,3)-AA3(1,3)*AA3(2,3))
+      AAINV3(1,3,pindex)=(AA3(1,2)*AA3(2,3)-AA3(1,3)*AA3(2,2))
+      DET3(pindex)=AA3(1,1)*AAINV3(1,1,pindex)+AA3(1,2)*AAINV3(1,2,pindex)
+     &            +AA3(1,3)*AAINV3(1,3,pindex)
+       if(abs(det3(pindex)).le.1e-20)then
+        write(6,*)'******************************************************'
+        write(6,*)'Warning! Determinate of matrix AA3(i,j) is nearly zero.'
+        write(6,*)'All tracks using pindex=',pindex,' will be zerfucked.'
+        write(6,*)'Fix problem in h_generate_geometry.f or else!'
+        write(6,*)'******************************************************'
+        det3(pindex)=1.
+       endif
+      AAINV3(1,1,pindex)=AAINV3(1,1,pindex)/DET3(pindex)
+      AAINV3(1,2,pindex)=AAINV3(1,2,pindex)/DET3(pindex)
+      AAINV3(1,3,pindex)=AAINV3(1,3,pindex)/DET3(pindex)
+      AAINV3(2,2,pindex)=(AA3(1,1)*AA3(3,3)-AA3(1,3)**2)/DET3(pindex)
+      AAINV3(2,3,pindex)= -(AA3(1,1)*AA3(2,3)-AA3(1,2)*AA3(3,1))/DET3(pindex)
+      AAINV3(3,3,pindex)=(AA3(1,1)*AA3(2,2)-AA3(1,2)**2)/DET3(pindex)
+
+      enddo  !end pindex loop
+
 *     for debug write out all parameters
       if(hdebugflaggeometry.ne.0) then
         write(hluno,'(''    HMS PLANE PARAMETERS: '')')
@@ -163,6 +237,3 @@
       endif                               !   end if on debug print out
       return
       end
-
-
-      
