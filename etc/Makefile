@@ -16,8 +16,8 @@
 #
 #  Revision History:
 #    $Log$
-#    Revision 1.2  1998/12/03 22:01:10  saw
-#    (SAW) New style
+#    Revision 1.3  1998/12/07 22:09:50  saw
+#    Remove dependency on $Csoft
 #
 #    Revision 1.1  1996/02/02 14:14:46  saw
 #    Initial revision
@@ -36,12 +36,12 @@ endif
 
 SHELL     = /bin/sh
 
-include $(Csoft)/etc/makefile.site.in
+include ../../etc/makefile.site.in
 include $(sources:.f=.d) 
 include $(sources:.c=.d) 
 
-EVGENLIB   = $(Csoft)/$(OSTYPE)$(OSEXT)/lib/libevgen.a
-LIBROOT   = $(Csoft)/$(OSTYPE)$(OSEXT)/lib
+EVGENLIB   = ../../../$(OSTYPE)$(OSEXT)/lib/libevgen.a
+LIBROOT   = ../../../$(OSTYPE)$(OSEXT)/lib
 #INCROOT   = $(Csoft)/$(OSTYPE)/include
 OS     := $(shell echo $(OSTYPE) | tr "[A-Z]" "[a-z]")
 
@@ -50,7 +50,8 @@ MAKEDIRS:=$(addprefix $(parent)/,$(shell find . -type d -print | sed -e '/RCS/d'
 
 
 TIMESTAMP := "\"$(shell date +%h\ %d\ %Y)\""
-CSOFT_VERSION := "\"$(shell grep define $(Csoft)/.version.h | sed -e 's|.*CSOFTVERSION ||')\""
+#CSOFT_VERSION := "\"$(shell grep define $(Csoft)/.version.h | sed -e 's|.*CSOFTVERSION ||')\""
+CSOFT_VERSION := "Version 0"
 
 CFLAGS    = $(INCS) $(DEFS) $(EXTRA) -D$(OSTYPE) -DOSTYPE="\"$(OSTYPE)\"" -DVERSION=$(CSOFT_VERSION) -DDAYTIME=$(TIMESTAMP)
 
@@ -81,6 +82,9 @@ ifdef NEWSTYLE
 	echo remaking $@
 	$(DEPENDS_RULE.c)
 
+#r_%.d:
+#	echo r_$*.o: r_$*.f > $@
+
 %.d: ../%.f
 	echo remaking $@
 	$(DEPENDS_RULE.f)
@@ -90,8 +94,8 @@ ifdef NEWSTYLE
 
 %.o: ../%.c
 	$(COMPILE_RULE.c)
+
 else
-#%.d: %.c .os$(OSTYPE) Makefile $(Csoft)/etc/Makefile
 %.d: %.c
 	echo remaking $@
 	$(DEPENDS_RULE.c)
@@ -119,7 +123,7 @@ ifdef RANLIB
 	$(RANLIB) $@
 endif
 
-TARGET_PATH := $(Csoft)/$(OSPREFIX)$(SUBDIR)/
+TARGET_PATH := ../../../$(OSPREFIX)$(SUBDIR)/
 FILES       = $(addsuffix ",$(addprefix "$(TARGET_PATH),$($(SUBDIR)_targets)))
 
 
@@ -165,8 +169,9 @@ directory:
 	fi;true
 	$(MAKE) SUBDIR=$(SUBDIR) OSPREFIX=$(OSPREFIX) $(FILES)
 
-CSOFT csoft: 
+CSOFT csoft: $(REGSOURCES)
 	@echo "CSOFT - Arch. $(ARCH) sys.vers $(OSTYPE)$(OSEXT)"
+	@echo "`pwd` $(REGSOURCES)"
 	@echo "Considering $(shell pwd) ... "
 	@if test -z "$(install-dirs)"; then \
 	  echo Nothing to do for $(OSTYPE)$(OSEXT); \
