@@ -1,6 +1,12 @@
 #
 # $Log$
-# Revision 1.15  1995/07/20 14:27:40  cdaq
+# Revision 1.16  1996/01/16 21:32:55  cdaq
+# (SAW) Use $(CP) instead of cp.  Add h_cer_eff, h_cer_eff_shutdown, h_init_cer,
+#       h_trans_cer, h_dc_eff, h_dc_eff_shutdown, h_dump_peds, h_dump_cal,
+#       h_report_bad_data, h_dc_trk_eff, h_dc_trk_eff_shutdown,
+#       h_find_easy_space_point, r_hms_cer_parms
+#
+# Revision 1.15  1995/07/20  14:27:40  cdaq
 # (SAW) Add option to get source via softlink to read only source tree
 #
 # Revision 1.14  1995/05/24  13:22:33  cdaq
@@ -69,12 +75,16 @@ newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f \
 	h_strip_scin.f h_choose_single_hit.f h_solve_3by3.f \
 	h_dump_tof.f h_select_best_track.f h_scin_eff.f h_scin_eff_shutdown.f \
 	h_cal_eff.f h_cal_eff_shutdown.f h_analyze_pedestal.f \
-	h_calc_pedestal.f h_trans_misc.f h_fill_cal_hist.f h_init_histid.f
+	h_calc_pedestal.f h_trans_misc.f h_fill_cal_hist.f h_init_histid.f \
+	h_cer_eff.f h_cer_eff_shutdown.f h_init_cer.f h_trans_cer.f \
+	h_dc_eff.f h_dc_eff_shutdown.f h_dump_peds.f h_dump_cal.f \
+	h_report_bad_data.f h_dc_trk_eff.f h_dc_trk_eff_shutdown.f \
+	h_find_easy_space_point.f
 makeregstuff =	r_hms_filenames.f r_hms_scin_parms.f r_hms_scin_tof.f \
 	r_hms_calorimeter.f r_hms_id_histid.f r_hms_tracking.f \
 	r_hms_geometry.f r_hms_track_histid.f r_hms_recon_elements.f \
 	r_hms_physics_sing.f r_hms_bypass_switches.f r_hms_statistics.f \
-	r_hms_pedestals.f
+	r_hms_pedestals.f r_hms_cer_parms.f
 
 
 sources = $(osources) $(newstuff) $(newerstuff) $(makeregstuff)
@@ -116,16 +126,16 @@ endif
 #
 
 %.cmn :: ../INCLUDE/%.cmn
-	cp -f $< $@
+	$(CP) $< $@
 
 %.dec :: ../INCLUDE/%.dec
-	cp -f $< $@
+	$(CP) $< $@
 
 %.par :: ../INCLUDE/%.par
-	cp -f $< $@
+	$(CP) $< $@
 
 %.dte :: ../INCLUDE/%.dte
-	cp -f $< $@
+	$(CP) $< $@
 
 include $(sources:.f=.d)
 
