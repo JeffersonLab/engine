@@ -5,6 +5,9 @@
 *                              change name to sos_tracking.cmn
 *                              put sluno and debugflags from parameters to CTP
 * $Log$
+* Revision 1.16  1996/09/04 16:32:10  saw
+* (DVW) Add slew of variables for derek's hms track tests
+*
 * Revision 1.15  1996/04/30 14:04:39  saw
 * (JRA) Bunch of changes
 *
@@ -137,7 +140,7 @@
       real*4  sdc_central_time   !ave. time (ns) for signal to reach disc. card.
                                  ! (both times are from center of the chamber)
 * timing offsets per card.
-      integer*4 sdc_sing_cardid  ! array of card id's so one can put cuts/test on a per/card basys
+      integer*4 sdc_sing_cardid  ! array of card id''s so one can put cuts/test on a per/card basys
       integer*4 sdc_card_no      ! card number
       real*4 sdc_card_delay      ! delay for a given card
 
@@ -342,3 +345,82 @@
      &   sdc_num_deadwires,  !number of dead wires.
      &   sdc_deadwire_plane, !list of plane numbers.
      &   sdc_deadwire_num    !list of wire numbers.
+
+*
+*     CTPTYPE=parm
+*
+      logical s1hit1,s1hit2,s1hit3,s1hit4,s1hit5,s1hit6
+      logical s1hit7,s1hit8,s1hit9,s1hit10,s1hit11,s1hit12
+      integer snumhit1,snumhit2,snumhit3,snumhit4,snumhit5,snumhit6
+      integer snumhit7,snumhit8,snumhit9,snumhit10,snumhit11,snumhit12
+      logical s1hitslt,s2hitslt,s1planesgt,s2planesgt
+      logical shitslt,splanesgt
+      logical sstublt
+      logical f1sspacepoints,f2sspacepoints,fsspacepoints
+      logical shitsplanes,shitsplanessps,shitsplanesspsstubs
+      logical sspacepoints
+      logical stest1,stest2
+      logical sfoundtrack, scleantrack
+      integer snumhits1,snumhits2,snumplanes1,snumplanes2
+      integer snumscins1,snumscins2,snumscins3,snumscins4
+      integer sstubtest
+      real*4 sstubminx,sstubminy,sstubminxp,sstubminyp
+      integer sscinhit(4,16)
+      integer snclust(4)
+      integer sthreescin(4)
+      integer sslope
+      integer sbestxpscin
+      integer sbestypscin
+      integer sgoodscinhits
+      integer sxloscin(smax_num_chambers),sxhiscin(smax_num_chambers)
+      integer syloscin(smax_num_chambers),syhiscin(smax_num_chambers)
+      integer strack_eff_test_num_scin_planes
+
+       common/dereks_sos_track_tests/
+     &    s1hit1,
+     &    s1hit2,
+     &    s1hit3,
+     &    s1hit4,
+     &    s1hit5,
+     &    s1hit6,
+     &    s1hit7,
+     &    s1hit8,
+     &    s1hit9,
+     &    s1hit10,
+     &    s1hit11,
+     &    s1hit12,
+     &	  snumhit1,snumhit2,snumhit3,snumhit4,snumhit5,snumhit6,
+     &    snumhit7,snumhit8,snumhit9,snumhit10,snumhit11,snumhit12,
+     &    s1hitslt,
+     &    s2hitslt,
+     &    s1planesgt,
+     &    s2planesgt,
+     &    shitslt,
+     &    splanesgt,
+     &    sstublt,
+     &    f1sspacepoints,
+     &    f2sspacepoints,
+     &    fsspacepoints,
+     &    shitsplanes,
+     &    shitsplanessps,
+     &    shitsplanesspsstubs,
+     &    sspacepoints,
+     &    stest1,stest2,
+     &    sfoundtrack,
+     &    scleantrack,
+     &    snumhits1,snumhits2,snumplanes1,snumplanes2,
+     &    snumscins1,snumscins2,snumscins3,snumscins4,
+     &    sstubtest,
+     &    sstubminx,
+     &    sstubminy,
+     &    sstubminxp,
+     &    sstubminyp,
+     &	  sscinhit,
+     &    snclust,
+     &    sthreescin,
+     &    sslope,
+     &    sbestxpscin,
+     &    sbestypscin,
+     &    sgoodscinhits,
+     &    sxloscin,sxhiscin,syloscin,syhiscin,
+     &    strack_eff_test_num_scin_planes
