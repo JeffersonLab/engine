@@ -5,6 +5,10 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.34  2003/02/21 14:54:04  jones
+* Added parameter genable_sos_fieldcorr used in ENGINE/s_fieldcorr.f
+* as flag for enabling correction to SOS central momentum
+*
 * Revision 1.33  2002/12/27 21:43:14  jones
 *    add variable geloss to common gen_beam
 *    add gtarg_type to common gen_target
@@ -401,11 +405,11 @@
 *     CTPTYPE=parm
 *
       integer*4 genable_hms_satcorr,genable_sos_satcorr
-      integer*4 genable_hms_fieldcorr
+      integer*4 genable_hms_fieldcorr,genable_sos_fieldcorr
 *
       common/gen_satcorr/
      &   genable_hms_satcorr,genable_sos_satcorr,
-     &   genable_hms_fieldcorr
+     &   genable_hms_fieldcorr,genable_sos_fieldcorr
 *
 *                                          
 *******************end: gen_data_structures.cmn*************************
