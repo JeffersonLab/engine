@@ -1,0 +1,115 @@
+AR = ar
+
+ifeq ($(OSTYPE),HPUX)
+EXTRA = -D_HPUX_SOURCE -Dhpux
+ifeq ($(OSEXT),TEST)
+  FFLAGS=+ppu -C +es -O -G +Obb1000 +FPVZOU
+else
+  ifeq ($(OSEXT),09)
+    FFLAGS=+ppu -C +es -O +Obb1000 +FPVZOU
+  else
+    FFLAGS=+ppu -C +es -O +Onolimit +FPVZOU
+    AR=/usr/bin/ar
+  endif
+endif
+
+ARFLAGS=frv
+GCC = gcc
+RPCGEN = rpcgen
+F77 = f77
+CP=cp -f
+RM        = rm -f 
+endif
+
+ifeq ($(OSTYPE),ULTRIX)
+EXTRA = 
+FFLAGS=-check_bounds -extend_source -g2 -I.
+GCC = gcc
+RPC_ROOT = /usr/site1/rpc/usr/lib
+RPCGEN = rpcgen
+F77 = f77
+##CODA=/usr/site2/coda/1.3b
+CP=cp -f
+RM        = rm -f 
+RANLIB = ranlib
+endif
+
+ifeq ($(OSTYPE),IRIX)
+EXTRA =
+FFLAGS=-check_bounds -extend_source -g2
+LDFLAGS=
+GCC = gcc
+RPCGEN = rpcgen
+F77 = f77
+CP=cp
+RM        = rm -f 
+endif
+
+#Alpha port known to work on a
+#	DEC Alphastation 200 4/166 with DEC Unix V4.0B (Rev 564)
+ifeq ($(OSTYPE),OSF1)
+EXTRA =
+FFLAGS=-extend_source
+LDFLAGS=
+GCC = gcc
+RPCGEN = rpcgen
+F77 = f77
+CP=cp -f
+RM        = rm
+endif
+
+ifeq ($(OSTYPE),Linux)
+GCC = cc
+CP=cp -f
+NOFORT77:=$(filter no,$(shell which fort77))
+ifneq ($(NOFORT77),no)
+F77=fort77
+FFLAGS=-Wf,-f -Nn1604
+else
+F77 = f77
+ifeq ($(F77COMPILER),Absoft)
+ifndef CERN_ROOT
+  CERN_ROOT = /usr/local/cernlib/96a_absoft
+endif
+FFLAGS=-f -W
+EXTRA=-DNOF77extname -DAbsoftUNIXFortran
+else
+ifndef CERN_ROOT
+  CERN_ROOT = /usr/local/cernlib/96a
+endif
+ifeq ($(F77COMPILER),fort77)
+F77 = fort77
+FFLAGS=-Wf,-f -Nn1604
+else
+ifeq ($(OSEXT),TEST)
+FFLAGS=-Nn1604 -O -f -g -pg
+else
+FFLAGS=-Nn1604 -O -f -g
+endif
+endif
+endif
+endif
+RM        = rm -f 
+endif
+
+ifeq ($(OSTYPE),SunOS)
+GCC = gcc
+CP=cp -f
+F77 = f77
+FFLAGS=-e -O
+RM        = rm -f 
+ifeq ($(OSVERSION),4)
+  RANLIB = ranlib
+endif
+endif
+
+ifeq ($(OSTYPE),AIX)
+GCC = gcc
+CP=cp -f
+F77 =f77
+FFLAGS=-qfixed=132 -qextname -O
+RM = rm -f
+endif
+
+ARCH = $(OSTYPE)
+MAKEREG=/group/hallc/saw/$(OSTYPE)$(OSEXT)/bin/makereg

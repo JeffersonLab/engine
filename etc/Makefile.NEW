@@ -1,0 +1,80 @@
+ifndef MYOS
+  MYOS := $(subst -,,$(shell uname))
+endif
+
+MAKEFILENAME = Makefile.Unix
+
+ifeq ($(MYOS),HPUX)
+  OSTYPE = $(MYOS)
+
+  ifneq (,$(findstring 09,$(shell uname -r)))
+    HPUXVERSION := 09
+  else
+    HPUXVERSION := 10
+  endif
+  SUBDIRNAME = O.hpux$(HPUXVERSION)
+  OSEXT = $(HPUXVERSION)
+endif
+
+ifeq ($(MYOS),HPUXTEST)
+  OSTYPE = HPUX
+  SUBDIRNAME = O.hpuxtest
+  OSEXT = TEST
+endif
+
+ifeq ($(MYOS),ULTRIX)
+  OSTYPE = $(MYOS)
+  SUBDIRNAME = O.ultrix
+  OSEXT =
+endif
+
+#Alpha port known to work on a
+#	DEC Alphastation 200 4/166 with DEC Unix V4.0B (Rev 564)
+ifeq ($(MYOS),OSF1)
+  OSTYPE = $(MYOS)
+  SUBDIRNAME = O.osf1
+  OSEXT =
+endif
+
+ifeq ($(MYOS),Linux)
+  OSTYPE = $(MYOS)
+  SUBDIRNAME = O.Linux
+  OSEXT =
+endif
+
+ifeq ($(MYOS),LinuxTEST)
+  OSTYPE = Linux
+  SUBDIRNAME = O.LinuxTEST
+  OSEXT = TEST
+endif
+
+ifeq ($(MYOS),SunOS)
+  ifeq ($(OSTYPE),SunOS4)
+    OSVERSION=4
+  else
+    OSVERSION=5
+  endif
+  OSTYPE = $(MYOS)
+  SUBDIRNAME = O.sunos
+  OSEXT =
+endif
+
+ifeq ($(MYOS),AIX)
+  OSTYPE = $(MYOS)
+  SUBDIRNAME = O.aix
+  OSEXT = 
+endif
+
+export MYOS
+export OSTYPE
+export OSEXT
+export OSVERSION
+
+all:  $(SUBDIRNAME) $(SUBDIRNAME)/Makefile
+	make -C $(SUBDIRNAME) csoft
+
+$(SUBDIRNAME)/Makefile:
+	(cd $(SUBDIRNAME) ; ln -f -s ../$(MAKEFILENAME) Makefile)
+
+$(SUBDIRNAME):
+	mkdir $(SUBDIRNAME)
