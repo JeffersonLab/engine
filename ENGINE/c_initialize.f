@@ -10,9 +10,12 @@
 *- 
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.1  1994/02/04 21:06:11  cdaq
-*-    Initial revision
+*-    Revision 1.2  1994/04/12 17:08:54  cdaq
+*-    (KBB) Add ntuple call
 *-
+* Revision 1.2  1994/04/12  17:08:54  cdaq
+* (KBB) Add ntuple call
+*
 * Revision 1.1  1994/02/04  21:06:11  cdaq
 * Initial revision
 *
@@ -33,10 +36,11 @@
 *
       INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_constants.par'
-       ABORT= .FALSE.    !can't think of anything in COIN to initialize
+       ABORT= .FALSE.
+      ABORT= .FALSE.
+       call c_ntuple_init(ABORT,err)
       CEBEAM=SQRT(CPBEAM**2 + mass_electron**2)
        IF(ABORT) THEN
-         err= ':failure!'
 *
        ELSE
 *

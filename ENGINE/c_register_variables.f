@@ -13,9 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.1  1994/02/11 18:32:18  cdaq
-*     Initial revision
+*     Revision 1.2  1994/04/12 17:13:37  cdaq
+*     (KBB) Add ntuple call
 *
+* Revision 1.1  1994/02/11  18:32:18  cdaq
+* Initial revision
 *
 *----------------------------------------------------------------------
       implicit none
@@ -28,6 +30,10 @@
       character*(*) err
 *
       ABORT = .false.
+*
+      if(.not.ABORT) call c_ntuple_register(ABORT,err)
+*
+      if(ABORT) call g_add_path(here,err)
 *
       return
       end
