@@ -13,6 +13,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.14  1996/09/04 14:23:38  saw
+* (??) Cosmetic
+*
 * Revision 1.13  1996/01/16 21:37:13  cdaq
 * (JRA) Change sign on hstart_time
 *
@@ -127,7 +130,7 @@
      &                     - hdc_center(pln)
                     else
                       hdc_wire_center(goodhit) = hdc_pitch(pln)
-     &                     * ((hdc_nrwire(pln)+float(1-wire))
+     &                     * ((hdc_nrwire(pln)+(1-wire))
      &                     - hdc_central_wire(pln)) - hdc_center(pln)
                     endif
 

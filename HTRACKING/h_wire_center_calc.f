@@ -8,6 +8,9 @@
 *     modified   dfg  18 feb 1994
 *                         add option to reverse plane wire numbering
 * $Log$
+* Revision 1.5  1996/09/04 14:24:38  saw
+* (??) Cosmetic
+*
 * Revision 1.4  1995/05/22 19:39:33  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -42,7 +45,7 @@
      &                     * hdc_pitch(plane) - hdc_center(plane)
       else        
            h_wire_center_calc = 
-     &         ((hdc_nrwire(plane) + FLOAT(1 - wire))- hdc_central_wire(plane))
+     &         ((hdc_nrwire(plane) + (1 - wire))- hdc_central_wire(plane))
      &                     * hdc_pitch(plane) - hdc_center(plane)
       endif
       return
