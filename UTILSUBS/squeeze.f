@@ -1,15 +1,18 @@
        SUBROUTINE squeeze(line,nonblank)
 *
 * $Log$
+* Revision 1.2  1996/05/24 16:03:33  saw
+* (SAW) Relocate data statements for f2c compatibility
+*
 * Revision 1.1  1994/02/22 20:02:45  cdaq
 * Initial revision
 *
 *
        character*(*) line
        integer nonblank
+       integer string_length	!FUNCTION
        character*1 tab
        data tab/'	'/
-       integer string_length	!FUNCTION
 c
 c      removes all blanks and tabs from a string
 c       and return nonblank length

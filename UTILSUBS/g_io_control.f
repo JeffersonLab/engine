@@ -13,6 +13,9 @@
 *-   Modified 11-Apr-1994   KBB; added FREE, removed CLOSE, 
 *-                               more efficient parsing
 * $Log$
+* Revision 1.2  1996/05/24 16:04:33  saw
+* (SAW) Relocate data statements for f2c compatibility
+*
 * Revision 1.1  1994/04/12 16:06:00  cdaq
 * Initial revision
 *
@@ -42,13 +45,13 @@
       parameter (gMAX_IO_channels_allowed= 100)
       logical IDLE
       parameter (IDLE= .FALSE.)
-      logical LUN_channel(gMAX_IO_channels_allowed)
-      data LUN_channel/gMAX_IO_channels_allowed*IDLE/
       logical request,OK
       character*20 cmd
       character*80 pat
       real rv
       integer m
+      logical LUN_channel(gMAX_IO_channels_allowed)
+      data LUN_channel/gMAX_IO_channels_allowed*IDLE/
 *
 *--------------------------------------------------------
       err= ' '

@@ -1,15 +1,18 @@
        SUBROUTINE NO_leading_blanks(string)
 *
 * $Log$
+* Revision 1.2  1996/05/24 16:02:54  saw
+* (SAW) Relocate data statements for f2c compatibility
+*
 * Revision 1.1  1994/02/22 20:01:36  cdaq
 * Initial revision
 *
 *
        character*(*) string
        integer skip
+       integer string_length	!FUNCTION
        character*1 tab
        data tab/'	'/ 
-       integer string_length	!FUNCTION
 c
 c      strips out leading blanks and tabs
 c

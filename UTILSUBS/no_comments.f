@@ -1,6 +1,9 @@
       SUBROUTINE NO_Comments(string) 
 *
 * $Log$
+* Revision 1.3  1996/05/24 16:01:47  saw
+* (SAW) Relocate data statements for f2c compatibility
+*
 * Revision 1.2  1994/06/06 04:39:27  cdaq
 * (KBB) Speedup
 *
@@ -9,9 +12,9 @@
 *
 *
       character*(*) string
+      integer string_length	!FUNCTION
       character*23 flag
       data flag/'!@#$%^&*<>[]{}*;?:"()~/'/ 
-      integer string_length	!FUNCTION
 c
 c     strips out comments [including "quotes"]
 c
