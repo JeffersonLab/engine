@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.18  2003/02/21 20:53:34  saw
+# Force rebuilding of files derived from daVarRpc.x more often.
+#
 # Revision 1.17  1999/11/04 20:34:03  saw
 # Alpha compatibility.
 # New RPC call needed for root event display.
@@ -198,15 +201,19 @@ daVarRpc_svc.d: ../daVarRpc.h
 	echo remaking $@
 	$(RPCDEPENDS_RULE)
 
-../daVarRpc_xdr.c: ../daVarRpc.x ../daVar.h
+daVarRpc.d: ../daVarRpc.h
+	echo remaking $@
+	touch $@
+
+../daVarRpc_xdr.c: ../daVarRpc.x ../daVar.h daVarRpc_xdr.d
 	rm -f $@
 	(cd .. ; $(RPCCOM) -o $(@F) -c daVarRpc.x)
 
-../daVarRpc_svc.c: ../daVarRpc.x ../daVar.h
+../daVarRpc_svc.c: ../daVarRpc.x ../daVar.h daVarRpc_svc.d
 	rm -f $@
 	(cd .. ; $(RPCCOM) -o $(@F) -m daVarRpc.x)
 
-../daVarRpc_clnt.c: ../daVarRpc.x ../daVar.h
+../daVarRpc_clnt.c: ../daVarRpc.x ../daVar.h daVarRpc_clnt.d
 	rm -f $@
 	(cd .. ; $(RPCCOM) -o $(@F) -l daVarRpc.x)
 
