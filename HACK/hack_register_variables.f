@@ -3,7 +3,10 @@
 *--  file hack_register_variables.f
 *--  Initialization for User Develpment Code
 * $Log$
-* Revision 1.1  1994/07/25 18:03:44  cdaq
+* Revision 1.2  1995/07/28 14:22:29  cdaq
+* (SAW) Change type to print for f2c compatibility
+*
+* Revision 1.1  1994/07/25  18:03:44  cdaq
 * Initial revision
 *
 *
@@ -29,7 +32,7 @@
 * ----------------------------------------------------------------------
 *-- second register the variables declared above.
 *
-      type *,'HACKING_INIT: Registering Event variables and Parameters'
+      print *,'HACKING_INIT: Registering Event variables and Parameters'
 *
       call regparmint('hack_enable',hack_enable,0)     !turn on/off User D.code
       call regeventintarray
