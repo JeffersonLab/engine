@@ -13,6 +13,9 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to h_raw_dump_all
 * $Log$
+* Revision 1.7  1996/01/16 21:58:51  cdaq
+* (JRA) Onlys  histogram ADC's that are not 200 above pedestal
+*
 * Revision 1.6  1995/08/30 18:12:12  cdaq
 * (JRA) Add a hist of all adc's into one spectrum
 *
@@ -56,10 +59,8 @@
 *
 *
       errmsg=' '
-      abort=hcal_tot_hits.lt.0.or.hcal_tot_hits.gt.hmax_cal_blocks
-      if(abort) then
-         write(errmsg,*) ':hcal_tot_hits = ',hcal_tot_hits
-         call g_prepend(here,errmsg)
+      if(hcal_tot_hits.lt.0.or.hcal_tot_hits.gt.hmax_cal_blocks) then
+         write(6,*) here,':hcal_tot_hits = ',hcal_tot_hits
          return
       endif
 *
@@ -106,7 +107,8 @@ c         endif
          nb =row+hmax_cal_rows*(col-1)
 
          hcal_realadc(nb) = float(adc)-hcal_ped_mean(nb)
-         call hf1(hidcalsumadc,hcal_realadc(nb),1.)
+         if (hcal_realadc(nb).le.200)
+     $        call hf1(hidcalsumadc,hcal_realadc(nb),1.)
          if(hcal_realadc(nb).gt.hcal_threshold(nb)) then
             hcal_num_hits           =hcal_num_hits+1
             hcal_rows(hcal_num_hits)=row
