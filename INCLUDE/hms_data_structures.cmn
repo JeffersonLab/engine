@@ -5,6 +5,9 @@
 *     Author:   D. F. Geesaman          1 September 1993
 *
 * $Log$
+* Revision 1.10.2.2  2003/07/15 19:04:03  cdaq
+* add hsinplane
+*
 * Revision 1.10.2.1  2003/04/10 12:36:56  cdaq
 * comments added
 *
@@ -554,6 +557,7 @@
       REAL*4 HSDELTA             ! Spectrometer delta of chosen track
       REAL*4 HSTHETA             ! Lab Scattering angle in radians
       REAL*4 HSPHI               ! Lab Azymuthal angle in radians
+      REAL*4 HSINPLANE           ! In plane angle
       REAL*4 HSMINV              ! Invariant Mass of remaing hadronic system
       REAL*4 HSZBEAM             ! Lab Z coordinate of intersection of beam
                                  ! track with spectrometer ray
@@ -602,6 +606,7 @@
      & HSDELTA,
      & HSTHETA,
      & HSPHI,
+     & HSINPLANE,
      & HSMINV,
      & HSZBEAM,
      & HSDEDX,
