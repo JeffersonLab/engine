@@ -10,7 +10,10 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
-* Revision 1.2  1994/06/17 02:32:24  cdaq
+* Revision 1.3  1995/05/11 13:55:27  cdaq
+* (SAW) Allow %d for run number in filenames
+*
+* Revision 1.2  1994/06/17  02:32:24  cdaq
 * (KBB) Upgrade
 *
 * Revision 1.1  1994/04/12  16:11:34  cdaq
@@ -30,6 +33,7 @@
       INCLUDE 'c_ntuple.cmn'
       INCLUDE 'c_ntuple.dte'
       INCLUDE 'gen_routines.dec'
+      include 'gen_run_info.cmn'
 *
       character*80 default_name
       parameter (default_name= 'COINntuple')
@@ -89,7 +93,10 @@
 *
       id= c_Ntuple_ID
       name= c_Ntuple_name
+
       file= c_Ntuple_file
+      call g_sub_run_number(file,gen_run_number)
+
       recL= default_recL
       io= c_Ntuple_IOchannel
 *
