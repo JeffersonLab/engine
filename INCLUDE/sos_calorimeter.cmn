@@ -1,9 +1,21 @@
 *
 *      SOS calorimeter. Parameters from sos_positions.parm
 * $Log$
-* Revision 1.1  1994/04/13 19:00:49  cdaq
+* Revision 1.2  1994/08/05 21:03:44  cdaq
+* (SAW) Add makereg directive with required include files
+*       Add "CTPTYPE=event,parm" directive for auto generation of CTP reg calls
+*
+* Revision 1.1  1994/04/13  19:00:49  cdaq
 * Initial revision
 *
+*     The following include statments must precede the inclusion of this
+*     file in each routine that uses it.  The *%% syntax is also a
+*     directive to makereg to tell it to include the code in the program
+*     that it generates.
+*
+*%%   include 'gen_data_structures.cmn'
+*
+*     CTPTYPE=parm
 *
       integer*4 smax_cal_rows         !Number of calorimeter rows
       parameter (smax_cal_rows=12)
@@ -60,6 +72,8 @@
      &       scal_4ta_top(smax_cal_rows)
 *
 *      SOS calorimeter. Geometrical constants filled by s_init_cal
+*
+*     CTPTYPE=event
 *
       real*4 scal_block_xsize   !
       real*4 scal_block_ysize   !Block dimensions - 10*70*10 cm^3
@@ -141,6 +155,8 @@
      &       strack_yc(sntracks_max),
      &       scluster_track(sntracks_max),
      &       sntracks_cal
+*
+*     CTPTYPE=parm
 *
 *      SOS calorimeter. ADC pedestals and thresholds
 *
