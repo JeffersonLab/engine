@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.3  1994/08/30 14:45:44  cdaq
-*-    (SAW) Add call to report generator
+*-    Revision 1.4  1994/10/11 18:39:02  cdaq
+*-    (SAW) Protect agains blank blocknames
 *-
+* Revision 1.3  1994/08/30  14:45:44  cdaq
+* (SAW) Add call to report generator
+*
 * Revision 1.2  1994/04/12  17:12:20  cdaq
 * (KBB) Add ntuple call
 *
@@ -47,10 +50,12 @@
 *
       call c_ntuple_shutdown(ABORT,err)
 *
-      ierr = threpa(c_report_blockname, g_report_output_filename)
-      if(ierr.ne.0) then
-        call g_append(err,'& threpa failed to append report')
-        report_abort = .true.
+      if(c_report_blockname .ne. ' ') then
+        ierr = threpa(c_report_blockname, g_report_output_filename)
+        if(ierr.ne.0) then
+          call g_append(err,'& threpa failed to append report')
+          report_abort = .true.
+        endif
       endif
 *
       IF(ABORT.or.report_abort) THEN
@@ -61,4 +66,3 @@
 *     
       RETURN
       END
-

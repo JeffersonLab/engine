@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.3  1994/06/17 03:02:01  cdaq
-*-    (KBB) Fix typo
+*-    Revision 1.4  1994/10/11 18:40:49  cdaq
+*-    (SAW) Protect agains blank blocknames
 *-
+* Revision 1.3  1994/06/17  03:02:01  cdaq
+* (KBB) Fix typo
+*
 * Revision 1.2  1994/04/12  17:28:15  cdaq
 * (KBB) Add ntuple call
 *
@@ -26,11 +29,17 @@
       IMPLICIT NONE
       SAVE
 *     
+      include 'gen_routines.dec'
+      include 'gen_filenames.cmn'
+      include 'sos_filenames.cmn'
+*
       character*50 here
       parameter (here= 'S_proper_shutdown')
 *     
-      logical ABORT
+      logical ABORT, report_abort
       character*(*) err
+*
+      integer ierr
 *     
 *--------------------------------------------------------
 *-    chance to flush any statistics, etc.
@@ -41,7 +50,15 @@
 *     
       call s_ntuple_shutdown(ABORT,err)
 *
-      IF(ABORT) THEN
+      if(s_report_blockname .ne. ' ') then
+        ierr = threpa(s_report_blockname, g_report_output_filename)
+        if(ierr.ne.0) then
+          call g_append(err,'& threpa failed to append report')
+          report_abort = .true.
+        endif
+      endif
+*
+      IF(ABORT.or.report_abort) THEN
          call G_add_path(here,err)
       ELSE
          err= ' '
