@@ -10,6 +10,24 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.21.4.1  2004/10/01 18:16:01  jones
+* fpi2 branch update. Add separate report file for gscaler_saved produced with syncfilter.
+*
+* Revision 1.23  2004/05/11 18:24:12  jones
+* Initialize skip_events to false
+*
+* Revision 1.22  2003/09/05 15:48:36  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.21.2.3  2003/08/14 00:42:22  cdaq
+* Modify to be able to write scaler rates for each read to a file (mkj)
+*
+* Revision 1.21.2.2  2003/04/10 00:41:27  cdaq
+* Added gen_data_structures and included status messages when kinematics overridden
+*
+* Revision 1.21.2.1  2003/04/09 23:56:27  cdaq
+* Check for gpbeam=0
+*
 * Revision 1.21  1996/11/05 21:41:36  saw
 * (SAW) Use CTP routines as functions rather than subroutines for
 * porting.
@@ -104,6 +122,7 @@
       include 'gen_scalers.cmn'
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
+      include 'gen_data_structures.cmn'
 *
       integer ierr
       logical HMS_ABORT,SOS_ABORT, HACK_ABORT
@@ -123,7 +142,7 @@
 *
 * set the runtime variable to avoid divide by zero during report
 *
-      g_run_time = 0.0001
+*      g_run_time = 0.0001
 *
 *     Book the histograms, tests and parameters
 *
@@ -176,10 +195,27 @@
 * that was the last call to engine_command_line, the last time to input
 * ctp variables.  Set some here to avoid divide by zero errors if they
 * were not read in.
-      if (hpcentral.le.0.001)  hpcentral = 1.
-      if (spcentral.le.0.001)  spcentral = 1.
-      if (htheta_lab.le.0.001) htheta_lab = 90.
-      if (stheta_lab.le.0.001) stheta_lab = 90.
+      if (hpcentral.le.0.001) then
+         hpcentral = 1.
+         write(6,*) 'hpcentral value not given: setting to 1 GeV'
+      endif
+      if (spcentral.le.0.001) then
+         spcentral = 1.
+         write(6,*) 'spcentral value not given: setting to 1 GeV'
+      endif
+      if (htheta_lab.le.0.001) then
+         htheta_lab = 90.
+         write(6,*) 'htheta_lab value not given: setting to 90 degrees'
+      endif
+      if (stheta_lab.le.0.001) then
+         stheta_lab = 90.
+         write(6,*) 'stheta_lab value not given: setting to 90 degrees'
+      endif
+      if (gpbeam.le.0.001) then
+         gpbeam = 2.
+         write(6,*) 'gpbeam value not given: setting to 2 GeV'
+      endif
+
 
       if((first_time.or.g_hist_rebook).and.g_ctp_hist_filename.ne.' ') then
         file = g_ctp_hist_filename
@@ -202,6 +238,7 @@
 *     
 *     Load the report definitions
 *
+
       if((first_time.or.g_report_rebook)
      $     .and.g_report_template_filename.ne.' ') then
         file = g_report_template_filename
@@ -209,6 +246,15 @@
         ierr = thload(file)
       endif
 *
+*** TH: Add report file for sync here
+*
+      if((first_time.or.g_report_rebook)
+     $     .and.g_report_template_sync_filename.ne.' ') then
+        file = g_report_template_sync_filename
+        call g_sub_run_number(file,gen_run_number)
+        ierr = thload(file)
+      endif
+
       if((first_time.or.g_report_rebook)
      $     .and.g_stats_template_filename.ne.' ') then
         file = g_stats_template_filename
@@ -269,6 +315,22 @@
         write(G_LUN_CHARGE_SCALER,*) '!Charge scalers - Run #',gen_run_number
         write(G_LUN_CHARGE_SCALER,*) '!event   Unser(Hz)     BCM1(Hz)     BCM2(Hz)',
      &               '     BCM3(Hz)     Time(s)'
+      endif
+
+c
+      skip_events = .false.
+* Open output file to writeout scalers.
+      if (g_writeout_scaler_filename.ne.' ') then
+        if ( NUM_WRITEOUT_SCALERS .le. MAX_WRITEOUT_SCALERS) then
+         file=g_writeout_scaler_filename
+         call g_sub_run_number(file,gen_run_number)
+         open(unit=G_LUN_WRITEOUT_SCALER,file=file,status='unknown')
+        else
+           write(*,*) ' Asking to write out ',NUM_WRITEOUT_SCALERS,' scalers'
+           write(*,*) ' Maximum is  ' ,MAX_WRITEOUT_SCALERS
+           WRITE(*,*) ' Modify  MAX_WRITEOUT_SCALERS in INCLUDE/gen_scalers and recompile code'
+           g_writeout_scaler_filename = ' '
+        endif
       endif
 
 * Open output file for epics events.

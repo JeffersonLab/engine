@@ -23,6 +23,15 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
+* Revision 1.17.4.1  2004/10/01 18:16:01  jones
+* fpi2 branch update. Add separate report file for gscaler_saved produced with syncfilter.
+*
+* Revision 1.18  2003/09/05 15:44:44  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.17.2.1  2003/08/14 00:42:22  cdaq
+* Modify to be able to write scaler rates for each read to a file (mkj)
+*
 * Revision 1.17  1996/11/05 21:40:59  saw
 * (JRA) Add g_epics_output_filename
 *
@@ -112,6 +121,7 @@
       g_ctp_database_filename = ' '
       g_ctp_kinematics_filename = ' '
       g_charge_scaler_filename = ' '
+      g_writeout_scaler_filename = ' '
 *
       s_recon_coeff_filename = ' '
       h_recon_coeff_filename = ' '
@@ -119,12 +129,14 @@
       h_report_template_filename = ' '
       s_report_template_filename = ' '
       g_report_template_filename = ' '
+      g_report_template_sync_filename = ' '
       c_report_template_filename = ' '
       g_stats_template_filename = ' '
 *
       h_report_output_filename = ' '
       s_report_output_filename = ' '
       g_report_output_filename = ' '
+      g_report_output_sync_filename = ' '
       c_report_output_filename = ' '
       g_stats_output_filename = ' '
       g_bad_output_filename = ' '

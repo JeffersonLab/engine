@@ -10,6 +10,15 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 * $Log$
+* Revision 1.12.4.1  2004/10/01 18:16:01  jones
+* fpi2 branch update. Add separate report file for gscaler_saved produced with syncfilter.
+*
+* Revision 1.14  2004/07/08 20:09:47  saw
+* Flush CTP Root trees
+*
+* Revision 1.13  2004/02/17 17:27:10  jones
+* Only dump histograms when g_histout_filename is set.
+*
 * Revision 1.12  1999/02/23 18:24:23  csa
 * (JRA) Remove debugcalcpeds stuff, cleanup
 *
@@ -80,6 +89,8 @@
       bad_report = .TRUE.
       err_report = 'Failed to open report file'
 
+      ierr=thtreewriteg('all') ! Flush
+
       if (g_bad_output_filename.ne.' ') then
         file = g_bad_output_filename
         call g_sub_run_number(file, gen_run_number)
@@ -99,8 +110,10 @@
       close(unit=SPAREID)
 
       call hack_shutdown(bad_hack,err_hack)
-
+      
+      if (g_histout_filename .ne. ' ') then 
       call g_dump_histograms(bad_HBK,err_HBK)
+      endif
 
       bad_report = .false.
       err_report = ' '
@@ -117,6 +130,22 @@
           err_report = 'threp failed to create report in file '//file
         endif
       endif
+
+**** TH - Add sync report file here
+*
+      if(g_report_blockname.ne.' '.and.
+     $     g_report_output_sync_filename.ne.' ') then
+
+        file = g_report_output_sync_filename
+        call g_sub_run_number(file, gen_run_number)
+
+        ierr = threp(g_report_blockname,file)
+        if(ierr.ne.0) then
+          bad_report = .true.
+          err_report = 'threp failed to create report in file '//file
+        endif
+      endif
+**
 
       ABORT= bad_HMS .or. bad_SOS .or. bad_COIN .or. bad_HBK
      $     .or. bad_report
