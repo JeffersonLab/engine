@@ -7,6 +7,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.7  1996/09/04 15:31:12  saw
+* (JRA) Add phi_offset to calculation of q 3 vector
+*
 * Revision 1.6  1996/04/29 19:13:00  saw
 * (JRA) Corrections
 *
@@ -70,9 +73,9 @@
         cqy = -hsp*sin(hsxp_tar)
         cqz = gpbeam - hsp*cos(hsxp_tar)*cos(hstheta)
         cqabs= sqrt(cqx**2+cqy**2+cqz**2)
-        cmissing_momx = cqx + ssp*cos(ssxp_tar)*sin(sstheta)
-        cmissing_momy = cqy - ssp*sin(ssxp_tar)
-        cmissing_momz = cqz - ssp*cos(ssxp_tar)*cos(sstheta)
+        cmissing_momx = cqx + ssp*cos(ssxp_tar+sphi_offset)*sin(sstheta)
+        cmissing_momy = cqy - ssp*sin(ssxp_tar+sphi_offset)
+        cmissing_momz = cqz - ssp*cos(ssxp_tar+sphi_offset)*cos(sstheta)
         cmissing_mom    = sqrt(cmissing_momx**2 + cmissing_momy**2 
      >                         + cmissing_momz**2)
         cmissing_mom_par = (cmissing_momx*cqx+cmissing_momz*cqz)/cqabs
@@ -93,9 +96,9 @@
      >     (gebeam+mass_nucleon)/(1-(gebeam*cos(sstheta)/
      >     (gebeam+mass_nucleon))**2) 
       else                              ! SOS is the electron
-        cqx = -ssp*cos(ssxp_tar)*sin(sstheta)
-        cqy = -ssp*sin(ssxp_tar)
-        cqz = gpbeam - ssp*cos(ssxp_tar)*cos(sstheta)
+        cqx = -ssp*cos(ssxp_tar+sphi_offset)*sin(sstheta)
+        cqy = -ssp*sin(ssxp_tar+sphi_offset)
+        cqz = gpbeam - ssp*cos(ssxp_tar+sphi_offset)*cos(sstheta)
         cqabs= sqrt(cqx**2+cqy**2+cqz**2)
         cmissing_momx = cqx + hsp*cos(hsxp_tar)*sin(hstheta)
         cmissing_momy = cqy - hsp*sin(hsxp_tar)
