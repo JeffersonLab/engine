@@ -11,6 +11,9 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
+* Revision 1.9  1996/01/17 16:01:00  cdaq
+* (JRA) Add hidscintimes histogram
+*
 * Revision 1.8  1995/09/01 13:02:31  cdaq
 * (JRA) Add dpos histid's
 *
@@ -59,6 +62,7 @@
       integer*4 hidcalplane
       integer*4 hidcalhits(HMAX_CAL_COLUMNS)
       integer*4 hidscinalltimes
+      integer*4 hidscintimes
       integer*4 hidsumposadc(HNUM_SCIN_PLANES)
       integer*4 hidsumnegadc(HNUM_SCIN_PLANES)
       integer*4 hidsumpostdc(HNUM_SCIN_PLANES)
@@ -83,6 +87,7 @@
      &     hidcalplane,
      &     hidcalhits,
      &     hidscinalltimes,
+     &     hidscintimes,
      &     hidsumposadc,
      &     hidsumnegadc,
      &     hidsumpostdc,
