@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.10  1995/01/27 20:49:23  cdaq
+# Revision 1.11  1995/02/02 16:37:23  cdaq
+# (SAW) Add -f flag on copy of include files
+#
+# Revision 1.10  1995/01/27  20:49:23  cdaq
 # (SAW) Remove RCS from include file rules
 #
 # Revision 1.9  1994/11/23  15:36:37  cdaq
@@ -42,7 +45,6 @@ osources = h_cal.f h_cer.f h_chamnum.f h_dpsifun.f \
 	h_tof.f h_track.f h_track_fit.f \
 	h_trans_cal.f h_trans_dc.f h_trans_scin.f h_wire_center_calc.f \
 	h_print_decoded_dc.f h_print_raw_dc.f
-# h_register_id_param.f
 newstuff = h_clusters_cal.f h_correct_cal.f \
 	h_fill_dc_dec_hist.f h_fill_dc_fp_hist.f h_init_cal.f \
 	h_init_scin.f h_prt_cal_clusters.f h_prt_cal_decoded.f \
@@ -52,7 +54,8 @@ newstuff = h_clusters_cal.f h_correct_cal.f \
 	h_tof_init.f h_tracks_cal.f h_fill_scin_raw_hist.f
 newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f h_register_bypass.f \
 	h_register_statistics.f h_init_physics.f h_physics_stat.f \
-	h_strip_scin.f h_choose_single_hit.f h_solve_3by3.f
+	h_strip_scin.f h_choose_single_hit.f h_solve_3by3.f \
+	h_dump_tof.f h_select_best_track.f
 makeregstuff =	r_hms_filenames.f r_hms_scin_parms.f r_hms_scin_tof.f \
 	r_hms_calorimeter.f r_hms_id_histid.f r_hms_tracking.f \
 	r_hms_geometry.f r_hms_track_histid.f r_hms_recon_elements.f \
@@ -94,16 +97,16 @@ r_%.f : %.cmn $(MAKEREG)
 # Get include files from INCLUDE directory
 #
 %.cmn :: ../INCLUDE/%.cmn
-	cp $< $@
+	cp -f $< $@
 
 %.dec :: ../INCLUDE/%.dec
-	cp $< $@
+	cp -f $< $@
 
 %.par :: ../INCLUDE/%.par
-	cp $< $@
+	cp -f $< $@
 
 %.dte :: ../INCLUDE/%.dte
-	cp $< $@
+	cp -f $< $@
 
 include $(sources:.f=.d)
 
