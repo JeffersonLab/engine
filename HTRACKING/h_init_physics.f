@@ -9,6 +9,9 @@
 *- 
 *-   Created 6-6-94          D. F. Geesaman
 * $Log$
+* Revision 1.5  1996/08/30 19:56:13  saw
+* (JRA) avoid setting p=0??
+*
 * Revision 1.4  1996/01/24 15:57:36  saw
 * (JRA) Change variables to lower case
 *
@@ -46,6 +49,10 @@
 *     Fix HMS to be in plane, beam right
 *
       hphi_lab = 3*tt/2
+*
+      if (hmomentum_factor .gt. 0.1) then   !avoid setting p=0
+        hpcentral = hpcentral * hmomentum_factor
+      endif
 *
       coshthetas = cos(htheta_lab)
       sinhthetas = sin(htheta_lab)
