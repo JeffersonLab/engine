@@ -10,12 +10,24 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
-* Revision 1.2  1994/05/13 04:00:50  cdaq
+* Revision 1.3  1994/08/05 20:38:26  cdaq
+* (SAW) Add makereg directive with required include files
+*       Add "CTPTYPE=event" directive for auto generation of CTP reg calls
+*
+* Revision 1.2  1994/05/13  04:00:50  cdaq
 * (DFG) Add s_fill_dc_target_hist id's
 *
 * Revision 1.1  1994/04/12  21:13:42  cdaq
 * Initial revision
 *
+*     The following include statments must precede the inclusion of this
+*     file in each routine that uses it.  The *%% syntax is also a
+*     directive to makereg to tell it to include the code in the program
+*     that it generates.
+*
+*%%   include 'gen_data_structures.cmn'
+*
+*     CTPTYPE=parm
 *
       integer*4 siddcwiremap(smax_num_dc_planes)
       integer*4 siddcdrifttime(smax_num_dc_planes)
@@ -46,9 +58,9 @@
      &     sidsdelta_tar,
      &     sidsp_tar
 
-
-
-
+*
+*     CTPTYPE=parm
+*
       integer*4 sturnon_decoded_dc_hist
       integer*4 sturnon_focal_plane_hist
       integer*4 sturnon_target_hist
