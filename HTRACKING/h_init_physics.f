@@ -9,6 +9,9 @@
 *- 
 *-   Created 6-6-94          D. F. Geesaman
 * $Log$
+* Revision 1.4  1996/01/24 15:57:36  saw
+* (JRA) Change variables to lower case
+*
 * Revision 1.3  1995/05/22 19:39:13  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -42,14 +45,15 @@
 *
 *     Fix HMS to be in plane, beam right
 *
-      HPHI_LAB = 3*TT/2
+      hphi_lab = 3*tt/2
 *
-      COSHTHETAS = COS(HTHETA_LAB)
-      SINHTHETAS = SIN(HTHETA_LAB)
+      coshthetas = cos(htheta_lab)
+      sinhthetas = sin(htheta_lab)
 *     Constants for elastic kinematics calcultion
-      HPHYSICSA = 2.*CEBEAM*TMASS_TARGET - mass_electron**2 - HPARTMASS**2
-      HPHYSICSB = 2. * ( TMASS_TARGET - CEBEAM)
-      HPHYSICAB2 = HPHYSICSA**2 * HPHYSICSB**2
-      HPHYSICSM3B = HPARTMASS**2 * HPHYSICSB**2
-      RETURN
-      END
+      hphysicsa = 2.*gebeam*gtarg_mass(gtarg_num) -
+     $     mass_electron**2 - hpartmass**2
+      hphysicsb = 2. * (gtarg_mass(gtarg_num) - gebeam)
+      hphysicab2 = hphysicsa**2 * hphysicsb**2
+      hphysicsm3b = hpartmass**2 * hphysicsb**2
+      return
+      end
