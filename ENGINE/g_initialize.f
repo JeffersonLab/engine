@@ -9,10 +9,15 @@
 *- 
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
-*-    $Log$
-*-    Revision 1.15  1995/09/01 14:29:41  cdaq
-*-    (JRA) Zero run time variable, read kinematics database after last book
-*-
+* $Log$
+* Revision 1.16  1995/10/09 18:42:57  cdaq
+* (SAW) Move loading of ctp_kinematics database to before CTP loading.  Take
+* ntuple inialization out of spec specific init routines into a all ntuple
+* init routine.
+*
+* Revision 1.15  1995/09/01 14:29:41  cdaq
+* (JRA) Zero run time variable, read kinematics database after last book
+*
 * Revision 1.14  1995/07/27  19:36:41  cdaq
 * (SAW) Relocate data statements for f2c compatibility, check error returns
 *       on thload calls and quit if important files are missing.
@@ -118,7 +123,22 @@
           ABORT = .true.
           err = file
         endif
-      endif
+        call thbook                     ! Assert parm values
+      endif                             ! so that ctp_database can override
+*
+*
+*     Now if there is a g_ctp_kinematics_filename set, pass the run number
+*     to it to set CTP variables.  Parameters placed in this file will NOT
+*     override values defined in the CTP input files.
+*
+      if(.not.ABORT.and.g_ctp_kinematics_filename.ne.' ') then
+        call g_ctp_database(ABORT, err
+     $       ,gen_run_number, g_ctp_kinematics_filename)
+        IF(ABORT) THEN
+          call G_add_path(here,err)
+        endif
+      ENDIF
+*
       if((first_time.or.g_test_rebook).and.g_ctp_test_filename.ne.' ') then
         file = g_ctp_test_filename
         call g_sub_run_number(file,gen_run_number)
@@ -202,18 +222,6 @@
       call thtstclr                     ! Clear test flags
       call thtstcls                     ! Clear test scalers
 *
-*     Now if there is a g_ctp_kinematics_filename set, pass the run number
-*     to it to set CTP variables.  Parameters placed in this file will
-*     override values defined in the CTP input files.
-*
-      if(.not.ABORT.and.g_ctp_kinematics_filename.ne.' ') then
-        call g_ctp_database(ABORT, err
-     $       ,gen_run_number, g_ctp_kinematics_filename)
-        IF(ABORT) THEN
-          call G_add_path(here,err)
-        endif
-      ENDIF
-*
 *-HMS initialize
       call H_initialize(HMS_ABORT,HMS_err)
 *
@@ -237,6 +245,8 @@
          call C_initialize(ABORT,err)
 *
       ENDIF
+*
+      call g_ntuple_init(HACK_ABORT,HACK_err) ! Ingore error return for now
 *
       call hack_initialize(HACK_ABORT,HACK_err) ! Ignore error return for now
 *
