@@ -2,9 +2,13 @@
 *
 *-Common block with filenames
 * $Log$
-* Revision 1.1  1994/06/15 18:12:47  cdaq
+* Revision 1.2  1994/08/15 04:13:08  cdaq
+* (SAW) Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
+*
+* Revision 1.1  1994/06/15  18:12:47  cdaq
 * Initial revision
 *
+*     CTPTYPE=parm
 *
       character*80 s_recon_coeff_filename
       character*80 s_report_template_filename    ! CTP file with sos report
