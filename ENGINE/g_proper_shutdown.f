@@ -9,10 +9,13 @@
 *-         : err	- reason for failure, if any
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
-*-    $Log$
-*-    Revision 1.9  1995/09/01 15:46:41  cdaq
-*-    (JRA) Open temp file for pedestal outputs
-*-
+* $Log$
+* Revision 1.10  1995/10/09 18:44:27  cdaq
+* (JRA) Only write pedestal file if appropriate control flag(s) set.
+*
+* Revision 1.9  1995/09/01 15:46:41  cdaq
+* (JRA) Open temp file for pedestal outputs
+*
 * Revision 1.8  1995/07/27  19:03:36  cdaq
 * (SAW) Error return fix up
 *
@@ -60,6 +63,10 @@
       include 'gen_filenames.cmn'
       include 'gen_routines.dec'
       include 'gen_run_info.cmn'
+      include 'hms_data_structures.cmn'
+      include 'hms_tracking.cmn'
+      include 'sos_data_structures.cmn'
+      include 'sos_tracking.cmn'
 *
       integer ierr
       character*132 file
@@ -72,7 +79,11 @@
       open(unit=SPAREID,file=file,status='unknown')
 
 c temporary files for pedestal calculation.
-      open(unit=39,file='peds.all',status='unknown')
+      if (hdebugcalcpeds.ne.0 .or. sdebugcalcpeds.ne.0) then
+        open(unit=39,file='peds.calc',status='unknown')
+        write(39,*) 'pedestals as extracted from analysis',
+     &       'of the physics events'
+      endif
 
 *-chance to flush any statistics, etc.
       call H_proper_shutdown(SPAREID,bad_HMS,err_HMS)
