@@ -16,6 +16,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.3  2004/07/07 18:16:30  saw
+ *   Use properly exported names from thRootStuff.cpp
+ *
  *   Revision 1.2  2004/07/02 18:46:29  saw
  *   Update ugly cpp routine for gcc 3.2.3.  Need to find a better way to
  *   reference C++ routines.
@@ -96,7 +99,7 @@ thStatus thBookTree(daVarStruct *var)
 
   /*  thHistZeroLastId(); */
   
-  printf("In booktrees\n");
+  /* printf("In booktrees\n");*/
   /* Get the name without the block.test on it */
   blockname = var->name;	/* If name doesn't fit pattern, use whole */
   if(strcasestr(var->name,BLOCKSTR)==var->name){
@@ -109,7 +112,7 @@ thStatus thBookTree(daVarStruct *var)
     }
   }
 
-  printf("Booking tree %s\n",blockname);
+  /*printf("Booking tree %s\n",blockname);*/
 
   if(var->opaque) thRemoveTree(blockname);
 
@@ -188,15 +191,15 @@ thStatus thBookTree(daVarStruct *var)
       
       if(fname) {
 	/*printf("Opening Root file %s\n",fname);*/
-	treedef->file = (void *) _Z12thRoot_TFilePc(fname);
+	treedef->file = (void *) thRoot_TFile(fname);
 	free(fname);
       } else {
 	/*printf("Opening Root file %s\n","ctp.tree");*/
-	treedef->file = (void *) _Z12thRoot_TFilePc("ctp.root");
+	treedef->file = (void *) thRoot_TFile("ctp.root");
       }
     
       /*printf("Call to TTree(\"%s\",\"title\") goes here\n",blockname);*/
-      treedef->treeptr = (void *) _Z12thRoot_TTreePc(blockname);
+      treedef->treeptr = (void *) thRoot_TTree(blockname);
 
       if(strcasestr(lines,BEGINSTR) != 0){
 	/*	printf("Is a begin\n");*/
@@ -283,7 +286,7 @@ thStatus thBookTree(daVarStruct *var)
       strcpy(thisblock->blockname,blockname);
     }
   }
-/*  printf("Returning from booking a tree\n");*/
+  /*printf("Returning from booking a tree\n");*/
   return(S_SUCCESS);
 }
 
@@ -364,8 +367,8 @@ thStatus thBookaBranch(thTreeOpaque *treedef, char *line, thTreeBranchList **thB
   brancharg = malloc(lenbrancharg+10);
   brancharg[0] = '\0';
   while(thisleaf) {
-    /*    printf("thisleaf = %x\n",thisleaf);*/
-    /*printf("Adding %s to branchlist\n",thisleaf->name);*/
+    /*printf("thisleaf = %x\n",thisleaf);
+      printf("Adding %s to branchlist\n",thisleaf->name);*/
     strcat(brancharg,thisleaf->name);
     if(thisleaf->varp->type == DAVARINT) {
       strcat(brancharg,"/I");
@@ -408,11 +411,11 @@ thStatus thBookaBranch(thTreeOpaque *treedef, char *line, thTreeBranchList **thB
             - D : a 64 bit floating point (Double_t)
   */
 
-  /*printf("Branch=%s  Leafs=%s\n",Branch->branchname,brancharg);*/
-  _Z13thRoot_BranchP5TTreePcPvS1_(treedef->treeptr,Branch->branchname,(Branch->evstruct),brancharg);
+  printf("Branch=%s  Leafs=%s\n",Branch->branchname,brancharg);
+  thRoot_Branch(treedef->treeptr,Branch->branchname,(Branch->evstruct),brancharg);
 
   free(brancharg);
-  /*printf("Exiting book a branch\n");*/
+  printf("Exiting book a branch\n");
   return(S_SUCCESS);
 }
   
@@ -421,8 +424,7 @@ thStatus thFillTreeV(daVarStruct *var){
   thTreeBranchList *thisbranch;
   thLeafList *thisleaf;
   void *structp;
-  /*  printf("Executing Tree %s\n",var->name);*/
-
+  /* printf("Executing Tree %s\n",var->name);*/
   treedef = ((thTreeOpaque *)(var->opaque));
   thisbranch = treedef->branchlistP;
   while(thisbranch) {
@@ -450,30 +452,30 @@ thStatus thFillTreeV(daVarStruct *var){
     }
     thisbranch = thisbranch->next;
   }
-  _Z11thRoot_FillP5TTree(treedef->treeptr);
+  thRoot_Fill(treedef->treeptr);
 
   (*((DAINT *)var->varptr))++; /* Increment block counter */
   return(S_SUCCESS);
 }
 thStatus thClearTreeV(daVarStruct *var){
   
-  printf("Clearing Tree %s\n",var->name);
+  /* printf("Clearing Tree %s\n",var->name); */
 
   (*((DAINT *)var->varptr)) = 0; /* Increment block counter */
   return(S_SUCCESS);
 }
 thStatus thWriteTreeV(daVarStruct *var){
   
-  printf("Writing Tree %s\n",var->name);
-  _Z12thRoot_WriteP14thRootFileList(((thTreeOpaque *)(var->opaque))->file);
+  /* printf("Writing Tree %s\n",var->name); */
+  thRoot_Write(((thTreeOpaque *)(var->opaque))->file);
 
   (*((DAINT *)var->varptr)) = 0; /* Increment block counter */
   return(S_SUCCESS);
 }
 thStatus thCloseTreeV(daVarStruct *var){
   
-  printf("Closing Tree %s\n",var->name);
-  _Z12thRoot_CloseP14thRootFileList(((thTreeOpaque *)(var->opaque))->file);
+  /*printf("Closing Tree %s\n",var->name);*/
+  thRoot_Close(((thTreeOpaque *)(var->opaque))->file);
 
   (*((DAINT *)var->varptr)) = 0; /* Increment block counter */
   return(S_SUCCESS);
@@ -487,7 +489,7 @@ thStatus thRemoveTree(char *treename) {
 /*
 int thtreewrite_()
 {
-  thRoot_Write__Fv();
+  thRoot_Write();
 }
 */
 
