@@ -3,6 +3,12 @@
 //    C++ wrapper routines to interface between CTP and Root libraries
 //
 // $Log$
+// Revision 1.1.16.1  2004/07/09 14:12:11  saw
+// Add ability for CTP to make ROOT Trees
+//
+// Revision 1.2  2004/07/07 18:16:55  saw
+// use extern "C" to export names needed in thTree.c
+//
 // Revision 1.1  2002/07/31 20:07:48  saw
 // Add files for ROOT Trees
 //
@@ -35,6 +41,18 @@ typedef struct thRootFileList thRootFileList;
 
 thRootFileList *rootfilelistp=0;
   
+extern "C" void *thRoot_TFile(char *filename);
+
+extern "C" void *thRoot_TTree(char *treename);
+
+extern "C" void thRoot_Branch(TTree *tree, char *branchname, void *structp, char *brancharg);
+
+extern "C" void thRoot_Fill(TTree *tree);
+
+extern "C" void thRoot_Write(thRootFileList *file);
+
+extern "C" void thRoot_Close(thRootFileList *file);
+
 void *thRoot_TFile(char *filename)
 {
   thRootFileList *thisfile,**lastp;
@@ -96,3 +114,4 @@ void thRoot_Close(thRootFileList *file)
     printf("Not Closing\n");
   }
 }
+

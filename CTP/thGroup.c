@@ -16,6 +16,18 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.2.16.1  2004/07/09 14:12:10  saw
+ *   Add ability for CTP to make ROOT Trees
+ *
+ *   Revision 1.5  2004/07/08 20:05:37  saw
+ *   Use dummy fortran ctp tree routines when ROOTSYS not defined.
+ *
+ *   Revision 1.4  2004/07/07 18:15:27  saw
+ *   Consistenly use thtreeexeg
+ *
+ *   Revision 1.3  2004/07/02 20:11:07  saw
+ *   Make fortran tree group function names sane
+ *
  *   Revision 1.2  1999/11/04 20:34:05  saw
  *   Alpha compatibility.
  *   New RPC call needed for root event display.
@@ -69,9 +81,7 @@ thHook thHooks[] = {
      ,thIncTestScalersV,0,0},
   {HISTSTR,thBookHists,thExecuteHistsV,thClearHistsV,0,0,0,0},
   {UHISTSTR,thBookHists,0,0,0,0,0,0},
-#ifdef ROOTTREE
   {TREESTR,thBookTree,thFillTreeV,thClearTreeV,0,0,thWriteTreeV,thCloseTreeV},
-#endif
   {REPORTSTR,thBookReports,0,0,0,0,0,0},
   {0,0,0,0,0,0,0,0}};
 
@@ -303,11 +313,9 @@ MAKEFSUB(thtstclsg,TESTSTR,thClearScalersGroup)
 MAKEFSUB(thtstinsg,TESTSTR,thIncrementScalersGroup)
 MAKEFSUB(thhstexeg,HISTSTR,thExecuteGroup)
 MAKEFSUB(thgethitg,GETHITSTR,thExecuteGroup)
-#ifdef ROOTTREE
-MAKEFSUB(thtreexeg,TREESTR,thExecuteGroup)
-MAKEFSUB(thtrecloseg,TREESTR,thCloseGroup)
-MAKEFSUB(thtrewriteg,TREESTR,thWriteGroup)
-#endif
+MAKEFSUB(thtreeexeg,TREESTR,thExecuteGroup)
+MAKEFSUB(thtreecloseg,TREESTR,thCloseGroup)
+MAKEFSUB(thtreewriteg,TREESTR,thWriteGroup)
 #else
 MAKEFSUB(thtstexeg_,TESTSTR,thExecuteGroup)
 MAKEFSUB(thtstclrg_,TESTSTR,thClearGroup)
@@ -315,11 +323,9 @@ MAKEFSUB(thtstclsg_,TESTSTR,thClearScalersGroup)
 MAKEFSUB(thtstinsg_,TESTSTR,thIncrementScalersGroup)
 MAKEFSUB(thhstexeg_,HISTSTR,thExecuteGroup)
 MAKEFSUB(thgethitg_,GETHITSTR,thExecuteGroup)
-#ifdef ROOTTREE
-MAKEFSUB(thtreexeg_,TREESTR,thExecuteGroup)
+MAKEFSUB(thtreeexeg_,TREESTR,thExecuteGroup)
 MAKEFSUB(thtreecloseg_,TREESTR,thCloseGroup)
 MAKEFSUB(thtreewriteg_,TREESTR,thWriteGroup)
-#endif
 #endif
 
 /*

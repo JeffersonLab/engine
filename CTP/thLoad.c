@@ -17,6 +17,12 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.3.16.1  2004/07/09 14:12:10  saw
+ *   Add ability for CTP to make ROOT Trees
+ *
+ *   Revision 1.4  2004/07/08 20:06:45  saw
+ *   CTP Root Trees can exist in input files even if root trees not compiled in.
+ *
  *   Revision 1.3  2003/02/21 20:55:24  saw
  *   Clean up some types and casts to reduce compiler warnings.
  *
@@ -114,15 +120,11 @@ extern daVarStatus thWHandler();
 extern daVarStatus thRHandler();*/
 
 char *types[]={PARMSTR, GETHITSTR, TESTSTR, HISTSTR, UHISTSTR,
-#ifdef ROOTTREE
                TREESTR,
-#endif
                REPORTSTR, 0};
 thStatus (*hooks[])()={thLoadParameters, thBookGethits, thBookTests,
 		       thBookHists, thBookHists,
-#ifdef ROOTTREE
                        thBookTree,
-#endif
                        thBookReports, 0};
 
 char *qualifiers[]={"obey", "read", "write", 0};
