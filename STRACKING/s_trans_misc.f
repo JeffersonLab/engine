@@ -6,6 +6,9 @@
 * s_trans_misc fills the sos_decoded_misc common block
 *
 * $Log$
+* Revision 1.5  1996/09/04 20:18:07  saw
+* (JRA) Add misc. tdc's
+*
 * Revision 1.4  1996/01/24 16:08:38  saw
 * (JRA) Replace 48 with smax_misc_hits
 *
@@ -25,13 +28,14 @@
 
       include 'sos_data_structures.cmn'
       include 'sos_scin_parms.cmn'
+      include 'sos_id_histid.cmn'
 
       logical abort
       character*1024 errmsg
       character*20 here
       parameter (here = 's_trans_misc')
 
-      integer*4 ihit
+      integer*4 ihit,ich,isig
 
       save
       
@@ -41,8 +45,13 @@
       enddo
 
       do ihit = 1 , smisc_tot_hits
-        smisc_dec_data(smisc_raw_addr2(ihit),smisc_raw_addr1(ihit)) =
-     $       smisc_raw_data(ihit)
+        ich=smisc_raw_addr2(ihit)
+        isig=smisc_raw_addr1(ihit)
+        smisc_dec_data(ich,isig) = smisc_raw_data(ihit)
+        smisc_scaler(ich,isig) = smisc_scaler(ich,isig) + 1
+        if (isig.eq.1) then        !TDC
+          call hf1(sidmisctdcs,float(smisc_dec_data(ich,isig)),1.)
+        endif
       enddo
 
       return
