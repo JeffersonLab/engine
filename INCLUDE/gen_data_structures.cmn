@@ -5,7 +5,11 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
-* Revision 1.23  1995/04/06 20:16:28  cdaq
+* Revision 1.24  1995/05/11 15:16:26  cdaq
+* (SAW) Add new singles and coin kinematics.  Add aerogel structure.
+* (JRA) Change ?SDEDXn vars to arrays.
+*
+* Revision 1.23  1995/04/06  20:16:28  cdaq
 * (SAW) Add ddutta's pre cosy rotation stuff.  Add arrays for BPM data
 *
 * Revision 1.22  1995/03/13  18:54:22  cdaq
@@ -101,17 +105,23 @@
 *
       REAL*4  CEBEAM         ! BEAM ENERGY (GEV)
       REAL*4  CPBEAM         ! BEAM MOMENTUM (GEV/C)
+      REAL*4  g_beam_target_s      ! s computed from beam and target info
 
 *
 *     CTPTYPE=event
 *
       REAL*4 CXRAST
       REAL*4 CYRAST
+*
+*     None of these are really coincidence things, and some are constant
+*     while some are event by event.
+*
       COMMON/COIN_BEAM/
      &     CEBEAM,
      &     CPBEAM,
      &     CXRAST,
-     &     CYRAST
+     &     CYRAST,
+     &     g_beam_target_s
 *
 *     CTPTYPE=parm
 *
@@ -129,13 +139,15 @@
       REAL*4    TTHETA_TAR             
       REAL*4    TPHI_TAR
       REAL*4    TRAD_LENGTH
+      REAL*4    TMASS_RECOIL       ! Mass of expected unobserved recoil g.s.
       COMMON/TARGET/
      &     TMASS_TARGET,
      &     TZ_TARGET,
      &     TA_TARGET,
      &     TTHETA_TAR,             
      &     TPHI_TAR,
-     &     TRAD_LENGTH
+     &     TRAD_LENGTH,
+     &     TMASS_RECOIL
 *
 *     HTHETA_LAB             HMS LAB ANGLE THETA (RADIANS)
 *     HPHI_LAB               HMS LAB ANGLE PHI 
@@ -574,10 +586,7 @@
       REAL*4 HSMINV              ! Invariant Mass of remaing hadronic system
       REAL*4 HSZBEAM             ! Lab Z coordinate of intersection of beam
                                  ! track with spectrometer ray
-      REAL*4 HSDEDX1             ! DEDX of chosen track in 1st scin plane
-      REAL*4 HSDEDX2             ! DEDX of chosen track in 2nd scin plane
-      REAL*4 HSDEDX3             ! DEDX of chosen track in 3rd scin plane
-      REAL*4 HSDEDX4             ! DEDX of chosen track in 4th scin plane
+      REAL*4 HSDEDX(4)           ! DEDX of chosen track in each scin plane
       REAL*4 HSBETA           ! BETA of chosen track
       REAL*4 HSTRACK_ET      ! Total shower energy of chosen track
       REAL*4 HSTRACK_PRESHOWER_E  ! preshower of chosen track
@@ -592,8 +601,18 @@
       REAL*4 HSXP_TAR 
       REAL*4 HSYP_TAR 
       REAL*4 HSBETA_CHISQ
-       
-
+*
+      real*4 hsmass2               ! Mass squared
+      real*4 hst                   ! invariant t 
+      real*4 hsu                   ! invariant u
+      real*4 hseloss
+      real*4 hsq3                  ! Lab frame momentum transfer
+      real*4 hsthetaq, hsphiq      ! Direction of q3
+      real*4 hsbigq2               ! Q**2
+      real*4 hsx                   ! fraction of nucleon p carried by quark
+      real*4 hsy                   ! fraction of lepton's E lost in lab
+      real*4 hsw                   ! Invariant mass of recoil system
+      real*4 hsw2                  ! Invariant mass**2 of recoil system
 *
       INTEGER*4 HSNUM_FPTRACK    ! Index of focal plane track chosen
       INTEGER*4 HSNUM_TARTRACK   ! Index of target track chosen
@@ -611,10 +630,7 @@
      & HSPHI,
      & HSMINV,
      & HSZBEAM,
-     & HSDEDX1,
-     & HSDEDX2,
-     & HSDEDX3,
-     & HSDEDX4,
+     & HSDEDX,
      & HSBETA,
      & HSTRACK_ET,
      & HSTRACK_PRESHOWER_E, 
@@ -628,7 +644,18 @@
      & HSY_TAR ,
      & HSXP_TAR ,
      & HSYP_TAR ,
-     & HSBETA_CHISQ
+     & HSBETA_CHISQ,
+     &     hsmass2,
+     &     hst,
+     &     hsu,
+     &     hseloss,
+     &     hsq3,
+     &     hsthetaq, hsphiq,
+     &     hsbigq2,
+     &     hsx,
+     &     hsy,
+     &     hsw,
+     &     hsw2
 *
       COMMON/HMS_PHYSICS_I4/
      & HSNUM_FPTRACK,
@@ -903,6 +930,36 @@
      &     SCER_TOT_HITS
 *
 *
+*
+*
+*     SOS AEROGEL HITS
+*      FILLED BY G_decode_event_by_banks
+*
+*     THERE ARE 14 AEROGEL PHOTOTUBES. We will pair tubes on the left and
+*     right side so that are 7 "counters"
+*          TUBE Row
+*          ADC Left VALUE
+*          ADC Right VALUE
+*    THE TOTAL NUMBER OF PHOTOTUBE HITS IS SCER_TOT_HITS
+*    HOWEVER TO MAKE THE DECODERS SYMMETRICAL TO A SCINT WE MUST ADD
+*    A DUMMY PLANE NUMBER.
+      INTEGER*4 SMAX_AER_HITS
+      PARAMETER(SMAX_AER_HITS=8)
+      INTEGER*4 SAER_TOT_HITS
+      INTEGER*4 SAER_PAIR_NUM
+      INTEGER*4 SAER_ADC_LEFT
+      INTEGER*4 SAER_ADC_RIGHT
+      INTEGER*4 SAER_DUMMY
+      INTEGER*4 SAER_PLANE
+      COMMON/SOS_RAW_AER/
+     &     SAER_PLANE(SMAX_AER_HITS),
+     &     SAER_PAIR_NUM(SMAX_AER_HITS),
+     &     SAER_ADC_LEFT(SMAX_AER_HITS),
+     &     SAER_ADC_RIGHT(SMAX_AER_HITS),
+     &     SAER_DUMMY(SMAX_AER_HITS),
+     &     SAER_TOT_HITS
+*
+*
  
 *     SOS DETECTOR TRACK QUANTITIES
 *     FILLED BY S_TRACK SUBROUTINE 
@@ -1046,10 +1103,7 @@
       REAL*4 SSMINV                ! Invariant Mass of remaing hadronic system
       REAL*4 SSZBEAM               ! Lab Z coordinate of intersection of beam
                                    ! track with spectrometer ray
-      REAL*4 SSDEDX1               ! DEDX of chosen track in 1st scin plane
-      REAL*4 SSDEDX2               ! DEDX of chosen track in 2nd scin plane
-      REAL*4 SSDEDX3               ! DEDX of chosen track in 3rd scin plane
-      REAL*4 SSDEDX4               ! DEDX of chosen track in 4th scin plane
+      REAL*4 SSDEDX(4)             ! DEDX of chosen track in each plane
       REAL*4 SSBETA                ! BETA of chosen track
       REAL*4 SSTRACK_ET            ! Total shower energy of chosen track
       REAL*4 SSTRACK_PRESHOWER_E   ! preshower of chosen track
@@ -1064,7 +1118,18 @@
       REAL*4 SSXP_TAR 
       REAL*4 SSYP_TAR 
       REAL*4 SSBETA_CHISQ
-
+*
+      real*4 ssmass2               ! Mass squared
+      real*4 sst                   ! invariant t
+      real*4 ssu                   ! invariant u
+      real*4 sseloss
+      real*4 ssq3                  ! Lab frame momentum transfer
+      real*4 ssthetaq, ssphiq      ! Direction of q3
+      real*4 ssbigq2               ! Q**2
+      real*4 ssx                   ! fraction of nucleon p carried by quark
+      real*4 ssy                   ! fraction of lepton's E lost in lab
+      real*4 ssw                   ! Invariant mass of recoil system
+      real*4 ssw2                  ! Invariant mass**2 of recoil system
 *
       INTEGER*4 SSNUM_FPTRACK      ! Index of focal plane track chosen
       INTEGER*4 SSNUM_TARTRACK     ! Index of target track chosen
@@ -1081,10 +1146,7 @@
      & SSPHI,
      & SSMINV,
      & SSZBEAM,
-     & SSDEDX1,
-     & SSDEDX2,
-     & SSDEDX3,
-     & SSDEDX4,
+     & SSDEDX,
      & SSBETA,
      & SSTRACK_ET,
      & SSTRACK_PRESHOWER_E, 
@@ -1098,7 +1160,18 @@
      & SSY_TAR ,
      & SSXP_TAR ,
      & SSYP_TAR ,
-     & SSBETA_CHISQ
+     & SSBETA_CHISQ,
+     &     ssmass2,
+     &     sst,
+     &     ssu,
+     &     sseloss,
+     &     ssq3,
+     &     ssthetaq, ssphiq,
+     &     ssbigq2,
+     &     ssx,
+     &     ssy,
+     &     ssw,
+     &     ssw2
 *
       COMMON/SOS_PHYSICS_I4/
      & SSNUM_FPTRACK,
@@ -1116,17 +1189,28 @@
 * 
       REAL*4 CMISSING_MASS         ! Missing mass of undetected hadron system
       REAL*4 CMISSING_MOM          ! Magnitude of missing momentum 
+      REAL*4 CMISSING_MOMS         ! Missing momentum with an attitude adjustment
       REAL*4 CMISSING_MOMX         ! X component of missing momentum
       REAL*4 CMISSING_MOMY         ! Y component of missing momentum
       REAL*4 CMISSING_MOMZ         ! Z component of missing momentum
+      REAL*4 CMISSING_E            ! Missing E (Binding Energy)
       REAL*4 CTIME_COIN_COR        ! Corrected Coincidence time
+      real*4 cs                    ! s computed from spectrometers only
+      real*4 cthetapq              ! Angle between q and hadron
+      real*4 cphipq                ! Azimuthal angle of hadron about q
+*
       COMMON/COIN_PHYSICS_R4/
      &     CMISSING_MASS,
      &     CMISSING_MOM,
+     &     CMISSING_MOMS,
      &     CMISSING_MOMX,
      &     CMISSING_MOMY,
      &     CMISSING_MOMZ,
-     &     CTIME_COIN_COR
+     &     CMISSING_E,
+     &     CTIME_COIN_COR,
+     &     cs,
+     &     cthetapq,
+     &     cphipq
 *
 
 *
