@@ -2,6 +2,9 @@
 *     gen_data_structures.cmn or be separate.
 *
 * $Log$
+* Revision 1.8  1996/04/30 14:05:12  saw
+* (JRA) Add some bcm stuff
+*
 * Revision 1.7  1996/01/17 15:47:29  cdaq
 * (JRA) Add current monitor variables, time variable, and delta_scalers
 *
@@ -30,50 +33,52 @@
       integer*4 MAX_NUM_EVSCALERS
       parameter (MAX_NUM_EVSCALERS=16)
 
-      integer*4 g_clock_index      !index of hardware scaler clock.
-      real*4 g_clock_rate          ! rate of hardware scaler clock.
+      integer*4 gclock_index      !index of hardware scaler clock.
+      real*4 gclock_rate          ! rate of hardware scaler clock.
 *
 *     CTPTYPE=event
 *
-      real*8 scalers(MAX_NUM_SCALERS)   ! Current scaler values
-      real*8 prev_scalers(MAX_NUM_SCALERS) ! Scaler values at last event
-      real*8 delta_scalers(MAX_NUM_SCALERS) ! prev_scalers - scalers
-      real*4 g_time                  !time of run at most recent scaler event
-      integer g_real_time            !time since start of run (from cpu clock)
+      integer gscaler_nroll(MAX_NUM_SCALERS)
+      real*8 gscaler(MAX_NUM_SCALERS)         ! Current scaler values
+      real*8 gscaler_old(MAX_NUM_SCALERS)     ! Scaler values at last event
+      real*8 gscaler_change(MAX_NUM_SCALERS)  ! prev_scalers - scalers
+      real*4 g_run_time                       !time of run at most recent scaler event
+      integer g_replay_time                   !time since start of run (from cpu clock) 
 *
-      common /SCALERS/ scalers, prev_scalers, delta_scalers,
-     $     g_clock_rate, g_time, g_clock_index, g_real_time
+      common /SCALERS/ gscaler, gscaler_old, gscaler_change,
+     $     gclock_rate, g_run_time, gclock_index, g_replay_time, gscaler_nroll
 
 *
+      integer*4 gscal_lastevnum(2)      ! check for missing/out of order of scaler events
+      integer*4 gscal_evnum_roll(2)
       real*8 evscalers(MAX_NUM_EVSCALERS)
 *
-      common /EVSCALERS/ evscalers
+      common /EVSCALERS/ evscalers, gscal_lastevnum, gscal_evnum_roll
 *
 *     CTPTYPE=parm
 *
-      integer*4 g_bcm1_index
-      integer*4 g_bcm2_index
-      integer*4 g_bcm3_index
-      integer*4 g_unser_index
-      real*8 g_bcm1_gain
-      real*8 g_bcm2_gain
-      real*8 g_bcm3_gain
-      real*8 g_unser_gain
-      real*8 g_bcm1_offset
-      real*8 g_bcm2_offset
-      real*8 g_bcm3_offset
-      real*8 g_unser_offset
+      integer*4 gbcm1_index
+      integer*4 gbcm2_index
+      integer*4 gbcm3_index
+      integer*4 gunser_index
+      real*8 gbcm1_gain
+      real*8 gbcm2_gain
+      real*8 gbcm3_gain
+      real*8 gunser_gain
+      real*8 gbcm1_offset
+      real*8 gbcm2_offset
+      real*8 gbcm3_offset
+      real*8 gunser_offset
 *
 *     CTPTYPE=event
 *
-      real*8 g_bcm1_charge
-      real*8 g_bcm2_charge
-      real*8 g_bcm3_charge
-      real*8 g_unser_charge
+      real*8 gbcm1_charge
+      real*8 gbcm2_charge
+      real*8 gbcm3_charge
+      real*8 gunser_charge
 *
       common/BEAMCURRENT/
-     &    g_bcm1_index, g_bcm2_index, g_bcm3_index, g_unser_index,
-     &    g_bcm1_gain, g_bcm2_gain, g_bcm3_gain, g_unser_gain,
-     &    g_bcm1_offset, g_bcm2_offset, g_bcm3_offset, g_unser_offset,
-     &    g_bcm1_charge, g_bcm2_charge, g_bcm3_charge, g_unser_charge
-
+     &    gbcm1_index, gbcm2_index, gbcm3_index, gunser_index,
+     &    gbcm1_gain, gbcm2_gain, gbcm3_gain, gunser_gain,
+     &    gbcm1_offset, gbcm2_offset, gbcm3_offset, gunser_offset,
+     &    gbcm1_charge, gbcm2_charge, gbcm3_charge, gunser_charge
