@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.5  1995/07/28 14:25:20  cdaq
+# Revision 1.6  1996/01/17 14:02:15  cdaq
+# (SAW) Add one event display includes
+#
+# Revision 1.5  1995/07/28  14:25:20  cdaq
 # (SAW) Update list of include files.  Add NFSDIRECTORY stuff
 #
 # Revision 1.4  1995/05/24  13:50:06  cdaq
@@ -27,26 +30,33 @@ cmn = gen_data_structures.cmn gen_craw.cmn gen_decode_common.cmn \
 	hms_physics_sing.cmn hms_recon_elements.cmn hms_scin_parms.cmn \
 	hms_scin_tof.cmn hms_statistics.cmn hms_track_histid.cmn \
 	hms_tracking.cmn hms_pedestals.cmn \
+	hms_cer_parms.cmn \
 	h_ntuple.cmn h_sieve_ntuple.cmn \
 	sos_data_structures.cmn sos_bypass_switches.cmn sos_calorimeter.cmn \
 	sos_filenames.cmn sos_geometry.cmn sos_id_histid.cmn \
 	sos_physics_sing.cmn sos_recon_elements.cmn sos_scin_parms.cmn \
 	sos_scin_tof.cmn sos_statistics.cmn sos_track_histid.cmn \
 	sos_tracking.cmn sos_pedestals.cmn \
-	s_ntuple.cmn \
+	sos_cer_parms.cmn \
+	s_ntuple.cmn s_sieve_ntuple.cmn \
 	coin_data_structures.cmn coin_bypass_switches.cmn c_ntuple.cmn \
 	coin_filenames.cmn \
 	hack_.cmn \
 	mc_structures.cmn
 
 dte = c_ntuple.dte gen_run_pref.dte h_sieve_ntuple.dte \
-	gen_run_info.dte h_ntuple.dte s_ntuple.dte
+	gen_run_info.dte h_ntuple.dte s_ntuple.dte s_sieve_ntuple.dte
 
 par = gen_constants.par gen_detectorids.par gen_units.par
 
 dec = gen_routines.dec
 
-include_files = $(cmn) $(dte) $(par) $(dec)
+# One event display
+oneev = gen_one_ev_info.cmn gen_one_ev_info.dte hms_one_ev.par \
+	sos_one_ev.par gen_one_ev_gckine.cmn gen_one_ev_gctrak.cmn \
+	gen_one_ev_gcvolu.cmn
+
+include_files = $(cmn) $(dte) $(par) $(dec) $(oneev)
 
 install-dirs :=
 
