@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.28  2002/09/24 20:10:34  jones
+* Added calls to subroutines h_fieldcorr.f and g_apply_offsets.f
+*
 * Revision 1.27  1999/11/04 20:35:14  saw
 * Linux/G77 compatibility fixes
 *
@@ -152,7 +155,7 @@
 *--------------------------------------------------------
 *
       print *
-      print *,'  Hall C Proudly Presents: PHYSICS Analysis Engine - 1999!'
+      print *,'  Hall C Proudly Presents: PHYSICS Analysis Engine'
 
       print *
 
@@ -353,7 +356,21 @@ c         err= ' '
 c      endif
 
       call engine_command_line(.false.) ! Set CTP vars from command line
-
+c 
+      call h_fieldcorr(ABORT,err)
+c
+c  call h_fieldcorr subroutine 
+c    to fix problem with setting hpcentral in field programs
+c    applies to experiments using fieldxx.f programs before field02.f
+c    parameter genable_hms_fieldcorr is switch to determine
+c    whether fix is applied.
+c
+c
+      call G_apply_offsets(ABORT,err)  
+c
+c  call G_apply_offsets which calls  s_apply_offsets, h_apply_offsets
+c   which apply offsets to spect. momenta, angles
+c
 * Print out the statistics report once...
       if(g_stats_blockname.ne.' '.and.
      $     g_stats_output_filename.ne.' ') then
