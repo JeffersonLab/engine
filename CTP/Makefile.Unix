@@ -1,5 +1,9 @@
 #
 # $Log$
+# Revision 1.20  2004/07/02 18:50:00  saw
+# Add ability to compile CTP root code.  To use, make sure the ROOTSYS
+# environment variable is set and comment out the line "ROOTSYS=".
+#
 # Revision 1.19  2004/02/26 14:58:29  jones
 # For now , comment out parts dealing with ROOT.
 #
@@ -60,7 +64,14 @@
 # Revision 1.1  1994/04/15  20:28:27  cdaq
 # Initial revision
 #
+
+# To enable compilation of CTP Root Trees, make sure that the environment
+# variable ROOTSYS is defined, and comment out the next line
+ROOTSYS=
+
+
 NEWSTYLE = 1
+
 include ../../etc/Makefile
 
 ctp_sources = thTest.c thTestParse.c thTestExecute.c thHandlers.c thParm.c \
@@ -69,19 +80,18 @@ ctp_sources = thTest.c thTestParse.c thTestExecute.c thHandlers.c thParm.c \
        daVarRpc_svc.c daVarRpc_xdr.c daVarHashLib.c
 ctpclient_sources = daVarRpc_xdr.c daVarRpc_clnt.c thClient.c
 
-sources = $(ctpclient_sources) $(ctp_sources) makereg.c
-
 lib_targets := $(patsubst %.c, libctp.a(%.o), $(ctp_sources)) \
 	$(patsubst %.c, libctpclient.a(%.o), $(ctpclient_sources))
 
-#ifdef ROOTSYS
-#cxxsources = thRootStuff.cpp
-#sources := $(sources) thTree.c
-#lib_targets := $(patsubst %.c, libctp_root.a(%.o), $(ctp_sources)) \
-#	$(patsubst %.c, libctpclient_root.a(%.o), $(ctpclient_sources)) \
-#	$(patsubst %.cpp, libctp_root.a(%.o), $(cxxsources))
-#endif
+ifdef ROOTSYS
+cxxsources = thRootStuff.cpp
+ctp_sources := $(ctp_sources) thTree.c
+lib_targets := $(patsubst %.c, libctp_root.a(%.o), $(ctp_sources)) \
+	$(patsubst %.c, libctpclient_root.a(%.o), $(ctpclient_sources)) \
+	$(patsubst %.cpp, libctp_root.a(%.o), $(cxxsources))
+endif
 
+sources = $(ctpclient_sources) $(ctp_sources) makereg.c
 
 bin_targets = makereg
 
@@ -135,7 +145,7 @@ endif
   RPCCOM=rpcgen -b -k
   OSTYPE=Linux
   CXX=g++
-  CXXFLAGS =  -g -O -Wall -fno-rtti -fno-exceptions -fPIC
+  CXXFLAGS =  -g -O -Wall -fno-exceptions -fPIC
 endif
 
 ifeq ($(ARCH),SunOS)
@@ -156,10 +166,10 @@ ifeq ($(ARCH),AIX)
   OSTYPE=AIX
 endif
 
-#ifdef ROOTSYS
-#  CFLAGS := $(CFLAGS) -DROOTTREE
-#  CXXFLAGS := $(CXXFLAGS) -I$(ROOTSYS)/include
-#endif
+ifdef ROOTSYS
+  CFLAGS := $(CFLAGS) -DROOTTREE
+  CXXFLAGS := $(CXXFLAGS) -I$(ROOTSYS)/include
+endif
 
 ##library: libctp.a
 
@@ -181,10 +191,10 @@ endif
 
 makereg: makereg.o
 
-#ifdef ROOTSYS
-#thRootStuff.o: ../thRootStuff.cpp
-#	$(CXX) -o$@ -c $(CXXFLAGS) $<
-#endif
+ifdef ROOTSYS
+thRootStuff.o: ../thRootStuff.cpp
+	$(CXX) -o$@ -c $(CXXFLAGS) $<
+endif
 
 RPCDEPENDS_RULE = echo "$(subst .d,.o,$@): \
 	../$(subst .d,.c,$@) ../daVarRpc.h" >$@
@@ -226,6 +236,6 @@ daVarRpc.d: ../daVarRpc.h
 
 include $(sources:.c=.d)
 
-#ifdef ROOTSYS
-#include $(cxxsources:.cpp=.d)
-#endif
+ifdef ROOTSYS
+include $(cxxsources:.cpp=.d)
+endif
