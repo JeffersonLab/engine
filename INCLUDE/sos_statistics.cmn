@@ -1,7 +1,10 @@
 *      sos_statistics.cmn
 *      common blocks containing event statistics for s_reconstruction
 * $Log$
-* Revision 1.9  1995/08/11 16:36:47  cdaq
+* Revision 1.10  1995/09/01 13:04:45  cdaq
+* (JRA) Add counter efficiency variables
+*
+* Revision 1.9  1995/08/11  16:36:47  cdaq
 * (JRA) Add sstat_mineff as a ctp parameter
 *
 * Revision 1.8  1995/07/28  14:42:37  cdaq
@@ -80,6 +83,10 @@
       integer*4 sstat_negsum(snum_scin_planes)
       integer*4 sstat_orsum(snum_scin_planes)
       integer*4 sstat_andsum(snum_scin_planes)
+      real*4 sstat_peff(snum_scin_planes,snum_scin_elements)
+      real*4 sstat_neff(snum_scin_planes,snum_scin_elements)
+      real*4 sstat_oeff(snum_scin_planes,snum_scin_elements)
+      real*4 sstat_aeff(snum_scin_planes,snum_scin_elements)
       real*4 sstat_poseff(snum_scin_planes)
       real*4 sstat_negeff(snum_scin_planes)
       real*4 sstat_oreff(snum_scin_planes)
@@ -102,6 +109,10 @@
      &  sstat_negsum,      !summed over all counters on plane
      &  sstat_orsum,       !summed over all counters on plane
      &  sstat_andsum,      !summed over all counters on plane
+     &  sstat_peff,        !pos efficiency for given counter.
+     &  sstat_neff,        !neg efficiency for given counter.
+     &  sstat_oeff,        !or  efficiency for given counter.
+     &  sstat_aeff,        !and efficiency for given counter.
      &  sstat_poseff,      !efficiency over all counters on plane
      &  sstat_negeff,      !efficiency over all counters on plane
      &  sstat_oreff,       !efficiency over all counters on plane
@@ -129,7 +140,8 @@
       integer*4 sstat_cal_hit(smax_cal_columns,smax_cal_rows)
       integer*4 sstat_cal_trksum(smax_cal_columns)
       integer*4 sstat_cal_hitsum(smax_cal_columns)
-      real*4 sstat_cal_eff(smax_cal_columns)
+      real*4 sstat_cal_eff(smax_cal_columns,smax_cal_rows)
+      real*4 sstat_cal_effsum(smax_cal_columns)
 
       common/scal_statistics/
      &  sstat_cal_numevents,
@@ -137,7 +149,8 @@
      &  sstat_cal_hit,         !# of times the tube on block was over threshold.
      &  sstat_cal_trksum,      !summed over all blocks on plane.
      &  sstat_cal_hitsum,      !summed over all blocks on plane.
-     &  sstat_cal_eff,         !efficiency over all counters on plane.
+     &  sstat_cal_eff,         !efficiency for a given block.
+     &  sstat_cal_effsum,      !efficiency over all counters on plane.
      &  sstat_cal_slop,        !distance allowed from center of block.
      &  sstat_cal_maxchisq     !maximum chisq allowed to use track for eff. calc.
 
@@ -152,3 +165,23 @@
      &   sbothgood,
      &   sposgood,
      &   sneggood
+*
+*     CTPTYPE=parm
+*
+      real*4 sdc_min_eff(smax_num_dc_planes)   !'warning' value for plane eff.
+*
+*     CTPTYPE=event
+*
+      integer*4 sdc_tot_events                 !total number of events examined
+      integer*4 sdc_events(smax_num_dc_planes) !counter of times plane was hit
+      integer*4 sdc_cham_hits(smax_num_chambers)
+      real*4 sdc_plane_eff(smax_num_dc_planes) !effic=events(pln)/tot_events
+      real*4 sdc_cham_eff(smax_num_chambers)
+
+      common/sdc_statistics/
+     &   sdc_tot_events,
+     &   sdc_events,
+     &   sdc_min_eff,
+     &   sdc_plane_eff,
+     &   sdc_cham_hits,
+     &   sdc_cham_eff
