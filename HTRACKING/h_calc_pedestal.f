@@ -1,6 +1,9 @@
       subroutine h_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.10  1998/12/17 22:02:38  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.9  1996/08/30 19:53:01  saw
 * (JRA) Up thresholds from 10 channels to 15 chans above pedestal
 *
@@ -128,26 +131,59 @@ c     &           2.*hhodo_new_sig_neg(pln,cnt)
 *
       ind = 0
       do blk = 1 , hmax_cal_blocks
-        num=max(1.,float(hcal_ped_num(blk)))
-c      write(6,*) blk,num     
-        hcal_new_ped(blk) = hcal_ped_sum(blk) / num
-        sig2 = float(hcal_ped_sum2(blk))/num - hcal_new_ped(blk)**2
-        hcal_new_rms(blk) = sqrt(max(0.,sig2))
-c        hcal_new_adc_threshold(blk)=hcal_new_ped(blk)+2.*hcal_new_rms(blk)
-        hcal_new_adc_threshold(blk)=hcal_new_ped(blk)+15.
-        if (abs(hcal_ped_mean(blk)-hcal_new_ped(blk))
-     &                 .ge.(2.*hcal_new_rms(blk))) then
+      
+* calculate new pedestal values, positive tubes first.      
+       num=max(1.,float(hcal_pos_ped_num(blk)))
+c      write(6,*) blk,'+',num     
+        hcal_new_ped_pos(blk)=hcal_pos_ped_sum(blk)/num
+        sig2 = float(hcal_pos_ped_sum2(blk))/num - hcal_new_ped_pos(blk)**2
+        hcal_new_rms_pos(blk)=sqrt(max(0.,sig2))
+*        hcal_new_adc_threshold_pos(blk)=hcal_pos_new_ped(blk)+
+*     &                  2.*hcal_new_rms_pos(blk)
+c        type *,blk,hmax_cal_blocks,hcal_new_adc_threshold_pos(blk),hcal_pos_new_ped(blk)
+        hcal_new_adc_threshold_pos(blk)=hcal_new_ped_pos(blk)+15.
+        if (abs(hcal_pos_ped_mean(blk)-hcal_new_ped_pos(blk))
+     &                 .ge.(2.*hcal_new_rms_pos(blk))) then
           ind = ind + 1
           hcal_changed_block(ind)=blk
-          hcal_ped_change(ind)=hcal_new_ped(blk)-hcal_ped_mean(blk) 
+          hcal_changed_sign(ind)=1         ! 1=pos,2=neg.
+          hcal_ped_change(ind)=hcal_new_ped_pos(blk)-
+     &                         hcal_pos_ped_mean(blk) 
         endif
+        
 
         if (num.gt.hcal_min_peds .and. hcal_min_peds.ne.0) then
-          hcal_ped_mean(blk)=hcal_new_ped(blk)
-          hcal_ped_rms(blk)=hcal_new_rms(blk)
-          hcal_threshold(blk) = min(50.,max(10.,3.*hcal_new_rms(blk)))
+          hcal_pos_ped_mean(blk)=hcal_new_ped_pos(blk)
+          hcal_pos_ped_rms(blk)=hcal_new_rms_pos(blk)
+          hcal_pos_threshold(blk)=min(50.,max(10.,3.*hcal_new_rms_pos(blk)))
         endif
-
+        
+*do it all again for negative tubes.
+       num=max(1.,float(hcal_neg_ped_num(blk)))
+c      write(6,*) blk,'-',num     
+        hcal_new_ped_neg(blk)=hcal_neg_ped_sum(blk)/num
+        sig2 = float(hcal_neg_ped_sum2(blk))/num-hcal_new_ped_neg(blk)**2
+        hcal_new_rms_neg(blk)=sqrt(max(0.,sig2))
+*        hcal_new_adc_threshold_neg(blk)=hcal_neg_new_ped(blk)+
+*     &                  2.*hcal_new_rms_neg(blk)
+        hcal_new_adc_threshold_neg(blk)=hcal_new_ped_neg(blk)+15.
+c        type *,blk,hmax_cal_blocks,hcal_new_adc_threshold_neg(blk),hcal_neg_new_ped(blk)
+        if (abs(hcal_neg_ped_mean(blk)-hcal_new_ped_neg(blk))
+     &                 .ge.(2.*hcal_new_rms_neg(blk))) then
+          ind = ind + 1
+          hcal_changed_block(ind)=blk
+          hcal_changed_sign(ind)=2         ! 1=pos,2=neg.
+          hcal_ped_change(ind)=hcal_new_ped_neg(blk)-
+     &                         hcal_neg_ped_mean(blk) 
+        endif
+  
+c        type *,num,hcal_min_peds
+        if (num.gt.hcal_min_peds .and. hcal_min_peds.ne.0) then
+          hcal_neg_ped_mean(blk)=hcal_new_ped_neg(blk)
+          hcal_neg_ped_rms(blk)=hcal_new_rms_neg(blk)
+          hcal_neg_threshold(blk)=min(50.,max(10.,3.*hcal_new_rms_neg(blk)))
+        endif
+  
       enddo
       hcal_num_ped_changes = ind
 
@@ -218,15 +254,24 @@ c        hcer_new_adc_threshold(pmt)=hcer_new_ped(pmt)+2.*hcer_new_rms(pmt)
         roc=1
 
         slot=1
-        signalcount=1
+        signalcount=2
         write(SPAREID,*) 'slot=',slot
         call g_output_thresholds(SPAREID,roc,slot,signalcount,hmax_cal_rows,
-     &      hcal_new_adc_threshold,0,hcal_new_rms,0)
+     &      hcal_new_adc_threshold_pos,hcal_new_adc_threshold_neg,
+     &      hcal_new_rms_pos,hcal_new_rms_neg)
+
         slot=3
         signalcount=1
         write(SPAREID,*) 'slot=',slot
         call g_output_thresholds(SPAREID,roc,slot,signalcount,hmax_cer_hits,
      &      hcer_new_adc_threshold,0,hcer_new_rms,0)
+
+        slot=5
+        signalcount=2
+        write(SPAREID,*) 'slot=',slot
+        call g_output_thresholds(SPAREID,roc,slot,signalcount,hmax_cal_rows,
+     &      hcal_new_adc_threshold_pos,hcal_new_adc_threshold_neg,
+     &      hcal_new_rms_pos,hcal_new_rms_neg)
 
         slot=7
         signalcount=2

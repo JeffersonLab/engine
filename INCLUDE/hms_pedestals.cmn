@@ -2,6 +2,9 @@
 *                      of pedestal events at the beginning of each run.
 *
 * $Log$
+* Revision 1.4  1998/12/17 22:02:41  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.3  1996/01/17 16:03:04  cdaq
 * (JRA) Add "_new_" pedestal variables
 *
@@ -81,28 +84,42 @@
 *
 *     CTPTYPE=event
 *
-      integer*4 hcal_ped_sum2(hmax_cal_blocks)
-      integer*4 hcal_ped_sum(hmax_cal_blocks)
-      integer*4 hcal_ped_num(hmax_cal_blocks)
+      integer*4 hcal_pos_ped_sum2(hmax_cal_blocks)
+      integer*4 hcal_neg_ped_sum2(hmax_cal_blocks)
+      integer*4 hcal_pos_ped_sum(hmax_cal_blocks)
+      integer*4 hcal_neg_ped_sum(hmax_cal_blocks)
+      integer*4 hcal_pos_ped_num(hmax_cal_blocks)
+      integer*4 hcal_neg_ped_num(hmax_cal_blocks)
+
       integer*4 hcal_num_ped_changes
-      integer*4 hcal_changed_block(hmax_cal_blocks)
-      real*4 hcal_ped_change(hmax_cal_blocks)
-      real*4 hcal_new_ped(hmax_cal_blocks)
-      real*4 hcal_new_rms(hmax_cal_blocks)
+      integer*4 hcal_changed_block(2*hmax_cal_blocks)
+      integer*4 hcal_changed_sign(2*hmax_cal_blocks) ! Which end?
+      real*4 hcal_ped_change(2*hmax_cal_blocks)
+
+      real*4 hcal_new_ped_pos(2*hmax_cal_blocks)
+      real*4 hcal_new_ped_neg(2*hmax_cal_blocks)
+      real*4 hcal_new_rms_pos(2*hmax_cal_blocks)
+      real*4 hcal_new_rms_neg(2*hmax_cal_blocks)
 *
 *     CTPTYPE=parm
 *
       integer*4 hcal_min_peds
 *
       common/hms_cal_ped_stats/
-     &   hcal_ped_sum2,       !sum of squares
-     &   hcal_ped_sum,        !sum of peds
-     &   hcal_ped_num,        !number of peds
+     &   hcal_pos_ped_sum2,       !sum of squares
+     &   hcal_neg_ped_sum2,       !sum of squares
+     &   hcal_pos_ped_sum,        !sum of peds
+     &   hcal_neg_ped_sum,        !sum of peds
+     &   hcal_pos_ped_num,        !number of peds
+     &   hcal_neg_ped_num,        !number of peds
      &   hcal_min_peds,       !# of peds required to override default pedestals
-     &   hcal_new_ped,        !(new) calculated pedestals.
-     &   hcal_new_rms,        !(new) calculated rms.
+     &   hcal_new_ped_pos,        !(new) calculated pedestals.
+     &   hcal_new_ped_neg,        !(new) calculated pedestals.
+     &   hcal_new_rms_pos,        !(new) calculated rms.
+     &   hcal_new_rms_neg,        !(new) calculated rms.
      &   hcal_num_ped_changes,!# of peds with 2 sigma changes from param file
      &   hcal_changed_block,
+     &   hcal_changed_sign,    ! 1=pos, 2=neg
      &   hcal_ped_change
 *
 * CERENKOV PEDESTALS
@@ -180,13 +197,15 @@
 *
       real*4 hhodo_new_threshold_pos(hnum_scin_planes,hnum_scin_elements)
       real*4 hhodo_new_threshold_neg(hnum_scin_planes,hnum_scin_elements)
-      real*4 hcal_new_adc_threshold(hmax_cal_blocks)
+      real*4 hcal_new_adc_threshold_pos(hmax_cal_blocks)
+      real*4 hcal_new_adc_threshold_neg(hmax_cal_blocks)
       real*4 hcer_new_adc_threshold(hmax_cer_hits)
       real*4 hmisc_new_adc_threshold(hmax_misc_hits)
 *
       common/hms_adc_thresholds/
      &   hhodo_new_threshold_pos,
      &   hhodo_new_threshold_neg,
-     &   hcal_new_adc_threshold,
+     &   hcal_new_adc_threshold_pos,
+     &   hcal_new_adc_threshold_neg,
      &   hcer_new_adc_threshold,
      &   hmisc_new_adc_threshold

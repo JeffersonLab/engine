@@ -6,6 +6,9 @@
 *-
 *-      Created: 20 Mar 1994      Tsolak A. Amatuni
 * $Log$
+* Revision 1.4  1998/12/17 22:02:39  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.3  1995/05/22 19:39:13  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -34,6 +37,7 @@
 *
       include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
+      data hcal_num_neg_columns /0/ ! No extra tubes unless specified in parm files
 *
 *-----Initialize the positions
       do column=1,hmax_cal_columns

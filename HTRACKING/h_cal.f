@@ -16,6 +16,9 @@
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 *
 * $Log$
+* Revision 1.5  1998/12/17 22:02:38  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.4  1995/05/22 19:39:04  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -74,6 +77,7 @@
 *
       do nt =1,hntracks_fp
          nc=hcluster_track(nt)
+* None of this deals with two tube blocks properly
          if(nc.gt.0) then
             cor=h_correct_cal(htrack_xc(nt),htrack_yc(nt))
 *

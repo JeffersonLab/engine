@@ -1,6 +1,9 @@
       subroutine h_analyze_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.6  1998/12/17 22:02:37  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.5  1996/01/24 15:55:06  saw
 * (JRA) Add ped analysis for misc channels
 *
@@ -71,9 +74,16 @@ c        call hf1(hidsumnegadc(pln),histval,1.)
         row = hcal_row(ihit)
         col = hcal_column(ihit)
         blk = row + (col-1)*hmax_cal_rows
-        hcal_ped_sum2(blk) = hcal_ped_sum2(blk) + hcal_adc(ihit)*hcal_adc(ihit)
-        hcal_ped_sum(blk) = hcal_ped_sum(blk) + hcal_adc(ihit)
-        hcal_ped_num(blk) = hcal_ped_num(blk) + 1
+
+        hcal_pos_ped_sum2(blk) = hcal_pos_ped_sum2(blk) +
+     $       hcal_adc_pos(ihit)*hcal_adc_pos(ihit)
+        hcal_pos_ped_sum(blk) = hcal_pos_ped_sum(blk) + hcal_adc_pos(ihit)
+        hcal_pos_ped_num(blk) = hcal_pos_ped_num(blk) + 1
+
+        hcal_neg_ped_sum2(blk) = hcal_neg_ped_sum2(blk) +
+     $       hcal_adc_neg(ihit)*hcal_adc_neg(ihit)
+        hcal_neg_ped_sum(blk) = hcal_neg_ped_sum(blk) + hcal_adc_neg(ihit)
+        hcal_neg_ped_num(blk) = hcal_neg_ped_num(blk) + 1
       enddo
 *
 *

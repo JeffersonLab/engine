@@ -1,6 +1,9 @@
       subroutine h_dump_peds(ABORT,err)
 *
 * $Log$
+* Revision 1.6  1998/12/17 22:02:38  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.5  1996/04/30 12:35:35  saw
 * (JRA) Cleanup
 *
@@ -94,25 +97,44 @@
 111   format (10x,3(f6.1,','),f6.1)
 *
 *
-* CALORIMETER PEDESTALS
+* CALORIMETER PEDESTALS ( Hamlet test version) 
 *
-      write(SPAREID,*) ' hcal_ped_mean = '
-      write(SPAREID,112) (hcal_ped_mean(blk),blk=1,hmax_cal_rows)
-      write(SPAREID,112) (hcal_ped_mean(blk),blk=hmax_cal_rows+1,2*hmax_cal_rows)
-      write(SPAREID,112) (hcal_ped_mean(blk),blk=2*hmax_cal_rows+1,3*hmax_cal_rows)
-      write(SPAREID,112) (hcal_ped_mean(blk),blk=3*hmax_cal_rows+1,4*hmax_cal_rows)
+      write(SPAREID,*) ' hcal_pos_ped_mean = '
+      write(SPAREID,112) (hcal_pos_ped_mean(blk),blk=1,hmax_cal_rows)
+      write(SPAREID,112) (hcal_pos_ped_mean(blk),blk=hmax_cal_rows+1,2*hmax_cal_rows)
+      write(SPAREID,112) (hcal_pos_ped_mean(blk),blk=2*hmax_cal_rows+1,3*hmax_cal_rows)
+      write(SPAREID,112) (hcal_pos_ped_mean(blk),blk=3*hmax_cal_rows+1,4*hmax_cal_rows)
       write(SPAREID,*) '; calorimeter ped. sigma (sqrt(variance))'
-      write(SPAREID,*) ' hcal_ped_rms = '
-      write(SPAREID,112) (hcal_ped_rms(blk),blk=1,hmax_cal_rows)
-      write(SPAREID,112) (hcal_ped_rms(blk),blk=hmax_cal_rows+1,2*hmax_cal_rows)
-      write(SPAREID,112) (hcal_ped_rms(blk),blk=2*hmax_cal_rows+1,3*hmax_cal_rows)
-      write(SPAREID,112) (hcal_ped_rms(blk),blk=3*hmax_cal_rows+1,4*hmax_cal_rows)
+      write(SPAREID,*) ' hcal_pos_ped_rms = '
+      write(SPAREID,112) (hcal_pos_ped_rms(blk),blk=1,hmax_cal_rows)
+      write(SPAREID,112) (hcal_pos_ped_rms(blk),blk=hmax_cal_rows+1,2*hmax_cal_rows)
+      write(SPAREID,112) (hcal_pos_ped_rms(blk),blk=2*hmax_cal_rows+1,3*hmax_cal_rows)
+      write(SPAREID,112) (hcal_pos_ped_rms(blk),blk=3*hmax_cal_rows+1,4*hmax_cal_rows)
       write(SPAREID,*) '; calorimeter threshold above ped. =MIN(50,MAX(10,3*sigma))'
-      write(SPAREID,*) 'hcal_threshold = '
-      write(SPAREID,112) (hcal_threshold(blk),blk=1,hmax_cal_rows)
-      write(SPAREID,112) (hcal_threshold(blk),blk=hmax_cal_rows+1,2*hmax_cal_rows)
-      write(SPAREID,112) (hcal_threshold(blk),blk=2*hmax_cal_rows+1,3*hmax_cal_rows)
-      write(SPAREID,112) (hcal_threshold(blk),blk=3*hmax_cal_rows+1,4*hmax_cal_rows)
+      write(SPAREID,*) 'hcal_new_threshold_pos = '
+      write(SPAREID,112) (hcal_new_adc_threshold_pos(blk),blk=1,hmax_cal_rows)
+      write(SPAREID,112) (hcal_new_adc_threshold_pos(blk),blk=hmax_cal_rows+1,2*hmax_cal_rows)
+      write(SPAREID,112) (hcal_new_adc_threshold_pos(blk),blk=2*hmax_cal_rows+1,3*hmax_cal_rows)
+      write(SPAREID,112) (hcal_new_adc_threshold_pos(blk),blk=3*hmax_cal_rows+1,4*hmax_cal_rows)
+*      
+      write(SPAREID,*) ' hcal_neg_ped_mean = '
+      write(SPAREID,112) (hcal_neg_ped_mean(blk),blk=1,hmax_cal_rows)
+      write(SPAREID,112) (hcal_neg_ped_mean(blk),blk=hmax_cal_rows+1,2*hmax_cal_rows)
+      write(SPAREID,112) (hcal_neg_ped_mean(blk),blk=2*hmax_cal_rows+1,3*hmax_cal_rows)
+      write(SPAREID,112) (hcal_neg_ped_mean(blk),blk=3*hmax_cal_rows+1,4*hmax_cal_rows)
+      write(SPAREID,*) '; calorimeter ped. sigma (sqrt(variance))'
+      write(SPAREID,*) ' hcal_ped_neg_rms = '
+      write(SPAREID,112) (hcal_neg_ped_rms(blk),blk=1,hmax_cal_rows)
+      write(SPAREID,112) (hcal_neg_ped_rms(blk),blk=hmax_cal_rows+1,2*hmax_cal_rows)
+      write(SPAREID,112) (hcal_neg_ped_rms(blk),blk=2*hmax_cal_rows+1,3*hmax_cal_rows)
+      write(SPAREID,112) (hcal_neg_ped_rms(blk),blk=3*hmax_cal_rows+1,4*hmax_cal_rows)
+      write(SPAREID,*) '; calorimeter threshold above ped. =MIN(50,MAX(10,3*sigma))'
+      write(SPAREID,*) 'hcal_new_threshold_neg = '
+      write(SPAREID,112) (hcal_new_adc_threshold_neg(blk),blk=1,hmax_cal_rows)
+      write(SPAREID,112) (hcal_new_adc_threshold_neg(blk),blk=hmax_cal_rows+1,2*hmax_cal_rows)
+      write(SPAREID,112) (hcal_new_adc_threshold_neg(blk),blk=2*hmax_cal_rows+1,3*hmax_cal_rows)
+      write(SPAREID,112) (hcal_new_adc_threshold_neg(blk),blk=3*hmax_cal_rows+1,4*hmax_cal_rows)
+***
 112   format (12(f5.1,','),f5.1)
 
 *

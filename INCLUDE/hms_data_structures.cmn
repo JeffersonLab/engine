@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.6  1998/12/17 22:02:41  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.5  1996/09/04 15:49:31  saw
 * (SAW) Double of all ' 's in comments
 *
@@ -222,7 +225,8 @@
 *     EACH COUNTER HAS A
 *         COLUMN NUMBER
 *         ROW NUMBER
-*         ADC VALUE
+*         ADC VALUE AT Positive End  (This end if only one end used)
+*         ADC VALUE AT Negative End
 *         
 *     THE TOTAL NUMBER OF SHOWER HITS IS HCAL_TOT_HITS
 *
@@ -235,15 +239,23 @@
       INTEGER*4 HCAL_TOT_HITS
       INTEGER*4 HCAL_COLUMN(HMAX_CAL_BLOCKS)
       INTEGER*4 HCAL_ROW(HMAX_CAL_BLOCKS)
+      INTEGER*4 HCAL_ADC_POS(HMAX_CAL_BLOCKS)
+      INTEGER*4 HCAL_ADC_NEG(HMAX_CAL_BLOCKS)
       INTEGER*4 HCAL_ADC(HMAX_CAL_BLOCKS)
+      equivalence (hcal_adc, hcal_adc_pos) ! For old code
+      REAL*4 HCAL_REALADC_POS(HMAX_CAL_BLOCKS)
+      REAL*4 HCAL_REALADC_NEG(HMAX_CAL_BLOCKS)
       REAL*4 HCAL_REALADC(HMAX_CAL_BLOCKS)
+      equivalence (hcal_realadc, hcal_realadc_pos)
 
       COMMON/HMS_RAW_CAL/
      &     HCAL_COLUMN,
      &     HCAL_ROW,
-     &     HCAL_ADC,
-     &     HCAL_TOT_HITS,
-     &     HCAL_REALADC
+     &     HCAL_ADC_POS,
+     &     HCAL_ADC_NEG,
+     &     HCAL_REALADC_POS,
+     &     HCAL_REALADC_NEG,
+     &     HCAL_TOT_HITS
 *
 *    DECODED CALORIMETER QUANTITIES
 *    FILLED BY H_TRANS_CAL USING ONLY THE CALORIMETER INFORMATION

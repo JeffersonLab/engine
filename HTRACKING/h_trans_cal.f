@@ -16,6 +16,9 @@
 *-
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 * $Log$
+* Revision 1.4  1998/12/17 22:02:40  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.3  1995/05/22 19:39:31  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -38,7 +41,7 @@
       integer*4 nh      !Hit number
       integer*4 row     !Row number
       integer*4 col     !Column number
-      real*4 adc        !ADC-PED value
+      real*4 adc_pos, adc_neg !ADC-PED value
 *
       include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
@@ -64,13 +67,19 @@
       do nh=1,hcal_num_hits
          row=hcal_rows(nh)
          col=hcal_cols(nh)
-         adc=hcal_adcs(nh)
+         adc_pos=hcal_adcs_pos(nh)
+         adc_neg=hcal_adcs_neg(nh)
          nb =row+hmax_cal_rows*(col-1)
 *
 *------Determine position and energy deposition for each block
          hblock_xc(nh)=hcal_block_xc(nb)
          hblock_zc(nh)=hcal_block_zc(nb)
-         hblock_de(nh)=adc*hcal_cal_const(nb)*hcal_gain_cor(nb)
+         if(col.le.hcal_num_neg_columns) then ! Blocks with two tubes
+           hblock_de(nh)=adc_pos*hcal_pos_cal_const(nb)*hcal_pos_gain_cor(nb)
+     $          +adc_neg*hcal_neg_cal_const(nb)*hcal_neg_gain_cor(nb)
+         else ! Blocks with single tube
+           hblock_de(nh)=adc_pos*hcal_pos_cal_const(nb)*hcal_pos_gain_cor(nb)
+         endif
 *
 *------Accumulate the integral energy depositions
          if(col.eq.1) hcal_e1=hcal_e1+hblock_de(nh)

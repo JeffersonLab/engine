@@ -8,6 +8,9 @@
 *
 *
 * $Log$
+* Revision 1.5  1998/12/17 22:02:39  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.4  1995/08/31 15:01:15  cdaq
 * (JRA) Move hidcalsumadc filling to h_sparsify_cal
 *
@@ -41,6 +44,8 @@
 *
       ABORT= .FALSE.
       err= ' '
+*
+*     Light in either tube will do
 *
       if(hcal_num_hits .gt. 0 ) then
         do ihit=1,hcal_num_hits

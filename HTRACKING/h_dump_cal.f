@@ -17,6 +17,9 @@
 * block.
 *
 * $Log$
+* Revision 1.3  1998/12/17 22:02:38  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.2  1996/01/17 18:17:47  cdaq
 * (SAW) Remove extra () pair around implied do loop in write statement
 *
@@ -42,8 +45,15 @@
 *
 *  Write out cal fitting data.
 *
+*  What should this do for new tubes?
+*
       write(35,'(1x,52f7.1,1x,e11.4)') 
-     &      (hcal_realadc(blk),blk=1,hmax_cal_blocks),hsp
+     &      (hcal_realadc_pos(blk),blk=1,hmax_cal_blocks),hsp
+
+      if(hcal_num_neg_columns.gt.0) then
+        write(35,'(1x,52f7.1,1x,e11.4)') 
+     &       (hcal_realadc_neg(blk),blk=1,hmax_cal_blocks),hsp
+      endif
 
       RETURN
       END

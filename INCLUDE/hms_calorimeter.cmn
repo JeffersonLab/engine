@@ -2,6 +2,9 @@
 *      HMS calorimeter. Parameters from hms_positions.parm
 *
 * $Log$
+* Revision 1.10  1998/12/17 22:02:40  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.9  1998/12/01 20:28:57  saw
 * (SAW) Cosmetics
 *
@@ -131,12 +134,14 @@
 *
       integer*4 hcal_rows          !Row number. Copied from hms_raw_cal
       integer*4 hcal_cols          !Column number. Copied from hms_raw_cal
-      real*4    hcal_adcs          !Pulse height in channels(ADC-PED).
+      real*4    hcal_adcs_pos      !Pulse height in channels(ADC_POS-PED).
+      real*4    hcal_adcs_neg      !Pulse height in channels(ADC_NEG-PED).
       integer*4 hcal_num_hits      !Total number of hits above threshold
       common/hms_sparsified_cal/ 
      &       hcal_rows(HMAX_CAL_BLOCKS),
      &       hcal_cols(HMAX_CAL_BLOCKS),
-     &       hcal_adcs(HMAX_CAL_BLOCKS),
+     &       hcal_adcs_pos(HMAX_CAL_BLOCKS),
+     &       hcal_adcs_neg(HMAX_CAL_BLOCKS),
      &       hcal_num_hits
 *
 *      HMS calorimeter. Cluster data, filled by h_clusters_cal
@@ -180,29 +185,43 @@
 *
 *      HMS calorimeter. ADC pedestals and thresholds
 *
-      real*4 hcal_ped_mean      !Mean pedestal value
-      real*4 hcal_ped_rms       !Pedestal rms deviation
-      real*4 hcal_threshold     !Threshold=3.*hcal_ped_rms
+      real*4 hcal_pos_ped_mean      !Mean pedestal value
+      real*4 hcal_pos_ped_rms       !Pedestal rms deviation
+      real*4 hcal_pos_threshold     !Threshold=3.*hcal_ped_rms
+      real*4 hcal_neg_ped_mean      !Mean pedestal value
+      real*4 hcal_neg_ped_rms       !Pedestal rms deviation
+      real*4 hcal_neg_threshold     !Threshold=3.*hcal_ped_rms
       common/hms_cal_pedestals/
-     &       hcal_ped_mean(HMAX_CAL_BLOCKS),
-     &       hcal_ped_rms(HMAX_CAL_BLOCKS),
-     &       hcal_threshold(HMAX_CAL_BLOCKS)
+     &       hcal_pos_ped_mean(HMAX_CAL_BLOCKS),
+     &       hcal_pos_ped_rms(HMAX_CAL_BLOCKS),
+     &       hcal_pos_threshold(HMAX_CAL_BLOCKS),
+     &       hcal_neg_ped_mean(HMAX_CAL_BLOCKS),
+     &       hcal_neg_ped_rms(HMAX_CAL_BLOCKS),
+     &       hcal_neg_threshold(HMAX_CAL_BLOCKS)
 *
 *      HMS calorimeter. Calibration constants
 *
-      real*4 hcal_cal_const      !Calibration constants
+      real*4 hcal_pos_cal_const      !Calibration constants for pos PMTs
+      real*4 hcal_neg_cal_const      !Calibration constants for neg PMTs
       common/hms_cal_const/
-     &       hcal_cal_const(HMAX_CAL_BLOCKS)
+     &       hcal_pos_cal_const(HMAX_CAL_BLOCKS),
+     &       hcal_neg_cal_const(HMAX_CAL_BLOCKS)
 *
 *      HMS calorimeter. Relative gains & correction factors
 *
-      real*4 hcal_gain_ini   !Relative gains during the last calibration
-      real*4 hcal_gain_cur   !Current relative gains
-      real*4 hcal_gain_cor   !Correction factor: cor=ini/cur
+      real*4 hcal_pos_gain_ini   !Relative gains during the last calibration
+      real*4 hcal_pos_gain_cur   !Current relative gains
+      real*4 hcal_pos_gain_cor   !Correction factor: cor=ini/cur
+      real*4 hcal_neg_gain_ini   !Relative gains during the last calibration
+      real*4 hcal_neg_gain_cur   !Current relative gains
+      real*4 hcal_neg_gain_cor   !Correction factor: cor=ini/cur
       common/hms_cal_monitor/
-     &       hcal_gain_ini(HMAX_CAL_BLOCKS),
-     &       hcal_gain_cur(HMAX_CAL_BLOCKS),
-     &       hcal_gain_cor(HMAX_CAL_BLOCKS)
+     &       hcal_pos_gain_ini(HMAX_CAL_BLOCKS),
+     &       hcal_pos_gain_cur(HMAX_CAL_BLOCKS),
+     &       hcal_pos_gain_cor(HMAX_CAL_BLOCKS),
+     &       hcal_neg_gain_ini(HMAX_CAL_BLOCKS),
+     &       hcal_neg_gain_cur(HMAX_CAL_BLOCKS),
+     &       hcal_neg_gain_cor(HMAX_CAL_BLOCKS)
 *
 *      HMS calorimeter. Debuging LUN and flags
 *
@@ -213,6 +232,7 @@
       integer*4 hdbg_clusters_cal
       integer*4 hdbg_tracks_cal
       integer*4 hdbg_tests_cal
+      integer*4 hcal_num_neg_columns
       common/hms_cal_flags/
      &       hlun_dbg_cal,
      &       hdbg_raw_cal,
@@ -220,7 +240,8 @@
      &       hdbg_decoded_cal,
      &       hdbg_clusters_cal,
      &       hdbg_tracks_cal,
-     &       hdbg_tests_cal
+     &       hdbg_tests_cal,
+     $     hcal_num_neg_columns
 
 *
 *     CTPTYPE=event

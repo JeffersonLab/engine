@@ -15,6 +15,9 @@
 * h_cal_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
+* Revision 1.5  1998/12/17 22:02:38  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.4  1996/08/30 19:52:12  saw
 * (JRA) Require more than one photoelectron
 *
@@ -46,7 +49,7 @@
       integer col,row,blk
       integer hit_row(hmax_cal_columns)
       integer nhit
-      real    adc
+      real    adc_pos, adc_neg
       real    hit_pos(hmax_cal_columns),hit_dist(hmax_cal_columns)
       real    histval
       save
@@ -95,7 +98,9 @@
       do nhit=1,hcal_num_hits
         row=hcal_rows(nhit)
         col=hcal_cols(nhit)
-        adc=hcal_adcs(nhit)
+* We don't actually do anything with the following values?
+        adc_pos=hcal_adcs_pos(nhit)
+        adc_neg=hcal_adcs_neg(nhit)
         blk=row+hmax_cal_rows*(col-1)
 
 * fill the dpos histograms.

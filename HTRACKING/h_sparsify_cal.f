@@ -13,6 +13,9 @@
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to h_raw_dump_all
 * $Log$
+* Revision 1.8  1998/12/17 22:02:40  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.7  1996/01/16 21:58:51  cdaq
 * (JRA) Onlys  histogram ADC's that are not 200 above pedestal
 *
@@ -48,7 +51,8 @@
       integer*4 nh        !Loop variable for raw hits
       integer*4 nb        !Block number
       integer*4 row,col   !Row & column numbers
-      integer*4 adc       !ADC value
+      integer*4 adc_pos    !ADC value
+      integer*4 adc_neg    !ADC value
       integer*4 adc_max   !Max. channel #
       parameter (adc_max=4095)
 *
@@ -66,7 +70,8 @@
 *
       hcal_num_hits=0
       do nb = 1 , hmax_cal_blocks
-        hcal_realadc(nb)=-100
+        hcal_realadc_pos(nb)=-100
+        hcal_realadc_neg(nb)=-100
       enddo
       if(hcal_tot_hits.le.0) return
 *
@@ -75,7 +80,8 @@
       do nh=1,hcal_tot_hits      
          row=hcal_row(nh)
          col=hcal_column(nh)
-         adc=hcal_adc(nh)
+         adc_pos=hcal_adc_pos(nh)
+         adc_neg=hcal_adc_neg(nh)
 *
 *------Check the validity of raw data
 c         abort=row.le.0.or.row.gt.hmax_cal_rows
@@ -106,14 +112,21 @@ c         endif
 *------Sparsify the raw data
          nb =row+hmax_cal_rows*(col-1)
 
-         hcal_realadc(nb) = float(adc)-hcal_ped_mean(nb)
-         if (hcal_realadc(nb).le.200)
-     $        call hf1(hidcalsumadc,hcal_realadc(nb),1.)
-         if(hcal_realadc(nb).gt.hcal_threshold(nb)) then
+         hcal_realadc_pos(nb) = 1.0
+         hcal_realadc_neg(nb) = 1.0
+*     Need to do this right
+         hcal_realadc_pos(nb) = float(adc_pos) - hcal_pos_ped_mean(nb)
+         hcal_realadc_neg(nb) = float(adc_neg) - hcal_neg_ped_mean(nb)
+         if (hcal_realadc_pos(nb).le.200)
+     $        call hf1(hidcalsumadc,hcal_realadc_pos(nb),1.)
+* ??
+         if(hcal_realadc_pos(nb).gt.hcal_pos_threshold(nb) .or.
+     $        hcal_realadc_neg(nb).gt.hcal_neg_threshold(nb)) then
             hcal_num_hits           =hcal_num_hits+1
             hcal_rows(hcal_num_hits)=row
             hcal_cols(hcal_num_hits)=col
-            hcal_adcs(hcal_num_hits)=hcal_realadc(nb)
+            hcal_adcs_pos(hcal_num_hits)=hcal_realadc_pos(nb)
+            hcal_adcs_neg(hcal_num_hits)=hcal_realadc_neg(nb)
          endif
       enddo                      !End loop over raw hits
 *

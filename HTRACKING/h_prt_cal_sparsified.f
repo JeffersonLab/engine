@@ -8,6 +8,9 @@
 *-      Modified 25 Mar 1994      DFG
 *-                                change name and lun
 * $Log$
+* Revision 1.3  1998/12/17 22:02:39  saw
+* Support extra set of tubes on HMS shower counter
+*
 * Revision 1.2  1995/05/22 19:39:21  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -35,8 +38,9 @@
 *
       do hit=1,hcal_num_hits
          write(hlun_dbg_cal,20)
-     &   hit,hcal_rows(hit),hcal_cols(hit),hcal_adcs(hit)
-   20    format(i5,3x,i5,4x,i5,6x,f8.2)
+     &   hit,hcal_rows(hit),hcal_cols(hit),hcal_adcs_pos(hit)
+     &   ,hcal_adcs_neg(hit)
+   20    format(i5,3x,i5,4x,i5,6x,2f8.2)
       enddo
 *
       return
