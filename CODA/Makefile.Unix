@@ -16,6 +16,9 @@
 # 
 #  Revision History:
 #    $Log$
+#    Revision 1.3  1999/02/24 15:27:43  saw
+#    Add to CVS tree
+#
 #    Revision 1.2  1998/12/09 16:31:01  saw
 #    Remove dependence on Csoft environment variable
 #
@@ -57,7 +60,7 @@ ifeq ($(ARCH),OSF1)
 else
   CC = gcc
 endif
-.KEEP_STATE:
+#.KEEP_STATE:
 
 ifdef NFSDIRECTORY
 ../%.c : $(NFSDIRECTORY)/CODA/%.c
