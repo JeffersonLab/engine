@@ -9,6 +9,9 @@
 *- 
 *-   Created 6-6-94          D. F. Geesaman
 * $Log$
+* Revision 1.4  1996/01/24 16:07:34  saw
+* (JRA) Change upper case to lower case, cebeam to gebeam
+*
 * Revision 1.3  1995/05/22 19:45:41  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -42,14 +45,15 @@
 *
 *     Fix SOS to be in plane, beam left
 *
-      SPHI_LAB = TT/2
+      sphi_lab = tt/2
 *
-      COSSTHETAS = COS(STHETA_LAB)
-      SINSTHETAS = SIN(STHETA_LAB)
+      cossthetas = cos(stheta_lab)
+      sinsthetas = sin(stheta_lab)
 *     Constants for elastic kinematics calcultion
-      SPHYSICSA = 2.*CEBEAM*TMASS_TARGET - mass_electron**2 - SPARTMASS**2
-      SPHYSICSB = 2. * ( TMASS_TARGET - CEBEAM)
-      SPHYSICAB2 = SPHYSICSA**2 * SPHYSICSB**2
-      SPHYSICSM3B = SPARTMASS**2 * SPHYSICSB**2
-      RETURN
-      END
+      sphysicsa = 2.*gebeam*gtarg_mass(gtarg_num) -
+     $     mass_electron**2 - spartmass**2
+      sphysicsb = 2. * (gtarg_mass(gtarg_num) - gebeam)
+      sphysicab2 = sphysicsa**2 * sphysicsb**2
+      sphysicsm3b = spartmass**2 * sphysicsb**2
+      return
+      end
