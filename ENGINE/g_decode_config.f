@@ -20,10 +20,13 @@
 *
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton Univ.; rewrote parsing
-*-    $Log$
-*-    Revision 1.5  1995/07/27 19:07:53  cdaq
-*-    (SAW) Remove unused variables, change type to status in open statement (f2c)
-*-
+* $Log$
+* Revision 1.6  1996/01/16 20:48:35  cdaq
+* (SAW) Start "roc" index at zero instead of one.
+*
+* Revision 1.5  1995/07/27 19:07:53  cdaq
+* (SAW) Remove unused variables, change type to status in open statement (f2c)
+*
 * Revision 1.4  1994/06/21  20:42:37  cdaq
 * (SAW) Fix a bug interpreting comment lines
 *
@@ -170,12 +173,12 @@
                   read(line(1:llen),'(4i15)') subadd, plane, counter,
      $                 signal
                   If(OK .and. (roc.ne.lastroc.or.slot.ne.lastslot)) Then
-                     if(g_decode_slotpointer(roc+1,slot).le.0) then
-                        g_decode_slotpointer(roc+1,slot) =
+                     if(g_decode_slotpointer(roc,slot).le.0) then
+                        g_decode_slotpointer(roc,slot) =
      &                       g_decode_nextpointer
-                        g_decode_subaddcnt(roc+1,slot) = nsubadd
-                        g_decode_subaddbit(roc+1,slot) = bsubadd
-                        g_decode_slotmask(roc+1,slot) = mask
+                        g_decode_subaddcnt(roc,slot) = nsubadd
+                        g_decode_subaddbit(roc,slot) = bsubadd
+                        g_decode_slotmask(roc,slot) = mask
                         g_decode_nextpointer = g_decode_nextpointer +
      &                       nsubadd
                         lastroc = roc
@@ -184,13 +187,13 @@
                   EndIf
 *     
                   If(OK) Then
-                     g_decode_didmap( g_decode_slotpointer(roc+1,slot)
+                     g_decode_didmap( g_decode_slotpointer(roc,slot)
      &                    +subadd ) = did
-                     g_decode_planemap( g_decode_slotpointer(roc+1,slot)
+                     g_decode_planemap( g_decode_slotpointer(roc,slot)
      &                    +subadd ) = plane
-                     g_decode_countermap( g_decode_slotpointer(roc+1,slot)
+                     g_decode_countermap( g_decode_slotpointer(roc,slot)
      &                    +subadd ) = counter
-                     g_decode_sigtypmap( g_decode_slotpointer(roc+1,slot)
+                     g_decode_sigtypmap( g_decode_slotpointer(roc,slot)
      &                    +subadd ) = signal
                   EndIf
 *     
