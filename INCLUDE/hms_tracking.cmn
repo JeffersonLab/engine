@@ -8,6 +8,9 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
+* Revision 1.24  1996/09/04 16:25:26  saw
+* (DVW) Add slew of variables for derek's hms track tests
+*
 * Revision 1.23  1996/04/30 13:44:09  saw
 * (JRA) Lots of changes
 *
@@ -164,7 +167,7 @@
       real*4  hdc_central_time   !ave. time (ns) for signal to reach disc. card.
                                  ! (both times are from center of the chamber)
 * timing offsets per card.
-      integer*4 hdc_sing_cardid  ! array of card id's so one can put cuts/test on a per/card basys
+      integer*4 hdc_sing_cardid  ! array of card id''s so one can put cuts/test on a per/card basys
       integer*4 hdc_card_no      ! card number
       real*4 hdc_card_delay      ! delay for a given card
 
@@ -360,3 +363,81 @@
      &   hdc_num_deadwires,  !number of dead wires.
      &   hdc_deadwire_plane, !list of plane numbers.
      &   hdc_deadwire_num    !list of wire numbers.
+*
+*     CTPTYPE=parm
+*
+      logical h1hit1,h1hit2,h1hit3,h1hit4,h1hit5,h1hit6
+      logical h1hit7,h1hit8,h1hit9,h1hit10,h1hit11,h1hit12
+      integer hnumhit1,hnumhit2,hnumhit3,hnumhit4,hnumhit5,hnumhit6
+      integer hnumhit7,hnumhit8,hnumhit9,hnumhit10,hnumhit11,hnumhit12
+      logical h1hitslt,h2hitslt,h1planesgt,h2planesgt
+      logical hhitslt,hplanesgt
+      logical hstublt
+      logical f1hspacepoints,f2hspacepoints,fhspacepoints
+      logical hhitsplanes,hhitsplanessps,hhitsplanesspsstubs
+      logical hspacepoints
+      logical htest1,htest2
+      logical hfoundtrack, hcleantrack
+      integer hnumhits1,hnumhits2,hnumplanes1,hnumplanes2
+      integer hnumscins1,hnumscins2,hnumscins3,hnumscins4
+      integer hstubtest
+      real*4 hstubminx,hstubminy,hstubminxp,hstubminyp
+      integer hscinhit(4,16)
+      integer hnclust(4)
+      integer hthreescin(4)
+      integer hslope
+      integer hbestxpscin
+      integer hbestypscin
+      integer hgoodscinhits
+      integer hxloscin(hmax_num_chambers),hxhiscin(hmax_num_chambers)
+      integer hyloscin(hmax_num_chambers),hyhiscin(hmax_num_chambers)
+      integer htrack_eff_test_num_scin_planes
+
+      common/dereks_hms_track_tests/
+     &    h1hit1,
+     &    h1hit2,
+     &    h1hit3,
+     &    h1hit4,
+     &    h1hit5,
+     &    h1hit6,
+     &    h1hit7,
+     &    h1hit8,
+     &    h1hit9,
+     &    h1hit10,
+     &    h1hit11,
+     &    h1hit12,
+     &	  hnumhit1,hnumhit2,hnumhit3,hnumhit4,hnumhit5,hnumhit6,
+     &    hnumhit7,hnumhit8,hnumhit9,hnumhit10,hnumhit11,hnumhit12,
+     &    h1hitslt,
+     &    h2hitslt,
+     &    h1planesgt,
+     &    h2planesgt,
+     &    hhitslt,
+     &    hplanesgt,
+     &    hstublt,
+     &    f1hspacepoints,
+     &    f2hspacepoints,
+     &    fhspacepoints,
+     &    hhitsplanes,
+     &    hhitsplanessps,
+     &    hhitsplanesspsstubs,
+     &    hspacepoints,
+     &    htest1,htest2,
+     &    hfoundtrack,
+     &    hcleantrack,
+     &    hnumhits1,hnumhits2,hnumplanes1,hnumplanes2,
+     &    hnumscins1,hnumscins2,hnumscins3,hnumscins4,
+     &    hstubtest,
+     &    hstubminx,
+     &    hstubminy,
+     &    hstubminxp,
+     &    hstubminyp,
+     &	  hscinhit,
+     &    hnclust,
+     &    hthreescin,
+     &    hslope,
+     &    hbestxpscin,
+     &    hbestypscin,
+     &    hgoodscinhits,
+     &    hxloscin,hxhiscin,hyloscin,hyhiscin,
+     &    htrack_eff_test_num_scin_planes
