@@ -5,24 +5,28 @@
 *                   David Potterveld, Argonne National Lab.                    *
 *     modified:  21-JAN-94    DFG     change max_ to hmax_
 * $Log$
-* Revision 1.1  1994/02/22 14:45:52  cdaq
+* Revision 1.2  1994/08/05 19:30:03  cdaq
+* (SAW) Add "CTPTYPE=parm" directive for auto generation of CTP reg calls
+*
+* Revision 1.1  1994/02/22  14:45:52  cdaq
 * Initial revision
 *
 ********************************************************************************
+*     CTPTYPE=parm
+*
+      integer*4        hmax_recon_elements
+      parameter       (hmax_recon_elements = 1000) !Max # coeff elements
 
-        integer*4        hmax_recon_elements
-        parameter       (hmax_recon_elements = 1000)       !Max # coeff elements
+      real*4           h_recon_coeff(4,hmax_recon_elements)
+      integer*4        h_recon_expon(4,hmax_recon_elements)
+      integer*4        h_num_recon_terms
+      integer*4        h_recon_initted
 
-        real*4           h_recon_coeff(4,hmax_recon_elements)
-        integer*4        h_recon_expon(4,hmax_recon_elements)
-        integer*4        h_num_recon_terms
-        integer*4        h_recon_initted
-
-        common /hms_recon_elements/
-     >                   h_recon_initted,                 !Initialization flag.
-     >                   h_num_recon_terms,               !Number of terms.
-     >                   h_recon_coeff,                   !Coefficients.
-     >                   h_recon_expon                    !Exponents.
+      common /hms_recon_elements/
+     >     h_recon_initted,             !Initialization flag.
+     >     h_num_recon_terms,           !Number of terms.
+     >     h_recon_coeff,               !Coefficients.
+     >     h_recon_expon                !Exponents.
 
 ********************************************************************************
 
