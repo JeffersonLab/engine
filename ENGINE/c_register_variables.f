@@ -13,8 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.7  1995/05/11 14:50:17  cdaq
-*     (SAW) Add call to register variables from c_ntuple.cmn
+*     Revision 1.8  1995/05/22 13:32:49  cdaq
+*     (SAW) Add call to register coin_data_structures.cmn variables
+*
+* Revision 1.7  1995/05/11  14:50:17  cdaq
+* (SAW) Add call to register variables from c_ntuple.cmn
 *
 * Revision 1.6  1994/08/18  04:11:57  cdaq
 * (SAW) Call makereg generated routines to register variables
@@ -52,6 +55,8 @@
 *
       ABORT = .false.
       err= ' '
+
+      call r_coin_data_structures
 
       call r_coin_filenames
 
