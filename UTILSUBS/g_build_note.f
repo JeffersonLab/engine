@@ -14,11 +14,14 @@
 *-   Created  20-Nov-1993 Kevin B. Beard, Hampton U.
 *-   Modified 18-Jan-1994 K.B.Beard, HU, so wild=" " gets skipped
 *     $Log$
-*     Revision 1.2  1994/02/17 20:56:34  cdaq
-*       Fmt also for integers
-*       fmt control words: "X" "Z" "HEX"       hexadecimal
-*                          "B" "BIN"           binary
-*       fmt decided on basis of F or E present, "()" added if needed
+*     Revision 1.3  1994/06/08 17:40:56  cdaq
+*     (KBB) new version
+*
+* Revision 1.2  1994/02/17  20:56:34  cdaq
+*   Fmt also for integers
+*   fmt control words: "X" "Z" "HEX"       hexadecimal
+*                      "B" "BIN"           binary
+*   fmt decided on basis of F or E present, "()" added if needed
 *
 * Revision 1.1  1994/02/09  14:15:01  cdaq
 * Initial revision
@@ -44,13 +47,17 @@
       character*20 fmtR,fmtI,FT
       character*40 pad,new
       logical wldI,wldR,binary,real_fmt,int_fmt
+      character*8 dflt_fmtR,dflt_fmtI,dflt_fmtZ
+      parameter (dflt_fmtR= '(f20.3)')
+      parameter (dflt_fmtI= '(i20)')
+      parameter (dflt_fmtZ= '(z10)')
 *
 *----------------------------------------------------------------------
 *
       wldI= wildI.NE.' '
       wldR= wildR.NE.' '
 *
-      IF(.NOT.wldI .or. .NOT.wldI) THEN
+      IF(.NOT.wldI .and. .NOT.wldI) THEN
         note= pat                       !do nothing
         call only_one_blank(note)       !leave only 1 consecutive blank 
         RETURN
@@ -60,29 +67,29 @@
       call only_one_blank(msg)	!leave only 1 consecutive blank 
 *
       binary= .FALSE.           !assume not a binary dump
-      fmtI= '(I20)'
-      fmtR= '(20F.6)'
+      fmtI= dflt_fmtI
+      fmtR= dflt_fmtR
       call ShiftAll(fmt,FT)
-      call NO_blanks(FT)
+      call NO_leading_blanks(FT)
       IF(FT.EQ.'Z' .or. FT.EQ.'X' .or. FT(1:3).EQ.'HEX') THEN     !hexadecimal
-        fmtI= '(z10)'
-        fmtR= '(20F.6)'
+        fmtI= dflt_fmtZ
+        fmtR= dflt_fmtR
         FT= ' '
       ELSEIF(FT.EQ.'B' .or. FT(1:3).EQ.'BIN') THEN                !binary
-        fmtI= '(z10)'
-        fmtR= '(20F.6)'
+        fmtI= dflt_fmtZ
+        fmtR= dflt_fmtR
         binary= .TRUE.
         FT= ' '
-      ELSEIF(FT(1:1).NE.'(') THEN                                 !add "()"
+      ELSEIF(FT.NE.' ' .and. FT(1:1).NE.'(') THEN                 !add "()"
         pad= '('//FT//')'
         FT= pad
-        call NO_blanks(FT)
+        call only_one_blank(FT)
       ENDIF
 *
-      real_fmt= .NOT.wldI .and. FT.NE.' ' .or. 
+      real_fmt= (.NOT.wldI .and. FT.NE.' ') .or. 
      &                    INDEX(FT,'F')+INDEX(FT,'E').GT.0
-      int_fmt= .NOT.wldR .and. FT.NE.' ' .or. 
-     &                    INDEX(FT,'I')+INDEX(FT,'Z')
+      int_fmt= (.NOT.wldR .and. FT.NE.' ') .or. 
+     &                    INDEX(FT,'I')+INDEX(FT,'Z').GT.0
       IF(real_fmt) THEN
         fmtR= FT
       ELSEIF(int_fmt) THEN
@@ -146,6 +153,7 @@
           msg= tmp
         EndIf       
         call only_one_blank(msg)	!leave only 1 consecutive blank 
+        i= INDEX(msg,w)
       ENDDO
 *
       note= msg
