@@ -21,6 +21,27 @@
 *
 *
 * $Log$
+* Revision 1.19.4.1  2004/07/01 14:43:10  jones
+* New version for fpi2 branch
+*
+* Revision 1.21  2003/11/28 14:57:30  jones
+* Added variable ssxp_tar_temp = ssxp_tar + s_oopcentral_offset  (MKJ)
+*
+* Revision 1.20  2003/09/05 19:52:01  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.19.2.4  2003/09/05 14:32:57  jones
+* Use s_oopcentral_offset (mkj)
+*
+* Revision 1.19.2.3  2003/08/12 17:36:21  cdaq
+* Add variables for e00-108 (hamlet)
+*
+* Revision 1.19.2.2  2003/07/15 19:04:40  cdaq
+* add calculation of ssinplane
+*
+* Revision 1.19.2.1  2003/04/10 12:40:30  cdaq
+* add  e_nonzero and modify p_nonzero.  These are used in calculating E_cal/p and beta.
+*
 * Revision 1.19  2002/12/27 22:13:00  jones
 *    a. Ioana Niculescu modified total_eloss call
 *    b. CSA 4/15/99 -- changed ssbeta to ssbeta_p in total_eloss call
@@ -117,13 +138,14 @@
       integer*4 i,ip,ihit
       integer*4 itrkfp
       real*4 cossstheta,sinsstheta
-      real*4 p_nonzero
+      real*4 p_nonzero,e_nonzero
       real*4 xdist,ydist,dist(12),res(12)
       real*4 tmp,W2
       real*4 ssp_z
       real*4 Wvec(4)
       real*4 sstheta_1st
       real*4 scalar,mink
+      real*4 ssxp_tar_temp
 *
 *--------------------------------------------------------
 *
@@ -140,6 +162,7 @@
       ssx_tar      = sx_tar(ssnum_tartrack)
       ssy_tar      = sy_tar(ssnum_tartrack)
       ssxp_tar     = sxp_tar(ssnum_tartrack) ! This is an angle (radians)
+      ssxp_tar_temp = ssxp_tar + s_oopcentral_offset
       ssyp_tar     = syp_tar(ssnum_tartrack) ! This is an angle (radians)
       ssbeta       = sbeta(itrkfp)
       ssbeta_chisq = sbeta_chisq(itrkfp)
@@ -159,7 +182,12 @@
 
       sstrack_et   = strack_et(itrkfp)
       sstrack_preshower_e = strack_preshower_e(itrkfp)
-      p_nonzero    = max(.0001,ssp)      !momentum (used to normalize calorim.)
+      p_nonzero    = ssp !reconstructed momentum with 'reasonable' limits.
+                         !Used to calc. E_cal/p and beta.
+      p_nonzero    = max(0.6*spcentral,p_nonzero)
+      p_nonzero    = min(1.4*spcentral,p_nonzero)
+      e_nonzero    = sqrt(p_nonzero**2+spartmass**2)
+
       sscal_suma   = scal_e1/p_nonzero  !normalized cal. plane sums
       sscal_sumb   = scal_e2/p_nonzero
       sscal_sumc   = scal_e3/p_nonzero
@@ -176,16 +204,18 @@
       ssy_sp2      = sy_sp2(itrkfp)
       ssxp_sp2     = sxp_sp2(itrkfp)
 
-      do ihit=1,snum_scin_hit(itrkfp)
-        if (sidscintimes.gt.0)
-     $       call hf1(sidscintimes,sscin_fptime(itrkfp,ihit),1.)
-      enddo
+      if (sidscintimes.gt.0) then
+        do ihit=1,snum_scin_hit(itrkfp)
+          call hf1(sidscintimes,sscin_fptime(itrkfp,ihit),1.)
+        enddo
+      endif
 
-      do ihit=1,sntrack_hits(itrkfp,1)
-        if (sidcuttdc.gt.0)
-     $       call hf1(sidcuttdc,
+      if (sidcuttdc.gt.0) then
+        do ihit=1,sntrack_hits(itrkfp,1)
+          call hf1(sidcuttdc,
      &       float(sdc_tdc(sntrack_hits(itrkfp,ihit+1))),1.)
-      enddo
+        enddo
+      endif
 
       ssx_dc1 = ssx_fp  +  ssxp_fp * sdc_1_zpos
       ssy_dc1 = ssy_fp  +  ssyp_fp * sdc_1_zpos
@@ -200,7 +230,12 @@
       ssx_cal = ssx_fp  +  ssxp_fp * scal_1pr_zpos
       ssy_cal = ssy_fp  +  ssyp_fp * scal_1pr_zpos
 
-      ssbeta_p = ssp/max(ssenergy,.00001)
+c Used to use hsp, replace with p_nonzero, to give reasonable limits
+C (+/-40%) to avoid unreasonable hsbeta_p values
+c      ssbeta_p = ssp/max(ssenergy,.00001)
+
+      ssbeta_p = p_nonzero/e_nonzero
+
 
 C old 'fit' value for pathlen correction
 C        sspathlength = 2.78*ssxp_fp - 3.5*ssxp_fp**2 + 2.9e-3*ssy_fp
@@ -267,6 +302,8 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 *     Do energy loss, which is particle specific
 
       sstheta_1st = stheta_lab*TT/180. + atan(ssyp_tar) ! rough scat angle
+c
+      ssinplane = stheta_lab*TT/180. + atan(ssyp_tar) ! In plane scat angle (rad)
 
       if (spartmass .lt. 2.*mass_electron) then ! for electron
         if (gtarg_z(gtarg_num).gt.0.) then
@@ -299,7 +336,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 *     This coordinate system is a just a simple rotation away from the
 *     TRANSPORT coordinate system used in the spectrometers
 
-      ssp_z = ssp/sqrt(1.+ssxp_tar**2+ssyp_tar**2)
+      ssp_z = ssp/sqrt(1.+ssxp_tar_temp**2+ssyp_tar**2)
             
 *     Initial Electron
 
@@ -313,7 +350,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 *     12/21/98 -- notice assumption of no out-of-plane offset
 
       ss_kpvec(1) =  ssenergy
-      ss_kpvec(2) =  ssp_z*ssxp_tar
+      ss_kpvec(2) =  ssp_z*ssxp_tar_temp
       ss_kpvec(3) =  ssp_z*(ssyp_tar*cossthetas+sinsthetas)
       ss_kpvec(4) =  ssp_z*(-ssyp_tar*sinsthetas+cossthetas)
 
@@ -327,14 +364,13 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
       else
         sstheta = -10.
       endif
-
       ssphi = atan(ss_kpvec(3)/ss_kpvec(2))
 
       sinsstheta = sin(sstheta)
       cossstheta = cos(sstheta)
 
       ssphi = sphi_lab + ssphi
-      if (ssphi .lt. 0.) ssphi = ssphi + tt
+c      if (ssphi .lt. 0.) ssphi = ssphi + tt
 
 *     sszbeam is the intersection of the beam ray with the
 *     spectrometer as measured along the z axis.
@@ -380,6 +416,11 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
          ssq3    = sqrt(scalar(ss_qvec,ss_qvec))
          ssbigq2 = -mink(ss_qvec,ss_qvec) 
          W2      = mink(Wvec,Wvec)
+
+         ssomega = gebeam-ssenergy
+         ssthet_gamma = asin((ssenergy*sin(sstheta))/ssq3)
+         ssx_bj = ssbigq2/(2.0*mass_nucleon*ssomega)
+
          if(W2.ge.0 ) then
             sinvmass = SQRT(W2)
          else
