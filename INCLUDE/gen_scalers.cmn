@@ -4,6 +4,9 @@
 *     quantities calculated from the scaler events (time, current, etc...)
 *
 * $Log$
+* Revision 1.11  1999/02/23 19:07:06  csa
+* (JRA) Add WEIRD_CLEARS common
+*
 * Revision 1.10  1999/02/10 17:40:52  csa
 * Added beam-on variables (D. McKee)
 *
@@ -56,8 +59,21 @@
       integer g_replay_time                   !time since start of run (from cpu clock) 
 *
       common /SCALERS/ gscaler, gscaler_old, gscaler_change,
-     $     gclock_rate, g_run_time, gclock_index, g_replay_time, 
+     $     gclock_rate, g_run_time, gclock_index, g_replay_time,
      $     gscaler_nroll, g_beam_on_run_time
+
+c For Gen it is noticed that some scaler channels are randomly clearing
+c themselves.  The following is to
+                         
+      real*8 gscalweird_lostcounts(MAX_NUM_SCALERS)
+      integer*4 gscalweird_nclears(MAX_NUM_SCALERS)
+      integer*4 gscalweird_lastval(MAX_NUM_SCALERS)
+*     CTPTYPE=parm
+      integer*4 gscalweirdcorrect_flag
+*     CTPTYPE=event
+
+      common /WEIRD_CLEARS/ gscalweird_lostcounts,
+     $     gscalweird_nclears,gscalweird_lastval,gscalweirdcorrect_flag
 
 *
       integer*4 gscal_lastevnum(2)      ! check for missing/out of order of scaler events
