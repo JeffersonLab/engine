@@ -12,6 +12,9 @@
 *           Add definition of snum_scin_elements and set parameter value
 *
 * $Log$
+* Revision 1.7  1996/01/24 16:20:17  saw
+* (JRA) Make smisc_dec_data two dimensional
+*
 * Revision 1.6  1995/08/11 16:35:55  cdaq
 * (JRA) Remove old dpos stuff
 *       Add sscin_zero accumulators
@@ -160,10 +163,15 @@ c      integer*4 sscin_num_counters(SNUM_SCIN_PLANES)
 * sos_misc_parms.cmn -  misc tdc's filled as array over signal number
 *         (tdc is sparsified, so the raw signals are array over hits)
 *
+*     CTPTYPE=parm
+*
+      integer*4 snum_misc_planes
+      parameter(snum_misc_planes=2)     !(1=TDC, 2=ADC)
+*
 *
 *     CTPTYPE=event
 *
-      integer*4 smisc_dec_data(smax_misc_hits)
+      integer*4 smisc_dec_data(smax_misc_hits,snum_misc_planes)
 
       common/sos_misc_parms/
      &   smisc_dec_data
