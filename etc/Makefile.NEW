@@ -55,7 +55,7 @@ ifeq ($(MYOS),SunOS)
     OSVERSION=5
   endif
   OSTYPE = $(MYOS)
-  SUBDIRNAME = O.sunos
+  SUBDIRNAME = O.$(MYOS)
   OSEXT =
 endif
 
