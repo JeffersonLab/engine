@@ -10,7 +10,10 @@
 *-                                Change lun
 *-                7 Apr 1994      DFG  Change print order
 * $Log$
-* Revision 1.2  1995/05/22 19:45:48  cdaq
+* Revision 1.3  1995/08/31 20:41:54  cdaq
+* (JRA) Subtract pedestal in raw data dump
+*
+* Revision 1.2  1995/05/22  19:45:48  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.1  1994/04/13  18:20:03  cdaq
@@ -22,6 +25,9 @@
       save
 *
       integer*4 hit      !Hit number
+      integer*4 row,col,nb
+      real*4 adc
+
 *
       include 'sos_data_structures.cmn'
       include 'sos_calorimeter.cmn'
@@ -36,9 +42,13 @@
       if(scal_tot_hits.le.0) return
 *
       do hit=1,scal_tot_hits
-         write(slun_dbg_cal,20)
-     &   hit,scal_column(hit),scal_row(hit),scal_adc(hit)
-   20    format(i5,3x,i5,4x,i5,7x,i5)
+        row=scal_row(hit)
+        col=scal_column(hit)
+        nb =row+smax_cal_rows*(col-1)
+        adc=float(scal_adc(hit))-scal_ped_mean(nb)
+        write(slun_dbg_cal,20)
+     &       hit,scal_column(hit),scal_row(hit),adc
+ 20     format(i5,3x,i5,4x,i5,7x,i5)
       enddo
 *
       return
