@@ -1,0 +1,86 @@
+* hms_pedestals.cmn -  counters used for calculating pedestals from the set
+*                      of pedestal events at the beginning of each run.
+*
+* $Log$
+* Revision 1.1  1995/05/26 16:14:28  cdaq
+* Initial revision
+*
+* Revision 1.2  1995/05/22  19:08:49  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
+* Fix conflicting common block names.  Add Cerenkov pedestals
+*
+* Revision 1.1  1995/04/06  20:17:19  cdaq
+* Initial revision
+*
+*
+*     The following include statments must precede the inclusion of this
+*     file in each routine that uses it.  The *%% syntax is also a
+*     directive to makereg to tell it to include the code in the program
+*     that it generates.
+*
+*%%   include 'hms_data_structures.cmn'
+*
+*     CTPTYPE=event
+*
+*
+* HODOSCOPE PEDESTALS
+* replace hscin_all_ped_pos with float(hhodo_pos_ped_sum/hhodo_pos_ped_num)
+* if hhodo_pos_ped_num > hhodo_min_peds.
+*
+      integer*4 hhodo_pos_ped_sum2(hnum_scin_planes,hnum_scin_elements)
+      integer*4 hhodo_neg_ped_sum2(hnum_scin_planes,hnum_scin_elements)
+      integer*4 hhodo_pos_ped_sum(hnum_scin_planes,hnum_scin_elements)
+      integer*4 hhodo_neg_ped_sum(hnum_scin_planes,hnum_scin_elements)
+      integer*4 hhodo_pos_ped_num(hnum_scin_planes,hnum_scin_elements)
+      integer*4 hhodo_neg_ped_num(hnum_scin_planes,hnum_scin_elements)
+      integer*4 hhodo_min_peds
+*
+      common/hms_scin_pedestals/
+     &   hhodo_pos_ped_sum2,  !sum of squares
+     &   hhodo_neg_ped_sum2,  !sum of squares
+     &   hhodo_pos_ped_sum,   !sum of peds
+     &   hhodo_neg_ped_sum,   !sum of peds
+     &   hhodo_pos_ped_num,   !number of peds
+     &   hhodo_neg_ped_num,   !number of peds
+     &   hhodo_min_peds       !# of peds required to override default pedestals
+*
+*
+* CALORIMETER PEDESTALS
+* replace hcal_ped_mean with float(hcal_ped_sum/hcal_ped_num),
+*         hcal_ped_rms  with (appropriate formula),
+*    and  hcal_threshold with (something like) min(10.,3.*hcal_ped_rms)
+* if hcal_num > hcal_min_peds.
+*
+      integer*4 hcal_ped_sum2(hmax_cal_blocks)
+      integer*4 hcal_ped_sum(hmax_cal_blocks)
+      integer*4 hcal_ped_num(hmax_cal_blocks)
+      integer*4 hcal_min_peds
+*
+      common/hms_cal_ped_stats/
+     &   hcal_ped_sum2,       !sum of squares
+     &   hcal_ped_sum,        !sum of peds
+     &   hcal_ped_num,        !number of peds
+     &   hcal_min_peds        !# of peds required to override default pedestals
+*
+* CERENKOV PEDESTALS
+* replace hcer_ped_mean with float(hcer_ped_sum/hcer_ped_num),
+*         hcer_ped_rms  with (appropriate formula),
+*    and  hcer_threshold with (something like) min(10.,3.*hcer_ped_rms)
+* if hcer_num > hcer_min_peds.
+*
+      integer*4 hcer_ped_sum2(hmax_cer_hits)
+      integer*4 hcer_ped_sum(hmax_cer_hits)
+      integer*4 hcer_ped_num(hmax_cer_hits)
+      integer*4 hcer_min_peds
+      real*4 hcer_ped_mean(hmax_cer_hits)
+      real*4 hcer_ped_rms(hmax_cer_hits)
+      real*4 hcer_threshold(hmax_cer_hits)
+*
+      common/hms_cer_pedestals/
+     &   hcer_ped_sum2,       !sum of squares
+     &   hcer_ped_sum,        !sum of peds
+     &   hcer_ped_num,        !number of peds
+     &   hcer_min_peds,       !# of peds required to override default pedestals
+     &   hcer_ped_mean,
+     &   hcer_ped_rms,
+     &   hcer_threshold
