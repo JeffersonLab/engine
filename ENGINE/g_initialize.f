@@ -10,9 +10,12 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.10  1994/09/21 19:52:57  cdaq
-*-    (SAW) Cosmetic change
+*-    Revision 1.11  1994/10/11 18:39:40  cdaq
+*-    (SAW) Add some hacks for event display
 *-
+* Revision 1.10  1994/09/21  19:52:57  cdaq
+* (SAW) Cosmetic change
+*
 * Revision 1.9  1994/08/30  14:47:41  cdaq
 * (SAW) Add calls to clear the test flags and scalers
 *
@@ -60,6 +63,8 @@
       INCLUDE 'coin_filenames.cmn'
       INCLUDE 'gen_routines.dec'
       INCLUDE 'gen_pawspace.cmn'                !includes sizes of special CERNLIB space
+*HDISPLAY      include 'one_ev_io.cmn'
+*HDISPLAY      include 'gen_gcbank.cmn'
 *
       integer ierr
       logical HMS_ABORT,SOS_ABORT, HACK_ABORT
@@ -80,6 +85,7 @@
 *     Book the histograms, tests and parameters
 *
       if(first_time) then
+*HDISPLAY        call GZEBRA(G_size_GCBANK)      ! init GEANT memory
         call HLIMIT(G_sizeHBOOK)        !set in "gen_pawspace.cmn"
       endif
 *     Load and book all the CTP files
