@@ -13,8 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.1  1994/02/11 04:18:56  cdaq
-*     Initial revision
+*     Revision 1.2  1994/02/22 18:58:00  cdaq
+*     (SAW) Make a call to h_register_param
+*
+* Revision 1.1  1994/02/11  04:18:56  cdaq
+* Initial revision
 *
 *
 *----------------------------------------------------------------------
@@ -33,6 +36,12 @@
 *--------------------------------------------------------
       err= ' '
       ABORT = .FALSE.
+*
+      call s_register_param(ABORT,err)          ! TRACKING ROUTINE
+      if(ABORT) then
+         g_add_path(here,err)
+         return
+      endif
 *
 *     The following variables are all fortran PARAMETERS.  It may not be
 *     wise to register them.  (External applications can still get the
