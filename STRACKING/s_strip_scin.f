@@ -7,7 +7,10 @@
 * s_strip_scin converts the raw hits to arrays over hits
 * with good TDC values.
 * $Log$
-* Revision 1.4  1995/05/22 19:45:56  cdaq
+* Revision 1.5  1995/08/31 20:44:25  cdaq
+* (JRA) Accumulate pedestals from pedestal events.
+*
+* Revision 1.4  1995/05/22  19:45:56  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.3  1995/05/11  15:02:18  cdaq
@@ -73,6 +76,15 @@
           plane = sscin_PLANE_NUM(igoodhit)
           counter = sscin_COUNTER_NUM(igoodhit)
           if(plane.ge.1.and.plane.le.4) sscin_sing_counter(plane) = counter
+
+        else            !not a real event, calc. pedestals
+
+          ip = sscin_all_plane_num(ihit)
+          ic = sscin_all_counter_num(ihit)
+          sscin_zero_pos(ip,ic)=sscin_zero_pos(ip,ic)+sscin_all_adc_pos(ihit)
+          sscin_zero_neg(ip,ic)=sscin_zero_neg(ip,ic)+sscin_all_adc_neg(ihit)
+          sscin_zero_num(ip,ic)=sscin_zero_num(ip,ic)+1
+
         endif
       enddo
 
