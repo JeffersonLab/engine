@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.7  1996/04/30 13:26:59  saw
+# (SAW) Add aerogel include file
+#
 # Revision 1.6  1996/01/17 14:02:15  cdaq
 # (SAW) Add one event display includes
 #
@@ -37,7 +40,7 @@ cmn = gen_data_structures.cmn gen_craw.cmn gen_decode_common.cmn \
 	sos_physics_sing.cmn sos_recon_elements.cmn sos_scin_parms.cmn \
 	sos_scin_tof.cmn sos_statistics.cmn sos_track_histid.cmn \
 	sos_tracking.cmn sos_pedestals.cmn \
-	sos_cer_parms.cmn \
+	sos_cer_parms.cmn sos_aero_parms.cmn \
 	s_ntuple.cmn s_sieve_ntuple.cmn \
 	coin_data_structures.cmn coin_bypass_switches.cmn c_ntuple.cmn \
 	coin_filenames.cmn \
