@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.41.6.1  2004/06/18 11:24:11  cdaq
+*  Fixed so that runstats works under Linux
+*
 * Revision 1.41  2004/05/27 23:51:28  jones
 * Initialize EoF = .false.
 *
@@ -481,8 +484,8 @@ c
 * Comment out the following three lines if they cause trouble or
 * if wish is unavailable.
 *
-      write(system_string,*) 'runstats ',file(1:index(file,' ')-1), ' ',
-     $     gen_run_number, '> /dev/null &'
+      write(system_string,*) './runstats ',file(1:index(file,' ')-1), ' ',
+     $     gen_run_number, ' > /dev/null &'
       call system(system_string)
 *
 *-zero entire event buffer
