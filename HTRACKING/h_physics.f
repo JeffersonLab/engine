@@ -19,7 +19,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.6  1995/02/02 13:05:40  cdaq
+* Revision 1.7  1995/02/10 18:44:47  cdaq
+* (SAW) _tar values are now angles instead of slopes
+*
+* Revision 1.6  1995/02/02  13:05:40  cdaq
 * (SAW) Moved best track selection code into H_SELECT_BEST_TRACK (new)
 *
 * Revision 1.5  1995/01/27  20:24:14  cdaq
@@ -74,8 +77,8 @@
          HSDELTA  = HDELTA_TAR(HSNUM_TARTRACK)
          HSX_TAR  = HX_TAR(HSNUM_TARTRACK)
          HSY_TAR  = HY_TAR(HSNUM_TARTRACK)
-         HSXP_TAR  = HXP_TAR(HSNUM_TARTRACK)
-         HSYP_TAR  = HYP_TAR(HSNUM_TARTRACK)
+         HSXP_TAR  = HXP_TAR(HSNUM_TARTRACK) ! This is an angle (radians)
+         HSYP_TAR  = HYP_TAR(HSNUM_TARTRACK) ! This is an angle (radians)
          HSDEDX1   = HDEDX(HSNUM_FPTRACK,1)
          HSDEDX2   = HDEDX(HSNUM_FPTRACK,2)
          HSDEDX3   = HDEDX(HSNUM_FPTRACK,3)
@@ -87,8 +90,8 @@
          HSTIME_AT_FP   = HTIME_AT_FP(HSNUM_FPTRACK)
          HSX_FP   = HX_FP(HSNUM_FPTRACK)
          HSY_FP   = HY_FP(HSNUM_FPTRACK)
-         HSXP_FP   = HXP_FP(HSNUM_FPTRACK)
-         HSYP_FP   = HYP_FP(HSNUM_FPTRACK)
+         HSXP_FP   = HXP_FP(HSNUM_FPTRACK) ! This is a slope (dx/dz)
+         HSYP_FP   = HYP_FP(HSNUM_FPTRACK) ! This is a slope (dy/dz)
 
 c         hsx_dc1 = hsx_fp + hsxp_fp * hdc_zpos(1)
 c         hsy_dc1 = hsy_fp + hsyp_fp * hdc_zpos(1)
@@ -100,6 +103,7 @@ c         hsy_dc2 = hsy_fp + hsyp_fp * hdc_zpos(2)
          hsy_s2 = hsy_fp + hsyp_fp * hscin_2x_zpos
          hsx_cal = hsx_fp + hsxp_fp * hcal_1pr_zpos
          hsy_cal = hsy_fp + hsyp_fp * hcal_1pr_zpos
+c     ?????
          htrue_x_fp = hsx_fp / sind(85.0) / (1/tand(85.0) - hsxp_fp)
 
          do ip=1,4
@@ -120,16 +124,16 @@ c         hsy_dc2 = hsy_fp + hsyp_fp * hdc_zpos(2)
          HSCHI2PERDEG  = HCHI2_FP(HSNUM_FPTRACK)
      $        /FLOAT(HNFREE_FP(HSNUM_FPTRACK))
          HSNFREE_FP = HNFREE_FP(HSNUM_FPTRACK)
-         cosgamma = 1.0/sqrt(1.0 + hsxp_tar**2 + hsyp_tar**2)
-         coshstheta = cosgamma*(sinhthetas * hsyp_tar + coshthetas)
+         cosgamma = 1.0/sqrt(1.0 + tan(hsxp_tar)**2 + tan(hsyp_tar)**2)
+         coshstheta = cosgamma*(sinhthetas * tan(hsyp_tar) + coshthetas)
 ccc         if( ABS(COSHSTHETA) .LT. 1.) then
             HSTHETA = ACOS(COSHSTHETA)
 ccc         else
 ccc            HSTHETA = 0.
 ccc         endif
          SINHSTHETA = SIN(HSTHETA)
-         tandelphi = hsxp_tar /
-     &        ( sinhthetas - coshthetas*hsyp_tar )
+         tandelphi = tan(hsxp_tar) /
+     &        ( sinhthetas - coshthetas*tan(hsyp_tar) )
          HSPHI = HPHI_LAB + TANDELPHI   ! HPHI_LAB must be multiple of
          SINHPHI = SIN(HSPHI)           ! pi/2, or above is crap
 *     Calculate elastic scattering kinematics
