@@ -11,7 +11,7 @@ c========================================================================
        integer out,imp,i,m,LENGTH
        logical last_blank,last_comma
        integer string_length	!FUNCTION
-       integer important_length !FUNCTION
+       integer g_important_length !FUNCTION
 c
 c      eliminates adjacent blanks, comments, packs with ","s 
 c	ex: "1   2,	3" =>  "1,2,3,,,,,,,,,,,,,,,,,,,,"
@@ -23,7 +23,7 @@ c
 	call NO_comments(pad)		!remove comments
 	call NO_leading_blanks(pad)		!remove leading blanks
         call only_one_blank(pad)             !remove redundant blanks
-        imp= important_length(pad)           !only nonblank length
+        imp= g_important_length(pad)           !only nonblank length
 c
         m= INDEX(pad,', ')
 	DO WHILE(m.LT.imp .and. m.GT.0)
@@ -45,7 +45,7 @@ c
            m= INDEX(pad,' ')
         ENDDO
 *
-        imp= important_length(pad)
+        imp= g_important_length(pad)
         string= pad(1:imp)
         DO i= imp+1,LENGTH
            string(i:i)= ','
