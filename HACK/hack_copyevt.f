@@ -4,13 +4,16 @@
 *  sparsified adc and tdc readout
 *- this is a complete routine and should have no additional user code
 * $Log$
-* Revision 1.1  1994/07/25 18:03:36  cdaq
+* Revision 1.2  1995/05/24 13:47:29  cdaq
+* (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
+*
+* Revision 1.1  1994/07/25  18:03:36  cdaq
 * Initial revision
 *
 *
       subroutine hack_copyevt(ABORT, err)
       implicit none
-      include 'gen_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'hack_.cmn'
       logical ABORT
       character*(*) err
