@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.6  1994/11/23 15:35:29  cdaq
+# Revision 1.7  1995/03/13 19:46:01  cdaq
+# (SAW) Add linux compile flags
+#
+# Revision 1.6  1994/11/23  15:35:29  cdaq
 # (SAW) Make a libctpclient.a, add NOFNMATCH for ultrix
 #
 # Revision 1.5  1994/10/11  18:31:42  cdaq
@@ -37,7 +40,7 @@ install-dirs := lib bin
 
 ifeq ($(ARCH),HPUX)
   CC = gcc
-  CFLAGS = -D_HPUX_SOURCE -Dextname
+  CFLAGS = -D_HPUX_SOURCE -Dextname -g
   ARFLAGS = frv
   RPCCOM=rpcgen
   OSTYPE=HPUX
@@ -49,6 +52,14 @@ ifeq ($(ARCH),ULTRIX)
   RPCCOM=/usr/site1/rpc/rpcgen
   OSTYPE=ULTRIX
 endif
+
+ifeq ($(ARCH),Linux)
+  CC = cc
+  CFLAGS = -g -Df2cFortran -b i486-linux # -Df2cFortran for cfortran.h
+  RPCCOM=rpcgen -b -k
+  OSTYPE=Linux
+endif
+
 
 ##library: libctp.a
 
@@ -62,6 +73,10 @@ daVarRpc_svc.c: daVarRpc.x
 	rm -f $@
 	$(RPCCOM) -o $@ -m daVarRpc.x
 
+daVarRpc_clnt.c: daVarRpc.x
+	rm -f $@
+	$(RPCCOM) -o $@ -m daVarRpc.x
+
 daVarRpc.h: daVarRpc.x
 	rm -f $@
 	$(RPCCOM) -o $@ -h daVarRpc.x
@@ -69,5 +84,7 @@ daVarRpc.h: daVarRpc.x
 daVarRpc_xdr.d: daVarRpc_xdr.c
 
 daVarRpc_svc.d: daVarRpc_svc.c
+
+daVarRpc_clnt.d: daVarRpc_clnt.c
 
 include $(sources:.c=.d)
