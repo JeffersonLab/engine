@@ -1,7 +1,10 @@
 *     hms_statistics.cmn
 *     common blocks containing event statistics for h_reconstruction
 * $Log$
-* Revision 1.6  1995/05/22 19:02:26  cdaq
+* Revision 1.7  1995/07/28 14:42:20  cdaq
+* (JRA) Add pos/neg/both good arrays
+*
+* Revision 1.6  1995/05/22  19:02:26  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
 * Fix a conflicting common block name
 *
@@ -129,3 +132,16 @@
      &  hstat_cal_eff,         !efficiency over all counters on plane.
      &  hstat_cal_slop,        !distance allowed from center of block.
      &  hstat_cal_maxchisq     !maximum chisq allowed to use track for eff. calc.
+
+*
+*     CTPTYPE=event
+*
+      integer hbothgood(hnum_scin_planes,hnum_scin_elements)
+      integer hposgood(hnum_scin_planes,hnum_scin_elements)
+      integer hneggood(hnum_scin_planes,hnum_scin_elements)
+
+      common/hscin_posneg_stats/
+     &   hbothgood,
+     &   hposgood,
+     &   hneggood
+

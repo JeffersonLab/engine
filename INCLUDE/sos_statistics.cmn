@@ -1,7 +1,10 @@
 *      sos_statistics.cmn
 *      common blocks containing event statistics for s_reconstruction
 * $Log$
-* Revision 1.7  1995/05/22 19:02:13  cdaq
+* Revision 1.8  1995/07/28 14:42:37  cdaq
+* (JRA) Add pos/neg/both good arrays
+*
+* Revision 1.7  1995/05/22  19:02:13  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts
 * Fix a conflicting common block name
 *
@@ -132,3 +135,15 @@
      &  sstat_cal_eff,         !efficiency over all counters on plane.
      &  sstat_cal_slop,        !distance allowed from center of block.
      &  sstat_cal_maxchisq     !maximum chisq allowed to use track for eff. calc.
+
+*
+*     CTPTYPE=event
+*
+      integer sbothgood(snum_scin_planes,snum_scin_elements)
+      integer sposgood(snum_scin_planes,snum_scin_elements)
+      integer sneggood(snum_scin_planes,snum_scin_elements)
+
+      common/sscin_posneg_stats/
+     &   sbothgood,
+     &   sposgood,
+     &   sneggood
