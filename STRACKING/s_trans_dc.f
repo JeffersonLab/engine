@@ -13,7 +13,10 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
-* Revision 1.8  1995/05/22 19:46:02  cdaq
+* Revision 1.9  1995/08/31 15:04:12  cdaq
+* (JRA) Add call to s_dc_eff, warn about invalid plane numbers
+*
+* Revision 1.8  1995/05/22  19:46:02  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.7  1995/05/17  16:47:43  cdaq
@@ -84,9 +87,9 @@
           wire  = SDC_RAW_WIRE_NUM(ihit)
 *     check valid plane and wire number
           if(plane.gt.0 .and. plane.le. sdc_num_planes) then
-*     test if tdc value less than lower limit for good hits
             histval=float(sdc_raw_tdc(ihit))
             call hf1(sidrawtdc,histval,1.)
+*     test if tdc value less than lower limit for good hits
             if(SDC_RAW_TDC(ihit) .lt. sdc_tdc_min_win(plane))  then
               swire_early_mult(wire,plane)
      $             = swire_early_mult(wire,plane)+1
@@ -120,9 +123,11 @@
                   endif                 ! end test on duplicate wire
                   old_plane = plane
                   old_wire  = wire
-                endif                   ! end test on hdc_tdc_max_win
-              endif                     ! end test on hdc_tdc_min_win
-            endif                       ! end test on valid wire number
+                endif                   ! end test on valid wire number
+              endif                     ! end test on hdc_tdc_max_win
+            endif                       ! end test on hdc_tdc_min_win
+          else                          ! if not a valid plane number
+            write(6,*) 'S_TRANS_DC: invalid plane number = ',plane
           endif                         ! end test on valid plane number
         enddo                           ! end loop over raw hits
 
@@ -130,11 +135,11 @@
 *     set total number of good hits
 *     
         SDC_TOT_HITS = goodhit
-
-*     Histogram SDC_DECODED_DC
-        call s_fill_dc_dec_hist(ABORT,err)
-
-      endif                             !  end test on SDC_RAW_TOT_HITS.gt.0
+*
+        call s_dc_eff           ! require at least 1 hit to find efficiency
+*
+      endif                     !  end test on SDC_RAW_TOT_HITS.gt.0
+*
 *     Dump decoded banks if flag is set
       if(sdebugprintdecodeddc.ne.0) then
         call s_print_decoded_dc(ABORT,err)
