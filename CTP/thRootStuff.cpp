@@ -3,6 +3,9 @@
 //    C++ wrapper routines to interface between CTP and Root libraries
 //
 // $Log$
+// Revision 1.1.16.2  2005/02/19 19:49:58  saw
+// Make sure next pointer is zeroed in rootfilelist
+//
 // Revision 1.1.16.1  2004/07/09 14:12:11  saw
 // Add ability for CTP to make ROOT Trees
 //
@@ -73,6 +76,7 @@ void *thRoot_TFile(char *filename)
   thisfile->tfile = new TFile(filename,"RECREATE","CTP ROOT file with trees");
   thisfile->count = 1;
   thisfile->filename = (char *)malloc(strlen(filename)+1);
+  thisfile->next = (thRootFileList *) 0;
   strcpy(thisfile->filename,filename);
   return((void *) thisfile);
 }
