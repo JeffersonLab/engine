@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.7  1996/09/04 16:37:02  saw
+# (SAW) New makefile style
+#
 # Revision 1.6  1996/01/17 20:25:00  saw
 # (SAW) Remove gmc library from DEPLIBS
 #
@@ -18,7 +21,7 @@
 # Revision 1.1  1995/01/27  20:49:35  cdaq
 # Initial revision
 #
-
+NEWSTYLE = 1
 include $(Csoft)/etc/Makefile
 
 oneev_sources = evdisplay.f revdis_getev.f revdis_init.f revdis_ask.f \
@@ -41,7 +44,6 @@ libsources = $(sources)
 
 lib_targets := $(patsubst %.f, liboneev.a(%.o), $(libsources))
 
-#install-dirs := lib bin
 install-dirs := lib bin
 
 bin_targets = evdisplay
@@ -59,8 +61,9 @@ CTP =  $(LIBROOT)/libctp.a
 GEANTVER = 321
 CERNLIBS = -lgeant$(GEANTVER) -lpawlib -lgraflib -lgrafX11 -lpacklib -lmathlib
 ifeq ($(ARCH),HPUX)
+  FFLAGS = -g +ppu +es -O +Obb1000 +FPVZOU 
   OTHERLIBS = -Wl,-L$(LIBROOT) -lctpclient -lctp -Wl,-L$(CODA)/HP_UX/lib \
-	-lana -lmsg -lcoda -Wl,-L$(CERN_ROOT)/lib $(CERNLIBS) \
+	-Wl,-L$(CERN_ROOT)/lib $(CERNLIBS) \
 	-Wl,-L/usr/lib/X11R5 -lX11 -lm
 	
 endif
@@ -74,6 +77,18 @@ endif
 ifeq ($(ARCH),ULTRIX)
   OTHERLIBS = -L$(CODA)/ULTRIX/lib \
 	-lana -lmsg -lcoda -L$(CERN_ROOT)/lib $(CERNLIBS) -L/usr/lib -lX11 -lm
+endif
+
+ifeq ($(ARCH),Linux)
+  CERN_ROOT = /usr/local/cernlib/95b
+  CERNLIBS = -lgeant$(GEANTVER) -lpawlib -lgraflib -lgrafX11 -lmathlib -lpacklib -lkernlib -lmathlib -lpacklib
+  OTHERLIBS = -L$(LIBROOT) -lctpclient -lctp -L$(CERN_ROOT)/lib \
+	$(CERNLIBS) -L/usr/lib/X11 -lX11 -lm
+  DEPLIBS := $(DEPLIBS) $(LIBROOT)/libf2c.a
+
+$(LIBROOT)/libf2c.a:
+	@make -C $(Csoft)/SRC/F2C csoft
+
 endif
 
 # Rules to make ENGINE source files that must be tweaked
@@ -101,30 +116,34 @@ evdisplay: evdisplay.o $(ONEEVLIB) $(DEPLIBS) $(CTPCLIENT) $(CTP)
 #%.f : %.F
 #	$(F77) -F -DHDISPLAY $<
 
-.PRECIOUS: r_%.f
+#.PRECIOUS: r_%.f
 
 ifdef NFSDIRECTORY
-%.f : $(NFSDIRECTORY)/ENGINE/%.f
+../%.f : $(NFSDIRECTORY)/ONEEV/%.f
 	ln -s $< $@
 
-.PRECIOUS: %.f
+.PRECIOUS: ../%.f
 endif
 #
 # Get include files from INCLUDE directory
 #
 
-%.cmn :: ../INCLUDE/%.cmn
+%.cmn :: ../../INCLUDE/%.cmn
 	$(CP) $< $@
+	$(CP) $< ../$@
 
-%.dec :: ../INCLUDE/%.dec
+%.dec :: ../../INCLUDE/%.dec
 	$(CP) $< $@
+	$(CP) $< ../$@
 
-%.dte :: ../INCLUDE/%.dte
+%.par :: ../../INCLUDE/%.par
 	$(CP) $< $@
-
-%.par :: ../INCLUDE/%.par
+	$(CP) $< ../$@
+	
+%.dte :: ../../INCLUDE/%.dte
 	$(CP) $< $@
-
+	$(CP) $< ../$@
+	
 include $(sources:.f=.d)
 
 
