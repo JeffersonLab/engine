@@ -23,7 +23,10 @@
 * the correction parameters.
 *
 * $Log$
-* Revision 1.3  1994/05/13 02:36:30  cdaq
+* Revision 1.4  1994/07/08 19:43:53  cdaq
+* (JRA) Keep list of wether hits are on track or not
+*
+* Revision 1.3  1994/05/13  02:36:30  cdaq
 * (DFG) remove h_prt_track_tests call
 *
 * Revision 1.2  1994/04/13  16:28:53  cdaq
@@ -98,8 +101,11 @@
 
 ** Check if scin is on track
                if (abs(hscin_center_coord(hit)-hscin_trans_coord(hit))
-     $              .le.(hscin_width(hit)/2.+hscin_slop(hit))) then
+     $              .gt.(hscin_width(hit)/2.+hscin_slop(hit))) then
 
+                  hscin_on_track(trk,hit) = .false.
+               else
+                  hscin_on_track(trk,hit) = .true.
 **  Check for good TDC
                   if (hscin_tdc_pos(hit) .ge. hscin_tdc_min .and.  
      1                 hscin_tdc_pos(hit) .le. hscin_tdc_max) then
