@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.7  1995/02/10 18:49:57  cdaq
+* Revision 1.8  1995/02/23 13:29:15  cdaq
+* (SAW) Cosmetic Changes
+*
+* Revision 1.7  1995/02/10  18:49:57  cdaq
 * (JRA) Add track index to hgood_scin_time
 *
 * Revision 1.6  1994/09/13  21:26:53  cdaq
@@ -57,15 +60,15 @@
       sumtz = 0.
 
       do hit = 1 , hscin_tot_hits
-         if (hgood_scin_time(trk,hit)) then
-            scin_weight = 1./hscin_sigma(hit)**2
-            sumw = sumw + scin_weight
-            sumt = sumt + scin_weight * hscin_time(hit)
-            sumz = sumz + scin_weight * hscin_zpos(hit)
-            sumzz = sumzz + scin_weight * hscin_zpos(hit)**2
-            sumtz = sumtz + scin_weight * hscin_zpos(hit) *
-     1           hscin_time(hit)
-         endif
+        if (hgood_scin_time(trk,hit)) then
+          scin_weight = 1./hscin_sigma(hit)**2
+          sumw = sumw + scin_weight
+          sumt = sumt + scin_weight * hscin_time(hit)
+          sumz = sumz + scin_weight * hscin_zpos(hit)
+          sumzz = sumzz + scin_weight * hscin_zpos(hit)**2
+          sumtz = sumtz + scin_weight * hscin_zpos(hit) *
+     1         hscin_time(hit)
+        endif
       enddo
 
 * The formula for beta (and t0) come from taking chi-squared (as
@@ -79,22 +82,22 @@
       t0 = (sumt*sumzz - sumz*sumtz) / tmp
       tmpdenom = sumw*sumtz - sumz*sumt
       if(abs(tmpdenom) .gt. 1.e-10) then
-         hbeta(trk) = tmp / tmpdenom        !velocity in cm/ns.
-         hbeta_chisq(trk) = 0.
-         do hit = 1 , hscin_tot_hits
-            if (hgood_scin_time(trk,hit)) then
-               hbeta_chisq(trk) = hbeta_chisq(trk) + 
-     1              (hscin_zpos(hit)/hbeta(trk) -
-     1              (hscin_time(hit) - t0))**2 / hscin_sigma(hit)**2
-            endif
-         enddo
+        hbeta(trk) = tmp / tmpdenom     !velocity in cm/ns.
+        hbeta_chisq(trk) = 0.
+        do hit = 1 , hscin_tot_hits
+          if (hgood_scin_time(trk,hit)) then
+            hbeta_chisq(trk) = hbeta_chisq(trk) + 
+     1           (hscin_zpos(hit)/hbeta(trk) -
+     1           (hscin_time(hit) - t0))**2 / hscin_sigma(hit)**2
+          endif
+        enddo
 
-         pathnorm = 1 + hxp_fp(trk)**2 + hyp_fp(trk)**2
-         hbeta(trk) = hbeta(trk) * pathnorm !take angle into account
-         hbeta(trk) = hbeta(trk) / 29.9979  !velocity/c
+        pathnorm = 1 + hxp_fp(trk)**2 + hyp_fp(trk)**2
+        hbeta(trk) = hbeta(trk) * pathnorm !take angle into account
+        hbeta(trk) = hbeta(trk) / 29.9979 !velocity/c
       else
-         hbeta(trk) = 0.               ! set unphysical beta
-         hbeta_chisq(trk) = -100
+        hbeta(trk) = 0.                 ! set unphysical beta
+        hbeta_chisq(trk) = -2
       endif                             ! end if on denomimator = 0.
 
       return
