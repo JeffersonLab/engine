@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.13  1995/02/23 13:23:49  cdaq
+* Revision 1.14  1995/05/11 19:11:45  cdaq
+* (JRA) Replace hardwired TDC offsets with ctp variables.
+*
+* Revision 1.13  1995/02/23  13:23:49  cdaq
 * (JRA) Add a calculation of beta without finding a track
 *
 * Revision 1.12  1995/02/02  16:36:22  cdaq
@@ -187,7 +190,7 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
       do ihit = 1 , hscin_tot_hits
         if (htwo_good_times(ihit)) then
           fptime  = hscin_cor_time(ihit) - hscin_zpos(ihit)/29.989
-          if (abs(fptime-17.).le.15) then
+          if (abs(fptime-hstart_time_center).le.hstart_time_slop) then
             time_sum = time_sum + fptime
             time_num = time_num + 1
           endif
@@ -195,8 +198,7 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
       enddo
       if (time_num.eq.0) then
         hgood_start_time = .false.
-        hstart_time = 17.		!17 ns is a rough average of time dif between trig
-                                        ! and wire firing.
+        hstart_time = hstart_time_center
       else
         hgood_start_time = .true.
         hstart_time = time_sum / float(time_num)
@@ -219,7 +221,7 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
       do ihit = 1 , hscin_tot_hits
         hgood_scin_time(dumtrk,ihit)=.false.
         if (htwo_good_times(ihit)) then !require 2 tubes to be track indep.
-          if (abs(fptime-17.).le.25) then !throw out outliers.
+          if (abs(fptime-hstart_time_center).le.hstart_time_slop) then ! throw out outliers.
             hgood_scin_time(dumtrk,ihit)=.true.
             hscin_time(ihit)=hscin_cor_time(ihit)
             hscin_sigma(ihit)=sqrt(hscin_neg_sigma(ihit)**2 +
@@ -234,8 +236,8 @@ ccc Supposedly, no one uses this right now (SAW 1/17/95)
       if ((goodtime(1) .or. goodtime(2)) .and.
      1     (goodtime(3) .or. goodtime(4))) then
 
-        hxp_fp(dumtrk)=1.0
-        hyp_fp(dumtrk)=1.0
+        hxp_fp(dumtrk)=0.0
+        hyp_fp(dumtrk)=0.0
         call h_tof_fit(abort,errmsg,dumtrk) !fit velocity of particle
         if (abort) then
           call g_prepend(here,errmsg)
