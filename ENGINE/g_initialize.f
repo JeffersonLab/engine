@@ -10,6 +10,10 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.21  1996/11/05 21:41:36  saw
+* (SAW) Use CTP routines as functions rather than subroutines for
+* porting.
+*
 * Revision 1.20  1996/09/04 14:37:56  saw
 * (JRA) Open output file for charge scalers
 *
@@ -136,7 +140,7 @@
           ABORT = .true.
           err = file
         endif
-        call thbook                     ! Assert parm values
+        ierr = thbook()                 ! Assert parm values
       endif                             ! so that ctp_database can override
 *
 *
@@ -202,42 +206,42 @@
      $     .and.g_report_template_filename.ne.' ') then
         file = g_report_template_filename
         call g_sub_run_number(file,gen_run_number)
-        call thload(file)
+        ierr = thload(file)
       endif
 *
       if((first_time.or.g_report_rebook)
      $     .and.g_stats_template_filename.ne.' ') then
         file = g_stats_template_filename
         call g_sub_run_number(file,gen_run_number)
-        call thload(file)
+        ierr = thload(file)
       endif
 *
       if((first_time.or.g_report_rebook)
      $     .and.s_report_template_filename.ne.' ') then
         file = s_report_template_filename
         call g_sub_run_number(file,gen_run_number)
-        call thload(file)
+        ierr = thload(file)
       endif
 *
       if((first_time.or.g_report_rebook)
      $     .and.h_report_template_filename.ne.' ') then
         file = h_report_template_filename
         call g_sub_run_number(file,gen_run_number)
-        call thload(file)
+        ierr = thload(file)
       endif
 *
       if((first_time.or.g_report_rebook)
      $     .and.c_report_template_filename.ne.' ') then
         file = c_report_template_filename
         call g_sub_run_number(file,gen_run_number)
-        call thload(file)
+        ierr = thload(file)
       endif
 *
 *     Call thbook if any new files have been loaded
 *
       if(first_time.or.g_parm_rebook.or.g_test_rebook
      $     .or.g_hist_rebook.or.g_report_rebook) then
-        call thbook
+        ierr = thbook()
 *
 *     Recalculate all histogram id's of user (hard wired) histograms
 *
@@ -261,10 +265,17 @@
       if (g_charge_scaler_filename.ne.' ') then
         file=g_charge_scaler_filename
         call g_sub_run_number(file,gen_run_number)
-        open(unit=217,file=file,status='unknown')
-        write(217,*) '!Charge scalers - Run #',gen_run_number
-        write(217,*) '!event   Unser(Hz)     BCM1(Hz)     BCM2(Hz)',
+        open(unit=G_LUN_CHARGE_SCALER,file=file,status='unknown')
+        write(G_LUN_CHARGE_SCALER,*) '!Charge scalers - Run #',gen_run_number
+        write(G_LUN_CHARGE_SCALER,*) '!event   Unser(Hz)     BCM1(Hz)     BCM2(Hz)',
      &               '     BCM3(Hz)     Time(s)'
+      endif
+
+* Open output file for epics events.
+      if (g_epics_output_filename.ne.' ') then
+        file=g_epics_output_filename
+        call g_sub_run_number(file,gen_run_number)
+        open(unit=G_LUN_EPICS_OUTPUT,file=file,status='unknown')
       endif
 
 *-HMS initialize
