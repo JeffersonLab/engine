@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.24  1996/11/08 15:48:01  saw
+* (WH) Add decoding for lucite counter
+*
 * Revision 1.23  1996/04/29 19:45:37  saw
 * (JRA) Update Aerogel variable names
 *
@@ -309,6 +312,21 @@ c      write(6,*) 'pointer,roc,slot=',pointer,roc,slot
      $           SAER_PAIR_NUM, 4, SAER_ADC_POS, SAER_ADC_NEG,
      $           SAER_DUMMY, SAER_DUMMY)
 
+          else if (did.eq.SLUC_ID) then
+*
+*     Lucite has two tubes for each "counter".  The detector
+*     has both ADC's and TDC's signals.
+*    
+*
+*     SLUC_PLANE is a dummy array.
+*     
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &           maxwords, did,
+     $           SMAX_LUC_HITS, SLUC_TOT_HITS, SLUC_PLANE,
+     $           SLUC_PAIR_NUM, 4, SLUC_ADC_POS, SLUC_ADC_NEG,
+     $           SLUC_TDC_POS, SLUC_TDC_NEG)
+
           else if (did.eq.SMISC_ID) then
 *
 *     This array is for data words that don't belong to a specific
@@ -346,7 +364,7 @@ c      write(6,*) 'pointer,roc,slot=',pointer,roc,slot
 *     Should never get here.  Unknown detector ID's or did=-1 for bad ROC#
 *     or SLOT# will come here.
 *
-            print *,"BAD DID, unknown ROC,SLOT",roc,slot
+            print *,"BAD DID, unknown ROC,SLOT",roc,slot,did
             pointer = pointer + 1       ! Skip unknown detector id's
           endif
         else
