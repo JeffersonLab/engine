@@ -27,7 +27,10 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
-* Revision 1.13  1995/04/01 19:44:50  cdaq
+* Revision 1.14  1995/05/11 17:17:00  cdaq
+* (SAW) Extend || link hack for SOS.  Add Aerogel detector.
+*
+* Revision 1.13  1995/04/01  19:44:50  cdaq
 * (SAW) Add BPM hitlist
 *
 * Revision 1.12  1995/01/27  20:12:48  cdaq
@@ -104,12 +107,14 @@
       endif
 *
       pointer = 3                               ! First word of bank
-      if (roc.eq.7 .or. roc.eq.8) pointer=5  !using parallel link, so next
+      if (roc.eq.7 .or. roc.eq.8 .or. roc.eq.9) pointer=5  !using parallel link, so next
                                              !2 words are fb roc header.
       if (roc.eq.7) then                ! Change || link ROC #'s into ROC #'s
         roc = 2                         ! used by the FB crates
       else if(roc.eq.8) then            ! so that only one map file is
         roc = 1                         ! needed.  (SAW 12/11/94)
+      else if(roc.eq.9) then            ! FBSOS
+        roc = 4
       endif
       lastslot = -1
       do while (pointer .le. banklength)
@@ -207,15 +212,26 @@
 
             else if (did.eq.SCER_ID) then
 *
-*     Cerenkov has no plane array.  Pass it SCER_COR_ADC.  Unpacker will
-*     fill it with zeros or ones.  (Or whatever we tell the unpacker the
-*     plane number is.)
-*     
               pointer = pointer +
      $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &             maxwords, did,
      $             SMAX_CER_HITS, SCER_TOT_HITS, SCER_PLANE,
      $             SCER_TUBE_NUM, 1, SCER_ADC, 0, 0, 0)
+
+            else if (did.eq.SAER_ID) then
+*
+*     Aerogel has two tubes for each "counter".  Since there are no
+*     TDC's, we will tell the decoder that we have 4 signals, but pass
+*     a dummy array for the 3rd and 4th signal.
+*
+*     SAER_PLANE is a dummy array.
+*     
+              pointer = pointer +
+     $             g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &             maxwords, did,
+     $             SMAX_AER_HITS, SAER_TOT_HITS, SAER_PLANE,
+     $             SAER_PAIR_NUM, 4, SAER_ADC_LEFT, SAER_ADC_RIGHT,
+     $             SAER_DUMMY, SAER_DUMMY)
 
             else if (did.eq.SMISC_ID) then
 *
