@@ -5,7 +5,10 @@
 *
 *     d.f. geesaman              17 feb 1994
 * $Log$
-* Revision 1.1  1994/02/19 06:14:04  cdaq
+* Revision 1.2  1994/03/24 18:51:52  cdaq
+* (DFG) Allow switch for monte carlo data
+*
+* Revision 1.1  1994/02/19  06:14:04  cdaq
 * Initial revision
 *
 *     
@@ -23,13 +26,22 @@
 *
 *     output
 *
-      real*4     h_drift_time_calc       !  drift time in nanoseconds
+      real*4     h_drift_time_calc      !  drift time in nanoseconds
 *
       external h_tdc_time_per_channel,h_tdc_zero
       real*4 h_tdc_time_per_channel,h_tdc_zero
 *
-      h_drift_time_calc = HSTART_TIME 
-     &      - FLOAT(tdc)*h_tdc_time_per_channel(plane,wire)
-     &      + h_tdc_zero(plane,wire)                     
+*     monte Carlo data does not set HSTART_TIME properly
+*     check debuging switch
+      if( hdebug_mc_start_time .ne. 0) then 
+         h_drift_time_calc = 0.
+     &        - FLOAT(tdc)*h_tdc_time_per_channel(plane,wire)
+     &        + h_tdc_zero(plane,wire)                     
+
+      else
+         h_drift_time_calc = HSTART_TIME 
+     &        - FLOAT(tdc)*h_tdc_time_per_channel(plane,wire)
+     &        + h_tdc_zero(plane,wire)                     
+      endif                             ! End check on monte carlo start time
       return
       end
