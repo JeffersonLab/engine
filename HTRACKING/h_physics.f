@@ -20,6 +20,9 @@
 *-                           Dummy Shell routine
 *
 * $Log$
+* Revision 1.23  2003/11/28 14:57:03  jones
+* Added variable hsxp_tar_temp = hsxp_tar + h_oopcentral_offset  (MKJ)
+*
 * Revision 1.22  2003/09/05 18:20:30  jones
 * Merge in online03 changes (mkj)
 *
@@ -140,6 +143,7 @@
       real*4 Wvec(4)
       real*4 hstheta_1st
       real*4 scalar,mink
+      real*4 hsxp_tar_temp
 *
 *--------------------------------------------------------
 *
@@ -155,7 +159,7 @@
       hsx_tar      = hx_tar(hsnum_tartrack)
       hsy_tar      = hy_tar(hsnum_tartrack)
       hsxp_tar     = hxp_tar(hsnum_tartrack) ! This is an angle (radians)
-      hsxp_tar     = hsxp_tar + h_oopcentral_offset
+      hsxp_tar_temp     = hsxp_tar + h_oopcentral_offset
       hsyp_tar     = hyp_tar(hsnum_tartrack) ! This is an angle (radians)
       hsbeta       = hbeta(itrkfp)
       hsbeta_chisq = hbeta_chisq(itrkfp)
@@ -329,7 +333,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 *     This coordinate system is a just a simple rotation away from the
 *     TRANSPORT coordinate system used in the spectrometers
 
-      hsp_z = hsp/sqrt(1.+hsxp_tar**2+hsyp_tar**2)
+      hsp_z = hsp/sqrt(1.+hsxp_tar_temp**2+hsyp_tar**2)
             
 *     Initial Electron
 
@@ -342,7 +346,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 *     - gaw 98/10/5
 
       hs_kpvec(1) =  hsenergy
-      hs_kpvec(2) =  hsp_z*hsxp_tar
+      hs_kpvec(2) =  hsp_z*hsxp_tar_temp
       hs_kpvec(3) =  hsp_z*(hsyp_tar*coshthetas-sinhthetas)
       hs_kpvec(4) =  hsp_z*(hsyp_tar*sinhthetas+coshthetas)
 
