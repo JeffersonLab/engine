@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.2  1994/06/14 04:53:41  cdaq
+* Revision 1.3  1994/07/08 19:42:31  cdaq
+* (JRA) Change fit from velocity to beta.  Bad fits give beta=0
+*
+* Revision 1.2  1994/06/14  04:53:41  cdaq
 * (DFG) Protect against divide by 0 in beta calc
 *
 * Revision 1.1  1994/04/13  16:29:15  cdaq
@@ -64,21 +67,23 @@
       t0 = (sumt*sumzz - sumz*sumtz) / tmp
       tmpdenom = sumw*sumtz - sumz*sumt
       if(tmpdenom .gt. 1.e-15) then
-         hbeta(trk) = tmp / tmpdenom
-      else
-         hbeta(trk) = -1.               ! set unphysical beta
-      endif                             ! end if on denomimator = 0.
-      hbeta_chisq(trk) = 0.
-      do hit = 1 , hscin_tot_hits
-         if (hgood_scin_time(hit)) then
-            hbeta_chisq(trk) = hbeta_chisq(trk) + 
-     1           (hscin_zpos(hit)/hbeta(trk) -
-     1           (hscin_time(hit) - t0))**2 / hscin_sigma(hit)**2
-         endif
-      enddo
+         hbeta(trk) = tmp / tmpdenom        !velocity in cm/ns.
+         hbeta(trk) = hbeta(trk) / 29.9979  !velocity/c
+         hbeta_chisq(trk) = 0.
+         do hit = 1 , hscin_tot_hits
+            if (hgood_scin_time(hit)) then
+               hbeta_chisq(trk) = hbeta_chisq(trk) + 
+     1              (hscin_zpos(hit)/hbeta(trk) -
+     1              (hscin_time(hit) - t0))**2 / hscin_sigma(hit)**2
+            endif
+         enddo
 
-      pathnorm = 1 + hxp_fp(trk)**2 + hyp_fp(trk)**2
-      hbeta(trk) = hbeta(trk) * pathnorm !take angle into account
+         pathnorm = 1 + hxp_fp(trk)**2 + hyp_fp(trk)**2
+         hbeta(trk) = hbeta(trk) * pathnorm !take angle into account
+      else
+         hbeta(trk) = 0.               ! set unphysical beta
+         hbeta_chisq(trk) = -100
+      endif                             ! end if on denomimator = 0.
 
       return
       end
