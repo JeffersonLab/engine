@@ -2,6 +2,9 @@
 *                      of pedestal events at the beginning of each run.
 *
 * $Log$
+* Revision 1.7  1996/11/19 18:49:39  saw
+* (WH) Add data structures for Lucite counter
+*
 * Revision 1.6  1996/09/04 16:30:06  saw
 * (JRA) Add thresholds for aerogel
 *
@@ -186,6 +189,51 @@
      &   saer_neg_threshold,
      &   saer_pos_adc_threshold,
      &   saer_neg_adc_threshold
+
+
+*
+*
+* LUCITE CERENKOV PEDESTALS
+*
+*
+*     CTPTYPE=event
+*
+      integer*4 sluc_pos_ped_sum2(smax_luc_hits)
+      integer*4 sluc_neg_ped_sum2(smax_luc_hits)
+      integer*4 sluc_pos_ped_sum(smax_luc_hits)
+      integer*4 sluc_neg_ped_sum(smax_luc_hits)
+      integer*4 sluc_pos_ped_num(smax_luc_hits)
+      integer*4 sluc_neg_ped_num(smax_luc_hits)
+*
+*     CTPTYPE=parm
+*
+      integer*4 sluc_min_peds
+      real*4 sluc_pos_ped_mean(smax_luc_hits)
+      real*4 sluc_neg_ped_mean(smax_luc_hits)
+      real*4 sluc_pos_ped_rms(smax_luc_hits)
+      real*4 sluc_neg_ped_rms(smax_luc_hits)
+*      real*4 sluc_pos_threshold(smax_luc_hits)
+*      real*4 sluc_neg_threshold(smax_luc_hits)
+      integer*4 sluc_pos_adc_threshold(smax_luc_hits)
+      integer*4 sluc_neg_adc_threshold(smax_luc_hits)
+*
+      common/sos_luci_pedestals/
+     &   sluc_pos_ped_sum2,       !sum of squares
+     &   sluc_neg_ped_sum2,       !sum of squares
+     &   sluc_pos_ped_sum,        !sum of peds
+     &   sluc_neg_ped_sum,        !sum of peds
+     &   sluc_pos_ped_num,        !number of peds
+     &   sluc_neg_ped_num,        !number of peds
+     &   sluc_min_peds,           !# of peds required to override default pedestals
+     &   sluc_pos_ped_mean,       !calculated pedestal value
+     &   sluc_neg_ped_mean,
+     &   sluc_pos_ped_rms,        !calculated pedestal width
+     &   sluc_neg_ped_rms,
+*     &   sluc_pos_threshold,
+*     &   sluc_neg_threshold,
+     &   sluc_pos_adc_threshold,
+     &   sluc_neg_adc_threshold
+
 
 *
 *     CTPTYPE=event
