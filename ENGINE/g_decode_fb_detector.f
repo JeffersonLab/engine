@@ -5,10 +5,13 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 *-    $Log$
-*-    Revision 1.10  1995/01/27 20:14:04  cdaq
-*-    (SAW) Add assorted diagnostic printouts.  Add hack to look for the headers
-*-          on new 1881M/1877 modules while maintaining backward compatibility.
+*-    Revision 1.11  1995/01/31 15:55:52  cdaq
+*-    (SAW) Make sure mappointer and subaddbit are set on program entry.
 *-
+* Revision 1.10  1995/01/27  20:14:04  cdaq
+* (SAW) Add assorted diagnostic printouts.  Add hack to look for the headers
+*       on new 1881M/1877 modules while maintaining backward compatibility.
+*
 * Revision 1.9  1994/10/20  12:34:55  cdaq
 * (SAW) Only print out "Max exceeded, did=" meesage once
 *
@@ -59,13 +62,13 @@
       integer h,hshift
       integer subaddbit
       logical printerr  !flag to turn off printing of error after 1 time.
-      logical lastwordheader
+      logical firsttime
 *     
-      if(oslot.lt.0) lastwordheader = .false.
       printerr = .true.
       pointer = 1
       newdid = did
 
+      firsttime = .true.
       do while(pointer.le.length .and. did.eq.newdid)
 *
         if(iand(evfrag(pointer),'FF000000'x).eq.'DC000000'x) then ! Catch arrington's headers
@@ -93,14 +96,16 @@
           goto 987
         endif
         slot = iand(ISHFT(evfrag(pointer),-27),'1F'X)
-        if(slot.ne.oslot) then
+        if(slot.ne.oslot.or.firsttime) then
           if (slot.le.0 .or. slot.ge.26 .or. roc.le.0 .or. roc.ge.9) then
             write (6,*) 'roc,slot=',roc,slot
             write (6,*) 'evfrag(pointer)=',evfrag(pointer)
           endif
           mappointer = g_decode_slotpointer(roc+1,slot)
-          oslot = slot
           subaddbit = g_decode_subaddbit(roc+1,slot) ! Usually 16 or 17
+        endif
+        if(slot.ne.oslot) then
+          oslot = slot
 
 c
 c     On 1881M's and 1877, a subaddress of zero could be a header word, so
