@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
 *-    $Log$
-*-    Revision 1.5  1994/02/22 15:14:03  cdaq
-*-    (DFG) Add calls to s_generate_geometry and s_initialize_fitting
+*-    Revision 1.6  1994/04/12 17:31:09  cdaq
+*-    (KBB) Add ntuple call
 *-
+* Revision 1.5  1994/02/22  15:14:03  cdaq
+* (DFG) Add calls to s_generate_geometry and s_initialize_fitting
+*
 * Revision 1.4  1994/02/11  18:36:35  cdaq
 * Split off CTP variables registration from initialize routines
 *
@@ -31,24 +34,29 @@
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 *-
 *--------------------------------------------------------
-       IMPLICIT NONE
-       SAVE
+      IMPLICIT NONE
+      SAVE
 *
-       character*12 here
-       parameter (here= 'S_initialize')
+      character*12 here
+      parameter (here= 'S_initialize')
 *
-       logical ABORT
-       character*(*) err
+      logical ABORT
+      character*(*) err
 *
 *
 *--------------------------------------------------------
+      ABORT = .FALSE.
       err= ' '
 *
-      call s_generate_geometry                  ! Tracking routine
+      call s_generate_geometry          ! Tracking routine
 *
-      call s_initialize_fitting                 ! Minuit initialization
+      call s_initialize_fitting         ! Minuit initialization
 *
-      ABORT = .FALSE.
+      call s_ntuple_init(ABORT,err)
+*
+      if(ABORT) then
+         call g_add_path(here,err)
+      endif
 *
       return
       end

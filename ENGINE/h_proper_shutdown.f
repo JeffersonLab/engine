@@ -10,13 +10,14 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.1  1994/02/04 22:19:09  cdaq
-*-    Initial revision
+*-    Revision 1.2  1994/04/12 17:23:31  cdaq
+*-    (KBB) Add ntuple call
 *-
-*-
+* Revision 1.1  1994/02/04  22:19:09  cdaq
+* Initial revision
+*
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
-*-
 *-
 *--------------------------------------------------------
       IMPLICIT NONE
@@ -33,11 +34,12 @@
 *
 *
       ABORT= .FALSE.
-      err= ':not yet written'
+      err= ' '
+*
+      call h_ntuple_shutdown(ABORT,err)
 *
       IF(ABORT) THEN
          call G_add_path(here,err)
-         RETURN
       ELSE
          err= ' '
       ENDIF

@@ -13,8 +13,11 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *     $Log$
-*     Revision 1.4  1994/02/22 19:37:53  cdaq
-*     (SAW) Remove CTP register calls to fortran PARAMETER's
+*     Revision 1.5  1994/04/12 17:25:03  cdaq
+*     (KBB) Add ntuple call
+*
+* Revision 1.4  1994/02/22  19:37:53  cdaq
+* (SAW) Remove CTP register calls to fortran PARAMETER's
 *
 * Revision 1.3  1994/02/22  18:56:45  cdaq
 * (SAW) Make a call to h_register_param
@@ -46,13 +49,11 @@
 *
       call h_register_param(ABORT,err)          ! TRACKING ROUTINE
 *
+      if(.not.ABORT) call h_ntuple_register(ABORT,err)
+*
       if(ABORT) then
          call g_add_path(here,err)
       endif
 *
       return
       end
-
-
-
-
