@@ -7,6 +7,9 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.2  1996/04/29 19:41:09  saw
+* (JRA) Update BPM code
+*
 * Revision 1.1  1996/01/22 15:08:37  saw
 * Initial revision
 *
@@ -30,16 +33,10 @@
 
 * BPM Signals.
 
-      do isig=1,gnum_bpm_signals   !need some kind of 'map' for this.
-        gbpm_raw_adc(1,isig) = gmisc_dec_data(isig,2)
-        gbpm_raw_adc(2,isig) = gmisc_dec_data(isig+4,2)
-        gbpm_raw_adc(3,isig) = gmisc_dec_data(isig+8,2)
-        gbpm_raw_adc(4,isig) = gmisc_dec_data(isig+12,2)
-      enddo
-
-      do ibpm=1,gmax_num_bpms
+      do ibpm=1,gmax_num_bpms       !need some kind of 'map' for this.
         do isig=1,gnum_bpm_signals
-          gbpm_adc(ibpm,isig)=gbpm_raw_adc(ibpm,isig)-gbpm_adc_ped(ibpm,isig)
+          gbpm_raw_adc(isig,ibpm) = gmisc_dec_data(4*(ibpm-1)+isig,2)
+          gbpm_adc(isig,ibpm)=gbpm_raw_adc(isig,ibpm)-gbpm_adc_ped(isig,ibpm)
         enddo
       enddo
 
