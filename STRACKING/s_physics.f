@@ -21,6 +21,9 @@
 *
 *
 * $Log$
+* Revision 1.21  2003/11/28 14:57:30  jones
+* Added variable ssxp_tar_temp = ssxp_tar + s_oopcentral_offset  (MKJ)
+*
 * Revision 1.20  2003/09/05 19:52:01  jones
 * Merge in online03 changes (mkj)
 *
@@ -139,6 +142,7 @@
       real*4 Wvec(4)
       real*4 sstheta_1st
       real*4 scalar,mink
+      real*4 ssxp_tar_temp
 *
 *--------------------------------------------------------
 *
@@ -155,7 +159,7 @@
       ssx_tar      = sx_tar(ssnum_tartrack)
       ssy_tar      = sy_tar(ssnum_tartrack)
       ssxp_tar     = sxp_tar(ssnum_tartrack) ! This is an angle (radians)
-      ssxp_tar = ssxp_tar + s_oopcentral_offset
+      ssxp_tar_temp = ssxp_tar + s_oopcentral_offset
       ssyp_tar     = syp_tar(ssnum_tartrack) ! This is an angle (radians)
       ssbeta       = sbeta(itrkfp)
       ssbeta_chisq = sbeta_chisq(itrkfp)
@@ -329,7 +333,7 @@ c
 *     This coordinate system is a just a simple rotation away from the
 *     TRANSPORT coordinate system used in the spectrometers
 
-      ssp_z = ssp/sqrt(1.+ssxp_tar**2+ssyp_tar**2)
+      ssp_z = ssp/sqrt(1.+ssxp_tar_temp**2+ssyp_tar**2)
             
 *     Initial Electron
 
@@ -343,7 +347,7 @@ c
 *     12/21/98 -- notice assumption of no out-of-plane offset
 
       ss_kpvec(1) =  ssenergy
-      ss_kpvec(2) =  ssp_z*ssxp_tar
+      ss_kpvec(2) =  ssp_z*ssxp_tar_temp
       ss_kpvec(3) =  ssp_z*(ssyp_tar*cossthetas+sinsthetas)
       ss_kpvec(4) =  ssp_z*(-ssyp_tar*sinsthetas+cossthetas)
 
