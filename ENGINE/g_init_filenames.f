@@ -23,6 +23,9 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
+* Revision 1.15  1996/04/29 19:47:11  saw
+* (JRA) Add g_pedestal_output_filename
+*
 * Revision 1.14  1996/01/16 18:31:26  cdaq
 * (JRA) Add file for tcl stats display, add files for thresholds and pedestals
 *
@@ -126,6 +129,7 @@
 *
       h_threshold_output_filename = ' '
       s_threshold_output_filename = ' '
+      g_pedestal_output_filename = ' '
       h_pedestal_output_filename = ' '
       s_pedestal_output_filename = ' '
 *
