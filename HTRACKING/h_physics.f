@@ -19,7 +19,10 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
-* Revision 1.3  1994/09/13 19:51:03  cdaq
+* Revision 1.4  1995/01/18 16:29:26  cdaq
+* (SAW) Correct some trig and check for negative arg in elastic kin calculation
+*
+* Revision 1.3  1994/09/13  19:51:03  cdaq
 * (JRA) Add HBETA_CHISQ
 *
 * Revision 1.2  1994/06/14  03:49:49  cdaq
@@ -106,22 +109,23 @@
          HSCHI2PERDEG  = HCHI2_FP(HSNUM_FPTRACK)
      $        /FLOAT(HNFREE_FP(HSNUM_FPTRACK))
          HSNFREE_FP = HNFREE_FP(HSNUM_FPTRACK)
-         COSGAMMA = SQRT( 1. - HSXP_TAR**2 - HSYP_TAR**2)
-         COSHSTHETA = SINHTHETAS * HSYP_TAR + COSHTHETAS * COSGAMMA
-         if( ABS(COSHSTHETA) .LT. 1.) then
+         cosgamma = 1.0/sqrt(1.0 + hsxp_tar**2 - hsyp_tar**2)
+         coshstheta = cosgamma*(sinhthetas * hsyp_tar + coshthetas)
+ccc         if( ABS(COSHSTHETA) .LT. 1.) then
             HSTHETA = ACOS(COSHSTHETA)
-         else
-            HSTHETA = 0.
-         endif
+ccc         else
+ccc            HSTHETA = 0.
+ccc         endif
          SINHSTHETA = SIN(HSTHETA)
-         TANDELPHI = HSXP_TAR /
-     &        ( SINHTHETAS*COSGAMMA - COSHTHETAS*HSYP_TAR )
-         HSPHI = HPHI_LAB + TANDELPHI
-         SINHPHI = SIN(HSPHI)
+         tandelphi = hsxp_tar /
+     &        ( sinhthetas - coshthetas*hsyp_tar )
+         HSPHI = HPHI_LAB + TANDELPHI   ! HPHI_LAB must be multiple of
+         SINHPHI = SIN(HSPHI)           ! pi/2, or above is crap
 *     Calculate elastic scattering kinematics
          t1  = 2.*HPHYSICSA*CPBEAM*COSHSTHETA      
          ta  = 4*CPBEAM**2*COSHSTHETA**2 - HPHYSICSB**2
-         if(ta.eq.0) then
+ccc SAW 1/17/95.  Add the stuff after the or.
+         if(ta.eq.0.0 .or. ( HPHYSICAB2 + HPHYSICSM3B * ta).lt.0.0) then
             p3=0.       
          else
             t3  = ta-HPHYSICSB**2
