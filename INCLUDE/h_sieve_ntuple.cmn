@@ -1,0 +1,34 @@
+**************************begin: h_ntuple.cmn ***********************
+*- 
+*-   Created    1-Nov-1994   
+*........................................................................
+*- Misc. info. required for HMS sieve slit Ntuple
+* $Log$
+* Revision 1.1  1994/12/17 22:14:28  cdaq
+* Initial revision
+*
+*
+*
+      integer HMAX_Ntuple_size
+      parameter (HMAX_Ntuple_size= 100)
+      integer default_h_sieve_Ntuple_ID
+      parameter (default_h_sieve_Ntuple_ID= 1411)
+*
+      logical h_sieve_Ntuple_exists
+      integer h_sieve_Ntuple_ID
+      integer h_sieve_Ntuple_size
+      integer h_sieve_Ntuple_IOchannel
+      character*80 h_sieve_Ntuple_name
+      character*80 h_sieve_Ntuple_title
+      character*132 h_sieve_Ntuple_directory   
+      character*256 h_sieve_Ntuple_file
+      character*8 h_sieve_Ntuple_tag(HMAX_Ntuple_size)
+      real h_sieve_Ntuple_contents(HMAX_Ntuple_size)
+*
+      COMMON /HMS_sieve_Ntuple/ h_sieve_Ntuple_exists,h_sieve_Ntuple_ID,
+     &     h_sieve_Ntuple_size,h_sieve_Ntuple_IOchannel,
+     &     h_sieve_Ntuple_name,h_sieve_Ntuple_title,
+     &     h_sieve_Ntuple_directory,h_sieve_Ntuple_file,
+     &     h_sieve_Ntuple_tag,h_sieve_Ntuple_contents
+
+*****************************end: h_sieve_ntuple.cmn ***********************
