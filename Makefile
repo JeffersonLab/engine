@@ -60,6 +60,7 @@ port:
 	$(MAKE) -C PORT
 exe:
 	$(MAKE) -C EXE
+
 syncfilter:
 	$(MAKE) -C SYNCFILTER
 #broken
@@ -71,7 +72,7 @@ clean:
 	-@rm ENGINE/O.$(OSTYPE)/*.[do]
 	-@rm CTP/O.$(OSTYPE)/*.[do]
 	-@rm HACK/O.$(OSTYPE)/*.[do]
-	-@rm ONEEV/O.$(OSTYPE)/*.[do]
+#	-@rm ONEEV/O.$(OSTYPE)/*.[do]
 	-@rm PORT/O.$(OSTYPE)/*.[do]
 	-@rm CODA/O.$(OSTYPE)/*.[do]
 #	-@rm ONLINE/O.$(OSTYPE)/*.[do]
