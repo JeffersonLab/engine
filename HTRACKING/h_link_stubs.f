@@ -10,6 +10,9 @@
 *
 *     d.f. geesaman           17 January 1994
 * $Log$
+* Revision 1.9  2003/04/01 15:21:33  jones
+*  minor change
+*
 * Revision 1.8  2003/04/01 13:49:26  jones
 * Modifications to tracking codes.
 * Mainly fix problems at high rates. (M. E. Christy)
@@ -212,7 +215,6 @@ c
                  else                      !!  MEC - added the next 3 lines to 
                   hntracks_fp = 0          !!  fail events with more than the 
                   return                   !!  Max # of allowed tracks.
-                 endif                     ! end test on too many tracks
                  endif                  ! end if on too many tracks
                 endif                   ! end if on same chamber
                endif                    ! end if on  duplicate point
