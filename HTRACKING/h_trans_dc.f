@@ -13,7 +13,10 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
-* Revision 1.10  1995/05/22 19:39:32  cdaq
+* Revision 1.11  1995/08/30 15:27:39  cdaq
+* (JRA) Add call to h_dc_eff, warn about invalid plane numbers
+*
+* Revision 1.10  1995/05/22  19:39:32  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.9  1995/05/17  14:02:20  cdaq
@@ -91,9 +94,9 @@
           wire  = HDC_RAW_WIRE_NUM(ihit)
 *     check valid plane and wire number
           if(plane.gt.0 .and. plane.le. hdc_num_planes) then
-*     test if tdc value less than lower limit for good hits
             histval=float(hdc_raw_tdc(ihit))
             call hf1(hidrawtdc,histval,1.)
+*     test if tdc value less than lower limit for good hits
             if(HDC_RAW_TDC(ihit) .lt. hdc_tdc_min_win(plane))  then
               hwire_early_mult(wire,plane)
      $             = hwire_early_mult(wire,plane)+1
@@ -131,18 +134,23 @@
                   endif                 ! end test on duplicate wire
                   old_plane = plane
                   old_wire  = wire
-                endif                   ! end test on hdc_tdc_max_win
-              endif                     ! end test on hdc_tdc_min_win
-            endif                       ! end test on valid wire number
+                endif                   ! end test on valid wire number
+              endif                     ! end test on hdc_tdc_max_win
+            endif                       ! end test on hdc_tdc_min_win
+          else                          ! if not a valid plane number
+            write(6,*) 'H_TRANS_DC: invalid plane number = ',plane
           endif                         ! end test on valid plane number
         enddo                           ! end loop over raw hits
 *     
 *     set total number of good hits
 *     
         HDC_TOT_HITS = goodhit
-         
+*
+        call h_dc_eff                   ! require at least 1 hit to find efficiency
+*
       endif                             !  end test on HDC_RAW_TOT_HITS.gt.0
-*     
+*
+*
 *     Dump decoded banks if flag is set
       if(hdebugprintdecodeddc.ne.0) then
         call h_print_decoded_dc(ABORT,err)
@@ -156,3 +164,4 @@
 *     fortran-if-indent: 2
 *     fortran-do-indent: 2
 *     End:
+
