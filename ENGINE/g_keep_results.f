@@ -11,6 +11,9 @@
 *-   Created  20-Nov-1993   Kevin B. Beard, HU
 *
 * $Log$
+* Revision 1.10  2004/07/08 20:09:25  saw
+* Fill CTP Root trees every event
+*
 * Revision 1.9  2002/09/25 14:38:21  jones
 *    a. character*20 groupname changed to character*(*) groupname
 *    b. remove declaration  character*80 msg
@@ -84,6 +87,9 @@
           ABORT= ierr.NE.0
           If(ABORT) call G_build_note(':failure#$ in thhstexeg',
      &         '$',ierr,' ',0.,' ',err)
+
+          ierr = thtreeexeg(groupname)
+
         ENDIF
       ENDIF
 *
