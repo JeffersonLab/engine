@@ -22,6 +22,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.4.2.2  2004/05/13 22:09:43  jones
+* Add variables zpi and zka
+*
 * Revision 1.4.2.1  2004/02/26 14:45:02  jones
 * Starting point for mduality
 *
@@ -68,6 +71,7 @@
       REAL*4 C_W2,C_BIGQ2,C_INVMASS,C_OMEGA
 
       REAL*4 X_bj,qabs,z_m,pt2
+      REAL*4 zpi,zka
 
 *     REAL*4 P_SOS_CORR,P_HMS_CORR   ! remove this line by xucc
 
@@ -91,7 +95,7 @@
 *    xucc change begin
      &     cs, cthetapq, cphipi,
      &     c_w2,c_bigq2,c_invmass,
-     &     c_omega,x_bj,qabs,z_m,pt2,
+     &     c_omega,x_bj,qabs,z_m,pt2,zpi,zka,
      &     cmissing_mom_par,cmissing_mom_perp,cmissing_mom_oop,
      &     cmin_t,c_epsilon,c_gamma_v,c_e_bind,ce_exc,ctphix,ctphiy,
      &     cmmx,cmex,ce_excx
