@@ -7,6 +7,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.10.10.4  2004/07/14 10:51:35  cdaq
+* modified mmx and missingmass for pionct
+*
 * Revision 1.10.10.3  2004/07/12 03:07:25  cdaq
 * problem with mmx fixed?
 *
@@ -20,6 +23,9 @@
 * change shicentral_offset to oopcentral_offset
 *
 * $Log$
+* Revision 1.10.10.4  2004/07/14 10:51:35  cdaq
+* modified mmx and missingmass for pionct
+*
 * Revision 1.10.10.3  2004/07/12 03:07:25  cdaq
 * problem with mmx fixed?
 *
@@ -139,6 +145,8 @@
 *      logical flag
       real*4 flag
       real*4 mype, myph
+* pionct_mtar added for the pionct exp, this is the target mass in GeV
+      real*4 pionct_mtar
 *      real dh
   
 *     xucc added end
@@ -581,8 +589,14 @@ c           write(6,*)'c_phys: phi_cm =',phi_cm
         endif
 
 *     bye now, Resonance boy!
-
-
+        
+CCC   Added for pionCT experiment
+c     print*,'targmass = ', gtarg_mass(gtarg_num)*amu 
+        pionct_mtar=gtarg_mass(gtarg_num)*amu
+        cmissing_mass=sqrt( (cmissing_e-targmass+pionct_mtar)**2
+     >       -cmissing_mom**2 )  !!! missing mass of neutron and A-1 system
+CCC   End addition for PionCT experiment
+        
 * Coincidence timing.
 cdjm I added the fudge factor of about 23 ns to get both scctime and
 * hcctime 
