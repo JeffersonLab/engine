@@ -9,6 +9,10 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.18  1995/10/09 19:59:00  cdaq
+* (JRA) Improve event counting for periodic dumping.  Dump pedestal data
+* at end of run.
+*
 * Revision 1.17  1995/09/22 19:39:13  cdaq
 * (SAW) Move g_ctp_database from g_init_filenames to here.  Process all
 * CTP command line vars after every ctp file read so that command line
@@ -86,10 +90,10 @@
 *
       logical problems
       integer total_event_count
-      integer i,since_cnt,itmp
+      integer physics_events
+      integer i,since_cnt,itmp,lastdump
       integer evtype
       integer rpc_pend                  ! # Pending asynchronous RPC requests
-      integer ierr
 *      integer SPAREID
 *      parameter (SPAREID=67)
 *
@@ -101,13 +105,13 @@
 *--------------------------------------------------------
 *
       print *
-      print *,'                hall C analysis engine Summer 1995'
-      print *
+      print *,'       Hall C Proudly Presents: Analysis Engine - Summer 1995'
 *
       err= ' '
       print *
 *
       total_event_count= 0                      ! Need to register this
+      lastdump=0
 *
       rpc_on=0                          ! RPC servicing off by default
       rpc_control=-1                    ! If RPC on, don't block by default
@@ -271,6 +275,7 @@ c      if (itmp.ne.0) gen_run_hist_dump_interval=itmp
               IF(gen_run_starting_event.LE.gen_event_ID_number) THEN
                 if(.NOT.problems) then
                   call G_reconstruction(CRAW,ABORT,err) !COMMONs
+                  physics_events = physics_events + 1
                   problems= problems .OR. ABORT
                 endif
 *     
@@ -321,22 +326,16 @@ c      if (itmp.ne.0) gen_run_hist_dump_interval=itmp
             endif
             mss = err
           EndIf
-          if(gen_run_hist_dump_interval.gt.0) then
-            if((total_event_count/gen_run_hist_dump_interval)
-     $           *gen_run_hist_dump_interval.eq.total_event_count) then
-ccc     $           (total_event_count-gen_run_starting_event)) then
-              print *,"Dumping histograms at event ",total_event_count
+          if(gen_run_hist_dump_interval.gt.0.and.physics_events.ne.lastdump) then
+            if((physics_events/gen_run_hist_dump_interval)*
+     $           gen_run_hist_dump_interval.eq.physics_events) then
+              lastdump=physics_events   ! Wait till next mult. of dump_int.
 *
 *     Dump scaler report as well
               call g_proper_shutdown(ABORT,err)
-cc              call h_scin_eff_shutdown(ABORT,err)
-cc              call h_cal_eff_shutdown(ABORT,err)
-cc              ierr = threp(g_report_blockname,g_report_output_filename)
-cc              if(ierr.ne.0) then
-cc                print *,'ierr=',ierr,', error dumping report'
-ccc                bad_report = .true.
-ccc                err = 'threp failed to create report'
-cc              endif
+              print 112,"Finished dumping histograms/scalers for first"
+     &             ,physics_events," events"
+ 112          format (a,i8,a)
             endif
           endif
         endif
@@ -389,17 +388,18 @@ cc              endif
         err= ' '
       EndIf
 *
-      print *
-      print *,'      total number of events=',total_event_count
-      print *
+      call h_dump_peds
+      call s_dump_peds
+      print *,' Total number of events=',total_event_count
 *
-      print *,' Processed:'
+      print *,'     Processed:'
       DO i=0,gen_MAX_trigger_types
         If(gen_run_triggered(i).GT.0) Then
           write(mss,'(i10," events of type",i3)') gen_run_triggered(i),i
           call G_log_message(mss)
         EndIf
       ENDDO
+      print *,'  for run #',gen_run_number
 *
       END
 
@@ -420,9 +420,3 @@ cc              endif
 *
       return
       end
-
-
-
-
-
-
