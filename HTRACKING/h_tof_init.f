@@ -9,7 +9,10 @@
 *
 * modifications: 31 Mar 1994    DFG  Check for 0 hits
 * $Log$
-* Revision 1.3  1994/09/13 21:30:01  cdaq
+* Revision 1.4  1995/02/02 16:12:50  cdaq
+* (JRA) Make minph variables into per pmt constants
+*
+* Revision 1.3  1994/09/13  21:30:01  cdaq
 * (JRA) Add staggering of scintillator counters
 *
 * Revision 1.2  1994/06/01  15:39:34  cdaq
@@ -49,6 +52,8 @@
           hscin_neg_phc_coeff(ihit) = hhodo_neg_phc_coeff(plane,counter)
           hscin_pos_time_offset(ihit) = hhodo_pos_time_offset(plane,counter)
           hscin_neg_time_offset(ihit) = hhodo_neg_time_offset(plane,counter)
+          hscin_pos_minph(ihit) = hhodo_pos_minph(plane,counter)
+          hscin_neg_minph(ihit) = hhodo_neg_minph(plane,counter)
 
           if (plane .eq. 1) then                   !1x
             hscin_zpos(ihit) = hscin_1x_zpos
