@@ -17,7 +17,10 @@
 *                add     hdc_xcenter
 *                        hdc_ycenter
 * $Log$
-* Revision 1.7  1994/09/13 19:19:37  cdaq
+* Revision 1.8  1994/11/22 18:43:10  cdaq
+* (SAW) Cleaned up ?DC_NUM_CHAMBERS and ?MAX_NUM_CHAMBERS stuff
+*
+* Revision 1.7  1994/09/13  19:19:37  cdaq
 * (JRA) Add global Wire chamber offsets
 *
 * Revision 1.6  1994/08/05  17:54:15  cdaq
@@ -108,8 +111,8 @@
      &     hdc_central_wire(HMAX_NUM_DC_PLANES),
      &     hdc_nrwire(HMAX_NUM_DC_PLANES),
      &     hdc_sigma(HMAX_NUM_DC_PLANES),
-     &     hdc_xcenter(HNUM_DC_CHAMBERS),
-     &     hdc_ycenter(HNUM_DC_CHAMBERS),
+     &     hdc_xcenter(HMAX_NUM_CHAMBERS),
+     &     hdc_ycenter(HMAX_NUM_CHAMBERS),
      &     hdc_chamber_planes(HMAX_NUM_DC_PLANES),
      &     hdc_plane_name(HMAX_NUM_DC_PLANES),
      &     hdc_center(HMAX_NUM_DC_PLANES)
