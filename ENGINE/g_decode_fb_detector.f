@@ -4,10 +4,13 @@
 *----------------------------------------------------------------------
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
-*-    $Log$
-*-    Revision 1.12  1995/07/27 19:10:02  cdaq
-*-    (SAW) Use specific bit manipulation routines for f2c compatibility
-*-
+* $Log$
+* Revision 1.13  1995/10/09 18:23:29  cdaq
+* (JRA) Comment out some debugging statements
+*
+* Revision 1.12  1995/07/27 19:10:02  cdaq
+* (SAW) Use specific bit manipulation routines for f2c compatibility
+*
 * Revision 1.11  1995/01/31  15:55:52  cdaq
 * (SAW) Make sure mappointer and subaddbit are set on program entry.
 *
@@ -102,10 +105,10 @@
         endif
         slot = jiand(JISHFT(evfrag(pointer),-27),'1F'X)
         if(slot.ne.oslot.or.firsttime) then
-          if (slot.le.0 .or. slot.ge.26 .or. roc.le.0 .or. roc.ge.9) then
-            write (6,*) 'roc,slot=',roc,slot
-            write (6,*) 'evfrag(pointer)=',evfrag(pointer)
-          endif
+*          if (slot.le.0 .or. slot.ge.26 .or. roc.le.0 .or. roc.ge.9) then
+*            write (6,*) 'roc,slot=',roc,slot
+*            write (6,*) 'evfrag(pointer)=',evfrag(pointer)
+*          endif
           mappointer = g_decode_slotpointer(roc+1,slot)
           subaddbit = g_decode_subaddbit(roc+1,slot) ! Usually 16 or 17
         endif
