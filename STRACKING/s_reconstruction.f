@@ -9,9 +9,12 @@
 *-         : err             - reason for failure, if any
 *- 
 *-    $Log$
-*-    Revision 1.5  1994/06/07 04:46:21  cdaq
-*-    (DFG) add s_recon_num and bypass switches
+*-    Revision 1.6  1995/04/06 19:42:47  cdaq
+*-    (JRA) Add call to s_select_best_track before s_physics
 *-
+* Revision 1.5  1994/06/07  04:46:21  cdaq
+* (DFG) add s_recon_num and bypass switches
+*
 * Revision 1.4  1994/05/13  03:34:52  cdaq
 * (DFG) Put s_prt_track_tests here. Remove from s_tof
 *
@@ -159,6 +162,14 @@
           endif
 *     Combine results in SOS physics analysis
 *     SOS_TARGET + SOS_TRACK_TESTS ====>  SOS_PHYSICS
+*
+         if(sbypass_track.eq.0) then
+           call s_select_best_track(abort,err)
+           if(ABORT) then
+             call G_add_path(here,err)
+             return
+           endif
+         endif
 *
         if(sbypass_physics.eq.0) then
          call S_PHYSICS(ABORT,err)
