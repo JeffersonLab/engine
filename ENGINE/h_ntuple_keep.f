@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.8  1996/09/04 14:43:17  saw
+* (JRA) Modify ntuple contents
+*
 * Revision 1.7  1996/01/16 17:01:55  cdaq
 * (JRA) Modify ntuple contents
 *
@@ -46,11 +49,15 @@
       INCLUDE 'hms_tracking.cmn'
       INCLUDE 'hms_physics_sing.cmn'
       INCLUDE 'hms_scin_tof.cmn'
+      INCLUDE 'gen_scalers.cmn'
       include 'hms_track_histid.cmn'  !temp junk.
 *
       logical HEXIST	!CERNLIB function
 *
       integer m
+
+      real proton_mass
+      parameter ( proton_mass = 0.93827247 ) ! [GeV/c^2]
 *
 *--------------------------------------------------------
       err= ' '
@@ -61,10 +68,6 @@
 ************************************************
       m= 0
 *  
-c      m= m+1
-c      h_Ntuple_contents(m)= HCER_ADC(1) ! cerenkov adc #1
-c      m= m+1
-c      h_Ntuple_contents(m)= HCER_ADC(2) ! cerenkov adc #2
       m= m+1
       h_Ntuple_contents(m)= HCER_NPE_SUM ! cerenkov photoelectron spectrum
       m= m+1
@@ -72,32 +75,26 @@ c      h_Ntuple_contents(m)= HCER_ADC(2) ! cerenkov adc #2
       m= m+1
       h_Ntuple_contents(m)= HSENERGY    ! Lab total energy of chosen track in GeV
       m= m+1
+      h_Ntuple_contents(m)= gbcm1_charge ! Charge of last scaler event
+      m= m+1
       h_Ntuple_contents(m)= HSDELTA	! Spectrometer delta of chosen track
       m= m+1
       h_Ntuple_contents(m)= HSTHETA	! Lab Scattering angle in radians
       m= m+1
       h_Ntuple_contents(m)= HSPHI	! Lab Azymuthal angle in radians
       m= m+1
-      h_Ntuple_contents(m)= HSMINV	! Invariant Mass of remaing hadronic system
+      h_Ntuple_contents(m)= HINVMASS	! Invariant Mass of remaing hadronic system
       m= m+1
       h_Ntuple_contents(m)= HSZBEAM! Lab Z coordinate of intersection of beam
 c                                ! track with spectrometer ray
       m= m+1
       h_Ntuple_contents(m)= HSDEDX(1)	! DEDX of chosen track in 1st scin plane
-c      m= m+1
-c      h_Ntuple_contents(m)= HSDEDX(2)	! DEDX of chosen track in 2nd scin plane
-c      m= m+1
-c      h_Ntuple_contents(m)= HSDEDX(3)	! DEDX of chosen track in 3rd scin plane
-c      m= m+1
-c      h_Ntuple_contents(m)= HSDEDX(4)	! DEDX of chosen track in 4th scin plane
       m= m+1
       h_Ntuple_contents(m)= HSBETA	! BETA of chosen track
       m= m+1
       h_Ntuple_contents(m)= HSTRACK_ET	! Total shower energy of chosen track
       m= m+1
       h_Ntuple_contents(m)= HSTRACK_PRESHOWER_E	! preshower of chosen track
-      m= m+1
-      h_Ntuple_contents(m)= HSTIME_AT_FP
       m= m+1
       h_Ntuple_contents(m)= HSX_FP		! X focal plane position 
       m= m+1
@@ -107,116 +104,20 @@ c      h_Ntuple_contents(m)= HSDEDX(4)	! DEDX of chosen track in 4th scin plane
       m= m+1
       h_Ntuple_contents(m)= HSYP_FP
       m= m+1
-      h_Ntuple_contents(m)= HSCHI2PERDEG	! CHI2 per degree of freedom of chosen track.
-      m= m+1
-      h_Ntuple_contents(m)= float(HSNFREE_FP)
-      m= m+1
       h_Ntuple_contents(m)= HSY_TAR
       m= m+1
       h_Ntuple_contents(m)= HSXP_TAR
       m= m+1
       h_Ntuple_contents(m)= HSYP_TAR
-*
-c      m= m+1
-c      h_Ntuple_contents(m)= float(HSNUM_FPTRACK)! Index of focal plane track chosen
-c      m= m+1
-c      h_Ntuple_contents(m)= float(HSID_LUND)! LUND particle ID code -- not yet filled
-*
-      m= m+1
-      h_Ntuple_contents(m)= float(gen_event_ID_number)
-*
-      m= m+1
-      h_Ntuple_contents(m)= hscin_tot_hits
-      m= m+1
-      h_Ntuple_contents(m)= hsnum_scin_hit
       m= m+1
       h_Ntuple_contents(m)= hstart_time
-c      m= m+1
-c      h_Ntuple_contents(m)= h_fptime(1)
-c      m= m+1
-c      h_Ntuple_contents(m)= h_fptime(2)
-c      m= m+1
-c      h_Ntuple_contents(m)= h_fptime(3)
-c      m= m+1
-c      h_Ntuple_contents(m)= h_fptime(4)
-c      m= m+1
-c      h_Ntuple_contents(m)= hsscin_elem_hit(1)
-c      m= m+1
-c      h_Ntuple_contents(m)= hsscin_elem_hit(2)
-c      m= m+1
-c      h_Ntuple_contents(m)= hsscin_elem_hit(3)
-c      m= m+1
-c      h_Ntuple_contents(m)= hsscin_elem_hit(4)
       m= m+1
-      h_Ntuple_contents(m)= hdc_raw_tot_hits
-      m= m+1
-      h_Ntuple_contents(m)= hdc_tot_hits
-*
-c      m= m+1
-c      h_Ntuple_contents(m)= hsx_sp1
-c      m= m+1
-c      h_Ntuple_contents(m)= hsy_sp1
-c      m= m+1
-c      h_Ntuple_contents(m)= hsxp_sp1
-c      m= m+1
-c      h_Ntuple_contents(m)= hsx_sp2
-c      m= m+1
-c      h_Ntuple_contents(m)= hsy_sp2
-c      m= m+1
-c      h_Ntuple_contents(m)= hsxp_sp2
-*
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_res(1)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_res(2)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_res(3)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_res(4)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_res(5)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_res(6)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_res(7)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_res(8)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_res(9)
-c      m= m+1
-c     h_Ntuple_contents(m)= hdc_sing_res(10)
-c     m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_res(11)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_res(12)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_driftdis(1)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_driftdis(2)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_driftdis(3)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_driftdis(4)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_driftdis(5)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_driftdis(6)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_driftdis(7)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_driftdis(8)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_driftdis(9)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_driftdis(10)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_driftdis(11)
-c      m= m+1
-c      h_Ntuple_contents(m)= hdc_sing_driftdis(12)
-*
-************************************************
-*
-*
+      h_Ntuple_contents(m)= float(gen_event_ID_number)
+
+* Experiment dependent entries start here.
+
+
+* Fill ntuple for this event
       ABORT= .NOT.HEXIST(h_Ntuple_ID)
       IF(ABORT) THEN
         call G_build_note(':Ntuple ID#$ does not exist',
