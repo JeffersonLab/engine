@@ -1,5 +1,9 @@
 *    This include file contains all the variables required for s_physics
 * $Log$
+* Revision 1.9.12.2  2005/03/23 16:53:47  jones
+* Add new variables for new code STRACKING/s_select_best_track_prune.f and
+* HTRACKING/h_select_best_track_prune.f
+*
 * Revision 1.9.12.1  2004/08/20 17:34:11  cdaq
 * updated to include _select_using_scin codes
 *
@@ -69,8 +73,24 @@
       REAL*4 ssel_etmin                 ! Minimum track et
       REAL*4 ssel_etmax                 ! Maximum track et
       INTEGER*4 ssel_ndegreesmin        ! Minimum number of degrees of freedom
-      INTEGER*4 ssel_using_scin       ! =1 select best track using scin info
+! following parameters are only used if pruning is selected
+! see the code h_select_best_track_prune.f for meaning
+! Note: all these limits are for abs(quantity) except df, chibeta
+      real*4 sprune_xp                  ! Maximum xp angle in radians
+      real*4 sprune_yp 	                ! maximum yp angle in radianss
+      real*4 sprune_ytar                ! maximum ytar in cm
+      real*4 sprune_delta               ! Maximum delta in percent
+      real*4 sprune_beta                ! Maximum beta-1
+      integer sprune_df                  ! Minimum d.f. for track
+      real*4 sprune_chibeta             ! Maximum beta chisq
+      real*4 sprune_fptime              ! Maximum fptime - nominal
+      integer sprune_npmt               ! Minimum PMTs for track
+
+       INTEGER*4 ssel_using_scin       ! =1 select best track using scin info
                                       ! = 0 select best track suing just chi2
+      INTEGER*4 ssel_using_prune      ! =1 select best track using new 
+                                      !    routine and prune values 
+                                      ! = 0 then using_scin applies
 *     
       COMMON/sos_chose_one_track_r4/
      &     ssel_chi2_fpperdegmax,
@@ -79,10 +99,21 @@
      &     ssel_betamin,
      &     ssel_betamax,
      &     ssel_etmin,
-     &     ssel_etmax
+     &     ssel_etmax,
+     &     sprune_xp,
+     &     sprune_yp,
+     &     sprune_ytar,
+     &     sprune_delta,
+     &     sprune_beta,
+     &     sprune_df,
+     &     sprune_chibeta,
+     &     sprune_npmt,
+     &     sprune_fptime
 *
       COMMON/sos_chose_one_track_i4/
-     &     ssel_ndegreesmin,ssel_using_scin      
+     &     ssel_ndegreesmin,
+     &     ssel_using_scin,
+     &     ssel_using_prune
 
 *
 *     CTPTYPE=event
