@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.1  1994/07/07 15:25:03  cdaq
+# Revision 1.2  1994/08/04 03:51:30  cdaq
+# (SAW) Add libhack.a to library list
+#
+# Revision 1.1  1994/07/07  15:25:03  cdaq
 # Initial revision
 #
 #
@@ -32,7 +35,7 @@ bin_targets = engine_online
 
 DEPLIBS = $(LIBROOT)/libengine.a \
 	$(LIBROOT)/libhtracking.a $(LIBROOT)/libstracking.a \
-	$(LIBROOT)/libtracking.a \
+	$(LIBROOT)/libtracking.a $(LIBROOT)/libhack.a \
 	$(LIBROOT)/libgmc.a $(LIBROOT)/libutils.a $(LIBROOT)/libctp.a
 
 default:
@@ -53,5 +56,8 @@ $(LIBROOT)/libctp.a:
 
 engine_online: $(objects) $(DEPLIBS)
 	$(F77) $(FFLAGS) -o engine_online $(objects) $(DEPLIBS) $(OTHERLIBS)
+
+%.cmn : ../INCLUDE/RCS/%.cmn,v
+	$(CO) $(COFLAGS) $<
 
 include $(sources:.f=.d)

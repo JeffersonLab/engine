@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.5  1994/07/07 15:18:22  cdaq
+# Revision 1.6  1994/08/04 03:49:53  cdaq
+# (SAW) Add libhack.a to library list
+#
+# Revision 1.5  1994/07/07  15:18:22  cdaq
 # (SAW) Fix a bug so that all sources not get compiled
 #
 # Revision 1.4  1994/06/22  21:04:29  cdaq
@@ -57,7 +60,7 @@ install-dirs := lib bin
 
 DEPLIBS = $(LIBROOT)/libengine.a \
 	$(LIBROOT)/libhtracking.a $(LIBROOT)/libstracking.a \
-	$(LIBROOT)/libtracking.a \
+	$(LIBROOT)/libtracking.a $(LIBROOT)/libhack.a \
 	$(LIBROOT)/libgmc.a $(LIBROOT)/libutils.a $(LIBROOT)/libctp.a
 
 ifeq ($(ARCH),HPUX)
