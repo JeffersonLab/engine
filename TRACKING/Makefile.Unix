@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.13  1999/01/21 21:42:04  saw
+# Clean up Include file rules
+#
 # Revision 1.12  1998/12/09 16:31:17  saw
 # Remove dependence on Csoft environment variable
 #
@@ -63,8 +66,7 @@ endif
 # Get include files from ENGINE directory
 #
 
-%.cmn :: ../../INCLUDE/%.cmn
+%.cmn ../%.cmn:: ../../INCLUDE/%.cmn
 	$(CP) $< $@
-	$(CP) $< ../$@
 
 include $(sources:.f=.d)

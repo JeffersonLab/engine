@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.10  1999/01/21 21:39:29  saw
+# Clean up Include file rules
+#
 # Revision 1.9  1998/12/09 16:31:16  saw
 # Remove dependence on Csoft environment variable
 #
@@ -62,6 +65,5 @@ endif
 
 %.cmn ../%.cmn:: ../../INCLUDE/%.cmn
 	$(CP) $< $@
-	$(CP) $< ../$@
 
 include $(sources:.f=.d)
