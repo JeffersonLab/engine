@@ -17,7 +17,10 @@
 *
 *     d.f. geesaman                   1 September 1993
 * $Log$
-* Revision 1.1  1994/02/21 16:07:39  cdaq
+* Revision 1.2  1994/02/22 05:47:45  cdaq
+* (SAW) Removed dfloat calls with floating args
+*
+* Revision 1.1  1994/02/21  16:07:39  cdaq
 * Initial revision
 *
 *
@@ -36,16 +39,16 @@
       parameter (infinity = 1.0d20)
       parameter (cinfinity = 1/infinity)
 *
-      S_DPSIFUN =  ray(3)*ray(2)*dfloat(splane_coeff(1,iplane)) 
-     &        + ray(4)*ray(1)*dfloat(splane_coeff(2,iplane))
-     &        + ray(3)*dfloat(splane_coeff(3,iplane)) 
-     &        + ray(4)*dfloat(splane_coeff(4,iplane))
-     &        + ray(1)*dfloat(splane_coeff(5,iplane))
-     &        + ray(2)*dfloat(splane_coeff(6,iplane))
+      S_DPSIFUN =  ray(3)*ray(2)*(splane_coeff(1,iplane)) 
+     &        + ray(4)*ray(1)*(splane_coeff(2,iplane))
+     &        + ray(3)*(splane_coeff(3,iplane)) 
+     &        + ray(4)*(splane_coeff(4,iplane))
+     &        + ray(1)*(splane_coeff(5,iplane))
+     &        + ray(2)*(splane_coeff(6,iplane))
 *
-      denom = ray(3)*dfloat(splane_coeff(7,iplane)) 
-     &      + ray(4)*dfloat(splane_coeff(8,iplane))  
-     &      + dfloat(splane_coeff(9,iplane))
+      denom = ray(3)*(splane_coeff(7,iplane)) 
+     &      + ray(4)*(splane_coeff(8,iplane))  
+     &      + (splane_coeff(9,iplane))
 *
       if(abs(denom).lt.cinfinity) then
           S_DPSIFUN=infinity
