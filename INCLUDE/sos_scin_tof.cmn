@@ -1,7 +1,10 @@
 * sos_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the sos time of flight.
 * $Log$
-* Revision 1.1  1994/04/13 19:01:46  cdaq
+* Revision 1.2  1994/05/13 03:58:46  cdaq
+* (DFG) Remove parameters to .parm file
+*
+* Revision 1.1  1994/04/13  19:01:46  cdaq
 * Initial revision
 *
 
@@ -25,17 +28,10 @@
 
 
 *****************************************
-* TEMPORARY SECTION: these will be read in from parameter file
-*                    and only the real*4 statements will remain.
         real*4 sscin_minph
-        parameter (sscin_minph=0)
         real*4 sscin_tdc_min
-        parameter (sscin_tdc_min=1)
         real*4 sscin_tdc_max
-        parameter (sscin_tdc_max=99999)      !not sure what range is.
         real*4 sscin_tdc_to_time
-        parameter (sscin_tdc_to_time=.050)   !50 ps / channel
-* TEMPORARY SECTION
 *****************************************
 
         logical*4 sgood_tdc_pos(smax_scin_hits)
@@ -56,12 +52,10 @@
      &    sscin_vel_light,
      &    sscin_pos_phc_coeff,sscin_neg_phc_coeff,
      &    sscin_pos_time_offset,sscin_neg_time_offset,
-* the next 4 lines are commented out since these variables are temporarily
-* being set as parameters rather than being read in.
-*     &    sscin_minph,
-*     &    sscin_tdc_min,
-*     &    sscin_tdc_max,
-*     &    sscin_tdc_to_time,
+     &    sscin_minph,
+     &    sscin_tdc_min,
+     &    sscin_tdc_max,
+     &    sscin_tdc_to_time,
      &    sgood_tdc_pos, sgood_tdc_neg,    !did pos/neg tube had good tdc?
      &    sgood_scin_time,                   !was a time found for the hit?
      &    sgood_plane_time,                  !was a time found for the plane?
