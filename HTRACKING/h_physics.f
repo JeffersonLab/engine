@@ -20,6 +20,9 @@
 *-                           Dummy Shell routine
 *
 * $Log$
+* Revision 1.21.2.2  2003/07/15 19:04:52  cdaq
+* add calculation of hsinplane
+*
 * Revision 1.21.2.1  2003/04/10 12:39:03  cdaq
 * add  e_nonzero and modify p_nonzero.  These are used in calculating E_cal/p and beta.
 *
@@ -285,7 +288,9 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 
 *     Do energy loss, which is particle specific
 
-      hstheta_1st = htheta_lab*TT/180. - atan(hsyp_tar) ! rough scat angle
+      hstheta_1st = htheta_lab*TT/180. - atan(hsyp_tar) ! rough scat
+                                                        ! angle
+      hsinplane = htheta_lab*TT/180. - atan(hsyp_tar) ! rough scat angle
 
       if (hpartmass .lt. 2.*mass_electron) then ! for electron
         if (gtarg_z(gtarg_num).gt.0.) then
