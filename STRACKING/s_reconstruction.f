@@ -8,13 +8,14 @@
 *-   Output: ABORT              - success or failure
 *-         : err             - reason for failure, if any
 *- 
-*-   Created  8-Nov-1993   Kevin B. Beard, HU
-*-   Modified 20-Nov-1993   KBB for new errors
 *-    $Log$
-*-    Revision 1.2  1994/02/22 15:56:17  cdaq
-*-    (DFG) Replace with real version
-*-    (SAW) Move to TRACKING directory
+*-    Revision 1.3  1994/04/13 18:30:40  cdaq
+*-    (DFG) add call to s_raw_dump_all and comment out some returns after ABORT's
 *-
+* Revision 1.2  1994/02/22  15:56:17  cdaq
+* (DFG) Replace with real version
+* (SAW) Move to TRACKING directory
+*
 * Revision 1.1  1994/02/04  22:16:44  cdaq
 * Initial revision
 *
@@ -42,13 +43,20 @@
 *
       ABORT= .TRUE.
       err= ':no events analyzed!'
+*     dump all raw data
+      call s_raw_dump_all(ABORT,err)
+      if(ABORT) then
+         call g_add_path(here,err)
+         return
+      endif
+*
 *     TRANSLATE SCINTILATORS AND CALCULATE START TIME
 *     SOS_RAW_SCIN ====> SOS_DECODED_SCIN
 *     
       call S_TRANS_SCIN(ABORT,err)
       if(ABORT)  then
          call G_add_path(here,err)
-         return
+*         return
       endif                                     ! end test on SCIN ABORT
 
 *
@@ -58,7 +66,7 @@
       call S_TRANS_CAL(ABORT,err)
       if(ABORT)   then
          call G_add_path(here,err)
-         return
+*         return
       endif                                     ! end test on CAL ABORT
 *
 *      TRANLATE DRIFT CHAMBERS
@@ -115,7 +123,7 @@
          call S_CER(ABORT,err)
          if(ABORT) then
             call G_add_path(here,err)
-            return
+*            return
          endif                                  ! end test of S_CER ABORT
 *
 *     Combine results in SOS physics analysis
@@ -124,7 +132,7 @@
          call S_PHYSICS(ABORT,err)
          if(ABORT) then
             call G_add_path(here,err)
-            return
+*            return
          endif                                  ! end test of S_PHYSICS ABORT
 *
       endif                                     ! end test no tracks found       
