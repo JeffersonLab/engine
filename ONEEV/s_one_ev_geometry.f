@@ -13,6 +13,9 @@
 * Derek van Westrum (vanwestr@cebaf.gov)
 *
 * $Log$
+* Revision 1.5  1996/11/22 15:37:10  saw
+* (SAW) Don't let U&V wires extend beyond chamber.  Some code cleanup.
+*
 * Revision 1.4  1996/04/30 14:10:39  saw
 * (DVW) Code update
 *
@@ -71,6 +74,12 @@
       real par(10)			! geometry parameters
       real x, y, z			! offset position for placement of dets
       integer i                         ! index variable
+
+      real wspace                       ! Wire spacing temp variable
+      real xtemp,ytemp                  ! Temporary variables for
+      real xplus,yplus                  ! display correct wire lengths.
+      real xminus,yminus
+  
       real*4 raddeg
       parameter (raddeg = 3.14159265/180.)
 
@@ -171,92 +180,80 @@
       par(1) = sdc_pitch(1) / 2./1000.        ! make the cells "wire" thin
       par(2) = uwirelength/2.
       par(3) = (sdc_zpos(2) - sdc_zpos(1))/ 2./1000. ! half width of chamber planes
+      wspace = sdc_pitch(1) / SIN(sdc_alpha_angle(1))
 *
 * First define all the "boxes" for all the U wires in both chambers...
-*
+* Then position the U wires plane by plane
       do ichamber=1,2
-       do isector=1,4
+        iplane = 1
+        x = -(sdc_nrwire(1) + 1.) / 2. * wspace
+        do isector=1,4
+          if(isector.eq.3) then
+            iplane = 2
+            x = -(sdc_nrwire(1) + 1.) / 2. * wspace
+          endif
+          write(plane,'(a,a,a,a)') 'W',char(64 + ichamber),char(64+iplane),'U'
           do iwire = 1,24
+            x = x + wspace
+            ytemp = xwirelength/2.0
+            xtemp = ytemp/tan(sdc_alpha_angle(1)) + x
+            if(xtemp.gt.ywirelength/2.0) then
+              xplus = ywirelength/2.0
+              yplus = (xplus-x)*tan(sdc_alpha_angle(1))
+            else
+              xplus = xtemp
+              yplus = ytemp
+            endif
+            ytemp = -xwirelength/2.0
+            xtemp = ytemp/tan(sdc_alpha_angle(1)) + x
+            if(xtemp.lt.-ywirelength/2.0) then
+              xminus = -ywirelength/2.0
+              yminus = (xminus-x)*tan(sdc_alpha_angle(1))
+            else
+              xminus = xtemp
+              yminus = ytemp
+            endif
+            par(2) = sqrt((xplus-xminus)**2+(yplus-yminus)**2)/2.0
             write (wire,'(a,a,a,a)') char(64 + ichamber),'U',
-     $             char(64 + isector),char(64 + iwire)
+     $           char(64 + isector),char(64 + iwire)
             call g_ugsvolu (wire, 'BOX ', DETMEDIA, par, 3, ivolu) ! U cell
             call gsatt (wire, 'SEEN', 0) ! can't see the wire cells
+            call gspos (wire, 1, plane, (xminus+xplus)/2
+     $           , (yminus+yplus)/2, 0., 3, 'ONLY')
           enddo
-       enddo
+        enddo
       enddo
 *
-      par(1) = sdc_pitch(1) / SIN(sdc_alpha_angle(1))        
-*
-* Now position the U wires plane by plane...
-      do ichamber=1,2
-         x = -(sdc_nrwire(1) + 1.) / 2. * par(1)
-         do isector=1,2
-            do iwire = 1,24
-               write (plane,'(a,a,a,a)') 'W',char(64 + ichamber),'AU'
-               write (wire,'(a,a,a,a)') char(64 + ichamber),'U',
-     $             char(64 + isector),char(64 + iwire)
-               x = x + par(1)
-               call gspos (wire, 1, plane, x, 0., 0., 3, 'ONLY')
-            enddo
-         enddo
-         x = -(sdc_nrwire(1) + 1.) / 2. * par(1)
-         do isector = 3,4
-            do iwire = 1,24
-               write (plane,'(a,a,a,a)') 'W',char(64 + ichamber),'BU'
-               write (wire,'(a,a,a,a)') char(64 + ichamber),'U',
-     $              char(64 + isector),char(64 + iwire)
-               x = x + par(1)
-               call gspos (wire, 1, plane, x, 0., 0., 3, 'ONLY')
-            enddo
-         enddo
-      enddo
-*
-*
-* Now position the X wires plane by plane...
+
 *****
 *XXX
 *****
       par(1) = sdc_pitch(3) / 2. /1000.       ! half width of cell
       par(2) = xwirelength/2.             ! the length of the xwirelengths
       par(3) = (sdc_zpos(4) - sdc_zpos(3))/ 2./1000. ! half width of chamber planes
+      wspace = sdc_pitch(3)
 *
 * First define all the "boxes" for all the X wires in both chambers...
+* Then position the X wires plane by plane...
 *
       do ichamber=1,2
-       do isector=1,8
+        iplane = 1
+        x = -(sdc_nrwire(3) + 1.) / 2. * wspace
+        do isector=1,8
+          if(isector.eq.5) then
+            iplane = 2
+            x = -(sdc_nrwire(3) + 1.) / 2. * wspace
+          endif
+          write (plane,'(a,a,a,a)') 'W',char(64 + ichamber),char(64+iplane),'X'
           do iwire = 1,16
+            x = x + wspace
             write (wire,'(a,a,a,a)') char(64 + ichamber),'X',
-     $             char(64 + isector),char(64 + iwire)
+     $           char(64 + isector),char(64 + iwire)
             call g_ugsvolu (wire, 'BOX ', DETMEDIA, par, 3, ivolu) ! X cell
             call gsatt (wire, 'SEEN', 0) ! can't see the wire cells
+            call gspos (wire, 1, plane, x, 0., 0., 0, 'ONLY')
           enddo
-       enddo
-      enddo
-*
-      par(1) = sdc_pitch(3)
-*
-* Now position the X wires plane by plane...
-      do ichamber=1,2
-         x = -(sdc_nrwire(3) + 1.) / 2. * par(1) 
-         do isector=1,4
-            do iwire = 1,16
-               write (plane,'(a,a,a,a)') 'W',char(64 + ichamber),'AX'
-               write (wire,'(a,a,a,a)') char(64 + ichamber),'X',
-     $             char(64 + isector),char(64 + iwire)
-               x = x + par(1)
-               call gspos (wire, 1, plane, x, 0., 0., 0, 'ONLY')
-            enddo
-         enddo
-         x = -(sdc_nrwire(3) + 1.) / 2. * par(1)
-         do isector = 5,8
-            do iwire = 1,16
-               write (plane,'(a,a,a,a)') 'W',char(64 + ichamber),'BX'
-               write (wire,'(a,a,a,a)') char(64 + ichamber),'X',
-     $              char(64 + isector),char(64 + iwire)
-               x = x + par(1)
-               call gspos (wire, 1, plane, x, 0., 0., 0, 'ONLY')
-            enddo
-         enddo
+        enddo
       enddo
 *
 *
@@ -267,43 +264,51 @@
       par(2) = vwirelength/2.
       par(3) = (sdc_zpos(6) - sdc_zpos(5))/ 2./1000. ! half width of chamber planes
 *
-* First define all the "boxes" for all the V wires in both chambers...
-*
-      do ichamber=1,2
-       do isector=1,4
-          do iwire = 1,24
-            write (wire,'(a,a,a,a)') char(64 + ichamber),'V',
-     $             char(64 + isector),char(64 + iwire)
-            call g_ugsvolu (wire, 'BOX ', DETMEDIA, par, 3, ivolu) ! V cell
-            call gsatt (wire, 'SEEN', 0) ! can't see the wire cells
-          enddo
-       enddo
-      enddo
-*
-      par(1) = sdc_pitch(5) / SIN(sdc_alpha_angle(5))        
+      wspace = sdc_pitch(5) / SIN(sdc_alpha_angle(5))        
 
-* Now position the V wires plane by plane...
+* First define all the "boxes" for all the V wires in both chambers...
+* Then position the V wires plane by plane...
       do ichamber=1,2
-         x = -(sdc_nrwire(5) + 1.) / 2. * par(1)
-         do isector=1,2
-            do iwire = 1,24
-               write (plane,'(a,a,a,a)') 'W',char(64 + ichamber),'AV'
-               write (wire,'(a,a,a,a)') char(64 + ichamber),'V',
-     $             char(64 + isector),char(64 + iwire)
-               x = x + par(1)
-               call gspos (wire, 1, plane, x, 0., 0., 4, 'ONLY')
-            enddo
-         enddo
-         x = -(sdc_nrwire(5) + 1.) / 2. * par(1)
-         do isector = 3,4
-            do iwire = 1,24
-               write (plane,'(a,a,a,a)') 'W',char(64 + ichamber),'BV'
-               write (wire,'(a,a,a,a)') char(64 + ichamber),'V',
-     $              char(64 + isector),char(64 + iwire)
-               x = x + par(1)
-               call gspos (wire, 1, plane, x, 0., 0., 4, 'ONLY')
-            enddo
-         enddo
+        iplane =1
+        x = -(sdc_nrwire(5) + 1.) / 2. * wspace
+        do isector=1,4
+          if(isector.eq.3) then
+            iplane = 2
+            x = -(sdc_nrwire(5) + 1.) / 2. * wspace
+          endif
+          write (plane,'(a,a,a,a)') 'W',char(64 + ichamber),char(64+iplane),'V'
+          do iwire = 1,24
+            x = x + wspace
+            ytemp = -xwirelength/2.0
+            xtemp = ytemp/tan(sdc_alpha_angle(5)) + x
+            if(xtemp.gt.ywirelength/2.0) then
+              xplus = ywirelength/2.0
+              yplus = (xplus-x)*tan(sdc_alpha_angle(5))
+            else
+              xplus = xtemp
+              yplus = ytemp
+            endif
+            ytemp = xwirelength/2.0
+            xtemp = ytemp/tan(sdc_alpha_angle(5)) + x
+            if(xtemp.lt.-ywirelength/2.0) then
+              xminus = -ywirelength/2.0
+              yminus = (xminus-x)*tan(sdc_alpha_angle(5))
+            else
+              xminus = xtemp
+              yminus = ytemp
+            endif
+             par(2) = sqrt((xplus-xminus)**2+(yplus-yminus)**2)/2.0
+            write (wire,'(a,a,a,a)') char(64 + ichamber),'V',
+     $           char(64 + isector),char(64 + iwire)
+            call g_ugsvolu (wire, 'BOX ', DETMEDIA, par, 3, ivolu) ! U cell
+            call gsatt (wire, 'SEEN', 0) ! can't see the wire cells
+             
+c            write (wire,'(a,a,a,a)') char(64 + ichamber),'V',
+c     $           char(64 + isector),char(64 + iwire)
+            call gspos (wire, 1, plane, (xminus+xplus)/2
+     $           , (yminus+yplus)/2, 0., 4, 'ONLY')
+          enddo
+        enddo
       enddo
 *
 *
@@ -422,47 +427,29 @@
       call gspos ('SHOW', 1, 'SHUT', x, y, z, 0, 'ONLY')
       call gsatt ('SHOW','SEEN',0)
 
-! half width of the shower in x
-      par(1) = smax_cal_rows * scal_block_zsize / 2.
-! half width of the shower in y
-      par(2) = scal_block_ysize / 2.
-! half height of the shower detector
-      par(3) = scal_block_xsize / 2.
-      call g_ugsvolu ('LAY1', 'BOX ', DETMEDIA, par, 3, ivolu)
-      call g_ugsvolu ('LAY2', 'BOX ', DETMEDIA, par, 3, ivolu)
-      call g_ugsvolu ('LAY3', 'BOX ', DETMEDIA, par, 3, ivolu)
-      call g_ugsvolu ('LAY4', 'BOX ', DETMEDIA, par, 3, ivolu)
+      par(1) = smax_cal_rows * scal_block_zsize / 2.! half width of shower in x
+      par(2) = scal_block_ysize / 2.    ! half width of the shower in y
+      par(3) = scal_block_xsize / 2.    ! half height of the shower detector
 
       z = -(smax_cal_columns + 1.) / 2. * scal_block_xsize
-      z = z + scal_block_xsize
-      call gspos('LAY1', 1, 'SHOW', 0., 0., z, 0, 'ONLY')
-      z = z + scal_block_xsize
-      call gspos('LAY2', 1, 'SHOW', 0., 0., z, 0, 'ONLY')
-      z = z + scal_block_xsize
-      call gspos('LAY3', 1, 'SHOW', 0., 0., z, 0, 'ONLY')
-      z = z + scal_block_xsize
-      call gspos('LAY4', 1, 'SHOW', 0., 0., z, 0, 'ONLY')
-
-      par(1) = scal_block_zsize / 2.	! half width of a block
-      par(2) = scal_block_ysize / 2.	! half length of a block
-      par(3) = scal_block_xsize / 2.	! half height of a block
       do ilayer =1,smax_cal_columns
-         do irow = 1,smax_cal_rows
-            write (blockname,'(a,i1,a)') 'BL',ilayer,char(64 + irow)
-            call g_ugsvolu (blockname, 'BOX ', DETMEDIA, par, 3, ivolu)
-         enddo
-      enddo
-*
-      do ilayer =1,smax_cal_columns
-         x =  (smax_cal_rows - 1.) / 2. * scal_block_zsize
-         do irow = 1,smax_cal_rows
-            write (blockname,'(a,i1,a)') 'BL',ilayer,char(64 + irow)
-            write (layername,'(a,i1)') 'LAY',ilayer
-            call gspos(blockname, 1, layername, x, 0., 0., 0, 'ONLY')
-            x = x - scal_block_zsize
-         enddo
-      enddo
+        z = z + scal_block_xsize
 
+        write (layername,'(a,i1)') 'LAY',ilayer
+
+        par(1) = smax_cal_rows * scal_block_zsize / 2. ! half width of shower
+        call g_ugsvolu (layername, 'BOX ', DETMEDIA, par, 3, ivolu)
+        call gspos(layername, 1, 'SHOW', 0., 0., z, 0, 'ONLY')
+
+        par(1) = scal_block_zsize / 2.	! half width of a block
+        x =  (smax_cal_rows - 1.) / 2. * scal_block_zsize
+        do irow = 1, smax_cal_rows
+          write (blockname,'(a,i1,a)') 'BL',ilayer,char(64 + irow)
+          call g_ugsvolu (blockname, 'BOX ', DETMEDIA, par, 3, ivolu)
+          call gspos(blockname, 1, layername, x, 0., 0., 0, 'ONLY')
+          x = x - scal_block_zsize
+        enddo
+      enddo
 *
 
       end
