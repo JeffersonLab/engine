@@ -15,7 +15,10 @@
 * s_cal_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
-* Revision 1.3  1995/05/22 19:45:31  cdaq
+* Revision 1.4  1995/08/31 15:06:45  cdaq
+* (JRA) Fill dpos (pos. track - pos. hit) histograms
+*
+* Revision 1.3  1995/05/22  19:45:31  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.2  1995/04/01  20:39:32  cdaq
@@ -38,12 +41,14 @@
       INCLUDE 'gen_units.par'
       include 'sos_calorimeter.cmn'
       include 'sos_statistics.cmn'
+      include 'sos_id_histid.cmn'
 
       integer col,row,blk
       integer hit_row(smax_cal_columns)
       integer nhit
       real    adc
       real    hit_pos(smax_cal_columns),hit_dist(smax_cal_columns)
+      real    histval
       save
 
 * find counters on track, and distance from center.
@@ -92,6 +97,12 @@
         col=scal_cols(nhit)
         adc=scal_adcs(nhit)
         blk=row+smax_cal_rows*(col-1)
+
+* fill the dpos histograms.
+        if (col .eq. 1) then
+          histval=(scal_block_xc(1)+scal_block_xsize*(row-1))-hit_pos(1)
+          call hf1(sidcaldpos,histval,1.)
+        endif
 
 *  Record the hits if track is near center of block and the chisquared of the 
 *  track is good
