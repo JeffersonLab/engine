@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23  1996/04/29 19:45:37  saw
+* (JRA) Update Aerogel variable names
+*
 * Revision 1.22  1996/01/22 15:13:56  saw
 * (JRA) Put BPM/Raster data into MISC data structures
 *
@@ -303,7 +306,7 @@ c      write(6,*) 'pointer,roc,slot=',pointer,roc,slot
      $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &           maxwords, did,
      $           SMAX_AER_HITS, SAER_TOT_HITS, SAER_PLANE,
-     $           SAER_PAIR_NUM, 4, SAER_ADC_LEFT, SAER_ADC_RIGHT,
+     $           SAER_PAIR_NUM, 4, SAER_ADC_POS, SAER_ADC_NEG,
      $           SAER_DUMMY, SAER_DUMMY)
 
           else if (did.eq.SMISC_ID) then
