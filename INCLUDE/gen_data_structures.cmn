@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.27  1996/04/30 13:34:25  saw
+* (JRA) Swap index order in GBPM_ADC_PED, GBPM_RAW_ADC
+*
 * Revision 1.26  1996/01/24 16:18:29  saw
 * (JRA) Change raster to use misc arrays.  Change some variable names
 *       for beam position and target information.
@@ -128,7 +131,7 @@
 *    BASIC TARGET PARAMETERS
 *
       integer   gmax_targets
-      parameter(gmax_targets=9)
+      parameter(gmax_targets=16)
       integer   gtarg_num       !position in target ladder
       REAL*4    gtarg_mass      !target mass
       REAL*4    gtarg_z         !target Z
@@ -179,9 +182,9 @@
       INTEGER*4 GNUM_BPM_SIGNALS
       PARAMETER(GNUM_BPM_SIGNALS=4)   !1=X+,2=X-,3=Y+,4=Y-
 
-      REAL*4 GBPM_ADC_PED(GMAX_NUM_BPMS,GNUM_BPM_SIGNALS)
-      REAL*4 GBPM_RAW_ADC(GMAX_NUM_BPMS,GNUM_BPM_SIGNALS)
-      REAL*4 GBPM_ADC(GMAX_NUM_BPMS,GNUM_BPM_SIGNALS)
+      REAL*4 GBPM_ADC_PED(GNUM_BPM_SIGNALS,GMAX_NUM_BPMS)
+      REAL*4 GBPM_RAW_ADC(GNUM_BPM_SIGNALS,GMAX_NUM_BPMS)
+      REAL*4 GBPM_ADC(GNUM_BPM_SIGNALS,GMAX_NUM_BPMS)
       REAL*4 GBPM_XPRIME(GMAX_NUM_BPMS)
       REAL*4 GBPM_YPRIME(GMAX_NUM_BPMS)
       REAL*4 GBPM_X(GMAX_NUM_BPMS)
