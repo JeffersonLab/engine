@@ -9,7 +9,10 @@
 *- 
 *-   Created 6-6-94          D. F. Geesaman
 * $Log$
-* Revision 1.1  1994/06/14 03:54:14  cdaq
+* Revision 1.2  1995/05/11 16:21:07  cdaq
+* (SAW) Force HMS to be in plane beam right
+*
+* Revision 1.1  1994/06/14  03:54:14  cdaq
 * Initial revision
 *
 *--------------------------------------------------------
@@ -32,7 +35,11 @@
 *
       ABORT= .FALSE.
       err= ' '
-* 
+*
+*     Fix HMS to be in plane, beam right
+*
+      HPHI_LAB = 3*TT/2
+*
       COSHTHETAS = COS(HTHETA_LAB)
       SINHTHETAS = SIN(HTHETA_LAB)
 *     Constants for elastic kinematics calcultion
