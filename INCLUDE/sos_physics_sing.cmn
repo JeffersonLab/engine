@@ -1,5 +1,9 @@
 *    This include file contains all the variables required for s_physics
 * $Log$
+* Revision 1.6  1996/09/04 16:30:39  saw
+* (JRA,DD) Add some egamma variables and some angle/momentum offset
+*          variables
+*
 * Revision 1.5  1996/04/30 14:03:28  saw
 * (JRA) Add path length, rf, and photodisintigration variables
 *
@@ -121,15 +125,31 @@ c     M.Miller, NPL UIUC, 10-Sept-1995, miller5@uiuc.edu
 *     CTPTYPE=parm
 *
       real*4 sphoto_mtarget    ! Mass of target [Gev/c^2]
-      real*4 sphoto_mparticle  ! Mass of detected particle [Gev/c^2]
       real*4 sphoto_mrecoil    ! Mass of recoil system [Gev/c^2]
 *
 *     CTPTYPE=event
 *
       real*4 ssegamma
+      real*4 ssegamma_p
 
       common /sos_photo_param/
      &     sphoto_mtarget,
-     &     sphoto_mparticle,
      &     sphoto_mrecoil,
-     &     ssegamma
+     &     ssegamma,
+     &     ssegamma_p
+
+*
+*     CTPTYPE=parm
+*
+c D.Dutta, 24th-Apr-1996
+
+      real*4 sdelta_offset     ! hms delta offset
+      real*4 stheta_offset     ! hms scatteringangel offset
+      real*4 sphi_offset
+      real*4 smomentum_factor    ! multiplier for the hms momentum
+
+      COMMON /sos_offsets/
+     &     sdelta_offset,
+     &     stheta_offset,
+     &     sphi_offset,
+     &     smomentum_factor
