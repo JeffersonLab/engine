@@ -1,4 +1,4 @@
-      subroutine h_find_best_stub(numhits,hits,plusminus,stub,chi2)
+      subroutine h_find_best_stub(numhits,hits,pl,pindex,plusminus,stub,chi2)
 *     This subroutine does a linear least squares fit of a line to the
 *     hits in an individual chamber. It assumes that the y slope is 0 
 *     The wire coordinate is calculated
@@ -7,7 +7,10 @@
 *     
 *     d. f. geesaman
 * $Log$
-* Revision 1.1  1994/02/19 06:14:29  cdaq
+* Revision 1.2  1994/10/12 18:38:46  cdaq
+* (DJM) Don't recalculate plane array, remove repetitive calc of AA matrix
+*
+* Revision 1.1  1994/02/19  06:14:29  cdaq
 * Initial revision
 *
 *
@@ -19,6 +22,7 @@
       include "gen_data_structures.cmn"
       include "hms_tracking.cmn"
       include "hms_geometry.cmn"
+
 *     input quantities
       integer*4 numhits
       integer*4 hits(*)
@@ -31,38 +35,35 @@
 *
 *     local variables
       real*4 position(hmax_hits_per_point)
-      integer*4 plane(hmax_hits_per_point)
-      real*8 TT(3),AA(3,3)      
+      integer*4 pl(hmax_hits_per_point) !keep name same as in h_left_right.f
+      integer*4 pindex                  ! passed from h_left_right to solve_3by3_hdc
+      real*8 TT(3)
       integer*4 ihit,ierr
-      integer*4 i,j
+      integer*4 i
 *
+
       chi2=10000.
-*     calculate trail hit position
+*     calculate trial hit position
       do ihit=1,numhits
-         plane(ihit)=HDC_PLANE_NUM(hits(ihit))
          position(ihit)=HDC_WIRE_CENTER(hits(ihit)) +
      &          plusminus(ihit)*HDC_DRIFT_DIS(hits(ihit))
       enddo
+
 *     calculate least squares matrix coefficients
       do i=1,3
         TT(i)=0.
           do ihit=1,numhits
-           TT(i)=TT(i)+((position(ihit)-hpsi0(plane(ihit)))*
-     &          hstubcoef(plane(ihit),i)) /hdc_sigma(plane(ihit))
-          enddo 
-      enddo
-      do i=1,3
-        do j=1,3
-        AA(i,j)=0.
-          do ihit=1,numhits
-             AA(i,j)=AA(i,j)
-     &             +hstubcoef(plane(ihit),i)*hstubcoef(plane(ihit),j)
-          enddo
-        enddo
-      enddo
+           TT(i)=TT(i)+((position(ihit)-hpsi0(pl(ihit)))*
+     &          hstubcoef(pl(ihit),i)) /hdc_sigma(pl(ihit))
+         enddo
+       enddo
 *
-*     solve four by four equations
-      call solve_three_by_three(TT,AA,dstub,ierr)
+* djm 10/2/94 removed repetitive calculations of matrix AA3. This matrix and its
+* inverse now calculated for the 14 most popular hit plane configurations and stored 
+* at initialization. (See h_generate_geometry.f)
+ 
+* solve three by three equations using stored inverse matrix 
+      call solve_3by3_hdc(TT,pindex,dstub,ierr)
 *
       if(ierr.ne.0) then
          stub(1)=10000.
@@ -78,10 +79,10 @@
         stub(3)=dstub(3)
         stub(4)=0.
         do ihit=1,numhits
-         chi2=chi2+((position(ihit)-hpsi0(plane(ihit)))/hdc_sigma(plane(ihit))
-     &         -hstubcoef(plane(ihit),1)*stub(1)
-     &         -hstubcoef(plane(ihit),2)*stub(2)
-     &         -hstubcoef(plane(ihit),3)*stub(3) )**2
+         chi2=chi2+((position(ihit)-hpsi0(pl(ihit)))/hdc_sigma(pl(ihit))
+     &         -hstubcoef(pl(ihit),1)*stub(1)
+     &         -hstubcoef(pl(ihit),2)*stub(2)
+     &         -hstubcoef(pl(ihit),3)*stub(3) )**2
         enddo
       endif
       return
