@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.27  1999/01/29 17:23:03  saw
+* Add second tubes to SOS shower counter
+*
 * Revision 1.26  1998/12/17 21:50:31  saw
 * Support extra set of tubes on HMS shower counter
 *
@@ -295,7 +298,7 @@ c      write(6,*) 'pointer,roc,slot=',pointer,roc,slot
      $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &           maxwords, did, 
      $           SMAX_CAL_BLOCKS, SCAL_TOT_HITS, SCAL_COLUMN, 
-     $           SCAL_ROW, 1, SCAL_ADC, 0, 0, 0)
+     $           SCAL_ROW, 2, SCAL_ADC_POS, HCAL_ADC_NEG, 0, 0)
 
           else if (did.eq.SCER_ID) then
 *
