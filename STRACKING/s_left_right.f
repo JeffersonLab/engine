@@ -9,7 +9,10 @@
 *     space point.
 *     d. f. geesaman           31 August 1993
 * $Log$
-* Revision 1.4  1995/04/01 20:42:35  cdaq
+* Revision 1.5  1995/05/11 21:05:32  cdaq
+* (JRA) Fix errors in left right selection.  Add some commented out code
+*
+* Revision 1.4  1995/04/01  20:42:35  cdaq
 * (SAW) Fix typos
 *
 * Revision 1.3  1994/12/01  21:55:08  cdaq
@@ -55,6 +58,7 @@
       real*4 minchi2
       real*4 stub(4)
       logical smallAngOk
+      integer*4 hit1,hit2
 *
       ABORT= .FALSE.
       err=':'
@@ -138,31 +142,31 @@ c          endif
               endif
               nplusminus = 2**(numhits-2)
             endif
-          endif
-        else                            ! SOS chambers
+          else                          ! SOS chambers
 *
 *     Brookhaven chamber L/R code
 *     Can we assume that hits are sorted by plane?  As best I (SAW) can
 *     tell, we can not.
 *
-          ihit = 1
-          npaired = 0
-          do ihit=1,numhits
-            if(pl(ihit)-2*(pl(ihit)/2) .eq. 1) then ! Odd plane
-              do ihit2=1,numhits        ! Look for the adjacent plane
-                if(pl(ihit2)-pl(ihit).eq.1) then ! Adjacent plane found
-                  if(wc(ihit2).le.wc(ihit)) then
-                    plusminusknown(ihit) = -1
-                    plusminusknown(ihit2) = -1
-                  else
-                    plusminusknown(ihit) = 1
-                    plusminusknown(ihit2) = 1
+            ihit = 1
+            npaired = 0
+            do ihit=1,numhits
+              if(pl(ihit)-2*(pl(ihit)/2) .eq. 1) then ! Odd plane
+                do ihit2=1,numhits      ! Look for the adjacent plane
+                  if(pl(ihit2)-pl(ihit).eq.1) then ! Adjacent plane found
+                    if(wc(ihit2).le.wc(ihit)) then
+                      plusminusknown(ihit) = -1
+                      plusminusknown(ihit2) = 1
+                    else
+                      plusminusknown(ihit) = 1
+                      plusminusknown(ihit2) = -1
+                    endif
+                    npaired = npaired + 2
                   endif
-                  npaired = npaired + 2
-                endif
-              enddo
-            endif
-          enddo
+                enddo
+              endif
+            enddo
+          endif
           nplusminus = 2**(numhits-npaired)
 *     Let's hope that following code will work with nplusminus = 1
         endif
@@ -229,12 +233,24 @@ c          endif
 *
       enddo                             ! end loop over space points
 *
+*
+c      do isp=1,snspace_points_tot
+c        do hit1=1,sspace_point_hits(isp,1)-1
+c          do hit2=hit1,sspace_point_hits(isp,1)
+c            if (2*int(hit1/2).ne.hit1 .and. hit2.eq.(hit1+1)) then
+c              write(98,*) (hit2/2),sdc_wire_coord(sspace_point_hits(isp,2+hit1)),
+c     &                    sdc_wire_coord(sspace_point_hits(isp,2+hit2))
+c            else if (2*int(hit2/2).ne.hit2 .and. hit1.eq.(hit2+1)) then
+c              write(98,*) (hit1/2),sdc_wire_coord(sspace_point_hits(isp,2+hit2)),
+c     &                    sdc_wire_coord(sspace_point_hits(isp,2+hit1))
+c            endif
+c          enddo
+c        enddo
+c      enddo
+*
 *     write out results if sdebugflagstubs is set
       if(sdebugflagstubs.ne.0) then
         call s_print_stubs
       endif
       return
       end
-        
-
-
