@@ -9,7 +9,10 @@
 *                              remove minuit. Make fit linear
 *                              still does not do errors properly
 * $Log$
-* Revision 1.5  1994/10/12 18:52:06  cdaq
+* Revision 1.6  1994/12/06 15:45:27  cdaq
+* (DJM) Take slices in Z to look for best focus
+*
+* Revision 1.5  1994/10/12  18:52:06  cdaq
 * (DJM) Initialize some variables
 * (SAW) Prettify indentation
 *
@@ -42,7 +45,9 @@
       integer*4 itrack                        ! track loop index
       integer*4 ihit,ierr
       integer*4 hit,plane
-      integer*4 i,j                             ! loop index
+      integer*4 i,j,k                             ! loop index
+      real*4 z_slice
+
       real*8   H_DPSIFUN
       real*8   pos
       real*4   ray(hnum_fpray_param)
@@ -159,6 +164,18 @@
           endif                         ! end test on degrees of freedom
           HCHI2_FP(itrack)=chi2
         enddo                           ! end loop over tracks
+      endif
+
+*     A reasonable selection of slices is presently -80,-60,-40,-20,0,20,40
+*     ,60,80.   Zero is the nominal midplane between the chambers, -80
+*     corresponds closely to the exit flange position.  This slice pattern
+*     is created with hz_wild=-80., hdelta_z_wild=20., and hnum_zslice=9 
+      if(hz_slice_enable.ne.0)then
+        do k=1,hnum_zslice
+          z_slice = hz_wild + (k-1)*hdelta_z_wild
+          hx_fp_wild(k) = hx_fp(1) + hxp_fp(1)*z_slice
+          hy_fp_wild(k) = hy_fp(1) + hyp_fp(1)*z_slice
+        enddo
       endif
 
 * calculate residuals for each chamber if in single stub mode
