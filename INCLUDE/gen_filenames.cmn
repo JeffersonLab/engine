@@ -2,6 +2,10 @@
 *
 *-Common block with filenames
 *     $Log$
+*     Revision 1.13  2002/09/25 13:54:16  jones
+*        a. change g_data_source_filename to character*120
+*        b. add variable g_segment
+*
 *     Revision 1.12  1996/11/19 18:13:44  saw
 *     (SAW) Add some filenames and variables for LUN's
 *
@@ -52,11 +56,12 @@
       integer G_LUN_EPICS_OUTPUT
       parameter (G_LUN_EPICS_OUTPUT=G_LUN_CHARGE_SCALER+1)
 *
+
       character*80 g_config_filename
       character*80 g_ctp_hist_filename
       character*80 g_ctp_test_filename
       character*80 g_ctp_parm_filename
-      character*80 g_data_source_filename	! Coda/other input file
+      character*120 g_data_source_filename	! Coda/other input file
       character*80 g_alias_filename		! PAW histogram name aliases
       character*80 g_histout_filename		! File to write histograms to
       character*80 g_decode_map_filename ! File containing unpack map
@@ -122,6 +127,11 @@
      $     g_preproc_opened,
      $     g_preproc_in_hndl,
      $     g_preproc_on
+
+      integer*4 g_segment
+
+      common /gen_segmented_runs/
+     $     g_segment
 
 *
 *     Local Variables:
