@@ -1,6 +1,9 @@
       subroutine s_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.13.2.3  2003/06/26 12:42:19  cdaq
+* changes for temp "muon" bar  (mkj)
+*
 * Revision 1.13.2.2  2003/04/10 12:41:18  cdaq
 * Add comment character to line writing out to threshold file
 *
@@ -305,7 +308,12 @@ c
         do ind=1,4
           write(SPAREID,'(a6)') '     0'
         enddo
-        do ind=5,64
+* DJG 6/17/03 - Chnage so that Peter's muon bar is not sparsified.
+        write(SPAREID,*) 'slot=',slot
+        do ind=5,6
+          write(SPAREID,'(a6)') '     0'
+        enddo
+        do ind=7,64
           write(SPAREID,'(a6)') '  4000'
         enddo
 
