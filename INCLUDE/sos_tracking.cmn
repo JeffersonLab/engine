@@ -5,7 +5,12 @@
 *                              change name to sos_tracking.cmn
 *                              put sluno and debugflags from parameters to CTP
 * $Log$
-* Revision 1.8  1994/11/22 18:40:41  cdaq
+* Revision 1.9  1994/12/01 17:22:08  cdaq
+* (SAW) Add s_hms_style_chambers flag to treat SOS chambers like HMS
+*       Add sdc_planes_per_chamber (calculated in s_generate_geometry)
+*       Make gplanesdc equivalenced with gplanesdc1, ...
+*
+* Revision 1.8  1994/11/22  18:40:41  cdaq
 * (SAW) Add s's in front of fract, aa3, det3, aainv3.  Remove fractinterp
 *       Cleaned up ?DC_NUM_CHAMBERS and ?MAX_NUM_CHAMBERS stuff
 *
@@ -73,6 +78,9 @@
 
       integer*4 sdc_num_planes   ! actual number of dc chambers - set in CTP
       integer*4 sdc_num_chambers    ! actual number of chambers - set in CTP
+*     CTPTYPE=off
+      integer*4 sdc_planes_per_chamber
+*     CTPTYPE=parm
       integer*4 smax_chamber_hits
       parameter (smax_chamber_hits=544)
       integer*4 smax_space_points   ! maximum number of space points
@@ -84,7 +92,16 @@
 *
       integer*4 snspace_points  ! number of space points in each chamber
       integer*4 snspace_points_tot ! total number of space points after select.
-      integer*4 gplanesdc1,gplanesdc2   ! good plane pattern unit, set bit if respective plane hit
+
+      integer*4 gplanesdc(smax_space_points,smax_num_chambers)   ! good plane pattern unit, set bit if respective plane hit
+      integer*4 gplanesdc1(smax_space_points)  ! good plane pattern unit, set bit if respective plane hit
+      integer*4 gplanesdc2(smax_space_points)  ! good plane pattern unit, set bit if respective plane hit
+      integer*4 gplanesdc3(smax_space_points)  ! good plane pattern unit, set bit if respective plane hit
+
+      equivalence (gplanesdc1(1),gplanesdc(1,1))
+      equivalence (gplanesdc2(1),gplanesdc(2,1))
+      equivalence (gplanesdc3(1),gplanesdc(3,1))
+
       real*4 sspace_points         ! array of x, y of space points
       real*4 sbeststub              ! array of stubs fit to each space point
       real*4 sdc_sing_drifttime ! array of fully corrected drift times for each plane
@@ -129,9 +146,11 @@
       integer*4 smax_pr_hits      ! max number of hits in each plane for
                                   ! pattern recognition to be done in that pla
       real*4 sdc_wire_velocity    ! propogation velocity of signal on wire (cm--M/ns)
-      real*4 sdc_x_central_time   ! time (ns) for signal to reach disc. card o--Mn XUVX' planes
+      real*4 sdc_x_central_time   ! time (ns) for signal to reach disc. card o--Mn XX' planes
       real*4 sdc_y_central_time   ! time (ns) for signal to reach disc. card o--Mn YY' planes
-                                  ! (both times are from center of the chamber--M)
+      real*4 sdc_u_central_time   ! time (ns) for signal to reach disc. card o--Mn UU' planes
+      real*4 sdc_v_central_time   ! time (ns) for signal to reach disc. card o--Mn VV' planes
+                                  ! (times are from center of the chamber--M)
 *
 *     CTPTYPE=event
 *
@@ -150,16 +169,18 @@
      &     sncham_hits(smax_num_chambers),smin_hit(smax_num_chambers),
      &     smin_combos(smax_num_chambers),strack_fit_num,
      &     sdc_num_planes,sdc_num_chambers,
+     &     sdc_planes_per_chamber,
      &     sdc_tdc_min_win(SMAX_NUM_DC_PLANES), 
      &     sdc_tdc_max_win(SMAX_NUM_DC_PLANES),
      &     smax_pr_hits(smax_num_chambers),
      &     sdc_wire_velocity,sdc_x_central_time,sdc_y_central_time,
+     &     sdc_u_central_time,sdc_v_central_time,
      &     sdc_sing_drifttime(SMAX_NUM_DC_PLANES),
      &     sdc_sing_driftdis(SMAX_NUM_DC_PLANES),
      &     SDC_HITS_PER_PLANE(SMAX_NUM_DC_PLANES),
      &     SDC_SING_WCENTER(SMAX_NUM_DC_PLANES),
      &     SDC_SING_WCOORD(SMAX_NUM_DC_PLANES),
-     &     gplanesdc1(smax_space_points),gplanesdc2(smax_space_points)
+     &     gplanesdc
 
 *     
 *     CTPTYPE=parm
@@ -188,6 +209,7 @@
       integer*4 ssingle_stub              ! switch to make tracks of all stubs
       integer*4 sSmallAngleApprox       ! switch for alternate L/R determ. of Y,Yprime planes
       integer*4 s_wire_vel_correction   ! switch to correct drift times for wi--Mre propogation
+      integer*4 s_hms_style_chambers    ! Using HMS style drift chambers
       common/SOS_TRACKFLAGS/
      &     sluno,
      &     sdebugflagpsi,
@@ -203,7 +225,8 @@
      &     sdebug_mc_start_time,
      &     ssingle_stub,
      &     sSmallAngleApprox,
-     &     s_wire_vel_correction
+     &     s_wire_vel_correction,
+     &     s_hms_style_chambers
 *
 *     CTPTYPE=parm
 *
