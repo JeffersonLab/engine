@@ -11,9 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 *-    $Log$
-*-    Revision 1.6  1994/06/06 16:49:49  cdaq
-*-    (DFG) add h_recon_num and bypass switches
+*-    Revision 1.7  1995/02/02 13:06:13  cdaq
+*-    (SAW) Add call to h_select_best_track
 *-
+* Revision 1.6  1994/06/06  16:49:49  cdaq
+* (DFG) add h_recon_num and bypass switches
+*
 * Revision 1.5  1994/05/12  21:18:13  cdaq
 * (DFG) Put h_prt_track_tests here. Remove from h_tof
 *
@@ -168,8 +171,16 @@
 *     Combine results in HMS physics analysis
 *     HMS_TARGET + HMS_TRACK_TESTS ====>  HMS_PHYSICS
 *     
+         if(hbypass_track.eq.0) then
+           call h_select_best_track(abort,err)
+           if(ABORT) then
+             call G_add_path(here,err)
+             return
+           endif
+         endif
+*
          if(hbypass_physics.eq.0) then
-            call H_PHYSICS(ABORT,err)
+            call h_physics(abort,err)
             if(ABORT) then
                call G_add_path(here,err)
                return
