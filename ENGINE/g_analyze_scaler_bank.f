@@ -1,6 +1,9 @@
       subroutine g_analyze_scaler_bank(event,ABORT,err)
 *     
 *     $Log$
+*     Revision 1.2.2.1  2003/04/14 18:05:37  jones
+*     Modified to skip first scaler event. gscaler is sum from first scaler event.
+*
 *     Revision 1.2  1999/11/04 20:35:14  saw
 *     Linux/G77 compatibility fixes
 *
@@ -27,6 +30,8 @@
       real*8 realscal
       logical update_bcms
       logical update_helicity_bcms
+      integer analyzed_events(0:15)
+      common /aevents/ analyzed_events
 *     
       integer*4 jiand, jishft, jieor   ! Declare to help f2c
 *     
@@ -162,8 +167,13 @@ c
 *     Save scaler value from previous scaler event:
 
 *     write(101,*) 'scaler index=',ind
-               gscaler_old(ind) = gscaler(ind)
-
+c               gscaler_old(ind) = gscaler(ind)
+c
+               if ( analyzed_events(0) .eq. 1) then
+                  gscaler_old(ind) = 0
+                  gscaler(ind) = 0
+               endif
+c
                if (realscal.lt.-0.5) then
                   realscal=realscal+4294967296.
                endif
@@ -173,10 +183,17 @@ c
                                 !32 bit scaler rolled over.
                   gscaler_nroll(ind)=gscaler_nroll(ind)+1
                endif
-               gscaler(ind) = realscal + gscaler_nroll(ind)*4294967296.
-     $              + gscalweird_lostcounts(ind)
+c               gscaler(ind) = realscal + gscaler_nroll(ind)*4294967296.
+c     $              + gscalweird_lostcounts(ind)
 *     Calculate difference between current scaler value and previous value:
-               gscaler_change(ind) = gscaler(ind) - gscaler_old(ind)
+c               gscaler_change(ind) = gscaler(ind) - gscaler_old(ind)
+               if ( analyzed_events(0) .gt. 1) then
+                   gscaler_change(ind) =  realscal + gscaler_nroll(ind)*4294967296.
+     $              + gscalweird_lostcounts(ind) - gscaler_old(ind)
+                   gscaler(ind) = gscaler_change(ind) + gscaler(ind)
+               endif
+               gscaler_old(ind) = realscal + gscaler_nroll(ind)*4294967296.
+     $              + gscalweird_lostcounts(ind)
             enddo
             pointer = pointer + countinmod + 1 ! Add 17 to pointer
          enddo
@@ -196,6 +213,7 @@ c
 
 *     Calculate beam current and charge between scaler events
 
+      if ( analyzed_events(0) .eq. 1) update_bcms = .false.
       if (update_bcms) then     ! can't assume in hms crate, moved for some runs
 
          delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001D00)
@@ -210,6 +228,7 @@ c     &       (gscaler_change(gbcm1_index)/delta_time)-gbcm1_offset))
      &        /delta_time) - gunser_offset)
          ave_current_bcm2 = gbcm2_gain*((gscaler_change(gbcm2_index)
      &        /delta_time) - gbcm2_offset)
+
 
          if (delta_time.gt.0.0001) then
             gbcm1_charge = gbcm1_charge + ave_current_bcm1*delta_time
@@ -253,3 +272,5 @@ c     &       (gscaler_change(gbcm1_index)/delta_time)-gbcm1_offset))
 
       return
       end
+
+
