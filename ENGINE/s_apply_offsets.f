@@ -31,8 +31,6 @@
       INCLUDE 'sos_physics_sing.cmn'
       INCLUDE 'gen_constants.par'
 *
-*     local variables 
-      real*8 sosp0corr
 *--------------------------------------------------------
 *
 
@@ -40,37 +38,39 @@
 * csa 8/31/99 -- We really should be filling *new* variables
 * here!
 
-      if (sphicentral_offset .ne. 0 )
-     > write(6,*)' s_apply_offs: before:   sphi_lab =',sphi_lab
-      sphi_lab = sphi_lab + sphicentral_offset/degree
-      if (sphicentral_offset .ne. 0 )
-     > write(6,*)' s_apply_offs:  after:   sphi_lab =',sphi_lab
-
-      if (spcentral_offset .ne. 0 )
-     > write(6,*)' s_apply_offs: before:  spcentral =',spcentral
-      spcentral = spcentral * ( 1. + spcentral_offset / 100. )
-      if (spcentral_offset .ne. 0 )
-     > write(6,*)' s_apply_offs:  after:  spcentral =',spcentral
-      if (smomentum_factor .gt. 0.1) then    !avoid setting p=0
-        sosp0corr=0.45
-        if (spcentral .gt. 0.51) sosp0corr=0.496-0.08845*spcentral
-     >       -5.743e-4*exp(2.341*(spcentral**2.156))
-*        sosp0corr = .225
-
-*        if (spcentral.gt.1.483) sosp0corr=sosp0corr-16.7*(spcentral-1.483)**2
-        spcentral = spcentral*smomentum_factor*(1+sosp0corr/100.)
+      if (sphicentral_offset .ne. 0 ) then
+        write(*,*) ' ******'
+       write(6,*)' s_apply_offs: before:   sphi_lab =',sphi_lab
+       sphi_lab = sphi_lab + sphicentral_offset/degree
+       write(6,*)' s_apply_offs:  after:   sphi_lab =',sphi_lab
       endif
-      if (smomentum_factor .gt. 0.1)
-     > write(6,*)' s_apply_offs: after2:  spcentral =',spcentral
-*
-      if (sthetacentral_offset .ne. 0 )
-     > write(6,*)' s_apply_offs: before: stheta_lab =',stheta_lab
-      stheta_lab=stheta_lab + sthetacentral_offset/degree
-      if (sthetacentral_offset .ne. 0 )
-     >  write(6,*)' s_apply_offs:  after: stheta_lab =',stheta_lab
-* csa 8/31/99 -- moved to s_physics
-*      cossthetas = cos(stheta_lab*degree)
-*      sinsthetas = sin(stheta_lab*degree)
+c
+      if (spcentral_offset .ne. 0 ) then
+        write(*,*) ' ******'
+       write(6,*)' s_apply_offs: apply spcentral_offset(%)  =',spcentral_offset
+       write(6,*)' s_apply_offs: before:  spcentral =',spcentral
+       spcentral = spcentral * ( 1. + spcentral_offset / 100. )
+       write(6,*)' s_apply_offs:  after:  spcentral =',spcentral
+      endif
+c
+      if (smomentum_factor .gt. 0.1) then    !avoid setting p=0
+        write(*,*) ' ******'
+       write(6,*)' s_apply_offs: apply smomentum_factor  =',smomentum_factor
+       write(6,*)' s_apply_offs: before:  spcentral =',spcentral
+       spcentral = spcentral * smomentum_factor
+       write(6,*)' s_apply_offs: after :  spcentral =',spcentral
+      endif
+c
+      if (sthetacentral_offset .ne. 0 ) then
+        write(*,*) ' ******'
+       write(6,*)' s_apply_offs: before: stheta_lab =',stheta_lab
+       stheta_lab=stheta_lab + sthetacentral_offset/degree
+       write(6,*)' s_apply_offs:  after: stheta_lab =',stheta_lab
+       cossthetas = cos(stheta_lab*degree)
+       sinsthetas = sin(stheta_lab*degree)
+      endif
+
+
 
       ABORT= .FALSE.
       err= ' '
