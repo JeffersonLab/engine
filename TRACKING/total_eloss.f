@@ -11,6 +11,9 @@
 *-    Created   1-Dec-1995  Rolf Ent
 *
 * $Log$
+* Revision 1.2  1996/01/24 16:31:35  saw
+* (JRA) Cleanup
+*
 * Revision 1.1  1996/01/17 19:12:32  cdaq
 * Initial revision
 *
@@ -29,6 +32,7 @@
                                         ! .false. : non-electron (beta .lt. 1)
       LOGICAL liquid
 
+      REAL*4 degrad                     !convert degrees to radians
       REAL*4 z,a,tgthick,dens,angle,tgangle,beta
       REAL*4 thick,thick_side,thick_front,dens_comp,e_loss,total_loss
 
@@ -60,15 +64,17 @@
 *     Additional materials:
 *     a 8.0 mil Al-foil (scattering chamber exit foil)
 *     a composite of 6 mil kevlar and 1.5 mil mylar (SOS entrance window)
+      degrad = 3.14159/180.
        total_loss=0.0
        liquid =.FALSE.
        if(z.le.1.4) liquid =.TRUE.
+       liquid=.FALSE.                   ! remove this later, derek!
 
       if(arm.eq.0) then
          if(liquid) then			!cryo target
             thick = 0.003*2.54*2.70
             call loss(.true.,13.,27.,thick/2.,2.70,beta,e_loss)
-            total_loss =e_loss
+            total_loss = total_loss + e_loss
          endif
          thick = tgthick
          call loss(prt,z,a,thick,dens,beta,e_loss)
@@ -78,15 +84,18 @@
       if (arm.eq.1) then			! HMS
          if (liquid) then
             thick_front = 0.0
-            if (angle.le.80.*3.14159/180.) thick_front =abs(tgthick/2./cos(angle))
+            if (angle.le.80.*degrad) thick_front =
+     $           abs(tgthick/2./cos(angle))
             thick_side  = abs(1.25*2.54*dens/sin(angle))
             if (thick_side.ge.thick_front) then
                 call loss(prt,z,a,thick_front,dens,beta,e_loss)
-                total_loss = e_loss
+                total_loss = total_loss + e_loss
                 thick = abs(0.005*2.54*2.70/cos(angle))
-                total_loss = total_loss + e_loss(prt,13.,27.,thick,2.70,beta)
+                call loss(prt,z,a,thick,2.70,beta,e_loss)
+                total_loss = total_loss + e_loss
             else
-                total_loss = e_loss(prt,z,a,thick_side,dens,beta)
+                call loss(prt,z,a,thick_side,dens,beta,e_loss)
+                total_loss = total_loss + e_loss
                 thick = abs(0.005*2.54*2.70/sin(angle))
                 call loss(prt,13.,27.,thick,2.70,beta,e_loss)
                 total_loss = total_loss + e_loss
@@ -95,7 +104,7 @@
          if (.not.liquid) then
             thick = abs((tgthick/2.)/sin(3.14159-tgangle-angle))
             call loss(prt,z,a,thick,dens,beta,e_loss)
-            total_loss = e_loss
+            total_loss = total_loss + e_loss
          endif
          thick = 0.016*2.54*2.70
          call loss(prt,13.,27.,thick,2.70,beta,e_loss)
@@ -111,16 +120,18 @@
       if (arm.eq.2) then			! SOS
          if (liquid) then
             thick_front = 0.0
-            if (angle.le.80.*3.14159/180.) thick_front=abs(tgthick/2./cos(angle))
+            if (angle.le.80.*degrad) thick_front=
+     $           abs(tgthick/2./cos(angle))
             thick_side  = abs(1.25*2.54*dens/sin(angle))
             if (thick_side.ge.thick_front) then
                 call loss(prt,z,a,thick_front,dens,beta,e_loss)
-                total_loss = e_loss
+                total_loss = total_loss + e_loss
                 thick = abs(0.005*2.54*2.70/cos(angle))
                 call loss(prt,13.,27.,thick,2.70,beta,e_loss)
                 total_loss = total_loss + e_loss
             else
-                total_loss = e_loss(prt,z,a,thick_side,dens,beta)
+                call loss(prt,z,a,thick_side,dens,beta,e_loss)
+                total_loss = total_loss + e_loss
                 thick = abs(0.005*2.54*2.70/sin(angle))
                 call loss(prt,13.,27.,thick,2.70,beta,e_loss)
                 total_loss = total_loss + e_loss
@@ -129,7 +140,7 @@
          if (.not.liquid) then
             thick = abs((tgthick/2.)/sin(tgangle-angle))
             call loss(prt,z,a,thick,dens,beta,e_loss) 
-            total_loss = e_loss
+            total_loss = total_loss + e_loss
          endif
          thick = 0.008*2.54*2.70
          call loss(prt,13.,27.,thick,2.70,beta,e_loss)
