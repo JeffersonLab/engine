@@ -31,6 +31,10 @@
 *                        don't print out stuff following the ';').
 *
 * $Log$
+* Revision 1.3  1995/10/11 12:14:49  cdaq
+* (JWP) Fix single run number at end of line bug.
+*       Don't pass blank lines to thpset.
+*
 * Revision 1.2  1995/09/01 13:42:04  cdaq
 * (JRA) Some corrections
 *
@@ -50,7 +54,7 @@
       character*(*) filename
 
       logical debug
-      logical parsing_run_list
+      logical parsing_run_list, spaces_stripped
 
       integer i
       integer index, number
@@ -60,9 +64,15 @@
 *      integer*4 err
       integer*4 lo_limit, hi_limit
 
-      debug = .false.
+c      write (6,*) 'Debug?'
+c      read (5, 1002) i
+c      if (i .eq. 1) then
+c         debug = .true.
+c      else
+       debug = .false.
+c      endif
          
-      if(debug) print *,'looking for run ',run
+      if(debug) write(6,*) 'looking for run ',run
       found_run = .FALSE.
       printed_header = .FALSE.
 
@@ -89,10 +99,11 @@
 
 * At this point, we should be looking at a run list.  The first thing in 
 * the list will be a number, or it may be white space.  Skip the white 
-* space and build the number.
+* space and build the number.  After that, skip any white space at the
+* end.
           number = 0
 
-          do while ((index .le. 132) .and.
+          do while ((index .lt. 132) .and.
      $         (line(index:index) .eq. ' '))
             if (debug) write (6,*) 'Found white space!'
             index = index + 1
@@ -106,6 +117,12 @@
           end do
           if (debug) write (6,*) 'Found number:',number
 
+          do while ((index .lt. 132) .and.
+     $         (line(index:index) .eq. ' '))
+            if (debug) write (6,*) 'Found white space!'
+            index = index + 1
+          end do
+
 ************************************************************************
 * Now, we are pointing at one of the following:
 * 
@@ -118,7 +135,6 @@
 *        the lower limit of the current run list.  Build the upper 
 *        limit, and check to see if <run> is within the limits.
 
-* JRA - or nothing, if the line just contained one number.  NOT CHEKCED FOR!!!!
 
           if (index .eq. 132) then
             if (debug) write (6,*) 'End of the line!'
@@ -134,11 +150,6 @@
               parsing_run_list = .false.
             end if
             index = index + 1
-
-** Remember, I don't make mistakes.  If we get here, it's a dash.
-
-* JRA - a dash, or just the end of the line if there is only a single number
-* at the end of the line, rather than a range
           else if (line(index:index) .eq. '-') then
             if (debug) write (6,*) 'Range:'
             lo_limit = number
@@ -162,7 +173,8 @@
               parsing_run_list = .false.
             end if
           else
-            print *, 'what do ya know, I make a mistake' ! JRA  
+            write(6,*) 'encountered unexpected character(s)' ! JRA
+            stop
           end if
             
         end do
@@ -185,11 +197,6 @@
 * At this point, we've found the run number.  Print out the lines 
 * following the run number, stripping the leading spaces, until we get 
 * to another run list.
-
-* JRA - Note, this does not work if there is a blank line after
-* the command list.
-
-      
       read (chan, 1001, end=9999) line
       index = 1
       if (debug) write (6,*) line
@@ -198,24 +205,33 @@
         do i=1,132
           newline(i:i) = ' '
         end do
-        do while (line(index:index) .eq. ' ')
-          index = index + 1
-        end do
-        if (line(index:index) .ne. ';') then
-          i = 1
-          do while ((index .le. 132) .and.
-     $         (line(index:index) .ne. ';'))
-            newline(i:i) = line(index:index)
+        spaces_stripped = .false.
+        do while(.not. spaces_stripped)
+          if (line(index:index) .eq. ' ') then
             index = index + 1
-            i = i+1
-          end do
-          if(.not.printed_header) then
-            print *
-     $           ,'g_ctp_database is setting the following CTP parameters'
-            printed_header = .true.
-          endif
-          print *,newline(1:79)         ! Truncate to keep 1/line
-          call thpset(newline)
+            if (index .gt. 132) then
+              spaces_stripped = .true.
+            end if
+          else
+            spaces_stripped = .true.
+          end if
+        end do
+        if (index .le. 132) then
+          if (line(index:index) .ne. ';') then
+            i = 1
+            do while ((index .lt. 132) .and.
+     $           (line(index:index) .ne. ';'))
+              newline(i:i) = line(index:index)
+              index = index + 1
+              i = i+1
+            end do
+            if(.not.printed_header) then
+c     write(6,*)'g_ctp_database is setting the following CTP parameters'
+              printed_header = .true.
+            endif
+            write(6,'(a)') newline(1:79) ! Truncate to keep 1/line
+            call thpset(newline)
+          end if
         end if
         read (chan, 1001, end=9999) line
         index = 1
@@ -226,8 +242,7 @@
 
  9999 close (unit=chan)
       if (.not. found_run) then
-        ABORT = .true.
-        error = here//':can''t find desired run in "'//filename//'"'
+        write(6,*) 'cant find run ',run,' in "'//filename//'"'
       end if
 
       return
