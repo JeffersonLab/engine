@@ -23,7 +23,10 @@
 * the correction parameters.
 *
 * $Log$
-* Revision 1.4  1994/07/08 19:43:53  cdaq
+* Revision 1.5  1994/07/21 13:29:45  cdaq
+* (JRA) Correct sign on a time correction
+*
+* Revision 1.4  1994/07/08  19:43:53  cdaq
 * (JRA) Keep list of wether hits are on track or not
 *
 * Revision 1.3  1994/05/13  02:36:30  cdaq
@@ -119,9 +122,9 @@
 * Convert TDC value to time, do pulse height correction, correction for
 * propogation of light thru scintillator, and offset.
                      time = hscin_tdc_pos(hit) * hscin_tdc_to_time
-                     time = time +
+                     time = time -
      1                    hscin_pos_phc_coeff(hit) *
-     $                    sqrt(max(adc_ph,hscin_minph))
+     $                    sqrt(max(0.,(adc_ph/hscin_minph-1.)))
                      time = time - path/hscin_vel_light(hit)
                      hscin_pos_time(hit) = time
      $                    - hscin_pos_time_offset(hit)
@@ -136,9 +139,9 @@
                      adc_ph = hscin_adc_neg(hit)
                      path = hscin_long_coord(hit) - hscin_neg_coord(hit)
                      time = hscin_tdc_neg(hit) * hscin_tdc_to_time
-                     time = time + 
+                     time = time - 
      1                    hscin_neg_phc_coeff(hit) *
-     $                    sqrt(max(adc_ph,hscin_minph))
+     $                    sqrt(max(0.,(adc_ph/hscin_minph-1.)))
                      time = time - path/hscin_vel_light(hit)
                      hscin_neg_time(hit) = time
      $                    - hscin_neg_time_offset(hit)
