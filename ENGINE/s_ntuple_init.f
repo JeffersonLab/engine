@@ -10,7 +10,10 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
-* Revision 1.3  1995/05/11 19:00:02  cdaq
+* Revision 1.4  1995/07/27 19:00:31  cdaq
+* (SAW) Relocate data statements for f2c compatibility
+*
+* Revision 1.3  1995/05/11  19:00:02  cdaq
 * (SAW) Allow %d for run number in filenames
 *
 * Revision 1.2  1994/06/17  02:36:00  cdaq
@@ -31,7 +34,6 @@
       character*(*) err
 *
       INCLUDE 's_ntuple.cmn'
-      INCLUDE 's_ntuple.dte'
       INCLUDE 'gen_routines.dec'
       include 'gen_run_info.cmn'
 *
@@ -48,6 +50,8 @@
       real rv(10)
 *
       logical HEXIST           !CERNLIB function
+*
+      INCLUDE 's_ntuple.dte'
 *
 *--------------------------------------------------------
       err= ' '

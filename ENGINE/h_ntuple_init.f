@@ -10,7 +10,10 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
-* Revision 1.5  1995/05/22 20:50:46  cdaq
+* Revision 1.6  1995/07/27 19:00:17  cdaq
+* (SAW) Relocate data statements for f2c compatibility
+*
+* Revision 1.5  1995/05/22  20:50:46  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.4  1995/05/11  17:17:38  cdaq
@@ -37,7 +40,6 @@
       character*(*) err
 *
       INCLUDE 'h_ntuple.cmn'
-      INCLUDE 'h_ntuple.dte'
       INCLUDE 'gen_routines.dec'
       include 'hms_data_structures.cmn'
       include 'gen_run_info.cmn'
@@ -54,6 +56,8 @@
       real rv(10)
 *
       logical HEXIST           !CERNLIB function
+*
+      INCLUDE 'h_ntuple.dte'
 *
 *--------------------------------------------------------
       err= ' '
