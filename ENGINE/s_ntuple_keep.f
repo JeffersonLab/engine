@@ -8,7 +8,10 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
-* Revision 1.2  1994/06/17 02:42:33  cdaq
+* Revision 1.3  1995/05/11 19:00:39  cdaq
+* (SAW) Change SSDEDXn vars to an array.
+*
+* Revision 1.2  1994/06/17  02:42:33  cdaq
 * (KBB) Upgrade
 *
 * Revision 1.1  1994/04/12  16:16:28  cdaq
@@ -59,13 +62,13 @@
       s_Ntuple_contents(m)= SSZBEAM! Lab Z coordinate of intersection of beam
                                 ! track with spectrometer ray
       m= m+1
-      s_Ntuple_contents(m)= SSDEDX1	! DEDX of chosen track in 1st scin plane
+      s_Ntuple_contents(m)= SSDEDX(1)	! DEDX of chosen track in 1st scin plane
       m= m+1
-      s_Ntuple_contents(m)= SSDEDX2	! DEDX of chosen track in 2nd scin plane
+      s_Ntuple_contents(m)= SSDEDX(2)	! DEDX of chosen track in 2nd scin plane
       m= m+1
-      s_Ntuple_contents(m)= SSDEDX3	! DEDX of chosen track in 3rd scin plane
+      s_Ntuple_contents(m)= SSDEDX(3)	! DEDX of chosen track in 3rd scin plane
       m= m+1
-      s_Ntuple_contents(m)= SSDEDX4	! DEDX of chosen track in 4th scin plane
+      s_Ntuple_contents(m)= SSDEDX(4)	! DEDX of chosen track in 4th scin plane
       m= m+1
       s_Ntuple_contents(m)= SSBETA	! BETA of chosen track
       m= m+1
