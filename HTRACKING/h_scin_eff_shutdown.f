@@ -16,6 +16,9 @@
 * h_scin_eff_shutdown does some final manipulation of the numbers.
 *
 * $Log$
+* Revision 1.9  1999/02/23 18:40:48  csa
+* (JRA) Remove hdebugcalcpeds stuff
+*
 * Revision 1.8  1996/08/30 20:35:14  saw
 * (JRA) Cosmetic
 *
@@ -141,19 +144,6 @@
       heff_stof=heff_s1 * heff_s2
       heff_3_of_4=p1234+p123+p124+p134+p234
       heff_4_of_4=p1234
-
-      if (hdebugcalcpeds.ne.0) then     !calc. peds from data.
-        write(39,*) 'hscin_all_ped_pos ='
-        do cnt=1,hnum_scin_elements
-          write(39,111) (hscin_zero_pave(pln,cnt),pln=1,hnum_scin_planes)
-        enddo
-
-        write(39,*) 'hscin_all_ped_neg ='
-        do cnt=1,hnum_scin_elements
-          write(39,111) (hscin_zero_nave(pln,cnt),pln=1,hnum_scin_planes)
-        enddo
-      endif
-111   format (10x,3(f6.1,','),f6.1)
 
       return
       end
