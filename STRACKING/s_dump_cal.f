@@ -17,6 +17,9 @@
 * block.
 *
 * $Log$
+* Revision 1.4  1999/06/10 16:56:30  csa
+* (JRA) Added ycal, emeas calculations, changed test condition
+*
 * Revision 1.3  1999/01/29 17:34:58  saw
 * Add variables for second tubes on shower counter
 *
@@ -39,6 +42,7 @@
       include 'sos_calorimeter.cmn'
 
       integer*4 blk
+      real*4 emeas,ycal
 
       save
 
@@ -47,16 +51,19 @@
 *
 *  What should this do for new tubes?
 *
+      if (abs(ssdelta).le.18 .and. scer_npe_sum.ge.2.0) then
 
-      if (ssshtrk.ge.0.75 .and. abs(ssdelta).le.20
-     $     .and. scer_npe_sum.ge.0.5) then
-        write(35,'(1x,52f7.1,1x,e11.4)') 
-     &       (scal_realadc_pos(blk),blk=1,smax_cal_blocks),ssp
+        ycal=ssy_fp + scal_1pr_zpos*ssyp_fp
+	ycal=min(35.,ycal)
+	ycal=max(-35.,ycal)
+        emeas=ssp*exp(-ycal/210.7)/(1+ycal**2/22000.)
 
-        if(scal_num_neg_columns.gt.0) then
-          write(35,'(1x,52f7.1,1x,e11.4)') 
-     &       (scal_realadc_neg(blk),blk=1,smax_cal_blocks),ssp
-        endif
+        write(36,'(1x,44(1x,f6.1),1x,e11.4)') 
+     &       (scal_realadc_pos(blk),blk=1,smax_cal_blocks),emeas
+!        if(scal_num_neg_columns.gt.0) then
+!          write(36,'(1x,44(1x,f6.1),1x,e11.4)') 
+!     &       (scal_realadc_neg(blk),blk=1,smax_cal_blocks),ssp
+!        endif
       endif
       RETURN
       END
