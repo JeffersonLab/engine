@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.10.2  2004/06/23 19:32:25  cdaq
+* removed ssnum_fp and hsnum_fp from c ntuple
+*
 * Revision 1.10.10.1  2004/06/18 15:27:19  cdaq
 * replaced with fpi2 version
 *
@@ -303,7 +306,15 @@ c
       c_ntuple_contents(m)=   ctphiy
       m= m+1
       c_Ntuple_contents(m)= HBETA_NOTRK 
-
+c     xempt adding on June 22 '04
+      m= m+1
+      c_Ntuple_contents(m)= HSTHETA ! Lab Scattering angle in radians
+      m= m+1
+      c_Ntuple_contents(m)= HSPHI	! Lab Scattering angle in radians
+      m= m+1
+      c_Ntuple_contents(m)= SSTHETA	! Lab Scattering angle in radians
+      m= m+1
+      c_Ntuple_contents(m)= SSPHI	! Lab Azymuthal angle in radians
 
 c       write(6,*)'ssz_beam =',sszbeam
 c       write(6,*)'hsmass2 =',hsmass2
