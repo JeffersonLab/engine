@@ -35,20 +35,37 @@
 *--------------------------------------------------------
 *
 
-      if (genable_sos_fieldcorr .ne. 0 ) then
+      if (genable_sos_fieldcorr .eq. 1999 ) then
         write(*,*) ' ******'
         write(*,*) ' Enabled SOS central momentum correction'
+        write(*,*) ' Using J. Volmer parametrization'
         write(*,*) ' Before correction: central  mom = ',spcentral
         sosp0corr=0.45
         if (spcentral .gt. 0.51) sosp0corr=0.496-0.08845*spcentral
      >       -5.743e-4*exp(2.341*(spcentral**2.156))
         spcentral = spcentral*(1+sosp0corr/100.)
         write(*,*) ' After correction: central  mom = ',spcentral
+        write(*,*) ' ******'
+      elseif (genable_sos_fieldcorr .eq. 2003 ) then
+        write(*,*) ' ******'
+        write(*,*) ' Enabled SOS central momentum correction'
+        write(*,*) ' Using C. Xu parametrization (2003)'
+        write(*,*) ' Before correction: central  mom = ',spcentral
+        sosp0corr=3.99168e-03 - 0.288891*e-01*spcentral
+     >       -5.68732e-4*exp(2.341*(spcentral**2.156))
+        spcentral = spcentral*(1+sosp0corr/100.)
+        write(*,*) ' After correction: central  mom = ',spcentral
+        write(*,*) ' ******'
       else
         write(*,*) ' ******'
         write(*,*) ' SOS central momentum correction not enabled'
         write(*,*) ' It is probably wise to enable by setting'
-        write(*,*) ' genable_sos_fieldcorr = 1 in sosflags.param'
+        write(*,*) ' genable_sos_fieldcorr = 2003 '
+        write(*,*) ' to use C. Xu parametrization (2003)'
+        write(*,*) ' or genable_sos_fieldcorr = 1999 '
+        write(*,*) ' to use J. Volmer parametrization'
+        write(*,*) ' Set parameter in sosflags.param'
+        write(*,*) ' ******'
       endif
 c
       ABORT= .FALSE.
