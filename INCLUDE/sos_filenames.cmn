@@ -2,6 +2,9 @@
 *
 *-Common block with filenames
 * $Log$
+* Revision 1.4.16.1  2004/06/30 19:33:21  cdaq
+* Add s_angle_output_filename (DJG)
+*
 * Revision 1.4  1996/01/17 15:10:02  cdaq
 * (JRA) Add threshold and pedestal output filenames
 *
@@ -22,6 +25,7 @@
       character*80 s_report_output_filename
       character*80 s_threshold_output_filename
       character*80 s_pedestal_output_filename
+      character*80 s_angle_output_filename
 *
       common /sos_filenames/
      $     s_recon_coeff_filename,
@@ -29,5 +33,6 @@
      $     s_report_blockname,
      $     s_report_output_filename,
      $     s_threshold_output_filename,
-     $     s_pedestal_output_filename
+     $     s_pedestal_output_filename,
+     $     s_angle_output_filename
 *
