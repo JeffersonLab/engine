@@ -15,7 +15,11 @@
 * s_scin_eff calculates efficiencies for the hodoscope.
 *
 * $Log$
-* Revision 1.4  1995/05/22 19:45:54  cdaq
+* Revision 1.5  1995/07/20 19:00:29  cdaq
+* (SAW) Put nint around some things for Ultrix compat.  Put h in front of
+*       various *good variables.
+*
+* Revision 1.4  1995/05/22  19:45:54  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.3  1995/05/11  21:17:23  cdaq
@@ -44,9 +48,6 @@
       include 'sos_statistics.cmn'
 
       integer pln,cnt,dist
-      integer bothgood(snum_scin_planes,snum_scin_elements)
-      integer posgood(snum_scin_planes,snum_scin_elements)
-      integer neggood(snum_scin_planes,snum_scin_elements)
       integer hit_cnt(snum_scin_planes)
       integer nhit
       real    hit_pos(snum_scin_planes),hit_dist(snum_scin_planes)
@@ -58,22 +59,22 @@
 
       hit_pos(1)=ssx_fp + ssxp_fp*(sscin_1x_zpos+0.5*sscin_1x_dzpos)
       hit_cnt(1)=nint((hit_pos(1)-shodo_center(1,1))/sscin_1x_spacing)+1
-      hit_cnt(1)=max(min(hit_cnt(1),snum_scin_counters(1)),1)
+      hit_cnt(1)=max(min(hit_cnt(1),nint(snum_scin_counters(1))),1)
       hit_dist(1)=hit_pos(1)-(sscin_1x_spacing*(hit_cnt(1)-1)+shodo_center(1,1))
 
       hit_pos(2)=ssy_fp + ssyp_fp*(sscin_1y_zpos+0.5*sscin_1y_dzpos)
       hit_cnt(2)=nint((shodo_center(2,1)-hit_pos(2))/sscin_1y_spacing)+1
-      hit_cnt(2)=max(min(hit_cnt(2),snum_scin_counters(1)),1)
+      hit_cnt(2)=max(min(hit_cnt(2),nint(snum_scin_counters(1))),1)
       hit_dist(2)=hit_pos(2)-(shodo_center(2,1)-sscin_1y_spacing*(hit_cnt(2)-1))
 
       hit_pos(3)=ssx_fp + ssxp_fp*(sscin_2x_zpos+0.5*sscin_2x_dzpos)
       hit_cnt(3)=nint((hit_pos(3)-shodo_center(3,1))/sscin_2x_spacing)+1
-      hit_cnt(3)=max(min(hit_cnt(3),snum_scin_counters(1)),1)
+      hit_cnt(3)=max(min(hit_cnt(3),nint(snum_scin_counters(1))),1)
       hit_dist(3)=hit_pos(3)-(sscin_2x_spacing*(hit_cnt(3)-1)+shodo_center(3,1))
 
       hit_pos(4)=ssy_fp + ssyp_fp*(sscin_2y_zpos+0.5*sscin_2y_dzpos)
       hit_cnt(4)=nint((shodo_center(4,1)-hit_pos(4))/sscin_2y_spacing)+1
-      hit_cnt(4)=max(min(hit_cnt(4),snum_scin_counters(1)),1)
+      hit_cnt(4)=max(min(hit_cnt(4),nint(snum_scin_counters(1))),1)
       hit_dist(4)=hit_pos(4)-(shodo_center(4,1)-sscin_2y_spacing*(hit_cnt(4)-1))
 
 *   Record position differences between track and center of scin. and
@@ -133,13 +134,13 @@
 
         if (sgood_tdc_pos(ssnum_fptrack,nhit)) then
           if (sgood_tdc_neg(ssnum_fptrack,nhit)) then    !both fired
-            bothgood(pln,cnt)=bothgood(pln,cnt)+1
+            sbothgood(pln,cnt)=sbothgood(pln,cnt)+1
           else                            !pos fired
-            posgood(pln,cnt)=posgood(pln,cnt)+1
+            sposgood(pln,cnt)=sposgood(pln,cnt)+1
           endif
         else
           if (sgood_tdc_neg(ssnum_fptrack,nhit)) then    !neg fired
-            neggood(pln,cnt)=neggood(pln,cnt)+1
+            sneggood(pln,cnt)=sneggood(pln,cnt)+1
           endif
         endif
 
