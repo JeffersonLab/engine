@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.1  1994/07/25 18:03:10  cdaq
+# Revision 1.2  1995/01/27 20:51:03  cdaq
+# SAW) Remove RCS from include file rules
+#
+# Revision 1.1  1994/07/25  18:03:10  cdaq
 # Initial revision
 #
 include $(Csoft)/etc/Makefile
@@ -19,16 +22,7 @@ install-dirs := lib
 default:
 	@echo "nothing to make"
 
-%.cmn : ../INCLUDE/RCS/%.cmn,v
-	$(CO) $(COFLAGS) $<
+%.cmn :: ../INCLUDE/%.cmn
+	cp $< $@
 
-#%.dec : ../INCLUDE/RCS/%.dec,v
-#	$(CO) $(COFLAGS) $<
-
-#%.par : ../INCLUDE/RCS/%.par,v
-#	$(CO) $(COFLAGS) $<
-	
-#%.dte : ../INCLUDE/RCS/%.dte,v
-#	$(CO) $(COFLAGS) $<
-	
 include $(sources:.f=.d)
