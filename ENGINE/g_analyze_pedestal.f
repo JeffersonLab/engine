@@ -1,0 +1,29 @@
+      subroutine g_analyze_pedestal(ABORT,err)
+*
+* $Log$
+* Revision 1.1  1995/04/01 19:36:55  cdaq
+* Initial revision
+*
+*
+      implicit none
+*
+      character*18 here
+      parameter (here='g_analyze_pedestal')
+*
+      logical ABORT
+      character*(*) err
+*
+      call h_analyze_pedestal(ABORT,err)
+      if(ABORT) then
+         call G_add_path(here,err)
+         return
+      endif
+*
+      call s_analyze_pedestal(ABORT,err)
+      if(ABORT) then
+         call G_add_path(here,err)
+         return
+      endif
+*
+      return
+      end
