@@ -9,6 +9,9 @@
 *- 
 *-   Created 6-6-94          D. F. Geesaman
 * $Log$
+* Revision 1.5  1996/09/05 19:54:16  saw
+* (JRA) avoid setting p=0??
+*
 * Revision 1.4  1996/01/24 16:07:34  saw
 * (JRA) Change upper case to lower case, cebeam to gebeam
 *
@@ -46,6 +49,10 @@
 *     Fix SOS to be in plane, beam left
 *
       sphi_lab = tt/2
+*
+      if (smomentum_factor .gt. 0.1) then    !avoid setting p=0
+        spcentral = spcentral * smomentum_factor
+      endif
 *
       cossthetas = cos(stheta_lab)
       sinsthetas = sin(stheta_lab)
