@@ -8,7 +8,10 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
-* Revision 1.7  1994/08/04 15:31:41  cdaq
+* Revision 1.8  1994/08/05 15:47:37  cdaq
+* (SAW) Add makereg directive with required include files
+*
+* Revision 1.7  1994/08/04  15:31:41  cdaq
 * (DA) Incorporate small angle approximation of L/R for YY' planes
 *
 * Revision 1.6  1994/06/30  02:26:14  cdaq
@@ -29,6 +32,13 @@
 *
 * Revision 1.1  1994/02/22  14:46:44  cdaq
 * Initial revision
+*
+*     The following include statments must precede the inclusion of this
+*     file in each routine that uses it.  The *%% syntax is also a
+*     directive to makereg to tell it to include the code in the program
+*     that it generates.
+*
+*%%   include 'gen_data_structures.cmn'
 *
 *      CTPTYPE=parm
 *
@@ -115,7 +125,7 @@
       integer*4 hdebugtartrackprint       ! call h_print_tar_track
       integer*4 hdebug_mc_start_time      ! kludge for monte carlo drift calc
       integer*4 hsingle_stub              ! switch to make tracks of all stubs
-      integer*4 hSmallAngleApprox         ! switch for alternate L/R determ. of Y,Y' planes 
+      integer*4 hSmallAngleApprox         ! switch for alternate L/R determ. of Y,Yprime planes
       common/HMS_TRACKFLAGS/
      &     hluno,
      &     hdebugflagpsi,
