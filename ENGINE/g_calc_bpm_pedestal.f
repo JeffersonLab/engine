@@ -1,6 +1,9 @@
       subroutine g_calc_bpm_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.2  1996/04/29 19:43:42  saw
+* (JRA) Update bpm calculations
+*
 * Revision 1.1  1996/01/22 15:12:05  saw
 * Initial revision
 *
@@ -13,18 +16,17 @@
       logical ABORT
       character*(*) err
 *
-      integer*4 ind
+      integer*4 ibpm,isig
 *
       INCLUDE 'gen_data_structures.cmn'
 *
 *
 * extract bpm pedestal information from gmisc variables.
 *
-      do ind=1,gnum_bpm_signals   !need some kind of 'map' for this.
-        gbpm_adc_ped(1,ind) = gmisc_ped(ind,2)     !2 is for ADCs
-        gbpm_adc_ped(2,ind) = gmisc_ped(ind+4,2)
-        gbpm_adc_ped(3,ind) = gmisc_ped(ind+8,2)
-        gbpm_adc_ped(4,ind) = gmisc_ped(ind+12,2)
+      do ibpm=1,gmax_num_bpms          !need some kind of 'map' for this.
+        do isig=1,gnum_bpm_signals
+          gbpm_adc_ped(isig,ibpm) = gmisc_ped(4*(ibpm-1)+isig,2) !2 is for ADC
+        enddo
       enddo
 
       return
