@@ -21,7 +21,7 @@ endif
 	oneev coda port t20 exe
 
 all: include utilsubs ctp coda tracking htracking stracking hack port \
-	engine t20 oneev exe
+	engine exe syncfilter
 
 include:
 	$(MAKE) -C INCLUDE
@@ -60,6 +60,8 @@ port:
 	$(MAKE) -C PORT
 exe:
 	$(MAKE) -C EXE
+syncfilter:
+	$(MAKE) -C SYNCFILTER
 #broken
 clean:
 	-@rm UTILSUBS/O.$(OSTYPE)/*.[do]
