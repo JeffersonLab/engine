@@ -5,6 +5,9 @@
 *                   David Potterveld, Argonne National Lab.                    *
 *     modified:  21-JAN-94    DFG     change max_ to hmax_
 * $Log$
+* Revision 1.5  1996/09/04 16:13:02  saw
+* (JRA) Add 5th element to h_recon_expon
+*
 * Revision 1.4  1995/08/08 15:41:57  cdaq
 * (DD) Add detector and angular offsets
 *
@@ -28,7 +31,7 @@
       real*4           h_ang_offset_x,h_ang_offset_y
       real*4           h_det_offset_x,h_det_offset_y
       real*4           h_z_true_focus ! Z position of HMS focus
-      integer*4        h_recon_expon(4,hmax_recon_elements)
+      integer*4        h_recon_expon(5,hmax_recon_elements)
       integer*4        h_num_recon_terms
       integer*4        h_recon_initted
 
