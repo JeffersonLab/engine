@@ -12,7 +12,11 @@
 *           Add definition of snum_scin_elements and set parameter value
 *
 * $Log$
-* Revision 1.5  1995/05/22 19:11:54  cdaq
+* Revision 1.6  1995/08/11 16:35:55  cdaq
+* (JRA) Remove old dpos stuff
+*       Add sscin_zero accumulators
+*
+* Revision 1.5  1995/05/22  19:11:54  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts.
 * Make pedestal arrays real.  Add sos_scin_positions and sos_misc_parms commons
 *
@@ -153,40 +157,6 @@ c      integer*4 sscin_num_counters(SNUM_SCIN_PLANES)
      $     shodo_neg_minph
 *
 *
-* sos_scin_positions.cmn - common block with the variables used
-*           to calculate/verify detector positions.
-*
-*     CTPTYPE=parm
-*  
-      real*4 sscin_dpos_slop
-      real*4 sscin_dpos_maxchisq
-*
-*      CTPTYPE=event
-*
-      real*4 sscin_dpos(snum_scin_planes,snum_scin_elements)
-      real*4 sscin_dpos_sum(snum_scin_planes,snum_scin_elements)
-      real*4 sscin_dpos_sum2(snum_scin_planes,snum_scin_elements)
-      real*4 sscin_dpos_ave(snum_scin_planes,snum_scin_elements)
-      real*4 sscin_dpos_sig(snum_scin_planes,snum_scin_elements)
-      integer*4 sscin_num_dpos(snum_scin_planes,snum_scin_elements)
-      real*4 sscin_tot_dpos_sum(snum_scin_planes)
-      real*4 sscin_tot_dpos_ave(snum_scin_planes)
-      integer*4 sscin_tot_num_dpos(snum_scin_planes)
-*
-      common/sos_scin_positions/
-     &   sscin_dpos,         ! x(y) of track - x(y) of center of scin.
-     &   sscin_dpos_sum,     ! sum of position differences
-     &   sscin_dpos_sum2,    ! sum of pos. differences squared
-     &   sscin_num_dpos,     ! number of position measurements
-     &   sscin_dpos_ave,     ! average of position differences
-     &   sscin_dpos_sig,     ! sigma of position differences
-     &   sscin_dpos_slop,    ! cut used to determine if scin. is on track
-     &   sscin_dpos_maxchisq,! chisq cut for good pos. measurement.
-     &   sscin_tot_dpos_sum, ! sum of pos. differences per plane.
-     &   sscin_tot_dpos_ave, ! ave pos. diff per plane.
-     &   sscin_tot_num_dpos  ! num. position measurements per plane.
-*
-*
 * sos_misc_parms.cmn -  misc tdc's filled as array over signal number
 *         (tdc is sparsified, so the raw signals are array over hits)
 *
@@ -197,3 +167,15 @@ c      integer*4 sscin_num_counters(SNUM_SCIN_PLANES)
 
       common/sos_misc_parms/
      &   smisc_dec_data
+
+
+      integer*4 sscin_zero_pos(snum_scin_planes,snum_scin_elements)
+      integer*4 sscin_zero_neg(snum_scin_planes,snum_scin_elements)
+      integer*4 sscin_zero_num(snum_scin_planes,snum_scin_elements)
+      real*4 sscin_zero_pave(snum_scin_planes,snum_scin_elements)
+      real*4 sscin_zero_nave(snum_scin_planes,snum_scin_elements)
+
+      common /sos_scin_zero/
+     &    sscin_zero_pos,sscin_zero_neg,
+     &    sscin_zero_num,
+     &    sscin_zero_pave,sscin_zero_nave
