@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.9.2.1  2003/07/15 19:04:15  cdaq
+* add ssinplane
+*
 * Revision 1.9  1999/02/23 19:19:57  csa
 * Change some physics vars
 *
@@ -576,6 +579,7 @@
       REAL*4 SSDELTA               ! Spectrometer delta of chosen track
       REAL*4 SSTHETA               ! Lab Scattering angle in radians
       REAL*4 SSPHI                 ! Lab Azymuthal angle in radians
+      REAL*4 SSINPLANE             ! In plane scattering angle
       REAL*4 SSMINV                ! Invariant Mass of remaing hadronic system
       REAL*4 SSZBEAM               ! Lab Z coordinate of intersection of beam
                                    ! track with spectrometer ray
@@ -624,6 +628,7 @@
      & SSDELTA,
      & SSTHETA,
      & SSPHI,
+     & SSINPLANE,
      & SSMINV,
      & SSZBEAM,
      & SSDEDX,
