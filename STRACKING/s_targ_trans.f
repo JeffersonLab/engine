@@ -19,6 +19,9 @@
 *-Modified 21-JAN-94  D.F.Geesaman
 *-            Add ABORT and err
 * $Log$
+* Revision 1.15  1999/02/23 19:01:10  csa
+* (JRA) Correct (another) hut(5) error
+*
 * Revision 1.14  1999/02/10 17:47:17  csa
 * Sign change in hut(5)
 *
@@ -145,7 +148,7 @@
 
          hut(4) = syp_fp(itrk) + s_ang_offset_y         !COSY wants slopes
 
-         hut(5) = -gbeam_y/1000.         ! spectrometer target X in meter!    
+         hut(5) = -gbeam_y/100.         ! spectrometer target X in meter!    
 
 ! now transform
          hut_rot(1) = hut(1)
