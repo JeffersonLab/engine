@@ -13,7 +13,10 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
-* Revision 1.6  1995/04/06 19:52:15  cdaq
+* Revision 1.7  1995/05/17 16:47:43  cdaq
+* (JRA) Add hist for all dc tdc's in one histogram.
+*
+* Revision 1.6  1995/04/06  19:52:15  cdaq
 * (JRA) SMAX_NUM_DC_PLANES -> SDC_NUM_PLANES
 *
 * Revision 1.5  1994/11/23  15:08:04  cdaq
@@ -46,7 +49,8 @@
       include 'gen_constants.par'
       include 'gen_units.par'
       include 'sos_tracking.cmn'
-      include 'sos_geometry.cmn'          
+      include 'sos_geometry.cmn'
+      include 'sos_track_histid.cmn'
 *     
 *--------------------------------------------------------
       real*4 s_drift_time_calc,s_drift_dist_calc,s_wire_center_calc
@@ -54,6 +58,7 @@
       external s_drift_dist_calc
       external s_wire_center_calc
       integer*4 ihit,goodhit,old_wire,old_plane,wire,plane,chamber
+      real*4 histval
 *     
       ABORT= .FALSE.
       err= ' '
@@ -77,6 +82,8 @@
 *     check valid plane and wire number
           if(plane.gt.0 .and. plane.le. sdc_num_planes) then
 *     test if tdc value less than lower limit for good hits
+            histval=float(sdc_raw_tdc(ihit))
+            call hf1(sidrawtdc,histval,1.)
             if(SDC_RAW_TDC(ihit) .lt. sdc_tdc_min_win(plane))  then
               swire_early_mult(wire,plane)
      $             = swire_early_mult(wire,plane)+1
