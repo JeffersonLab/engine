@@ -10,7 +10,10 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
-* Revision 1.4  1994/09/13 20:20:21  cdaq
+* Revision 1.5  1994/09/13 20:23:29  cdaq
+* *** empty log message ***
+*
+* Revision 1.4  1994/09/13  20:20:21  cdaq
 * (JRA) Change output format, add missing variables
 *
 * Revision 1.3  1994/08/02  20:00:48  cdaq
@@ -69,7 +72,7 @@
      &       HTWO_GOOD_TIMES(j), 
      &       j=1,HSCIN_TOT_HITS)    
         write(hluno,'('' HGOOD_START_TIME='', l2)')
-        &       HGOOD_START_TIME
+     &       HGOOD_START_TIME
         write(hluno,'('' HSTART_TIME='',e10.4)') HSTART_TIME
         write(hluno,*)
       endif
