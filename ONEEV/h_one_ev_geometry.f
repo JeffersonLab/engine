@@ -9,6 +9,9 @@
 *	at least I didn't see a method around them.  So I have defined all
 *	the subvolumes explicitly. (TPW)
 * $Log$
+* Revision 1.7  1996/04/30 14:09:54  saw
+* (JRA) Some new code
+*
 * Revision 1.6  1996/01/17 16:35:37  cdaq
 * (DVW) Tweak hodoscale
 *
@@ -34,12 +37,6 @@ c
       include 'hms_geometry.cmn'
       include 'hms_calorimeter.cmn'
       include 'hms_scin_parms.cmn'
-
-* One day these will be real ctp variables...
-      real*4    SHOWER_X_OFFSET,SHOWER_Y_OFFSET
-      parameter (SHOWER_X_OFFSET = 0.) ! offset
-      parameter (SHOWER_Y_OFFSET = 0.) ! offset
-
 
       real*4    HHUT_WIDTH,HHUT_HEIGHT
       parameter (HHUT_WIDTH = 100.)     ! full width of the det. hut
@@ -387,12 +384,12 @@ c
       call g_ugsvolu ('HOD2', 'BOX ', DETMEDIA, par, 3, ivolu) ! hodoscope box
       call gsatt ('HOD2', 'SEEN', 0)	! can't see the hodo box
 
-      x = hscin_1x_offset
-      y = -hscin_1y_offset
+      x = -hscin_1x_offset
+      y = hscin_1y_offset
       z = hscin_1x_zpos
       call gspos ('HOD1', 1, 'HHUT', x, y, z, 0, 'ONLY') ! lower hodo
-      x = hscin_2x_offset
-      y = -hscin_2y_offset
+      x = -hscin_2x_offset
+      y = hscin_2y_offset
       z = hscin_2x_zpos
       call gspos ('HOD2', 1, 'HHUT', x, y, z, 0, 'ONLY') ! upper hodo
 
@@ -457,8 +454,13 @@ c
 ! half height of the shower detector
       par(3) = hmax_cal_columns * hcal_block_xsize / 2.
       call g_ugsvolu ('SHOW', 'BOX ', DETMEDIA, par, 3, ivolu)
-      x = SHOWER_X_OFFSET 
-      y = SHOWER_Y_OFFSET
+
+!for the x offset, we take the center of the top and bottom blocks
+!This assumes that all the blocks are
+!the same heighth and width as scal_1pr
+
+      x = -(hcal_block_xc(1) + hcal_block_xc(hmax_cal_rows))/2
+      y = hcal_block_yc(1)
       z = hcal_1pr_zpos + hmax_cal_columns*hcal_block_xsize/2.
       call gspos ('SHOW', 1, 'HHUT', x, y, z, 0, 'ONLY')
       call gsatt ('SHOW', 'SEEN',0)
