@@ -6,8 +6,8 @@ CC=gcc
 
 all: syncfilter
 
-syncfilter: syncfilter.c ../../$(MYOS)/lib/libctp.a
+syncfilter: syncfilter.c ../../$(MYOS)/lib/libcoda.a
 
-	gcc $(CFLAGS) -o syncfilter syncfilter.c -lctp
+	gcc $(CFLAGS) -o syncfilter syncfilter.c -lcoda
 	cp  syncfilter ../../$(MYOS)/bin/syncfilter
 	rm syncfilter
