@@ -15,7 +15,10 @@
 *-      Modified 25 Mar 1994      DFG
 *-                                Change name of print routine
 * $Log$
-* Revision 1.3  1995/05/22 19:39:31  cdaq
+* Revision 1.4  1995/08/30 17:34:24  cdaq
+* (JRA) Use off-track blocks to accumulate pedestal data
+*
+* Revision 1.3  1995/05/22  19:39:31  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.2  1994/10/11  19:24:54  cdaq
@@ -35,6 +38,9 @@
       character*12 here
       parameter (here='H_TRACKS_CAL')
 *
+      integer*4 hit,blk
+      real*4 xblk
+
       integer*4 nt      !Track number
       integer*4 nc      !Cluster number
       real*4 xf         !X position of track on calorimeter front surface
@@ -89,6 +95,21 @@
         endif                           !End ... if number of clusters > 0
       enddo                             !End loop over detector tracks
 *
+
+      if(hntracks_fp.eq.1) then   !use blocks not on track to find pedestal
+        do hit=1,hcal_tot_hits
+          blk=hcal_row(hit)+hmax_cal_rows*(hcal_column(hit)-1)
+          xblk=hcal_block_xc(blk)
+          if (abs(xf-xblk).ge.20. .and. abs(xb-xblk).ge.20.) then !blk not hit
+            if (hcal_zero_num(blk).le.2000) then !avoid overflow in sum**2
+              hcal_zero_sum(blk)=hcal_zero_sum(blk)+hcal_adc(hit)
+              hcal_zero_sum2(blk)=hcal_zero_sum2(blk)+hcal_adc(hit)*hcal_adc(hit)
+              hcal_zero_num(blk)=hcal_zero_num(blk)+1
+            endif
+          endif
+        enddo
+      endif
+
   100 continue
       if(hdbg_tracks_cal.gt.0) call h_prt_cal_tracks
 *
