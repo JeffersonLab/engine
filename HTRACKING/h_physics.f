@@ -18,7 +18,15 @@
 *- 
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
+*
 * $Log$
+* Revision 1.21  2002/12/27 22:07:04  jones
+*    a. Ioana Niculescu modified total_eloss call
+*    b. CSA 4/15/99 -- changed hsbeta to hsbeta_p in total_eloss call
+*       to yield reasonable calculation for hsbeta=0 events.
+*    c. CSA 4/12/99 -- changed hscorre/p back to hsenergy and hsp so
+*       I could keep those names in c_physics.f
+*
 * Revision 1.20  2002/10/02 13:42:43  saw
 * Check that user hists are defined before filling
 *
@@ -120,6 +128,7 @@
       real*4 Wvec(4)
       real*4 hstheta_1st
       real*4 scalar,mink
+      real*4 denom
 *
 *--------------------------------------------------------
 *
@@ -268,26 +277,24 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 
       if (hpartmass .lt. 2.*mass_electron) then ! for electron
         if (gtarg_z(gtarg_num).gt.0.) then
-          call total_eloss(1,.true.,gtarg_z(gtarg_num),gtarg_a(gtarg_num),
-     $           gtarg_thick(gtarg_num),gtarg_dens(gtarg_num),
-     $           hstheta_1st,gtarg_theta,1.0,hseloss)
+          call total_eloss(1,.true.,hstheta_1st,1.0,hseloss)
          else
            hseloss=0.
         endif
       else   ! not an electron
         if (gtarg_z(gtarg_num).gt.0.) then
-          call total_eloss(1,.false.,gtarg_z(gtarg_num),gtarg_a(gtarg_num),
-     $           gtarg_thick(gtarg_num),gtarg_dens(gtarg_num),
-     $           hstheta_1st,gtarg_theta,hsbeta,hseloss)
+          call total_eloss(1,.false.,hstheta_1st,hsbeta_p,hseloss)
         else
           hseloss=0.
         endif
       endif           ! particle specific stuff
 
 *     Correct hsenergy and hsp for eloss at the target
+* csa 4/12/99 -- changed hscorre/p back to hsenergy and hsp so
+* I could keep those names in c_physics.f
 
-      hscorre = hsenergy + hseloss
-      hscorrp = sqrt(hscorre**2-hpartmass**2)
+      hsenergy = hsenergy + hseloss
+      hsp = sqrt(hsenergy**2-hpartmass**2)
 
 *     Begin Kinematic stuff
 
@@ -299,7 +306,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 *     This coordinate system is a just a simple rotation away from the
 *     TRANSPORT coordinate system used in the spectrometers
 
-      hsp_z = hscorrp/sqrt(1.+hsxp_tar**2+hsyp_tar**2)
+      hsp_z = hsp/sqrt(1.+hsxp_tar**2+hsyp_tar**2)
             
 *     Initial Electron
 
@@ -311,7 +318,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 *     Scattered Particle calculation without small angle approximation
 *     - gaw 98/10/5
 
-      hs_kpvec(1) =  hscorre
+      hs_kpvec(1) =  hsenergy
       hs_kpvec(2) =  hsp_z*hsxp_tar
       hs_kpvec(3) =  hsp_z*(hsyp_tar*coshthetas-sinhthetas)
       hs_kpvec(4) =  hsp_z*(hsyp_tar*sinhthetas+coshthetas)
@@ -322,7 +329,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 *     +pi/2 for SOS.
 
       if (abs(hs_kpvec(4)/hsp).le.1.) then
-        hstheta = acos(hs_kpvec(4)/hscorrp)
+        hstheta = acos(hs_kpvec(4)/hsp)
       else
         hstheta = -10.
       endif
@@ -405,6 +412,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 
       endif
 
+C-----------------------------------------------------------------------
       if (.false.) then
 *      if (.true.) then
          write(6,*)' ***********************************'
@@ -415,7 +423,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
          write(6,*)' h_phys: hsbeta, hsbeta_p   =',hsbeta,hsbeta_p
          write(6,*)' h_phys: hsenergy, hsp      =',hsenergy,hsp
          write(6,*)' h_phys: hseloss            =',hseloss
-         write(6,*)' h_phys: hscorre, hscorrp   =',hscorre,hscorrp
+*         write(6,*)' h_phys: hscorre, hscorrp   =',hscorre,hscorrp
          write(6,*)' h_phys: hstheta_1st        =',hstheta_1st
          write(6,*)' h_phys: hsp_z              =',hsp_z
          write(6,*)' h_phys: hs_kvec            =',hs_kvec
