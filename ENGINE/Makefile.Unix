@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.13  1995/05/24 13:20:54  cdaq
+# Revision 1.14  1995/07/28 14:13:32  cdaq
+# (SAW) Add new routines, SGI/IRIX compatibility
+#
+# Revision 1.13  1995/05/24  13:20:54  cdaq
 # Cosmetic changes
 #
 # Revision 1.12  1995/05/11  19:03:10  cdaq
@@ -53,7 +56,7 @@ general_source = $(decode_source) g_clear_event.f \
 	g_reset_event.f g_register_variables.f \
 	g_examine_control_event.f \
 	g_examine_physics_event.f g_dump_histograms.f g_analyze_pedestal.f \
-	g_calc_pedestal.f
+	g_calc_pedestal.f g_ctp_database.f
 hms_source = h_clear_event.f h_initialize.f h_keep_results.f \
 	h_proper_shutdown.f h_reset_event.f \
 	h_register_variables.f
@@ -68,7 +71,7 @@ ntuple_source = c_ntuple_init.f c_ntuple_keep.f \
 	h_ntuple_keep.f h_ntuple_register.f h_ntuple_shutdown.f \
 	s_ntuple_init.f s_ntuple_keep.f s_ntuple_register.f \
 	s_ntuple_shutdown.f h_sv_nt_register.f h_sv_nt_keep.f \
-	h_sv_nt_init.f h_sv_nt_shutdown.f
+	h_sv_nt_init.f h_sv_nt_shutdown.f g_ntuple_shutdown.f
 gmakeregstuff = r_gen_filenames.f r_gen_run_info.f r_gen_event_info.f \
 	r_gen_scalers.f r_gen_run_pref.f r_gen_data_structures.f
 cmakeregstuff = r_coin_filenames.f r_c_ntuple.f r_coin_data_structures.f
@@ -85,30 +88,41 @@ libsources =  $(coin_source) $(sos_source) $(hms_source) $(general_source) \
 sources = $(libsources) $(replay_source)
 #engine_members:= $(patsubst %.f, libengine.a(%.o), $(libsources))
 lib_targets := $(patsubst %.f, libengine.a(%.o), $(sources))
+bin_targets = engine
 
 install-dirs := lib bin
 
 DEPLIBS = $(LIBROOT)/libengine.a \
 	$(LIBROOT)/libhtracking.a $(LIBROOT)/libstracking.a \
 	$(LIBROOT)/libtracking.a $(LIBROOT)/libhack.a \
-	$(LIBROOT)/libgmc.a $(LIBROOT)/libutils.a $(LIBROOT)/libctp.a
+	$(LIBROOT)/libutils.a $(LIBROOT)/libctp.a
+#$(LIBROOT)/libgmc.a 
 
 ifeq ($(ARCH),HPUX)
-  CC = gcc
 #  OTHERLIBS = -Wl,-L$(CODA)/HP_UX/lib \
 #	-lcoda -Wl,-L$(CERN_ROOT)/lib -lpacklib
   OTHERLIBS = -Wl,-L$(CERN_ROOT)/lib -lpacklib -lm
-##  lib_targets := libengine.a
-  bin_targets = engine
 endif
 
 ifeq ($(ARCH),ULTRIX)
-  CC = gcc
   RPCLIBDIR = /usr/site1/rpc/usr/lib
   OTHERLIBS = -L$(CODA)/ULTRIX/lib -lcoda -L$(CERN_ROOT)/lib -lpacklib \
 	-L$(RPCLIBDIR) -lrpclib
-##  lib_targets := libengine.a
-  bin_targets = engine
+endif
+
+ifeq ($(ARCH),IRIX)
+  RPCLIBDIR = /usr/lib
+  OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -L$(RPCLIBDIR) -lrpcsvc
+endif
+
+ifeq ($(ARCH),Linux)
+  CERN_ROOT = /usr/local/cernlib/95a
+  OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -lc -lm
+  DEPLIBS := $(DEPLIBS) $(LIBROOT)/libf2c.a
+
+$(LIBROOT)/libf2c.a:
+	@make -C $(Csoft)/SRC/F2C csoft
+
 endif
 
 #default:
@@ -121,8 +135,8 @@ endif
 $(LIBROOT)/libutils.a:
 	@make -C $(Csoft)/SRC/UTILSUBS csoft
 
-$(LIBROOT)/libgmc.a:
-	@make -C $(Csoft)/SRC/GMC csoft
+#$(LIBROOT)/libgmc.a:
+#	@make -C $(Csoft)/SRC/GMC csoft
 
 $(LIBROOT)/libtracking.a:
 	@make -C $(Csoft)/SRC/TRACKING csoft
@@ -142,6 +156,17 @@ r_%.f : %.cmn $(MAKEREG)
 	$(MAKEREG) $< -o $@ -e /dev/null
 
 .PRECIOUS: r_%.f
+
+ifdef NFSDIRECTORY
+%.f : $(NFSDIRECTORY)/ENGINE/%.f
+	ln -s $< $@
+
+# F2C doesn't know about READONLY
+g_decode_config.f : $(NFSDIRECTORY)/ENGINE/g_decode_config.f
+	sed -e "s/,READONLY//" $< > $@
+
+.PRECIOUS: %.f
+endif
 
 %.cmn :: ../INCLUDE/%.cmn
 	cp -f $< $@
