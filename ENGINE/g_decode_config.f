@@ -21,6 +21,10 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton Univ.; rewrote parsing
 * $Log$
+* Revision 1.7  2002/09/25 14:40:33  jones
+*    Add call to G_IO_control to get spareID for unit number to open file
+*     and call at end to G_IO_control free the unit number.
+*
 * Revision 1.6  1996/01/16 20:48:35  cdaq
 * (SAW) Start "roc" index at zero instead of one.
 *
@@ -43,39 +47,40 @@
 * Initial revision
 *
 *------------------------------------------------------------------------------
+
       implicit none
       SAVE
-*
+
       character*30 here
       parameter (here= 'g_decode_config')
-*
+
       character*(*) error
       logical ABORT
       character*(*) fname
-*
+
       include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       integer SPAREID                           ! Need a LUN handler?
-      parameter (SPAREID=67)
       integer MAXLINE
       parameter (MAXLINE=300)
-*
+
       character*(MAXLINE) line    
       logical OK,text
-*
+
       integer llen,lp,lpcom, lpeq, m                          ! Line pointers
       character*1 tab
       integer*4 roc, slot, subadd, mask
       integer*4 did, plane, counter, signal, nsubadd, bsubadd
       integer*4 lastroc, lastslot
       integer N_lines_read
-*
+
       logical echo,debug,override
       character*26 lo,HI
       data echo/.FALSE./
       data debug,override/2*.FALSE./
       data lo/'abcdefghijklmnopqrstuvwxyz'/
       data HI/'ABCDEFGHIJKLMNOPQRSTUVWXYZ'/
+      
 *********************************************************************************
 *     Valid data lines are
 *    
@@ -87,10 +92,17 @@
 *     sigtyp may be left blank (e.g. for wire chambers) in which case zero
 *     is assumed.
 *********************************************************************************
-      ABORT= .TRUE.
-*     Need to pass this file name as an argument or through a common block.
+
+      ABORT= .FALSE.
+      
+      call g_IO_control(spareID,'ANY',ABORT,error)  !get IO channel
+      IF(ABORT) THEN
+        call G_add_path(here,error)
+        RETURN
+      ENDIF
       open(unit=SPAREID,status='OLD',READONLY,file=fname,err=999)
-*
+*     * file name passed as an argument
+
       tab = char(9)
       roc = -1
       slot = -1
@@ -99,21 +111,21 @@
       N_lines_read= 0
       mask = 'FFF'x                     ! Default data mask
       bsubadd = 17                      ! Default LSB of channel field
-*
+
       OK= .TRUE.
       DO WHILE (OK)
-*
+
          OK= .FALSE.
          error= ':error reading'
          read(SPAREID, '(a)',err=555,end=666) line
          OK= .TRUE.
          error= ' '
 555      N_lines_read= N_lines_read+1
-*
+
          If(OK) Then
-*
+
             if(echo) call g_log_message(line)
-*
+
             llen = len(line)		! Remove comments (; or !)
             lpcom = index(line(1:llen),';')
             if(lpcom.gt.0) llen = lpcom - 1
@@ -121,7 +133,7 @@
                lpcom = index(line(1:llen),'!')
                if(lpcom.gt.0) llen = lpcom - 1
             endif
-*
+
             if(llen.gt.0) then
                do while((line(llen:llen).eq.' '.or.line(llen:llen).eq.tab)
      $              .and.llen.ge.1)
@@ -130,7 +142,7 @@
                enddo
  127           continue
             endif
-*
+
             if(llen.gt.0) then
                text = .false.
                do lp=1,llen		! Shift to upper case
@@ -142,10 +154,10 @@
                      text = .true.
                   endif
                enddo
-*               
+
                if(text) then
                   lpeq = index(line(1:llen),'=')
-*     
+
                   if(lpeq.gt.0) then
                      if(index(line(1:lpeq-1),'ROC').gt.0) then
                         read(line(lpeq+1:llen),'(i10)') roc
@@ -170,6 +182,7 @@
                      endif
                   endif
                else
+
                   read(line(1:llen),'(4i15)') subadd, plane, counter,
      $                 signal
                   If(OK .and. (roc.ne.lastroc.or.slot.ne.lastslot)) Then
@@ -185,7 +198,7 @@
                         lastslot = slot
                      endif
                   EndIf
-*     
+
                   If(OK) Then
                      g_decode_didmap( g_decode_slotpointer(roc,slot)
      &                    +subadd ) = did
@@ -196,27 +209,39 @@
                      g_decode_sigtypmap( g_decode_slotpointer(roc,slot)
      &                    +subadd ) = signal
                   EndIf
-*     
+
                endif
             endif
          endif
       enddo
-*  
+
+
 888   ABORT= .NOT.OK
       IF(ABORT) THEN
         call G_add_path(here,error)
       ELSE
         error= ' '
       ENDIF
+      
       close(unit=SPAREID)
+      call G_IO_control(spareID,'FREE',ABORT,error)  !free up IO channel
+      IF(ABORT) THEN
+        call G_add_path(here,error)
+        RETURN
+      ENDIF
+	
       return
-*
+
+
 666   OK= N_lines_read.GT.0
       error= ':no lines read before End-of-File'
       GOTO 888                       !normal end-of-file?
-*
+
+
 999   continue
       error = ':Unable to open file "'//fname//'"'
       call G_add_path(here,error)
       return
+      
+      
       end
