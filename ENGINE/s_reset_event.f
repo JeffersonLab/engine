@@ -12,9 +12,12 @@
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 *-      $Log$
-*-      Revision 1.3  1994/02/22 19:43:15  cdaq
-*-      (SAW) SNUM_DC_PLANES  --> SMAX_NUM_DC_PLANES
+*-      Revision 1.4  1994/03/24 22:01:43  cdaq
+*-      Reflect changes in gen_data_structures.cmn
 *-
+* Revision 1.3  1994/02/22  19:43:15  cdaq
+* (SAW) SNUM_DC_PLANES  --> SMAX_NUM_DC_PLANES
+*
 * Revision 1.2  1994/02/11  04:12:30  cdaq
 * Change var names to reflect current gen_data_structures
 *
@@ -65,8 +68,8 @@
 *     SOS SCINTILLATOR HITS
 *     
       DO hit= 1,SMAX_SCIN_HITS
-         SSCIN_SCIN_COORD(hit)= 0.0
-         SSCIN_HIT_COORD(hit)= 0.0
+         SSCIN_ZPOS(hit)= 0.0
+         SSCIN_CENTER_COORD(hit)= 0.0
          SSCIN_COR_ADC(hit)= 0.0
          SSCIN_COR_TIME(hit)= 0.0
          SSCIN_PLANE_NUM(hit)= 0
@@ -84,9 +87,9 @@
 *     SOS CALORIMETER HITS
 *     
       DO block= 1,SMAX_CAL_BLOCKS
-         SCAL_XPOS(block) = 0.
-         SCAL_YPOS(block) = 0.
-         SCAL_COR_ADC(block) = 0.
+         SBLOCK_XC(block) = 0.
+         SBLOCK_ZC(block) = 0.
+         SBLOCK_DE(block) = 0.
          SCAL_ROW(block) = 0
          SCAL_COLUMN(block) = 0
          SCAL_ADC(block) = 0

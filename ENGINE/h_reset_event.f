@@ -50,8 +50,8 @@
       ENDDO
 *
       DO hit= 1,HMAX_SCIN_HITS
-         HSCIN_SCIN_COORD(hit)= 0
-         HSCIN_HIT_COORD(hit)= 0
+         HSCIN_ZPOS(hit)= 0.0
+         HSCIN_CENTER_COORD(hit)= 0.0
          HSCIN_COR_ADC(hit)= 0
          HSCIN_COR_TIME(hit)= 0
          HSCIN_PLANE_NUM(hit)= 0
@@ -69,9 +69,9 @@
 *     HMS CALORIMETER HITS
 *
       DO block= 1,HMAX_CAL_BLOCKS
-         HCAL_XPOS(block)= 0
-         HCAL_YPOS(block)= 0
-         HCAL_COR_ADC(block)= 0
+         HBLOCK_XC(block)= 0.
+         HBLOCK_ZC(block)= 0
+         HBLOCK_DE(block)= 0
          HCAL_ROW(block)= 0
          HCAL_COLUMN(block)= 0
          HCAL_ADC(block)= 0
@@ -119,6 +119,11 @@
          HDEL_TAR(5,5,track)= 0
          HNFREE_TAR(track)= 0
          HLINK_TAR_FP(track)= 0
+         Do j= 1,5
+            do i= 1,5
+               HDEL_TAR(i,j,track)= 0.
+            enddo
+         EndDo
       ENDDO
       HNTRACKS_TAR= 0
 *     
