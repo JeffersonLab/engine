@@ -1,7 +1,12 @@
 * sos_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the sos time of flight.
 * $Log$
-* Revision 1.5  1994/11/21 18:02:11  cdaq
+* Revision 1.6  1995/03/13 19:13:57  cdaq
+* (JRA) Change sscin_minph to sscin_???_minph arrays.  Add tracks index to
+*       sgood_tdc_pos, sgood_tdc_neg, sgood_scin_time, sgood_plane_time,
+*       and sgood_beta.
+*
+* Revision 1.5  1994/11/21  18:02:11  cdaq
 * * (SPB) Recopied from hms file and modified names for SOS
 *
 * Revision 1.4  1994/08/16  03:56:41  cdaq
@@ -23,6 +28,7 @@
 *     that it generates.
 *
 *%%   include 'gen_data_structures.cmn'
+*%%   include 'sos_scin_parms.cmn'
 *
 *     CTPTYPE=event
 *
@@ -48,18 +54,19 @@
 *
 *     CTPTYPE=parm
 *
-      real*4 sscin_minph
+      real*4 sscin_pos_minph(smax_scin_hits) ! ADC Offset for PH correction
+      real*4 sscin_neg_minph(smax_scin_hits) ! ADC Offset for PH correction
       real*4 sscin_tdc_min
       real*4 sscin_tdc_max
       real*4 sscin_tdc_to_time
 *
 *     CTPTYPE=event
 *
-      logical*4 sgood_tdc_pos(smax_scin_hits)
-      logical*4 sgood_tdc_neg(smax_scin_hits)
-      logical*4 sgood_scin_time(smax_scin_hits)
-      logical*4 sgood_plane_time(snum_scin_planes)
-      logical*4 sgood_beta
+      logical*4 sgood_tdc_pos(sntracks_max,smax_scin_hits)
+      logical*4 sgood_tdc_neg(sntracks_max,smax_scin_hits)
+      logical*4 sgood_scin_time(sntracks_max,smax_scin_hits)
+      logical*4 sgood_plane_time(sntracks_max,snum_scin_planes)
+      logical*4 sgood_beta(sntracks_max)
       logical*4 sscin_on_track(sntracks_max,smax_scin_hits)
 
       common/sos_scin_tof/
@@ -74,7 +81,7 @@
      &     sscin_vel_light,
      &     sscin_pos_phc_coeff,sscin_neg_phc_coeff,
      &     sscin_pos_time_offset,sscin_neg_time_offset,
-     &     sscin_minph,
+     &     sscin_pos_minph, sscin_neg_minph,
      &     sscin_tdc_min,
      &     sscin_tdc_max,
      &     sscin_tdc_to_time,
@@ -84,3 +91,36 @@
      &     sgood_beta,                  !was a value of beta found?
      &     sscin_on_track,              !list of which scins. were on each track.
      &     sscin_time_fp                !scin time (ave) projected to fp
+
+*
+*     CTPTYPE=event
+*
+      real*4 s_fptime(hnum_scin_planes)    !time at fp from all hits in 1 plane
+      real*4 s_fptimedif(6)                !fp time differences
+      real*4 sbeta_notrk
+      real*4 sbeta_chisq_notrk
+
+       common/stof_notrk/
+     &  s_fptime,
+     &  s_fptimedif,
+     &  sbeta_notrk,
+     &  sbeta_chisq_notrk
+
+c      integer*4 sscin_pos_did(snum_scin_planes,16)
+c      integer*4 sscin_neg_did(snum_scin_planes,16)
+c      integer*4 sscin_pos_should(snum_scin_planes,16)
+c      integer*4 sscin_neg_should(snum_scin_planes,16)
+c      real*4 sscin_pos_eff(snum_scin_planes,16)
+c      real*4 sscin_neg_eff(snum_scin_planes,16)
+c      real*4 sscin_pos_solo(snum_scin_planes,16)
+c      real*4 sscin_neg_solo(snum_scin_planes,16)
+c
+c      common/smore_debugging/
+c     &  sscin_pos_eff,
+c     &  sscin_neg_eff,
+c     &  sscin_pos_solo,
+c     &  sscin_neg_solo,
+c     &  sscin_pos_did,
+c     &  sscin_neg_did,
+c     &  sscin_pos_should,
+c     &  sscin_neg_should
