@@ -1,6 +1,9 @@
       subroutine g_sub_run_number(string,number)
 *
 * $Log$
+* Revision 1.3  1996/01/17 19:26:27  cdaq
+* (SAW) Fix so it works on more platforms
+*
 * Revision 1.2  1995/07/20 19:08:00  cdaq
 * (SAW) Build result into temporary string, then copy back to string.
 *
@@ -47,7 +50,11 @@
       
       if(reallen+(10-inum+1)-2.gt.len(string)) return ! Would be too long
       if(reallen+(10-inum+1)-2.gt.len(stemp)) return ! Would be too long
-      stemp = string(1:iper-1)//snum(inum:10)//string(iper+2:reallen)
+      if(iper+2.gt.reallen) then        ! Line ends with %d
+        stemp = string(1:iper-1)//snum(inum:10)
+      else
+        stemp = string(1:iper-1)//snum(inum:10)//string(iper+2:reallen)
+      endif
       string = stemp
 
 c      print *,number
