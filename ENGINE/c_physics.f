@@ -7,6 +7,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.7.2.3  2003/07/15 12:05:29  cdaq
+* sign change to ctphix (fpi2)
+*
 * Revision 1.7.2.2  2003/07/03 14:06:09  cdaq
 * update for fpi-2 (xu)
 *
@@ -195,8 +198,8 @@ c      write(6,*)'c_phys: at 2'
          sign_hadron = hbfield
 
       else
-         write(6,*) 'c_physics: no electron arm'
-         return
+c         write(6,*) 'c_physics: no electron arm'
+c         return
       endif
 
 c        if(m_hadron.lt.0.8) then
@@ -413,7 +416,8 @@ c       write(6,*)'t2=',cmin_t
 c        t = (c_bigq2 - hsp*cos(theta_gp_lab))**2 +
 c     >      (hsp*sin(theta_gp_lab))**2 - (omega-e_pion_lab)**2 
 
-        ctphix= - cmin_t * cos(cphipi)
+c        ctphix= - cmin_t * cos(cphipi)
+        ctphix=   cmin_t * cos(cphipi)
         ctphiy=   cmin_t * sin(cphipi)
       
 c        write(6,*)'c_phys: at 8'
@@ -523,8 +527,8 @@ c       write(6,*) 'ccointime_sos_shift=',ccointime_sos_shift
       offset_ctime = - (hstime_at_fp-hstart_time_center)
      &               + (sstime_at_fp-sstart_time_center)
      &               - hspath_cor + sspath_cor +42 
-      ccointime_hms = (hmisc_dec_data(10,1)-2472)/9.46 + offset_ctime
-      ccointime_sos = (smisc_dec_data(9,1)-1572)/9.68 - offset_ctime
+      ccointime_hms = (hmisc_dec_data(10,1)-2400)/9.46 + offset_ctime
+      ccointime_sos = (smisc_dec_data(9,1)-1500)/9.68 - offset_ctime
       endif
 
 
