@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.7  1996/09/04 15:41:55  saw
+# (SAW) Fixes for linux
+#
 # Revision 1.6  1996/04/30 12:30:51  saw
 # (SAW) New makefile style
 #
@@ -39,15 +42,16 @@ bin_targets =
 #
 # Rule for making the register subroutines
 #
-r_%.f : %.cmn $(MAKEREG)
+../r_%.f : ../%.cmn $(MAKEREG)
 	(cd .. ; $(MAKEREG) $(<F) -o $(@F) -e /dev/null)
 
-.PRECIOUS: r_%.f
+.PRECIOUS: ../r_%.f
+
 ifdef NFSDIRECTORY
-%.f : $(NFSDIRECTORY)/HACK/%.f
+../%.f : $(NFSDIRECTORY)/HACK/%.f
 	ln -s $< $@
 
-.PRECIOUS: %.f
+.PRECIOUS: ../%.f
 endif
 
 %.cmn :: ../../INCLUDE/%.cmn
