@@ -8,6 +8,9 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
+* Revision 1.23  1996/04/30 13:44:09  saw
+* (JRA) Lots of changes
+*
 * Revision 1.22  1996/01/17 15:18:42  cdaq
 * (JRA) Change name of various correction variables.
 *       Add some efficiency accumulator variables.
@@ -87,19 +90,19 @@
 *     that it generates.
 *
 *%%   include 'hms_data_structures.cmn'
+
+*----------------------------------------------------------------------
+* PARAMETERS FOR DRIFT TIME TO DISTANCE CALCULATION
 *
 *      CTPTYPE=parm
 *
-*
-*     Parameters for drift time to distance calculation
-*
-      integer*4 hdriftbins_max          ! maximum number of bins for drift time
-* change to 150
-      parameter (hdriftbins_max=200)    ! lookup table
+      integer*4 hdriftbins_max  ! number of bins for drift time lookup table
+      parameter (hdriftbins_max=138)
       real*4    hdriftbins         ! number of bins for drift time lookup table
       real*4    hdriftbinsz         ! drift bin size in nsec of lookup table
       real*4    hdrift1stbin        ! drift time of 1st bin in nsec of lookup
-      real*4     hfract             !fraction of integrated time spectrum
+      real*4    hfract              !fraction of integrated time spectrum
+
       real*4 hwc1x1fract(hdriftbins_max),hwc1y1fract(hdriftbins_max),
      &       hwc1u1fract(hdriftbins_max),hwc1v1fract(hdriftbins_max),
      &       hwc1y2fract(hdriftbins_max),hwc1x2fract(hdriftbins_max),
@@ -120,107 +123,111 @@
       equivalence (hwc2y2fract(1),hfract(1,11))
       equivalence (hwc2x2fract(1),hfract(1,12))
 
-      common/HMS_DRIFT/hfract(hdriftbins_max,12),
-     $     hdriftbinsz,hdrift1stbin,hdriftbins
+      common/HMS_DRIFT/
+     $     hfract(hdriftbins_max,hmax_num_dc_planes),
+     $     hdriftbinsz,
+     $     hdrift1stbin,
+     $     hdriftbins
 
-      integer*4 hdc_num_planes      ! actual number of dc chambers - set in CTP
-      integer*4 hdc_num_chambers    ! actual number of chambers - set in CTP
-      integer*4 hdc_planes_per_chamber
+*----------------------------------------------------------------------
+* INFORMATION ABOUT PLANE GEOMETRY AND TRACKING PARAMETERS
+*
+*     CTPTYPE=parm
+*
       integer*4 hmax_chamber_hits
       parameter (hmax_chamber_hits=544)
       integer*4 hmax_space_points   ! maximum number of space points
-      integer*4 hmax_hits_per_point ! maximum number of hits per point
       parameter (hmax_space_points=50)
+      integer*4 hmax_hits_per_point ! maximum number of hits per point
       parameter (hmax_hits_per_point=20)
-*
-*     CTPTYPE=event
-*
-      integer*4 hnspace_points  ! number of space points in each chamber
-      integer*4 hnspace_points_tot ! total number of space points after select.
-      integer*4 gplanehdc1,gplanehdc2   ! good plane pattern unit, set bit if respective plane hit
-      real*4 hspace_points         ! array of x, y of space points
-      real*4 hbeststub              ! array of stubs fit to each space point
-      real*4 hdc_sing_drifttime ! array of fully corrected drift times for each plane
-      real*4 hdc_sing_driftdis  ! array of final drift distances for each plane
+      integer*4 hnum_fpray_param    ! number of ray parameters in focal plane
+      parameter (hnum_fpray_param=4)
+      integer*4 hdc_num_cards       ! #/discriminator cards
+      parameter (hdc_num_cards=72)
+      integer*4 hdc_max_wires_per_plane
+      parameter (hdc_max_wires_per_plane=113)
 
-*
-*     CTPTYPE=parm
-*
-      real*4 hspace_point_criterion
-*
-*     CTPTYPE=event
-*
-      integer*4 hspace_point_hits  ! array of n rows of space points
-                                   ! (n,1) = number of hits
-                                   ! (n,2) = number of valid combinations
-                                   ! (n,3...) hit numbers for space point
-      integer*4 hncham_hits
-*
-*     CTPTYPE=parm
-*
-      integer*4 hmin_hit
-      integer*4 hmin_combos
+      integer*4 hdc_num_planes   ! actual number of dc chambers - set in CTP
+      integer*4 hdc_num_chambers ! actual number of chambers - set in CTP
+      integer*4 hdc_planes_per_chamber
+      integer*4 hdc_tdc_min_win  ! drift chamber tdc min value for good hit
+      integer*4 hdc_tdc_max_win  ! drfit chamber tdc max value for good hit
+      integer*4 hmin_hit         ! minimum hits   for space point
+      integer*4 hmin_combos      ! minimum combos for space point
+      integer*4 hmax_pr_hits     ! max number of hits in each plane for
+                                 ! pattern recognition to be done in that pla
+* wire velocity corrections.
+      logical hdc_readout_x      !true = read out from side (like x plane)
+      real*4  hdc_readout_corr   !wire path length/dist. to readout side
+      real*4  hdc_wire_velocity  ! propogation velocity of signal on wire(cm/ns)
+      real*4  hdc_drifttime_sign !sign of correction term.
+      real*4  hdc_central_time   !ave. time (ns) for signal to reach disc. card.
+                                 ! (both times are from center of the chamber)
+* timing offsets per card.
+      integer*4 hdc_sing_cardid  ! array of card id's so one can put cuts/test on a per/card basys
+      integer*4 hdc_card_no      ! card number
+      real*4 hdc_card_delay      ! delay for a given card
 
       real*4 hxt_track_criterion   ! stub link criterion on x_t
       real*4 hyt_track_criterion   ! stub link criterion on y_t
       real*4 hxpt_track_criterion  ! stub link criterion on xp_t
       real*4 hypt_track_criterion  ! stub link criterion on yp_t
-
-      real*4 hstub_max_xpdiff      ! cut on xp for best left/right determination.
+      real*4 hstub_max_xpdiff      ! stub criterion for l/r determination
+      real*4 hspace_point_criterion ! maximum distance**2 to join pairs/combos.
 *
 *     CTPTYPE=event
 *
+      integer*4 hncham_hits
+      integer*4 hnspace_points     ! number of space points in each chamber
+      integer*4 hdc_hits_per_plane
       integer*4 htrack_fit_num     ! track number in fitting loop
+      integer*4 hnspace_points_tot ! total number of space points after select.
+      integer*4 gplanehdc1,gplanehdc2 ! good plane pattern unit, set bit if respective plane hit
+      integer*4 hspace_point_hits  ! array of n rows of space points
+                                   ! (n,1) = number of hits
+                                   ! (n,2) = number of valid combinations
+                                   ! (n,3...) hit numbers for space point
+      real*4 hspace_points         ! array of x, y of space points
+      real*4 hbeststub             ! array of stubs fit to each space point
+      real*4 hdc_sing_drifttime    ! array of fully corrected drift times for each plane
+      real*4 hdc_sing_driftdis     ! array of final drift distances for each plane
 
-      integer*4 hnum_fpray_param   ! number of ray parameters in focal plane
-      parameter (hnum_fpray_param=4)
-*
-*     CTPTYPE=parm
-*
-      integer*4 hdc_tdc_min_win   ! drift chamber tdc min value for good hit
-      integer*4 hdc_tdc_max_win   ! drfit chamber tdc max value for good hit
-      integer*4 hmax_pr_hits      ! max number of hits in each plane for
-                                  ! pattern recognition to be done in that pla
-      logical hdc_readout_x(hmax_num_dc_planes)
-                                 !true = read out from side (like x plane)
-      real*4 hdc_readout_corr(hmax_num_dc_planes)
-                                 !wire path length/dist. to readout side
-      real*4 hdc_wire_velocity    ! propogation velocity of signal on wire (cm--M/ns)
-      real*4 hdc_central_time(hmax_num_dc_planes) !ave. time (ns) for signal to reach disc. card.
-                                   ! (both times are from center of the chamber--M)
-      real*4 hdc_drifttime_sign(hmax_num_dc_planes) !sign of correction term.
-*
-*     CTPTYPE=event
-*
-      INTEGER*4 HDC_HITS_PER_PLANE
 *
       common/HMS_TRACKING/
-     &     hbeststub(hmax_space_points,hnum_fpray_param),
-     &     hspace_point_criterion(hmax_num_chambers),
-     &     hxt_track_criterion,hyt_track_criterion,
-     &     hxpt_track_criterion,hypt_track_criterion,
-     &     hspace_points(hmax_space_points,2),
-     &     hspace_point_hits(hmax_space_points,hmax_hits_per_point+2),
-     &     hnspace_points(hmax_num_chambers),hnspace_points_tot,
-     &     hncham_hits(hmax_num_chambers),hmin_hit(hmax_num_chambers),
-     &     hmin_combos(hmax_num_chambers),htrack_fit_num,
-     &     hdc_num_planes,hdc_num_chambers,
+     &     hdc_num_chambers,hdc_num_planes,
      &     hdc_planes_per_chamber,
-     &     hdc_tdc_min_win(HMAX_NUM_DC_PLANES), 
-     &     hdc_tdc_max_win(HMAX_NUM_DC_PLANES),
-     &     hmax_pr_hits(hmax_num_chambers),
-     &     hdc_wire_velocity,
-     &     hdc_sing_drifttime(HMAX_NUM_DC_PLANES),
-     &     hdc_sing_driftdis(HMAX_NUM_DC_PLANES),
-     &     HDC_HITS_PER_PLANE(HMAX_NUM_DC_PLANES),
+     &     hdc_hits_per_plane(hmax_num_dc_planes),
      &     gplanehdc1(hmax_space_points),
      &     gplanehdc2(hmax_space_points),
-     &     hdc_central_time,
-     &     hdc_drifttime_sign,
-     &     hdc_readout_corr,
-     &     hdc_readout_x,
-     &     hstub_max_xpdiff
-*
+     &     hspace_points(hmax_space_points,2),
+     &     hspace_point_hits(hmax_space_points,hmax_hits_per_point+2),
+     &     hnspace_points(hmax_num_chambers),
+     &     hnspace_points_tot,
+     &     hbeststub(hmax_space_points,hnum_fpray_param),
+     &     hncham_hits(hmax_num_chambers),
+     &     htrack_fit_num,
+     &     hspace_point_criterion(hmax_num_chambers),
+     &     hdc_tdc_min_win(hmax_num_dc_planes),
+     &     hdc_tdc_max_win(hmax_num_dc_planes),
+     &     hmin_hit(hmax_num_chambers),hmin_combos(hmax_num_chambers),
+     &     hmax_pr_hits(hmax_num_chambers),
+     &     hxt_track_criterion,hyt_track_criterion,
+     &     hxpt_track_criterion,hypt_track_criterion,
+     &     hstub_max_xpdiff,
+     &     hdc_sing_drifttime(hmax_num_dc_planes),
+     &     hdc_sing_driftdis(hmax_num_dc_planes),
+     &     hdc_wire_velocity,
+     &     hdc_central_time(hmax_num_dc_planes),
+     &     hdc_drifttime_sign(hmax_num_dc_planes),
+     &     hdc_readout_corr(hmax_num_dc_planes),
+     &     hdc_readout_x(hmax_num_dc_planes),
+     &     hdc_card_delay(hdc_num_cards),
+     &     hdc_card_no(hdc_max_wires_per_plane,hmax_num_dc_planes),
+     &     hdc_sing_cardid(hmax_num_dc_planes)
+
+
+*----------------------------------------------------------------------
+* MATRICES FOR 3 PARAMETER FITS.
 *
 *     CTPTYPE=parm
 *
@@ -228,11 +235,15 @@
       real*8 hdet3               ! array of determinants of AA
       common/HMS_TFIT_MATRIX/
      &     haa3(3,3),haainv3(3,3,14),hdet3(14)
+
+
+
+*----------------------------------------------------------------------
+* DRIFT CHAMBER DEBUGGING FLAGS/INFO.
 *
-*     hms print routines logical unit number for output
-      integer*4 hluno
-*     debug print flags
-*     if flags .ne. 0 then execute debug code
+*     CTPTYPE=parm
+*
+* debug print flags, if flags .ne. 0 then execute debug code
       integer*4 hdebugprintrawdc
       integer*4 hdebugprintdecodeddc
       integer*4 hdebugflagpsi          
@@ -243,12 +254,12 @@
       integer*4 hdebugtrackprint
       integer*4 hdebugstubchisq
       integer*4 hdebugtartrackprint     ! call h_print_tar_track
-*      integer*4 hdebug_mc_start_time    ! kludge for monte carlo drift calc
       integer*4 hdebugdumptof           ! dumps tof fitting data
       integer*4 hdebugdumpcal           ! dumps cal fitting data
       integer*4 hdebugcalcpeds          ! calc peds from physics events.
       integer*4 hsingle_stub            ! switch to make tracks of all stubs
       integer*4 hSmallAngleApprox       ! switch for alternate L/R determ. of Y,Yprime planes
+      integer*4 hluno                 ! logical unit number for debugging output
       common/HMS_TRACKFLAGS/
      &     hluno,
      &     hdebugflagpsi,
@@ -266,41 +277,64 @@
      &     hdebugcalcpeds,
      &     hsingle_stub,
      &     hSmallAngleApprox
-*     &     hdebug_mc_start_time,
 
+*----------------------------------------------------------------------
+* DRIFT CHAMBER EFFICIENCY MEASUREMENTS.
 *
 *     CTPTYPE=parm
 *
-*     These arrays are presumably scalers to per run statistics
+* warning levels for efficiency
+      real*4 hdc_min_plane_eff(hmax_num_dc_planes)
+      real*4 hdc_min_wire_eff
 *
-*     array to hold multiple hits per wire
-      integer*4 hdc_max_wires_per_plane   ! maximum number of wires per plane
-* change to 120
-      parameter (hdc_max_wires_per_plane = 200)
-      integer*4 hwire_mult(hdc_max_wires_per_plane,HMAX_NUM_DC_PLANES)
-      integer*4 hwire_early_mult(hdc_max_wires_per_plane,HMAX_NUM_DC_PLANES)
-      integer*4 hwire_late_mult(hdc_max_wires_per_plane,HMAX_NUM_DC_PLANES)
-      integer*4 hwire_extra_mult(hdc_max_wires_per_plane,HMAX_NUM_DC_PLANES)
+*     CTPTYPE=event
 *
-      common/HMS_WIRE_MULTIPLICITY/
+* multiple hits per wire statistics.
+      integer*4 hwire_mult(hdc_max_wires_per_plane,hmax_num_dc_planes)
+      integer*4 hwire_early_mult(hdc_max_wires_per_plane,hmax_num_dc_planes)
+      integer*4 hwire_late_mult(hdc_max_wires_per_plane,hmax_num_dc_planes)
+      integer*4 hwire_extra_mult(hdc_max_wires_per_plane,hmax_num_dc_planes)
+* stuff for calcualting efficiency per wire.
+      integer*4 hdc_shouldhit(hmax_num_dc_planes,hdc_max_wires_per_plane)
+      integer*4 hdc_didhit(hmax_num_dc_planes,hdc_max_wires_per_plane)
+      integer*4 hdc_shouldsum(hmax_num_dc_planes)
+      integer*4 hdc_didsum(hmax_num_dc_planes)
+      integer*4 hdc_eff(hmax_num_dc_planes)
+      real*4 hdc_track_coord(hntracks_max,hmax_num_dc_planes)
+      real*4 hsdc_track_coord(hmax_num_dc_planes)
+
+      common/hms_dc_track_efficiency/
+     &   hdc_track_coord,   !track position per plane, in x,y,u,v directions.
+     &   hsdc_track_coord,  !track position in x,y,,u,v directions-final track.
+     &   hdc_shouldhit,     !times a wire should have fired.
+     &   hdc_didhit,        !times a wire did fire.
+     &   hdc_shouldsum,     !sum over plane.
+     &   hdc_didsum,        !sum over plane.
+     &   hdc_eff,           !effic. per plane.
+     &   hdc_min_wire_eff,  !warning level for wire effic.
+     &   hdc_min_plane_eff, !warning level for plane effic.
      &     hwire_mult,
      &     hwire_early_mult,
      &     hwire_late_mult,
      &     hwire_extra_mult
+
+
+*----------------------------------------------------------------------
+* DRIFT CHAMBER RESIDUALS
 *
 *     CTPTYPE=event
 *
 *  complete 2-D array for residuals in all planes over all tracks
-      real*4 hdc_single_residual(HNTRACKS_MAX,HMAX_NUM_DC_PLANES)
-      real*4 hdc_double_residual(HNTRACKS_MAX,HMAX_NUM_DC_PLANES)
+      real*4 hdc_single_residual(hntracks_max,hmax_num_dc_planes)
+      real*4 hdc_double_residual(hntracks_max,hmax_num_dc_planes)
 
 *     djm 8/26/94 arrays containing single and double residual arrays which can be
 *     histogrammed in the normal fashion (ie, not hardwired histograms).
 
-      real*4 hdc_sing_res(HMAX_NUM_DC_PLANES)
-      real*4 hdc_dbl_res(HMAX_NUM_DC_PLANES)
-      real*4 hdc_plane_wirecoord(HNTRACKS_MAX,HMAX_NUM_DC_PLANES)
-      real*4 hdc_plane_wirecenter(HNTRACKS_MAX,HMAX_NUM_DC_PLANES)
+      real*4 hdc_sing_res(hmax_num_dc_planes)
+      real*4 hdc_dbl_res(hmax_num_dc_planes)
+      real*4 hdc_plane_wirecoord(hntracks_max,hmax_num_dc_planes)
+      real*4 hdc_plane_wirecenter(hntracks_max,hmax_num_dc_planes)
 
       common/HMS_RESIDUAL/
      &     hdc_single_residual,
@@ -310,33 +344,9 @@
      &     hdc_plane_wirecoord,
      &     hdc_plane_wirecenter
 
-*
-*     CTPTYPE=parm
-*
-      real*4 hdc_min_plane_eff(HMAX_NUM_DC_PLANES)
-      real*4 hdc_min_wire_eff
-*
-*     CTPTYPE=event
-*
-      real*4 hdc_track_coord(HNTRACKS_MAX,HMAX_NUM_DC_PLANES)
-      real*4 hsdc_track_coord(HMAX_NUM_DC_PLANES)
-      integer*4 hdc_shouldhit(HMAX_NUM_DC_PLANES,HDC_MAX_WIRES_PER_PLANE)
-      integer*4 hdc_didhit(HMAX_NUM_DC_PLANES,HDC_MAX_WIRES_PER_PLANE)
-      integer*4 hdc_shouldsum(HMAX_NUM_DC_PLANES)
-      integer*4 hdc_didsum(HMAX_NUM_DC_PLANES)
-      integer*4 hdc_eff(HMAX_NUM_DC_PLANES)
 
-      common/hms_dc_track_efficiency/
-     &   hdc_track_coord,  !track position per plane, in x,y,u,v directions.
-     &   hsdc_track_coord, !track position in x,y,,u,v directions-final track.
-     &   hdc_shouldhit,    !times a wire should have fired.
-     &   hdc_didhit,       !times a wire did fire.
-     &   hdc_shouldsum,    !sum over plane.
-     &   hdc_didsum,       !sum over plane.
-     &   hdc_eff,          !effic. per plane.
-     &   hdc_min_wire_eff, !warning level for wire effic.
-     &   hdc_min_plane_eff !warning level for plane effic.
-
+*----------------------------------------------------------------------
+* DEADWIRE LIST
 *
 *     CTPTYPE=parm
 *
