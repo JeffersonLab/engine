@@ -13,7 +13,10 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
-* Revision 1.8  1995/05/17 16:43:28  cdaq
+* Revision 1.9  1995/08/31 20:43:41  cdaq
+* (JRA) Register Cerenkov variables
+*
+* Revision 1.8  1995/05/17  16:43:28  cdaq
 * (JRA) Register pedestal variables
 *
 * Revision 1.7  1994/08/18  03:59:50  cdaq
@@ -66,9 +69,9 @@
 
       call r_sos_scin_parms
       call r_sos_scin_tof
+      call r_sos_cer_parms
       call r_sos_calorimeter
       call r_sos_id_histid
-
 *
 *     register bypass switches
 *
