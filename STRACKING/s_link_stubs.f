@@ -10,7 +10,10 @@
 *
 *     d.f. geesaman           7-September 1993
 * $Log$
-* Revision 1.4  1995/05/22 19:45:42  cdaq
+* Revision 1.5  1995/08/31 18:44:51  cdaq
+* (JRA) Calculate dpos (pos. track - pos. hit) variables
+*
+* Revision 1.4  1995/05/22  19:45:42  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
 * Revision 1.3  1995/04/01  20:42:57  cdaq
@@ -37,13 +40,15 @@
       implicit none
       include "sos_data_structures.cmn"
       include "sos_tracking.cmn"
+      include "sos_id_histid.cmn"
+      include "sos_geometry.cmn"
       external s_chamnum
       integer*4 s_chamnum
       
 *     local variables
 *
       logical ABORT
-      character*50 here
+      character*12 here
       parameter (here='S_LINK_STUBS')
       character*(*) err
       integer*4  isp1,isp2,isp       !  loop index on space points
@@ -57,6 +62,8 @@
       integer*4  track_space_points(SNTRACKS_MAX,smax_space_points+1)
       integer*4  tryflag             ! flag to loop over rest of points
       integer*4  newtrack            ! make a new track
+      real*4 dposx,dposy,dposxp,dposyp
+      real*4 y1,y2
 *
       ABORT= .FALSE.
       err=':'
@@ -85,14 +92,25 @@
 *     are these stubs in the same chamber. If so then skip
            if(s_chamnum(isp1).ne.s_chamnum(isp2)) then
 *     does this stub match
-            if(abs(sbeststub(isp1,1)-sbeststub(isp2,1))
-     $           .lt.sxt_track_criterion
-     $           .and. abs(sbeststub(isp1,2)-sbeststub(isp2,2))
-     $           .lt.syt_track_criterion
-     $           .and. abs(sbeststub(isp1,3)-sbeststub(isp2,3))
-     $           .lt.sxpt_track_criterion
-     $           .and. abs(sbeststub(isp1,4)-sbeststub(isp2,4))
-     $           .lt.sypt_track_criterion) then
+
+*     since single chamber angular resolution is ~50mr, and the maximum y'
+*     angle is about 30mr, use difference between y AT CHAMBERS, rather than
+*     at focal plane.  (project back to chamber, to take out y' uncertainty).
+            dposx = sbeststub(isp1,1)-sbeststub(isp2,1)
+            call hf1(siddcdposx,dposx,1.)
+            y1=sbeststub(isp1,2)+sdc_1_zpos*sbeststub(isp1,4)
+            y2=sbeststub(isp2,2)+sdc_2_zpos*sbeststub(isp2,4)
+            dposy=y1-y2
+            call hf1(siddcdposy,dposy,1.)
+            dposxp= sbeststub(isp1,3)-sbeststub(isp2,3)
+            call hf1(siddcdposxp,dposxp,1.)
+            dposyp= sbeststub(isp1,4)-sbeststub(isp2,4)
+            call hf1(siddcdposyp,dposyp,1.)
+
+            if      (abs(dposx) .lt. sxt_track_criterion
+     $         .and. abs(dposy) .lt. syt_track_criterion
+     $         .and. abs(dposxp).lt. sxpt_track_criterion
+     $         .and. abs(dposyp).lt. sypt_track_criterion) then
              if(newtrack.eq.1) then         
 *     make a new track
               if(SNTRACKS_FP.lt.SNTRACKS_MAX) then ! are there too many 
