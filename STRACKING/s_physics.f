@@ -19,6 +19,9 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.11  1995/10/10 12:54:30  cdaq
+* (JRA) Add call to s_dump_cal, change upper to lower case
+*
 * Revision 1.10  1995/08/31 18:45:26  cdaq
 * (JRA) Add projection to cerenkov mirror pos, fill sdc_sing_res array
 *
@@ -82,28 +85,39 @@
       real*4 t1,ta,p3,t3,sminv2
       real*4 cosssthetaq
       real*4 sind,tand
+      real*4 p_nonzero
 *     
 *--------------------------------------------------------
 *
-      if(SSNUM_FPTRACK.gt.0) then       ! Good track has been selected
-        SSP = SP_TAR(SSNUM_TARTRACK)
-        SSENERGY = SQRT(SSP*SSP+SPARTMASS*SPARTMASS)
+      if(ssnum_fptrack.gt.0) then       ! Good track has been selected
+        ssp = sp_tar(ssnum_tartrack)
+        ssenergy = sqrt(ssp*ssp+spartmass*spartmass)
 *     Copy variables for ntuple so we can test on them
-        SSDELTA  = SDELTA_TAR(SSNUM_TARTRACK)
-        SSX_TAR  = SX_TAR(SSNUM_TARTRACK)
-        SSY_TAR  = SY_TAR(SSNUM_TARTRACK)
-        SSXP_TAR  = SXP_TAR(SSNUM_TARTRACK) ! This is an angle (radians)
-        SSYP_TAR  = SYP_TAR(SSNUM_TARTRACK) ! This is an angle (radians)
-        SSBETA   = SBETA(SSNUM_FPTRACK)
-        SSBETA_CHISQ = SBETA_CHISQ(SSNUM_FPTRACK)
-        SSTRACK_ET   = STRACK_ET(SSNUM_FPTRACK)
-        SSTRACK_PRESHOWER_E   = STRACK_PRESHOWER_E(SSNUM_FPTRACK)
-        SSTIME_AT_FP   = STIME_AT_FP(SSNUM_FPTRACK)
-        SSX_FP   = SX_FP(SSNUM_FPTRACK)
-        SSY_FP   = SY_FP(SSNUM_FPTRACK)
-        SSXP_FP   = SXP_FP(SSNUM_FPTRACK) ! This is a slope (dx/dz)
-        SSYP_FP   = SYP_FP(SSNUM_FPTRACK) ! This is a slope (dy/dz)
+        ssdelta  = sdelta_tar(ssnum_tartrack)
+        ssx_tar  = sx_tar(ssnum_tartrack)
+        ssy_tar  = sy_tar(ssnum_tartrack)
+        ssxp_tar  = sxp_tar(ssnum_tartrack) ! This is an angle (radians)
+        ssyp_tar  = syp_tar(ssnum_tartrack) ! This is an angle (radians)
+        ssbeta   = sbeta(ssnum_fptrack)
+        ssbeta_chisq = sbeta_chisq(ssnum_fptrack)
+        sstime_at_fp   = stime_at_fp(ssnum_fptrack)
 
+        sstrack_et   = strack_et(ssnum_fptrack)
+        sstrack_preshower_e   = strack_preshower_e(ssnum_fptrack)
+        p_nonzero = max(.0001,ssp)      !momentum (used to normalize calorim.)
+        sscal_suma = scal_e1/p_nonzero  !normalized cal. plane sums
+        sscal_sumb = scal_e2/p_nonzero
+        sscal_sumc = scal_e3/p_nonzero
+        sscal_sumd = scal_e4/p_nonzero
+        ssprsum = sscal_suma
+        ssshsum = scal_et/p_nonzero
+        ssprtrk = sstrack_preshower_e/p_nonzero
+        ssshtrk = sstrack_et/p_nonzero
+
+        ssx_fp   = sx_fp(ssnum_fptrack)
+        ssy_fp   = sy_fp(ssnum_fptrack)
+        ssxp_fp   = sxp_fp(ssnum_fptrack) ! This is a slope (dx/dz)
+        ssyp_fp   = syp_fp(ssnum_fptrack) ! This is a slope (dy/dz)
         ssx_dc1 = ssx_fp + ssxp_fp * sdc_1_zpos
         ssy_dc1 = ssy_fp + ssyp_fp * sdc_1_zpos
         ssx_dc2 = ssx_fp + ssxp_fp * sdc_2_zpos
@@ -137,48 +151,49 @@
 
         do ip = 1 , sdc_num_planes
           sdc_sing_res(ip)=sdc_single_residual(ssnum_fptrack,ip)
+          ssdc_track_coord(ip)=sdc_track_coord(ssnum_fptrack,ip)
         enddo
 
-        SSCHI2PERDEG  = SCHI2_FP(SSNUM_FPTRACK)
-     $       /FLOAT(SNFREE_FP(SSNUM_FPTRACK))
-        SSNFREE_FP = SNFREE_FP(SSNUM_FPTRACK)
+        sschi2perdeg  = schi2_fp(ssnum_fptrack)
+     $       /float(snfree_fp(ssnum_fptrack))
+        ssnfree_fp = snfree_fp(ssnum_fptrack)
         cosgamma = 1.0/sqrt(1.0 + ssxp_tar**2 + ssyp_tar**2)
         cossstheta = cosgamma*(sinsthetas * ssyp_tar + cossthetas)
-        SSTHETA = ACOS(COSSSTHETA)
-        SINSSTHETA = SIN(SSTHETA)
+        sstheta = acos(cossstheta)
+        sinsstheta = sin(sstheta)
         tandelphi = ssxp_tar /
      &       ( sinsthetas - cossthetas*ssyp_tar )
-        SSPHI = SPHI_LAB + TANDELPHI    ! PHI_LAB must be multpiple of
-        SINSPHI = SIN(SSPHI)            ! pi/2, or above is crap
+        ssphi = sphi_lab + tandelphi    ! phi_lab MUST BE MULTPIPLE OF
+        sinsphi = sin(ssphi)            ! PI/2, OR ABOVE IS CRAP
 *     Calculate elastic scattering kinematics
-        t1  = 2.*SPHYSICSA*CPBEAM*COSSSTHETA      
-        ta  = 4*CPBEAM**2*COSSSTHETA**2 - SPHYSICSB**2
-        if(ta.eq.0 .or. ( SPHYSICAB2 + SPHYSICSM3B * ta).lt.0.0) then
+        t1  = 2.*sphysicsa*cpbeam*cossstheta      
+        ta  = 4*cpbeam**2*cossstheta**2 - sphysicsb**2
+        if(ta.eq.0 .OR. ( sphysicab2 + sphysicsm3b * ta).lt.0.0) then
           p3=0.       
         else
-          t3  = ta-SPHYSICSB**2
-          p3  = (t1 - SQRT( SPHYSICAB2 + SPHYSICSM3B * ta)) / ta
+          t3  = ta-sphysicsb**2
+          p3  = (t1 - SQRT( sphysicab2 + sphysicsm3b * ta)) / ta
         endif
 *     This is the difference in the momentum obtained by tracking
 *     and the momentum from elastic kinematics
-        SSELAS_COR = SSP - p3
-*     INVARIANT MASS OF THE REMAINING PARTICLES
-        sminv2 =   ( (CEBEAM+TMASS_TARGET-SSENERGY)**2
-     &       - (CPBEAM - SSP * COSSSTHETA)**2
-     &       - ( SSP * SINSSTHETA)**2  )       
+        sselas_cor = ssp - p3
+*     invariant mass of the remaining particles
+        sminv2 =   ( (cebeam+tmass_target-ssenergy)**2
+     &       - (cpbeam - ssp * cossstheta)**2
+     &       - ( ssp * sinsstheta)**2  )       
         if(sminv2.ge.0 ) then
-          SSMINV = SQRT(sminv2)
+          ssminv = SQRT(sminv2)
         else
-          SSMINV = 0.
+          ssminv = 0.
         endif                           ! end test on positive arg of SQRT
-*     SSZBEAM is the intersection of the beam ray with the spectrometer
+*     sszbeam is the intersection of the beam ray with the spectrometer
 *     as measured along the z axis.
-        if( SINSSTHETA .eq. 0.) then
-          SSZBEAM = 0.
+        if( sinsstheta .eq. 0.) then
+          sszbeam = 0.
         else
-          SSZBEAM = SINSPHI * ( -SSY_TAR + CYRAST * COSSSTHETA) /
-     $         SINSSTHETA 
-        endif                           ! end test on SINSSTHETA=0
+          sszbeam = sinsphi * ( -ssy_tar + cyrast * cossstheta) /
+     $         sinsstheta 
+        endif                           ! end test on sinsstheta=0
 *
 *     More kinematics
 *
@@ -188,19 +203,19 @@
           ssmass2 = 1.0E10
         endif
 
-        sst = (CEBEAM - SSENERGY)**2
-     $       - (CPBEAM - SSP*COSSSTHETA)**2 - (SSP*SINSSTHETA)**2
-        ssu = (TMASS_TARGET - SSENERGY)**2 - SSP**2
+        sst = (cebeam - ssenergy)**2
+     $       - (cpbeam - ssp*cossstheta)**2 - (ssp*sinsstheta)**2
+        ssu = (tmass_target - ssenergy)**2 - ssp**2
 
-        sseloss = CEBEAM - SSENERGY
-        ssq3 = sqrt(CPBEAM**2 + SSP**2 - 2*CPBEAM*SSP*COSSSTHETA)
-        cosssthetaq = (CPBEAM**2 - CPBEAM*SSP*COSSSTHETA)/CPBEAM/ssq3
+        sseloss = cebeam - ssenergy
+        ssq3 = sqrt(cpbeam**2 + ssp**2 - 2*cpbeam*ssp*cossstheta)
+        cosssthetaq = (cpbeam**2 - cpbeam*ssp*cossstheta)/cpbeam/SSQ3
         ssthetaq = acos(cosssthetaq)
-        ssphiq = ssphi + TT
+        ssphiq = ssphi + tt
         ssbigq2 = -sst
         ssx = ssbigq2/(2*mass_nucleon*sseloss)
-        ssy = sseloss/CEBEAM
-        ssw2 = TMASS_TARGET**2 + 2*TMASS_TARGET*sseloss - ssbigq2
+        ssy = sseloss/cebeam
+        ssw2 = tmass_target**2 + 2*tmass_target*sseloss - ssbigq2
         if(ssw2.ge.0.0) then
           ssw = sqrt(ssw2)
         else
@@ -212,6 +227,7 @@
 *     
 *     Turn on to write raw timing information for fitting
         if(sdebugdumptof.ne.0) call s_dump_tof
+        if(sdebugdumpcal.ne.0) call s_dump_cal
 *
 *     calculate physics statistics and wire chamber efficencies
         call s_physics_stat(ABORT,err)
