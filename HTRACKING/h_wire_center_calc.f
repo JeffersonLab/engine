@@ -6,9 +6,12 @@
 *     d.f. geesaman              17 feb 1994
 *          
 *     modified   dfg  18 feb 1994
-*                         add option to reverse plane wire numbering                 
+*                         add option to reverse plane wire numbering
 * $Log$
-* Revision 1.1  1994/02/19 06:22:00  cdaq
+* Revision 1.2  1994/02/22 05:34:03  cdaq
+* (SAW) Remove FLOAT call on floating arg
+*
+* Revision 1.1  1994/02/19  06:22:00  cdaq
 * Initial revision
 *
 *     
@@ -33,7 +36,7 @@
      &                     * hdc_pitch(plane)
       else        
            h_wire_center_calc = 
-     &         (FLOAT(hdc_nrwire(plane) +1 - wire)- hdc_central_wire(plane))
+     &         ((hdc_nrwire(plane) + FLOAT(1 - wire))- hdc_central_wire(plane))
      &                     * hdc_pitch(plane)
       endif
       return
