@@ -10,6 +10,9 @@
 *- 
 *-   Created  8-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.9  2002/12/27 21:49:43  jones
+*     Ioana Niculescu modified total_eloss call
+*
 * Revision 1.8  1999/02/10 17:39:36  csa
 * Changed celoss to geloss
 *
@@ -54,20 +57,13 @@
 **      INCLUDE 'coin_data_structures.cmn'
       INCLUDE 'gen_constants.par'
 *
-
-*
-      REAL*4 geloss
-*
 *--------------------------------------------------------
 *
       ABORT= .FALSE.
 *
       gebeam=sqrt(gpbeam**2 + mass_electron**2)
       if(gtarg_z(gtarg_num).gt.0.)then
-        call total_eloss(0,.true.,gtarg_z(gtarg_num),
-     $       gtarg_a(gtarg_num),gtarg_thick(gtarg_num),
-     $       gtarg_dens(gtarg_num),
-     $       0.0,gtarg_theta,1.0,geloss)
+        call total_eloss(0,.true.,0.0,1.0,geloss)
       else
         geloss=0.
       endif
