@@ -8,6 +8,9 @@
 *
 *
 * $Log$
+* Revision 1.5  1999/01/27 16:02:45  saw
+* Check if some hists are defined before filling
+*
 * Revision 1.4  1995/08/31 18:07:29  cdaq
 * (JRA) Move sidcalsumadc filling to s_sparsify_cal
 *
@@ -47,7 +50,7 @@
           row=scal_rows(ihit)
           col=scal_cols(ihit)
           histval=float(col)
-          call hf1(sidcalplane,histval,1.)
+          if(sidcalplane.gt.0) call hf1(sidcalplane,histval,1.)
           histval=float(row)
           call hf1(sidcalhits(col),histval,1.)
         enddo

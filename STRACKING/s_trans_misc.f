@@ -6,6 +6,9 @@
 * s_trans_misc fills the sos_decoded_misc common block
 *
 * $Log$
+* Revision 1.6  1999/01/27 16:02:45  saw
+* Check if some hists are defined before filling
+*
 * Revision 1.5  1996/09/04 20:18:07  saw
 * (JRA) Add misc. tdc's
 *
@@ -49,7 +52,7 @@
         isig=smisc_raw_addr1(ihit)
         smisc_dec_data(ich,isig) = smisc_raw_data(ihit)
         smisc_scaler(ich,isig) = smisc_scaler(ich,isig) + 1
-        if (isig.eq.1) then        !TDC
+        if (isig.eq.1.and.sidmisctdcs.gt.0) then        !TDC
           call hf1(sidmisctdcs,float(smisc_dec_data(ich,isig)),1.)
         endif
       enddo

@@ -6,6 +6,9 @@
 * h_trans_misc fills the hms_decoded_misc common block
 *
 * $Log$
+* Revision 1.7  1999/01/27 16:02:39  saw
+* Check if some hists are defined before filling
+*
 * Revision 1.6  1996/09/04 14:24:13  saw
 * (JRA) Add misc. tdc's
 *
@@ -52,7 +55,7 @@
         isig=hmisc_raw_addr1(ihit)
         hmisc_dec_data(ich,isig) = hmisc_raw_data(ihit)
         hmisc_scaler(ich,isig) = hmisc_scaler(ich,isig) + 1
-        if (isig.eq.1) then        !TDC
+        if (isig.eq.1.and.hidmisctdcs.gt.0) then        !TDC
           call hf1(hidmisctdcs,float(hmisc_dec_data(ich,isig)),1.)
         endif
       enddo

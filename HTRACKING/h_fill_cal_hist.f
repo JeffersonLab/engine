@@ -8,6 +8,9 @@
 *
 *
 * $Log$
+* Revision 1.6  1999/01/27 16:02:39  saw
+* Check if some hists are defined before filling
+*
 * Revision 1.5  1998/12/17 22:02:39  saw
 * Support extra set of tubes on HMS shower counter
 *
@@ -52,7 +55,7 @@
           row=hcal_rows(ihit)
           col=hcal_cols(ihit)
           histval=float(col)
-          call hf1(hidcalplane,histval,1.)
+          if(hidcalplane.gt.0) call hf1(hidcalplane,histval,1.)
           histval=float(row)
           call hf1(hidcalhits(col),histval,1.)
         enddo
