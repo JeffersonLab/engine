@@ -9,7 +9,10 @@
 *
 * modifications:
 * $Log$
-* Revision 1.2  1994/04/13 18:03:14  cdaq
+* Revision 1.3  1994/06/29 03:43:27  cdaq
+* (JRA) Add call to h_strip_scin to get good hits from HSCIN_ALL arrays
+*
+* Revision 1.2  1994/04/13  18:03:14  cdaq
 * (DFG) 4/6       Add call to h_fill_scin_raw_hist
 * (DFG) 4/5       Move call to h_prt_raw_scin to h_dump_all_raw
 * (DFG) 3/24      Add h_prt_scin_raw    raw bank dump routine
@@ -50,6 +53,9 @@
       
       abort = .false.
 
+**    Find scintillators with real hits (good TDC values)
+      call h_strip_scin(abort,errmsg)
+      
 **    Initialize track-independant quantaties.
       call h_tof_init(abort,errmsg)
 *     
