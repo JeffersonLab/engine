@@ -11,12 +11,16 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 *-    $Log$
-*-    Revision 1.2  1994/02/04 20:49:31  cdaq
-*-    Print out some raw hit data
+*-    Revision 1.3  1994/02/22 15:51:33  cdaq
+*-    (DFG) Replace with real version
+*-    (SAW) Move to TRACKING directory
 *-
-c Revision 1.1  1994/02/04  20:47:59  cdaq
-c Initial revision
-c
+* Revision 1.2  1994/02/04  20:49:31  cdaq
+* Print out some raw hit data
+*
+* Revision 1.1  1994/02/04  20:47:59  cdaq
+* Initial revision
+*
 *-
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
@@ -35,20 +39,100 @@ c
        INCLUDE 'gen_constants.par'
        INCLUDE 'gen_units.par'
 *
-       integer i
-*
+*      Local variables
+       integer*4 istat
 *--------------------------------------------------------
 *
-       ABORT= .FALSE.
-       err= here//':not yet written!'     !warning
+       ABORT= .TRUE.
+       err= ':no events analyzed!'
+*      TRANSLATE SCINTILATORS AND CALCULATE START TIME
+*      HMS_RAW_SCIN ====> HMS_DECODED_SCIN
 *
-       TYPE *,'  HDC_RAW_TOT_HITS=',HDC_RAW_TOT_HITS
-       Do i=1,HDC_RAW_TOT_HITS
-          type *,HDC_RAW_PLANE_NUM(i),HDC_RAW_WIRE_NUM(i),
-     &         HDC_RAW_TDC(i)
-       EndDo       
+       call H_TRANS_SCIN(ABORT,err)
+       if(ABORT)  then
+           call G_add_path(here,err)
+           return
+       endif                             ! end test on SCIN ABORT
 
-       IF(ABORT) call G_add_path(here,err)
 *
+*      TRANSLATE CALORIMETER 
+*      HMS_RAW_CAL ====> HMS_DECODED_CAL
+*
+       call H_TRANS_CAL(ABORT,err)
+       if(ABORT)   then
+           call G_add_path(here,err)
+           return
+       endif                             ! end test on CAL ABORT
+*
+*      TRANLATE DRIFT CHAMBERS
+*      HMS_RAW_DC + HMS_DECODED_SCIN ====>  HMS_DECODED_DC
+       call H_TRANS_DC(ABORT,err)
+       if(ABORT) then
+           call G_add_path(here,err)
+           return
+       endif                             ! end test on H_TRANS_DC ABORT
+       call H_TRACK(ABORT,err)
+       if(ABORT)  then
+           call G_add_path(here,err)
+           return
+       endif                             ! end test on H_TRACK ABORT
+*      only proceed if the number of tracks is greater than one
+*
+       if(HNTRACKS_FP .lt. 1) then
+           ABORT=.FALSE.
+           err=":no tracks found!"
+           return
+       else
+*      Proceed if one or more track has been found
+*
+*      Project tracks back to target
+*      HMS_FOCAL_PLANE  ====>  HMS_TARGET
+*
+           call H_TARG_TRANS(ABORT,err,istat)
+           if(ABORT) then
+              call G_add_path(here,err)
+              return
+           endif                         ! end test on H_TARG_TRANS ABORT
+*
+*      Now begin to process particle identification information
+*      First scintillator and time of flight
+*      HMS_RAW_SCIN ====> HMS_TRACK_TESTS
+*
+           call H_TOF(ABORT,err)
+           if(ABORT) then
+              call G_add_path(here,err)
+              return
+           endif                         ! end test of H_TOF ABORT
+*      Next Calorimeter information
+*      HMS_DECODED_CAL ====> HMS_TRACK_TESTS
+*
+           call H_CAL(ABORT,err)
+           if(ABORT) then
+              call G_add_path(here,err)
+              return
+           endif                         ! end test of H_CAL ABORT
+*      Next Cerenkov information
+*      HMS_DECODED_CER ====> HMS_TRACK_TESTS
+*
+           call H_CER(ABORT,err)
+           if(ABORT) then
+              call G_add_path(here,err)
+              return
+           endif                         ! end test of H_CER ABORT
+*
+*      Combine results in HMS physics analysis
+*      HMS_TARGET + HMS_TRACK_TESTS ====>  HMS_PHYSICS
+*
+           call H_PHYSICS(ABORT,err)
+           if(ABORT) then
+              call G_add_path(here,err)
+              return
+           endif                         ! end test of H_PHYSICS ABORT
+*
+       endif                             ! end test no tracks found       
+*      
+*
+*      Successful return
+       ABORT=.FALSE.
        RETURN
        END
