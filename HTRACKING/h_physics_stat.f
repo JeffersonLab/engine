@@ -16,6 +16,9 @@
 *- 
 *-   Created 10-JUN-1994     D. F. Geesaman
 * $Log$
+* Revision 1.6  1995/10/10 16:50:08  cdaq
+* (JRA) Comment out some redundant efficiency calculations
+*
 * Revision 1.5  1995/08/31 14:47:09  cdaq
 * (JRA) Add calls to h_dc_eff and h_cer_eff
 *
@@ -48,59 +51,58 @@
       INCLUDE 'hms_geometry.cmn'
       INCLUDE 'hms_physics_sing.cmn'
       INCLUDE 'hms_statistics.cmn'
+      INCLUDE 'hms_bypass_switches.cmn'
 *
 *     local variables 
-      integer*4 goodtrack,tothits,ihit,hitnum,plane
-      real*4 normsigma
-      real*8 ray(4)                     ! xt,yt,xpt,ypt
-      EXTERNAL  H_DPSIFUN
-      REAL*8 H_DPSIFUN
+c      integer*4 goodtrack,tothits,ihit,hitnum,plane
+c      real*4 normsigma
+c      real*8 ray(4)                     ! xt,yt,xpt,ypt
+c      EXTERNAL  H_DPSIFUN
+c      REAL*8 H_DPSIFUN
 *--------------------------------------------------------
 *
       ABORT= .FALSE.
       err= ' '
-*     increment numbr of tracks
-      hgoodtracksctr = hgoodtracksctr +1
-*     loop over all hists
-      goodtrack = HSNUM_FPTRACK
-      tothits=HNTRACK_HITS(goodtrack,1)
-      if(tothits.gt.0) then
-*     get ray parameters
-        ray(1) = DBLE(HX_FP(goodtrack))
-        ray(2) = DBLE(HY_FP(goodtrack))
-        ray(3) = DBLE(HXP_FP(goodtrack))
-        ray(4) = DBLE(HYP_FP(goodtrack))
+c*     increment numbr of tracks
+c      hgoodtracksctr = hgoodtracksctr +1
+c*     loop over all hists
+c      goodtrack = HSNUM_FPTRACK
+c      tothits=HNTRACK_HITS(goodtrack,1)
+c      if(tothits.gt.0) then
+c*     get ray parameters
+c        ray(1) = DBLE(HX_FP(goodtrack))
+c        ray(2) = DBLE(HY_FP(goodtrack))
+c        ray(3) = DBLE(HXP_FP(goodtrack))
+c        ray(4) = DBLE(HYP_FP(goodtrack))
 
-*     loop over all hits in track
-         
-
-        do ihit = 1, tothits
-          hitnum=HNTRACK_HITS(goodtrack,1+ihit)
-          plane = HDC_PLANE_NUM(hitnum)
-          normsigma = (HDC_WIRE_COORD(hitnum)
-     $         - REAL(H_DPSIFUN(ray,plane)))/hdc_sigma(plane)
-          hplanehitctr(plane) = hplanehitctr(plane) + 1
-          hplanesigmasq(plane) = hplanesigmasq(plane) + normsigma
-     $         *normsigma
-          hmeasuredsigma(plane) = SQRT(hplanesigmasq(plane) 
-     &         / FLOAT(hplanehitctr(plane)))
-          hchambereff(plane)=FLOAT(hplanehitctr(plane))
-     $         /FLOAT(hgoodtracksctr)
-        enddo                           ! endloop over hits in track
-      endif                             ! end test on zero hits
-*     
+c*     loop over all hits in track
+c        do ihit = 1, tothits
+c          hitnum=HNTRACK_HITS(goodtrack,1+ihit)
+c          plane = HDC_PLANE_NUM(hitnum)
+c          normsigma = (HDC_WIRE_COORD(hitnum)
+c     $         - REAL(H_DPSIFUN(ray,plane)))/hdc_sigma(plane)
+c          hplanehitctr(plane) = hplanehitctr(plane) + 1
+c          hplanesigmasq(plane) = hplanesigmasq(plane) + normsigma
+c     $         *normsigma
+c          hmeasuredsigma(plane) = SQRT(hplanesigmasq(plane) 
+c     &         / FLOAT(hplanehitctr(plane)))
+c          hchambereff(plane)=FLOAT(hplanehitctr(plane))
+c     $         /FLOAT(hgoodtracksctr)
+c        enddo                           ! endloop over hits in track
+c      endif                             ! end test on zero hits
+*
+*
 *     Drift chamber efficiencies
-*      call h_dc_eff  !efficiencies need to be calculated for ALL triggers.
-                      !call from h_trans_dc.f
+      if (hbypass_dc_eff.eq.0) call h_dc_trk_eff
 *
 *     Scintillator efficiencies
-      call h_scin_eff
+      if (hbypass_scin_eff.eq.0) call h_scin_eff
 *
 *     Cerenkov efficiencies
-      call h_cer_eff
+      if (hbypass_cer_eff.eq.0) call h_cer_eff
 *
 *     Calorimeter efficiencies
-      call h_cal_eff
+      if (hbypass_cal_eff.eq.0) call h_cal_eff
 *
       RETURN
       END
