@@ -1,6 +1,9 @@
 #
 # $Log$
-# Revision 1.12  1995/05/11 19:03:10  cdaq
+# Revision 1.13  1995/05/24 13:20:54  cdaq
+# Cosmetic changes
+#
+# Revision 1.12  1995/05/11  19:03:10  cdaq
 # (SAW) Compile c_physics.f and some ntuple variable registration routines
 #
 # Revision 1.11  1995/04/06  20:05:30  cdaq
@@ -66,14 +69,16 @@ ntuple_source = c_ntuple_init.f c_ntuple_keep.f \
 	s_ntuple_init.f s_ntuple_keep.f s_ntuple_register.f \
 	s_ntuple_shutdown.f h_sv_nt_register.f h_sv_nt_keep.f \
 	h_sv_nt_init.f h_sv_nt_shutdown.f
-makeregstuff = r_gen_filenames.f r_gen_run_info.f r_gen_event_info.f \
-	r_gen_scalers.f r_gen_run_pref.f r_gen_data_structures.f \
-	r_coin_filenames.f r_c_ntuple.f r_h_ntuple.f r_s_ntuple.f \
-	r_h_sieve_ntuple.f
+gmakeregstuff = r_gen_filenames.f r_gen_run_info.f r_gen_event_info.f \
+	r_gen_scalers.f r_gen_run_pref.f r_gen_data_structures.f
+cmakeregstuff = r_coin_filenames.f r_c_ntuple.f r_coin_data_structures.f
+hmakeregstuff = r_h_ntuple.f r_h_sieve_ntuple.f r_hms_data_structures.f
+smakeregstuff = r_s_ntuple.f r_sos_data_structures.f
 replay_source = engine.f
 
 libsources =  $(coin_source) $(sos_source) $(hms_source) $(general_source) \
-	$(ntuple_source) $(makeregstuff)
+	$(ntuple_source) $(gmakeregstuff) $(cmakeregstuff) \
+	$(hmakeregstuff) $(smakeregstuff)
 
 #short_names = g_xyz_sph.f g_shift_len.f g_sort.f g_rep_err.f g_prepend.f \
 #	g_normalize.f g_add_path.f g_decode_clear.f
