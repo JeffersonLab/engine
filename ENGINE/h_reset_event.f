@@ -15,6 +15,9 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 * $Log$
+* Revision 1.12  1995/10/09 18:08:46  cdaq
+* (JRA) Add clear of HCER_RAW_ADC
+*
 * Revision 1.11  1995/07/27 19:41:10  cdaq
 * (JRA) Zero out pedestal arrays
 *
@@ -133,6 +136,7 @@
 *
       DO hit= 1,HMAX_CER_HITS
          HCER_TUBE_NUM(hit)= 0
+         HCER_RAW_ADC(hit)= 0
          HCER_ADC(hit)= 0
          HCER_PLANE(hit)= 0
       ENDDO

@@ -11,6 +11,9 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-    $Log$
+*-    Revision 1.12  1995/10/09 18:07:59  cdaq
+*-    (JRA) Add clear of HCER_RAW_ADC
+*-
 *-    Revision 1.11  1995/09/01 13:36:45  cdaq
 *-    (JRA) Clear some cerenkov variables
 *-
@@ -98,6 +101,7 @@
 *
       HCER_TOT_HITS= 0
       do tube = 1, HMAX_CER_HITS
+        HCER_RAW_ADC(tube) = 0
         HCER_ADC(tube) = 0
         HCER_NPE(tube) = 0.
       enddo
