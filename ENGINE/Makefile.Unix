@@ -1,5 +1,11 @@
 #
 # $Log$
+# Revision 1.28  2004/02/18 14:06:53  jones
+# Updated compile subroutines needed to allow the possibility of segmenting rzdat files.
+#
+# Revision 1.27.2.1  2003/06/26 12:39:53  cdaq
+# changes for e01-001  (mkj)
+#
 # Revision 1.27  2003/02/21 14:47:46  jones
 # Add s_fieldcorr.f to list of SOS files to compile
 #
@@ -108,13 +114,16 @@ general_source = $(decode_source) g_clear_event.f \
 	g_analyze_scaler_bank.f g_analyze_scalers_by_banks.f g_apply_offsets.f 
 hms_source = h_clear_event.f h_initialize.f h_keep_results.f \
 	h_proper_shutdown.f h_reset_event.f \
-	h_register_variables.f h_apply_offsets.f h_fieldcorr.f
+	h_register_variables.f h_apply_offsets.f h_fieldcorr.f \
+	h_ntuple_close.f h_ntuple_open.f h_ntuple_change.f       
 sos_source = s_clear_event.f s_initialize.f s_keep_results.f \
 	s_proper_shutdown.f s_reset_event.f \
-	s_register_variables.f s_apply_offsets.f s_fieldcorr.f
+	s_register_variables.f s_apply_offsets.f s_fieldcorr.f \
+	s_ntuple_close.f s_ntuple_open.f s_ntuple_change.f       
 coin_source = c_register_variables.f c_clear_event.f c_initialize.f \
 	c_keep_results.f c_proper_shutdown.f c_reconstruction.f \
-	c_reset_event.f c_physics.f
+	c_reset_event.f c_physics.f \
+	c_ntuple_close.f c_ntuple_open.f c_ntuple_change.f       
 ntuple_source = g_ntuple_init.f g_ntuple_shutdown.f \
 	c_ntuple_clear.f c_ntuple_init.f c_ntuple_keep.f \
 	c_ntuple_register.f c_ntuple_shutdown.f \
