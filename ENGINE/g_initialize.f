@@ -10,9 +10,12 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 *-    $Log$
-*-    Revision 1.4  1994/04/12 20:59:21  cdaq
-*-    (SAW) Add call to calculation of histid's for hfilled histograms
+*-    Revision 1.5  1994/06/04 02:35:59  cdaq
+*-    (KBB) Make sure CTP files are non-blank before trying to thload them
 *-
+* Revision 1.4  1994/04/12  20:59:21  cdaq
+* (SAW) Add call to calculation of histid's for hfilled histograms
+*
 * Revision 1.3  1994/03/24  22:02:31  cdaq
 * Reorganize for online compatibility
 *
@@ -63,9 +66,12 @@
 *     Load and book all the CTP files
 *
 *
-      if(first_time.or.g_parm_rebook) call thload(g_ctp_parm_filename)
-      if(first_time.or.g_test_rebook) call thload(g_ctp_test_filename)
-      if(first_time.or.g_hist_rebook) call thload(g_ctp_hist_filename)
+      if((first_time.or.g_parm_rebook).and.g_ctp_parm_filename.ne.' ')
+     $     call thload(g_ctp_parm_filename)
+      if((first_time.or.g_test_rebook).and.g_ctp_test_filename.ne.' ')
+     $     call thload(g_ctp_test_filename)
+      if((first_time.or.g_hist_rebook).and.g_ctp_hist_filename.ne.' ')
+     $     call thload(g_ctp_hist_filename)
 *
       if(first_time.or.g_parm_rebook
      $     .or.g_test_rebook.or.g_hist_rebook) then
