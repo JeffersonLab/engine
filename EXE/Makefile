@@ -53,6 +53,14 @@ ifeq ($(MYOS),ULTRIX)
   OURLIBS := $(OURGENLIBS)
 endif
 
+ifeq ($(MYOS),OSF1)
+  FFLAGS=-non_shared -check_bounds -align dcommons
+  DISPFLAGS=$(FFLAGS)
+  LDFLAGS=
+  OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib
+  OURLIBS := $(OURGENLIBS)
+endif
+
 ifeq ($(MYOS),Linux)  
 
    F77=g77
