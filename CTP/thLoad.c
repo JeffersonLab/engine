@@ -17,6 +17,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.5  2004/07/13 15:04:53  saw
+ *   Get count of groups on begin line correct when there are other attributes
+ *
  *   Revision 1.4  2004/07/08 20:06:45  saw
  *   CTP Root Trees can exist in input files even if root trees not compiled in.
  *
@@ -552,8 +555,8 @@ int getblock(FILE **TEST_FILE, char **varname, char **vartitle, int *qualid
 	  }
 #endif
 	}	/* else { ignore if = is missing } */
+	ig++;
       }
-      ig++;
     }
     if(groups[ig]) {		/* Null terminate list */
       free(groups[ig]);
