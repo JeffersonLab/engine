@@ -9,9 +9,12 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 *-    $Log$
-*-    Revision 1.9  1994/07/07 15:28:29  cdaq
-*-    (SAW) Move check for scaler event to proper place
+*-    Revision 1.10  1994/10/19 20:40:29  cdaq
+*-    (SAW) Add handling of RPC requests
 *-
+* Revision 1.9  1994/07/07  15:28:29  cdaq
+* (SAW) Move check for scaler event to proper place
+*
 * Revision 1.8  1994/06/26  02:07:03  cdaq
 * (KBB) Add ability to analyze selected subset of events.  Add evcount stats.
 * (SAW) Add call to scaler analysis
@@ -52,28 +55,32 @@
       include 'gen_craw.cmn'
       include 'gen_run_info.cmn'
       include 'gen_event_info.cmn'
+      include 'gen_run_pref.cmn'
+      include 'gen_routines.dec'
 *
       logical problems
       integer total_event_count
       integer i,since_cnt
       integer evtype
+      integer rpc_pend                  ! # Pending asynchronous RPC requests
 * 
       character*80 g_config_environmental_var
       parameter (g_config_environmental_var= 'ENGINE_CONFIG_FILE')
 *
-      EXTERNAL thwhalias,thbook
-*
 *--------------------------------------------------------
 *
       type *
-      type *,'                hall C analysis engine June 1994'
+      type *,'                hall C analysis engine October 1994'
       type *
 *
       err= ' '
       type *
 *
       total_event_count= 0                      ! Need to register this
-
+*
+      rpc_on=0                          ! RPC servicing off by default
+      rpc_control=-1                    ! If RPC on, don't block by default
+*
       call g_register_variables(ABORT,err)
       if(ABORT.or.err.ne.' ') then
          call G_add_path(here,err)
@@ -129,101 +136,147 @@
       problems= .false.
       EoF = .false.
 *
+      if(rpc_on.ne.0) then
+        print *,"*****************************************************"
+        print *,""
+        print *,"ENGINE is enabled to receive RPC requests"
+        if(rpc_control.eq.0) then
+          print *,""
+          print *,"ENGINE will HANG waiting for RPC requests"
+                else if(rpc_control.gt.0) then
+          print *,"ENGINE will HANG to waitfor RPC requests after "
+     $         ,rpc_control," events"
+        endif
+        if(rpc_control.ge.0) then
+          print *,"If you don't want this to happen, put one of the"
+          print *,"following in your CTP setup file"
+          print *,"    rpc_on = 0 ; Turns off RPC handling"
+          print *,"    rpc_control = -1 ; No Hanging, but RPC handled"
+        endif
+        print *,""
+        print *,"*****************************************************"
+
+        call thservset(0,0)             !prepare for RPC requests
+
+      endif
+      rpc_pend = 0
+*
       DO WHILE(.NOT.problems .and. .NOT.ABORT .and. .NOT.EoF)
-         mss= ' '
+        mss= ' '
 *
-         call G_clear_event(ABORT,err)          !clear out old data
-         problems= problems .OR. ABORT
+        call G_clear_event(ABORT,err)   !clear out old data
+        problems= problems .OR. ABORT
 *
-         if(mss.NE.' ' .and. err.NE.' ') then
-           call G_append(mss,' & '//err)
-         elseif(err.NE.' ') then
-           mss= err
-         endif
+        if(mss.NE.' ' .and. err.NE.' ') then
+          call G_append(mss,' & '//err)
+        elseif(err.NE.' ') then
+          mss= err
+        endif
 *
-         If(.NOT.problems) Then
-            call G_get_next_event(ABORT,err)    !get and store 1 event 
-            problems= problems .OR. ABORT 
-            if(.NOT.ABORT) total_event_count= total_event_count+1
-*
-            since_cnt= since_cnt+1
-            if(since_cnt.GE.1000) then
-              type *,' event#',total_event_count,'  ',ABORT
-              since_cnt= 0
-            endif
+        If(.NOT.problems) Then
+          call G_get_next_event(ABORT,err) !get and store 1 event 
+          problems= problems .OR. ABORT 
+          if(.NOT.ABORT) total_event_count= total_event_count+1
+*     
+          since_cnt= since_cnt+1
+          if(since_cnt.GE.1000) then
+            type *,' event#',total_event_count,'  ',ABORT
+            since_cnt= 0
+          endif
 
 *
-         EndIf
+        EndIf
 *
-         if(mss.NE.' ' .and. err.NE.' ') then
-           call G_append(mss,' & '//err)
-         elseif(err.NE.' ') then
-           mss= err
-         endif
+        if(mss.NE.' ' .and. err.NE.' ') then
+          call G_append(mss,' & '//err)
+        elseif(err.NE.' ') then
+          mss= err
+        endif
 *
 *     Check if this is a physics event or a CODA control event.
 *
-         if(.not.problems) then
-            evtype = ishft(craw(2),-16)
-            gen_event_type= evtype      ! reassigned later? 
-            if(iand(CRAW(2),'FFFF'x).eq.'10CC'x) then ! Physics event
+        if(.not.problems) then
+          evtype = ishft(craw(2),-16)
+          gen_event_type= evtype        ! reassigned later? 
+          if(iand(CRAW(2),'FFFF'x).eq.'10CC'x) then ! Physics event
 *     
-               if(evtype.le.gen_MAX_trigger_types) then
+            if(evtype.le.gen_MAX_trigger_types) then
                   
-                  call g_examine_physics_event(CRAW,ABORT,err)
-                  problems = problems .or.ABORT
+              call g_examine_physics_event(CRAW,ABORT,err)
+              problems = problems .or.ABORT
 *     
-                  if(mss.NE.' ' .and. err.NE.' ') then
-                     call G_append(mss,' & '//err)
-                  elseif(err.NE.' ') then
-                     mss= err
+              if(mss.NE.' ' .and. err.NE.' ') then
+                call G_append(mss,' & '//err)
+              elseif(err.NE.' ') then
+                mss= err
+              endif
+*     
+              IF(gen_run_starting_event.LE.gen_event_ID_number) THEN
+                if(.NOT.problems) then
+                  call G_reconstruction(CRAW,ABORT,err) !COMMONs
+                  problems= problems .OR. ABORT
+                endif
+*     
+                if(mss.NE.' ' .and. err.NE.' ') then
+                  call G_append(mss,' & '//err)
+                elseif(err.NE.' ') then
+                  mss= err
+                endif
+*     
+                If(.NOT.problems) Then
+                  call G_keep_results(ABORT,err) !file away results as
+                  problems= problems .OR. ABORT !specified by interface
+                EndIf
+*     
+                if(mss.NE.' ' .and. err.NE.' ') then
+                  call G_append(mss,' & '//err)
+                elseif(err.NE.' ') then
+                  mss= err
+                endif
+
+*
+*- Here is where we insert a check for an Remote Proceedure Call (RPC) 
+*- from another process for CTP to interpret
+*
+                if(rpc_on.ne.0) then
+                  if(rpc_pend.eq.0.and.rpc_control.eq.0) then
+                    do while(rpc_pend.eq.0.and.rpc_control.eq.0)
+                      call thservone(-1) !block until one RPC request serviced
+                      rpc_pend = thcallback()
+                    enddo
+                  else
+                    call thservone(0)   !service one RPC requests
+                    rpc_pend = thcallback()
                   endif
-*     
-                  IF(gen_run_starting_event.LE.gen_event_ID_number) THEN
-                     if(.NOT.problems) then
-                        call G_reconstruction(CRAW,ABORT,err) !COMMONs
-                        problems= problems .OR. ABORT
-                     endif
-*     
-                     if(mss.NE.' ' .and. err.NE.' ') then
-                        call G_append(mss,' & '//err)
-                     elseif(err.NE.' ') then
-                        mss= err
-                     endif
-*     
-                     If(.NOT.problems) Then
-                        call G_keep_results(ABORT,err) !file away results as
-                        problems= problems .OR. ABORT !specified by interface
-                     EndIf
-*     
-                     if(mss.NE.' ' .and. err.NE.' ') then
-                        call G_append(mss,' & '//err)
-                     elseif(err.NE.' ') then
-                        mss= err
-                     endif
-                  ENDIF
-               endif
-            Else
-               if(evtype.eq.129) then
-                  call g_analyze_scalers(CRAW,ABORT,err)
-               else
-                  call g_examine_control_event(CRAW,ABORT,err)
-               endif
-            EndIf
-         endif
+                  if(rpc_pend.lt.0) rpc_pend = 0 ! Last thcallback took care of all
+                                        ! outstanding requests
+                  if(rpc_control.gt.0) rpc_control = rpc_control - 1
+                endif
+
+
+              ENDIF
+            endif
+          Else
+            if(evtype.eq.129) then
+              call g_analyze_scalers(CRAW,ABORT,err)
+            else
+              call g_examine_control_event(CRAW,ABORT,err)
+            endif
+          EndIf
+        endif
 *
 *
-         If(ABORT .or. mss.NE.' ') Then
-            call G_add_path(here,mss)   !only if problems
-            call G_rep_err(ABORT,mss)
-         EndIf
+        If(ABORT .or. mss.NE.' ') Then
+          call G_add_path(here,mss)     !only if problems
+          call G_rep_err(ABORT,mss)
+        EndIf
 *
-         EoF= gen_event_type.EQ.20
+        EoF= gen_event_type.EQ.20
 *
-         If(gen_run_stopping_event.GT.0 .and. 
-     &        gen_event_ID_number.GT.0) Then
-            EoF= EoF .or. gen_run_stopping_event.LE.gen_event_ID_number
-         EndIf
+        If(gen_run_stopping_event.GT.0 .and. 
+     &       gen_event_ID_number.GT.0) Then
+          EoF= EoF .or. gen_run_stopping_event.LE.gen_event_ID_number
+        EndIf
 *
 *- Here is where we insert a check for an Remote Proceedure Call (RPC) 
 *- from another process for CTP to interpret
@@ -233,17 +286,19 @@
       type *,'    -------------------------------------'
 *
       IF(ABORT .or. mss.NE.' ') THEN
-         call G_rep_err(ABORT,mss)              !report any errors or warnings
-         err= ' '
+        call G_rep_err(ABORT,mss)       !report any errors or warnings
+        err= ' '
       ENDIF
+*
+      if(rpc_on.ne.0) call thservunset(0,0)
 *
       type *,'    -------------------------------------'
 *
-      call G_proper_shutdown(ABORT,err)         !save files, etc.
+      call G_proper_shutdown(ABORT,err) !save files, etc.
       If(ABORT .or. err.NE.' ') Then
-         call G_add_path(here,err)              !report any errors or warnings
-         call G_rep_err(ABORT,err)
-         err= ' '
+        call G_add_path(here,err)       !report any errors or warnings
+        call G_rep_err(ABORT,err)
+        err= ' '
       EndIf
 *
       type *
@@ -252,10 +307,16 @@
 *
       type *,' Processed:'
       DO i=0,gen_MAX_trigger_types
-         If(gen_run_triggered(i).GT.0) Then
-            write(mss,'(i10," events of type",i3)') gen_run_triggered(i),i
-            call G_log_message(mss)
-         EndIf
+        If(gen_run_triggered(i).GT.0) Then
+          write(mss,'(i10," events of type",i3)') gen_run_triggered(i),i
+          call G_log_message(mss)
+        EndIf
       ENDDO
 *
       END
+
+
+
+
+
+
