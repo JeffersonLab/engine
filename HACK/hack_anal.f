@@ -14,9 +14,12 @@
 *    HACK_SHUTDOWN.F is called to allow final manipulations, e.g.
 *    printed output.
 * $Log$
-* Revision 1.1  1994/07/25 18:03:25  cdaq
-* Initial revision
+* Revision 1.2  1994/07/26 21:03:02  cdaq
+* (SAW) Remove event argument.
 *
+* Revision 1.1  94/07/25  18:03:25  18:03:25  cdaq (Data Acquisition Account)
+* Initial revision
+* 
 *-----------------------------------------------------------------------------
 *---   for information, the following lines are copied from file hack_.cmn:
 *-- file: hack_.cmn
@@ -47,7 +50,7 @@
 *     & hack_hmssc_tu,hack_hmssc_td,hack_hmssc_go
 *-----------------------------------------------------------------------------
 *
-      subroutine hack_anal(event, ABORT, err)
+      subroutine hack_anal(ABORT, err)
       implicit none                              !needed
       logical ABORT                              !needed
       character*(*) err                          !needed
