@@ -18,6 +18,12 @@
 *-   Created 24-JUN-1998   J. Volmer
 *-                           Dummy Shell routine
 * $Log$
+* Revision 1.2  2003/09/05 20:00:03  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.1.2.1  2003/04/11 14:01:34  cdaq
+* eliminate p0corr since already in s_fieldcorr.f (mkj)
+*
 * Revision 1.1  1999/02/10 18:35:01  csa
 * Initial revision
 *
@@ -63,13 +69,14 @@
             deltacorr = 14.6369
          endif
 
-         p0corr = .225
-         if (spcentral.gt.1.483) p0corr=p0corr-16.7*(spcentral-1.483)**2
+c         p0corr = .225
+c         if (spcentral.gt.1.483) p0corr=p0corr-16.7*(spcentral-1.483)**2
       endif
 
 *      write(6,*)' s_satcorr: ssdelta, ssxp_fp =',ssdelta, ssxp_fp
 *      write(6,*)' s_satcorr: deltacorr, p0corr =',deltacorr,p0corr
-      ssdelta = ssdelta + deltacorr*ssxp_fp**2 + p0corr
+c      ssdelta = ssdelta + deltacorr*ssxp_fp**2 + p0corr
+       ssdelta = ssdelta + deltacorr*ssxp_fp**2 
 *      write(6,*)' s_satcorr: ssdelta =',ssdelta
 
       ABORT= ierr.ne.0 .or. ABORT

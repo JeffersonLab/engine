@@ -10,6 +10,12 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
+* Revision 1.6  2003/09/05 19:58:29  jones
+* Merge in online03 changes (mkj)
+*
+* Revision 1.5.2.1  2003/04/10 12:42:26  cdaq
+* Print out additional info on raw scint
+*
 * Revision 1.5  1995/07/20 18:59:35  cdaq
 * (SAW) Fix format
 *
@@ -60,6 +66,17 @@
      $       ,sscin_all_counter_num(j)))
      $       ,SSCIN_ALL_TDC_POS(j)
      $       ,SSCIN_ALL_TDC_NEG(j),j=1,SSCIN_ALL_TOT_HITS )
+
+        write(sluno,'('' Num  Plane    Counter    RAW_ADC_+ ''
+     &       ''RAW_ADC_-  PED_POS  PED_NEG'')')
+        write(sluno,'(3i5,4f10.2)')
+     &       (j,SSCIN_ALL_PLANE_NUM(j),SSCIN_ALL_COUNTER_NUM(j),
+     &       float(SSCIN_ALL_ADC_POS(j)),
+     $       float(SSCIN_ALL_ADC_NEG(j)),
+     $       SSCIN_ALL_PED_POS(sscin_all_plane_num(j),sscin_all_counter_num(j)),
+     $       SSCIN_ALL_PED_NEG(sscin_all_plane_num(j),sscin_all_counter_num(j)),
+     $       j=1,SSCIN_ALL_TOT_HITS )
+
       endif
       RETURN
       END
