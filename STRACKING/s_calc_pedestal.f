@@ -1,6 +1,9 @@
       subroutine s_calc_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.7  1996/01/17 19:03:49  cdaq
+* (JRA) Fixes, write results to file.
+*
 * Revision 1.6  1995/10/09 20:12:30  cdaq
 * (JRA) Note pedestals that differ by 2 sigma from parameter file
 *
@@ -33,20 +36,29 @@
       integer*4 blk
       integer*4 pmt
       integer*4 ind
+      integer*4 roc,slot
+      integer*4 signalcount
       real*4 sig2
       real*4 num
+      character*80 file
 *
       INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'sos_pedestals.cmn'
       INCLUDE 'sos_scin_parms.cmn'
       INCLUDE 'sos_calorimeter.cmn'
+      INCLUDE 'sos_cer_parms.cmn'
+      INCLUDE 'sos_filenames.cmn'
+      INCLUDE 'gen_run_info.cmn'
+*
+      integer SPAREID
+      parameter (SPAREID=67)
 *
 *
 * HODOSCOPE PEDESTALS
 *
       ind = 0
       do pln = 1 , snum_scin_planes
-        do cnt = 1 , snum_scin_elements
+        do cnt = 1 , snum_scin_counters(pln)
 
 *calculate new pedestal values, positive tubes first.
           num=max(1.,float(shodo_pos_ped_num(pln,cnt)))
@@ -54,6 +66,9 @@
           sig2 = float(shodo_pos_ped_sum2(pln,cnt))/num -
      $           shodo_new_ped_pos(pln,cnt)**2
           shodo_new_sig_pos(pln,cnt) = sqrt(max(0.,sig2))
+c          shodo_new_threshold_pos(pln,cnt) = shodo_new_ped_pos(pln,cnt)+
+c     &            2.*shodo_new_sig_pos(pln,cnt)
+          shodo_new_threshold_pos(pln,cnt) = shodo_new_ped_pos(pln,cnt)+10.
 
 *note channels with 2 sigma difference from paramter file values.
           if (abs(sscin_all_ped_pos(pln,cnt)-shodo_new_ped_pos(pln,cnt))
@@ -77,6 +92,9 @@
           sig2 = float(shodo_neg_ped_sum2(pln,cnt))/num -
      $           shodo_new_ped_neg(pln,cnt)**2
           shodo_new_sig_neg(pln,cnt) = sqrt(max(0.,sig2))
+c          shodo_new_threshold_neg(pln,cnt) = shodo_new_ped_neg(pln,cnt)+
+c     &            2.*shodo_new_sig_neg(pln,cnt)
+          shodo_new_threshold_neg(pln,cnt) = shodo_new_ped_neg(pln,cnt)+10.
 
           if (abs(sscin_all_ped_neg(pln,cnt)-shodo_new_ped_neg(pln,cnt))
      &            .ge.(2.*shodo_new_sig_neg(pln,cnt))) then
@@ -105,6 +123,8 @@
         scal_new_ped(blk) = scal_ped_sum(blk) / num
         sig2 = float(scal_ped_sum2(blk))/num - scal_new_ped(blk)**2
         scal_new_rms(blk) = sqrt(max(0.,sig2))
+c        scal_new_adc_threshold(blk) = scal_new_ped(blk)+2.*scal_new_rms(blk)
+        scal_new_adc_threshold(blk) = scal_new_ped(blk)+10.
 
         if (abs(scal_ped_mean(blk)-scal_new_ped(blk))
      &                 .ge.(2.*scal_new_rms(blk))) then
@@ -122,7 +142,6 @@
       enddo
       scal_num_ped_changes = ind
 
-
 *
 *
 * GAS CERENKOV PEDESTALS
@@ -133,22 +152,21 @@
         scer_new_ped(pmt) = float(scer_ped_sum(pmt)) / num
         sig2 = float(scer_ped_sum2(pmt))/ num - scer_new_ped(pmt)**2
         scer_new_rms(pmt) = sqrt(max(0.,sig2))
-      enddo
-      if (abs(scer_ped_mean(pmt)-scer_new_ped(pmt))
+c        scer_new_adc_threshold(pmt) = scer_new_ped(pmt)+2.*scer_new_rms(pmt)
+        scer_new_adc_threshold(pmt) = scer_new_ped(pmt)+10.
+      if (abs(scer_ped(pmt)-scer_new_ped(pmt))
      &              .ge.(2.*scer_new_rms(pmt))) then
         ind = ind + 1
         scer_changed_tube(ind)=pmt
-        scer_ped_change(ind)=scer_new_ped(pmt)-scer_ped_mean(pmt)
+        scer_ped_change(ind)=scer_new_ped(pmt)-scer_ped(pmt)
       endif
-      scer_num_ped_changes = ind
 
       if (num.gt.scer_min_peds .and. scer_min_peds.ne.0) then
-        scer_ped_mean(pmt)=scer_new_ped(pmt)
-        scer_ped_rms(pmt)=scer_new_rms(pmt)
+        scer_ped(pmt)=scer_new_ped(pmt)
       endif
 
-c      scer_threshold(pmt) = max(4.,3.*scer_ped_rms(pmt))
-
+      enddo
+      scer_num_ped_changes = ind
 *
 *
 * AEROGEL CERENKOV PEDESTALS
@@ -177,6 +195,64 @@ c      scer_threshold(pmt) = max(4.,3.*scer_ped_rms(pmt))
           saer_neg_threshold(pmt) = max(4.,3.*saer_neg_ped_rms(pmt))
         endif
       enddo
+
+
+*
+* WRITE THRESHOLDS TO FILE FOR HARDWARE SPARCIFICATION
+*
+      if (s_threshold_output_filename.ne.' ') then
+        file=s_threshold_output_filename
+        call g_sub_run_number(file, gen_run_number)
+      
+        open(unit=SPAREID,file=file,status='unknown')
+
+        write(SPAREID,*) '# This is the ADC threshold file generated automatically'
+        write(SPAREID,*) 'from the pedestal data from run number ',gen_run_number
+
+        roc=3
+
+        slot=1
+        signalcount=1
+        write(SPAREID,*) 'slot=',slot
+        call g_output_thresholds(SPAREID,roc,slot,signalcount,smax_cal_rows,
+     &      scal_new_adc_threshold,0,scal_new_rms,0)
+
+c Want aero as well.  For now, don't sparsify at all.
+c        slot=3
+c        signalcount=1
+c        write(SPAREID,*) 'slot=',slot
+c        call g_output_thresholds(SPAREID,roc,slot,signalcount,smax_cer_hits,
+c     &      scer_new_adc_threshold,0,scer_new_rms,0)
+c
+        slot=3
+        write(SPAREID,*) 'slot=',slot
+        do ind=1,4
+         write(SPAREID,*) '0'
+        enddo
+        do ind=17,34
+         write(SPAREID,*) '4000'
+        enddo
+        do ind=35,64
+         write(SPAREID,*) '0'
+        enddo
+
+        slot=7
+        signalcount=2
+        write(SPAREID,*) 'slot=',slot
+        call g_output_thresholds(SPAREID,roc,slot,signalcount,snum_scin_planes,
+     &      shodo_new_threshold_pos,shodo_new_threshold_neg,shodo_new_sig_pos,
+     &      shodo_new_sig_neg)
+
+        slot=9
+        signalcount=2
+        write(SPAREID,*) 'slot=',slot
+        call g_output_thresholds(SPAREID,roc,slot,signalcount,snum_scin_planes,
+     &      shodo_new_threshold_pos,shodo_new_threshold_neg,shodo_new_sig_pos,
+     &      shodo_new_sig_neg)
+
+        close (unit=SPAREID)
+
+      endif
 
       return
       end
