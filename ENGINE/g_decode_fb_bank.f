@@ -27,7 +27,10 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
-* Revision 1.9  1994/06/18 02:45:49  cdaq
+* Revision 1.10  1994/06/28 20:01:23  cdaq
+* (SAW) Change arrays that HMS scintillators go into
+*
+* Revision 1.9  1994/06/18  02:45:49  cdaq
 * (SAW) Add code for miscleaneous data and uninstrumented channels
 *
 * Revision 1.8  1994/06/09  04:48:28  cdaq
@@ -120,9 +123,10 @@
               pointer = pointer +
      $             g_decode_fb_detector(roc, bank(pointer), 
      &             maxwords, did, 
-     $             HMAX_SCIN_HITS, HSCIN_TOT_HITS, HSCIN_PLANE_NUM,
-     $             HSCIN_COUNTER_NUM, 4, HSCIN_ADC_POS, HSCIN_ADC_NEG,
-     $             HSCIN_TDC_POS, HSCIN_TDC_NEG)
+     $             HMAX_ALL_SCIN_HITS, HSCIN_ALL_TOT_HITS, 
+     $             HSCIN_ALL_PLANE_NUM, HSCIN_ALL_COUNTER_NUM, 4,
+     $             HSCIN_ALL_ADC_POS, HSCIN_ALL_ADC_NEG,
+     $             HSCIN_ALL_TDC_POS, HSCIN_ALL_TDC_NEG)
 
             else if (did.eq.HCAL_ID) then
               pointer = pointer +
