@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.2  1994/04/12 17:28:15  cdaq
-*-    (KBB) Add ntuple call
+*-    Revision 1.3  1994/06/17 03:02:01  cdaq
+*-    (KBB) Fix typo
 *-
+* Revision 1.2  1994/04/12  17:28:15  cdaq
+* (KBB) Add ntuple call
+*
 * Revision 1.1  1994/02/04  22:21:52  cdaq
 * Initial revision
 *
@@ -36,7 +39,7 @@
       ABORT= .FALSE.
       err= ' '
 *     
-      call h_ntuple_shutdown(ABORT,err)
+      call s_ntuple_shutdown(ABORT,err)
 *
       IF(ABORT) THEN
          call G_add_path(here,err)
