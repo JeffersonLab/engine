@@ -1,4 +1,4 @@
-      SUBROUTINE H_proper_shutdown(ABORT,err)
+      SUBROUTINE H_proper_shutdown(lunout,ABORT,err)
 *--------------------------------------------------------
 *-       Prototype C analysis routine
 *-
@@ -10,10 +10,13 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.6  1995/04/01 20:09:28  cdaq
-*-    (SAW) One report file for each of g, h, s, c instead of a single report file
-*-          Allow %d for run number in filenames
+*-    Revision 1.7  1995/05/22 13:29:49  cdaq
+*-    (JRA) Make a listing of potential detector problems
 *-
+* Revision 1.6  1995/04/01  20:09:28  cdaq
+* (SAW) One report file for each of g, h, s, c instead of a single report file
+*       Allow %d for run number in filenames
+*
 * Revision 1.5  1995/03/13  18:13:19  cdaq
 * (JRA) Add calls to h_scin_eff_shutdown and h_cal_eff_shutdown.
 *
@@ -49,6 +52,7 @@
 *
       integer ierr
       character*132 file
+      integer lunout
 *--------------------------------------------------------
 *-chance to flush any statistics, etc.
 *
@@ -56,11 +60,14 @@
       ABORT= .FALSE.
       err= ' '
 *
+      write(lunout,*) 'Possible HMS hardware problems: '
+      write(lunout,*) '------------------------------- '
+*
       call h_ntuple_shutdown(ABORT,err)
 *
       call h_sv_nt_shutdown(ABORT,err)
 *
-      call h_scin_eff_shutdown(ABORT,err)
+      call h_scin_eff_shutdown(lunout,ABORT,err)
 *
       call h_cal_eff_shutdown(ABORT,err)
 *

@@ -10,9 +10,12 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.6  1995/04/01 19:42:36  cdaq
-*-    (SAW) One report file for each of g, h, s, c instead of a single report file
+*-    Revision 1.7  1995/05/22 13:29:24  cdaq
+*-    (JRA) Make a listing of potential detector problems
 *-
+* Revision 1.6  1995/04/01  19:42:36  cdaq
+* (SAW) One report file for each of g, h, s, c instead of a single report file
+*
 * Revision 1.5  1994/08/04  03:45:46  cdaq
 * (SAW) Add call to Breuer's hack_shutdown
 *
@@ -45,6 +48,8 @@
 *
       logical bad_report,bad_HMS,bad_SOS,bad_COIN,bad_HBK,bad_hack
       character*132 err_report,err_HMS,err_SOS,err_COIN,err_HBK,err_hack
+      integer SPAREID
+      parameter (SPAREID=67)
 *
       include 'gen_filenames.cmn'
       include 'gen_routines.dec'
@@ -56,12 +61,18 @@
       bad_report = .TRUE.
       err_report = 'Failed to open report file'
 
+      file = "scalers/bad%d.txt"
+      call g_sub_run_number(file,gen_run_number)
+      open(unit=SPAREID,file=file,status='unknown')
+
 *-chance to flush any statistics, etc.
-      call H_proper_shutdown(bad_HMS,err_HMS)
+      call H_proper_shutdown(SPAREID,bad_HMS,err_HMS)
 *     
-      call S_proper_shutdown(bad_SOS,err_SOS)
+      call S_proper_shutdown(SPAREID,bad_SOS,err_SOS)
 *     
-      call C_proper_shutdown(bad_COIN,err_COIN)
+      call C_proper_shutdown(SPAREID,bad_COIN,err_COIN)
+*
+      close(unit=SPAREID)
 *
       call hack_shutdown(bad_hack,err_hack)
 *

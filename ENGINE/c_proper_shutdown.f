@@ -1,4 +1,4 @@
-      SUBROUTINE C_proper_shutdown(ABORT,err)
+      SUBROUTINE C_proper_shutdown(lunout,ABORT,err)
 *--------------------------------------------------------
 *-       Prototype C analysis routine
 *-
@@ -10,10 +10,13 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *-    $Log$
-*-    Revision 1.5  1995/04/01 19:43:57  cdaq
-*-    (SAW) One report file for each of g, h, s, c instead of a single report file
-*-          Allow %d for run number in filenames
+*-    Revision 1.6  1995/05/22 13:30:11  cdaq
+*-    (JRA) Make a listing of potential detector problems
 *-
+* Revision 1.5  1995/04/01  19:43:57  cdaq
+* (SAW) One report file for each of g, h, s, c instead of a single report file
+*       Allow %d for run number in filenames
+*
 * Revision 1.4  1994/10/11  18:39:02  cdaq
 * (SAW) Protect agains blank blocknames
 *
@@ -46,6 +49,7 @@
 *
       integer ierr
       character*132 file
+      integer lunout
 *--------------------------------------------------------
 *-chance to flush any statistics, etc.
 *
