@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.9.6.2  2003/12/18 17:21:13  jones
+* add common blocks needed
+*
 * Revision 1.9.6.1  2003/12/17 22:54:44  jones
 *  update e01004
 *
@@ -55,6 +58,7 @@
       INCLUDE 'coin_data_structures.cmn'
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_physics_sing.cmn'
+      INCLUDE 'sos_physics_sing.cmn'
       INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'hms_scin_parms.cmn'
       INCLUDE 'sos_scin_parms.cmn'
@@ -68,6 +72,7 @@
       INCLUDE 'sos_calorimeter.cmn'
       INCLUDE 'hms_scin_tof.cmn'
       INCLUDE 'sos_scin_tof.cmn'
+      INCLUDE 'hms_aero_parms.cmn'
 *
       logical HEXIST    !CERNLIB function
 *
