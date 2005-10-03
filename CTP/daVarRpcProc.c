@@ -18,6 +18,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.2.16.1  2005/10/03 17:55:05  saw
+ *   Some RPC change
+ *
  *   Revision 1.2  1999/11/04 20:34:04  saw
  *   Alpha compatibility.
  *   New RPC call needed for root event display.
@@ -227,7 +230,7 @@ davar_readmultiple_test_cb_1(argp, clnt)
 	static int clnt_res;
 	enum clnt_stat clnt_stat;
 
-#if 0
+	/*#if 0*/
 	{
 	  struct sockaddr_in sock;
 	  struct hostent *hp;
@@ -237,7 +240,7 @@ davar_readmultiple_test_cb_1(argp, clnt)
 	    gethostbyaddr((char *)&sock.sin_addr, sizeof(sock.sin_addr),AF_INET);
 	  printf("cb_1:  %s %s\n", inet_ntoa(sock.sin_addr), hp->h_name);
 	}
-#endif
+	/*#endif*/
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	if ((clnt_stat = clnt_call(clnt, DAVAR_READMULTIPLE_TEST_CB, xdr_RVALLIST, argp, xdr_int, &clnt_res, TIMEOUT)) != RPC_SUCCESS) {
@@ -341,6 +344,7 @@ int daVarCallBack()
         rpc.RVALLIST_len = 0;
         rpc.RVALLIST_val = 0;
       }
+#if 0
       {
 	/* This is really weird.  clnt_create only works if we copy the hostname*/
 	char *host;
@@ -349,6 +353,7 @@ int daVarCallBack()
 	clnt = clnt_create(host, argp->prog, argp->vers, "tcp");
 	free(host);
       }
+#endif
       {
 	/* This is really weird.  On the alpha it seems we need to copy the
 	   host name to a separate variable.  Maybe clnt_create calls some
