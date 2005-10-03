@@ -16,6 +16,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.3.16.1  2005/10/03 17:54:21  saw
+ *   Compiler warning issue
+ *
  *   Revision 1.3  2003/02/21 20:55:24  saw
  *   Clean up some types and casts to reduce compiler warnings.
  *
@@ -188,13 +191,13 @@ daVarStatus thHistRHandler(char *name, daVarStruct *varclass, any *retval)
       retval->any_u.r.r_val[0] = YMA;
     } else if(strcasecmp(attribute,TH_CONTEN) == 0){
       int size;
+      char *HIST="HIST";
       retval->valtype = DAVARFLOAT_RPC;
       size = NX;
       if(NY != 0) size *= NY;
       retval->any_u.r.r_len = size;
       retval->any_u.r.r_val = (float *)malloc(size*sizeof(float));
-      /* Next line gives warning "assignment of read-only location */
-      HUNPAK(thLastIdRhandled,retval->any_u.r.r_val,"HIST",(int) 1);
+      HUNPAK(thLastIdRhandled,retval->any_u.r.r_val,HIST,1);
     }
   }
   return(status);
