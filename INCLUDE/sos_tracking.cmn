@@ -5,6 +5,9 @@
 *                              change name to sos_tracking.cmn
 *                              put sluno and debugflags from parameters to CTP
 * $Log$
+* Revision 1.18.22.1  2007/05/02 21:12:05  jones
+* Add new parameter sdumptof as flag for dumping data used for adjusting scintillator timing using P Bosted's method.
+*
 * Revision 1.18  1999/02/23 19:22:52  csa
 * (JRA) Remove sdebugcalcpeds
 *
@@ -248,6 +251,8 @@
       integer*4 ssmallAngleApprox     ! switch for alternate L/R determ. of Y,Yprime planes
       integer*4 s_hms_style_chambers  ! Using HMS style drift chambers.
       integer*4 sluno                 ! logical unit number for debugging output
+      integer*4 sdumptof               ! dumps tof fitting data from s_tof
+
       common/SOS_TRACKFLAGS/
      &     sluno,
      &     sdebugflagpsi,
@@ -264,7 +269,8 @@
      &     sdebugdumpcal,
      &     ssingle_stub,
      &     ssmallAngleApprox,
-     &     s_hms_style_chambers
+     &     s_hms_style_chambers,
+     &     sdumptof
 
 *----------------------------------------------------------------------
 * DRIFT CHAMBER EFFICIENCY MEASUREMENTS.
