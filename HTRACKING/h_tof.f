@@ -23,6 +23,10 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19.4.1  2007/05/02 21:19:30  jones
+* Add new code needed for  adjusting scintillator timing using P Bosted's method.
+* Only used when flag  htofusinginvadc.eq.1 .
+*
 * Revision 1.19  2005/03/15 21:08:08  jones
 * Add code to filter the scintillator tdc hits and group them by time. ( P. Bosted)
 *
@@ -98,6 +102,7 @@
       INCLUDE 'gen_units.par'
       include 'hms_scin_parms.cmn'
       include 'hms_scin_tof.cmn'
+      include 'hms_tracking.cmn'
       integer*4 hit, trk
       integer*4 plane,ind
       integer*4 hntof_pairs
@@ -105,9 +110,9 @@
       real*4 xhit_coord,yhit_coord
       real*4 time
       real*4 p,betap         !momentum and velocity from momentum, assuming desired mass
-      real*4 path
+      real*4 path,zcor,num_fp_time
       real*4 sum_fp_time,sum_plane_time(hnum_scin_planes)
-      integer*4 num_fp_time,num_plane_time(hnum_scin_planes)
+      integer*4 num_plane_time(hnum_scin_planes)
       integer timehist(200),i,j,jmax,maxhit,nfound
       real*4 time_pos(1000),time_neg(1000),tmin,time_tolerance
       logical keep_pos(1000),keep_neg(1000),first/.true./
@@ -136,7 +141,7 @@
         hntof = 0
         hntof_pairs = 0
         sum_fp_time = 0.
-        num_fp_time = 0
+        num_fp_time = 0.
         hnum_scin_hit(trk) = 0
         hnum_pmt_hit(trk) = 0
         p = hp_tar(trk)
@@ -163,11 +168,20 @@
         if(htof_tolerance.gt.0.5.and.htof_tolerance.lt.10000.) then
           time_tolerance=htof_tolerance
         endif
+! Use wide window if dumping events for fitting
+        if(hdumptof.eq.1) time_tolerance=20.0
         if(first) then
            first=.false.
-           write(*,'(//1x,''USING '',f8.2,'' NSEC WINDOW FOR'',
+           write(*,'(/1x,''USING '',f8.2,'' NSEC WINDOW FOR'',
      >     ''  HMS TOF AND FP CALCULATIONS'')') time_tolerance
-           write(*,'(//)')
+           if(htofusinginvadc.eq.1) then
+             write(*,'(/1x,''TOF using 1/sqrt(ADC), separate '',
+     >         ''velocities for pos and neg tubes'')')
+           else
+             write(*,'(/1x,''TOF using ADC for slewing correction'',
+     >         ''  and same vecolicty for pos and neg tubes'')')
+           endif
+           write(*,'(/)')
         endif
         nfound = 0
         do j=1,200
@@ -201,12 +215,18 @@
               adc_ph = hscin_adc_pos(hit)
               path = hscin_pos_coord(hit) - hscin_long_coord(hit)
               time = hscin_tdc_pos(hit) * hscin_tdc_to_time
-              time = time - hscin_pos_phc_coeff(hit) *
-     &             sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
-              time = time - path/hscin_vel_light(hit)
-     &                  - (hscin_zpos(hit)/(29.979*betap) *
-     &          sqrt(1.+hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
-              time_pos(i) = time - hscin_pos_time_offset(hit)
+              time = time - (hscin_zpos(hit)/(29.979*betap) *
+     &               sqrt(1. + hxp_fp(trk)**2 + hyp_fp(trk)**2))
+              if(htofusinginvadc.eq.1) then
+                time_pos(i) = time - hscin_pos_invadc_offset(hit) -
+     >            path / hscin_pos_invadc_linear(hit) -
+     >            hscin_pos_invadc_adc(hit)/sqrt(max(20,adc_ph))
+              else
+                time = time - hscin_pos_phc_coeff(hit) *
+     &               sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
+                time = time - path/hscin_vel_light(hit)
+                time_pos(i) = time - hscin_pos_time_offset(hit)
+              endif
               nfound = nfound + 1
               do j=1,200
                 tmin = 0.5*float(j)                
@@ -220,12 +240,18 @@
               adc_ph = hscin_adc_neg(hit)
               path = hscin_long_coord(hit) - hscin_neg_coord(hit)
               time = hscin_tdc_neg(hit) * hscin_tdc_to_time
-              time = time - hscin_neg_phc_coeff(hit) *
-     &             sqrt(max(0.,(adc_ph/hscin_neg_minph(hit)-1.)))
-              time = time - path/hscin_vel_light(hit)
-     &                    - (hscin_zpos(hit)/(29.979*betap) *
-     &          sqrt(1.+hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
-              time_neg(i) = time - hscin_neg_time_offset(hit)
+              time = time - (hscin_zpos(hit)/(29.979*betap) *
+     &               sqrt(1. + hxp_fp(trk)**2 + hyp_fp(trk)**2))
+              if(htofusinginvadc.eq.1) then
+                time_neg(i) = time + hscin_neg_invadc_offset(hit) -
+     >            path / hscin_neg_invadc_linear(hit) -
+     >            hscin_neg_invadc_adc(hit)/sqrt(max(20,adc_ph))
+              else
+                time = time - hscin_neg_phc_coeff(hit) *
+     &               sqrt(max(0.,(adc_ph/hscin_neg_minph(hit)-1.)))
+                time = time - path/hscin_vel_light(hit)
+                time_neg(i) = time - hscin_neg_time_offset(hit)
+              endif
               nfound = nfound + 1
               do j=1,200
                 tmin = 0.5*float(j)                
@@ -266,7 +292,7 @@
           hgood_tdc_pos(trk,hit) = .false.
           hgood_tdc_neg(trk,hit) = .false.
           hscin_time(hit) = 0
-          hscin_sigma(hit) = 0
+          hscin_sigma(hit) = 100.
         enddo
 
         do hit = 1 , hscin_tot_hits
@@ -309,10 +335,28 @@
 *     Convert TDC value to time, do pulse height correction, correction for
 *     propogation of light thru scintillator, and offset.
               time = hscin_tdc_pos(hit) * hscin_tdc_to_time
-              time = time - hscin_pos_phc_coeff(hit) *
-     &             sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
-              time = time - path/hscin_vel_light(hit)
-              hscin_pos_time(hit) = time - hscin_pos_time_offset(hit)
+              if(htofusinginvadc.eq.1) then
+                hscin_pos_time(hit)=time - hscin_pos_invadc_offset(hit) -
+     >            path / hscin_pos_invadc_linear(hit) -
+     >            hscin_pos_invadc_adc(hit)/sqrt(max(20,adc_ph))
+              else
+                time = time - hscin_pos_phc_coeff(hit) *
+     &               sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
+                time = time - path/hscin_vel_light(hit)
+                hscin_pos_time(hit) = time - hscin_pos_time_offset(hit)
+              endif
+              zcor =  (hscin_zpos(hit)/(29.979*betap) * sqrt(1.+
+     >               hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
+              if(hntracks_fp.eq.1.and.
+     >          hdumptof.eq.1.and.
+     >          timehist(max(1,jmax)).gt.6) then
+                write(37,'(1x,''1'',2i3,5f10.3)') 
+     >             hscin_plane_num(hit),
+     >             hscin_counter_num(hit),
+     >             hscin_tdc_pos(hit) * hscin_tdc_to_time,
+     >             path,zcor,
+     >             hscin_pos_time(hit)-zcor,adc_ph
+              endif
             endif
 
 **    Repeat for pmts on 'negative' side
@@ -325,30 +369,48 @@
               adc_ph = hscin_adc_neg(hit)
               path = hscin_long_coord(hit) - hscin_neg_coord(hit)
               time = hscin_tdc_neg(hit) * hscin_tdc_to_time
-              time = time - hscin_neg_phc_coeff(hit) *
-     &             sqrt(max(0.,(adc_ph/hscin_neg_minph(hit)-1.)))
-              time = time - path/hscin_vel_light(hit)
-              hscin_neg_time(hit) = time - hscin_neg_time_offset(hit)
+              if(htofusinginvadc.eq.1) then
+                hscin_neg_time(hit)=time - hscin_neg_invadc_offset(hit) -
+     >            path / hscin_neg_invadc_linear(hit) -
+     >            hscin_neg_invadc_adc(hit)/sqrt(max(20,adc_ph))
+              else
+                time = time - hscin_neg_phc_coeff(hit) *
+     &               sqrt(max(0.,(adc_ph/hscin_neg_minph(hit)-1.)))
+                time = time - path/hscin_vel_light(hit)
+                hscin_neg_time(hit) = time - hscin_neg_time_offset(hit)
+              endif
+              zcor =  (hscin_zpos(hit)/(29.979*betap) * sqrt(1.+
+     >               hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
+              if(hntracks_fp.eq.1.and.
+     >          hdumptof.eq.1.and.
+     >          timehist(max(1,jmax)).gt.6) then
+                write(37,'(1x,''2'',2i3,5f10.3)') 
+     >             hscin_plane_num(hit),
+     >             hscin_counter_num(hit),
+     >             hscin_tdc_neg(hit) * hscin_tdc_to_time,
+     >             path,zcor,
+     >             hscin_neg_time(hit)-zcor,adc_ph
+              endif
             endif
 
 **    Calculate ave time for scintillator and error.
             if (hgood_tdc_pos(trk,hit)) then
               if (hgood_tdc_neg(trk,hit)) then
                 hscin_time(hit) = (hscin_neg_time(hit) + hscin_pos_time(hit))/2.
-                hscin_sigma(hit) = sqrt(hscin_neg_sigma(hit)**2 + 
-     1               hscin_pos_sigma(hit)**2)/2.
+                hscin_sigma(hit) = max(0.1,sqrt(hscin_neg_sigma(hit)**2 + 
+     1               hscin_pos_sigma(hit)**2)/2.)
                 hgood_scin_time(trk,hit) = .true.
                 hntof_pairs = hntof_pairs + 1
               else
                 hscin_time(hit) = hscin_pos_time(hit)
-                hscin_sigma(hit) = hscin_pos_sigma(hit)
+                hscin_sigma(hit) = max(0.1,hscin_pos_sigma(hit))
                 hgood_scin_time(trk,hit) = .true.
 *                hgood_scin_time(trk,hit) = .false.
               endif
             else                        ! if hgood_tdc_neg = .false.
               if (hgood_tdc_neg(trk,hit)) then
                 hscin_time(hit) = hscin_neg_time(hit)
-                hscin_sigma(hit) = hscin_neg_sigma(hit)
+                hscin_sigma(hit) = max(0.1,hscin_neg_sigma(hit))
                 hgood_scin_time(trk,hit) = .true.
 *                hgood_scin_time(trk,hit) = .false.
               endif
@@ -358,8 +420,9 @@ c     Get time at focal plane
               hscin_time_fp(hit) = hscin_time(hit)
      &             - (hscin_zpos(hit)/(29.979*betap) *
      &             sqrt(1.+hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
-              sum_fp_time = sum_fp_time + hscin_time_fp(hit)
-              num_fp_time = num_fp_time + 1
+              sum_fp_time = sum_fp_time + hscin_time_fp(hit) /
+     >          hscin_sigma(hit)**2
+              num_fp_time = num_fp_time + 1./hscin_sigma(hit)**2
               sum_plane_time(plane)=sum_plane_time(plane)
      &             +hscin_time_fp(hit)
               num_plane_time(plane)=num_plane_time(plane)+1
@@ -410,7 +473,7 @@ c     Get time at focal plane
           hbeta_chisq(trk) = -1.
         endif
         if (num_fp_time .ne. 0) then
-          htime_at_fp(trk) = sum_fp_time / float(num_fp_time)
+          htime_at_fp(trk) = sum_fp_time / num_fp_time
         endif
         
         do ind=1,4
@@ -441,6 +504,11 @@ c     Get time at focal plane
      >      hgood_plane_time(trk,2),hgood_plane_time(trk,4),
      >      htime_at_fp(trk),hbeta(trk),hbeta_chisq(trk),
      >      hdelta_tar(trk),hy_tar(trk),hxp_tar(trk),hyp_tar(trk)
+        endif
+        if(hntracks_fp.eq.1.and.
+     >    hdumptof.eq.1.and.
+     >     timehist(max(1,jmax)).gt.6) then
+           write(37,'(1x,''0'')') 
         endif
       enddo                             !end of loop over tracks
 
