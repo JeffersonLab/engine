@@ -8,6 +8,9 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
+* Revision 1.27.18.1  2007/05/02 21:12:23  jones
+* Add new parameter hdumptof as flag for dumping data used for adjusting scintillator timing using P Bosted's method.
+*
 * Revision 1.27  2003/04/01 13:55:09  jones
 * Add variables hntracks_max_fp and h_remove_sppt_if_one_y_plane to
 * hms_tracking.cmn
@@ -276,6 +279,8 @@
       integer*4 hsingle_stub            ! switch to make tracks of all stubs
       integer*4 hSmallAngleApprox       ! switch for alternate L/R determ. of Y,Yprime planes
       integer*4 hluno                 ! logical unit number for debugging output
+      integer*4 hdumptof               ! dumps tof fitting data from h_tof
+
       common/HMS_TRACKFLAGS/
      &     hluno,
      &     hdebugflagpsi,
@@ -291,7 +296,8 @@
      &     hdebugdumptof,
      &     hdebugdumpcal,
      &     hsingle_stub,
-     &     hSmallAngleApprox
+     &     hSmallAngleApprox,
+     &     hdumptof
 
 *----------------------------------------------------------------------
 * DRIFT CHAMBER EFFICIENCY MEASUREMENTS.
