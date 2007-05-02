@@ -9,6 +9,9 @@
 *
 * modifications: 31 Mar 1994    DFG  Check for 0 hits
 * $Log$
+* Revision 1.5.22.1  2007/05/02 21:20:21  jones
+* Add new code needed for  adjusting scintillator timing using P Bosted's method.
+*
 * Revision 1.5  1995/05/22 19:46:00  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -58,6 +61,18 @@
           sscin_neg_time_offset(ihit) = shodo_neg_time_offset(plane,counter)
           sscin_pos_minph(ihit) = shodo_pos_minph(plane,counter)
           sscin_neg_minph(ihit) = shodo_neg_minph(plane,counter)
+          sscin_pos_invadc_offset(ihit) = 
+     >      shodo_pos_invadc_offset(plane,counter)
+          sscin_neg_invadc_offset(ihit) = 
+     >      shodo_neg_invadc_offset(plane,counter)
+          sscin_pos_invadc_linear(ihit) = 
+     >      max(10.,shodo_pos_invadc_linear(plane,counter))
+          sscin_neg_invadc_linear(ihit) = 
+     >      max(10.,shodo_neg_invadc_linear(plane,counter))
+          sscin_pos_invadc_adc(ihit) = 
+     >      shodo_pos_invadc_adc(plane,counter)
+          sscin_neg_invadc_adc(ihit) = 
+     >      shodo_neg_invadc_adc(plane,counter)
 
           if (plane .eq. 1) then        !1x
             sscin_zpos(ihit) = sscin_1x_zpos
