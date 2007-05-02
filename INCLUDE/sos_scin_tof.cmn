@@ -1,6 +1,9 @@
 * sos_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the sos time of flight.
 * $Log$
+* Revision 1.9.4.1  2007/05/02 21:15:55  jones
+* Add new internal arrays used  for adjusting scintillator timing using P Bosted's method.
+*
 * Revision 1.9  2005/03/15 21:14:28  jones
 * Add variables htof_tolerance and stof_tolerance to be used to filter the scintillator tdc hits and group them by time. ( P. Bosted)
 *
@@ -61,6 +64,12 @@
       real*4 sscin_pos_time_offset(smax_scin_hits)
       real*4 sscin_neg_time_offset(smax_scin_hits)
       real*4 sscin_time_fp(smax_scin_hits)
+      real*4 sscin_pos_invadc_offset(smax_scin_hits)
+      real*4 sscin_neg_invadc_offset(smax_scin_hits)
+      real*4 sscin_pos_invadc_linear(smax_scin_hits)
+      real*4 sscin_neg_invadc_linear(smax_scin_hits)
+      real*4 sscin_pos_invadc_adc(smax_scin_hits)
+      real*4 sscin_neg_invadc_adc(smax_scin_hits)
 
 *
 *     CTPTYPE=parm
@@ -107,7 +116,13 @@
      &     sscin_time_fp,               !scin time (ave) projected to fp
      &     sstart_time_center,
      &     sstart_time_slop,
-     &     stof_tolerance
+     &     stof_tolerance,
+     >     sscin_pos_invadc_offset,
+     >     sscin_neg_invadc_offset,
+     >     sscin_pos_invadc_linear,
+     >     sscin_neg_invadc_linear,
+     >     sscin_pos_invadc_adc,
+     >     sscin_neg_invadc_adc
  
 *
 *     CTPTYPE=event
