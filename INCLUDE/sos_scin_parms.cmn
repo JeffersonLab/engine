@@ -12,6 +12,9 @@
 *           Add definition of snum_scin_elements and set parameter value
 *
 * $Log$
+* Revision 1.8.22.1  2007/05/02 21:09:34  jones
+* Add new SOS hodo params for adjusting scintillator timing using P Bosted's method.
+*
 * Revision 1.8  1996/09/04 16:31:26  saw
 * (JRA) Add misc scaler
 *
@@ -141,6 +144,13 @@ c      integer*4 sscin_num_counters(SNUM_SCIN_PLANES)
       real*4 shodo_neg_time_offset(snum_scin_planes,snum_scin_elements)
       real*4 shodo_pos_minph(snum_scin_planes,snum_scin_elements) ! ADC offset for PH correction
       real*4 shodo_neg_minph(snum_scin_planes,snum_scin_elements) ! ADC offset for PH correction
+      real*4 shodo_pos_invadc_offset(snum_scin_planes,snum_scin_elements)
+      real*4 shodo_neg_invadc_offset(snum_scin_planes,snum_scin_elements)
+      real*4 shodo_pos_invadc_linear(snum_scin_planes,snum_scin_elements)
+      real*4 shodo_neg_invadc_linear(snum_scin_planes,snum_scin_elements)
+      real*4 shodo_pos_invadc_adc(snum_scin_planes,snum_scin_elements)
+      real*4 shodo_neg_invadc_adc(snum_scin_planes,snum_scin_elements)
+      integer stofusinginvadc
 
 * correction parameters and position information converted to arryas
 * over plane and counter
@@ -160,7 +170,14 @@ c      integer*4 sscin_num_counters(SNUM_SCIN_PLANES)
      &     shodo_pos_time_offset,
      &     shodo_neg_time_offset,
      $     shodo_pos_minph,
-     $     shodo_neg_minph
+     $     shodo_neg_minph,
+     >     shodo_pos_invadc_offset,
+     >     shodo_neg_invadc_offset,
+     >     shodo_pos_invadc_linear,
+     >     shodo_neg_invadc_linear,
+     >     shodo_pos_invadc_adc,
+     >     shodo_neg_invadc_adc,
+     >     stofusinginvadc
 *
 *
 * sos_misc_parms.cmn -  misc tdc's filled as array over signal number
