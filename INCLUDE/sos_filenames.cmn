@@ -2,6 +2,9 @@
 *
 *-Common block with filenames
 * $Log$
+* Revision 1.5.4.1  2007/05/08 22:00:01  cdaq
+* added parameter names for output of angle pictures
+*
 * Revision 1.5  2005/02/16 20:44:45  saw
 * Add filename for sos root tree
 *
@@ -25,6 +28,7 @@
       character*80 s_report_output_filename
       character*80 s_threshold_output_filename
       character*80 s_pedestal_output_filename
+      character*80 s_angle_output_filename
       character*80 s_tree_filename
 *
       common /sos_filenames/
@@ -34,5 +38,6 @@
      $     s_report_output_filename,
      $     s_threshold_output_filename,
      $     s_pedestal_output_filename,
+     $     s_angle_output_filename,
      $     s_tree_filename
 *
