@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.28.14.1  2007/05/08 22:08:47  cdaq
+# add g_examine_picture_event.f
+#
 # Revision 1.28  2004/02/18 14:06:53  jones
 # Updated compile subroutines needed to allow the possibility of segmenting rzdat files.
 #
@@ -110,7 +113,7 @@ general_source = $(decode_source) g_clear_event.f \
 	g_calc_beam_pedestal.f g_calc_bpm_pedestal.f g_calc_raster_pedestal.f \
 	g_target_initialize.f g_trans_misc.f g_dump_peds.f g_get_next_event.f \
 	g_preproc_event.f g_preproc_open.f g_write_event.f \
-	g_examine_epics_event.f \
+	g_examine_epics_event.f g_examine_picture_event.f \
 	g_analyze_scaler_bank.f g_analyze_scalers_by_banks.f g_apply_offsets.f 
 hms_source = h_clear_event.f h_initialize.f h_keep_results.f \
 	h_proper_shutdown.f h_reset_event.f \
