@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.6.1  2007/05/08 21:54:36  cdaq
+* add call to g_examine_picture_event
+*
 * Revision 1.42  2004/07/08 20:10:01  saw
 * Close CTP Root trees
 *
@@ -413,6 +416,9 @@ c
           else if (gen_event_type.eq.141 .or. gen_event_type.eq.142 .or.
      &             gen_event_type.eq.144) then
 *             write(6,*) 'HV information event, event type=',gen_event_type
+	  else if (gen_event_type.eq.146..or.gen_event_type.eq.147) then
+c	     write(6,*) 'Cheesy poofs! - picture event'
+	     call g_examine_picture_event
           else if (gen_event_type.eq.251) then
              syncfilter_on = .true.
           else
@@ -647,7 +653,7 @@ c
               endif
             else				!REAL physics event.
 c
-               if (analyzed_events(0) .le. 1 .and. gen_event_type .le. 3) then
+               if (analyzed_events(0) .le. 0 .and. gen_event_type .le. 3) then
                   if (skipped_events_scal .eq. 0 ) then
                   write(*,*) '************'
                   write(*,*) ' Will not analyze SOS,HMS or coin events until after first scaler read'
