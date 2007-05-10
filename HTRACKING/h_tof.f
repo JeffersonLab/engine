@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19.4.2  2007/05/10 21:15:10  cdaq
+* changes for writing dump file for Peter's tof code
+*
 * Revision 1.19.4.1  2007/05/02 21:19:30  jones
 * Add new code needed for  adjusting scintillator timing using P Bosted's method.
 * Only used when flag  htofusinginvadc.eq.1 .
@@ -116,6 +119,8 @@
       integer timehist(200),i,j,jmax,maxhit,nfound
       real*4 time_pos(1000),time_neg(1000),tmin,time_tolerance
       logical keep_pos(1000),keep_neg(1000),first/.true./
+      integer ndumped(4,16,2),ndumpmax
+      logical oktodump
       save
 *
 *--------------------------------------------------------
@@ -169,7 +174,7 @@
           time_tolerance=htof_tolerance
         endif
 ! Use wide window if dumping events for fitting
-        if(hdumptof.eq.1) time_tolerance=20.0
+        if(hdumptof.eq.1) time_tolerance=50.0
         if(first) then
            first=.false.
            write(*,'(/1x,''USING '',f8.2,'' NSEC WINDOW FOR'',
@@ -181,7 +186,16 @@
              write(*,'(/1x,''TOF using ADC for slewing correction'',
      >         ''  and same vecolicty for pos and neg tubes'')')
            endif
+           ndumpmax = 1000.
+           if(hdumptof.eq.1) 
+     >       write(*,'(/1x,''Dumping TDC, ADC to fort.37 for'',
+     >         ''  TOF calibration, ndumpmax='',i5)') ndumpmax
            write(*,'(/)')
+           do i=1,4
+            do j=1,16
+             ndumped(i,j,2)= 0.
+            enddo
+           enddo
         endif
         nfound = 0
         do j=1,200
@@ -265,6 +279,7 @@
 ! Find bin with most hits
         jmax=0
         maxhit=0
+        oktodump = .false.
         do j=1,200
           if(timehist(j) .gt. maxhit) then
             jmax = j
@@ -278,10 +293,18 @@
             if(time_pos(i) .gt. tmin .and.
      >         time_pos(i) .lt. tmin + time_tolerance) then
               keep_pos(i) = .true.
+              ndumped(hscin_plane_num(hit),hscin_plane_num(hit),1) =  
+     >        ndumped(hscin_plane_num(hit),hscin_plane_num(hit),1) + 1
+              if(ndumped(hscin_plane_num(hit),
+     >          hscin_plane_num(hit),1).lt.ndumpmax) oktodump=.true.
             endif
             if(time_neg(i) .gt. tmin .and.
      >         time_neg(i) .lt. tmin + time_tolerance) then
               keep_neg(i) = .true.
+              ndumped(hscin_plane_num(hit),hscin_plane_num(hit),2) =  
+     >        ndumped(hscin_plane_num(hit),hscin_plane_num(hit),2) + 1
+              if(ndumped(hscin_plane_num(hit),
+     >          hscin_plane_num(hit),2).lt.ndumpmax) oktodump=.true.
             endif
           enddo
         endif
@@ -349,6 +372,7 @@
      >               hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
               if(hntracks_fp.eq.1.and.
      >          hdumptof.eq.1.and.
+     >          oktodump.and.
      >          timehist(max(1,jmax)).gt.6) then
                 write(37,'(1x,''1'',2i3,5f10.3)') 
      >             hscin_plane_num(hit),
@@ -383,6 +407,7 @@
      >               hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
               if(hntracks_fp.eq.1.and.
      >          hdumptof.eq.1.and.
+     >          oktodump.and.
      >          timehist(max(1,jmax)).gt.6) then
                 write(37,'(1x,''2'',2i3,5f10.3)') 
      >             hscin_plane_num(hit),
