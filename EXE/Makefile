@@ -2,7 +2,7 @@
 # variable ROOTSYS is undefined, or uncomment "#ROOTSYS=" line below.
 # The same must be done in CTP/Makefile.Unix
 
-# ROOTSYS=
+ROOTSYS=
 
 
 disp_objs = glvolu.o 
@@ -40,10 +40,12 @@ endif
 TRACKINGLIB = $(LIBROOT)/libtracking.a
 HTRACKINGLIB = $(LIBROOT)/libhtracking.a
 STRACKINGLIB = $(LIBROOT)/libstracking.a
+BTRACKINGLIB = $(LIBROOT)/libbtracking.a
 HACKLIB = $(LIBROOT)/libhack.a
 CERNLIBS = -lgeant$(GEANTVER) -lpawlib -lgraflib -lgrafX11 -lpacklib -lmathlib
 OURGENLIBS = $(ENGINELIB) $(HTRACKINGLIB) $(STRACKINGLIB) $(TRACKINGLIB) \
-	$(HACKLIB) $(UTILLIB) $(CODALIB) $(CTPLIB) $(CTPCLIENTLIB) 
+	$(HACKLIB) $(UTILLIB) $(CODALIB) $(CTPLIB) $(CTPCLIENTLIB) \
+	$(BTRACKINGLIB)
 MAKEREG=$(Csoft)/../$(MYOS)/bin/makereg
 
 ifeq ($(MYOS),HPUX)

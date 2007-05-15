@@ -3,6 +3,9 @@
 *     to logical detector identification.
 *
 *     $Log$
+*     Revision 1.4.24.1  2007/05/15 02:53:02  jones
+*     Start to Bigcal code
+*
 *     Revision 1.4  1996/01/17 15:40:59  cdaq
 *     (SAW) Change roc index in arrays to start at zero.
 *     (JRA) Add structures needed to produce adc threshold setting files.
@@ -18,9 +21,9 @@
 *
 *
       integer G_DECODE_MAXWORDS                 ! Must exceed number of
-      parameter (G_DECODE_MAXWORDS=5000)        ! installed FB channels
+      parameter (G_DECODE_MAXWORDS=10000)        ! installed FB channels
       integer G_DECODE_MAXROCS
-      parameter (G_DECODE_MAXROCS=8)            ! Largest ROC # + 1
+      parameter (G_DECODE_MAXROCS=15)            ! Largest ROC # + 1
       integer G_DECODE_MAXSLOTS
       parameter (G_DECODE_MAXSLOTS=25)          ! # slots in a FB crate
       integer*4 g_decode_slotpointer            ! Pointer into map arrays
@@ -46,7 +49,7 @@
       integer*4 gmax_slot_with_adc
       integer*4 gnum_adc_channels
       parameter (gmax_roc_with_adc=3)
-      parameter (gmax_slot_with_adc=15)
+      parameter (gmax_slot_with_adc=22)
       parameter (gnum_adc_channels=64)
 
 * use slot,roc so that g_threshold_readback(1,3,7) >>> thresholds(*) gives

@@ -15,6 +15,9 @@
 *-
 *-     Created   3-Dec-1993   Kevin Beard, Hampton U.
 *-    $Log$
+*-    Revision 1.6.24.1  2007/05/15 02:55:01  jones
+*-    Start to Bigcal code
+*-
 *-    Revision 1.6  1999/11/04 20:35:15  saw
 *-    Linux/G77 compatibility fixes
 *-
@@ -86,8 +89,10 @@
       ENDIF
 
       do while(bankpointer.lt.evlength)
-         
+         !write(*,*) 'about to call g_decode_fb_bank'
          call g_decode_fb_bank(event(bankpointer), ABORT, err)
+
+         !write(*,*) 'g_decode_fb_bank successful'
          bankpointer = bankpointer + event(bankpointer) + 1
 
       enddo

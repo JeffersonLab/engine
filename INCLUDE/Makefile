@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.10.24.1  2007/05/15 02:53:03  jones
+# Start to Bigcal code
+#
 # Revision 1.10  2002/12/20 21:52:32  jones
 # Modified by Hamlet for new HMS aerogel
 #
@@ -32,7 +35,7 @@
 #
 ##include $(Csoft)/etc/Makefile
 
-ntuples = c_ntuple.cmn h_ntuple.cmn s_ntuple.cmn
+ntuples = c_ntuple.cmn h_ntuple.cmn s_ntuple.cmn b_ntuple.cmn gep_ntuple.cmn
 
 cmn = gen_data_structures.cmn gen_craw.cmn gen_decode_common.cmn \
 	gen_event_info.cmn gen_filenames.cmn gen_output_info.cmn \
@@ -55,10 +58,15 @@ cmn = gen_data_structures.cmn gen_craw.cmn gen_decode_common.cmn \
 	coin_data_structures.cmn coin_bypass_switches.cmn c_ntuple.cmn \
 	coin_filenames.cmn \
 	hack_.cmn \
-	mc_structures.cmn sos_lucite_parms.cmn
+	mc_structures.cmn sos_lucite_parms.cmn \
+	bigcal_data_structures.cmn \
+	bigcal_filenames.cmn bigcal_bypass_switches.cmn bigcal_gain_parms.cmn \
+	bigcal_geometry.cmn bigcal_shower_parms.cmn bigcal_tof_parms.cmn \
+	gep_data_structures.cmn gep_filenames.cmn
 
 dte = c_ntuple.dte gen_run_pref.dte h_sieve_ntuple.dte \
-	gen_run_info.dte h_ntuple.dte s_ntuple.dte s_sieve_ntuple.dte
+	gen_run_info.dte h_ntuple.dte s_ntuple.dte s_sieve_ntuple.dte \
+	gep_ntuple.dte b_ntuple.dte
 
 par = gen_constants.par gen_detectorids.par gen_units.par
 

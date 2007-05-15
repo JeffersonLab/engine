@@ -8,8 +8,17 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
-* Revision 1.42  2004/07/08 20:10:01  saw
-* Close CTP Root trees
+* Revision 1.42.8.1  2007/05/15 02:55:01  jones
+* Start to Bigcal code
+*
+* Revision 1.41.6.3  2004/07/09 14:12:46  saw
+* Add function calls to fill CTP ROOT Trees
+*
+* Revision 1.41.6.2  2004/06/30 19:31:49  cdaq
+* Add call to g_examine_picture_event (DJG)
+*
+* Revision 1.41.6.1  2004/06/18 11:24:11  cdaq
+*  Fixed so that runstats works under Linux
 *
 * Revision 1.41  2004/05/27 23:51:28  jones
 * Initialize EoF = .false.
@@ -194,6 +203,7 @@ c
       include 'gen_data_structures.cmn'
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
+      include 'bigcal_data_structures.cmn' 
       include 'hms_calorimeter.cmn' !for HMS calorimeter calibration
       include 'sos_calorimeter.cmn' !for SOS calorimeter calibration
 
@@ -226,6 +236,7 @@ c
       character*132 system_string
 
       real*4 ebeam,phms,thms,psos,tsos,ntarg
+      real*4 calangledeg,rcal,ycal
 
       integer start_time,lasttime
       integer time
@@ -413,6 +424,9 @@ c
           else if (gen_event_type.eq.141 .or. gen_event_type.eq.142 .or.
      &             gen_event_type.eq.144) then
 *             write(6,*) 'HV information event, event type=',gen_event_type
+	  else if (gen_event_type.eq.146..or.gen_event_type.eq.147) then
+c	     write(6,*) 'Cheesy poofs! - picture event'
+	     call g_examine_picture_event
           else if (gen_event_type.eq.251) then
              syncfilter_on = .true.
           else
@@ -451,6 +465,7 @@ c      endif
 
       call engine_command_line(.false.) ! Set CTP vars from command line
 c 
+      !write(*,*) 'about to call h_fieldcorr'
       call h_fieldcorr(ABORT,err)
 c
 c  call h_fieldcorr subroutine 
@@ -484,9 +499,9 @@ c
 * Comment out the following three lines if they cause trouble or
 * if wish is unavailable.
 *
-      write(system_string,*) 'runstats ',file(1:index(file,' ')-1), ' ',
-     $     gen_run_number, '> /dev/null &'
-      call system(system_string)
+c$$$      write(system_string,*) './runstats ',file(1:index(file,' ')-1), ' ',
+c$$$     $     gen_run_number, ' > /dev/null &'
+c$$$      call system(system_string)
 *
 *-zero entire event buffer
 *
@@ -562,6 +577,9 @@ c
 *
         if (.not.problems) then
           gen_event_type = jishft(craw(2),-16)
+
+          !write(*,*) 'gen_event_type = ',gen_event_type
+
           if(gen_event_type.le.gen_MAX_trigger_types) then
             recorded_events(gen_event_type)=recorded_events(gen_event_type)+1
             if (gen_event_type.ne.0) sum_recorded=sum_recorded+1
@@ -640,13 +658,14 @@ c
               if((physics_events-lastdump).ge.gen_run_hist_dump_interval
      &           .and.gen_run_hist_dump_interval.gt.0) then
                 lastdump=physics_events   ! Wait for next interval of dump_int.
+                !write(*,*) 'about to call g_proper_shutdown. Is this where the seg. fault occurs?'
                 call g_proper_shutdown(ABORT,err)
                 print 112,"Finished dumping histograms/scalers for first",
      &             physics_events," events"
  112            format (a,i8,a)
               endif
             else				!REAL physics event.
-c
+c        may need to change some of this stuff to look at the testlab data.
                if (analyzed_events(0) .le. 1 .and. gen_event_type .le. 3) then
                   if (skipped_events_scal .eq. 0 ) then
                   write(*,*) '************'
@@ -672,12 +691,12 @@ c
                   sum_analyzed_skipped = sum_analyzed_skipped + 1
                   goto 868
                endif
-               if ( ave_current_bcm(bcm_for_threshold_cut)  .lt. g_beam_on_thresh_cur(bcm_for_threshold_cut)
-     >               .and. gen_event_type .le. 3 .and. syncfilter_on) then
-                  skipped_lowbcm_events(gen_event_type)=skipped_lowbcm_events(gen_event_type) + 1
-                  sum_analyzed_skipped = sum_analyzed_skipped + 1
-                  goto 868
-               endif
+c$$$               if ( ave_current_bcm(bcm_for_threshold_cut)  .lt. g_beam_on_thresh_cur(bcm_for_threshold_cut)
+c$$$     >               .and. gen_event_type .le. 3 .and. syncfilter_on) then
+c$$$                  skipped_lowbcm_events(gen_event_type)=skipped_lowbcm_events(gen_event_type) + 1
+c$$$                  sum_analyzed_skipped = sum_analyzed_skipped + 1
+c$$$                  goto 868
+c$$$               endif
 c
                 call g_examine_physics_event(CRAW,ABORT,err)
                 problems = problems .or.ABORT
@@ -696,7 +715,9 @@ c
      &                 start_time=time()  !reset start time for analysis rate
                   if(.NOT.problems) then
                     if (gen_event_type.ne.0) then	!physics events (not scalers)
+                       !write(*,*) 'about to call g_reconstruction, trying to locate segfault'
                       call G_reconstruction(CRAW,ABORT,err) !COMMONs
+                      !write(*,*) 'g_reconstruction finished successfully, no segfault'
                       physics_events = physics_events + 1
                       if (gen_event_type .le. gen_max_trigger_types) then
                           analyzed_events(gen_event_type)=analyzed_events(gen_event_type)+1
@@ -723,12 +744,17 @@ c
                   else if (gen_event_type.eq.4) then
                     start_time=time()     !reset start time for analysis rate
                     groupname='ped'
+                 else if (gen_event_type.eq.5) then
+                    groupname = 'bigcal'
+                 else if (gen_event_type.eq.6) then
+                    groupname = 'gep'
                   else
                     write(6,*) 'gen_event_type= ',gen_event_type,' for call to g_keep_results'
                   endif
 
                   If(.NOT.problems .and. groupname.ne.' ') Then
-                    call G_keep_results(groupname,ABORT,err) !file away results as
+                     !write(*,*) 'about to call g_keep_results'
+                     call G_keep_results(groupname,ABORT,err) !file away results as
                     problems= problems .OR. ABORT !specified by interface
                   EndIf
 
@@ -844,6 +870,8 @@ c...  Calibrate HMS and SOS calorimeters.
       if(hdbg_tracks_cal.lt.0) call h_cal_calib(1)
 
       if(sdbg_tracks_cal.lt.0) call s_cal_calib(1)
+c...  No call to calibration routine for BigCal. We will write out a specialized "calibration" ntuple
+c...  on an as-needed basis.
 
 c...
 
@@ -894,6 +922,7 @@ c...
       call g_dump_peds
       call h_dump_peds
       call s_dump_peds
+      call b_dump_peds ! add bigcal
       print *
       print *,'Processed:'
       DO i=0,gen_MAX_trigger_types

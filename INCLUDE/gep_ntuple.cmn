@@ -1,0 +1,39 @@
+*
+      integer gep_max_ntuple_size
+      parameter (gep_max_ntuple_size=100)
+      integer default_gep_ntuple_ID
+      parameter (default_gep_ntuple_ID=9510)
+*
+*     CTPTYPE=parm
+*
+      logical gep_ntuple_exists
+      integer gep_ntuple_ID
+      integer gep_ntuple_size
+      integer gep_ntuple_IO_channel
+      character*80 gep_ntuple_name
+      character*80 gep_ntuple_title
+      character*132 gep_ntuple_directory
+      character*256 gep_ntuple_file
+      character*8 gep_ntuple_tag(gep_max_ntuple_size)
+      integer gep_ntuple_max_segmentevents
+*
+*     CTPTYPE=event
+*     
+      integer gep_ntuple_segmentevents
+      integer gep_ntuple_filesegments
+      real gep_ntuple_contents(gep_max_ntuple_size)
+*
+      common/gep_ntuple/
+     $     gep_ntuple_exists,
+     $     gep_ntuple_ID,
+     $     gep_ntuple_size,
+     $     gep_ntuple_IO_channel,
+     $     gep_ntuple_name,
+     $     gep_ntuple_title,
+     $     gep_ntuple_directory,
+     $     gep_ntuple_file,
+     $     gep_ntuple_tag,
+     $     gep_ntuple_max_segmentevents,
+     $     gep_ntuple_segmentevents,
+     $     gep_ntuple_filesegments,
+     $     gep_ntuple_contents

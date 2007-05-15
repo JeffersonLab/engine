@@ -11,8 +11,11 @@
 *-   Created  20-Nov-1993   Kevin B. Beard, HU
 *
 * $Log$
-* Revision 1.10  2004/07/08 20:09:25  saw
-* Fill CTP Root trees every event
+* Revision 1.10.8.1  2007/05/15 02:55:01  jones
+* Start to Bigcal code
+*
+* Revision 1.9.16.1  2004/07/09 14:12:47  saw
+* Add function calls to fill CTP ROOT Trees
 *
 * Revision 1.9  2002/09/25 14:38:21  jones
 *    a. character*20 groupname changed to character*(*) groupname
@@ -119,6 +122,24 @@
         err= why
       ENDIF
       ABORT= ABORT .or. FAIL
+*-BIGCAL
+      call B_keep_results(FAIL,why)
+      if(err.ne.' '.and. why.ne.' ') then
+         call G_append(err,' & '//why)
+      else if(why.ne.' ') then
+         err = why
+      endif
+      abort = abort .or. fail
+*-GEp
+      call GEp_keep_results(FAIL,why)
+      if(err.ne.' '.and.why.ne.' ') then
+         call G_append(err,' & '//why)
+      else if(why.ne.' ') then
+         err = why
+      endif
+      abort = abort .or. fail
+         
+
 *
       IF(ABORT .or. err.NE.' ') call G_add_path(here,err)
 *

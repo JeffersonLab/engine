@@ -10,8 +10,11 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 * $Log$
-* Revision 1.14  2004/07/08 20:09:47  saw
-* Flush CTP Root trees
+* Revision 1.14.8.1  2007/05/15 02:55:01  jones
+* Start to Bigcal code
+*
+* Revision 1.13.10.1  2004/07/09 14:12:47  saw
+* Add function calls to fill CTP ROOT Trees
 *
 * Revision 1.13  2004/02/17 17:27:10  jones
 * Only dump histograms when g_histout_filename is set.
@@ -68,7 +71,10 @@
       character*(*) err
 
       logical bad_report,bad_HMS,bad_SOS,bad_COIN,bad_HBK,bad_hack
+      logical bad_BIGCAL
+      logical bad_GEP
       character*132 err_report,err_HMS,err_SOS,err_COIN,err_HBK,err_hack
+      character*132 err_BIGCAL,err_GEP
       integer SPAREID
       parameter (SPAREID=67)
 
@@ -79,6 +85,7 @@
       include 'hms_tracking.cmn'
       include 'sos_data_structures.cmn'
       include 'sos_tracking.cmn'
+      include 'bigcal_data_structures.cmn'
 
       integer ierr
       character*132 file
@@ -102,7 +109,11 @@
 
       call S_proper_shutdown(SPAREID,bad_SOS,err_SOS)
 
+      call B_proper_shutdown(SPAREID,bad_BIGCAL,err_BIGCAL)
+
       call C_proper_shutdown(SPAREID,bad_COIN,err_COIN)
+
+      call GEP_proper_shutdown(SPAREID,bad_GEP,err_GEP)
 
       close(unit=SPAREID)
 
@@ -129,7 +140,7 @@
       endif
 
       ABORT= bad_HMS .or. bad_SOS .or. bad_COIN .or. bad_HBK
-     $     .or. bad_report
+     $     .or. bad_report .or. bad_BIGCAL.or.bad_GEP
       err= ' '
       IF(ABORT) THEN                    !assemble error message
          if(bad_report) err = err_report
@@ -153,6 +164,18 @@
          ElseIf(bad_HMS) Then
             err= err_HMS
          EndIf
+         If(bad_BIGCAL .and. err .ne. ' ') then
+            call G_prepend(err_BIGCAL//' &',err)
+         else if(bad_BIGCAL) then
+            err = err_BIGCAL
+         endif
+
+         if(bad_GEP .and. err .ne.' ') then
+            call G_prepend(err_GEP//' &',err)
+         else if(bad_GEP) then
+            err = err_GEP
+         end if
+            
          call G_add_path(here,err)
       ENDIF
 

@@ -1,0 +1,30 @@
+      integer BMAX_Ntuple_size
+      parameter (BMAX_Ntuple_size=100)
+      integer default_b_Ntuple_ID
+      parameter (default_b_Ntuple_ID=9030)
+*
+*     CTPTYPE=parm
+*
+      logical b_Ntuple_exists
+      integer b_Ntuple_ID
+      integer b_Ntuple_size
+      integer b_Ntuple_IOchannel
+      character*80 b_Ntuple_name
+      character*80 b_Ntuple_title
+      character*132 b_Ntuple_directory
+      character*256 b_Ntuple_file
+      character*8 b_Ntuple_tag(BMAX_Ntuple_size)
+      integer b_Ntuple_max_segmentevents
+*
+*     CTPTYPE=event
+*
+      integer b_Ntuple_segmentevents
+      integer b_Ntuple_filesegments
+      real b_Ntuple_contents(BMAX_Ntuple_size)
+
+      common/BIGCAL_Ntuple/
+     $     b_Ntuple_exists,b_Ntuple_ID,b_Ntuple_size,b_Ntuple_IOchannel,
+     $     b_Ntuple_name,b_Ntuple_title,b_Ntuple_directory,
+     $     b_Ntuple_file,b_Ntuple_tag,b_Ntuple_max_segmentevents,
+     $     b_Ntuple_segmentevents,b_Ntuple_filesegments,
+     $     b_Ntuple_contents

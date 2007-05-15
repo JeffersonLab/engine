@@ -1,0 +1,10 @@
+	  data b_ntuple_exists/.false./
+	  data b_ntuple_id/0/
+	  data b_ntuple_size/0/
+	  data b_ntuple_iochannel/0/
+	  data b_ntuple_name/' '/
+	  data b_ntuple_title/' '/
+	  data b_ntuple_directory/' '/
+	  data b_ntuple_file/' '/
+	  data b_ntuple_tag/bmax_ntuple_size*' '/
+	  data b_ntuple_contents/bmax_ntuple_size*0/

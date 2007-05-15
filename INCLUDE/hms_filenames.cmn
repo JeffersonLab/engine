@@ -2,6 +2,9 @@
 *
 *-Common block with filenames
 * $Log$
+* Revision 1.5.6.1  2007/05/15 02:53:02  jones
+* Start to Bigcal code
+*
 * Revision 1.5  2005/02/16 20:46:02  saw
 * Add filename for hms root tree
 *
@@ -26,6 +29,7 @@
       character*80 h_threshold_output_filename
       character*80 h_pedestal_output_filename
       character*80 h_tree_filename
+      character*80 h_angle_output_filename
 *
       common /hms_filenames/
      $     h_recon_coeff_filename,
@@ -34,5 +38,6 @@
      $     h_report_output_filename,
      $     h_threshold_output_filename,
      $     h_pedestal_output_filename,
+     $     h_angle_output_filename,
      $     h_tree_filename
 *

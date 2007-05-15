@@ -18,10 +18,10 @@ else
 endif
 
 .PHONY: utilsubs ctp coda engine tracking stracking htracking hack \
-	oneev coda port t20 exe
+	oneev coda port t20 btracking exe 
 
 all: include utilsubs ctp coda tracking htracking stracking hack port \
-	engine exe syncfilter
+	engine  btracking exe syncfilter
 
 include:
 	$(MAKE) -C INCLUDE
@@ -40,6 +40,9 @@ stracking:
 
 htracking:
 	$(MAKE) -C HTRACKING
+
+btracking:
+	$(MAKE) -C BTRACKING
 
 hack:
 	$(MAKE) -C HACK
@@ -63,6 +66,7 @@ exe:
 
 syncfilter:
 	$(MAKE) -C SYNCFILTER
+
 #broken
 clean:
 	-@rm UTILSUBS/O.$(OSTYPE)/*.[do]
@@ -80,6 +84,7 @@ clean:
 	-@rm ../$(OSTYPE)/bin/*
 	-@rm CTP/daVarRpc_svc.c 
 	-@rm CTP/daVarRpc_xdr.c CTP/daVarRpc_clnt.c CTP/daVarRpc.h
+	-@rm BTRACKING/O.$(OSTYPE)/*.[do]
 #	$(MAKE) -C UTILSUBS clean
 #	$(MAKE) -C ENGINE clean
 #	$(MAKE) -C CTP clean

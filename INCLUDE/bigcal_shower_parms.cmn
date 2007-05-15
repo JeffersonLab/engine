@@ -1,0 +1,23 @@
+*%%   include 'bigcal_data_structures.cmn'
+*
+*     CTPTYPE=parm
+*     
+*     parameters for shower cluster coordinate reconstruction: 
+*     x = p0*arctan(p1*xmom**4 + p2*xmom**3 + p3*xmom**2 + p4*xmom + p5)
+*     y = p0*arctan(p1*ymom**4 + p2*ymom**3 + p3*ymom**2 + p4*ymom + p5)
+*     p1 and p2 generally small, p0,p3,p4,p5 typically most important
+      integer*4 BIGCAL_SHOWER_NPAR
+      parameter(BIGCAL_SHOWER_NPAR=6)
+
+      real*4 BIGCAL_PROT_XPAR(BIGCAL_PROT_NX,BIGCAL_SHOWER_NPAR)
+      real*4 BIGCAL_PROT_YPAR(BIGCAL_PROT_NY,BIGCAL_SHOWER_NPAR)
+      real*4 BIGCAL_RCS_XPAR(BIGCAL_RCS_NX,BIGCAL_SHOWER_NPAR)
+      real*4 BIGCAL_RCS_YPAR(BIGCAL_RCS_NY,BIGCAL_SHOWER_NPAR)
+      common/bigcal_shower_parms/
+     $     BIGCAL_PROT_XPAR,
+     $     BIGCAL_PROT_YPAR,
+     $     BIGCAL_RCS_XPAR,
+     $     BIGCAL_RCS_YPAR
+      
+
+      

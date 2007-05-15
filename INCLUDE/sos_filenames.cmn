@@ -2,6 +2,9 @@
 *
 *-Common block with filenames
 * $Log$
+* Revision 1.5.6.1  2007/05/15 02:53:03  jones
+* Start to Bigcal code
+*
 * Revision 1.5  2005/02/16 20:44:45  saw
 * Add filename for sos root tree
 *
@@ -26,6 +29,7 @@
       character*80 s_threshold_output_filename
       character*80 s_pedestal_output_filename
       character*80 s_tree_filename
+      character*80 s_angle_output_filename
 *
       common /sos_filenames/
      $     s_recon_coeff_filename,
@@ -34,5 +38,6 @@
      $     s_report_output_filename,
      $     s_threshold_output_filename,
      $     s_pedestal_output_filename,
+     $     s_angle_output_filename,
      $     s_tree_filename
 *

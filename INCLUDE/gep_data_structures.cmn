@@ -1,0 +1,48 @@
+*
+*     CTPTYPE=event
+*
+      real*4 GEP_ctime_hms ! HMS coincidence time
+      real*4 GEP_ctime_cal ! BigCal coincidence time
+      real*4 GEP_ctime_cor ! "corrected" coincidence time
+      real*4 GEP_Q2 ! 4 momentum transfer squared
+      real*4 GEP_E_electron ! scattered electron energy in GeV
+      real*4 GEP_P_proton ! scattered proton momentum in GeV
+      real*4 GEP_delta_p ! proton p - p0 in %, where p0 is HMS central mom.
+      real*4 GEP_epsilon ! virtual photon long. polarization, usual definition
+      real*4 GEP_etheta_deg ! electron scattering angle in degrees
+      real*4 GEP_ptheta_deg ! proton scattering angle in degrees
+      real*4 GEP_ephi_deg ! electron azimuthal scattering angle in degrees
+      real*4 GEP_pphi_deg ! proton azimuthal scattering angle in degrees
+      real*4 GEP_Emiss ! missing energy in GeV
+      real*4 GEP_Pmissx ! x cpt. of missing momentum
+      real*4 GEP_Pmissy ! y cpt. of missing momentum
+      real*4 GEP_Pmissz ! z cpt. of missing momentum
+      real*4 GEP_Pmiss ! magnitude of missing momentum in GeV
+      real*4 GEP_W2 ! invariant mass of detected particles: should equal Mp^2
+      real*4 GEP_Mmiss ! missing mass = sqrt(W^2 - Mp^2)
+c     For GEp, all our "missing" quantities should be zero, because W^2 = M^2,
+c     and the e- and p carry all of the energy and momentum in the reaction
+c     by defining both polar and azimuthal scattering angles theta and phi, we
+c     can define the unit vector in the q-direction, which defines the coord. 
+c     system for the polarization measurement. 
+      
+      common/GEP_CPHYSICS/
+     $     GEP_ctime_hms,
+     $     GEP_ctime_cal,
+     $     GEP_ctime_cor,
+     $     GEP_Q2,
+     $     GEP_E_electron,
+     $     GEP_P_proton,
+     $     GEP_delta_p,
+     $     GEP_epsilon,
+     $     GEP_etheta_deg,
+     $     GEP_ptheta_deg,
+     $     GEP_ephi_deg,
+     $     GEP_pphi_deg,
+     $     GEP_Emiss,
+     $     GEP_Pmissx,
+     $     GEP_Pmissy,
+     $     GEP_Pmissz,
+     $     GEP_Pmiss,
+     $     GEP_W2,
+     $     GEP_Mmiss

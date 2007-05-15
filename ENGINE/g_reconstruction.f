@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.1  2007/05/15 02:55:01  jones
+* Start to Bigcal code
+*
 * Revision 1.13  1996/01/22 15:23:34  saw
 * (SAW) Add calls to analyze beam position
 *
@@ -79,18 +82,27 @@
       ABORT= .FALSE.
       err= ' '                                  !erase any old errors
 *
+
+      !write(*,*) 'segfault occurs somewhere in g_reconstruction.'
+      !write(*,*) 'about to call g_decode_event_by_banks'
       call G_decode_event_by_banks(event,ABORT,err)
       IF(ABORT) THEN
          call G_add_path(here,err)
          RETURN
       ENDIF
+
+      !write(*,*) 'g_decode_event_by_banks finished successfully'
+
 *
 *
 *  INTERRUPT ANALYSIS FOR PEDESTAL EVENTS.
 *
 *
       IF(gen_event_type .eq. 4) then            !pedestal event
-        call g_analyze_pedestal(ABORT,err)
+         !write(*,*) 'calling g_analyze_pedestal'
+         call g_analyze_pedestal(ABORT,err)
+
+         !write(*,*) 'g_analyze_pedestal successful'
         update_peds = .true.                    !need to recalculate pedestals
         RETURN
       ENDIF
@@ -100,20 +112,31 @@
 *  end of the pedestal handling call.
 *
       IF(update_peds) then
+         !write(*,*) 'calling g_calc_pedestal'
         call g_calc_pedestal(ABORT,err)
+        !write(*,*) 'g_calc_pedestal successful'
         update_peds = .false.
       ENDIF
 *
 *-Beamline reconstruction
-      IF(gen_event_type.ge.1 .and. gen_event_type.le.3) then  !HMS/SOS/COIN trig
+*-for GEp, avoid event types 2 and 3!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (No SOS!)
+c      IF(gen_event_type.ge.1 .and. gen_event_type.le.3) then  !HMS/SOS/COIN trig
+      if(gen_event_type.eq.1 .or. gen_event_type.eq.5 .or. 
+     $     gen_event_type.eq.6) then ! 1 = HMS singles, 5 = BigCal singles, 6 = HMS-BigCal coin.
+        
+         !write(*,*) 'calling g_trans_misc'
         call g_trans_misc(FAIL,why)
+        !write(*,*) 'g_trans_misc successful'
         IF(err.NE.' ' .and. why.NE.' ') THEN
           call G_append(err,' & '//why)
         ELSEIF(why.NE.' ') THEN
           err= why
         ENDIF
         ABORT= ABORT .or. FAIL
-        call g_analyze_misc(FAIL,why)
+
+        !write(*,*) 'calling g_analyze_misc'
+c        call g_analyze_misc(FAIL,why)
+        !write(*,*) 'g_analyze_misc successful'
         IF(err.NE.' ' .and. why.NE.' ') THEN
           call G_append(err,' & '//why)
         ELSEIF(why.NE.' ') THEN
@@ -123,8 +146,10 @@
       ENDIF
 *
 *-HMS reconstruction
-      IF(gen_event_type.eq.1 .or. gen_event_type.eq.3) then  !HMS/COIN trig
-        call H_reconstruction(FAIL,why)
+c      IF(gen_event_type.eq.1 .or. gen_event_type.eq.3) then  !HMS/COIN trig
+      
+      if(gen_event_type.eq.1 .or. gen_event_type .eq. 6) then !HMS/COIN trig
+         call H_reconstruction(FAIL,why)
         IF(err.NE.' ' .and. why.NE.' ') THEN
           call G_append(err,' & '//why)
         ELSEIF(why.NE.' ') THEN
@@ -143,6 +168,30 @@
         ENDIF
         ABORT= ABORT .or. FAIL
       ENDIF
+*-BIGCAL reconstruction
+      if(gen_event_type.eq.5 .or. gen_event_type.eq.6) then !BIGCAL/HMS-BIGCAL COIN
+         !write(*,*) 'calling b_reconstruction'
+         call B_reconstruction(FAIL,why)
+         !write(*,*) 'b_reconstruction successful'
+         IF(err.NE.' ' .and. why.NE.' ') THEN
+            call G_append(err,' & '//why)
+         ELSEIF(why.NE.' ') THEN
+            err= why
+         ENDIF
+         ABORT= ABORT .or. FAIL
+      endif
+*-GEP-COIN reconstruction
+      if(gen_event_type.eq.6) then !GEp-coin. trig
+         !write(*,*) 'calling gep_reconstruction'
+         call GEp_reconstruction(FAIL,why)
+         !write(*,*) 'gep_reconstruction successful'
+         if(err.ne.' '.and.why.ne.' ') then
+            call G_append(err,' & '//why)
+         else if(why.ne.' ') then
+            err = why
+         endif
+         ABORT = ABORT.or.FAIL
+      endif
 *
 *-COIN reconstruction
       IF(gen_event_type.eq.3) then  !COIN trig

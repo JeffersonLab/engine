@@ -1,5 +1,14 @@
 #
 # $Log$
+# Revision 1.28.16.1  2007/05/15 02:55:01  jones
+# Start to Bigcal code
+#
+# Revision 1.28.8.2  2004/09/07 18:02:56  cdaq
+# updated to check magnets and beam positions
+#
+# Revision 1.28.8.1  2004/06/30 19:34:55  cdaq
+# Add g_examine_picture_event.f (DJG)
+#
 # Revision 1.28  2004/02/18 14:06:53  jones
 # Updated compile subroutines needed to allow the possibility of segmenting rzdat files.
 #
@@ -110,8 +119,9 @@ general_source = $(decode_source) g_clear_event.f \
 	g_calc_beam_pedestal.f g_calc_bpm_pedestal.f g_calc_raster_pedestal.f \
 	g_target_initialize.f g_trans_misc.f g_dump_peds.f g_get_next_event.f \
 	g_preproc_event.f g_preproc_open.f g_write_event.f \
-	g_examine_epics_event.f \
-	g_analyze_scaler_bank.f g_analyze_scalers_by_banks.f g_apply_offsets.f 
+	g_examine_epics_event.f g_examine_picture_event.f\
+	g_analyze_scaler_bank.f g_analyze_scalers_by_banks.f g_apply_offsets.f \
+	h_field03.f params03.f 
 hms_source = h_clear_event.f h_initialize.f h_keep_results.f \
 	h_proper_shutdown.f h_reset_event.f \
 	h_register_variables.f h_apply_offsets.f h_fieldcorr.f \
@@ -123,7 +133,13 @@ sos_source = s_clear_event.f s_initialize.f s_keep_results.f \
 coin_source = c_register_variables.f c_clear_event.f c_initialize.f \
 	c_keep_results.f c_proper_shutdown.f c_reconstruction.f \
 	c_reset_event.f c_physics.f \
-	c_ntuple_close.f c_ntuple_open.f c_ntuple_change.f       
+	c_ntuple_close.f c_ntuple_open.f c_ntuple_change.f    
+bigcal_source = b_clear_event.f b_initialize.f b_keep_results.f b_ntuple_change.f \
+	b_ntuple_close.f b_ntuple_open.f b_proper_shutdown.f b_register_variables.f \
+	b_reset_event.f
+gep_source = gep_clear_event.f gep_initialize.f gep_keep_results.f gep_ntuple_change.f \
+	gep_ntuple_close.f gep_ntuple_open.f gep_physics.f gep_proper_shutdown.f \
+	gep_reconstruction.f gep_register_variables.f gep_reset_event.f
 ntuple_source = g_ntuple_init.f g_ntuple_shutdown.f \
 	c_ntuple_clear.f c_ntuple_init.f c_ntuple_keep.f \
 	c_ntuple_register.f c_ntuple_shutdown.f \
@@ -134,17 +150,24 @@ ntuple_source = g_ntuple_init.f g_ntuple_shutdown.f \
 	h_sv_nt_init.f h_sv_nt_keep.f \
 	h_sv_nt_register.f h_sv_nt_shutdown.f \
 	s_sv_nt_init.f s_sv_nt_keep.f \
-	s_sv_nt_register.f s_sv_nt_shutdown.f
+	s_sv_nt_register.f s_sv_nt_shutdown.f \
+	b_ntuple_clear.f b_ntuple_init.f b_ntuple_keep.f \
+	b_ntuple_register.f b_ntuple_shutdown.f \
+	gep_ntuple_clear.f gep_ntuple_init.f gep_ntuple_keep.f \
+	gep_ntuple_register.f gep_ntuple_shutdown.f
 gmakeregstuff = r_gen_filenames.f r_gen_run_info.f r_gen_event_info.f \
 	r_gen_scalers.f r_gen_run_pref.f r_gen_data_structures.f
 cmakeregstuff = r_coin_filenames.f r_c_ntuple.f r_coin_data_structures.f
 hmakeregstuff = r_h_ntuple.f r_h_sieve_ntuple.f r_hms_data_structures.f
 smakeregstuff = r_s_ntuple.f r_sos_data_structures.f
+bmakeregstuff = r_b_ntuple.f r_bigcal_data_structures.f r_bigcal_filenames.f
+gepmakeregstuff = r_gep_ntuple.f r_gep_filenames.f r_gep_data_structures.f
 replay_source = engine.f
 
 libsources =  $(coin_source) $(sos_source) $(hms_source) $(general_source) \
-	$(ntuple_source) $(gmakeregstuff) $(cmakeregstuff) \
-	$(hmakeregstuff) $(smakeregstuff)
+	$(bigcal_source) $(gep_source) $(ntuple_source) $(gmakeregstuff) \
+	$(cmakeregstuff) $(hmakeregstuff) $(smakeregstuff)  $(bmakeregstuff) \
+	$(gepmakeregstuff)
 
 ifeq ($(ARCH),AIX)
 xlibsources := $(filter-out g_decode_config.f,$(libsources))
@@ -175,6 +198,7 @@ DEPLIBS = $(LIBROOT)/libengine.a \
 	$(LIBROOT)/libhtracking.a $(LIBROOT)/libstracking.a \
 	$(LIBROOT)/libengine.a \
 	$(LIBROOT)/libtracking.a $(LIBROOT)/libhack.a \
+	$(LIBROOT)/libbtracking.a \
 	$(LIBROOT)/libutils.a #$(LIBROOT)/libctp.a
 #$(LIBROOT)/libgmc.a 
 
@@ -244,6 +268,8 @@ $(LIBROOT)/libhtracking.a:
 
 $(LIBROOT)/libstracking.a:
 	@make -C ../../STRACKING
+$(LIBROOT)/libbtracking.a:
+	@make -C ../../BTRACKING
 
 $(LIBROOT)/libctp.a:
 	@make -C ../../CTP

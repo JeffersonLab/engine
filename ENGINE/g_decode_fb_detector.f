@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.1  2007/05/15 02:55:01  jones
+* Start to Bigcal code
+*
 * Revision 1.23  2003/09/05 15:31:23  jones
 * Merge in online03 changes (mkj)
 *
@@ -152,10 +155,10 @@
         slot = jiand(JISHFT(evfrag(pointer),-27),'1F'X)
         if(slot.ne.oslot.or.firsttime) then
           if (slot.le.0 .or. slot.ge.26 .or. roc.le.0 .or. roc.ge.9) then
-            write (6,'(a,i3,i3,i3,z10,a,i5,a,i8)') 'roc,slot,oslot,evfrag=',roc,
-     &           slot,oslot,evfrag(pointer),
-     $           '(p=',pointer,') for event #',gen_event_id_number
-            write (6,'(a,i3)') '  Probably after slot',jiand(JISHFT(evfrag(pointer-1),-27),'1F'X)
+c$$$            write (6,'(a,i3,i3,i3,z10,a,i5,a,i8)') 'roc,slot,oslot,evfrag=',roc,
+c$$$     &           slot,oslot,evfrag(pointer),
+c$$$     $           '(p=',pointer,') for event #',gen_event_id_number
+c$$$            write (6,'(a,i3)') '  Probably after slot',jiand(JISHFT(evfrag(pointer-1),-27),'1F'X)
             pointer = pointer + 1
             goto 987
           else

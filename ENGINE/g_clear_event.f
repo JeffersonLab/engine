@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard, Hampton U.
 *-   Modified 19-Nov-1993   Kevin B. Beard for new error standards
 *-      $Log$
+*-      Revision 1.10.24.1  2007/05/15 02:55:01  jones
+*-      Start to Bigcal code
+*-
 *-      Revision 1.10  1996/09/04 14:33:10  saw
 *-      (SAW) Don't use gmc_abort since gmc stuff not called
 *-
@@ -59,14 +62,18 @@
 *
       INCLUDE 'gen_data_structures.cmn'
 *
-      logical HMS_ABORT,SOS_ABORT,COIN_ABORT,gmc_abort
-      character*132 HMS_err,SOS_err,COIN_err,gmc_err
+      logical HMS_ABORT,SOS_ABORT,COIN_ABORT,gmc_abort,BIGCAL_ABORT
+      logical GEP_ABORT
+      character*132 HMS_err,SOS_err,COIN_err,gmc_err,BIGCAL_err
+      character*132 GEP_err
 *
 *--------------------------------------------------------
 *
       err= ' '
       HMS_err= ' '
       SOS_err= ' '
+      BIGCAL_err=' '
+      GEP_err=' '
       gmc_err= ' '
 *
       GUNINST_TOT_HITS = 0              ! Unistrumented hit counter
@@ -77,16 +84,24 @@
       call S_clear_event(SOS_ABORT,SOS_err)
 *
       call C_clear_event(COIN_ABORT,COIN_err)
+
+      call B_clear_event(BIGCAL_ABORT,BIGCAL_err) ! BigCal
+
+      call GEp_clear_event(GEP_ABORT,GEP_err) ! GEp-coin
 *
 **      call gmc_mc_clear(gmc_abort,gmc_err)
 *
-      ABORT= HMS_ABORT .or. SOS_ABORT .or. COIN_ABORT !.or. gmc_abort
+      ABORT= HMS_ABORT .or. SOS_ABORT .or. COIN_ABORT .or. BIGCAL_ABORT
+     $     .or. GEP_ABORT
+*.or. gmc_abort
 *
       IF(ABORT) THEN
          err= COIN_err
          call G_prepend(SOS_err,err)
          call G_prepend(HMS_err,err)
          call g_prepend(gmc_err,err)
+         call g_prepend(BIGCAL_err,err)
+         call g_prepend(GEP_err,err)
          call G_add_path(here,err)
       ELSE
          err= ' '

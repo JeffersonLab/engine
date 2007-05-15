@@ -1,0 +1,10 @@
+*
+*     CTPTYPE=parm
+*
+      character*80 gep_report_template_filename
+      character*80 gep_report_blockname
+      character*80 gep_report_output_filename
+      common/gep_filenames/
+     $     gep_report_template_filename,
+     $     gep_report_blockname,
+     $     gep_report_output_filename

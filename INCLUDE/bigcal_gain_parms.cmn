@@ -1,0 +1,148 @@
+      integer*4 BIGCAL_PROT_NPMT
+      parameter(BIGCAL_PROT_NPMT=1024)
+      integer*4 BIGCAL_RCS_NPMT
+      parameter(BIGCAL_RCS_NPMT=720)
+      integer*4 BIGCAL_TRIG_NGROUP
+      parameter(BIGCAL_TRIG_NGROUP=38)
+*
+*     CTPTYPE=event
+*
+*     arrays for analysis of ped. events:
+      integer*4 bigcal_prot_ped_sum2 ! sum of pedestal squared
+      integer*4 bigcal_prot_ped_sum ! sum of pedestal
+      integer*4 bigcal_prot_ped_num ! number of ped. events
+      integer*4 bigcal_prot_num_ped_changes ! number of >2sigma changes
+      integer*4 bigcal_prot_change_irow ! iy of changed ped.
+      integer*4 bigcal_prot_change_icol ! ix of changed ped.
+      real*4 bigcal_prot_ped_change ! amount of change
+      real*4 bigcal_prot_new_rms    ! new rms value
+      real*4 bigcal_prot_new_ped    ! new mean value
+      common/bigcal_prot_ped_stats/
+     $     bigcal_prot_ped_sum2(BIGCAL_PROT_NPMT),
+     $     bigcal_prot_ped_sum(BIGCAL_PROT_NPMT),
+     $     bigcal_prot_ped_num(BIGCAL_PROT_NPMT),
+     $     bigcal_prot_num_ped_changes,
+     $     bigcal_prot_change_irow(BIGCAL_PROT_NPMT),
+     $     bigcal_prot_change_icol(BIGCAL_PROT_NPMT),
+     $     bigcal_prot_ped_change(BIGCAL_PROT_NPMT),
+     $     bigcal_prot_new_rms(BIGCAL_PROT_NPMT),
+     $     bigcal_prot_new_ped(BIGCAL_PROT_NPMT)
+
+      integer*4 bigcal_rcs_ped_sum2 ! sum of pedestal squared
+      integer*4 bigcal_rcs_ped_sum ! sum of pedestal
+      integer*4 bigcal_rcs_ped_num ! number of ped. events
+      integer*4 bigcal_rcs_num_ped_changes ! number of >2sigma changes
+      integer*4 bigcal_rcs_change_irow ! iy of changed ped.
+      integer*4 bigcal_rcs_change_icol ! ix of changed ped.
+      real*4 bigcal_rcs_ped_change ! amount of change
+      real*4 bigcal_rcs_new_rms    ! new rms value
+      real*4 bigcal_rcs_new_ped    ! new mean value
+      common/bigcal_rcs_ped_stats/
+     $     bigcal_rcs_ped_sum2(BIGCAL_RCS_NPMT),
+     $     bigcal_rcs_ped_sum(BIGCAL_RCS_NPMT),
+     $     bigcal_rcs_ped_num(BIGCAL_RCS_NPMT),
+     $     bigcal_rcs_num_ped_changes,
+     $     bigcal_rcs_change_irow(BIGCAL_RCS_NPMT),
+     $     bigcal_rcs_change_icol(BIGCAL_RCS_NPMT),
+     $     bigcal_rcs_ped_change(BIGCAL_RCS_NPMT),
+     $     bigcal_rcs_new_rms(BIGCAL_RCS_NPMT),
+     $     bigcal_rcs_new_ped(BIGCAL_RCS_NPMT)
+      
+      integer*4 bigcal_trig_ped_sum2 ! sum of pedestal squared
+      integer*4 bigcal_trig_ped_sum ! sum of pedestal
+      integer*4 bigcal_trig_ped_num ! number of ped. events
+      integer*4 bigcal_trig_num_ped_changes ! number of >2sigma changes
+      integer*4 bigcal_trig_change_irow ! iy of changed ped.
+      integer*4 bigcal_trig_change_icol ! ix of changed ped.
+      real*4 bigcal_trig_ped_change ! amount of change
+      real*4 bigcal_trig_new_rms    ! new rms value
+      real*4 bigcal_trig_new_ped    ! new mean value
+      common/bigcal_trig_ped_stats/
+     $     bigcal_trig_ped_sum2(BIGCAL_TRIG_NGROUP),
+     $     bigcal_trig_ped_sum(BIGCAL_TRIG_NGROUP),
+     $     bigcal_trig_ped_num(BIGCAL_TRIG_NGROUP),
+     $     bigcal_trig_num_ped_changes,
+     $     bigcal_trig_change_irow(BIGCAL_TRIG_NGROUP),
+     $     bigcal_trig_change_icol(BIGCAL_TRIG_NGROUP),
+     $     bigcal_trig_ped_change(BIGCAL_TRIG_NGROUP),
+     $     bigcal_trig_new_rms(BIGCAL_TRIG_NGROUP),
+     $     bigcal_trig_new_ped(BIGCAL_TRIG_NGROUP)
+
+      real*4 bigcal_prot_new_threshold
+      real*4 bigcal_rcs_new_threshold
+      real*4 bigcal_trig_new_threshold
+      common/bigcal_new_adc_threshold/
+     $     bigcal_prot_new_threshold(BIGCAL_PROT_NPMT),
+     $     bigcal_rcs_new_threshold(BIGCAL_RCS_NPMT),
+     $     bigcal_trig_new_threshold(BIGCAL_TRIG_NGROUP)
+
+*
+*     CTPTYPE=parm
+*     
+*     parameters for analysis of ped events:
+      integer*4 bigcal_prot_min_peds
+      integer*4 bigcal_prot_ped_limit
+      integer*4 bigcal_rcs_min_peds
+      integer*4 bigcal_rcs_ped_limit
+      integer*4 bigcal_trig_min_peds
+      integer*4 bigcal_trig_ped_limit
+      common/bigcal_ped_stat_parms/
+     $     bigcal_prot_min_peds,
+     $     bigcal_prot_ped_limit(BIGCAL_PROT_NPMT),
+     $     bigcal_rcs_min_peds,
+     $     bigcal_rcs_ped_limit(BIGCAL_RCS_NPMT),
+     $     bigcal_trig_min_peds,
+     $     bigcal_trig_ped_limit(BIGCAL_TRIG_NGROUP)
+
+*     Bigcal ADC pedestals for analysis of physics events:
+      
+
+      real*4 bigcal_prot_ped_mean
+      real*4 bigcal_prot_ped_rms
+      real*4 bigcal_prot_adc_threshold
+      real*4 bigcal_rcs_ped_mean
+      real*4 bigcal_rcs_ped_rms
+      real*4 bigcal_rcs_adc_threshold
+      real*4 bigcal_trig_ped_mean
+      real*4 bigcal_trig_ped_rms
+      real*4 bigcal_trig_adc_threshold
+      common/bigcal_pedestals/
+     $     bigcal_prot_ped_mean(BIGCAL_PROT_NPMT),
+     $     bigcal_prot_ped_rms(BIGCAL_PROT_NPMT),
+     $     bigcal_prot_adc_threshold(BIGCAL_PROT_NPMT),
+     $     bigcal_rcs_ped_mean(BIGCAL_RCS_NPMT),
+     $     bigcal_rcs_ped_rms(BIGCAL_RCS_NPMT),
+     $     bigcal_rcs_adc_threshold(BIGCAL_RCS_NPMT),
+     $     bigcal_trig_ped_mean(BIGCAL_TRIG_NGROUP),
+     $     bigcal_trig_ped_rms(BIGCAL_TRIG_NGROUP),
+     $     bigcal_trig_adc_threshold(BIGCAL_TRIG_NGROUP) 
+
+*     calibration constants:
+      real*4 bigcal_prot_cfac
+      real*4 bigcal_rcs_cfac
+      real*4 bigcal_trig_cfac
+      common/bigcal_calib_const/
+     $     bigcal_prot_cfac(BIGCAL_PROT_NPMT),
+     $     bigcal_rcs_cfac(BIGCAL_RCS_NPMT),
+     $     bigcal_trig_cfac(BIGCAL_TRIG_NGROUP)
+*     relative gains and correction factors. unclear at this moment if and how we will 
+*     use these parameters. 
+      real*4 bigcal_prot_gain_last ! relative gain at most recent calibration
+      real*4 bigcal_prot_gain_now ! current relative gain (how is this determined?) 
+      real*4 bigcal_prot_gain_cor ! correction factor = now/last
+      real*4 bigcal_rcs_gain_last 
+      real*4 bigcal_rcs_gain_now
+      real*4 bigcal_rcs_gain_cor
+      real*4 bigcal_trig_gain_last
+      real*4 bigcal_trig_gain_now
+      real*4 bigcal_trig_gain_cor
+      common/bigcal_gain_monitor/
+     $     bigcal_prot_gain_last(BIGCAL_PROT_NPMT),
+     $     bigcal_prot_gain_now(BIGCAL_PROT_NPMT),
+     $     bigcal_prot_gain_cor(BIGCAL_PROT_NPMT),
+     $     bigcal_rcs_gain_last(BIGCAL_RCS_NPMT),
+     $     bigcal_rcs_gain_now(BIGCAL_RCS_NPMT),
+     $     bigcal_rcs_gain_cor(BIGCAL_RCS_NPMT),
+     $     bigcal_trig_gain_last(BIGCAL_TRIG_NGROUP),
+     $     bigcal_trig_gain_now(BIGCAL_TRIG_NGROUP),
+     $     bigcal_trig_gain_cor(BIGCAL_TRIG_NGROUP)

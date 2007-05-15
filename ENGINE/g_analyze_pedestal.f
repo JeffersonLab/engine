@@ -1,6 +1,9 @@
       subroutine g_analyze_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.2.24.1  2007/05/15 02:55:01  jones
+* Start to Bigcal code
+*
 * Revision 1.2  1996/01/22 15:09:24  saw
 * (JRA) Add call to g_analyze_beam_pedestal
 *
@@ -23,6 +26,12 @@
       endif
 *
       call h_analyze_pedestal(ABORT,err)
+      if(ABORT) then
+         call G_add_path(here,err)
+         return
+      endif
+*
+      call b_analyze_pedestal(ABORT,err) ! bigcal
       if(ABORT) then
          call G_add_path(here,err)
          return

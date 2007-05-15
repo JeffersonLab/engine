@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
 * $Log$
+* Revision 1.11.24.1  2007/05/15 02:55:01  jones
+* Start to Bigcal code
+*
 * Revision 1.11  1996/01/22 15:15:01  saw
 * (JRA) Put BPM/Raster data into MISC data structures
 *
@@ -62,7 +65,8 @@
       character*(*) err
 *
       logical HMS_ABORT,SOS_ABORT,COIN_ABORT,SCAL_ABORT
-      character*132 HMS_err,SOS_err,COIN_err,SCAL_err
+      logical BIGCAL_ABORT
+      character*132 HMS_err,SOS_err,COIN_err,SCAL_err,BIGCAL_err
 *
       integer hit,chan,roc,slot
 *
@@ -74,6 +78,7 @@
       err = ' '
       hms_err = ' '
       sos_err = ' '
+      bigcal_err = ' '
 *
 *     Uninstrumented hits
 *
@@ -107,13 +112,16 @@
 *     
       call C_reset_event(COIN_ABORT,COIN_err)
 *     
+      call B_reset_event(BIGCAL_ABORT,BIGCAL_err)
       abort = hms_abort.or.sos_abort.or.coin_abort.or.scal_abort
+     $     .or. BIGCAL_ABORT
 *
       IF(ABORT) then
          err= COIN_err
          call G_prepend(SOS_err,err)
          call G_prepend(HMS_err,err)
          call G_prepend(SCAL_err,err)
+         call G_prepend(BIGCAL_err,err)
          call G_add_path(here,err)
       else
          err = ' '

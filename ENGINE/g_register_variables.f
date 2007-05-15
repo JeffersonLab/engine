@@ -19,6 +19,9 @@
 *     Modified: 24-May-1994 K.B.Beard
 *
 * $Log$
+* Revision 1.11.24.1  2007/05/15 02:55:01  jones
+* Start to Bigcal code
+*
 * Revision 1.11  1996/01/16 17:08:55  cdaq
 * no change
 *
@@ -166,13 +169,28 @@
       ENDIF
       ABORT= ABORT .or. FAIL 
 *
-      call c_register_variables(FAIL,why)
+      call c_register_variables(FAIL,why) ! COIN
       IF(err.NE.' ' .and. why.NE.' ') THEN
          call G_append(err,' & '//why)
       ELSEIF(why.NE.' ') THEN
          err= why
       ENDIF
       ABORT= ABORT .or. FAIL 
+*
+      call b_register_variables(FAIL,why) ! BIGCAL
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+         call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+         err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL 
+*
+      call gep_register_variables(FAIL,why) ! GEp-coin.
+      if(err.ne.' '.and.why.ne.' ') then
+         call G_append(err,' & '//why)
+      else if(why.ne.' ') then
+         err = why
+      endif
 *
       call hack_register_variables(FAIL,why)
       IF(err.NE.' ' .and. why.NE.' ') THEN

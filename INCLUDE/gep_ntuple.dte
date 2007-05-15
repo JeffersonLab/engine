@@ -1,0 +1,13 @@
+c     leave clean field for gep ntuple:
+
+      data gep_ntuple_exists/.false./
+      data gep_ntuple_ID/0/
+      data gep_ntuple_file/' '/
+      data gep_ntuple_name/' '/
+      data gep_ntuple_title/' '/
+      data gep_ntuple_directory/' '/
+      data gep_ntuple_IO_channel/0/
+      data gep_ntuple_size/0/
+      data gep_ntuple_tag/gep_max_ntuple_size*' '/
+      data gep_ntuple_contents/gep_max_ntuple_size*0/
+      

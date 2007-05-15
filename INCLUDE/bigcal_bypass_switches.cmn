@@ -1,0 +1,35 @@
+*
+*     CTPTYPE=parm
+*     
+      integer*4 bbypass_prot
+      integer*4 bbypass_rcs
+      integer*4 bbypass_sum8
+      integer*4 bbypass_sum64
+      integer*4 bbypass_find_clusters
+      integer*4 bbypass_calc_cluster_time
+      integer*4 bbypass_calc_shower_coord
+      integer*4 bbypass_all_tdc
+      integer*4 bbypass_all_adc
+      integer*4 bbypass_find_track
+      integer*4 bbypass_calc_physics
+      integer*4 bdebug_print_adc
+      integer*4 bdebug_print_tdc
+      integer*4 bdebug_print_trig
+      integer*4 bluno ! logical unit number for debugging output
+      common/bigcal_bypass_switches/
+     $     bbypass_prot,
+     $     bbypass_rcs,
+     $     bbypass_sum8,
+     $     bbypass_sum64,
+     $     bbypass_find_clusters,
+     $     bbypass_calc_cluster_time,
+     $     bbypass_calc_shower_coord,
+     $     bbypass_all_tdc,
+     $     bbypass_all_adc,
+     $     bbypass_find_track,
+     $     bbypass_calc_physics,
+     $     bdebug_print_adc,
+     $     bdebug_print_tdc,
+     $     bdebug_print_trig,
+     $     bluno
+      

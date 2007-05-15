@@ -10,8 +10,8 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
-* Revision 1.24  2005/02/16 22:39:09  saw
-* Construct Root tree filenames
+* Revision 1.24.6.1  2007/05/15 02:55:01  jones
+* Start to Bigcal code
 *
 * Revision 1.23  2004/05/11 18:24:12  jones
 * Initialize skip_events to false
@@ -115,7 +115,9 @@
       INCLUDE 'gen_filenames.cmn'               !all setup files
       INCLUDE 'hms_filenames.cmn'
       INCLUDE 'sos_filenames.cmn'
+      include 'bigcal_filenames.cmn' ! add BigCal
       INCLUDE 'coin_filenames.cmn'
+      include 'gep_filenames.cmn' ! add GEp
       INCLUDE 'gen_routines.dec'
       INCLUDE 'gen_pawspace.cmn'        !includes sizes of special CERNLIB space
       INCLUDE 'gen_run_info.cmn'
@@ -123,10 +125,11 @@
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
       include 'gen_data_structures.cmn'
+      include 'bigcal_data_structures.cmn' ! add BigCal
 *
       integer ierr
-      logical HMS_ABORT,SOS_ABORT, HACK_ABORT
-      character*132 HMS_err,SOS_err, HACK_err
+      logical HMS_ABORT,SOS_ABORT, HACK_ABORT, BIGCAL_ABORT ! add flag for BigCal
+      character*132 HMS_err,SOS_err, HACK_err, BIGCAL_err ! add err. message for BigCal
 *
       character*132 file
       logical*4 first_time                      ! Allows routine to be called 
@@ -139,6 +142,7 @@
       err= ' '                                  !erase any old errors
       HMS_err= ' '
       SOS_err= ' '
+      BIGCAL_err = ' '
 *
 * set the runtime variable to avoid divide by zero during report
 *
@@ -215,7 +219,15 @@
          gpbeam = 2.
          write(6,*) 'gpbeam value not given: setting to 2 GeV'
       endif
-
+c     avoid divide-by-zero errors for BigCal: 
+      if(BIGCAL_THETA_DEG.le.0.001) then
+         BIGCAL_THETA_DEG = 90.
+         write(6,*) 'bigcal_theta_deg value not given: set to 90 deg.'
+      endif
+      if(BIGCAL_R_TGT.le.0.001) then
+         BIGCAL_R_TGT = 1000.
+         write(6,*) 'bigcal_r_tgt value not given: setting to 10.0 m'
+      endif
 
       if((first_time.or.g_hist_rebook).and.g_ctp_hist_filename.ne.' ') then
         file = g_ctp_hist_filename
@@ -274,20 +286,20 @@
         call g_sub_run_number(file,gen_run_number)
         ierr = thload(file)
       endif
-*
-*     Do run number substituion on Root tree filenames
-*
-      if (h_tree_filename.ne.' ') then
-        call g_sub_run_number(h_tree_filename,gen_run_number)
-      endif
 
-      if (s_tree_filename.ne.' ') then
-        call g_sub_run_number(s_tree_filename,gen_run_number)
-      endif
-
-      if (c_tree_filename.ne.' ') then
-        call g_sub_run_number(c_tree_filename,gen_run_number)
-      endif
+c$$$      if((first_time.or.g_report_rebook).and. ! add BigCal
+c$$$     $     b_report_template_filename.ne.' ') then
+c$$$         file = b_report_template_filename
+c$$$         call g_sub_run_number(file,gen_run_number)
+c$$$         ierr = thload(file)
+c$$$      endif
+c$$$
+c$$$      if((first_time.or.g_report_rebook).and. ! add GEp-coin.
+c$$$     $     gep_report_template_filename.ne.' ') then
+c$$$         file = gep_report_template_filename
+c$$$         call g_sub_run_number(file,gen_run_number)
+c$$$         ierr = thload(file)
+c$$$      endif
 *
 *     Call thbook if any new files have been loaded
 *
@@ -299,6 +311,8 @@
 *
         call h_init_histid(ABORT,err)
         call s_init_histid(ABORT,err)
+        call b_init_histid(ABORT,err) ! add bigcal
+*        call gep_init_histid(ABORT,err) ! add GEp-coin
 *
         if(g_alias_filename.ne.' ') then
           file = g_alias_filename
@@ -346,36 +360,63 @@ c
         open(unit=G_LUN_EPICS_OUTPUT,file=file,status='unknown')
       endif
 
+      write(*,*) 'about to call h_initialize'
+
 *-HMS initialize
-      call H_initialize(HMS_ABORT,HMS_err)
+c      call H_initialize(HMS_ABORT,HMS_err)
 *
 *-SOS initialize
-      call S_initialize(SOS_ABORT,SOS_err)
+c      call S_initialize(SOS_ABORT,SOS_err)
+
+      write(*,*) 'about to call b_initialize'
 *
-      ABORT= HMS_ABORT .or. SOS_ABORT
-      If(HMS_ABORT .and. .NOT.SOS_ABORT) Then
+*-BigCal initialize
+      call B_initialize(BIGCAL_ABORT,BIGCAL_err)
+*
+      ABORT= HMS_ABORT .or. SOS_ABORT .or. BIGCAL_ABORT
+      If(HMS_ABORT .and. .NOT.(SOS_ABORT.or.BIGCAL_ABORT)) Then
          err= HMS_err
-      ElseIf(SOS_ABORT .and. .NOT.HMS_ABORT) Then
+      ElseIf(SOS_ABORT .and. .NOT.(HMS_ABORT.or.BIGCAL_ABORT)) Then
          err= SOS_err
-      ElseIf(HMS_ABORT .and. SOS_ABORT) Then
+      ElseIf(BIGCAL_ABORT.and. .not.(HMS_ABORT.or.SOS_ABORT)) then
+         err = BIGCAL_err
+      ElseIf(HMS_ABORT.and.SOS_ABORT.and.(.not.BIGCAL_ABORT)) Then
          err= '&'//SOS_err
+         call G_prepend(HMS_err,err)
+      ElseIf(HMS_ABORT.and.BIGCAL_ABORT.and.(.not.SOS_ABORT)) Then
+         err= '&'//BIGCAL_err
+         call G_prepend(HMS_err,err)
+      ElseIf(BIGCAL_ABORT.and.SOS_ABORT.and.(.not.HMS_ABORT)) Then
+         err= '&'//BIGCAL_err
+         call G_prepend(SOS_err,err)
+      ElseIf(BIGCAL_ABORT.and.SOS_ABORT.and.HMS_ABORT) Then
+         err= '&'//SOS_err//'&'//BIGCAL_err
          call G_prepend(HMS_err,err)
       EndIf
 *
+      write(*,*) 'about to call C_initialize'
       IF(.NOT.ABORT) THEN
-*
+*     
 *-COIN initialize
-*
+*     
          call C_initialize(ABORT,err)
 *
       ENDIF
 *
+      write(*,*) 'about to call GEP_initialize'
+      if(.not.ABORT) then
+         call GEP_initialize(ABORT,err) ! clone of C_initialize for now
+      endif
+      
+      write(*,*) 'about to call g_ntuple_init'
       call g_ntuple_init(HACK_ABORT,HACK_err) ! Ingore error return for now
 *
+      write(*,*) 'about to call hack_initialize'
       call hack_initialize(HACK_ABORT,HACK_err) ! Ignore error return for now
 *
 *-force reset of all space of all working arrays
 *-(clear just zeros the index of each array)
+      write(*,*) 'about to call g_reset_event'
       IF(.NOT.ABORT) THEN
          call G_reset_event(ABORT,err)
 *

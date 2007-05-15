@@ -12,6 +12,9 @@
 *- 
 *-   Created  30-June-1995 SAW
 *  $Log$
+*  Revision 1.2.24.1  2007/05/15 02:55:01  jones
+*  Start to Bigcal code
+*
 *  Revision 1.2  1995/09/01 15:46:13  cdaq
 *  (JRA) Add call to sos sieve slit ntuple
 *
@@ -37,6 +40,10 @@
       call s_sv_nt_shutdown(ABORT,err)
 *
       call c_ntuple_shutdown(ABORT,err)
+*
+      call b_ntuple_shutdown(ABORT,err)
+*  
+      call gep_ntuple_shutdown(ABORT,err)
 *
       return
       end

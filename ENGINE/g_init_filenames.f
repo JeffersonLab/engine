@@ -23,8 +23,11 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
-* Revision 1.19  2005/02/16 22:38:41  saw
-* Initialize root tree filenames
+* Revision 1.19.6.1  2007/05/15 02:55:01  jones
+* Start to Bigcal code
+*
+* Revision 1.18.12.1  2004/06/30 19:32:32  cdaq
+* Add initialition of angle picture filenames (DJG)
 *
 * Revision 1.18  2003/09/05 15:44:44  jones
 * Merge in online03 changes (mkj)
@@ -99,6 +102,7 @@
       include 'hms_filenames.cmn'
       include 'sos_filenames.cmn'
       include 'coin_filenames.cmn'
+      include 'bigcal_filenames.cmn'
       include 'gen_routines.dec'
       include 'gen_run_info.cmn'
 *
@@ -130,12 +134,14 @@
       s_report_template_filename = ' '
       g_report_template_filename = ' '
       c_report_template_filename = ' '
+      b_report_template_filename = ' ' ! add BigCal
       g_stats_template_filename = ' '
 *
       h_report_output_filename = ' '
       s_report_output_filename = ' '
       g_report_output_filename = ' '
       c_report_output_filename = ' '
+      b_report_output_filename = ' ' ! add BigCal
       g_stats_output_filename = ' '
       g_bad_output_filename = ' '
       g_epics_output_filename = ' '
@@ -144,17 +150,20 @@
       s_report_blockname = ' '
       g_report_blockname = ' '
       c_report_blockname = ' '
+      b_report_blockname = ' ' ! add BigCal
       g_stats_blockname = ' '
-*
-      h_tree_filename = ' '
-      s_tree_filename = ' '
-      c_tree_filename = ' '
 *
       h_threshold_output_filename = ' '
       s_threshold_output_filename = ' '
+      b_threshold_output_filename = ' ' ! add BigCal
       g_pedestal_output_filename = ' '
       h_pedestal_output_filename = ' '
       s_pedestal_output_filename = ' '
+      b_pedestal_output_filename = ' ' ! add BigCal
+*
+      h_angle_output_filename = ' '
+      s_angle_output_filename = ' '
+      b_angle_output_filename = ' ' ! add BigCal
 *
       g_label = ' '                     ! Label for reports etc.
 *
