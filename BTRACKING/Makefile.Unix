@@ -1,0 +1,56 @@
+NEWSTYLE=1
+include ../../etc/Makefile
+
+
+osources = b_analyze_pedestal.f b_calc_cluster_time.f b_calc_pedestal.f b_calc_physics.f \
+	b_calc_shower_coord.f b_dump_peds.f b_find_clusters.f b_generate_geometry.f b_init_gain.f \
+	b_init_histid.f b_init_physics.f b_init_shower.f b_init_tof.f b_print_raw_adc.f \
+	b_print_raw_tdc.f b_print_raw_trig.f b_raw_dump_all.f b_reconstruction.f b_register_param.f \
+	b_report_bad_data.f b_sparsify_prot.f b_sparsify_rcs.f b_strip_tdc.f b_strip_trig.f \
+	b_trans_prot.f b_trans_rcs.f b_trans_tdc.f b_trans_trig.f 
+makeregstuff = r_bigcal_geometry.f r_bigcal_gain_parms.f r_bigcal_tof_parms.f r_bigcal_shower_parms.f \
+	r_bigcal_bypass_switches.f 
+
+sources = $(osources) $(makeregstuff)
+
+libsources = $(sources)
+
+lib_targets := $(patsubst %.f, libbtracking.a(%.o), $(libsources))
+install-dirs := lib
+bin_targets =
+
+#default:
+#	@echo "nothing to make"
+
+ifdef NFSDIRECTORY
+../%.f : $(NFSDIRECTORY)/BTRACKING/%.f
+	ln -s $< $@
+
+.PRECIOUS: ../%.f
+else
+#
+# Rule for making the register subroutines
+#
+../r_%.f : ../%.cmn $(MAKEREG)
+	(cd .. ; $(MAKEREG) $(<F) -o $(@F) -e /dev/null)
+
+.PRECIOUS: ../r_%.f
+endif
+
+#
+# Get include files from INCLUDE directory
+#
+
+%.cmn ../%.cmn:: ../../INCLUDE/%.cmn
+	$(CP) $< $@
+
+%.dec ../%.dec:: ../../INCLUDE/%.dec
+	$(CP) $< $@
+
+%.par ../%.par:: ../../INCLUDE/%.par
+	$(CP) $< $@
+
+%.dte ../%.dte:: ../../INCLUDE/%.dte
+	$(CP) $< $@
+
+include $(sources:.f=.d)
