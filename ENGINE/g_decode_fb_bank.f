@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.1  2007/05/15 18:55:22  jones
+* Start Bigcal version
+*
 * Revision 1.32  2003/09/05 15:22:56  jones
 * Merge in online03 changes (mkj)
 *
@@ -138,6 +141,9 @@
       include 'gen_decode_common.cmn'
       include 'mc_structures.cmn'
       include 'gen_event_info.cmn'
+cajp
+      include 'bigcal_data_structures.cmn'
+cajp
 
       integer*4 pointer                 ! Pointer FB data word
       integer*4 banklength,maxwords
@@ -242,6 +248,8 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddress
             did = UNINST_ID
           endif
 
+          !write(*,*) 'detector id this bank = ',did
+
           maxwords = last_first - pointer + 1
 *
 *        1         2         3         4         5         6         7
@@ -307,7 +315,40 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddress
 *
 *
 ************************************************************************
-*
+*===================== BIGCAL ==========================================
+          else if (did.eq.BIGCAL_PROT_ID) then 
+            !write(*,*) 'did = protvino, decoding protvino data'
+            pointer = pointer + 
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     $           maxwords, did, BIGCAL_PROT_MAXHITS, BIGCAL_PROT_NHIT, 
+     $           BIGCAL_PROT_IY, BIGCAL_PROT_IX, 1, BIGCAL_PROT_ADC_RAW, 
+     $           0, 0, 0)
+            !write(*,*) 'protvino data decoded successfully'
+          else if (did.eq.BIGCAL_RCS_ID) then 
+            !write(*,*) 'did = rcs, decoding rcs data'
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer),
+     $           maxwords, did, BIGCAL_RCS_MAXHITS, BIGCAL_RCS_NHIT,
+     $           BIGCAL_RCS_IY, BIGCAL_RCS_IX, 1, BIGCAL_RCS_ADC_RAW, 
+     $           0, 0, 0)
+            !write(*,*) 'rcs data decoded successfully'
+          else if (did.eq.BIGCAL_TDC_ID) then
+            !write(*,*) 'did = tdc, decoding tdc data'
+            pointer = pointer + 
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer),
+     $           maxwords, did, BIGCAL_TDC_MAXHITS, BIGCAL_TDC_NHIT, 
+     $           BIGCAL_TDC_RAW_IROW, BIGCAL_TDC_RAW_IGROUP, 1, 
+     $           BIGCAL_TDC_RAW, 0, 0, 0)
+            !write(*,*) 'tdc data decoded successfully'
+          else if (did.eq.BIGCAL_TRIG_ID) then 
+            !write(*,*) 'did = trig, decoding trig data'
+            pointer = pointer + 
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer),
+     $           maxwords, did, BIGCAL_TRIG_MAXHITS, BIGCAL_TRIG_NHIT,
+     $           BIGCAL_TRIG_IGROUP, BIGCAL_TRIG_IHALF, 2, 
+     $           BIGCAL_TRIG_ADC_RAW, BIGCAL_TRIG_TDC_RAW,0,0)
+            !write(*,*) 'trig data decoded successfully'
+*======================= HMISC =========================================
           else if (did.eq.HMISC_ID) then
 *
 *     This array is for data words that don't belong to a specific
