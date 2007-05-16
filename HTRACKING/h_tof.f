@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19.4.3  2007/05/16 19:50:02  cdaq
+* P. Bosted fixed bug in new code to dump TOF data
+*
 * Revision 1.19.4.2  2007/05/10 21:15:10  cdaq
 * changes for writing dump file for Peter's tof code
 *
@@ -119,6 +122,7 @@
       integer timehist(200),i,j,jmax,maxhit,nfound
       real*4 time_pos(1000),time_neg(1000),tmin,time_tolerance
       logical keep_pos(1000),keep_neg(1000),first/.true./
+! new next 2 lines
       integer ndumped(4,16,2),ndumpmax
       logical oktodump
       save
@@ -169,7 +173,7 @@
 !       reference particle, need to make sure this is big enough
 !       to accomodate difference in TOF for other particles
 ! Default value in case user hasnt definedd something reasonable
-        time_tolerance=3.0
+        time_tolerance=20.0
         if(htof_tolerance.gt.0.5.and.htof_tolerance.lt.10000.) then
           time_tolerance=htof_tolerance
         endif
@@ -186,6 +190,7 @@
              write(*,'(/1x,''TOF using ADC for slewing correction'',
      >         ''  and same vecolicty for pos and neg tubes'')')
            endif
+! new: next 10 lines
            ndumpmax = 1000.
            if(hdumptof.eq.1) 
      >       write(*,'(/1x,''Dumping TDC, ADC to fort.37 for'',
@@ -193,6 +198,7 @@
            write(*,'(/)')
            do i=1,4
             do j=1,16
+             ndumped(i,j,1)= 0.
              ndumped(i,j,2)= 0.
             enddo
            enddo
@@ -279,6 +285,7 @@
 ! Find bin with most hits
         jmax=0
         maxhit=0
+! new next line
         oktodump = .false.
         do j=1,200
           if(timehist(j) .gt. maxhit) then
@@ -293,18 +300,20 @@
             if(time_pos(i) .gt. tmin .and.
      >         time_pos(i) .lt. tmin + time_tolerance) then
               keep_pos(i) = .true.
-              ndumped(hscin_plane_num(hit),hscin_plane_num(hit),1) =  
-     >        ndumped(hscin_plane_num(hit),hscin_plane_num(hit),1) + 1
+! new next 4 lines
+              ndumped(hscin_plane_num(hit),hscin_counter_num(hit),1) =  
+     >        ndumped(hscin_plane_num(hit),hscin_counter_num(hit),1) + 1
               if(ndumped(hscin_plane_num(hit),
-     >          hscin_plane_num(hit),1).lt.ndumpmax) oktodump=.true.
-            endif
+     >          hscin_counter_num(hit),1).lt.ndumpmax) oktodump=.true.
+           endif
             if(time_neg(i) .gt. tmin .and.
      >         time_neg(i) .lt. tmin + time_tolerance) then
               keep_neg(i) = .true.
-              ndumped(hscin_plane_num(hit),hscin_plane_num(hit),2) =  
-     >        ndumped(hscin_plane_num(hit),hscin_plane_num(hit),2) + 1
+! new next 4 lines
+              ndumped(hscin_plane_num(hit),hscin_counter_num(hit),2) =  
+     >        ndumped(hscin_plane_num(hit),hscin_counter_num(hit),2) + 1
               if(ndumped(hscin_plane_num(hit),
-     >          hscin_plane_num(hit),2).lt.ndumpmax) oktodump=.true.
+     >          hscin_counter_num(hit),2).lt.ndumpmax) oktodump=.true.
             endif
           enddo
         endif
@@ -372,6 +381,7 @@
      >               hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
               if(hntracks_fp.eq.1.and.
      >          hdumptof.eq.1.and.
+! new next line
      >          oktodump.and.
      >          timehist(max(1,jmax)).gt.6) then
                 write(37,'(1x,''1'',2i3,5f10.3)') 
@@ -380,6 +390,15 @@
      >             hscin_tdc_pos(hit) * hscin_tdc_to_time,
      >             path,zcor,
      >             hscin_pos_time(hit)-zcor,adc_ph
+c               write(39,'(1x,''1'',2i3,8f8.2)') 
+c    >             hscin_plane_num(hit),
+c    >             hscin_counter_num(hit),
+c    >             hscin_tdc_pos(hit) * hscin_tdc_to_time - zcor,
+c    >             hscin_pos_time(hit) - zcor,
+c    >             -1.*hscin_pos_invadc_offset(hit),
+c    >             -1./hscin_pos_invadc_linear(hit),path,
+c    >             -1.*hscin_pos_invadc_adc(hit),
+c    >              1./sqrt(max(20,adc_ph))
               endif
             endif
 
@@ -407,6 +426,7 @@
      >               hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
               if(hntracks_fp.eq.1.and.
      >          hdumptof.eq.1.and.
+! new next line
      >          oktodump.and.
      >          timehist(max(1,jmax)).gt.6) then
                 write(37,'(1x,''2'',2i3,5f10.3)') 
@@ -415,6 +435,15 @@
      >             hscin_tdc_neg(hit) * hscin_tdc_to_time,
      >             path,zcor,
      >             hscin_neg_time(hit)-zcor,adc_ph
+c               write(39,'(1x,''1'',2i3,8f8.2)') 
+c    >             hscin_plane_num(hit),
+c    >             hscin_counter_num(hit),
+c    >             hscin_tdc_neg(hit) * hscin_tdc_to_time - zcor,
+c    >             hscin_neg_time(hit) - zcor,
+c    >             -1.*hscin_neg_invadc_offset(hit),
+c    >             -1./hscin_neg_invadc_linear(hit),path,
+c    >             -1.*hscin_neg_invadc_adc(hit),
+c    >              1./sqrt(max(20,adc_ph))
               endif
             endif
 
