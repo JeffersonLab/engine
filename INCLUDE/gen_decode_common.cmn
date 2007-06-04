@@ -3,6 +3,9 @@
 *     to logical detector identification.
 *
 *     $Log$
+*     Revision 1.4.24.2  2007/06/04 15:11:23  puckett
+*     changed hit array structure for trigger-related signals
+*
 *     Revision 1.4.24.1  2007/05/15 02:53:02  jones
 *     Start to Bigcal code
 *
@@ -48,7 +51,7 @@
       integer*4 gmax_roc_with_adc
       integer*4 gmax_slot_with_adc
       integer*4 gnum_adc_channels
-      parameter (gmax_roc_with_adc=3)
+      parameter (gmax_roc_with_adc=12)
       parameter (gmax_slot_with_adc=22)
       parameter (gnum_adc_channels=64)
 

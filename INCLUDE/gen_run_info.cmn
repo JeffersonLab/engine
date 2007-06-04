@@ -2,6 +2,9 @@
 *- 
 *-   Created   22-Apr-1994   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.7.24.1  2007/06/04 15:11:23  puckett
+* changed hit array structure for trigger-related signals
+*
 * Revision 1.7  1996/09/04 15:46:13  saw
 * (JRA) Add prescale factors and some a debugging  flag
 *
@@ -50,16 +53,19 @@
       INTEGER gen_run_analyzed(0:gen_MAX_trigger_types)  ! NOT USED ANYWHERE
       INTEGER gen_run_hist_dump_interval
       INTEGER gen_run_starting_event,gen_run_stopping_event
+      INTEGER gen_analyze_beamline      !1=enable beamline, 0=disable
 *
       COMMON /gen_run_cntrl/ gen_run_starting_event,
      &     gen_run_stopping_event,
      &     gen_run_enable,
      &     gen_run_triggered,
      &     gen_run_analyzed,
-     &     gen_run_hist_dump_interval
+     &     gen_run_hist_dump_interval,
+     $     gen_analyze_beamline
 *
 *-shorter names for command line input
       integer grun,gstart,gstop,gdump,gtrig1,gtrig2,gtrig3,gtrig4 ! aliases
+      integer gtrig5,gtrig6,gbeam
       equivalence (grun,gen_run_number)
       equivalence (gstart,gen_run_starting_event)
       equivalence (gstop,gen_run_stopping_event)
@@ -68,13 +74,16 @@
       equivalence (gtrig2,gen_run_enable(1))
       equivalence (gtrig3,gen_run_enable(2))
       equivalence (gtrig4,gen_run_enable(3))
+      equivalence (gtrig5,gen_run_enable(5))
+      equivalence (gtrig6,gen_run_enable(6))
+      equivalence (gbeam,gen_analyze_beamline)
 
 *
 *     CTPTYPE=parm
 *
-      real*4 gps1,gps2,gps3  !prescale factors (1-hms,2-sos,3-coin)
+      real*4 gps1,gps2,gps3,gps5,gps6  !prescale factors (1-hms,2-sos,3-coin,5-bigcal,6-gep)
 *
-      common/gen_prescales/ gps1,gps2,gps3
+      common/gen_prescales/ gps1,gps2,gps3,gps5,gps6
 
 *
 *     CTPTYPE=parm

@@ -1,14 +1,30 @@
+*
+*     CTPTYPE=parm
+*
       integer BMAX_Ntuple_size
       parameter (BMAX_Ntuple_size=100)
       integer default_b_Ntuple_ID
       parameter (default_b_Ntuple_ID=9030)
-*
-*     CTPTYPE=parm
-*
+*     array dimensions for cluster ntuple: 
+      integer maxnclust
+      parameter(maxnclust=25)
+      integer maxncellclust
+      parameter(maxncellclust=25)
+*     array dimensions for cosmics ntuple:
+      integer maxahit
+      parameter(maxahit=1856)
+      integer maxthit
+      parameter(maxthit=3072)
+      integer maxtahit
+      parameter(maxtahit=38)
+      integer maxtthit
+      parameter(maxtthit=42*8)
+
       logical b_Ntuple_exists
       integer b_Ntuple_ID
       integer b_Ntuple_size
       integer b_Ntuple_IOchannel
+      integer bigcal_ntuple_type 
       character*80 b_Ntuple_name
       character*80 b_Ntuple_title
       character*132 b_Ntuple_directory
@@ -27,4 +43,105 @@
      $     b_Ntuple_name,b_Ntuple_title,b_Ntuple_directory,
      $     b_Ntuple_file,b_Ntuple_tag,b_Ntuple_max_segmentevents,
      $     b_Ntuple_segmentevents,b_Ntuple_filesegments,
-     $     b_Ntuple_contents
+     $     b_Ntuple_contents,bigcal_ntuple_type
+
+      integer*4 nclust
+      integer*4 ncellclust(maxnclust)
+      integer*4 iycell(maxncellclust,maxnclust)
+      integer*4 ixcell(maxncellclust,maxnclust)
+      real*4 xcell(maxncellclust,maxnclust)
+      real*4 ycell(maxncellclust,maxnclust)
+      real*4 eblock(maxncellclust,maxnclust)
+      real*4 tcell8(10,8,maxnclust)
+      real*4 tcell64(6,8,maxnclust)
+      real*4 xmoment(maxnclust)
+      real*4 ymoment(maxnclust)
+      real*4 tclust8(maxnclust)
+      real*4 tclust64(maxnclust)
+      real*4 xclust(maxnclust)
+      real*4 yclust(maxnclust)
+      real*4 eclust(maxnclust)
+
+*     reconstructed physics quantities
+      
+      real*4 thetarad(maxnclust)
+      real*4 phirad(maxnclust)
+      real*4 xface(maxnclust)
+      real*4 yface(maxnclust)
+      real*4 zface(maxnclust)
+      real*4 px(maxnclust)
+      real*4 py(maxnclust)
+      real*4 pz(maxnclust)
+      real*4 ctime_clust(maxnclust)
+      
+      common/BIGCAL_Ntup_CW_Clust/
+     $     nclust,
+     $     ncellclust,
+     $     iycell,
+     $     ixcell,
+     $     xcell,
+     $     ycell,
+     $     eblock,
+     $     tcell8,
+     $     tcell64,
+     $     xmoment,
+     $     ymoment,
+     $     tclust8,
+     $     tclust64,
+     $     xclust,
+     $     yclust,
+     $     eclust,
+     $     thetarad,
+     $     phirad,
+     $     xface,
+     $     yface,
+     $     zface,
+     $     px,
+     $     py,
+     $     pz,
+     $     ctime_clust
+
+      integer*4 nahit
+      integer*4 xa(maxahit)
+      integer*4 ya(maxahit)
+      integer*4 aa(maxahit)
+      integer*4 nthit
+      integer*4 xt(maxthit)
+      integer*4 yt(maxthit)
+      integer*4 hn(maxthit)
+      integer*4 tt(maxthit)
+      integer*4 ntahit
+      integer*4 xta(maxtahit)
+      integer*4 yta(maxtahit)
+      integer*4 taa(maxtahit)
+      integer*4 ntthit
+      integer*4 xtt(maxtthit)
+      integer*4 ytt(maxtthit)
+      integer*4 hnt(maxtthit)
+      integer*4 ttt(maxtthit)
+
+      common/cosmic_hits/
+     $     nahit,
+     $     xa,
+     $     ya,
+     $     aa,
+     $     nthit,
+     $     xt,
+     $     yt,
+     $     hn,
+     $     tt,
+     $     ntahit,
+     $     xta,
+     $     yta,
+     $     taa,
+     $     ntthit,
+     $     xtt,
+     $     ytt,
+     $     hnt,
+     $     ttt
+
+*
+*     CTPTYPE=parm
+*
+      integer iquest(100)
+      common/quest/iquest

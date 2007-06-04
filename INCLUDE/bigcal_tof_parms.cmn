@@ -1,7 +1,7 @@
       integer*4 BIGCAL_N8
       parameter(BIGCAL_N8=224) ! 32*56 / 8 = 1792/8 = 224 
       integer*4 BIGCAL_N64     
-      parameter(BIGCAL_N64=38) ! sum of 64 groups
+      parameter(BIGCAL_N64=42) ! sum of 64 groups
 *
 *     CTPTYPE = parm
 *     
