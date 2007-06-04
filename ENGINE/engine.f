@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.2  2007/06/04 14:56:05  puckett
+* changed hit array structure for trigger related signals
+*
 * Revision 1.42.8.1  2007/05/15 02:55:01  jones
 * Start to Bigcal code
 *
@@ -466,7 +469,9 @@ c      endif
       call engine_command_line(.false.) ! Set CTP vars from command line
 c 
       !write(*,*) 'about to call h_fieldcorr'
-      call h_fieldcorr(ABORT,err)
+      if(gen_run_enable(1).ne.0) then
+        call h_fieldcorr(ABORT,err)
+      endif
 c
 c  call h_fieldcorr subroutine 
 c    to fix problem with setting hpcentral in field programs
@@ -474,7 +479,9 @@ c    applies to experiments using fieldxx.f programs before field02.f
 c    parameter genable_hms_fieldcorr is switch to determine
 c    whether fix is applied.
 c
-      call s_fieldcorr(ABORT,err)
+      if(gen_run_enable(2).ne.0) then
+        call s_fieldcorr(ABORT,err)
+      endif
 c
       if (genable_sos_satcorr.ne.0) then
          write(*,*) '*************'
@@ -482,7 +489,8 @@ c
          write(*,*) ' Delta modified for each event'
          write(*,*) '*************'
        endif
-c
+c     
+       
       call G_apply_offsets(ABORT,err)  
 c
 c  call G_apply_offsets which calls  s_apply_offsets, h_apply_offsets

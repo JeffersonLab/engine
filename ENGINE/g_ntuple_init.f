@@ -13,6 +13,9 @@
 *- 
 *-Created  6-September-1995 SAW
 * $Log$
+* Revision 1.1.24.2  2007/06/04 14:56:05  puckett
+* changed hit array structure for trigger related signals
+*
 * Revision 1.1.24.1  2007/05/15 02:55:01  jones
 * Start to Bigcal code
 *
@@ -31,20 +34,25 @@
 *
       character*500 why
       logical FAIL
+
+      include 'gen_run_info.cmn'
+
 *--------------------------------------------------------
       ABORT = .false.
       err = ' '
 *
-      write(*,*) 'about to call h_ntuple_init'
+c      write(*,*) 'about to call h_ntuple_init'
+      
       call h_ntuple_init(FAIL,why)
+      
       if(err.NE.' ' .and. why.NE.' ') then
         call G_append(err,' & '//why)
       elseif(why.NE.' ') then
         err= why
       endif
       ABORT= ABORT .or. FAIL
-*
-      write(*,*) 'about to call h_sv_ntuple_init'
+*     
+c     write(*,*) 'about to call h_sv_ntuple_init'
       call h_sv_nt_init(FAIL,why)
       if(err.NE.' ' .and. why.NE.' ') then
         call G_append(err,' & '//why)
@@ -53,7 +61,8 @@
       endif
       ABORT= ABORT .or. FAIL
 *
-      write(*,*) 'about to call s_ntuple_init'
+      
+c     write(*,*) 'about to call s_ntuple_init'
       call s_ntuple_init(FAIL,why)
       if(err.NE.' ' .and. why.NE.' ') then
         call G_append(err,' & '//why)
@@ -61,8 +70,8 @@
         err= why
       endif
       ABORT= ABORT .or. FAIL
-*
-      write(*,*) 'about to call s_sv_nt_init'
+*     
+c     !write(*,*) 'about to call s_sv_nt_init'
       call s_sv_nt_init(FAIL,why)
       if(err.NE.' ' .and. why.NE.' ') then
         call G_append(err,' & '//why)
@@ -70,17 +79,21 @@
         err= why
       endif
       ABORT= ABORT .or. FAIL
-*
-      write(*,*) 'about to call b_ntuple_init'
-      call b_ntuple_init(1,FAIL,why)
+*     
+      
+      !write(*,*) 'about to call b_ntuple_init'
+      call b_ntuple_init(FAIL,why)
+      !write(*,*) 'b_ntuple_init successful'
       if(err.ne.' '.and.why.ne.' ')then
-         call G_append(err,' & '//why)
+        call G_append(err,' & '//why)
       elseif(why.ne.' ') then
-         err = why
+        err = why
       endif
       ABORT = ABORT .or. FAIL
-*
-      write(*,*) 'about to call c_ntuple_init'
+     
+*     
+      
+c     !write(*,*) 'about to call c_ntuple_init'
       call c_ntuple_init(FAIL,why)
       if(err.NE.' ' .and. why.NE.' ') then
         call G_append(err,' & '//why)
@@ -88,14 +101,17 @@
         err= why
       endif
       ABORT= ABORT .or. FAIL
+      
 *     
-      write(*,*) 'about to call gep_ntuple_init'
+      
+C     !write(*,*) 'about to call gep_ntuple_init'
       call gep_ntuple_init(FAIL,why)
       if(err.ne.' '.and.why.ne.' ') then
-         call G_append(err,' & '//why)
+        call G_append(err,' & '//why)
       else if(why.ne.' ') then
-         err=why
+        err=why
       endif
+      
 *
       if(ABORT .or. err.NE.' ') call g_add_path(here,err)
 *

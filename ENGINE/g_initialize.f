@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.24.6.2  2007/06/04 14:56:05  puckett
+* changed hit array structure for trigger related signals
+*
 * Revision 1.24.6.1  2007/05/15 02:55:01  jones
 * Start to Bigcal code
 *
@@ -360,18 +363,24 @@ c
         open(unit=G_LUN_EPICS_OUTPUT,file=file,status='unknown')
       endif
 
-      write(*,*) 'about to call h_initialize'
+      !write(*,*) 'about to call h_initialize'
 
 *-HMS initialize
-c      call H_initialize(HMS_ABORT,HMS_err)
+      if(gen_run_enable(1).ne.0) then
+        call H_initialize(HMS_ABORT,HMS_err)
+      endif
 *
 *-SOS initialize
-c      call S_initialize(SOS_ABORT,SOS_err)
+      if(gen_run_enable(2).ne.0) then
+        call S_initialize(SOS_ABORT,SOS_err)
+      endif
 
-      write(*,*) 'about to call b_initialize'
+c      !write(*,*) 'about to call b_initialize'
 *
 *-BigCal initialize
+      
       call B_initialize(BIGCAL_ABORT,BIGCAL_err)
+      
 *
       ABORT= HMS_ABORT .or. SOS_ABORT .or. BIGCAL_ABORT
       If(HMS_ABORT .and. .NOT.(SOS_ABORT.or.BIGCAL_ABORT)) Then
@@ -394,29 +403,31 @@ c      call S_initialize(SOS_ABORT,SOS_err)
          call G_prepend(HMS_err,err)
       EndIf
 *
-      write(*,*) 'about to call C_initialize'
+c      !write(*,*) 'about to call C_initialize'
       IF(.NOT.ABORT) THEN
 *     
 *-COIN initialize
-*     
-         call C_initialize(ABORT,err)
 *
+        
+        call C_initialize(ABORT,err)
+        
+*     
       ENDIF
 *
-      write(*,*) 'about to call GEP_initialize'
+c      !write(*,*) 'about to call GEP_initialize'
       if(.not.ABORT) then
          call GEP_initialize(ABORT,err) ! clone of C_initialize for now
       endif
       
-      write(*,*) 'about to call g_ntuple_init'
+c      !write(*,*) 'about to call g_ntuple_init'
       call g_ntuple_init(HACK_ABORT,HACK_err) ! Ingore error return for now
 *
-      write(*,*) 'about to call hack_initialize'
+c      !write(*,*) 'about to call hack_initialize'
       call hack_initialize(HACK_ABORT,HACK_err) ! Ignore error return for now
 *
 *-force reset of all space of all working arrays
 *-(clear just zeros the index of each array)
-      write(*,*) 'about to call g_reset_event'
+      !write(*,*) 'about to call g_reset_event'
       IF(.NOT.ABORT) THEN
          call G_reset_event(ABORT,err)
 *

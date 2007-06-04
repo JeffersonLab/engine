@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
 * $Log$
+* Revision 1.11.24.2  2007/06/04 14:56:06  puckett
+* changed hit array structure for trigger related signals
+*
 * Revision 1.11.24.1  2007/05/15 02:55:01  jones
 * Start to Bigcal code
 *
@@ -65,20 +68,24 @@
       character*(*) err
 *
       logical HMS_ABORT,SOS_ABORT,COIN_ABORT,SCAL_ABORT
-      logical BIGCAL_ABORT
+      logical BIGCAL_ABORT,GEP_ABORT
       character*132 HMS_err,SOS_err,COIN_err,SCAL_err,BIGCAL_err
+      character*132 GEP_err
 *
       integer hit,chan,roc,slot
 *
       INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_decode_common.cmn'
+      include 'gen_run_info.cmn'
 *
 *--------------------------------------------------------
 *
       err = ' '
       hms_err = ' '
       sos_err = ' '
+      coin_err = ' '
       bigcal_err = ' '
+      gep_err = ' '
 *
 *     Uninstrumented hits
 *
@@ -106,15 +113,28 @@
 *
       call g_scaler_reset_event(SCAL_ABORT,SCAL_err)
 *
+      
       call H_reset_event(HMS_ABORT,HMS_err)
+      
 *     
+      
       call S_reset_event(SOS_ABORT,SOS_err)
+      
 *     
+      
       call C_reset_event(COIN_ABORT,COIN_err)
+      
 *     
+      
       call B_reset_event(BIGCAL_ABORT,BIGCAL_err)
+      
+
+      
+      call GEp_reset_event(GEP_ABORT,GEP_err)
+      
+
       abort = hms_abort.or.sos_abort.or.coin_abort.or.scal_abort
-     $     .or. BIGCAL_ABORT
+     $     .or. BIGCAL_ABORT .or. GEP_ABORT
 *
       IF(ABORT) then
          err= COIN_err
@@ -122,6 +142,7 @@
          call G_prepend(HMS_err,err)
          call G_prepend(SCAL_err,err)
          call G_prepend(BIGCAL_err,err)
+         call G_prepend(GEP_err,err)
          call G_add_path(here,err)
       else
          err = ' '

@@ -11,12 +11,14 @@
 
       include 'b_ntuple.cmn'
 
+c      integer itype
+
       integer default_bank,default_recl
       parameter(default_bank=8000)     !4 bytes/word
       parameter(default_recl=1024)     !record length
       character*80 title,file
       character*80 directory,name
-      character*1000 pat,msg
+      character*1000 pat,msg,chform
       integer status,size,io,id,bank,recL,iv(10),m
       real rv(10)
 
@@ -56,9 +58,18 @@ c     get any free IO channel
       endif
 
       call HCDIR(directory,'R') !CERNLIB read current directory
+  
+      if(bigcal_ntuple_type.ne.3) then
+        recL = default_recl
+        call HROPEN(io,name,file,'N',recL,status)
+      else
+        recL = 8191
+        iquest(10) = 65000
+        call HROPEN(io,name,file,'NQ',recL,status)
+      endif
 
-      recL = default_recl
-      call HROPEN(io,name,file,'N',recL,status)
+
+      
 
       ABORT= status.ne.0
       if(ABORT) then
@@ -75,8 +86,50 @@ c     get any free IO channel
       bank = default_bank
       title = b_ntuple_title
       
-      call HBOOKN(id,title,size,name,bank,b_ntuple_tag)  ! create ntuple
+      if(bigcal_ntuple_type.eq.1) then ! row wise ntuple
+        call HBOOKN(id,title,size,name,bank,b_ntuple_tag) ! create ntuple
+      else if(bigcal_ntuple_type.eq.2) then ! col-wise ntuple for cluster analysis
+        call HBNT(id,title)
+        call HBNAME(id,'ClustBlock',nclust,'nclust[0,25],'//
+     $       'ncellclust(nclust)[0,25],iycell(25,nclust),'//
+     $       'ixcell(25,nclust),xcell(25,nclust),ycell(25,nclust),'//
+     $       'ecell(25,nclust),tcell8(25,nclust),tcell64(25,nclust),'//
+     $       'xmom(nclust),ymom(nclust),tclust8(nclust),'//
+     $       'tclust64(nclust),xclust(nclust),yclust(nclust),'//
+     $       'eclust(nclust),thetarad(nclust),phirad(nclust),'//
+     $       'xface(nclust),yface(nclust),zface(nclust),px(nclust),'//
+     $       'py(nclust),pz(nclust),time(nclust)')
 
+      else if(bigcal_ntuple_type.eq.3) then ! col-wise ntuple for cosmics analysis
+
+        !write(*,*) 'booking cosmic hits ntuple:'
+
+        !write(*,*) 'calling hbnt title=',title,' ID=',id
+        call hbset('BSIZE',8176,status)
+        call hbnt(id,title,' ')
+        
+        !write(*,*) 'hbnt successful, calling hbname(clear)'
+
+        call hbname(id,' ',0,'$clear')
+
+        !write(*,*) 'clear successful, creating chform'
+        chform='nahit[0,1856]:I*4,xa(nahit)[1,32]:I*4,'//
+     *       'ya(nahit)[1,56]:I*4,aa(nahit)[-100,8192]:I*4,'//
+     *       'nthit[0,3072]:I*4,xt(nthit)[1,4]:I*4,'//
+     *       'yt(nthit)[1,56]:I*4,hn(nthit)[1,8]:I*4,'//
+     *       'tt(nthit)[-100,8192]:I*4,'//
+     *       'ntahit[0,38]:I*4,xta(ntahit)[1,2]:I*4,'//
+     *       'yta(ntahit)[1,19]:I*4,taa(ntahit)[-100,8192]:I*4,'//
+     *       'ntthit[0,336]:I*4,xtt(ntthit)[1,2]:I*4,'//
+     *       'ytt(ntthit)[1,21]:I*4,hnt(ntthit)[1,8]:I*4,'//
+     *       'ttt(ntthit)[-100,8192]:I*4'
+        !write(*,*) 'chform successful, calling hbname(chform)'
+        call hbname(id,'hits',nahit,chform)
+
+        !write(*,*) 'booking of cosmic hits ntuple successful'
+
+      endif
+        
       call HCDIR(b_ntuple_directory,'R')     ! record ntuple directory
 
       call HCDIR(directory,' ')          !reset CERNLIB directory

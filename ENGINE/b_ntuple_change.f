@@ -34,12 +34,13 @@
       call g_sub_run_number(file,gen_run_number)
 
       b_ntuple_filesegments = b_ntuple_filesegments + 1
-      
+      !write(*,*) 'computing ifile'
       if(b_ntuple_filesegments.lt.10) then
          ifile = char(ichar('0')+b_ntuple_filesegments)
       else 
          ifile = char(ichar('a')+b_ntuple_filesegments-10)
       endif
+      !write(*,*), 'ifile = ',ifile
 
       fn_len = g_important_length(file)
       ilo = index(file,'.hbook')
@@ -53,6 +54,8 @@
          abort=.true.
       endif
       
+      !write(*,*) 'new file name = ',file
+
       if(.not.abort) call b_ntuple_open(file,ABORT,err)
 
       if(abort) then

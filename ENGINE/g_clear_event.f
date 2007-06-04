@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard, Hampton U.
 *-   Modified 19-Nov-1993   Kevin B. Beard for new error standards
 *-      $Log$
+*-      Revision 1.10.24.2  2007/06/04 14:56:05  puckett
+*-      changed hit array structure for trigger related signals
+*-
 *-      Revision 1.10.24.1  2007/05/15 02:55:01  jones
 *-      Start to Bigcal code
 *-
@@ -61,6 +64,7 @@
       character*(*) err
 *
       INCLUDE 'gen_data_structures.cmn'
+      include 'gen_run_info.cmn'
 *
       logical HMS_ABORT,SOS_ABORT,COIN_ABORT,gmc_abort,BIGCAL_ABORT
       logical GEP_ABORT
@@ -79,16 +83,26 @@
       GUNINST_TOT_HITS = 0              ! Unistrumented hit counter
       GMISC_TOT_HITS = 0
 *
+      
       call H_clear_event(HMS_ABORT,HMS_err)
+      
 *
+      
       call S_clear_event(SOS_ABORT,SOS_err)
-*
+      
+*     
+      
       call C_clear_event(COIN_ABORT,COIN_err)
-
-      call B_clear_event(BIGCAL_ABORT,BIGCAL_err) ! BigCal
-
-      call GEp_clear_event(GEP_ABORT,GEP_err) ! GEp-coin
+      
 *
+      call B_clear_event(BIGCAL_ABORT,BIGCAL_err) ! BigCal
+     
+*     
+      
+      call GEp_clear_event(GEP_ABORT,GEP_err) ! GEp-coin
+      
+*
+
 **      call gmc_mc_clear(gmc_abort,gmc_err)
 *
       ABORT= HMS_ABORT .or. SOS_ABORT .or. COIN_ABORT .or. BIGCAL_ABORT

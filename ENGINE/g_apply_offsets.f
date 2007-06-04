@@ -28,6 +28,8 @@
       character*(*) err
       logical HMS_ABORT,SOS_ABORT
       character*132 HMS_err,SOS_err
+
+      include 'gen_run_info.cmn'
 *
 *--------------------------------------------------------
 *
@@ -35,9 +37,13 @@
       HMS_err= ' '
       SOS_err= ' '
 *
+      
       call H_apply_offsets(HMS_ABORT,HMS_err)
+      
 *
+      
       call S_apply_offsets(SOS_ABORT,SOS_err)
+      
 *
       ABORT= HMS_ABORT .or. SOS_ABORT
 *

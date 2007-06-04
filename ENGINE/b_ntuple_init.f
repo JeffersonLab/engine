@@ -1,4 +1,4 @@
-      subroutine b_ntuple_init(itype,ABORT,err)
+      subroutine b_ntuple_init(ABORT,err)
 
       implicit none
       save
@@ -6,7 +6,7 @@
       character*13 here
       parameter(here='b_ntuple_init')
       
-      integer itype
+c      integer itype
 
       include 'b_ntuple.cmn'
       include 'gen_routines.dec'
@@ -15,7 +15,7 @@
       include 'b_ntuple.dte'
 
       character*80 default_name 
-      parameter(default_name='BIGCALntuple')
+      parameter(default_name='BIGCAL_ntuple')
 
       logical ABORT
       character*(*) err
@@ -44,7 +44,7 @@ c$$$      data b_ntuple_contents/bmax_ntuple_size*0/
       abort=.false.
 
       if(b_ntuple_exists) then 
-         write(*,*) 'calling b_ntuple_shutdown'
+         !write(*,*) 'calling b_ntuple_shutdown'
          call b_ntuple_shutdown(ABORT,err)
          if(abort) then 
             call G_add_path(here,err)
@@ -58,9 +58,11 @@ c$$$      data b_ntuple_contents/bmax_ntuple_size*0/
       b_ntuple_id = default_b_ntuple_ID
       b_ntuple_name = default_name
       if(b_ntuple_title.eq.' ') then
-         msg = name//' '//b_ntuple_file
+         msg = b_ntuple_name//' '//b_ntuple_file
+         !write(*,*) 'bigcal ntuple title = ',msg
          call only_one_blank(msg)
          b_ntuple_title= msg
+         
       endif
       
       file = b_ntuple_file
@@ -93,13 +95,13 @@ c     choose ntuple type based on input argument
 
       m=0
 
-      if(itype.le.2) then ! "normal" ntuple, also used for ep calibration
+      if(bigcal_ntuple_type.eq.1) then ! "normal" basic row-wise ntuple which uses best cluster (singles)
          m=m+1
          b_ntuple_tag(m) = 'time' ! coin time in ns of best cluster
          m=m+1
-         b_ntuple_tag(m) = 'etheta' ! polar angle in degrees
+         b_ntuple_tag(m) = 'etheta' ! polar angle in radians
          m=m+1
-         b_ntuple_tag(m) = 'ephi' ! azimuthal angle in degrees
+         b_ntuple_tag(m) = 'ephi' ! azimuthal angle in radians
          m=m+1
          b_ntuple_tag(m) = 'Etot' ! energy in GeV
          m=m+1 
@@ -136,10 +138,6 @@ c     choose ntuple type based on input argument
          b_ntuple_tag(m) = 't8avg' ! average time of sum of 8
          m=m+1
          b_ntuple_tag(m) = 't64avg' ! average time of sum of 64
-         m=m+1
-         b_ntuple_tag(m) = 'L8sum' ! level sum for sum8 channels
-         m=m+1
-         b_ntuple_tag(m) = 'L64sum' ! level sum for sum64 channels
          do i=-2,2        ! cell amplitudes (5x5)
             do j=-2,2
                m=m+1
@@ -163,18 +161,27 @@ c     choose ntuple type based on input argument
                b_ntuple_tag(m) = Ecelltag
             enddo
          enddo 
+
+         b_ntuple_size = m
 c     so far we have added 48 quantities to the ntuple: 23 'per event' 
 c     quantities + 25 cell amplitudes for the best cluster. We only allow 
 c     one cluster to get into the ntuple per event for now.
-      else if(itype.eq.3) then ! cosmic tracking
-         ! don't add this right now
-      else if(itype.eq.4) then ! laser/light box/gain monitoring 
+      else if(bigcal_ntuple_type.eq.2) then ! column-wise ntuple writes out all clusters
+        
+
+      else if(bigcal_ntuple_type.eq.3) then ! column-wise ntuple for cosmic analysis
+        b_ntuple_id = 9501
+
+      else if(bigcal_ntuple_type.eq.4) then ! laser/light box/gain monitoring 
          ! don't add this right now
       endif
       
-      b_ntuple_size = m
+
+      !write(*,*) 'calling b_ntuple_open'
 
       call b_ntuple_open(file,ABORT,err)
+
+      !write(*,*) 'b_ntuple_open successful, itype=',bigcal_ntuple_type
 
       if(abort) then
          err= ':unable to create BigCal ntuple'

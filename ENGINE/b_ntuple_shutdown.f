@@ -2,7 +2,7 @@
 c     final shutdown of BigCal ntuple
       implicit none
       save
-
+      
       character*17 here
       parameter(here='b_ntuple_shutdown')
 

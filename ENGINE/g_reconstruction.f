@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.2  2007/06/04 14:56:06  puckett
+* changed hit array structure for trigger related signals
+*
 * Revision 1.13.24.1  2007/05/15 02:55:01  jones
 * Start to Bigcal code
 *
@@ -71,6 +74,7 @@
 *     
       INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_event_info.cmn'
+      include 'gen_run_info.cmn'
       INCLUDE 'hack_.cmn'
 *     
       logical FAIL
@@ -121,8 +125,8 @@
 *-Beamline reconstruction
 *-for GEp, avoid event types 2 and 3!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (No SOS!)
 c      IF(gen_event_type.ge.1 .and. gen_event_type.le.3) then  !HMS/SOS/COIN trig
-      if(gen_event_type.eq.1 .or. gen_event_type.eq.5 .or. 
-     $     gen_event_type.eq.6) then ! 1 = HMS singles, 5 = BigCal singles, 6 = HMS-BigCal coin.
+      if((gen_event_type.eq.1 .or. gen_event_type.eq.5 .or. 
+     $     gen_event_type.eq.6).and.gen_analyze_beamline.ne.0) then ! 1 = HMS singles, 5 = BigCal singles, 6 = HMS-BigCal coin.
         
          !write(*,*) 'calling g_trans_misc'
         call g_trans_misc(FAIL,why)
@@ -134,8 +138,8 @@ c      IF(gen_event_type.ge.1 .and. gen_event_type.le.3) then  !HMS/SOS/COIN tri
         ENDIF
         ABORT= ABORT .or. FAIL
 
-        !write(*,*) 'calling g_analyze_misc'
-c        call g_analyze_misc(FAIL,why)
+        !write(*,*) 'calling g_analyze_misc' 
+        call g_analyze_misc(FAIL,why) !UNCOMMENT WHEN WE GET IN HALL AND BEAM ON!
         !write(*,*) 'g_analyze_misc successful'
         IF(err.NE.' ' .and. why.NE.' ') THEN
           call G_append(err,' & '//why)

@@ -10,6 +10,9 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 * $Log$
+* Revision 1.14.8.2  2007/06/04 14:56:05  puckett
+* changed hit array structure for trigger related signals
+*
 * Revision 1.14.8.1  2007/05/15 02:55:01  jones
 * Start to Bigcal code
 *
@@ -105,15 +108,25 @@
       endif
 
 *-chance to flush any statistics, etc.
+      
       call H_proper_shutdown(SPAREID,bad_HMS,err_HMS)
-
+      
+      
+      
       call S_proper_shutdown(SPAREID,bad_SOS,err_SOS)
-
+      
+      
+      
       call B_proper_shutdown(SPAREID,bad_BIGCAL,err_BIGCAL)
-
+      
+      
+      
       call C_proper_shutdown(SPAREID,bad_COIN,err_COIN)
-
+      
+      
+      
       call GEP_proper_shutdown(SPAREID,bad_GEP,err_GEP)
+      
 
       close(unit=SPAREID)
 
