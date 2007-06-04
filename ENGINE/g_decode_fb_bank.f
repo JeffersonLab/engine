@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.2  2007/06/04 15:01:48  puckett
+* *** empty log message ***
+*
 * Revision 1.32.20.1  2007/05/15 18:55:22  jones
 * Start Bigcal version
 *
@@ -340,15 +343,22 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddress
      $           BIGCAL_TDC_RAW_IROW, BIGCAL_TDC_RAW_IGROUP, 1, 
      $           BIGCAL_TDC_RAW, 0, 0, 0)
             !write(*,*) 'tdc data decoded successfully'
-          else if (did.eq.BIGCAL_TRIG_ID) then 
+          else if (did.eq.BIGCAL_ATRIG_ID) then 
             !write(*,*) 'did = trig, decoding trig data'
             pointer = pointer + 
      $           g_decode_fb_detector(lastslot, roc, bank(pointer),
-     $           maxwords, did, BIGCAL_TRIG_MAXHITS, BIGCAL_TRIG_NHIT,
-     $           BIGCAL_TRIG_IGROUP, BIGCAL_TRIG_IHALF, 2, 
-     $           BIGCAL_TRIG_ADC_RAW, BIGCAL_TRIG_TDC_RAW,0,0)
+     $           maxwords, did, BIGCAL_ATRIG_MAXHITS, BIGCAL_ATRIG_NHIT,
+     $           BIGCAL_ATRIG_IGROUP, BIGCAL_ATRIG_IHALF, 1, 
+     $           BIGCAL_ATRIG_ADC_RAW, 0,0,0)
             !write(*,*) 'trig data decoded successfully'
+          else if (did.eq.BIGCAL_TTRIG_ID) then
+            pointer = pointer + 
+     $           g_decode_fb_detector(lastslot,roc, bank(pointer),
+     $           maxwords, did, BIGCAL_TTRIG_MAXHITS, BIGCAL_TTRIG_NHIT,
+     $           BIGCAL_TTRIG_IGROUP, BIGCAL_TTRIG_IHALF, 1,
+     $           BIGCAL_TTRIG_TDC_RAW, 0,0,0)
 *======================= HMISC =========================================
+=======
           else if (did.eq.HMISC_ID) then
 *
 *     This array is for data words that don't belong to a specific
