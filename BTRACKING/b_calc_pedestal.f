@@ -105,9 +105,9 @@
 
       nchange = 0
 
-      do igroup=1,BIGCAL_LOGIC_GROUPS/2
+      do igroup=1,BIGCAL_ATRIG_MAXHITS/2
          do ihalf=1,2
-            igr64 = igroup + (ihalf-1)*BIGCAL_LOGIC_GROUPS/2
+            igr64 = ihalf + 2*(igroup-1)
             numped = max(1.,float(bigcal_trig_ped_num(igr64)))
             
             bigcal_trig_new_ped(igr64)=bigcal_trig_ped_sum(igr64)/numped

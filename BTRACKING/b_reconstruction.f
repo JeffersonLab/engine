@@ -67,42 +67,6 @@
             return
          endif
       endif
-      
-***********  What are the analysis steps? What physics variables do we need
-***********  to reconstruct? First do hit variables: timings, 
-***********      1. Trigger time/amplitude 
-***********      2. Logic group (sum 64) hits and times/amplitudes
-***********      3. TDC hit times
-***********      4. Cluster finding and moments (also, associate an average 
-***********             time with each cluster, average of all associated 
-***********             TDC groups)
-***********      5. "Good" clusters: Cut on time difference between average 
-***********         TDC and trigger time, cut on requiring at least one logic 
-***********         group with hit containing the cells in this cluster
-***********  Reconstructed physics variables: 
-***********      1. "Good" clusters should be ep coin. High background rate, 
-***********         ~1 MHz or so, take prescaled singles at about 10-100 Hz 
-***********         or so. Trig rate is about 600 Hz per glass bar, should
-***********         be able to measure pile-up of signals.
-***********      2. Time of cluster as determined by best average of overall
-***********         trigger time, TDCs of groups containing the cluster cells,
-***********         and TDCs of logic groups containing the cluster cells.
-***********      3. x and y coordinates. Assuming elastic electrons, use the 
-***********         fit parameters specific to the row and column of the 
-***********         central cell of the cluster (5x5)
-***********      4. Energy. This will depend on calibrating the calo with ep
-***********         elastic, and we will have to determine the calibration 
-***********         "constants". Want to be able to interface to database for
-***********         this purpose. x and y coordinates and energy are most 
-***********         important
-***********  Higher-level physics variables (requires HMS info): 
-***********      1. Because no spectrometer, we cannot correct for the extended
-***********         target unless we have some HMS vertex information as well
-***********      2. electron angles theta and phi 
-***********      3. missing energy and momentum (requires HMS)
-***********      4. Coincidence time (requires HMS)
-***********  Cut on missing energy and momentum and coincidence timing 
-***********  suppresses most accidentals. 
   
 *     find_clusters: fills the cluster arrays, calculates sums and moments
       if(bbypass_find_clusters.eq.0.and.bbypass_prot.eq.0.and.
@@ -113,9 +77,8 @@
             return
          endif
       endif
-*     check cluster timing: looks at all the hits in a cluster and checks 
-*     timing for consistency, throw out bad hits if there are any, and 
-*     calculate average cluster time.
+*     check cluster timing: looks at all the hits in a cluster and calculates 
+*     the average time associated with sum8 tdcs and sum64 tdcs
       if(bbypass_sum8.eq.0.and.bbypass_sum64.eq.0.and.
      $     bbypass_calc_cluster_time.eq.0.and.bbypass_find_clusters
      $     .eq.0) then

@@ -15,13 +15,8 @@
 *     want to calculate time relative to reference time (master trigger)
       
       integer*4 ihit
-      integer*4 irow,igroup,itdc
+      integer*4 irow,igroup,itdc,tdc_raw,thitnum
       integer*4 ngood,igood
-      logical firsthit(BIGCAL_MAX_TDC)
-
-      do itdc=1,BIGCAL_MAX_TDC
-         firsthit(itdc) = .true.
-      enddo
 
       do ihit=1,BIGCAL_TDC_MAXHITS
          BIGCAL_TDC(ihit) = -1
@@ -38,24 +33,28 @@ c      BIGCAL_GOOD_TRIG = .false.
 
       ngood = 0
 
-      do ihit=1,BIGCAL_TDC_NHIT
-         irow = BIGCAL_TDC_RAW_IROW(ihit)
-         igroup = BIGCAL_TDC_RAW_IGROUP(ihit)
-         itdc = igroup + (irow - 1) * BIGCAL_MAX_GROUPS 
-         if(firsthit(itdc).or.BIGCAL_TDC_RAW(ihit).gt.
-     $        BIGCAL_TDC_DET(itdc)) then
-            BIGCAL_TDC_DET(itdc) = BIGCAL_TDC_RAW(ihit)
-            firsthit(itdc) = .false.
-            ! common stop means longer time/larger TDC = earlier hit
-         endif
-         if(BIGCAL_TDC_RAW(ihit) .ge. bigcal_tdc_min .and. 
-     $        BIGCAL_TDC_RAW(ihit) .le. bigcal_tdc_max ) then
+      if(bigcal_tdc_nhit.gt.0) then
+        do ihit=1,BIGCAL_TDC_NHIT
+          irow = BIGCAL_TDC_RAW_IROW(ihit)
+          igroup = BIGCAL_TDC_RAW_IGROUP(ihit)
+          itdc = igroup + (irow - 1) * BIGCAL_MAX_GROUPS 
+          tdc_raw = bigcal_tdc_raw(ihit)
+          
+          if(bigcal_tdc_det_nhit(itdc).lt.8) then
+            bigcal_tdc_det_nhit(itdc)=bigcal_tdc_det_nhit(itdc) + 1
+            thitnum = bigcal_tdc_det_nhit(itdc)
+            bigcal_tdc_raw_det(itdc,thitnum) = tdc_raw
+          endif
+
+          if(tdc_raw .ge. bigcal_tdc_min .and. 
+     $         tdc_raw .le. bigcal_tdc_max ) then
             ngood = ngood + 1
             BIGCAL_TDC(ngood) = BIGCAL_TDC_RAW(ihit)
             BIGCAL_TDC_IROW(ngood) = irow
             BIGCAL_TDC_IGROUP(ngood) = igroup
-         endif
-      enddo
+          endif
+        enddo
+      endif
       
       BIGCAL_TDC_NDECODED = ngood
       

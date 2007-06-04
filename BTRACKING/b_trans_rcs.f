@@ -33,49 +33,54 @@
 *     accumulate?
 *      
 *     loop over sparsified "good" hits
-      
-      do ihit=1,BIGCAL_RCS_NGOOD
-         irow = BIGCAL_RCS_IYGOOD(ihit)
-         icol = BIGCAL_RCS_IXGOOD(ihit)
-         icell = icol + BIGCAL_RCS_NX*(irow - 1)
-         BIGCAL_RCS_ECELL(ihit) = BIGCAL_RCS_CFAC(icell) *
-     $        BIGCAL_RCS_ADC_GOOD(ihit) * BIGCAL_RCS_GAIN_COR(icell)
-
-         if(bigcal_rcs_adc_good(ihit).gt.bigcal_max_adc) then
+      if(bigcal_rcs_ngood.gt.0) then
+        do ihit=1,BIGCAL_RCS_NGOOD
+          irow = BIGCAL_RCS_IYGOOD(ihit)
+          icol = BIGCAL_RCS_IXGOOD(ihit)
+          icell = icol + BIGCAL_RCS_NX*(irow - 1)
+          BIGCAL_RCS_ECELL(ihit) = BIGCAL_RCS_CFAC(icell) *
+     $         BIGCAL_RCS_ADC_GOOD(ihit) * BIGCAL_RCS_GAIN_COR(icell)
+          
+          if(bigcal_rcs_adc_good(ihit).gt.bigcal_max_adc) then
             bigcal_max_adc = bigcal_rcs_adc_good(ihit)
             bigcal_iymax_adc = irow + bigcal_prot_ny
             bigcal_ixmax_adc = icol
-         endif
-
+          endif
+          
 *     question of whether to group by hits or cells. 
 *     seems most logical and efficient to go by hits only and not 
 *     have to keep passing around the full array of cells with lots of 
 *     empties. 
 *     
 *     Fill also xgood and ygood arrays
-         BIGCAL_RCS_XGOOD(ihit) = BIGCAL_RCS_XCENTER(icell)
-         BIGCAL_RCS_YGOOD(ihit) = BIGCAL_RCS_YCENTER(icell)
+          BIGCAL_RCS_XGOOD(ihit) = BIGCAL_RCS_XCENTER(icell)
+          BIGCAL_RCS_YGOOD(ihit) = BIGCAL_RCS_YCENTER(icell)
 *     Fill detector array and increment sums of 8 and sums of 64
-         BIGCAL_RCS_GOOD_DET(icell) = BIGCAL_RCS_ECELL(ihit)
-         BIGCAL_RCS_GOOD_HIT(icell) = .true.
-         irow8 = irow + BIGCAL_PROT_NY
-         if(icol.lt.16) then 
+          BIGCAL_RCS_GOOD_DET(icell) = BIGCAL_RCS_ECELL(ihit)
+c     BIGCAL_RCS_GOOD_HIT(icell) = .true.
+          irow8 = irow + BIGCAL_PROT_NY
+          if(icol.lt.16) then 
             icol8 = (icol - 1)/8 + 1
-         else 
+          else 
             icol8 = icol / 8 + 1
-         endif
-         ig8 = icol8 + (irow8 - 1)*BIGCAL_MAX_GROUPS
-
-         igroup64 = (irow8 - 1) / 3 + 1
-         ihalf64 = icol / 16 + 1
-         ig64 = igroup64 + (ihalf64 - 1)*BIGCAL_LOGIC_GROUPS / 2
-
-         BIGCAL_TIME_ADC_SUM(ig8) = BIGCAL_TIME_ADC_SUM(ig8) + 
-     $        BIGCAL_RCS_ECELL(ihit)
-         BIGCAL_TRIG_ADC_SUM(ig64) = BIGCAL_TRIG_ADC_SUM(ig64) + 
-     $        BIGCAL_RCS_ECELL(ihit)
-
-      enddo
+          endif
+          ig8 = icol8 + (irow8 - 1)*BIGCAL_MAX_GROUPS
+          
+          igroup64 = (irow8 - 1) / 3 + 1
+          ihalf64 = icol / 16 + 1
+          ig64 = ihalf64 + 2*(igroup64-1)
+          
+          bigcal_tdc_sum8(ig8) = bigcal_tdc_sum8(ig8) + 
+     $         BIGCAL_RCS_ECELL(ihit)
+          bigcal_atrig_sum64(ig64) = bigcal_atrig_sum64(ig64) + 
+     $         BIGCAL_RCS_ECELL(ihit)
+          if( mod(irow8-1,3) .eq.0)then ! overlap row, also increment previous group
+            bigcal_atrig_sum64(ig64-2) = bigcal_atrig_sum64(ig64-2) +
+     $           bigcal_rcs_ecell(ihit)
+          endif
+          
+        enddo
+      endif
 
       return
       end

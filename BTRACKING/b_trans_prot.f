@@ -36,42 +36,48 @@
 *     accumulate?
 *      
 *     loop over sparsified "good" hits
-      
-      do ihit=1,BIGCAL_PROT_NGOOD
-         irow = BIGCAL_PROT_IYGOOD(ihit)
-         icol = BIGCAL_PROT_IXGOOD(ihit)
-         icell = icol + BIGCAL_PROT_NX*(irow - 1)
-         BIGCAL_PROT_ECELL(ihit) = BIGCAL_PROT_CFAC(icell) *
-     $        BIGCAL_PROT_ADC_GOOD(ihit) * BIGCAL_PROT_GAIN_COR(icell)
-
-         if(bigcal_prot_adc_good(ihit).gt.bigcal_max_adc) then
+      if(bigcal_prot_ngood.gt.0) then
+        do ihit=1,BIGCAL_PROT_NGOOD
+          irow = BIGCAL_PROT_IYGOOD(ihit)
+          icol = BIGCAL_PROT_IXGOOD(ihit)
+          icell = icol + BIGCAL_PROT_NX*(irow - 1)
+          BIGCAL_PROT_ECELL(ihit) = BIGCAL_PROT_CFAC(icell) *
+     $         BIGCAL_PROT_ADC_GOOD(ihit) * BIGCAL_PROT_GAIN_COR(icell)
+          
+          if(bigcal_prot_adc_good(ihit).gt.bigcal_max_adc) then
             bigcal_max_adc = bigcal_prot_adc_good(ihit)
             bigcal_iymax_adc = irow
             bigcal_ixmax_adc = icol
-         endif
-
+          endif
+          
 *     question of whether to group by hits or cells. 
 *     seems most logical and efficient to go by hits only and not 
 *     have to keep passing around the full array of cells with lots of 
 *     empties. 
 *     
 *     Fill also xgood and ygood arrays
-         BIGCAL_PROT_XGOOD(ihit) = BIGCAL_PROT_XCENTER(icell)
-         BIGCAL_PROT_YGOOD(ihit) = BIGCAL_PROT_YCENTER(icell)
+          BIGCAL_PROT_XGOOD(ihit) = BIGCAL_PROT_XCENTER(icell)
+          BIGCAL_PROT_YGOOD(ihit) = BIGCAL_PROT_YCENTER(icell)
 *     Fill detector arrays and increment sums of 8 and sums of 64:
-         BIGCAL_PROT_GOOD_DET(icell) = BIGCAL_PROT_ECELL(ihit)
-         BIGCAL_PROT_GOOD_HIT(icell) = .true.
-         irow8 = irow
-         icol8 = (icol - 1)/8 + 1
-         ig8 = icol8 + BIGCAL_MAX_GROUPS * (irow8 - 1)
-         BIGCAL_TIME_ADC_SUM(ig8) = BIGCAL_TIME_ADC_SUM(ig8) + 
-     $        BIGCAL_PROT_ECELL(ihit)
-         igroup64 = (irow - 1) / 3 + 1
-         ihalf64 = (icol - 1) / 16 + 1
-         ig64 = igroup64 + (ihalf64 - 1)*BIGCAL_LOGIC_GROUPS / 2
-         BIGCAL_TRIG_ADC_SUM(ig64) = BIGCAL_TRIG_ADC_SUM(ig64) + 
-     $        BIGCAL_PROT_ECELL(ihit)
-      enddo
+          BIGCAL_PROT_GOOD_DET(icell) = BIGCAL_PROT_ECELL(ihit)
+c     BIGCAL_PROT_GOOD_HIT(icell) = .true.
+          irow8 = irow
+          icol8 = (icol - 1)/8 + 1
+          ig8 = icol8 + BIGCAL_MAX_GROUPS * (irow8 - 1)
+          bigcal_tdc_sum8(ig8) = bigcal_tdc_sum8(ig8) + 
+     $         BIGCAL_PROT_ECELL(ihit)
+          igroup64 = (irow - 1) / 3 + 1
+          ihalf64 = (icol - 1) / 16 + 1
+          ig64 = ihalf64 + 2*(igroup64 - 1)
+          bigcal_atrig_sum64(ig64) = bigcal_atrig_sum64(ig64) + 
+     $         BIGCAL_PROT_ECELL(ihit)
+          if( mod(irow-1,3) .eq. 0 .and. irow.gt.1) then ! overlap row, also increment previous sum
+            bigcal_atrig_sum64(ig64-2) = bigcal_atrig_sum64(ig64-2) + 
+     $           bigcal_prot_ecell(ihit)
+          endif
+            
+        enddo
+      endif
 
       return
       end

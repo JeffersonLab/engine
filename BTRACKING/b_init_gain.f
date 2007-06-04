@@ -45,7 +45,7 @@ c     are correctly read in from CTP parm files
          enddo
       enddo
 
-      do ilogic=1,BIGCAL_LOGIC_GROUPS
+      do ilogic=1,BIGCAL_ATRIG_MAXHITS
          gainold = bigcal_trig_gain_last(ilogic)
          gainnew = bigcal_trig_gain_now(ilogic)
          bigcal_trig_gain_cor(ilogic) = gainnew / gainold

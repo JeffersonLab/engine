@@ -13,57 +13,70 @@
       include 'bigcal_tof_parms.cmn'
       include 'bigcal_gain_parms.cmn'
 
-      integer*4 ihit,igroup,ngood,ihalf,ilogic
-      logical firsthit(BIGCAL_LOGIC_GROUPS)
+      integer*4 ihit,igroup64,ihalf64,icell64,ngood,adc_raw,tdc_raw
+      integer*4 thitnum
       
       ngood = 0
-
-      do ilogic=1,BIGCAL_LOGIC_GROUPS
-         firsthit(ilogic) = .true.
+      
+*     do atrig first:
+      do icell64=1,bigcal_atrig_maxhits
+        bigcal_atrig_adc_dec(icell64) = -100.
       enddo
 
-*     'zero' 'decoded' hit arrays:
-      do ihit=1,BIGCAL_TRIG_MAXHITS
-         BIGCAL_TRIG_TDC_DECODED(ihit) = -1
-         BIGCAL_TRIG_ADC_DECODED(ihit) = -100.
-         BIGCAL_TRIG_ADC_GOOD(ihit) = -100.
-         BIGCAL_TRIG_TIME_GOOD(ihit) = -1000. ! depending on distance, e- tof will be anywhere from 
-                                              ! 15 ns to 67 ns
-      enddo
-*     check number of hits, must fall in allowed range:
-      if(BIGCAL_TRIG_NHIT.lt.0.or.BIGCAL_TRIG_NHIT.gt.
-     $     BIGCAL_TRIG_MAXHITS) then 
-         write(6,*) here,':bigcal_trig_nhit=',BIGCAL_TRIG_NHIT
-         return
-      endif
-*     good hit has good tdc value:
-      do ihit=1,BIGCAL_TRIG_NHIT
-         igroup = BIGCAL_TRIG_IGROUP(ihit)
-         ihalf = BIGCAL_TRIG_IHALF(ihit)
-         ilogic = igroup + BIGCAL_LOGIC_GROUPS/2 *(ihalf - 1) ! 1 = left, 
-                                ! 2 = right,
-         if(BIGCAL_TRIG_TDC_RAW(ihit).gt.BIGCAL_TRIG_TDC_DET(ilogic)
-     $        .or.firsthit(ilogic)) then
-            firsthit(ilogic) = .false.
-            BIGCAL_TRIG_TDC_DET(ilogic) = BIGCAL_TRIG_TDC_RAW(ihit)
-            BIGCAL_TRIG_ADC_DET(ilogic) = BIGCAL_TRIG_ADC_RAW(ihit)
-         endif
-         if( BIGCAL_TRIG_TDC_RAW(ihit).ge.bigcal_tdc_min.and.
-     $        BIGCAL_TRIG_TDC_RAW(ihit).le.bigcal_tdc_max) then
-            
+      if(bigcal_atrig_nhit.gt.0.and.bigcal_atrig_nhit.le.
+     $     bigcal_atrig_maxhits) then
+        do ihit=1,bigcal_atrig_nhit
+          igroup64 = bigcal_atrig_igroup(ihit)
+          ihalf64 = bigcal_atrig_ihalf(ihit)
+          icell64 = ihalf64 + 2*(igroup64 - 1)
+          adc_raw = bigcal_atrig_adc_raw(ihit)
+          bigcal_atrig_raw_det(icell64) = adc_raw
+
+          if(adc_raw.ge.0) then
+            bigcal_atrig_adc_dec(icell64) = float(adc_raw) - 
+     $           bigcal_trig_ped_mean(icell64)
+          endif
+          
+          if(bigcal_atrig_adc_dec(icell64) .gt. 
+     $         bigcal_trig_adc_threshold(icell64)) then
             ngood = ngood + 1
-            ! subtract ADC pedestal
-            BIGCAL_TRIG_ADC_DECODED(ngood) = 
-     $           float(BIGCAL_TRIG_ADC_RAW(ihit)) - 
-     $           BIGCAL_TRIG_PED_MEAN(ilogic)
-            BIGCAL_TRIG_TDC_DECODED(ngood) = 
-     $           BIGCAL_TRIG_TDC_RAW(ihit)
-            BIGCAL_TRIG_DEC_IGROUP(ngood) = igroup
-            BIGCAL_TRIG_DEC_IHALF(ngood) = ihalf
-         endif
-      enddo
+            bigcal_atrig_adc_good(ngood) = bigcal_atrig_adc_dec(icell64)
+            bigcal_atrig_good_igroup(ngood) = igroup64
+            bigcal_atrig_good_ihalf(ngood) = ihalf64
+          endif
+        enddo
+      endif
+      
+      bigcal_atrig_ngood = ngood
 
-      BIGCAL_TRIG_NDECODED = ngood
+      ngood = 0 ! now do tdcs:
+
+      if(bigcal_ttrig_nhit.gt.0.and.bigcal_ttrig_nhit.le.
+     $     bigcal_ttrig_maxhits) then
+        do ihit=1,bigcal_ttrig_nhit
+          igroup64 = bigcal_ttrig_igroup(ihit)
+          ihalf64 = bigcal_ttrig_ihalf(ihit)
+          icell64 = ihalf64 + 2*(igroup64-1)
+          tdc_raw = bigcal_ttrig_tdc_raw(ihit)
+          
+          if(bigcal_ttrig_det_nhit(icell64).lt.8) then
+            bigcal_ttrig_det_nhit(icell64)=
+     $           bigcal_ttrig_det_nhit(icell64) + 1
+            
+            thitnum = bigcal_ttrig_det_nhit(icell64)
+            bigcal_ttrig_raw_det(icell64,thitnum) = tdc_raw
+          endif
+          if(tdc_raw.ge.bigcal_tdc_min.and.tdc_raw.le.bigcal_tdc_max) 
+     $         then
+            ngood = ngood + 1
+            bigcal_ttrig_tdc_dec(ngood) = tdc_raw
+            bigcal_ttrig_dec_igroup(ngood) = igroup64
+            bigcal_ttrig_dec_ihalf(ngood) = ihalf64
+          endif
+        enddo
+      endif
+      
+      bigcal_ttrig_ndecoded = ngood
 
       return 
       end

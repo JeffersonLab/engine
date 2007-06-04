@@ -33,25 +33,27 @@ c     fill decoded data arrays
       ngood = 0
 
 *     loop over raw hits: 
-      do ihit=1,BIGCAL_PROT_NHIT
-         irow = BIGCAL_PROT_IY(ihit)
-         icol = BIGCAL_PROT_IX(ihit)
-         icell = icol + BIGCAL_PROT_NX*(irow - 1)
-         adc_val = BIGCAL_PROT_ADC_RAW(ihit)
-         BIGCAL_PROT_RAW_DET(icell) = adc_val
-         if(adc_val.ge.0) then 
+      if(bigcal_prot_nhit.gt.0) then
+        do ihit=1,BIGCAL_PROT_NHIT
+          irow = BIGCAL_PROT_IY(ihit)
+          icol = BIGCAL_PROT_IX(ihit)
+          icell = icol + BIGCAL_PROT_NX*(irow - 1)
+          adc_val = BIGCAL_PROT_ADC_RAW(ihit)
+          BIGCAL_PROT_RAW_DET(icell) = adc_val
+          if(adc_val.ge.0) then 
             BIGCAL_PROT_ADC_DECODED(icell) = float(adc_val) - 
      $           BIGCAL_PROT_PED_MEAN(icell)
-         endif
+          endif
 c     "sparsify" the data
-         if(BIGCAL_PROT_ADC_DECODED(icell).gt.
-     $        BIGCAL_PROT_ADC_THRESHOLD(icell)) then
+          if(BIGCAL_PROT_ADC_DECODED(icell).gt.
+     $         BIGCAL_PROT_ADC_THRESHOLD(icell)) then
             ngood = ngood + 1
             BIGCAL_PROT_ADC_GOOD(ngood) = BIGCAL_PROT_ADC_DECODED(icell)
             BIGCAL_PROT_IYGOOD(ngood) = irow
             BIGCAL_PROT_IXGOOD(ngood) = icol
-         endif
-      enddo
+          endif
+        enddo
+      endif
 
       BIGCAL_PROT_NGOOD = ngood
 

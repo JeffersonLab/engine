@@ -43,7 +43,7 @@ c            nprot = nprot + 1
             x = BIGCAL_PROT_CLSTR_X(i)
             y = BIGCAL_PROT_CLSTR_Y(i)
             E = BIGCAL_PROT_CLSTR_ETOT(i)
-            t = BIGCAL_PROT_CLSTR_TIME8(i)
+            t = BIGCAL_PROT_CLSTR_T8BEST(i)
 
             xrot = x * Costh + R * Sinth
             zrot = -x * Sinth + R * Costh
@@ -87,7 +87,7 @@ c            nrcs = nrcs + 1
             x = BIGCAL_RCS_CLSTR_X(i)
             y = BIGCAL_RCS_CLSTR_Y(i)
             E = BIGCAL_RCS_CLSTR_ETOT(i)
-            t = BIGCAL_RCS_CLSTR_TIME8(i)
+            t = BIGCAL_RCS_CLSTR_T8BEST(i)
 
             xrot = x * Costh + R * Sinth
             zrot = -x * Sinth + R * Costh
@@ -132,7 +132,7 @@ c            nmid = nmid + 1
             x = BIGCAL_MID_CLSTR_X(i)
             y = BIGCAL_MID_CLSTR_Y(i)
             E = BIGCAL_MID_CLSTR_ETOT(i)
-            t = BIGCAL_MID_CLSTR_TIME8(i)
+            t = BIGCAL_MID_CLSTR_T8BEST(i)
 
             xrot = x * Costh + R * Sinth
             zrot = -x * Sinth + R * Costh

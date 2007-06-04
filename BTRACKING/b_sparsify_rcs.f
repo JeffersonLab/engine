@@ -36,26 +36,27 @@ c     then we can assume from here on out that RCS_IY starts at 1 and goes to 24
       ngood = 0
 
 *     loop over raw hits: 
-      do ihit=1,BIGCAL_RCS_NHIT
-         irow = BIGCAL_RCS_IY(ihit) - BIGCAL_PROT_NY 
-         icol = BIGCAL_RCS_IX(ihit)
-         icell = icol + BIGCAL_RCS_NX*(irow - 1)
-         adc_val = BIGCAL_RCS_ADC_RAW(ihit)
-         BIGCAL_RCS_RAW_DET(icell) = adc_val
-         if(adc_val.ge.0) then 
+      if(bigcal_rcs_nhit.gt.0) then
+        do ihit=1,BIGCAL_RCS_NHIT
+          irow = BIGCAL_RCS_IY(ihit) - BIGCAL_PROT_NY 
+          icol = BIGCAL_RCS_IX(ihit)
+          icell = icol + BIGCAL_RCS_NX*(irow - 1)
+          adc_val = BIGCAL_RCS_ADC_RAW(ihit)
+          BIGCAL_RCS_RAW_DET(icell) = adc_val
+          if(adc_val.ge.0) then 
             BIGCAL_RCS_ADC_DECODED(icell) = float(adc_val) - 
      $           BIGCAL_RCS_PED_MEAN(icell)
-         endif
+          endif
 c     "sparsify" the data
-         if(BIGCAL_RCS_ADC_DECODED(icell).gt.
-     $        BIGCAL_RCS_ADC_THRESHOLD(icell)) then
+          if(BIGCAL_RCS_ADC_DECODED(icell).gt.
+     $         BIGCAL_RCS_ADC_THRESHOLD(icell)) then
             ngood = ngood + 1
             BIGCAL_RCS_ADC_GOOD(ngood) = BIGCAL_RCS_ADC_DECODED(icell)
             BIGCAL_RCS_IYGOOD(ngood) = irow
             BIGCAL_RCS_IXGOOD(ngood) = icol
-         endif
-      enddo
-      
+          endif
+        enddo
+      endif
       BIGCAL_RCS_NGOOD = ngood
 
       return
