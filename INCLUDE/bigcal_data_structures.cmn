@@ -398,8 +398,8 @@
       real*4 BIGCAL_RCS_CLSTR_X(BIGCAL_RCS_NCLSTR_MAX) 
       real*4 BIGCAL_RCS_CLSTR_Y(BIGCAL_RCS_NCLSTR_MAX) 
       real*4 BIGCAL_RCS_CLSTR_ETOT(BIGCAL_RCS_NCLSTR_MAX) 
-      logical bigcal_rcs_clstr_good8(bigcal_prot_nclstr_max) ! criterion for timing agreement
-      logical bigcal_rcs_clstr_good64(bigcal_prot_nclstr_max) ! criterion for timing agreement
+      logical bigcal_rcs_clstr_good8(bigcal_rcs_nclstr_max) ! criterion for timing agreement
+      logical bigcal_rcs_clstr_good64(bigcal_rcs_nclstr_max) ! criterion for timing agreement
       
       common/BIGCAL_CLUSTER_RCS/
      $     BIGCAL_RCS_NCLSTR,
