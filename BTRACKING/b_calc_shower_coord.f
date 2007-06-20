@@ -13,6 +13,7 @@
       include 'bigcal_gain_parms.cmn'
       include 'bigcal_geometry.cmn'
       include 'bigcal_shower_parms.cmn'
+      include 'bigcal_bypass_switches.cmn'
 
       integer i,j,irow,icol,icell
       real xmom,ymom,xcenter,ycenter,xdiff,ydiff
@@ -33,8 +34,15 @@
             
             do j=1,6
                xpar(j) = BIGCAL_PROT_XPAR(icol,j)
+               !write(*,'(A5,I2,A4,F8.4)') 'xpar(',j,') = ',xpar(j)
                ypar(j) = BIGCAL_PROT_YPAR(irow,j)
+               !write(*,'(A5,I2,A4,F8.4)') 'ypar(',j,') = ',ypar(j)
             enddo
+
+c$$$            if(bdebug_print_clusters) then 
+c$$$               write(*,*) 'xpar = ',xpar
+c$$$               write(*,*) 'ypar = ',ypar
+c$$$            endif
             
             xdiff = xpar(1)*atan(xpar(2) * xmom**4 + xpar(3) * xmom**3 + 
      $           xpar(4) * xmom**2 + xpar(5) * xmom + xpar(6))

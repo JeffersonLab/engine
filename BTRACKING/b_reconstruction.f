@@ -98,8 +98,7 @@
          endif
       endif
 *     
-      if(bbypass_calc_physics.eq.0.and.bbypass_find_clusters.eq.0.and.
-     $     bbypass_calc_cluster_time.eq.0) then
+      if(bbypass_calc_physics.eq.0.and.bbypass_find_clusters.eq.0) then
          call b_calc_physics(ABORT,err)
          if(ABORT) then
             call g_add_path(here,err)

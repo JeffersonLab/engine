@@ -299,8 +299,11 @@ c     ! the Prot-RCS boundary:
             enddo
             BIGCAL_PROT_CLSTR_XMOM(ncluster) = xmom
             BIGCAL_PROT_CLSTR_YMOM(ncluster) = ymom
-          endif
-        endif
+            
+            if(bdebug_print_clusters.ne.0) call b_print_cluster(1,ncluster,ABORT,err)
+            
+         endif
+      endif
       endif
       if(found_cluster .and. ncluster .lt. BIGCAL_PROT_NCLSTR_MAX) then 
      $     goto 101
@@ -547,6 +550,9 @@ c     ! the Prot-RCS boundary:
           
             BIGCAL_RCS_CLSTR_XMOM(ncluster) = xmom
             BIGCAL_RCS_CLSTR_YMOM(ncluster) = ymom
+
+            if(bdebug_print_clusters.ne.0) call b_print_cluster(2,ncluster,ABORT,err)
+            
           endif
         endif
       endif
@@ -876,6 +882,8 @@ c     zero the hits from this array so that they can't be used again:
             
             bigcal_mid_clstr_xmom(ncluster) = xmom
             bigcal_mid_clstr_ymom(ncluster) = ymom
+            
+            if(bdebug_print_clusters.ne.0) call b_print_cluster(3,ncluster,ABORT,err)
             
           endif
           
