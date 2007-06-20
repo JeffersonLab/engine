@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.24.6.3  2007/06/20 18:26:32  puckett
+* Added BigCal Monte Carlo analysis capability
+*
 * Revision 1.24.6.2  2007/06/04 14:56:05  puckett
 * changed hit array structure for trigger related signals
 *
@@ -403,31 +406,31 @@ c      !write(*,*) 'about to call b_initialize'
          call G_prepend(HMS_err,err)
       EndIf
 *
-c      !write(*,*) 'about to call C_initialize'
+c     write(*,*) 'about to call C_initialize'
       IF(.NOT.ABORT) THEN
 *     
 *-COIN initialize
 *
         
-        call C_initialize(ABORT,err)
+         call C_initialize(ABORT,err)
         
 *     
       ENDIF
 *
-c      !write(*,*) 'about to call GEP_initialize'
+c      write(*,*) 'about to call GEP_initialize'
       if(.not.ABORT) then
          call GEP_initialize(ABORT,err) ! clone of C_initialize for now
       endif
       
-c      !write(*,*) 'about to call g_ntuple_init'
+c     write(*,*) 'about to call g_ntuple_init'
       call g_ntuple_init(HACK_ABORT,HACK_err) ! Ingore error return for now
 *
-c      !write(*,*) 'about to call hack_initialize'
+c     write(*,*) 'about to call hack_initialize'
       call hack_initialize(HACK_ABORT,HACK_err) ! Ignore error return for now
 *
 *-force reset of all space of all working arrays
 *-(clear just zeros the index of each array)
-      !write(*,*) 'about to call g_reset_event'
+c     write(*,*) 'about to call g_reset_event'
       IF(.NOT.ABORT) THEN
          call G_reset_event(ABORT,err)
 *

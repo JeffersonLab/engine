@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.28.16.2  2007/06/20 18:26:32  puckett
+# Added BigCal Monte Carlo analysis capability
+#
 # Revision 1.28.16.1  2007/05/15 02:55:01  jones
 # Start to Bigcal code
 #
@@ -136,7 +139,7 @@ coin_source = c_register_variables.f c_clear_event.f c_initialize.f \
 	c_ntuple_close.f c_ntuple_open.f c_ntuple_change.f    
 bigcal_source = b_clear_event.f b_initialize.f b_keep_results.f b_ntuple_change.f \
 	b_ntuple_close.f b_ntuple_open.f b_proper_shutdown.f b_register_variables.f \
-	b_reset_event.f
+	b_reset_event.f bigcal_mc_reconstruction.f
 gep_source = gep_clear_event.f gep_initialize.f gep_keep_results.f gep_ntuple_change.f \
 	gep_ntuple_close.f gep_ntuple_open.f gep_physics.f gep_proper_shutdown.f \
 	gep_reconstruction.f gep_register_variables.f gep_reset_event.f

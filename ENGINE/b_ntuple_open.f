@@ -89,16 +89,17 @@ c     get any free IO channel
       if(bigcal_ntuple_type.eq.1) then ! row wise ntuple
         call HBOOKN(id,title,size,name,bank,b_ntuple_tag) ! create ntuple
       else if(bigcal_ntuple_type.eq.2) then ! col-wise ntuple for cluster analysis
-        call HBNT(id,title)
+        call HBNT(id,title,' ')
         call HBNAME(id,'ClustBlock',nclust,'nclust[0,25],'//
      $       'ncellclust(nclust)[0,25],iycell(25,nclust),'//
      $       'ixcell(25,nclust),xcell(25,nclust),ycell(25,nclust),'//
-     $       'ecell(25,nclust),tcell8(25,nclust),tcell64(25,nclust),'//
-     $       'xmom(nclust),ymom(nclust),tclust8(nclust),'//
+     $       'eblock(25,nclust),tcell8(10,8,nclust),'//
+     $       'tcell64(6,8,nclust),'//
+     $       'xmoment(nclust),ymoment(nclust),tclust8(nclust),'//
      $       'tclust64(nclust),xclust(nclust),yclust(nclust),'//
      $       'eclust(nclust),thetarad(nclust),phirad(nclust),'//
      $       'xface(nclust),yface(nclust),zface(nclust),px(nclust),'//
-     $       'py(nclust),pz(nclust),time(nclust)')
+     $       'py(nclust),pz(nclust),ctime_clust(nclust)')
 
       else if(bigcal_ntuple_type.eq.3) then ! col-wise ntuple for cosmics analysis
 

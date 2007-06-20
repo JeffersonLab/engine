@@ -210,6 +210,7 @@ c      integer itype
         do jclust = 1,bigcal_prot_nclstr
           iclust = iclust + 1
           ncellclust(iclust) = bigcal_prot_clstr_ncell(jclust)
+
           do icell=1,ncellclust(iclust)
             iycell(icell,iclust)=bigcal_prot_clstr_iycell(jclust,icell)
             ixcell(icell,iclust)=bigcal_prot_clstr_ixcell(jclust,icell)
@@ -231,7 +232,7 @@ c      integer itype
      $             bigcal_prot_clstr_tcell64(jclust,icell,ihit)
             enddo
           enddo
-
+          
           xmoment(iclust) = bigcal_prot_clstr_xmom(jclust)
           ymoment(iclust) = bigcal_prot_clstr_ymom(jclust)
           tclust8(iclust) = bigcal_prot_clstr_t8best(jclust)
@@ -249,9 +250,10 @@ c      integer itype
           py(iclust) = bigcal_track_py(iclust)
           pz(iclust) = bigcal_track_pz(iclust)
           ctime_clust(iclust) = bigcal_track_coin_time(iclust)
-        enddo
 
-        do jclust = 1,bigcal_rcs_nclstr
+       enddo
+       
+       do jclust = 1,bigcal_rcs_nclstr
           iclust = iclust + 1
           ncellclust(iclust) = bigcal_rcs_clstr_ncell(jclust)
           do icell=1,ncellclust(iclust)
@@ -352,7 +354,7 @@ c      integer itype
               nahit = nahit + 1
               xa(nahit) = bigcal_prot_ixgood(ihit)
               ya(nahit) = bigcal_prot_iygood(ihit)
-              aa(nahit) = nint(bigcal_prot_adc_good(ihit))
+              aa(nahit) = bigcal_prot_adc_good(ihit)
             endif
           enddo
         endif
@@ -368,7 +370,7 @@ c      integer itype
               nahit = nahit + 1
               xa(nahit) = bigcal_rcs_ixgood(ihit) + icol/16
               ya(nahit) = bigcal_rcs_iygood(ihit) + 32
-              aa(nahit) = nint(bigcal_rcs_adc_good(ihit))
+              aa(nahit) = bigcal_rcs_adc_good(ihit)
             endif
           enddo
         endif
@@ -405,7 +407,7 @@ c$$$     $             yt(nthit),hn(nthit),tt(nthit)
               ntahit =  ntahit + 1
               xta(ntahit) = icol
               yta(ntahit) = irow
-              taa(ntahit) = nint(bigcal_atrig_adc_good(ihit))
+              taa(ntahit) = bigcal_atrig_adc_good(ihit)
             endif
           enddo
         endif

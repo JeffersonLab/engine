@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.3  2007/06/20 18:26:32  puckett
+* Added BigCal Monte Carlo analysis capability
+*
 * Revision 1.42.8.2  2007/06/04 14:56:05  puckett
 * changed hit array structure for trigger related signals
 *
@@ -300,12 +303,17 @@ c
 * If there is a g_ctp_database_filename set, pass the run number
 * to it to set CTP variables
 *
+
+      !write(*,*) 'processing CTP database'
+
       if(.not.ABORT.and.g_ctp_database_filename.ne.' ') then
         call g_ctp_database(ABORT, err ,gen_run_number, g_ctp_database_filename)
         IF(ABORT) THEN
           call G_add_path(here,err)
         endif
       ENDIF
+
+      !write(*,*) 'CTP database file processed'
 
       call engine_command_line(.false.) ! Set CTP vars from command line
 
@@ -349,6 +357,9 @@ c
       syncfilter_on = .false.
       insync = 0
       EoF=.false.
+
+      if(gen_bigcal_mc.ne.0) goto 666     ! skip run info event loop 
+
       DO WHILE(.NOT.problems .and. .NOT.ABORT .and. .NOT.EoF .and.
      &         .NOT.finished_extracting)
         mss= ' '
@@ -446,6 +457,11 @@ c	     write(6,*) 'Cheesy poofs! - picture event'
 
         endif                           !if .not.problems
       enddo                             !do while .not.finished_extracting
+
+ 666  continue
+
+      !write(*,*) 'skipped run info event loop for mc analysis'
+
       call G_initialize(ABORT,err)              !includes a total reset
       IF(ABORT.or.err.NE.' ') THEN
          call G_add_path(here,err)
@@ -453,6 +469,8 @@ c	     write(6,*) 'Cheesy poofs! - picture event'
          If(ABORT) STOP
          err= ' '
       ENDIF
+
+      write(*,*) 'G_initialize completed successfully'
 *
 *-attempt to open FASTBUS-CODA file
 *
@@ -556,13 +574,46 @@ c Start data analysis
          write(6,*) ' ******'
       endif
 c
+      !write(*,*) 'Entering event loop'
+      
       DO WHILE(.NOT.problems .and. .NOT.ABORT .and. .NOT.EoF)
         mss= ' '
         g_replay_time=time()-start_time
 
         call G_clear_event(ABORT,err)   !clear out old data
         problems= problems .OR. ABORT
+c     !!!!!!!!!!!!!!!!!!!!!!!!!!!IF BIGCAL MONTE CARLO DATA, DO ALL EVENT REPLAY HERE!!!!!!!!
+        if(gen_bigcal_mc.ne.0) then
+c           call get_bigcal_mc_event(gen_bigcal_mc,ABORT,err)
+           gen_event_type = 5
+           
+           call bigcal_mc_reconstruction(gen_bigcal_mc,ABORT,err)
 
+           EoF = EOF_MC_DAT
+
+           if(abort) then
+              call g_add_path(here,err)
+              return 
+           endif
+
+c$$$           recorded_events(gen_event_type)=recorded_events(gen_event_type)+1
+c$$$           sum_recorded=sum_recorded+1
+c$$$           total_event_count= total_event_count+1
+           
+           groupname='bigcal'
+           call g_keep_results(groupname,ABORT,err)
+
+           if(abort) then 
+              call g_add_path(here,err)
+              return 
+           endif
+
+           sum_analyzed = sum_analyzed + 1
+           gen_event_ID_number = gen_event_ID_number + 1
+
+           goto 667  ! skip the rest of event loop
+        endif
+c     !!!!!!!!!!!!!!!!!!!!!!!!!!!END BIGCAL MONTE CARLO EVENT REPLAY!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         if(mss.NE.' ' .and. err.NE.' ') then
           call G_append(mss,' & '//err)
         elseif(err.NE.' ') then
@@ -584,8 +635,7 @@ c
 * Check if this is a physics event or a CODA control event.
 *
         if (.not.problems) then
-          gen_event_type = jishft(craw(2),-16)
-
+           gen_event_type = jishft(craw(2),-16)
           !write(*,*) 'gen_event_type = ',gen_event_type
 
           if(gen_event_type.le.gen_MAX_trigger_types) then
@@ -671,8 +721,8 @@ c
                 print 112,"Finished dumping histograms/scalers for first",
      &             physics_events," events"
  112            format (a,i8,a)
-              endif
-            else				!REAL physics event.
+             endif
+          else                  !REAL physics event.
 c        may need to change some of this stuff to look at the testlab data.
                if (analyzed_events(0) .le. 1 .and. gen_event_type .le. 3) then
                   if (skipped_events_scal .eq. 0 ) then
@@ -809,7 +859,7 @@ c
 
 	    endif    !if REAL physics event as opposed to scaler (evtype=0)
 
-          Else
+         Else
               if(gen_event_type.eq.129) then
               write(6,*) 'CODA 1.4 SCALER EVENT - event type 129!!!!!'
               write(6,*) ' Will not Analyze this event'
@@ -830,8 +880,8 @@ c
               call g_examine_control_event(CRAW,ABORT,err)
             endif
             mss = err
-          EndIf
-        endif
+         EndIf
+      endif
 c
 c  skip analyzing data until after first scaler read
 c    also can skip if using syncfilter and beam current is low
@@ -851,6 +901,8 @@ c
            endif
         endif
 
+ 667    continue
+
         since_cnt= since_cnt+1
         if(since_cnt.GE.10000) then
           print *,' event#',total_event_count,'      trigger#',physics_events
@@ -862,16 +914,19 @@ c
           call G_rep_err(ABORT,mss)
         EndIf
 
-        EoF= gen_event_type.EQ.20
+        EoF= gen_event_type.EQ.20 .or. EOF_MC_DAT
 
         if(gen_run_stopping_event.gt.0 .and. gen_event_ID_number.gt.0) then
           EoF=EoF .or. gen_run_stopping_event.le.sum_analyzed+sum_analyzed_skipped-analyzed_events(4)
+     $          .or. EOF_MC_DAT
         EndIf
 *
 *- Here is where we insert a check for an Remote Proceedure Call (RPC)
 *- from another process for CTP to interpret
+ 
+
 *
-      ENDDO                             !found a problem or end of run
+      ENDDO                     !found a problem or end of run
 
 c...  Calibrate HMS and SOS calorimeters.
 

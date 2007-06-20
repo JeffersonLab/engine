@@ -16,6 +16,7 @@
       include 'bigcal_tof_parms.cmn'
 c      include 'gen_units.par'
       include 'gen_constants.par'
+      include 'gen_run_info.cmn'
 
       integer i,j,k
       integer irow,icol,icell,jrow,jcol,jcell
@@ -297,6 +298,23 @@ c         BIGCAL_RCS_GOOD_HIT(i) = .false.
         bigcal_track_tof(i) = 0.
         bigcal_track_coin_time(i) = 0.
       enddo
+
+      if(gen_bigcal_mc.ne.0) then
+         !override pedestals info from param file: set all to zero for monte carlo events:
+         !also override calibration constants:
+         do i=1,bigcal_prot_maxhits
+            bigcal_prot_ped_mean(i) = 0.0
+            bigcal_prot_ped_rms(i) = 0.0
+            bigcal_prot_adc_threshold(i) = 0.0
+            bigcal_prot_cfac(i) = 1./950.79
+         enddo
+         do i=1,bigcal_rcs_maxhits
+            bigcal_rcs_ped_mean(i) = 0.0
+            bigcal_rcs_ped_rms(i) = 0.0
+            bigcal_rcs_adc_threshold(i) = 0.0
+            bigcal_rcs_cfac(i) = 1./911.57
+         enddo
+      endif
 
       return
       end
