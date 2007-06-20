@@ -9,11 +9,20 @@
       integer*4 BIGCAL_SHOWER_NPAR
       parameter(BIGCAL_SHOWER_NPAR=6)
 
+      real*4 bigcal_pxdet_par(BIGCAL_PROT_NX*BIGCAL_SHOWER_NPAR)
+      real*4 bigcal_pydet_par(BIGCAL_PROT_NY*BIGCAL_SHOWER_NPAR)
+      real*4 bigcal_rxdet_par(BIGCAL_RCS_NX*BIGCAL_SHOWER_NPAR)
+      real*4 bigcal_rydet_par(BIGCAL_RCS_NY*BIGCAL_SHOWER_NPAR)
+      
       real*4 BIGCAL_PROT_XPAR(BIGCAL_PROT_NX,BIGCAL_SHOWER_NPAR)
       real*4 BIGCAL_PROT_YPAR(BIGCAL_PROT_NY,BIGCAL_SHOWER_NPAR)
       real*4 BIGCAL_RCS_XPAR(BIGCAL_RCS_NX,BIGCAL_SHOWER_NPAR)
       real*4 BIGCAL_RCS_YPAR(BIGCAL_RCS_NY,BIGCAL_SHOWER_NPAR)
       common/bigcal_shower_parms/
+     $     BIGCAL_PXDET_PAR,
+     $     BIGCAL_PYDET_PAR,
+     $     BIGCAL_RXDET_PAR,
+     $     BIGCAL_RYDET_PAR,
      $     BIGCAL_PROT_XPAR,
      $     BIGCAL_PROT_YPAR,
      $     BIGCAL_RCS_XPAR,

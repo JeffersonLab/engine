@@ -2,6 +2,9 @@
 *- 
 *-   Created   22-Apr-1994   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.7.24.2  2007/06/20 18:38:23  puckett
+* Added BigCal Monte Carlo analysis capability
+*
 * Revision 1.7.24.1  2007/06/04 15:11:23  puckett
 * changed hit array structure for trigger-related signals
 *
@@ -54,6 +57,7 @@
       INTEGER gen_run_hist_dump_interval
       INTEGER gen_run_starting_event,gen_run_stopping_event
       INTEGER gen_analyze_beamline      !1=enable beamline, 0=disable
+      integer gen_bigcal_mc             !0=disable, 1=dat, 2=ntup
 *
       COMMON /gen_run_cntrl/ gen_run_starting_event,
      &     gen_run_stopping_event,
@@ -61,11 +65,12 @@
      &     gen_run_triggered,
      &     gen_run_analyzed,
      &     gen_run_hist_dump_interval,
-     $     gen_analyze_beamline
+     $     gen_analyze_beamline,
+     $     gen_bigcal_mc
 *
 *-shorter names for command line input
       integer grun,gstart,gstop,gdump,gtrig1,gtrig2,gtrig3,gtrig4 ! aliases
-      integer gtrig5,gtrig6,gbeam
+      integer gtrig5,gtrig6,gbeam,gmc
       equivalence (grun,gen_run_number)
       equivalence (gstart,gen_run_starting_event)
       equivalence (gstop,gen_run_stopping_event)
@@ -77,6 +82,7 @@
       equivalence (gtrig5,gen_run_enable(5))
       equivalence (gtrig6,gen_run_enable(6))
       equivalence (gbeam,gen_analyze_beamline)
+      equivalence (gmc,gen_bigcal_mc)
 
 *
 *     CTPTYPE=parm

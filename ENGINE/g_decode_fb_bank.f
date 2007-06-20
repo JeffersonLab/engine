@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.4  2007/06/20 18:34:43  puckett
+* Added BigCal Monte Carlo analysis capability
+*
 * Revision 1.32.20.3  2007/06/05 21:26:36  weiluo
 * Fix typo
 *
@@ -360,7 +363,9 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddress
      $           maxwords, did, BIGCAL_TTRIG_MAXHITS, BIGCAL_TTRIG_NHIT,
      $           BIGCAL_TTRIG_IGROUP, BIGCAL_TTRIG_IHALF, 1,
      $           BIGCAL_TTRIG_TDC_RAW, 0,0,0)
+
 *======================= HMISC ================================================
+
           else if (did.eq.HMISC_ID) then
 *
 *     This array is for data words that don't belong to a specific

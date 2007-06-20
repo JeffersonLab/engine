@@ -74,7 +74,7 @@
       real*4 pz(maxnclust)
       real*4 ctime_clust(maxnclust)
       
-      common/BIGCAL_Ntup_CW_Clust/
+      common/ClustBlock/
      $     nclust,
      $     ncellclust,
      $     iycell,

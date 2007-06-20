@@ -15,6 +15,7 @@
       integer*4 bdebug_print_adc
       integer*4 bdebug_print_tdc
       integer*4 bdebug_print_trig
+      integer*4 bdebug_print_clusters
       integer*4 bluno ! logical unit number for debugging output
       common/bigcal_bypass_switches/
      $     bbypass_prot,
@@ -31,5 +32,6 @@
      $     bdebug_print_adc,
      $     bdebug_print_tdc,
      $     bdebug_print_trig,
+     $     bdebug_print_clusters,
      $     bluno
       

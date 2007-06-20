@@ -555,4 +555,24 @@ c     bigcal_physics: reconstructed
      $     BIGCAL_BEST_BETA,
      $     BIGCAL_BEST_TOF,
      $     BIGCAL_BEST_COIN_TIME
+
+c     variables for reading Protvino Monte Carlo events ('.dat' style output!!!)
+      
+      integer*4 iev_mc
+      integer*4 nvtrk_mc
+      integer*4 pid_mc(100)
+      integer*4 isum_mc(2),ix_mc,iy_mc
+      integer*4 idesum_mc(2)
+      real*4 xv_mc,yv_mc,zv_mc,px_mc(100),py_mc(100),pz_mc(100)
+      real*4 esum_mc(2)
+      real*4 allde_mc(2)
+      real*4 npe_mc,dedx_mc
+      logical EOF_MC_DAT
+
+      common/BIGCAL_MC_STUFF/
+     $     iev_mc,nvtrk_mc,pid_mc,isum_mc,ix_mc,iy_mc,
+     $     idesum_mc,
+     $     xv_mc,yv_mc,zv_mc,px_mc,py_mc,pz_mc,esum_mc,
+     $     allde_mc,npe_mc,dedx_mc,EOF_MC_DAT
+
       
