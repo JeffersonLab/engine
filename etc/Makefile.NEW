@@ -73,7 +73,12 @@ export OSVERSION
 all:  $(SUBDIRNAME) $(SUBDIRNAME)/Makefile
 	make -C $(SUBDIRNAME) csoft
 
-$(SUBDIRNAME)/Makefile:
+../$(MAKEFILENAME):
+	echo chagne in ../$(MAKEFILENAME)
+	(cd $(SUBDIRNAME) ; ln -f -s ../$(MAKEFILENAME) Makefile)
+
+$(SUBDIRNAME)/Makefile: ../$(MAKEFILENAME)
+	echo copy ../$(MAKEFILENAME)
 	(cd $(SUBDIRNAME) ; ln -f -s ../$(MAKEFILENAME) Makefile)
 
 $(SUBDIRNAME):
