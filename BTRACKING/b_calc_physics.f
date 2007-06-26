@@ -174,50 +174,54 @@ c            nmid = nmid + 1
       ! for now, simply choose track with greatest energy as "best" track
       ! don't distinguish which section of the calorimeter the track comes from
 
-      itrackmax = 0
-      maxetot = 0.
-      
-      do i=1,ntrack
-         if(BIGCAL_TRACK_ENERGY(i).gt.maxetot) then
-            maxetot = BIGCAL_TRACK_ENERGY(i)
-            itrackmax = i
-         endif
-      enddo
+      if(ntrack.gt.0) then
 
-      nprot = BIGCAL_PROT_NCLSTR
-      nrcs = BIGCAL_RCS_NCLSTR
-      nmid = BIGCAL_MID_NCLSTR
-
-      if(itrackmax.le.nprot) then
-         BIGCAL_BEST_CLSTR_ISECTION = 1
-         BIGCAL_BEST_CLSTR_ICLUSTER = itrackmax
-      else if(itrackmax-nprot.le.nrcs) then
-         BIGCAL_BEST_CLSTR_ISECTION = 2
-         BIGCAL_BEST_CLSTR_ICLUSTER = itrackmax - nprot
-      else if(itrackmax-nprot-nrcs.le.nmid) then
-         BIGCAL_BEST_CLSTR_ISECTION = 3
-         BIGCAL_BEST_CLSTR_ICLUSTER = itrackmax - nprot - nrcs
-      else ! itrackmax out of range. should never happen
-         BIGCAL_BEST_CLSTR_ISECTION = 0
-         BIGCAL_BEST_CLSTR_ICLUSTER = 0
-      endif
+         itrackmax = 0
+         maxetot = 0.
          
-           
-      BIGCAL_BEST_THETARAD = BIGCAL_TRACK_THETARAD(itrackmax)
-      BIGCAL_BEST_THETADEG = BIGCAL_TRACK_THETADEG(itrackmax)
-      BIGCAL_BEST_PHIRAD = BIGCAL_TRACK_PHIRAD(itrackmax)
-      BIGCAL_BEST_PHIDEG = BIGCAL_TRACK_PHIDEG(itrackmax)
-      BIGCAL_BEST_ENERGY = BIGCAL_TRACK_ENERGY(itrackmax)
-      BIGCAL_BEST_TIME = BIGCAL_TRACK_TIME(itrackmax)
-      BIGCAL_BEST_XFACE = BIGCAL_TRACK_XFACE(itrackmax)
-      BIGCAL_BEST_YFACE = BIGCAL_TRACK_YFACE(itrackmax)
-      BIGCAL_BEST_ZFACE = BIGCAL_TRACK_ZFACE(itrackmax)
-      BIGCAL_BEST_PX = BIGCAL_TRACK_PX(itrackmax)
-      BIGCAL_BEST_PY = BIGCAL_TRACK_PY(itrackmax)
-      BIGCAL_BEST_PZ = BIGCAL_TRACK_PZ(itrackmax)
-      BIGCAL_BEST_BETA = BIGCAL_TRACK_BETA(itrackmax)
-      BIGCAL_BEST_TOF = BIGCAL_TRACK_TOF(itrackmax)
-      BIGCAL_BEST_COIN_TIME = BIGCAL_TRACK_COIN_TIME(itrackmax)
+         do i=1,ntrack
+            if(BIGCAL_TRACK_ENERGY(i).gt.maxetot) then
+               maxetot = BIGCAL_TRACK_ENERGY(i)
+               itrackmax = i
+            endif
+         enddo
+         
+         nprot = BIGCAL_PROT_NCLSTR
+         nrcs = BIGCAL_RCS_NCLSTR
+         nmid = BIGCAL_MID_NCLSTR
+         
+         if(itrackmax.le.nprot) then
+            BIGCAL_BEST_CLSTR_ISECTION = 1
+            BIGCAL_BEST_CLSTR_ICLUSTER = itrackmax
+         else if(itrackmax-nprot.le.nrcs) then
+            BIGCAL_BEST_CLSTR_ISECTION = 2
+            BIGCAL_BEST_CLSTR_ICLUSTER = itrackmax - nprot
+         else if(itrackmax-nprot-nrcs.le.nmid) then
+            BIGCAL_BEST_CLSTR_ISECTION = 3
+            BIGCAL_BEST_CLSTR_ICLUSTER = itrackmax - nprot - nrcs
+         else                   ! itrackmax out of range. should never happen
+            BIGCAL_BEST_CLSTR_ISECTION = 0
+            BIGCAL_BEST_CLSTR_ICLUSTER = 0
+         endif
+         
+         
+         BIGCAL_BEST_THETARAD = BIGCAL_TRACK_THETARAD(itrackmax)
+         BIGCAL_BEST_THETADEG = BIGCAL_TRACK_THETADEG(itrackmax)
+         BIGCAL_BEST_PHIRAD = BIGCAL_TRACK_PHIRAD(itrackmax)
+         BIGCAL_BEST_PHIDEG = BIGCAL_TRACK_PHIDEG(itrackmax)
+         BIGCAL_BEST_ENERGY = BIGCAL_TRACK_ENERGY(itrackmax)
+         BIGCAL_BEST_TIME = BIGCAL_TRACK_TIME(itrackmax)
+         BIGCAL_BEST_XFACE = BIGCAL_TRACK_XFACE(itrackmax)
+         BIGCAL_BEST_YFACE = BIGCAL_TRACK_YFACE(itrackmax)
+         BIGCAL_BEST_ZFACE = BIGCAL_TRACK_ZFACE(itrackmax)
+         BIGCAL_BEST_PX = BIGCAL_TRACK_PX(itrackmax)
+         BIGCAL_BEST_PY = BIGCAL_TRACK_PY(itrackmax)
+         BIGCAL_BEST_PZ = BIGCAL_TRACK_PZ(itrackmax)
+         BIGCAL_BEST_BETA = BIGCAL_TRACK_BETA(itrackmax)
+         BIGCAL_BEST_TOF = BIGCAL_TRACK_TOF(itrackmax)
+         BIGCAL_BEST_COIN_TIME = BIGCAL_TRACK_COIN_TIME(itrackmax)
+
+      endif
 
       return 
       end
