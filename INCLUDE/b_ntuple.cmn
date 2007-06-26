@@ -47,8 +47,14 @@
 
       integer*4 nclust
       integer*4 ncellclust(maxnclust)
+      integer*4 ncell8clust(maxnclust)
+      integer*4 ncell64clust(maxnclust)
       integer*4 iycell(maxncellclust,maxnclust)
       integer*4 ixcell(maxncellclust,maxnclust)
+      integer*4 irow8hit(10,maxnclust)
+      integer*4 icol8hit(10,maxnclust)
+      integer*4 irow64hit(6,maxnclust)
+      integer*4 icol64hit(6,maxnclust)
       real*4 xcell(maxncellclust,maxnclust)
       real*4 ycell(maxncellclust,maxnclust)
       real*4 eblock(maxncellclust,maxnclust)
@@ -77,8 +83,14 @@
       common/ClustBlock/
      $     nclust,
      $     ncellclust,
+     $     ncell8clust,
+     $     ncell64clust,
      $     iycell,
      $     ixcell,
+     $     irow8hit,
+     $     icol8hit,
+     $     irow64hit,
+     $     icol64hit,
      $     xcell,
      $     ycell,
      $     eblock,
@@ -100,6 +112,39 @@
      $     py,
      $     pz,
      $     ctime_clust
+
+*     in case of Monte Carlo analysis, actual event info for comparison to reconstructed:
+*     one "vertex" per event is assumed. Fill if and only if cluster ntuple gets filled.
+
+      integer*4 ntrk_g
+      integer*4 pid_g(maxnclust)
+      real*4 xvertex_g
+      real*4 yvertex_g
+      real*4 zvertex_g
+      real*4 pxgeant(maxnclust)
+      real*4 pygeant(maxnclust)
+      real*4 pzgeant(maxnclust)
+      real*4 xgeant(maxnclust) ! x in calo-centered coordinate system
+      real*4 ygeant(maxnclust) ! y in calo-centered coordinate system
+      real*4 egeant(maxnclust) ! actual energy of particle
+      real*4 pgeant(maxnclust) ! magnitude of momentum of particle
+      real*4 gthetarad(maxnclust)
+      real*4 gphirad(maxnclust)
+      common/MC_Clust/
+     $     ntrk_g,
+     $     pid_g,
+     $     xvertex_g,
+     $     yvertex_g,
+     $     zvertex_g,
+     $     pxgeant,
+     $     pygeant,
+     $     pzgeant,
+     $     xgeant,
+     $     ygeant,
+     $     egeant,
+     $     pgeant,
+     $     gthetarad,
+     $     gphirad
 
       integer*4 nahit
       integer*4 xa(maxahit)

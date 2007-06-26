@@ -10,6 +10,7 @@
       character*(*) err
 
       include 'b_ntuple.cmn'
+      include 'gen_run_info.cmn'
 
 c      integer itype
 
@@ -90,9 +91,17 @@ c     get any free IO channel
         call HBOOKN(id,title,size,name,bank,b_ntuple_tag) ! create ntuple
       else if(bigcal_ntuple_type.eq.2) then ! col-wise ntuple for cluster analysis
         call HBNT(id,title,' ')
-        call HBNAME(id,'ClustBlock',nclust,'nclust[0,25],'//
-     $       'ncellclust(nclust)[0,25],iycell(25,nclust),'//
-     $       'ixcell(25,nclust),xcell(25,nclust),ycell(25,nclust),'//
+        call HBNAME(id,'ClustBlock',nclust,'nclust[0,25]:I*4,'//
+     $       'ncellclust(nclust)[0,25]:I*4,'//
+     $       'ncell8clust(nclust)[0,10]:I*4,'//
+     $       'ncell64clust(nclust)[0,6]:I*4,'//
+     $       'iycell(25,nclust)[0,56]:I*4,'//
+     $       'ixcell(25,nclust)[0,32]:I*4,'//
+     $       'irow8hit(10,nclust)[0,56]:I*4,'//
+     $       'icol8hit(10,nclust)[0,4]:I*4,'//
+     $       'irow64hit(6,nclust)[0,19]:I*4,'//
+     $       'icol64hit(6,nclust)[0,2]:I*4,'//
+     $       'xcell(25,nclust),ycell(25,nclust),'//
      $       'eblock(25,nclust),tcell8(10,8,nclust),'//
      $       'tcell64(6,8,nclust),'//
      $       'xmoment(nclust),ymoment(nclust),tclust8(nclust),'//
@@ -100,6 +109,14 @@ c     get any free IO channel
      $       'eclust(nclust),thetarad(nclust),phirad(nclust),'//
      $       'xface(nclust),yface(nclust),zface(nclust),px(nclust),'//
      $       'py(nclust),pz(nclust),ctime_clust(nclust)')
+        if(gen_bigcal_mc.ne.0) then
+           call HBNAME(id,'MC_Clust',ntrk_g,'ntrk_g[0,25]:I*4,'//
+     $          'pid_g(ntrk_g)[0,50]:I*4,xvertex_g,yvertex_g,'//
+     $          'zvertex_g,pxgeant(ntrk_g),pygeant(ntrk_g),'//
+     $          'pzgeant(ntrk_g),xgeant(ntrk_g),ygeant(ntrk_g),'//
+     $          'egeant(ntrk_g),pgeant(ntrk_g),gthetarad(ntrk_g),'//
+     $          'gphirad(ntrk_g)')
+        endif
 
       else if(bigcal_ntuple_type.eq.3) then ! col-wise ntuple for cosmics analysis
 

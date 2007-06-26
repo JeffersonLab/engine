@@ -210,6 +210,8 @@ c      integer itype
         do jclust = 1,bigcal_prot_nclstr
           iclust = iclust + 1
           ncellclust(iclust) = bigcal_prot_clstr_ncell(jclust)
+          ncell8clust(iclust) = bigcal_prot_clstr_ncell8(jclust)
+          ncell64clust(iclust) = bigcal_prot_clstr_ncell64(jclust)
 
           do icell=1,ncellclust(iclust)
             iycell(icell,iclust)=bigcal_prot_clstr_iycell(jclust,icell)
@@ -220,6 +222,8 @@ c      integer itype
           enddo
           
           do icell=1,bigcal_prot_clstr_ncell8(jclust)
+             irow8hit(icell,iclust) = bigcal_prot_clstr_irow8(jclust,icell)
+             icol8hit(icell,iclust) = bigcal_prot_clstr_icol8(jclust,icell)
             do ihit=1,bigcal_prot_clstr_nhit8(jclust,icell)
               tcell8(icell,ihit,iclust) = 
      $             bigcal_prot_clstr_tcell8(jclust,icell,ihit)
@@ -227,6 +231,8 @@ c      integer itype
           enddo
           
           do icell=1,bigcal_prot_clstr_ncell64(jclust)
+             irow64hit(icell,iclust) = bigcal_prot_clstr_irow64(jclust,icell)
+             icol64hit(icell,iclust) = bigcal_prot_clstr_icol64(jclust,icell)
             do ihit=1,bigcal_prot_clstr_nhit64(jclust,icell)
               tcell64(icell,ihit,iclust) = 
      $             bigcal_prot_clstr_tcell64(jclust,icell,ihit)
@@ -256,6 +262,8 @@ c      integer itype
        do jclust = 1,bigcal_rcs_nclstr
           iclust = iclust + 1
           ncellclust(iclust) = bigcal_rcs_clstr_ncell(jclust)
+          ncell8clust(iclust) = bigcal_rcs_clstr_ncell8(jclust)
+          ncell64clust(iclust) = bigcal_rcs_clstr_ncell64(jclust)
           do icell=1,ncellclust(iclust)
             iycell(icell,iclust)=bigcal_rcs_clstr_iycell(jclust,icell)
             ixcell(icell,iclust)=bigcal_rcs_clstr_ixcell(jclust,icell)
@@ -265,6 +273,8 @@ c      integer itype
           enddo
 
           do icell=1,bigcal_rcs_clstr_ncell8(jclust)
+             irow8hit(icell,iclust) = bigcal_rcs_clstr_irow8(jclust,icell)
+             icol8hit(icell,iclust) = bigcal_rcs_clstr_icol8(jclust,icell)
             do ihit=1,bigcal_rcs_clstr_nhit8(jclust,icell)
               tcell8(icell,ihit,iclust) = 
      $             bigcal_rcs_clstr_tcell8(jclust,icell,ihit)
@@ -272,6 +282,8 @@ c      integer itype
           enddo
           
           do icell=1,bigcal_rcs_clstr_ncell64(jclust)
+             irow64hit(icell,iclust) = bigcal_rcs_clstr_irow64(jclust,icell)
+             icol64hit(icell,iclust) = bigcal_rcs_clstr_icol64(jclust,icell)
             do ihit=1,bigcal_rcs_clstr_nhit64(jclust,icell)
               tcell64(icell,ihit,iclust) = 
      $             bigcal_rcs_clstr_tcell64(jclust,icell,ihit)
@@ -300,6 +312,8 @@ c      integer itype
         do jclust = 1,bigcal_mid_nclstr
           iclust = iclust + 1
           ncellclust(iclust) = bigcal_mid_clstr_ncell(jclust)
+          ncell8clust(iclust) = bigcal_mid_clstr_ncell8(jclust)
+          ncell64clust(iclust) = bigcal_mid_clstr_ncell64(jclust)
           do icell=1,ncellclust(iclust)
             iycell(icell,iclust)=bigcal_mid_clstr_iycell(jclust,icell)
             ixcell(icell,iclust)=bigcal_mid_clstr_ixcell(jclust,icell)
@@ -309,6 +323,8 @@ c      integer itype
           enddo
 
           do icell=1,bigcal_mid_clstr_ncell8(jclust)
+             irow8hit(icell,iclust) = bigcal_mid_clstr_irow8(jclust,icell)
+             icol8hit(icell,iclust) = bigcal_mid_clstr_icol8(jclust,icell)
             do ihit=1,bigcal_mid_clstr_nhit8(jclust,icell)
               tcell8(icell,ihit,iclust) = 
      $             bigcal_mid_clstr_tcell8(jclust,icell,ihit)
@@ -316,6 +332,8 @@ c      integer itype
           enddo
           
           do icell=1,bigcal_mid_clstr_ncell64(jclust)
+             irow64hit(icell,iclust) = bigcal_mid_clstr_irow64(jclust,icell)
+             icol64hit(icell,iclust) = bigcal_mid_clstr_icol64(jclust,icell)
             do ihit=1,bigcal_mid_clstr_nhit64(jclust,icell)
               tcell64(icell,ihit,iclust) = 
      $             bigcal_mid_clstr_tcell64(jclust,icell,ihit)
@@ -339,7 +357,7 @@ c      integer itype
           py(iclust) = bigcal_track_py(iclust)
           pz(iclust) = bigcal_track_pz(iclust)
           ctime_clust(iclust) = bigcal_track_coin_time(iclust)
-        enddo
+       enddo
 
       else if(bigcal_ntuple_type.eq.3) then
         nahit = 0

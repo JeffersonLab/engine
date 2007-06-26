@@ -14,8 +14,9 @@
       include 'bigcal_geometry.cmn'
       include 'bigcal_shower_parms.cmn'
       include 'bigcal_tof_parms.cmn'
+      include 'b_ntuple.cmn'
 c      include 'gen_units.par'
-      include 'gen_constants.par'
+c      include 'gen_constants.par'
       include 'gen_run_info.cmn'
 
       integer i,j,k
@@ -315,6 +316,54 @@ c         BIGCAL_RCS_GOOD_HIT(i) = .false.
             bigcal_rcs_cfac(i) = 1./911.57
          enddo
       endif
+
+c     clear out cluster ntuple variables:
+
+      nclust = 0
+      do i=1,maxnclust
+         ncellclust(i) = 0
+         ncell8clust(i) = 0
+         ncell64clust(i) = 0
+         xmoment(i) = 0.
+         ymoment(i) = 0.
+         tclust8(i) = 0.
+         tclust64(i) = 0.
+         xclust(i) = 0.
+         yclust(i) = 0.
+         eclust(i) = 0.
+         do j=1,maxncellclust
+            iycell(j,i) = 0
+            ixcell(j,i) = 0
+            xcell(j,i) = 0.
+            ycell(j,i) = 0.
+            eblock(j,i) = 0.
+         enddo
+         do j=1,10
+            irow8hit(j,i) = 0
+            icol8hit(j,i) = 0
+            do k=1,8
+               tcell8(j,k,i) = 0.
+            enddo
+         enddo
+         do j=1,6
+            irow64hit(j,i) = 0
+            icol64hit(j,i) = 0
+            do k=1,8
+               tcell64(j,k,i) = 0.
+            enddo
+         enddo
+         thetarad(i) = 0.
+         phirad(i) = 0.
+         xface(i) = 0.
+         yface(i) = 0.
+         zface(i) = 0.
+         px(i) = 0.
+         py(i) = 0.
+         pz(i) = 0.
+         ctime_clust(i) = 0.
+      enddo
+               
+              
 
       return
       end

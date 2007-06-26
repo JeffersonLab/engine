@@ -10,6 +10,9 @@
 *-   Created  30-Nov-1993   Kevin B. Beard
 *
 * $Log$
+* Revision 1.5.24.2  2007/06/26 16:36:45  puckett
+* latest changes for monte carlo analysis, latest fixes for cluster finding routine
+*
 * Revision 1.5.24.1  2007/06/20 18:26:32  puckett
 * Added BigCal Monte Carlo analysis capability
 *
@@ -68,7 +71,7 @@ c      include 'bigcal_bypass_switches.cmn'
                call g_add_path(here,err)
                return 
             endif
-            
+            call g_sub_run_number(file,gen_run_number)
             g_data_source_in_hndl = io_dat
             open(unit=g_data_source_in_hndl,file=file,status='old',
      $           form='unformatted',err=34)
@@ -79,6 +82,7 @@ c      include 'bigcal_bypass_switches.cmn'
             abort = .true. 
             err='error opening bigcal mc .dat file '//file
             call g_add_path(here,err)
+            return
             
  35         write(*,*) 'Opened bigcal mc .dat file '//file//
      $           ' successfully'

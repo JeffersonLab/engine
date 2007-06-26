@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.4  2007/06/26 16:36:45  puckett
+* latest changes for monte carlo analysis, latest fixes for cluster finding routine
+*
 * Revision 1.42.8.3  2007/06/20 18:26:32  puckett
 * Added BigCal Monte Carlo analysis capability
 *
@@ -470,7 +473,7 @@ c	     write(6,*) 'Cheesy poofs! - picture event'
          err= ' '
       ENDIF
 
-      write(*,*) 'G_initialize completed successfully'
+c      write(*,*) 'G_initialize completed successfully'
 *
 *-attempt to open FASTBUS-CODA file
 *
@@ -588,7 +591,7 @@ c           call get_bigcal_mc_event(gen_bigcal_mc,ABORT,err)
            gen_event_type = 5
            
            call bigcal_mc_reconstruction(gen_bigcal_mc,ABORT,err)
-
+           
            EoF = EOF_MC_DAT
 
            if(abort) then
@@ -610,6 +613,7 @@ c$$$           total_event_count= total_event_count+1
 
            sum_analyzed = sum_analyzed + 1
            gen_event_ID_number = gen_event_ID_number + 1
+c           write(*,*) gen_event_ID_number
 
            goto 667  ! skip the rest of event loop
         endif
