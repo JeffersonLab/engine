@@ -139,6 +139,8 @@ c     **************************************************************************
                 enddo
                 bigcal_prot_clstr_nhit8(iclust,nhit8) = 
      $               bigcal_tdc_det_ngood(isum8)
+                bigcal_prot_clstr_irow8(iclust,nhit8) = irow
+                bigcal_prot_clstr_icol8(iclust,nhit8) = icol
               enddo
             enddo
             bigcal_prot_clstr_ncell8(iclust) = nhit8
@@ -157,6 +159,9 @@ c     **************************************************************************
                 enddo
                 bigcal_prot_clstr_nhit64(iclust,nhit64) = 
      $               bigcal_ttrig_det_ngood(isum64)
+                bigcal_prot_clstr_irow64(iclust,nhit64) = irow
+                bigcal_prot_clstr_icol64(iclust,nhit64) = icol
+
               enddo
             enddo
             bigcal_prot_clstr_ncell64(iclust) = nhit64
@@ -696,6 +701,8 @@ c     **************************************************************************
                 enddo
                 bigcal_rcs_clstr_nhit8(iclust,nhit8) = 
      $               bigcal_tdc_det_ngood(isum8)
+                bigcal_rcs_clstr_irow8(iclust,nhit8) = irow
+                bigcal_rcs_clstr_icol8(iclust,nhit8) = icol
               enddo
             enddo
             bigcal_rcs_clstr_ncell8(iclust) = nhit8
@@ -714,6 +721,8 @@ c     **************************************************************************
                 enddo
                 bigcal_rcs_clstr_nhit64(iclust,nhit64) = 
      $               bigcal_ttrig_det_ngood(isum64)
+                bigcal_rcs_clstr_irow64(iclust,nhit64) = irow
+                bigcal_rcs_clstr_icol64(iclust,nhit64) = icol
               enddo
             enddo
             bigcal_rcs_clstr_ncell64(iclust) = nhit64
@@ -1253,6 +1262,8 @@ c     **************************************************************************
                 enddo
                 bigcal_mid_clstr_nhit8(iclust,nhit8) = 
      $               bigcal_tdc_det_ngood(isum8)
+                bigcal_mid_clstr_irow8(iclust,nhit8) = irow
+                bigcal_mid_clstr_icol8(iclust,nhit8) = icol
               enddo
             enddo
             bigcal_mid_clstr_ncell8(iclust) = nhit8
@@ -1271,6 +1282,8 @@ c     **************************************************************************
                 enddo
                 bigcal_mid_clstr_nhit64(iclust,nhit64) = 
      $               bigcal_ttrig_det_ngood(isum64)
+                bigcal_mid_clstr_irow64(iclust,nhit64) = irow
+                bigcal_mid_clstr_icol64(iclust,nhit64) = icol
               enddo
             enddo
             bigcal_mid_clstr_ncell64(iclust) = nhit64

@@ -53,6 +53,10 @@ c$$$      write(*,*) 'rydet_par = ',bigcal_rydet_par
          enddo
       enddo
 
+c$$$      do ipar=1,6
+c$$$         write(*,*) bigcal_prot_ypar(32,ipar)
+c$$$      enddo
+
 c$$$      write(*,*) 'prot_xpar = ',bigcal_prot_xpar
 c$$$      write(*,*) 'prot_ypar = ',bigcal_prot_ypar
 c$$$      write(*,*) 'rcs_xpar = ',bigcal_rcs_xpar

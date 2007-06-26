@@ -40,7 +40,7 @@ c     are correctly read in from CTP parm files
             gainold = bigcal_rcs_gain_last(icell)
             gainnew = bigcal_rcs_gain_now(icell)
 
-            bigcal_prot_gain_cor(icell) = gainnew / gainold
+            bigcal_rcs_gain_cor(icell) = gainnew / gainold
             
          enddo
       enddo

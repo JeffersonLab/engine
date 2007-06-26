@@ -57,9 +57,9 @@ c            nprot = nprot + 1
             thetarad = acos(zrot/L)
             thetadeg = 180./tt * thetarad
             
-            Rperp = L*cos(thetarad)
+            Rperp = L*sin(thetarad)
 
-            phirad = atan2(y,Rperp)
+            phirad = atan2(y,xrot)
             phideg = 180./tt * phirad
 
             BIGCAL_TRACK_THETARAD(ntrack) = thetarad
@@ -101,9 +101,9 @@ c            nrcs = nrcs + 1
             thetarad = acos(zrot/L)
             thetadeg = 180./tt * thetarad
             
-            Rperp = L*cos(thetarad)
+            Rperp = L*sin(thetarad)
 
-            phirad = atan2(y,Rperp)
+            phirad = atan2(y,xrot)
             phideg = 180./tt * phirad
 
             BIGCAL_TRACK_THETARAD(ntrack) = thetarad
@@ -146,9 +146,9 @@ c            nmid = nmid + 1
             thetarad = acos(zrot/L)
             thetadeg = 180./tt * thetarad
             
-            Rperp = L*cos(thetarad)
+            Rperp = L*sin(thetarad)
 
-            phirad = atan2(y,Rperp)
+            phirad = atan2(y,xrot)
             phideg = 180./tt * phirad
 
             BIGCAL_TRACK_THETARAD(ntrack) = thetarad
