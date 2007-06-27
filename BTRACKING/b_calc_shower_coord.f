@@ -24,19 +24,19 @@
             xmom = BIGCAL_PROT_CLSTR_XMOM(i)
             ymom = BIGCAL_PROT_CLSTR_YMOM(i)
 
-c$$$            irow = BIGCAL_PROT_CLSTR_IYMAX(i)
-c$$$            icol = BIGCAL_PROT_CLSTR_IXMAX(i)
-c$$$            
-c$$$            icell = icol + (irow - 1)*BIGCAL_PROT_NX
-c$$$
-c$$$            xcenter = BIGCAL_PROT_XCENTER(icell)
-c$$$            ycenter = BIGCAL_PROT_YCENTER(icell)
+            irow = BIGCAL_PROT_CLSTR_IYMAX(i)
+            icol = BIGCAL_PROT_CLSTR_IXMAX(i)
+            
+            icell = icol + (irow - 1)*BIGCAL_PROT_NX
 
-            irow = bigcal_prot_clstr_iycell(i,1)
-            icol = bigcal_prot_clstr_ixcell(i,1)
+            xcenter = BIGCAL_PROT_XCENTER(icell)
+            ycenter = BIGCAL_PROT_YCENTER(icell)
 
-            xcenter = bigcal_prot_clstr_xcell(i,1)
-            ycenter = bigcal_prot_clstr_ycell(i,1)
+c$$$            irow = bigcal_prot_clstr_iycell(i,1)
+c$$$            icol = bigcal_prot_clstr_ixcell(i,1)
+
+c$$$            xcenter = bigcal_prot_clstr_xcell(i,1)
+c$$$            ycenter = bigcal_prot_clstr_ycell(i,1)
             
             do j=1,6
                xpar(j) = BIGCAL_PROT_XPAR(icol,j)
@@ -78,19 +78,19 @@ c$$$            endif
             xmom = BIGCAL_RCS_CLSTR_XMOM(i)
             ymom = BIGCAL_RCS_CLSTR_YMOM(i)
 
-c$$$            irow = BIGCAL_RCS_CLSTR_IYMAX(i) - BIGCAL_PROT_NY
-c$$$            icol = BIGCAL_RCS_CLSTR_IXMAX(i)
-c$$$            
-c$$$            icell = icol + (irow - 1) * BIGCAL_RCS_NX
+            irow = BIGCAL_RCS_CLSTR_IYMAX(i) 
+            icol = BIGCAL_RCS_CLSTR_IXMAX(i)
+            
+            icell = icol + (irow - bigcal_prot_ny - 1) * BIGCAL_RCS_NX
+
+            xcenter = BIGCAL_RCS_XCENTER(icell)
+            ycenter = BIGCAL_RCS_YCENTER(icell)
+
+c$$$            irow = bigcal_rcs_clstr_iycell(i,1)
+c$$$            icol = bigcal_rcs_clstr_ixcell(i,1)
 c$$$
-c$$$            xcenter = BIGCAL_RCS_XCENTER(icell)
-c$$$            ycenter = BIGCAL_RCS_YCENTER(icell)
-
-            irow = bigcal_rcs_clstr_iycell(i,1)
-            icol = bigcal_rcs_clstr_ixcell(i,1)
-
-            xcenter = bigcal_rcs_clstr_xcell(i,1)
-            ycenter = bigcal_rcs_clstr_ycell(i,1)
+c$$$            xcenter = bigcal_rcs_clstr_xcell(i,1)
+c$$$            ycenter = bigcal_rcs_clstr_ycell(i,1)
             
             do j=1,6
                xpar(j) = BIGCAL_RCS_XPAR(icol,j)
@@ -128,28 +128,28 @@ c$$$            ycenter = BIGCAL_RCS_YCENTER(icell)
             xmom = BIGCAL_MID_CLSTR_XMOM(i)
             ymom = BIGCAL_MID_CLSTR_YMOM(i)
             
-c$$$            irow = BIGCAL_MID_CLSTR_IYMAX(i) 
-c$$$            icol = BIGCAL_MID_CLSTR_IXMAX(i)
+            irow = BIGCAL_MID_CLSTR_IYMAX(i) 
+            icol = BIGCAL_MID_CLSTR_IXMAX(i)
 
-            irow = bigcal_mid_clstr_iycell(i,1)
-            icol = bigcal_mid_clstr_ixcell(i,1)
-
-            xcenter = bigcal_mid_clstr_xcell(i,1)
-            ycenter = bigcal_mid_clstr_ycell(i,1)
+c$$$            irow = bigcal_mid_clstr_iycell(i,1)
+c$$$            icol = bigcal_mid_clstr_ixcell(i,1)
+c$$$
+c$$$            xcenter = bigcal_mid_clstr_xcell(i,1)
+c$$$            ycenter = bigcal_mid_clstr_ycell(i,1)
 
             if(irow.le.BIGCAL_PROT_NY) then
-c$$$               icell = icol + (irow-1)*BIGCAL_PROT_NX
-c$$$               xcenter = BIGCAL_PROT_XCENTER(icell)
-c$$$               ycenter = BIGCAL_PROT_YCENTER(icell)
+               icell = icol + (irow-1)*BIGCAL_PROT_NX
+               xcenter = BIGCAL_PROT_XCENTER(icell)
+               ycenter = BIGCAL_PROT_YCENTER(icell)
                do j=1,6
                   xpar(j) = BIGCAL_PROT_XPAR(icol,j)
                   ypar(j) = BIGCAL_PROT_YPAR(irow,j)
                enddo
             else 
 c               irow = irow - BIGCAL_PROT_NY
-c$$$               icell = icol + (irow - 1 - bigcal_prot_ny)*BIGCAL_RCS_NX
-c$$$               xcenter = BIGCAL_RCS_XCENTER(icell)
-c$$$               ycenter = BIGCAL_RCS_YCENTER(icell)
+               icell = icol + (irow - 1 - bigcal_prot_ny)*BIGCAL_RCS_NX
+               xcenter = BIGCAL_RCS_XCENTER(icell)
+               ycenter = BIGCAL_RCS_YCENTER(icell)
                do j=1,6
                   xpar(j) = BIGCAL_RCS_XPAR(icol,j)
                   ypar(j) = BIGCAL_RCS_YPAR(irow-bigcal_prot_ny,j)

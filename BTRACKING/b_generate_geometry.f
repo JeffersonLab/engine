@@ -6,9 +6,10 @@
       include 'bigcal_data_structures.cmn'
       include 'bigcal_geometry.cmn'
 
-      integer ix,iy,icell
+      integer ix,iy,icell,ixmin
 
-      real xshift,yshift,xsize,ysize,xcenter,ycenter
+      real xshift,yshift,xsize,ysize,xcenter,ycenter,xcell,diff
+      real mindiff
 
       xshift = BIGCAL_PROT_SHIFT_X
       yshift = BIGCAL_PROT_SHIFT_Y
@@ -44,6 +45,53 @@
             BIGCAL_RCS_YCENTER(icell) = ycenter
          enddo
       enddo
+
+      do ix=1,bigcal_prot_nx
+
+         mindiff = 1000000.
+         ixmin = 0
+
+         xcenter = bigcal_prot_xcenter(ix + 31*32)
+         do icell=1,30
+            xcell = bigcal_rcs_xcenter(icell)
+            diff = xcenter - xcell
+            if(abs(diff).lt.mindiff) then
+               mindiff = diff
+               ixmin = icell
+            endif
+         enddo
+
+         if(mindiff.lt.1000000..and.ixmin.gt.0.and.ixmin.le.30) then
+            bigcal_ixclose_prot(ix) = ixmin
+         else
+            write(*,*) 'warning: could not find ixclose_prot, ix = ',ix
+            write(*,*) 'something probably wrong with geometry database'
+            bigcal_ixclose_prot(ix) = min(ix,30)
+         endif     
+      enddo
+
+      do ix=1,bigcal_rcs_nx
+         
+         mindiff = 1000000.
+         ixmin = 0
+
+         xcenter = bigcal_rcs_xcenter(ix)
+         do icell=1,32
+            xcell = bigcal_prot_xcenter(icell + 31*32)
+            diff = xcenter - xcell
+            if(abs(diff).lt.mindiff) then
+               mindiff = diff
+               ixmin = icell
+            endif
+         enddo
+         if(mindiff.lt.1000000..and.ixmin.ge.1.and.ixmin.le.32) then
+            bigcal_ixclose_rcs(ix) = ixmin
+         else
+            write(*,*) 'warning: could not find ixclose_rcs, ix = ',ix
+            write(*,*) 'something probably wrong with geometry database'
+            bigcal_ixclose_rcs(ix) = ix
+         endif
+      enddo 
 
       return
       end

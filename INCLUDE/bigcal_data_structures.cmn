@@ -326,11 +326,19 @@
      $     B_CLUSTER_CUT,
      $     B_CELL_CUT_PROT,
      $     B_CELL_CUT_RCS
+*     arrays of closest column number in row 33 to column number in row 32 
+*     and vice versa
+      integer*4 bigcal_ixclose_prot(bigcal_prot_nx)
+      integer*4 bigcal_ixclose_rcs(bigcal_rcs_nx)
+      common/bigcal_ixclose_mid/
+     $     bigcal_ixclose_prot,
+     $     bigcal_ixclose_rcs
 *
 *     CTPTYPE=event
 *
 *     cluster arrays for Protvino half
       integer*4 BIGCAL_PROT_NCLSTR 
+      integer*4 BIGCAL_PROT_CLSTR_BAD_FLAG(BIGCAL_PROT_NCLSTR_MAX)
       integer*4 BIGCAL_PROT_CLSTR_NCELL(BIGCAL_PROT_NCLSTR_MAX) 
       integer*4 BIGCAL_PROT_CLSTR_IYMAX(BIGCAL_PROT_NCLSTR_MAX)
       integer*4 BIGCAL_PROT_CLSTR_IXMAX(BIGCAL_PROT_NCLSTR_MAX)
@@ -361,6 +369,7 @@
       
       common/BIGCAL_CLUSTER_PROT/
      $     BIGCAL_PROT_NCLSTR,
+     $     BIGCAL_PROT_CLSTR_BAD_FLAG,
      $     BIGCAL_PROT_CLSTR_NCELL,
      $     BIGCAL_PROT_CLSTR_IYMAX,
      $     BIGCAL_PROT_CLSTR_IXMAX,
@@ -391,6 +400,7 @@
 
 *     cluster arrays or RCS half:
       integer*4 BIGCAL_RCS_NCLSTR 
+      integer*4 BIGCAL_RCS_CLSTR_BAD_FLAG(BIGCAL_RCS_NCLSTR_MAX)
       integer*4 BIGCAL_RCS_CLSTR_NCELL(BIGCAL_RCS_NCLSTR_MAX) 
       integer*4 BIGCAL_RCS_CLSTR_IYMAX(BIGCAL_RCS_NCLSTR_MAX)
       integer*4 BIGCAL_RCS_CLSTR_IXMAX(BIGCAL_RCS_NCLSTR_MAX)
@@ -421,6 +431,7 @@
       
       common/BIGCAL_CLUSTER_RCS/
      $     BIGCAL_RCS_NCLSTR,
+     $     BIGCAL_RCS_CLSTR_BAD_FLAG,
      $     BIGCAL_RCS_CLSTR_NCELL,
      $     BIGCAL_RCS_CLSTR_IYMAX,
      $     BIGCAL_RCS_CLSTR_IXMAX,
@@ -451,6 +462,7 @@
 
 *     cluster arrays for middle section:
       integer*4 BIGCAL_MID_NCLSTR 
+      integer*4 BIGCAL_MID_CLSTR_BAD_FLAG(BIGCAL_MID_NCLSTR_MAX)
       integer*4 BIGCAL_MID_CLSTR_NCELL(BIGCAL_MID_NCLSTR_MAX) 
       integer*4 BIGCAL_MID_CLSTR_IYMAX(BIGCAL_MID_NCLSTR_MAX)
       integer*4 BIGCAL_MID_CLSTR_IXMAX(BIGCAL_MID_NCLSTR_MAX)
@@ -481,6 +493,7 @@
       
       common/BIGCAL_CLUSTER_MID/
      $     BIGCAL_MID_NCLSTR,
+     $     BIGCAL_MID_CLSTR_BAD_FLAG,
      $     BIGCAL_MID_CLSTR_NCELL,
      $     BIGCAL_MID_CLSTR_IYMAX,
      $     BIGCAL_MID_CLSTR_IXMAX,

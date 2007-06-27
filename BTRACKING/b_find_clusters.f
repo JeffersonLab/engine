@@ -155,43 +155,47 @@ c     ! in the special case of iymax = 31 add closest cells in the first rows of
         if(iymax + maxcelldiff .gt. BIGCAL_PROT_NY) then
           nrows = iymax + maxcelldiff - BIGCAL_PROT_NY
           do irow=1,nrows
-            minxdiff = 1000.
-            xcell = BIGCAL_PROT_XGOOD(ihitmax)
-            do icol = max(1,ixmax-5),min(ixmax+5,BIGCAL_RCS_NX)
-              icell = icol + BIGCAL_RCS_NX * (irow - 1)
-              if(abs(xcell - BIGCAL_RCS_XCENTER(icell)).lt.minxdiff)
-     $             then
-                minxdiff = abs(xcell - BIGCAL_RCS_XCENTER(icell))
-                ixmin = icol
-              endif
-            enddo
-            if(minxdiff .lt. 1000.) then
-              do icol = ixmin - maxcelldiff,ixmin + maxcelldiff
+c$$$            minxdiff = 1000.
+c$$$            xcell = BIGCAL_PROT_XGOOD(ihitmax)
+c$$$            do icol = max(1,ixmax-5),min(ixmax+5,BIGCAL_RCS_NX)
+c$$$              icell = icol + BIGCAL_RCS_NX * (irow - 1)
+c$$$              if(abs(xcell - BIGCAL_RCS_XCENTER(icell)).lt.minxdiff)
+c$$$     $             then
+c$$$                minxdiff = abs(xcell - BIGCAL_RCS_XCENTER(icell))
+c$$$                ixmin = icol
+c$$$              endif
+c$$$            enddo
+
+             ixmin = bigcal_ixclose_prot(ixmax)
+
+c            if(minxdiff .lt. 1000.) then
+             do icol = max(ixmin-maxcelldiff,1),min(ixmin+maxcelldiff,30)
+c$$$              do icol = ixmin - maxcelldiff,ixmin + maxcelldiff
                 icell = icol + BIGCAL_RCS_NX * (irow - 1)
-                if(icol.ge.1.and.icol.le.BIGCAL_RCS_NX) then
+c                if(icol.ge.1.and.icol.le.BIGCAL_RCS_NX) then
 
-                   ecell = BIGCAL_RCS_GOOD_DET(icell)
-                   xcell = BIGCAL_RCS_XCENTER(icell)
-                   ycell = BIGCAL_RCS_YCENTER(icell)
+                ecell = BIGCAL_RCS_GOOD_DET(icell)
+                xcell = BIGCAL_RCS_XCENTER(icell)
+                ycell = BIGCAL_RCS_YCENTER(icell)
 
-                   if(ecell.ge.b_cell_cut_rcs) then
-                      ncellclust = ncellclust + 1
-                      if(ncellclust.gt.BIGCAL_CLSTR_NCELL_MAX)goto 102
+                if(ecell.ge.b_cell_cut_rcs) then
+                   ncellclust = ncellclust + 1
+                   if(ncellclust.gt.BIGCAL_CLSTR_NCELL_MAX)goto 102
                       
-                      clstr_temp_ecell(ncellclust) = ecell
-                      clstr_temp_ixcell(ncellclust) = icol
-                      clstr_temp_iycell(ncellclust) =
-     $                     irow + BIGCAL_PROT_NY
-                      clstr_temp_xcell(ncellclust) = xcell
-                      clstr_temp_ycell(ncellclust) = ycell
-                      goodhit(ncellclust)=.true.
-                   endif
-                   
+                   clstr_temp_ecell(ncellclust) = ecell
+                   clstr_temp_ixcell(ncellclust) = icol
+                   clstr_temp_iycell(ncellclust) =
+     $                  irow + BIGCAL_PROT_NY
+                   clstr_temp_xcell(ncellclust) = xcell
+                   clstr_temp_ycell(ncellclust) = ycell
+                   goodhit(ncellclust)=.true.
                 endif
-              enddo
-            endif
+                   
+c                endif
+             enddo
+c           endif
           enddo
-        endif
+       endif
 c     ! end special case iymax = 31
 c     ! check temporary cluster for absence of second max. and sum above 
 c     ! software threshold:
@@ -209,31 +213,31 @@ c     ! start by sorting cluster cells in descending order of amplitude:
         enddo
         
         do ihit=1,ncellclust
-          do jhit=ihit+1,ncellclust
-            if(clstr_temp_ecell(jhit).gt.clstr_temp_ecell(ihit))then
+           do jhit=ihit+1,ncellclust
+              if(clstr_temp_ecell(jhit).gt.clstr_temp_ecell(ihit))then
 c     ! switch hits i and j, remember to switch all five quantities
 c     ! at this point all goodhit are true, so no need to switch
-              irtemp = clstr_temp_ecell(ihit)
-              clstr_temp_ecell(ihit) = clstr_temp_ecell(jhit)
-              clstr_temp_ecell(jhit) = irtemp
+                 irtemp = clstr_temp_ecell(ihit)
+                 clstr_temp_ecell(ihit) = clstr_temp_ecell(jhit)
+                 clstr_temp_ecell(jhit) = irtemp
               
-              irtemp = clstr_temp_xcell(ihit)
-              clstr_temp_xcell(ihit) = clstr_temp_xcell(jhit)
-              clstr_temp_xcell(jhit) = irtemp
-              
-              irtemp = clstr_temp_ycell(ihit)
-              clstr_temp_ycell(ihit) = clstr_temp_ycell(jhit)
-              clstr_temp_ycell(jhit) = irtemp
-              
-              itemp = clstr_temp_ixcell(ihit)
-              clstr_temp_ixcell(ihit) = clstr_temp_ixcell(jhit)
-              clstr_temp_ixcell(jhit) = itemp
-              
-              itemp = clstr_temp_iycell(ihit)
-              clstr_temp_iycell(ihit) = clstr_temp_iycell(jhit)
-              clstr_temp_iycell(jhit) = itemp
-            endif
-          enddo
+                 irtemp = clstr_temp_xcell(ihit)
+                 clstr_temp_xcell(ihit) = clstr_temp_xcell(jhit)
+                 clstr_temp_xcell(jhit) = irtemp
+                 
+                 irtemp = clstr_temp_ycell(ihit)
+                 clstr_temp_ycell(ihit) = clstr_temp_ycell(jhit)
+                 clstr_temp_ycell(jhit) = irtemp
+                 
+                 itemp = clstr_temp_ixcell(ihit)
+                 clstr_temp_ixcell(ihit) = clstr_temp_ixcell(jhit)
+                 clstr_temp_ixcell(jhit) = itemp
+                 
+                 itemp = clstr_temp_iycell(ihit)
+                 clstr_temp_iycell(ihit) = clstr_temp_iycell(jhit)
+                 clstr_temp_iycell(jhit) = itemp
+              endif
+           enddo
         enddo
         
         celldiffx = clstr_temp_ixcell(2) - clstr_temp_ixcell(1)
@@ -243,11 +247,15 @@ c     ! at this point all goodhit are true, so no need to switch
         celldiffy = int(abs(float(celldiffy)))
         
         if(celldiffx .gt. 1.or.celldiffy .gt. 1) then
-          second_max = .true.
+           second_max = .true.
         else
-          second_max = .false.
+           second_max = .false.
         endif
         
+        if(clstr_temp_iycell(1).ne.iymax.or.clstr_temp_ixcell(1).ne.ixmax) then
+           second_max = .true.
+        endif
+
         if(clstr_temp_esum.ge.b_cluster_cut.and. .not. second_max) then
 c     !add a cluster to the array for protvino:
           if(ncellclust.ge.BIGCAL_CLSTR_NCELL_MIN) then
@@ -428,44 +436,46 @@ c     ! in the special case of iymax = 34 add closest cells in the first rows of
         if(iymax - maxcelldiff .lt. 1) then
           nrows = maxcelldiff - iymax + 1
           do irow=1,nrows
-            minxdiff = 1000.
-            xcell = BIGCAL_RCS_XGOOD(ihitmax)
-            do icol = max(1,ixmax-5),min(ixmax+5,BIGCAL_PROT_NX)
-              icell = icol + BIGCAL_PROT_NX * (BIGCAL_PROT_NY-irow)
-              if(abs(xcell-BIGCAL_PROT_XCENTER(icell)).lt.minxdiff)
-     $             then
-                minxdiff = abs(xcell - BIGCAL_PROT_XCENTER(icell))
-                ixmin = icol
-              endif
-            enddo
-            if(minxdiff .lt. 1000.) then
-              do icol = ixmin - maxcelldiff,ixmin + maxcelldiff
-                icell = icol + BIGCAL_PROT_NX*(BIGCAL_PROT_NY-irow)
-                if(icol.ge.1.and.icol.le.BIGCAL_PROT_NX) then
-                   
-                   ecell = BIGCAL_PROT_GOOD_DET(icell)
-                   xcell = BIGCAL_PROT_XCENTER(icell)
-                   ycell = BIGCAL_PROT_YCENTER(icell)
+c$$$            minxdiff = 1000.
+c$$$            xcell = BIGCAL_RCS_XGOOD(ihitmax)
+c$$$            do icol = max(1,ixmax-5),min(ixmax+5,BIGCAL_PROT_NX)
+c$$$              icell = icol + BIGCAL_PROT_NX * (BIGCAL_PROT_NY-irow)
+c$$$              if(abs(xcell-BIGCAL_PROT_XCENTER(icell)).lt.minxdiff)
+c$$$     $             then
+c$$$                minxdiff = abs(xcell - BIGCAL_PROT_XCENTER(icell))
+c$$$                ixmin = icol
+c$$$              endif
+c$$$            enddo
+c            if(minxdiff .lt. 1000.) then
+             ixmin = bigcal_ixclose_rcs(ixmax)
 
-                   if(ecell.ge.b_cell_cut_prot) then
-                      ncellclust = ncellclust + 1
-                      if(ncellclust.gt.BIGCAL_CLSTR_NCELL_MAX)goto 202
-                      
-                      clstr_temp_ecell(ncellclust) = ecell
-                      clstr_temp_ixcell(ncellclust) = icol
-                      clstr_temp_iycell(ncellclust) = BIGCAL_PROT_NY 
-     $                     - irow + 1
-                      clstr_temp_xcell(ncellclust) = xcell
-                      clstr_temp_ycell(ncellclust) = ycell
-                      goodhit(ncellclust)=.true.
-                   endif
+             do icol = max(ixmin-maxcelldiff,1),min(ixmin+maxcelldiff,32)
+                icell = icol + BIGCAL_PROT_NX*(BIGCAL_PROT_NY-irow)
+c     if(icol.ge.1.and.icol.le.BIGCAL_PROT_NX) then
+                
+                ecell = BIGCAL_PROT_GOOD_DET(icell)
+                xcell = BIGCAL_PROT_XCENTER(icell)
+                ycell = BIGCAL_PROT_YCENTER(icell)
+
+                if(ecell.ge.b_cell_cut_prot) then
+                   ncellclust = ncellclust + 1
+                   if(ncellclust.gt.BIGCAL_CLSTR_NCELL_MAX)goto 202
                    
+                   clstr_temp_ecell(ncellclust) = ecell
+                   clstr_temp_ixcell(ncellclust) = icol
+                   clstr_temp_iycell(ncellclust) = BIGCAL_PROT_NY 
+     $                  - irow + 1
+                   clstr_temp_xcell(ncellclust) = xcell
+                   clstr_temp_ycell(ncellclust) = ycell
+                   goodhit(ncellclust)=.true.
                 endif
-              enddo
-            endif
+                   
+c                endif
+             enddo
+c     endif
           enddo
         endif
-c     ! end special case iymax = 31
+c     ! end special case iymax = 34
 c     ! check temporary cluster for absence of second max. and sum above 
 c     ! software threshold:
 c     ! start by sorting cluster cells in descending order of amplitude:
@@ -519,6 +529,11 @@ c     ! at this point all goodhit are true, so no need to switch
           second_max = .true.
         else 
           second_max = .false.
+        endif
+
+        if(clstr_temp_iycell(1)-bigcal_prot_ny.ne.iymax.or.
+     $       clstr_temp_ixcell(1).ne.ixmax) then
+           second_max = .true.
         endif
         
         if(clstr_temp_esum.ge.b_cluster_cut.and. .not. second_max) then
@@ -671,63 +686,65 @@ c$$$      if(iymax.ne.0) write(*,*) 'row = ',iymax,' col = ',ixmax
       if(iymax.eq.32) then
          if(ixmax.ge.2.and.ixmax.le.31) then
             
-            minxdiff = 10000.
-
-            do icol = max(ixmax-5,1),min(ixmax+5,30)
-               if(abs(bigcal_mid_xhit(33,icol)-bigcal_mid_xhit(32,ixmax))
-     $              .lt.minxdiff) then
-                  ixmin = icol
-                  minxdiff = abs(bigcal_mid_xhit(33,icol) - 
-     $                 bigcal_mid_xhit(32,ixmax))
-               endif
-            enddo
+c$$$            minxdiff = 10000.
+c$$$
+c$$$            do icol = max(ixmax-5,1),min(ixmax+5,30)
+c$$$               if(abs(bigcal_mid_xhit(33,icol)-bigcal_mid_xhit(32,ixmax))
+c$$$     $              .lt.minxdiff) then
+c$$$                  ixmin = icol
+c$$$                  minxdiff = abs(bigcal_mid_xhit(33,icol) - 
+c$$$     $                 bigcal_mid_xhit(32,ixmax))
+c$$$               endif
+c$$$            enddo
 
 c     !write(*,*) 'colmindiff = ',ixmin
             
+            ixmin = bigcal_ixclose_prot(ixmax)
+
             ncellclust = 0
             
-            if(minxdiff.lt.10000.) then
-               do irow = 30,32
-                  do icol = max(ixmax-2,1),min(ixmax+2,32)
+c            if(minxdiff.lt.10000.) then
+            do irow = 30,32
+               do icol = max(ixmax-2,1),min(ixmax+2,32)
+                  
+                  ecell = bigcal_mid_ehit(irow,icol)
+                  xcell = bigcal_mid_xhit(irow,icol)
+                  ycell = bigcal_mid_yhit(irow,icol)
+                  
+                  if(ecell.ge.b_cell_cut_prot) then
                      
-                     ecell = bigcal_mid_ehit(irow,icol)
-                     xcell = bigcal_mid_xhit(irow,icol)
-                     ycell = bigcal_mid_yhit(irow,icol)
-
-                     if(ecell.ge.b_cell_cut_prot) then
-                        
-                        ncellclust = ncellclust + 1
-                        if(ncellclust.gt.bigcal_clstr_ncell_max)goto 300
-                        
-                        clstr_temp_ecell(ncellclust) = ecell
-                        clstr_temp_xcell(ncellclust) = xcell
-                        clstr_temp_ycell(ncellclust) = ycell
-                        clstr_temp_ixcell(ncellclust) = icol
-                        clstr_temp_iycell(ncellclust) = irow
-                     endif
-                  enddo
+                     ncellclust = ncellclust + 1
+                     if(ncellclust.gt.bigcal_clstr_ncell_max)goto 300
+                     
+                     clstr_temp_ecell(ncellclust) = ecell
+                     clstr_temp_xcell(ncellclust) = xcell
+                     clstr_temp_ycell(ncellclust) = ycell
+                     clstr_temp_ixcell(ncellclust) = icol
+                     clstr_temp_iycell(ncellclust) = irow
+                  endif
                enddo
-          
-               do irow = 33,34
-                  do icol = max(ixmin-2,1),min(ixmin+2,30)
+            enddo
+            
+            do irow = 33,34
+               do icol = max(ixmin-2,1),min(ixmin+2,30)
+                  
+                  ecell = bigcal_mid_ehit(irow,icol)
+                  xcell = bigcal_mid_xhit(irow,icol)
+                  ycell = bigcal_mid_yhit(irow,icol)
+                  
+                  if(ecell.ge.b_cell_cut_rcs) then
+                     ncellclust = ncellclust + 1
+                     if(ncellclust.gt.bigcal_clstr_ncell_max)goto 300
                      
-                     ecell = bigcal_mid_ehit(irow,icol)
-                     xcell = bigcal_mid_xhit(irow,icol)
-                     ycell = bigcal_mid_yhit(irow,icol)
-                     
-                     if(ecell.ge.b_cell_cut_rcs) then
-                        ncellclust = ncellclust + 1
-                        if(ncellclust.gt.bigcal_clstr_ncell_max)goto 300
-                        
-                        clstr_temp_ecell(ncellclust) = ecell
-                        clstr_temp_xcell(ncellclust) = xcell
-                        clstr_temp_ycell(ncellclust) = ycell
-                        clstr_temp_ixcell(ncellclust) = icol
-                        clstr_temp_iycell(ncellclust) = irow
-                     endif
-                  enddo
+                     clstr_temp_ecell(ncellclust) = ecell
+                     clstr_temp_xcell(ncellclust) = xcell
+                     clstr_temp_ycell(ncellclust) = ycell
+                     clstr_temp_ixcell(ncellclust) = icol
+                     clstr_temp_iycell(ncellclust) = irow
+                  endif
                enddo
-            endif ! otherwise something doesn't make sense
+            enddo
+c     endif ! otherwise something doesn't make sense
  300        continue
           
             if(ncellclust.gt.bigcal_clstr_ncell_max) then
@@ -789,6 +806,11 @@ c     !write(*,*) 'ixcell = ',clstr_temp_ixcell
                second_max = .false.
             endif
           
+            if(clstr_temp_iycell(1).ne.iymax.or.clstr_temp_ixcell(1)
+     $           .ne.ixmax) then
+               second_max = .false.
+            endif
+
             if(clstr_temp_esum.ge.b_cluster_cut.and. .not. second_max
      $           .and.ncellclust.gt.bigcal_clstr_ncell_min)then
 c     ADD A CLUSTER TO THE ARRAY FOR THE MIDDLE SECTION!
@@ -836,59 +858,61 @@ c     zero the hits from this array so that they can't be used again:
          endif
       else if(iymax.eq.33) then
          if(ixmax.ge.2.and.ixmax.le.29) then
-            minxdiff = 10000.
-            do icol = max(ixmax-5,1),min(ixmax+5,32)
-               if(abs(bigcal_mid_xhit(32,icol)-bigcal_mid_xhit(33,ixmax))
-     $              .lt.minxdiff) then
-                  ixmin = icol
-                  minxdiff = abs(bigcal_mid_xhit(32,icol) - 
-     $                 bigcal_mid_xhit(33,ixmax))
-               endif
-            enddo
+c$$$            minxdiff = 10000.
+c$$$            do icol = max(ixmax-5,1),min(ixmax+5,32)
+c$$$               if(abs(bigcal_mid_xhit(32,icol)-bigcal_mid_xhit(33,ixmax))
+c$$$     $              .lt.minxdiff) then
+c$$$                  ixmin = icol
+c$$$                  minxdiff = abs(bigcal_mid_xhit(32,icol) - 
+c$$$     $                 bigcal_mid_xhit(33,ixmax))
+c$$$               endif
+c$$$            enddo
             
 c     !write(*,*) 'colmindiff = ',ixmin
             
+            ixmin = bigcal_ixclose_rcs(ixmax)
+
             ncellclust = 0
-            if(minxdiff.lt.10000.) then
-               do irow = 31,32
-                  do icol = max(ixmin-2,1),min(ixmin+2,32)
+c            if(minxdiff.lt.10000.) then
+            do irow = 31,32
+               do icol = max(ixmin-2,1),min(ixmin+2,32)
+                  
+                  ecell = bigcal_mid_ehit(irow,icol)
+                  xcell = bigcal_mid_xhit(irow,icol)
+                  ycell = bigcal_mid_yhit(irow,icol)
+                  
+                  if(ecell.ge.b_cell_cut_prot) then
+                     ncellclust = ncellclust + 1
+                     if(ncellclust.gt.bigcal_clstr_ncell_max)goto 302
                      
-                     ecell = bigcal_mid_ehit(irow,icol)
-                     xcell = bigcal_mid_xhit(irow,icol)
-                     ycell = bigcal_mid_yhit(irow,icol)
-                     
-                     if(ecell.ge.b_cell_cut_prot) then
-                        ncellclust = ncellclust + 1
-                        if(ncellclust.gt.bigcal_clstr_ncell_max)goto 302
-                        
-                        clstr_temp_ecell(ncellclust) = ecell
-                        clstr_temp_xcell(ncellclust) = xcell
-                        clstr_temp_ycell(ncellclust) = ycell
-                        clstr_temp_ixcell(ncellclust) = icol
-                        clstr_temp_iycell(ncellclust) = irow
-                     endif
-                  enddo
+                     clstr_temp_ecell(ncellclust) = ecell
+                     clstr_temp_xcell(ncellclust) = xcell
+                     clstr_temp_ycell(ncellclust) = ycell
+                     clstr_temp_ixcell(ncellclust) = icol
+                     clstr_temp_iycell(ncellclust) = irow
+                  endif
                enddo
-               
-               do irow = 33,35
-                  do icol = max(ixmax-2,1),min(ixmax+2,30)
-                     ecell = bigcal_mid_ehit(irow,icol)
-                     xcell = bigcal_mid_xhit(irow,icol)
-                     ycell = bigcal_mid_yhit(irow,icol)
+            enddo
+            
+            do irow = 33,35
+               do icol = max(ixmax-2,1),min(ixmax+2,30)
+                  ecell = bigcal_mid_ehit(irow,icol)
+                  xcell = bigcal_mid_xhit(irow,icol)
+                  ycell = bigcal_mid_yhit(irow,icol)
+                  
+                  if(ecell.ge.b_cell_cut_rcs) then
+                     ncellclust = ncellclust + 1
+                     if(ncellclust.gt.bigcal_clstr_ncell_max)goto 302
                      
-                     if(ecell.ge.b_cell_cut_rcs) then
-                        ncellclust = ncellclust + 1
-                        if(ncellclust.gt.bigcal_clstr_ncell_max)goto 302
-                        
-                        clstr_temp_ecell(ncellclust) = ecell
-                        clstr_temp_xcell(ncellclust) = xcell
-                        clstr_temp_ycell(ncellclust) = ycell
-                        clstr_temp_ixcell(ncellclust) = icol
-                        clstr_temp_iycell(ncellclust) = irow
-                     endif
-                  enddo
+                     clstr_temp_ecell(ncellclust) = ecell
+                     clstr_temp_xcell(ncellclust) = xcell
+                     clstr_temp_ycell(ncellclust) = ycell
+                     clstr_temp_ixcell(ncellclust) = icol
+                     clstr_temp_iycell(ncellclust) = irow
+                  endif
                enddo
-            endif
+            enddo
+c           endif
             
  302        continue
  
@@ -951,6 +975,11 @@ c     !write(*,*) 'ixcell = ',clstr_temp_ixcell
                second_max = .false.
             endif
             
+            if(clstr_temp_iycell(1).ne.iymax.or.clstr_temp_ixcell(1).ne.
+     $           ixmax) then
+               second_max = .true.
+            endif
+
             if(clstr_temp_esum.ge.b_cluster_cut.and. .not. second_max
      $           .and.ncellclust.gt.bigcal_clstr_ncell_min)then
 c     ADD A CLUSTER TO THE ARRAY FOR THE MIDDLE SECTION!
