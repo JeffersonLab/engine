@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.24.6.4  2007/06/28 22:10:54  puckett
+* *** empty log message ***
+*
 * Revision 1.24.6.3  2007/06/20 18:26:32  puckett
 * Added BigCal Monte Carlo analysis capability
 *
@@ -293,19 +296,19 @@ c     avoid divide-by-zero errors for BigCal:
         ierr = thload(file)
       endif
 
-c$$$      if((first_time.or.g_report_rebook).and. ! add BigCal
-c$$$     $     b_report_template_filename.ne.' ') then
-c$$$         file = b_report_template_filename
-c$$$         call g_sub_run_number(file,gen_run_number)
-c$$$         ierr = thload(file)
-c$$$      endif
-c$$$
-c$$$      if((first_time.or.g_report_rebook).and. ! add GEp-coin.
-c$$$     $     gep_report_template_filename.ne.' ') then
-c$$$         file = gep_report_template_filename
-c$$$         call g_sub_run_number(file,gen_run_number)
-c$$$         ierr = thload(file)
-c$$$      endif
+      if((first_time.or.g_report_rebook).and. ! add BigCal
+     $     b_report_template_filename.ne.' ') then
+         file = b_report_template_filename
+         call g_sub_run_number(file,gen_run_number)
+         ierr = thload(file)
+      endif
+
+      if((first_time.or.g_report_rebook).and. ! add GEp-coin.
+     $     gep_report_template_filename.ne.' ') then
+         file = gep_report_template_filename
+         call g_sub_run_number(file,gen_run_number)
+         ierr = thload(file)
+      endif
 *
 *     Call thbook if any new files have been loaded
 *

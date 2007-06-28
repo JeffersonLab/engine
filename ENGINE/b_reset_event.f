@@ -150,8 +150,21 @@ c         BIGCAL_RCS_GOOD_HIT(i) = .false.
         enddo
       enddo
 
+c      bigcal_prot_bad_clstr_flag(0) = 0
+
+      do i=1,bigcal_atrig_maxhits
+         bigcal_atrig_cluster_match(i)=.true.
+      enddo
+
+      bigcal_prot_no_clstr_why = 0
+      bigcal_rcs_no_clstr_why = 0
+      bigcal_mid_no_clstr_why = 0
+      bigcal_all_no_clstr_why = 0
+
       bigcal_prot_nclstr = 0
+      bigcal_prot_bad_clstr_flag(0) = 0
       do i=1,bigcal_prot_nclstr_max
+        bigcal_prot_bad_clstr_flag(i) = 0
         bigcal_prot_clstr_ncell(i) = 0
         bigcal_prot_clstr_iymax(i) = 0
         bigcal_prot_clstr_ixmax(i) = 0
@@ -188,7 +201,9 @@ c         BIGCAL_RCS_GOOD_HIT(i) = .false.
       enddo
 
       bigcal_rcs_nclstr = 0
+      bigcal_rcs_bad_clstr_flag(0) = 0
       do i=1,bigcal_rcs_nclstr_max
+        bigcal_rcs_bad_clstr_flag(i) = 0
         bigcal_rcs_clstr_ncell(i) = 0
         bigcal_rcs_clstr_iymax(i) = 0
         bigcal_rcs_clstr_ixmax(i) = 0
@@ -225,7 +240,9 @@ c         BIGCAL_RCS_GOOD_HIT(i) = .false.
       enddo
 
       bigcal_mid_nclstr = 0
+      bigcal_mid_bad_clstr_flag(0) = 0
       do i=1,bigcal_mid_nclstr_max
+        bigcal_mid_bad_clstr_flag(i) = 0
         bigcal_mid_clstr_ncell(i) = 0
         bigcal_mid_clstr_iymax(i) = 0
         bigcal_mid_clstr_ixmax(i) = 0
@@ -259,6 +276,10 @@ c         BIGCAL_RCS_GOOD_HIT(i) = .false.
         bigcal_mid_clstr_etot(i) = 0.
         bigcal_mid_clstr_good8(i) = .false.
         bigcal_mid_clstr_good64(i) = .false.
+      enddo
+
+      do i=1,bigcal_all_nclstr_max
+         bigcal_all_bad_clstr_flag(i) = 0
       enddo
 
       bigcal_phys_ntrack = 0

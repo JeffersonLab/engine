@@ -207,11 +207,25 @@ c     ! start by sorting cluster cells in descending order of amplitude:
           ncellclust = BIGCAL_CLSTR_NCELL_MAX
         endif
         
+        if(ncellclust.lt.bigcal_clstr_ncell_min) then
+           bigcal_prot_bad_clstr_flag(ncluster) = 2
+c$$$           call b_trig_check(2,ncellclust,clstr_temp_iycell,
+c$$$     $          clstr_temp_ixcell,clstr_temp_ecell,abort,err)
+           goto 134
+        endif
+
         clstr_temp_esum = 0.
         do ihit=1,ncellclust
           clstr_temp_esum = clstr_temp_esum + clstr_temp_ecell(ihit)
         enddo
         
+        if(clstr_temp_esum .lt.b_cluster_cut) then
+           bigcal_prot_bad_clstr_flag(ncluster) = 3
+c$$$           call b_trig_check(3,ncellclust,clstr_temp_iycell,
+c$$$     $          clstr_temp_ixcell,clstr_temp_ecell,abort,err)
+           goto 134
+        endif
+
         do ihit=1,ncellclust
            do jhit=ihit+1,ncellclust
               if(clstr_temp_ecell(jhit).gt.clstr_temp_ecell(ihit))then
@@ -254,6 +268,13 @@ c     ! at this point all goodhit are true, so no need to switch
         
         if(clstr_temp_iycell(1).ne.iymax.or.clstr_temp_ixcell(1).ne.ixmax) then
            second_max = .true.
+        endif
+
+        if(second_max) then
+           bigcal_prot_bad_clstr_flag(ncluster) = 4
+c$$$           call b_trig_check(4,ncellclust,clstr_temp_iycell,
+c$$$     $          clstr_temp_ixcell,clstr_temp_ecell,abort,err)
+           goto 134
         endif
 
         if(clstr_temp_esum.ge.b_cluster_cut.and. .not. second_max) then
@@ -334,10 +355,25 @@ c     ! the Prot-RCS boundary:
             
          endif
       endif
+
+      else if(ixmax.eq.1.or.ixmax.eq.bigcal_prot_nx.or.iymax.eq.1.or.
+     $     iymax.eq.bigcal_prot_ny) then ! max is at edge
+         bigcal_prot_bad_clstr_flag(ncluster) = 1
+c$$$         call b_trig_check(1,ncellclust,clstr_temp_iycell,
+c$$$     $          clstr_temp_ixcell,clstr_temp_ecell,abort,err)
+         !write(*,*) 'edge max! ncluster = ',ncluster
       endif
+      
+ 134  continue
+
+      if((.not.found_cluster).and.ncluster.eq.0) then
+         bigcal_prot_no_clstr_why = bigcal_prot_bad_clstr_flag(0)
+      endif
+
       if(found_cluster .and. ncluster .lt. BIGCAL_PROT_NCLSTR_MAX) then 
          goto 101
       endif
+
       BIGCAL_PROT_NCLSTR = ncluster
       
       ncluster = 0
@@ -486,11 +522,21 @@ c     ! start by sorting cluster cells in descending order of amplitude:
           ncellclust = BIGCAL_CLSTR_NCELL_MAX
         endif
         
+        if(ncellclust.lt.bigcal_clstr_ncell_min) then
+           bigcal_rcs_bad_clstr_flag(ncluster) = 2
+           goto 234
+        endif
+
         clstr_temp_esum = 0.
         do ihit=1,ncellclust
           clstr_temp_esum = clstr_temp_esum + clstr_temp_ecell(ihit)
         enddo
         
+        if(clstr_temp_esum.lt.b_cluster_cut) then
+           bigcal_rcs_bad_clstr_flag(ncluster) = 3
+           goto 234
+        endif
+
         do ihit=1,ncellclust
           do jhit=ihit+1,ncellclust
             if(clstr_temp_ecell(jhit).gt.clstr_temp_ecell(ihit))then
@@ -534,6 +580,11 @@ c     ! at this point all goodhit are true, so no need to switch
         if(clstr_temp_iycell(1)-bigcal_prot_ny.ne.iymax.or.
      $       clstr_temp_ixcell(1).ne.ixmax) then
            second_max = .true.
+        endif
+
+        if(second_max) then
+           bigcal_rcs_bad_clstr_flag(ncluster) = 4
+           goto 234
         endif
         
         if(clstr_temp_esum.ge.b_cluster_cut.and. .not. second_max) then
@@ -615,7 +666,18 @@ c     ! the Prot-RCS boundary:
             
           endif
         endif
+      else if(ixmax.eq.1.or.ixmax.eq.bigcal_rcs_nx.or.iymax.eq.1.or.
+     $       iymax.eq.bigcal_rcs_ny) then ! max at edge
+         bigcal_rcs_bad_clstr_flag(ncluster) = 1
+         !write(*,*) 'edge max! ncluster = ',ncluster
       endif
+
+ 234  continue
+      
+      if((.not.found_cluster).and.ncluster.eq.0) then
+         bigcal_rcs_no_clstr_why = bigcal_rcs_bad_clstr_flag(0)
+      endif
+
       if(found_cluster .and. ncluster .lt. BIGCAL_RCS_NCLSTR_MAX) then 
          goto 201
       endif
@@ -643,7 +705,7 @@ c     first fill middle hit arrays:
          enddo
       enddo  
       
-c$$$      write(*,*) 'mid_ehit = ',bigcal_mid_ehit
+c$$$      !write(*,*) 'mid_ehit = ',bigcal_mid_ehit
 c$$$      write(*,*) 'mid_xhit = ',bigcal_mid_xhit
 c$$$      write(*,*) 'mid_yhit = ',bigcal_mid_yhit
 
@@ -750,12 +812,23 @@ c     endif ! otherwise something doesn't make sense
             if(ncellclust.gt.bigcal_clstr_ncell_max) then
                ncellclust = bigcal_clstr_ncell_max
             endif
+
+            if(ncellclust.lt.bigcal_clstr_ncell_min) then
+               bigcal_mid_bad_clstr_flag(ncluster) = 2
+               goto 334
+            endif
+
 c     sort in descending order of amplitude:
             
             clstr_temp_esum = 0.
             do ihit=1,ncellclust
                clstr_temp_esum = clstr_temp_esum + clstr_temp_ecell(ihit)
             enddo
+
+            if(clstr_temp_esum.lt.b_cluster_cut) then
+               bigcal_mid_bad_clstr_flag(ncluster) = 3
+               goto 334
+            endif
 
             do ihit=1,ncellclust
                do jhit=ihit+1,ncellclust
@@ -808,7 +881,12 @@ c     !write(*,*) 'ixcell = ',clstr_temp_ixcell
           
             if(clstr_temp_iycell(1).ne.iymax.or.clstr_temp_ixcell(1)
      $           .ne.ixmax) then
-               second_max = .false.
+               second_max = .true.
+            endif
+
+            if(second_max) then
+               bigcal_mid_bad_clstr_flag(ncluster) = 4
+               goto 334
             endif
 
             if(clstr_temp_esum.ge.b_cluster_cut.and. .not. second_max
@@ -855,6 +933,10 @@ c     zero the hits from this array so that they can't be used again:
                bigcal_mid_clstr_ymom(ncluster) = ymom
 
             endif
+         else if(ixmax.eq.1.or.ixmax.eq.bigcal_prot_nx) then
+            bigcal_mid_bad_clstr_flag(ncluster) = 1
+            
+            !write(*,*) 'edge max! ncluster = ',ncluster
          endif
       else if(iymax.eq.33) then
          if(ixmax.ge.2.and.ixmax.le.29) then
@@ -921,10 +1003,20 @@ c           endif
             endif
 c     sort in descending order of amplitude:
           
+            if(ncellclust.lt.bigcal_clstr_ncell_min) then
+               bigcal_mid_bad_clstr_flag(ncluster) = 2
+               goto 334
+            endif
+
             clstr_temp_esum = 0.
             do ihit=1,ncellclust
                clstr_temp_esum = clstr_temp_esum + clstr_temp_ecell(ihit)
             enddo
+
+            if(clstr_temp_esum.lt.b_cluster_cut) then
+               bigcal_mid_bad_clstr_flag(ncluster) = 3
+               goto 334
+            endif
             
             do ihit=1,ncellclust
                do jhit=ihit+1,ncellclust
@@ -980,6 +1072,11 @@ c     !write(*,*) 'ixcell = ',clstr_temp_ixcell
                second_max = .true.
             endif
 
+            if(second_max) then
+               bigcal_mid_bad_clstr_flag(ncluster) = 4
+               goto 334 
+            endif
+
             if(clstr_temp_esum.ge.b_cluster_cut.and. .not. second_max
      $           .and.ncellclust.gt.bigcal_clstr_ncell_min)then
 c     ADD A CLUSTER TO THE ARRAY FOR THE MIDDLE SECTION!
@@ -1027,15 +1124,31 @@ c     zero the hits from this array so that they can't be used again:
                if(bdebug_print_clusters.ne.0) call b_print_cluster(3,ncluster,ABORT,err)
                
             endif
-          
+         else if(ixmax.eq.1.or.ixmax.eq.bigcal_rcs_nx) then
+            bigcal_mid_bad_clstr_flag(ncluster) = 1
+            !write(*,*) 'edge max! ncluster = ',ncluster
          endif
       endif
       
+ 334  continue
+
+      if((.not.found_cluster).and.ncluster.eq.0) then
+         bigcal_mid_no_clstr_why = bigcal_mid_bad_clstr_flag(0)
+      endif
+
       if(found_cluster .and. ncluster.lt.bigcal_mid_nclstr_max) then
          goto 301
       endif
       
       bigcal_mid_nclstr = ncluster
+
+      if(bigcal_prot_nclstr.eq.0.and.bigcal_rcs_nclstr.eq.0.and.
+     $     bigcal_mid_nclstr.eq.0) then
+         bigcal_all_no_clstr_why = max(bigcal_prot_no_clstr_why,
+     $        bigcal_rcs_no_clstr_why,bigcal_mid_no_clstr_why)
+      else 
+         bigcal_all_no_clstr_why = 0
+      endif
       
       return 
       end

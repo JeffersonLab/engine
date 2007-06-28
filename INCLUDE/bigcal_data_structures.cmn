@@ -46,6 +46,8 @@
       parameter(BIGCAL_RCS_NCLSTR_MAX=10)
       integer*4 BIGCAL_MID_NCLSTR_MAX
       parameter(BIGCAL_MID_NCLSTR_MAX=5)
+      integer*4 BIGCAL_ALL_NCLSTR_MAX
+      parameter(BIGCAL_ALL_NCLSTR_MAX=25) ! must equal sum of prot, rcs, and mid or problems will happen
 
       integer*4 BIGCAL_CLSTR_NCELL_MAX
       parameter(BIGCAL_CLSTR_NCELL_MAX=25) ! maximum cluster size is 5x5
@@ -333,12 +335,41 @@
       common/bigcal_ixclose_mid/
      $     bigcal_ixclose_prot,
      $     bigcal_ixclose_rcs
+*     reasons for not finding clusters:
+*     0 = no hits in section or good cluster found
+*     1 = edge max
+*     2 = not enough cells
+*     3 = not enough energy
+*     4 = second max
+      integer*4 bigcal_prot_bad_clstr_flag(0:BIGCAL_PROT_NCLSTR_MAX)
+      integer*4 bigcal_rcs_bad_clstr_flag(0:BIGCAL_RCS_NCLSTR_MAX)
+      integer*4 bigcal_mid_bad_clstr_flag(0:BIGCAL_MID_NCLSTR_MAX)
+      integer*4 bigcal_all_bad_clstr_flag(0:BIGCAL_ALL_NCLSTR_MAX)
+      integer*4 bigcal_prot_no_clstr_why
+      integer*4 bigcal_rcs_no_clstr_why
+      integer*4 bigcal_mid_no_clstr_why
+      integer*4 bigcal_all_no_clstr_why
+      logical bigcal_atrig_cluster_match(bigcal_atrig_maxhits)
+      integer*4 bigcal_atrig_why_bad(bigcal_atrig_maxhits)
+      common/bigcal_stats_flags/
+     $     bigcal_prot_bad_clstr_flag,
+     $     bigcal_rcs_bad_clstr_flag,
+     $     bigcal_mid_bad_clstr_flag,
+     $     bigcal_all_bad_clstr_flag,
+     $     bigcal_prot_no_clstr_why,
+     $     bigcal_rcs_no_clstr_why,
+     $     bigcal_mid_no_clstr_why,
+     $     bigcal_all_no_clstr_why,
+     $     bigcal_atrig_cluster_match,
+     $     bigcal_atrig_why_bad
+      
+      
+
 *
 *     CTPTYPE=event
 *
 *     cluster arrays for Protvino half
       integer*4 BIGCAL_PROT_NCLSTR 
-      integer*4 BIGCAL_PROT_CLSTR_BAD_FLAG(BIGCAL_PROT_NCLSTR_MAX)
       integer*4 BIGCAL_PROT_CLSTR_NCELL(BIGCAL_PROT_NCLSTR_MAX) 
       integer*4 BIGCAL_PROT_CLSTR_IYMAX(BIGCAL_PROT_NCLSTR_MAX)
       integer*4 BIGCAL_PROT_CLSTR_IXMAX(BIGCAL_PROT_NCLSTR_MAX)
@@ -369,7 +400,6 @@
       
       common/BIGCAL_CLUSTER_PROT/
      $     BIGCAL_PROT_NCLSTR,
-     $     BIGCAL_PROT_CLSTR_BAD_FLAG,
      $     BIGCAL_PROT_CLSTR_NCELL,
      $     BIGCAL_PROT_CLSTR_IYMAX,
      $     BIGCAL_PROT_CLSTR_IXMAX,
@@ -400,7 +430,6 @@
 
 *     cluster arrays or RCS half:
       integer*4 BIGCAL_RCS_NCLSTR 
-      integer*4 BIGCAL_RCS_CLSTR_BAD_FLAG(BIGCAL_RCS_NCLSTR_MAX)
       integer*4 BIGCAL_RCS_CLSTR_NCELL(BIGCAL_RCS_NCLSTR_MAX) 
       integer*4 BIGCAL_RCS_CLSTR_IYMAX(BIGCAL_RCS_NCLSTR_MAX)
       integer*4 BIGCAL_RCS_CLSTR_IXMAX(BIGCAL_RCS_NCLSTR_MAX)
@@ -431,7 +460,6 @@
       
       common/BIGCAL_CLUSTER_RCS/
      $     BIGCAL_RCS_NCLSTR,
-     $     BIGCAL_RCS_CLSTR_BAD_FLAG,
      $     BIGCAL_RCS_CLSTR_NCELL,
      $     BIGCAL_RCS_CLSTR_IYMAX,
      $     BIGCAL_RCS_CLSTR_IXMAX,
@@ -462,7 +490,6 @@
 
 *     cluster arrays for middle section:
       integer*4 BIGCAL_MID_NCLSTR 
-      integer*4 BIGCAL_MID_CLSTR_BAD_FLAG(BIGCAL_MID_NCLSTR_MAX)
       integer*4 BIGCAL_MID_CLSTR_NCELL(BIGCAL_MID_NCLSTR_MAX) 
       integer*4 BIGCAL_MID_CLSTR_IYMAX(BIGCAL_MID_NCLSTR_MAX)
       integer*4 BIGCAL_MID_CLSTR_IXMAX(BIGCAL_MID_NCLSTR_MAX)
@@ -493,7 +520,6 @@
       
       common/BIGCAL_CLUSTER_MID/
      $     BIGCAL_MID_NCLSTR,
-     $     BIGCAL_MID_CLSTR_BAD_FLAG,
      $     BIGCAL_MID_CLSTR_NCELL,
      $     BIGCAL_MID_CLSTR_IYMAX,
      $     BIGCAL_MID_CLSTR_IXMAX,

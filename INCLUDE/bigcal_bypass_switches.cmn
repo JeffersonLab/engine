@@ -12,6 +12,7 @@
       integer*4 bbypass_all_adc
       integer*4 bbypass_find_track
       integer*4 bbypass_calc_physics
+      integer*4 bbypass_trig_check
       integer*4 bdebug_print_adc
       integer*4 bdebug_print_tdc
       integer*4 bdebug_print_trig
@@ -29,6 +30,7 @@
      $     bbypass_all_adc,
      $     bbypass_find_track,
      $     bbypass_calc_physics,
+     $     bbypass_trig_check,
      $     bdebug_print_adc,
      $     bdebug_print_tdc,
      $     bdebug_print_trig,
