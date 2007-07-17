@@ -26,6 +26,8 @@
 
             BIGCAL_PROT_XCENTER(icell) = xcenter
             BIGCAL_PROT_YCENTER(icell) = ycenter
+            bigcal_all_xcenter(icell) = xcenter
+            bigcal_all_ycenter(icell) = ycenter
          enddo
       enddo
 
@@ -43,6 +45,9 @@
 
             BIGCAL_RCS_XCENTER(icell) = xcenter
             BIGCAL_RCS_YCENTER(icell) = ycenter
+
+            bigcal_all_xcenter(icell + bigcal_prot_maxhits) = xcenter
+            bigcal_all_ycenter(icell + bigcal_prot_maxhits) = ycenter
          enddo
       enddo
 
@@ -61,12 +66,12 @@
             endif
          enddo
 
-         if(mindiff.lt.1000000..and.ixmin.gt.0.and.ixmin.le.30) then
+         if(mindiff.lt.1000000..and.ixmin.ge.1.and.ixmin.le.30) then
             bigcal_ixclose_prot(ix) = ixmin
          else
             write(*,*) 'warning: could not find ixclose_prot, ix = ',ix
             write(*,*) 'something probably wrong with geometry database'
-            bigcal_ixclose_prot(ix) = min(ix,30)
+            bigcal_ixclose_prot(ix) = min(max(ix,1),30)
          endif     
       enddo
 
@@ -89,7 +94,7 @@
          else
             write(*,*) 'warning: could not find ixclose_rcs, ix = ',ix
             write(*,*) 'something probably wrong with geometry database'
-            bigcal_ixclose_rcs(ix) = ix
+            bigcal_ixclose_rcs(ix) = min(max(ix,1),32)
          endif
       enddo 
 

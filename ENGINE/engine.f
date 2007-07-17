@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.5  2007/07/17 22:55:50  puckett
+* new cluster finding algorithm and some changes to data structures
+*
 * Revision 1.42.8.4  2007/06/26 16:36:45  puckett
 * latest changes for monte carlo analysis, latest fixes for cluster finding routine
 *
@@ -590,6 +593,8 @@ c     !!!!!!!!!!!!!!!!!!!!!!!!!!!IF BIGCAL MONTE CARLO DATA, DO ALL EVENT REPLAY
 c           call get_bigcal_mc_event(gen_bigcal_mc,ABORT,err)
            gen_event_type = 5
            
+           !write(*,*) 'Entering monte carlo reconstruction'
+
            call bigcal_mc_reconstruction(gen_bigcal_mc,ABORT,err)
            
            EoF = EOF_MC_DAT

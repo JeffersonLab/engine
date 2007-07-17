@@ -81,9 +81,11 @@
       m=m+1
       gep_ntuple_tag(m) = 'ctimeb' ! bigcal coin. time
       m=m+1
-      gep_ntuple_tag(m) = 'ctime' ! corrected coin. time
-      m=m+1
       gep_ntuple_tag(m) = 'Q2' ! q-squared in GeV^2
+      m=m+1
+      gep_ntuple_tag(m) = 'Q2_H' ! q-squared in GeV^2, HMS
+      m=m+1
+      gep_ntuple_tag(m) = 'Q2_B' ! q-squared in GeV^2, Calo
       m=m+1
       gep_ntuple_tag(m) = 'E_e' ! electron energy in GeV
       m=m+1

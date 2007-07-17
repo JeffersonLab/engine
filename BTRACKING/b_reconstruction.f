@@ -109,6 +109,17 @@ c$$$      if(gen_bigcal_mc.ne.0.and. .not.mc_trig) return
 *     find_clusters: fills the cluster arrays, calculates sums and moments
       if(bbypass_find_clusters.eq.0.and.bbypass_prot.eq.0.and.
      $     bbypass_rcs.eq.0) then
+
+         !write(*,*) 'entering b_fill_bigcal_arrays'
+
+         call b_fill_bigcal_arrays(abort,err)
+         if(ABORT) then 
+            call g_add_path(here,err)
+            return
+         endif
+
+         !write(*,*) 'entering b_find_clusters'
+
          call b_find_clusters(ABORT,err)
          if(ABORT) then 
             call g_add_path(here,err)
@@ -144,7 +155,7 @@ c$$$      if(gen_bigcal_mc.ne.0.and. .not.mc_trig) return
          endif
       endif
 
-
+      !write(*,*) 'done with reconstruction'
 
 *
       return

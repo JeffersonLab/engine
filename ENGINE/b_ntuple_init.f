@@ -93,87 +93,8 @@ c$$$      data b_ntuple_contents/bmax_ntuple_size*0/
 
 c     choose ntuple type based on input argument
 
-      m=0
-
-      if(bigcal_ntuple_type.eq.1) then ! "normal" basic row-wise ntuple which uses best cluster (singles)
-         m=m+1
-         b_ntuple_tag(m) = 'time' ! coin time in ns of best cluster
-         m=m+1
-         b_ntuple_tag(m) = 'etheta' ! polar angle in radians
-         m=m+1
-         b_ntuple_tag(m) = 'ephi' ! azimuthal angle in radians
-         m=m+1
-         b_ntuple_tag(m) = 'Etot' ! energy in GeV
-         m=m+1 
-         b_ntuple_tag(m) = 'xcal' ! x of calo impact point
-         m=m+1
-         b_ntuple_tag(m) = 'ycal' ! y of calo impact point
-         m=m+1
-         b_ntuple_tag(m) = 'zcal' ! z of calo impact point
-         m=m+1
-         b_ntuple_tag(m) = 'px' ! px of electron
-         m=m+1
-         b_ntuple_tag(m) = 'py' ! py of electron
-         m=m+1
-         b_ntuple_tag(m) = 'pz' ! pz of electron
-         m=m+1
-         b_ntuple_tag(m) = 'beta' ! v/c of electron
-         m=m+1
-         b_ntuple_tag(m) = 'tof' ! time of flight of electron
-         m=m+1
-         b_ntuple_tag(m) = 'iymax' ! iy of central cell
-         m=m+1
-         b_ntuple_tag(m) = 'ixmax' ! ix of central cell
-         m=m+1
-         b_ntuple_tag(m) = 'xclust' ! recon. x of cluster
-         m=m+1
-         b_ntuple_tag(m) = 'yclust' ! recon. y of cluster
-         m=m+1
-         b_ntuple_tag(m) = 'Eclust' ! Esum of cluster
-         m=m+1
-         b_ntuple_tag(m) = 'xmom' ! x moment of cluster
-         m=m+1
-         b_ntuple_tag(m) = 'ymom' ! y moment of cluster
-         m=m+1
-         b_ntuple_tag(m) = 't8avg' ! average time of sum of 8
-         m=m+1
-         b_ntuple_tag(m) = 't64avg' ! average time of sum of 64
-         do i=-2,2        ! cell amplitudes (5x5)
-            do j=-2,2
-               m=m+1
-               if(i.lt.0)then
-                  iytag='-'//char(-i+ichar('0')) !!should I use char(i) or char(i+48)? 
-               else if(i.gt.0)then    !!(ASCII for numeric digits 0-9)
-                  iytag='+'//char(i+ichar('0'))
-               else 
-                  iytag='_'//char(i+ichar('0'))
-               endif
-
-               if(j.lt.0)then
-                  ixtag='-'//char(-j+ichar('0'))
-               else if(j.gt.0)then
-                  ixtag='+'//char(j+ichar('0'))
-               else 
-                  ixtag='_'//char(j+ichar('0'))
-               endif
-
-               Ecelltag='E'//iytag//ixtag
-               b_ntuple_tag(m) = Ecelltag
-            enddo
-         enddo 
-
-         b_ntuple_size = m
-c     so far we have added 48 quantities to the ntuple: 23 'per event' 
-c     quantities + 25 cell amplitudes for the best cluster. We only allow 
-c     one cluster to get into the ntuple per event for now.
-      else if(bigcal_ntuple_type.eq.2) then ! column-wise ntuple writes out all clusters
-        
-
-      else if(bigcal_ntuple_type.eq.3) then ! column-wise ntuple for cosmic analysis
-        b_ntuple_id = 9501
-
-      else if(bigcal_ntuple_type.eq.4) then ! laser/light box/gain monitoring 
-         ! don't add this right now
+      if(bigcal_ntuple_type.eq.2) then ! cosmics ntuple
+         b_ntuple_id = 9501
       endif
       
 

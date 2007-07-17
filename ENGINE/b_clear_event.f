@@ -31,24 +31,8 @@ c      include 'bigcal_statistics.cmn'
       BIGCAL_RCS_NHIT = 0
       BIGCAL_PROT_NGOOD = 0
       BIGCAL_RCS_NGOOD = 0
-      BIGCAL_PROT_NCLSTR = 0
-      BIGCAL_RCS_NCLSTR = 0
-      BIGCAL_MID_NCLSTR = 0
-      bigcal_phys_ntrack = 0
-
-      bigcal_prot_bad_clstr_flag(0) = 0
-      bigcal_rcs_bad_clstr_flag(0) = 0
-      bigcal_mid_bad_clstr_flag(0) = 0
-      bigcal_all_bad_clstr_flag(0) = 0
-
-      bigcal_prot_no_clstr_why = 0
-      bigcal_rcs_no_clstr_why = 0
-      bigcal_mid_no_clstr_why = 0
-      bigcal_all_no_clstr_why = 0
-
-      do i=1,bigcal_atrig_maxhits
-         bigcal_atrig_cluster_match(i)=.true.
-      enddo
+c$$$      bigcal_all_nclstr = 0
+c$$$      bigcal_phys_ntrack = 0
 
       bigcal_max_adc = 0.
       bigcal_iymax_adc = 0
@@ -63,12 +47,16 @@ c      bigcal_max_adc_final = 0.
          BIGCAL_PROT_RAW_DET(i) = 0
          BIGCAL_PROT_GOOD_DET(i) = 0.
 c         BIGCAL_PROT_GOOD_HIT(i) = .false.
+         bigcal_all_raw_det(i) = 0
+         bigcal_all_good_det(i) = 0.
       enddo
 
       do i=1,BIGCAL_RCS_MAXHITS
          BIGCAL_RCS_RAW_DET(i) = 0
          BIGCAL_RCS_GOOD_DET(i) = 0.
 c         BIGCAL_RCS_GOOD_HIT(i) = .false.
+         bigcal_all_raw_det(i+bigcal_prot_maxhits)=0
+         bigcal_all_good_det(i+bigcal_prot_maxhits) = 0.
       enddo
 
       do i=1,BIGCAL_MAX_TDC
@@ -96,131 +84,19 @@ c         BIGCAL_RCS_GOOD_HIT(i) = .false.
         enddo
       enddo
 
-      do i=30,35
-        do j=1,32
-          bigcal_mid_ehit(i,j) = 0.
-          bigcal_mid_xhit(i,j) = 0.
-          bigcal_mid_yhit(i,j) = 0.
-        enddo
-      enddo
+c$$$      do i=30,35
+c$$$        do j=1,32
+c$$$          bigcal_mid_ehit(i,j) = 0.
+c$$$          bigcal_mid_xhit(i,j) = 0.
+c$$$          bigcal_mid_yhit(i,j) = 0.
+c$$$        enddo
+c$$$      enddo
 
 c     we probably need to clear out the cluster arrays too!!!!
 
-      bigcal_prot_nclstr = 0
-c$$$      do i=1,bigcal_prot_nclstr_max
-c$$$        bigcal_prot_clstr_ncell(i) = 0
-c$$$        bigcal_prot_clstr_iymax(i) = 0
-c$$$        bigcal_prot_clstr_ixmax(i) = 0
-c$$$        do j=1,bigcal_clstr_ncell_max
-c$$$          bigcal_prot_clstr_iycell(i,j) = 0
-c$$$          bigcal_prot_clstr_ixcell(i,j) = 0
-c$$$          bigcal_prot_clstr_xcell(i,j) = 0.
-c$$$          bigcal_prot_clstr_ycell(i,j) = 0.
-c$$$          bigcal_prot_clstr_ecell(i,j) = 0.
-c$$$        enddo
-c$$$        bigcal_prot_clstr_ncell8(i) = 0
-c$$$        bigcal_prot_clstr_ncell64(i) = 0
-c$$$        do j=1,10
-c$$$          bigcal_prot_clstr_nhit8(i,j) = 0
-c$$$          do k=1,8
-c$$$            bigcal_prot_clstr_tcell8(i,j,k) = 0.
-c$$$          enddo
-c$$$        enddo
-c$$$        do j=1,6
-c$$$          bigcal_prot_clstr_nhit64(i,j) = 0
-c$$$          do k=1,8
-c$$$            bigcal_prot_clstr_tcell64(i,j,k) = 0.
-c$$$          enddo
-c$$$        enddo
-c$$$        bigcal_prot_clstr_xmom(i) = 0.
-c$$$        bigcal_prot_clstr_ymom(i) = 0.
-c$$$        bigcal_prot_clstr_t8best(i) = 0.
-c$$$        bigcal_prot_clstr_t64best(i) = 0.
-c$$$        bigcal_prot_clstr_x(i) = 0.
-c$$$        bigcal_prot_clstr_y(i) = 0.
-c$$$        bigcal_prot_clstr_etot(i) = 0.
-c$$$        bigcal_prot_clstr_good8(i) = .false.
-c$$$        bigcal_prot_clstr_good64(i) = .false.
-c$$$      enddo
-
-      bigcal_rcs_nclstr = 0
-c$$$      do i=1,bigcal_rcs_nclstr_max
-c$$$        bigcal_rcs_clstr_ncell(i) = 0
-c$$$        bigcal_rcs_clstr_iymax(i) = 0
-c$$$        bigcal_rcs_clstr_ixmax(i) = 0
-c$$$        do j=1,bigcal_clstr_ncell_max
-c$$$          bigcal_rcs_clstr_iycell(i,j) = 0
-c$$$          bigcal_rcs_clstr_ixcell(i,j) = 0
-c$$$          bigcal_rcs_clstr_xcell(i,j) = 0.
-c$$$          bigcal_rcs_clstr_ycell(i,j) = 0.
-c$$$          bigcal_rcs_clstr_ecell(i,j) = 0.
-c$$$        enddo
-c$$$        bigcal_rcs_clstr_ncell8(i) = 0
-c$$$        bigcal_rcs_clstr_ncell64(i) = 0
-c$$$        do j=1,10
-c$$$          bigcal_rcs_clstr_nhit8(i,j) = 0
-c$$$          do k=1,8
-c$$$            bigcal_rcs_clstr_tcell8(i,j,k) = 0.
-c$$$          enddo
-c$$$        enddo
-c$$$        do j=1,6
-c$$$          bigcal_rcs_clstr_nhit64(i,j) = 0
-c$$$          do k=1,8
-c$$$            bigcal_rcs_clstr_tcell64(i,j,k) = 0.
-c$$$          enddo
-c$$$        enddo
-c$$$        bigcal_rcs_clstr_xmom(i) = 0.
-c$$$        bigcal_rcs_clstr_ymom(i) = 0.
-c$$$        bigcal_rcs_clstr_t8best(i) = 0.
-c$$$        bigcal_rcs_clstr_t64best(i) = 0.
-c$$$        bigcal_rcs_clstr_x(i) = 0.
-c$$$        bigcal_rcs_clstr_y(i) = 0.
-c$$$        bigcal_rcs_clstr_etot(i) = 0.
-c$$$        bigcal_rcs_clstr_good8(i) = .false.
-c$$$        bigcal_rcs_clstr_good64(i) = .false.
-c$$$      enddo
-
-      bigcal_mid_nclstr = 0
-c$$$      do i=1,bigcal_mid_nclstr_max
-c$$$        bigcal_mid_clstr_ncell(i) = 0
-c$$$        bigcal_mid_clstr_iymax(i) = 0
-c$$$        bigcal_mid_clstr_ixmax(i) = 0
-c$$$        do j=1,bigcal_clstr_ncell_max
-c$$$          bigcal_mid_clstr_iycell(i,j) = 0
-c$$$          bigcal_mid_clstr_ixcell(i,j) = 0
-c$$$          bigcal_mid_clstr_xcell(i,j) = 0.
-c$$$          bigcal_mid_clstr_ycell(i,j) = 0.
-c$$$          bigcal_mid_clstr_ecell(i,j) = 0.
-c$$$        enddo
-c$$$        bigcal_mid_clstr_ncell8(i) = 0
-c$$$        bigcal_mid_clstr_ncell64(i) = 0
-c$$$        do j=1,10
-c$$$          bigcal_mid_clstr_nhit8(i,j) = 0
-c$$$          do k=1,8
-c$$$            bigcal_mid_clstr_tcell8(i,j,k) = 0.
-c$$$          enddo
-c$$$        enddo
-c$$$        do j=1,6
-c$$$          bigcal_mid_clstr_nhit64(i,j) = 0
-c$$$          do k=1,8
-c$$$            bigcal_mid_clstr_tcell64(i,j,k) = 0.
-c$$$          enddo
-c$$$        enddo
-c$$$        bigcal_mid_clstr_xmom(i) = 0.
-c$$$        bigcal_mid_clstr_ymom(i) = 0.
-c$$$        bigcal_mid_clstr_t8best(i) = 0.
-c$$$        bigcal_mid_clstr_t64best(i) = 0.
-c$$$        bigcal_mid_clstr_x(i) = 0.
-c$$$        bigcal_mid_clstr_y(i) = 0.
-c$$$        bigcal_mid_clstr_etot(i) = 0.
-c$$$        bigcal_mid_clstr_good8(i) = .false.
-c$$$        bigcal_mid_clstr_good64(i) = .false.
-c$$$      enddo
-
+      bigcal_all_nclstr = 0
       bigcal_phys_ntrack = 0
-      bigcal_best_track = 0
-      bigcal_best_clstr_isection = 0
-      bigcal_best_clstr_icluster = 0
+      bigcal_nmaxima = 0
       
 c$$$      bigcal_best_thetarad = 0.
 c$$$      bigcal_best_thetadeg = 0.

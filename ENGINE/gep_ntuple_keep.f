@@ -40,9 +40,11 @@
       m=m+1
       gep_ntuple_contents(m) = GEP_ctime_cal
       m=m+1
-      gep_ntuple_contents(m) = GEP_ctime_cor
-      m=m+1
       gep_ntuple_contents(m) = GEP_Q2
+      m=m+1
+      gep_ntuple_contents(m) = GEP_Q2_H
+      m=m+1
+      gep_ntuple_contents(m) = GEP_Q2_B
       m=m+1
       gep_ntuple_contents(m) = GEP_E_electron
       m=m+1

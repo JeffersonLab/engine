@@ -11,25 +11,26 @@
       
       include 'gep_data_structures.cmn'
 
-      GEP_ctime_hms = 0.
-      GEP_ctime_cal = 0.
-      GEP_ctime_cor = 0.
-      GEP_Q2 = 0.
-      GEP_E_electron = 0.
-      GEP_P_proton = 0.
-      GEP_delta_p = 0.
-      GEP_epsilon = 0.
-      GEP_etheta_deg = 0.
-      GEP_ephi_deg = 0.
-      GEP_ptheta_deg = 0.
-      GEP_pphi_deg = 0.
-      GEP_Emiss = 0.
-      GEP_Pmissx = 0.
-      GEP_Pmissy = 0.
-      GEP_Pmissz = 0.
-      GEP_Pmiss = 0.
-      GEP_W2 = 0.
-      GEP_Mmiss = 0.
+      gep_ctime_hms = 0.
+      gep_ctime_cal = 0.
+      gep_Q2 = 0.
+      gep_Q2_H = 0.
+      gep_Q2_B = 0.
+      gep_E_electron = 0.
+      gep_P_proton = 0.
+      gep_delta_P = 0.
+      gep_epsilon = 0.
+      gep_etheta_deg = 0.
+      gep_ephi_deg = 0.
+      gep_ptheta_deg = 0.
+      gep_pphi_deg = 0.
+      gep_emiss = 0.
+      gep_pmissx = 0.
+      gep_pmissy = 0.
+      gep_pmissz = 0.
+      gep_pmiss = 0.
+      gep_w2 = 0.
+      gep_mmiss = 0.
 
       call gep_ntuple_clear
 

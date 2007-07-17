@@ -16,8 +16,9 @@
 
       gep_ctime_hms = 0.
       gep_ctime_cal = 0.
-      gep_ctime_cor = 0.
       gep_Q2 = 0.
+      gep_Q2_H = 0.
+      gep_Q2_B = 0.
       gep_E_electron = 0.
       gep_P_proton = 0.
       gep_delta_P = 0.

@@ -1,10 +1,25 @@
 *
+*     CTPTYPE=parm
+*
+c     resolution parameters for picking best bigcal track using hms info!
+      real*4 GEP_sigma_xdiff
+      real*4 GEP_sigma_ydiff
+      real*4 GEP_sigma_Ediff
+      real*4 GEP_sigma_tdiff
+      common/GEP_res/
+     $     GEP_sigma_xdiff,
+     $     GEP_sigma_ydiff,
+     $     GEP_sigma_Ediff,
+     $     GEP_sigma_tdiff
+
+*
 *     CTPTYPE=event
 *
       real*4 GEP_ctime_hms ! HMS coincidence time
       real*4 GEP_ctime_cal ! BigCal coincidence time
-      real*4 GEP_ctime_cor ! "corrected" coincidence time
-      real*4 GEP_Q2 ! 4 momentum transfer squared
+      real*4 GEP_Q2 ! 4 momentum transfer squared: BigCal angle, HMS momentum
+      real*4 GEP_Q2_H ! Q2 from HMS only
+      real*4 GEP_Q2_B ! Q2 from BigCal & HMS vertex, but no HMS momentum
       real*4 GEP_E_electron ! scattered electron energy in GeV
       real*4 GEP_P_proton ! scattered proton momentum in GeV
       real*4 GEP_delta_p ! proton p - p0 in %, where p0 is HMS central mom.
@@ -21,7 +36,7 @@
       real*4 GEP_W2 ! invariant mass of detected particles: should equal Mp^2
       real*4 GEP_Mmiss ! missing mass = sqrt(W^2 - Mp^2)
 c     For GEp, all our "missing" quantities should be zero, because W^2 = M^2,
-c     and the e- and p carry all of the energy and momentum in the reaction
+c     and the e- and p carry all of the energy and momentum in the reaction.
 c     by defining both polar and azimuthal scattering angles theta and phi, we
 c     can define the unit vector in the q-direction, which defines the coord. 
 c     system for the polarization measurement. 
@@ -29,8 +44,9 @@ c     system for the polarization measurement.
       common/GEP_CPHYSICS/
      $     GEP_ctime_hms,
      $     GEP_ctime_cal,
-     $     GEP_ctime_cor,
      $     GEP_Q2,
+     $     GEP_Q2_H,
+     $     GEP_Q2_B,
      $     GEP_E_electron,
      $     GEP_P_proton,
      $     GEP_delta_p,

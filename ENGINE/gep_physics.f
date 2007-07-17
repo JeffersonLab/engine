@@ -25,380 +25,211 @@
 c
 c     local variables:
 c
-      real*4 Mp
-      parameter(Mp=.938272) ! mass of proton in GeV
-      real*4 PI
-      parameter(PI=3.141592654)
 
-      real*4 offset_ctime
-      real*4 vx,vy,vz
-      real*4 tface_cal 
-      real*4 exhat,eyhat,ezhat,exhatrot,ezhatrot
-      real*4 thetax_inc_H,thetay_inc_H ! x and y incident angle based on HMS vertex and angle info
-      real*4 thetax_inc_O,thetay_inc_O ! x and y incident angle from origin
-      real*4 nu 
-      real*4 costheta_e
-      real*4 theta_e_HMS
-      real*4 phi_e_HMS
-      real*4 xface_HMS,yface_HMS,zface_HMS
-      real*4 xface_CAL,yface_CAL,zface_CAL
-      real*4 minthetaxdiff
-      real*4 minthetaydiff
-      real*4 xcell,ycell,xmom,ymom,xcellclst,ycellclst
-      real*4 newxpar(6),newypar(6)
-      real*4 xface,yface,zface,xrot,zrot,rayperp,px,py,pz
-      real*4 Q2_cal,Q2_HMS
-      real*4 deltaQ2_cal,deltaQ2_HMS,delta_cosetheta,tau
+c     FIRST PART OF THIS CODE IS TO USE HMS INFO TO SELECT BEST TRACK IN BIGCAL!!!
+c     HMS phi is centered at -PI/2, therefore, we need to rotate bigcal phi so
+c     that it is centered at +PI/2
+c     here we want to use the HMS singles physics info to choose the best track
+c     from BigCal assuming elastic kinematics!!!
+      integer pick_best_cal_track
 
-      integer*4 irowclst,icolclst,irow,icol,icell,ipar,icellclst
-      integer*4 irowmindiff,icolmindiff,isectmindiff
+      real etheta_expect,ephi_expect
+      real exhat,eyhat,ezhat,exhat_tar,eyhat_tar,ezhat_tar
+      real xint_hexpect,yint_hexpect,zint_hexpect
+      real xcal_hexpect
+      real ycal_hexpect
+      real Ecal_hexpect
+      real tcal_hexpect
+      real Eprime,ethetarad,ephirad,Q2,nu
+      real pthetarad,pphirad
+      real vx,vy,vz
+      real etint
+      real edx,edy,edz,ethetacorr,ephicorr,epathlength,mom_corr
+      real gamma_corr,beta_corr,tof
+      real Q2_cal,Q2_hms
 
-      abort=.false.
-      err=' '
+      real Mp
+      parameter(Mp=.938272)
       
-      if(HSNUM_FPTRACK.le.0.or.BIGCAL_PHYS_NTRACK.le.0)then
-         return
-      endif
-      
-c     HMS is always hadron arm for "GEp" type events: 
-      
-c     TARGET coordinates: 
-c     z points downstream along beamline
-c     x points downward
-c     y points beam left (away from HMS, toward BigCal) in contrast to my BigCal coordinates in which
-c     x points beam left, and y is upward
+      real Me
+      integer i,ibest_cal
 
-c     hstheta is lab scattering angle in radians
-c     hsphi is lab azimuthal angle in radians: centered at -PI/2 for HMS in TARGET coordinates
-c     hszbeam is lab z coordinate of intersection of beam track with spectrometer ray
-c     as far as I can tell, even though gbeam_x, gbeam_y, gbeam_xp and gbeam_yp are calculated from the 
-c     BPM/raster info, hsx_tar is just set to zero. For now, use xtar = 0 and ytar = 0 and just use hszbeam
-c     to correct BigCal angle info.
+      real PI
+      parameter(PI=3.14159265359)
 
-c     Apparently, only the y info of the BPM/raster is used to correct the HMS track info and calculate the z 
-c     of the vertex. However, we can still use the BPM/raster info to correct the BigCal angle info, along with
-c     hszbeam
-
-c     first correct BigCal info based on hms vertex and angle info
-
-c$$$      vx = gbeam_y ! use BPM and raster info 
-c$$$      vy = -gbeam_x ! use BPM and raster info
-
-      vx = 0. ! nominally zero
-      vy = 0. ! nominally zero
-      vz = hszbeam ! vertex z is only vertex coord. that has a significant impact on angular resolution
-
-c     calculate expected electron angle from measured proton momentum assuming elastic kinematics
-c     and using calculated beam energy: 
+      Me = mass_electron ! convenient shorthand
 
       nu = sqrt(Mp**2 + hsp**2) - Mp
+ 
+      Eprime = gebeam - nu
+      Ecal_hexpect = Eprime
+
+      pthetarad = hstheta
+      pphirad = hsphi
+
+c     calculate electron angle from gebeam and hsp only, since the resolution of these quantities is better than 
+c     you can get using hstheta, the reason being the large Jacobian of the reaction. The error on etheta is
+c     magnified roughly by a factor hsp/Eprime compared to the error on hstheta, and this in turn gives a 
+c     large error on xcal,ycal
+
+      etheta_expect = acos(1. - Mp/gebeam * nu / Eprime)
       
-      costheta_e = 1. - Mp / gebeam * nu / (gebeam - nu)
+      ! in BigCal coordinates, phi is centered at 0 for BigCal. In target coordinates, BigCal is 
+      ! centered at +PI/2, while HMS is centered at -PI/2. However, since BigCal y means -target x
+      ! we have to be careful. 
 
-      if(costheta_e.gt.1.) costheta_e = 1.
+      ephi_expect = pphirad + PI
 
-c     BigCal coordinates:
-c     x = beam left toward bigcal = y in target coords.
-c     y = vertically up = -x in target coords
-c     z = downstream along beam = z in target coords.
-
-      theta_e_HMS = acos(costheta_e) 
-      phi_e_HMS = hsphi + PI/2. ! in my BigCal coordinates phi_e is centered at phi=0 
+      ethetarad = etheta_expect 
+     
+c     first calculate exhat,eyhat,ezhat in target coordinates so there is no ambiguity: 
       
-c     neglecting beam slope for now, set electron trajectory variables:
+      exhat_tar = sin(ethetarad)*cos(ephi_expect)
+      eyhat_tar = sin(ethetarad)*sin(ephi_expect)
+      ezhat_tar = cos(ethetarad)
 
-      exhat = sin(theta_e_HMS)*cos(phi_e_HMS)
-      eyhat = sin(theta_e_HMS)*sin(phi_e_HMS)
-      ezhat = cos(theta_e_HMS)
-
-c     now find point of intersection of electron's assumed trajectory with BigCal face:
-c     x_e = (0,0,vz) + t*(exhat,eyhat,ezhat)
-c     tface_cal = value of parameter of trajectory equation at intercept with the plane of BigCal face
-c     neglecting transverse beam position info: 
-      tface_cal = (bigcal_r_tgt-vz*bigcal_costheta-vx*bigcal_sintheta)/ 
-     $     (exhat*bigcal_sintheta + ezhat*bigcal_costheta)
-c     or including transverse beam position info:
-c$$$      tface_cal = (R - vx*bigcal_sintheta - vz*bigcal_costheta) / 
-c$$$     $     (exhat*bigcal_sintheta + ezhat*bigcal_costheta)
-c     expected coordinates at BigCal using HMS info:
-      xface_HMS = vx + tface_cal*exhat
-      yface_HMS = vy + tface_cal*eyhat
-      zface_HMS = vz + tface_cal*ezhat
-c     calculate incident x and y angles to choose different shower parms if necessary:
-c     simple rotation from 
+c     now rotate to BigCal coordinates:
       
-      exhatrot = exhat*bigcal_costheta - ezhat*bigcal_sintheta
-      ezhatrot = exhat*bigcal_sintheta + ezhat*bigcal_costheta
+      exhat = eyhat_tar
+      eyhat = -exhat_tar
+      ezhat = ezhat_tar
 
-      thetax_inc_H = atan2(exhatrot,ezhatrot)
-      thetay_inc_H = atan2(eyhat,ezhatrot)
+c     vertex coordinates expressed in BigCal coordinate system
 
-c     get best cluster from bigcal:
+      vz = hszbeam ! along beamline
+      vx = gbeam_y ! horizontal toward BigCal
+      vy = -gbeam_x ! vertical up (target x is vertical down.)
 
-      if(bigcal_best_clstr_isection.eq.1) then ! protvino
-         irowclst = bigcal_prot_clstr_iymax(bigcal_best_clstr_icluster)
-         icolclst = bigcal_prot_clstr_ixmax(bigcal_best_clstr_icluster)
-         xmom = bigcal_prot_clstr_xmom(bigcal_best_clstr_icluster)
-         ymom = bigcal_prot_clstr_ymom(bigcal_best_clstr_icluster)
+c     etint is the trajectory parameter, calculated at the intersection point with the face of BigCal,
+c     in other words, if e- position = vertex + et*ehat, where ehat is the unit trajectory vector and et is 
+c     the parameter determining where we are on the line, then etint is the value of the parameter when the 
+c     electron hits the calorimeter. 
+c     so we are calculating the intersection point of the e- trajectory expected from the HMS with BigCal:
 
-         icellclst = icolclst + (irowclst-1)*BIGCAL_PROT_NX
+      etint = (bigcal_r_tgt-vx*bigcal_sintheta-vz*bigcal_costheta) / 
+     $     (exhat * bigcal_sintheta + ezhat*bigcal_costheta)
 
-      else if(bigcal_best_clstr_isection.eq.2) then ! rcs
-         irowclst = bigcal_rcs_clstr_iymax(bigcal_best_clstr_icluster)
-         icolclst = bigcal_rcs_clstr_ixmax(bigcal_best_clstr_icluster)
-         xmom = bigcal_rcs_clstr_xmom(bigcal_best_clstr_icluster)
-         ymom = bigcal_rcs_clstr_ymom(bigcal_best_clstr_icluster)
+      xint_hexpect = vx + etint * exhat
+      yint_hexpect = vy + etint * eyhat
+      zint_hexpect = vz + etint * ezhat
 
-         icellclst = icolclst+(irowclst-1-BIGCAL_PROT_NY)*BIGCAL_RCS_NX
+c     now rotate into calo-centered coordinate system:
 
-      else if(bigcal_best_clstr_isection.eq.3) then ! mid
-         irowclst = bigcal_mid_clstr_iymax(bigcal_best_clstr_icluster)
-         icolclst = bigcal_mid_clstr_ixmax(bigcal_best_clstr_icluster)
-         xmom = bigcal_mid_clstr_xmom(bigcal_best_clstr_icluster)
-         ymom = bigcal_mid_clstr_ymom(bigcal_best_clstr_icluster)
-         
-         if(irowclst.le.BIGCAL_PROT_NY) then
-            icellclst = icolclst + (irowclst-1)*BIGCAL_PROT_NX
-         else
-            icellclst=icolclst+(irowclst-1-BIGCAL_PROT_NY)*BIGCAL_RCS_NX
-         endif
-      else                      ! problem or no good clusters
-         return
-      endif
+      xcal_hexpect=xint_hexpect*bigcal_costheta-zint_hexpect*bigcal_sintheta
+      ycal_hexpect=yint_hexpect
+      tcal_hexpect= hstime_at_fp - hstart_time_center + hspath_cor
+
+c     how to choose? pick the track for which the quadrature sum of 
+c     sum( ((Eclust-Eexpect)/sigma)**2 + ((xclust-xexpect)/sigma)**2 + ((yclust-yexpect)/sigma)**2 ) is minimum
+c     the resolution parameters sigma should be CTP parms
+
+      ibest_cal = pick_best_cal_track(tcal_hexpect,xcal_hexpect,ycal_hexpect,Ecal_hexpect)
+
+c     now compute "missing" quantities using the track we have selected.
+c     first correct best calo track for vertex information which we now know from HMS reconstruction:
+
+      bigcal_itrack_best = ibest_cal
+
+c     correct angles since we know vertex:
       
-      minthetaxdiff = 1000.
-      minthetaydiff = 1000.
+      edx = bigcal_track_xface(ibest_cal) - vx
+      edy = bigcal_track_yface(ibest_cal) - vy
+      edz = bigcal_track_zface(ibest_cal) - vz
 
-      irowmindiff = 0
-      icolmindiff = 0
+      epathlength = sqrt(edx**2 + edy**2 + edz**2)
 
-      do irow=irowclst-5,irowclst+5
-         if(irow.ge.2) then
-            if(irow.le.BIGCAL_PROT_NY) then
-               icol = icolclst
-               icell = icolclst + (irow-1)*BIGCAL_PROT_NX
-               ycell = bigcal_prot_ycenter(icell)
-               
-               thetay_inc_O = atan2(ycell,bigcal_r_tgt)
-
-               if(abs(thetay_inc_O - thetay_inc_H).lt.minthetaydiff)then 
-                  minthetaydiff = abs(thetay_inc_O - thetay_inc_H)
-                  irowmindiff = irow
-               endif
-            else if(irow-BIGCAL_PROT_NY.lt.BIGCAL_RCS_NY)then
-               icol = icolclst
-               icell = icolclst + BIGCAL_RCS_NX*(irow-1-BIGCAL_PROT_NY)
-               ycell = bigcal_rcs_ycenter(icell)
-               
-               thetay_inc_O = atan2(ycell,bigcal_r_tgt)
-
-               if(abs(thetay_inc_O - thetay_inc_H).lt.minthetaydiff)then 
-                  minthetaydiff = abs(thetay_inc_O - thetay_inc_H)
-                  irowmindiff = irow
-               endif
-            endif
-         endif
-      enddo 
-            
-      if(irowmindiff.ne.0.and.irowmindiff.ne.irowclst) then ! pick a different set of fit parameters 
-         if(irowmindiff.le.BIGCAL_PROT_NY.and.irowmindiff.ge.2) then
-            do ipar=1,6
-               newypar(ipar) = bigcal_prot_ypar(irowmindiff,ipar)
-            enddo
-
-            ycellclst = bigcal_prot_ycenter(icellclst)
-            
-c     recalculate y coordinate of best track using new fit parameters:
-            yface_cal = newypar(1)*atan(newypar(2)*ymom**4 + 
-     $           newypar(3)*ymom**3 + newypar(4)*ymom**2 + 
-     $           newypar(5)*ymom + newypar(6)) + ycellclst
-            
-            bigcal_best_yface = yface_cal
-         else if(irowmindiff.lt.BIGCAL_PROT_NY+BIGCAL_RCS_NY) then
-            do ipar=1,6
-               newypar(ipar) = bigcal_rcs_ypar(irowmindiff,ipar)
-            enddo
-            
-            ycellclst = bigcal_rcs_ycenter(icellclst)
-
-            yface_cal = newypar(1)*atan(newypar(2)*ymom**4 + 
-     $           newypar(3)*ymom**3 + newypar(4)*ymom**2 + 
-     $           newypar(5)*ymom + newypar(6)) + ycellclst
-
-            bigcal_best_yface = yface_cal
-         endif
-      endif
-c     this logical structure insures that we will recalculate the cluster coordinates if and only if
-c     the incident angle for the electron track predicted by the HMS info suggests a better choice of 
-c     fit parameters than that assuming all tracks come from the origin. It may even be better simply to use 
-c     the HMS vertex info and the initial BigCal coordinates to choose new parameters if necessary, without 
-c     referring to the HMS momentum measurement. However, the HMS momentum measurement of ~.1% together with 
-c     a beam energy spread of ~3e-5 added in quadrature and assuming elastic kinematics, do in fact give a 
-c     determination of the scattered electron angle which is comparable to that obtained by BigCal. 
-
-      do icol=icolclst-5,icolclst+5
-         if(irowclst.le.BIGCAL_PROT_NY.and.icol.ge.2.and.icol.le.
-     $        BIGCAL_PROT_NX-1) then
-            icell = icol + (irowclst-1)*BIGCAL_PROT_NX
-            xcell = bigcal_prot_xcenter(icell)
-
-            thetax_inc_O = atan2(xcell,bigcal_r_tgt)
-
-            if(abs(thetax_inc_H - thetax_inc_O).lt.minthetaxdiff)then
-               minthetaxdiff = abs(thetax_inc_H - thetax_inc_O)
-               icolmindiff = icol
-            endif
-         else if(irowclst.gt.BIGCAL_PROT_NY.and.icol.ge.2.and.icol.le.
-     $           BIGCAL_RCS_NX-1) then
-            icell = icol + (irowclst-1-BIGCAL_PROT_NY)*BIGCAL_RCS_NX
-            xcell = bigcal_rcs_xcenter(icell)
-
-            thetax_inc_O = atan2(xcell,bigcal_r_tgt)
-
-            if(abs(thetax_inc_H - thetax_inc_O).lt.minthetaxdiff)then
-               minthetaxdiff = abs(thetax_inc_H - thetax_inc_O)
-               icolmindiff = icol
-            endif
-         endif
-      enddo
-            
-      if(icolmindiff.ne.0.and.icolmindiff.ne.icolclst) then ! pick a different set of fit parameters
-         if(irowclst.le.BIGCAL_PROT_NY.and.icolmindiff.ge.2.and.
-     $        icolmindiff.le.BIGCAL_PROT_NX-1) then
-            do ipar=1,6
-               newxpar(ipar) = bigcal_prot_xpar(icolmindiff,ipar)
-            enddo
-
-            xcellclst = bigcal_prot_xcenter(icellclst)
-
-            xface_cal = newxpar(1)*atan(newxpar(2)*xmom**4 + newxpar(3)*
-     $           xmom**3 + newxpar(4)*xmom**2 + newxpar(5)*xmom + 
-     $           newxpar(6)) + xcellclst
-
-            xrot = xface_cal*bigcal_costheta + 
-     $           bigcal_r_tgt*bigcal_sintheta
-            zrot = -xface_cal*bigcal_sintheta + 
-     $           bigcal_r_tgt*bigcal_costheta
-
-            bigcal_best_xface = xrot
-            bigcal_best_zface = zrot
-
-         else if(icolmindiff.ge.2.and.icolmindiff.le.BIGCAL_RCS_NX-1
-     $           .and. irowclst.gt.BIGCAL_PROT_NY) then
-            do ipar=1,6
-               newxpar(ipar) = bigcal_rcs_xpar(icolmindiff,ipar)
-            enddo
-
-            xcellclst = bigcal_rcs_xcenter(icellclst)
-
-            xface_cal = newxpar(1)*atan(newxpar(2)*xmom**4 + newxpar(3)*
-     $           xmom**3 + newxpar(4)*xmom**2 + newxpar(5)*xmom + 
-     $           newxpar(6)) + xcellclst
-
-            xrot = xface_cal*bigcal_costheta + 
-     $           bigcal_r_tgt*bigcal_sintheta
-            zrot = -xface_cal*bigcal_sintheta + 
-     $           bigcal_r_tgt*bigcal_costheta
-
-            bigcal_best_xface = xrot
-            bigcal_best_zface = zrot
-         endif
-      endif
-
-c     now we have made any necessary corrections/improvements to the reconstructed BigCal coordinates:
-c     recalculate the BigCal measured angles which depend on these coordinates (and also the HMS vertex coordinates)
-
-      xface = bigcal_best_xface
-      yface = bigcal_best_yface
-      zface = bigcal_best_zface
-
-      rayperp = sqrt( (xface-vx)**2 + (yface-vy)**2 )
+      bigcal_thetarad = acos(edz/epathlength)
+      bigcal_phirad = atan2(edy,edz)
       
-      bigcal_best_thetarad = atan2(rayperp,zface-vz)
-      bigcal_best_phirad = atan2(yface-vy,xface-vx)
-
-      bigcal_best_thetadeg = bigcal_best_thetarad*180./PI
-      bigcal_best_phideg = bigcal_best_phirad*180./PI
-
-      bigcal_best_px = bigcal_best_energy*sin(bigcal_best_thetarad)*
-     $     cos(bigcal_best_phirad)
-      bigcal_best_py = bigcal_best_energy*sin(bigcal_best_thetarad)*
-     $     sin(bigcal_best_phirad)
-      bigcal_best_pz = bigcal_best_energy*cos(bigcal_best_thetarad)
-
-c     at this point we should probably change all these quantities to the standard target coordinates:
-c     x = vertical down = -(my y)
-c     y = beam left = my x
-c     z = downstream along beam = my z
-c     phi = my phi + pi/2 (phi_HMS = -pi/2)
-
-      bigcal_best_phirad = bigcal_best_phirad + PI/2.
-      bigcal_best_phideg = bigcal_best_phideg + 90.
-
-      bigcal_best_xface = -yface
-      bigcal_best_yface = xface
-      bigcal_best_zface = zface
-
-      px = bigcal_best_px
-      py = bigcal_best_py
-      pz = bigcal_best_pz
-
-      bigcal_best_px = -py
-      bigcal_best_py = px
-      bigcal_best_pz = pz
-
-c     now we are ready to compute coincidence physics quantities like missing E,m and p
-c     start by working at the most basic level:
-c     some of my "coincidence" variables are simply copies of HMS or BigCal reconstructed variables:
-
-      gep_E_electron = bigcal_best_energy
-      gep_P_proton = hsp
-      gep_delta_p = hsdelta
+      bigcal_energy = bigcal_track_energy(ibest_cal)
       
-      gep_etheta_deg = bigcal_best_thetadeg
-      gep_ephi_deg = bigcal_best_phideg
+c     correct tof:
       
-      gep_ptheta_deg = hstheta*180./PI
-      gep_pphi_deg = hsphi*180./PI
+      gamma_corr = bigcal_energy / Me
+      beta_corr = sqrt(1.-1./gamma_corr**2)
 
-      Q2_HMS = 2.*Mp*nu ! this Q2 determination is based solely on beam energy and HMS momentum measurement
+      bigcal_beta = beta_corr
+      bigcal_tof = epathlength / (beta_corr*speed_of_light)
       
-      Q2_cal = 4.*gebeam*bigcal_best_energy*
-     $     (sin(bigcal_best_thetarad/2.))**2
-c     Q2_cal determination based solely on beam energy and BigCal angle measurement, which may include 
-c     "fine" corrections based on the HMS momentum and vertex information, but only to the extent that a 
-c     different set of fit parameters may be chosen to reconstruct the position. 
+      mom_corr = beta_corr * bigcal_energy
 
-      GEP_Q2 = Q2_HMS
+      bigcal_px = mom_corr * sin(bigcal_thetarad) * cos(bigcal_phirad)
+      bigcal_py = mom_corr * sin(bigcal_thetarad) * sin(bigcal_phirad)
+      bigcal_pz = mom_corr * cos(bigcal_thetarad)
 
-c     since we are talking about elastic ep, W^2 is not a useful variable. 
+      bigcal_eloss = bigcal_track_eloss(ibest_cal)
+      bigcal_time = bigcal_track_time(ibest_cal)
+      bigcal_ctime = bigcal_track_time(ibest_cal) - tof
 
-      gep_emiss = gebeam - (bigcal_best_energy + nu) ! nu is calculated from HMS mom. measurement only
-      
-c     compute hms momentum:
-      px = hsp*sin(hstheta)*cos(hsphi)
-      py = hsp*sin(hstheta)*sin(hsphi)
-      pz = hsp*cos(hstheta)
-c     
-      gep_pmissx = bigcal_best_px + px 
-      gep_pmissy = bigcal_best_py + py
-      gep_pmissz = bigcal_best_pz + pz - gpbeam
+      gep_ctime_hms = hstime_at_fp - hstart_time_center + hspath_cor
+      gep_ctime_cal = bigcal_ctime
 
-      gep_pmiss = sqrt(gep_pmissx**2 + gep_pmissy**2 + gep_pmissz**2)
 
-      gep_W2 = Mp**2 + Q2_HMS - Q2_cal
+c     compute Q2 three different ways:
+c     Q2_Cal uses only BigCal information except for hms vertex info
+c     Q2_hms uses only HMS information, period.
+      Q2_cal = 2.*gebeam*bigcal_energy*(1.-cos(bigcal_thetarad))
+      Q2_hms = 2.*Mp*nu
+c     what is the average Q2? Both measurements are very good, except for bigcal_energy
+c     best is probably to use Eprime calculated from hsp, but use BigCal angle measurement
+c     corrected for HMS vertex info. Q2 from Ebeam, hsp alone (Q2_hms) may be even better than this. 
+      GEP_Q2 = 2.*gebeam*Eprime*(1.-cos(bigcal_thetarad))
+c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
+      GEP_Q2_H = Q2_hms
+      GEP_Q2_B = Q2_cal
+      GEP_E_electron = Eprime
+      GEP_P_proton = hsp
+      GEP_delta_p = hsdelta
+      GEP_epsilon = 1./(1.+2.*(1.+GEP_Q2/(4.*Mp**2))*(tan(bigcal_thetarad/2.))**2)
+      GEP_etheta_deg = bigcal_thetarad * 180./PI
+      GEP_ptheta_deg = hstheta * 180./PI
+      GEP_ephi_deg = bigcal_phirad * 180./PI + 90.
+      GEP_pphi_deg = hsphi * 180./PI
 
-      gep_Mmiss = sqrt(abs(gep_W2 - Mp**2) )
+      GEP_Emiss = gebeam + Mp - hsenergy - bigcal_energy
+      GEP_Pmissx = -bigcal_py + hsp*sin(hstheta)*cos(hsphi)
+      GEP_Pmissy = bigcal_px + hsp*sin(hstheta)*sin(hsphi)
+      GEP_Pmissz = gpbeam - bigcal_pz - hsp*cos(hstheta)
+      GEP_Pmiss = sqrt(GEP_Pmissx**2 + GEP_Pmissy**2 + GEP_Pmissz**2)
+      GEP_W2 = Mp**2 + Q2_hms - Q2_cal ! 2Mnu - Q2_cal
+      GEP_Mmiss = sqrt(abs(GEP_W2 - Mp**2))
 
-      tau = GEP_Q2 / (4.* Mp**2)
-
-      gep_epsilon=1./(1.+2.*(1.+tau)*(tan(bigcal_best_thetarad/2.))**2)
-
-c     don't compute coincidence timing quantities at this time. need to set up parameters 
-c     to handle this that will be determined by experiment.
-
-      
       return 
       end
 
+      integer function pick_best_cal_track(T_H,X_H,Y_H,E_H)
       
+      include 'gep_data_structures.cmn'
+      include 'bigcal_data_structures.cmn'
+
+      integer itrack,ibest
+      real diffsum,mindiffsum
+      real E_cal,X_cal,Y_cal,T_cal
+
+      if(bigcal_phys_ntrack.gt.0) then
+         do itrack = 1,bigcal_phys_ntrack
+            E_cal = bigcal_track_energy(itrack)
+            X_cal = bigcal_all_clstr_x(itrack)
+            Y_cal = bigcal_all_clstr_y(itrack)
+            T_cal = bigcal_track_time(itrack)
+            diffsum = 0.
+            diffsum = diffsum + ( (E_cal - E_H)/GEP_sigma_Ediff )**2
+            diffsum = diffsum + ( (X_cal - X_H)/GEP_sigma_Xdiff )**2
+            diffsum = diffsum + ( (Y_cal - Y_H)/GEP_sigma_Ydiff )**2
+            diffsum = diffsum + ( (T_cal - T_H)/GEP_sigma_Tdiff )**2
+            if(itrack.eq.1) then
+               mindiffsum = diffsum
+               ibest = itrack
+            else
+               if(diffsum.lt.mindiffsum) then
+                  mindiffsum = diffsum
+                  ibest = itrack
+               endif
+            endif
+         enddo
+         pick_best_cal_track = ibest
+      else
+         pick_best_cal_track = 0
+      endif
+      
+      end

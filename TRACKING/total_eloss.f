@@ -16,6 +16,9 @@
 *-    Created   1-Dec-1995  Rolf Ent
 *
 * $Log$
+* Revision 1.8.20.1  2007/07/17 23:07:48  puckett
+* new cluster finding algorithm and some changes to data structures
+*
 * Revision 1.8  2003/09/05 20:06:07  jones
 * Merge in online03 changes (mkj)
 *
@@ -110,6 +113,7 @@
       include 'gen_data_structures.cmn'
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
+      include 'bigcal_data_structures.cmn'
       include 'gen_run_info.cmn'
       include 'gen_constants.par'
 
@@ -127,7 +131,7 @@
       REAL*4 z,a,tgthick,dens,angle,tgangle,beta,type
       REAL*4 thick,thick_side,thick_front,e_loss,total_loss
       REAL*4 targ_win_loss,front_loss,back_loss,cell_wall_loss
-      REAL*4 scat_win_loss,air_loss,h_win_loss,s_win_loss
+      REAL*4 scat_win_loss,air_loss,h_win_loss,s_win_loss,b_abs_loss
       REAL*4 electron
       REAL*8 beta_temp,gamma_temp,X_temp,frac_temp,p_temp
       REAL*4 velocity
@@ -173,18 +177,24 @@
          write(6,*)'gfront_thk   = ',gfront_thk
          stop
       elseif ((arm.eq.1).and.((hscat_win_den.eq.0.0).or.
-     & (hscat_win_thk.eq.0.0).or.(hscat_win_z.eq.0.0).or.
-     & (hscat_win_a.eq.0.0).or.(hdet_ent_z.eq.0.0).or.
-     & (hdet_ent_a.eq.0.0))) then
-            write(6,*)'Total_eloss: Uninitialized HMS window specs!!!'
-            stop
+     &        (hscat_win_thk.eq.0.0).or.(hscat_win_z.eq.0.0).or.
+     &        (hscat_win_a.eq.0.0).or.(hdet_ent_z.eq.0.0).or.
+     &        (hdet_ent_a.eq.0.0))) then
+         write(6,*)'Total_eloss: Uninitialized HMS window specs!!!'
+         stop
       elseif ((arm.eq.2).and.((sscat_win_den.eq.0.0).or.
-     & (sscat_win_thk.eq.0.0).or.(sscat_win_z.eq.0.0).or.
-     & (sscat_win_a.eq.0.0).or.(sdet_ent_z.eq.0.0).or.
-     & (sdet_ent_a.eq.0.0))) then
-            write(6,*)'Total_eloss: Uninitialized SOS window specs!!!'
-            stop
-      else
+     &        (sscat_win_thk.eq.0.0).or.(sscat_win_z.eq.0.0).or.
+     &        (sscat_win_a.eq.0.0).or.(sdet_ent_z.eq.0.0).or.
+     &        (sdet_ent_a.eq.0.0))) then
+         write(6,*)'Total_eloss: Uninitialized SOS window specs!!!'
+         stop
+      else if((arm.eq.3).and.((bscat_win_den.eq.0.0).or.
+     $        (bscat_win_thk.eq.0.0).or.(bscat_win_z.eq.0).or.
+     $        (bscat_win_a.eq.0.0).or.(babs_z.eq.0.0).or.
+     $        (babs_a.eq.0.0))) then
+         write(6,*)
+     $        'Total_eloss: Uninitialized BigCal window specs!!!'
+         stop
       endif
 
       if ((z*a*tgthick*dens*tgangle).eq.0.0) then
@@ -213,6 +223,7 @@
          write(6,*) 'total_eloss: angle = 90 degrees, using centr spectr angle(VT)'
          if (arm.eq.1) angle=htheta_lab*3.14159/180.
          if (arm.eq.2) angle=stheta_lab*3.14159/180.
+         if (arm.eq.3) angle=bigcal_theta_rad
       endif
 
  10            format(7(2x,A10))
@@ -245,13 +256,16 @@
             p_temp=hsp
          elseif (arm.eq.2) then
             p_temp=ssp
+         elseif (arm.eq.3) then
+            p_temp=gpbeam
          else
-            write(6,*) 'total_eloss: no arm specified for electron velocity'
+            write(6,*) 
+     $           'total_eloss: no arm specified for electron velocity'
          endif
-
+         
          p_temp=max(p_temp,.1D0)
          frac_temp=mass_electron/p_temp
-
+         
          if(gelossdebug.ne.0) then
             write(6,*) 'total_eloss: p_temp=',p_temp
             write(6,*) 'total_eloss: frac_temp=',frac_temp
@@ -261,6 +275,9 @@
          gamma_temp=sqrt(1.+frac_temp**2)/frac_temp
          X_temp=log(beta_temp*gamma_temp)/log(10.)   
          velocity=X_temp
+         if(arm.eq.3) then 
+            velocity = beta
+         endif
       else
          velocity=beta
       endif
@@ -339,6 +356,10 @@
          goto 100
       endif
 
+      if(gen_bigcal_mc.ne.0) then
+         goto 101
+      endif
+
 *********************************************************************
 *Calculate the energy loss of ejectile after the target center.
 *********************************************************************
@@ -403,6 +424,8 @@
             tg_spect_angle = angle + tgangle
          elseif (arm.eq.2) then ! SOS
             tg_spect_angle = angle - tgangle
+         elseif(arm.eq.3) then  ! BigCal
+            tg_spect_angle = angle - tgangle
          else
             write(6,*)' '
             write(6,*)' bad ''arm'' in total_eloss.f'
@@ -420,6 +443,8 @@
 ************************************
 * Now calculate the HMS energy loss.  
 ************************************
+
+ 101  continue
 
       if (arm.eq.1) then			! HMS
 
@@ -497,6 +522,37 @@ c       write(*,*) "In HMS"
 
       endif
 
+****************************************
+* Now calculate the BigCal energy loss *
+****************************************
+      if(arm.eq.3) then
+c     scattering window on bigcal side!!!!
+         call loss(prt,bscat_win_z,bscat_win_a,bscat_win_thk,
+     $        bscat_win_den,velocity,scat_win_loss) !aluminum
+         total_loss = total_loss + scat_win_loss
+c     air gap between the chamber and the entrance window!
+         call loss(prt,gair_z,gair_a,gair_thk,gair_dens,velocity,air_loss) ! air
+         total_loss = total_loss + air_loss
+c     BigCal Al absorber loss (most significant)
+         call loss(prt,babs_z,babs_a,babs_thk,babs_den,velocity,b_abs_loss) ! absorber
+         total_loss = total_loss + b_abs_loss
+         e_loss = total_loss
+
+         if(gelossdebug.ne.0)then
+            if(liquid) then
+               write(6,10)'liquid',
+     &              'back','cell_wall','scat_win','air','BigCal_win',
+     &              'total'
+               write(6,20) back_loss,cell_wall_loss,scat_win_loss,air_loss,
+     &              b_abs_loss,total_loss
+            else
+               write(6,30)'solid',
+     &               'scat_win','air','BigCal_win','total'
+               write(6,40) scat_win_loss,air_loss,b_abs_loss,total_loss
+            endif
+            write(6,*) ' '
+         endif   
+      endif
  100  continue
 
       RETURN

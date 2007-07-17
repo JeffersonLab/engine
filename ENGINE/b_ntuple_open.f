@@ -87,28 +87,35 @@ c     get any free IO channel
       bank = default_bank
       title = b_ntuple_title
       
-      if(bigcal_ntuple_type.eq.1) then ! row wise ntuple
-        call HBOOKN(id,title,size,name,bank,b_ntuple_tag) ! create ntuple
-      else if(bigcal_ntuple_type.eq.2) then ! col-wise ntuple for cluster analysis
+      if(bigcal_ntuple_type.eq.1) then ! col-wise ntuple for cluster analysis
         call HBNT(id,title,' ')
         call HBNAME(id,'ClustBlock',nclust,'nclust[0,25]:I*4,'//
      $       'ncellclust(nclust)[0,25]:I*4,'//
+     $       'ncellx(nclust):I*4,ncelly(nclust):I*4,'//
      $       'ncell8clust(nclust)[0,10]:I*4,'//
      $       'ncell64clust(nclust)[0,6]:I*4,'//
      $       'iycell(25,nclust)[0,56]:I*4,'//
      $       'ixcell(25,nclust)[0,32]:I*4,'//
      $       'irow8hit(10,nclust)[0,56]:I*4,'//
      $       'icol8hit(10,nclust)[0,4]:I*4,'//
+     $       'nhit8clust(10,nclust)[0,8]:I*4,'//
      $       'irow64hit(6,nclust)[0,19]:I*4,'//
      $       'icol64hit(6,nclust)[0,2]:I*4,'//
+     $       'nhit64clust(6,nclust)[0,8]:I*4,'//
      $       'xcell(25,nclust),ycell(25,nclust),'//
      $       'eblock(25,nclust),tcell8(10,8,nclust),'//
      $       'tcell64(6,8,nclust),'//
      $       'xmoment(nclust),ymoment(nclust),tclust8(nclust),'//
-     $       'tclust64(nclust),xclust(nclust),yclust(nclust),'//
+     $       'tclust64(nclust),trms8(nclust),trms64(nclust),'//
+     $       'xclust(nclust),yclust(nclust),'//
      $       'eclust(nclust),thetarad(nclust),phirad(nclust),'//
      $       'xface(nclust),yface(nclust),zface(nclust),px(nclust),'//
      $       'py(nclust),pz(nclust),ctime_clust(nclust)')
+        call HBNAME(id,'bad_clust',nmax,'nmax[0,25]:I*4,'//
+     $       'edge_max(nmax):L,not_enough(nmax):L,too_long_x(nmax):L,'//
+     $       'too_long_y(nmax):L,below_thresh(nmax):L,'//
+     $       'above_max(nmax):L,second_max(nmax):L')
+
         if(gen_bigcal_mc.ne.0) then
            call HBNAME(id,'MC_Clust',ntrk_g,'ntrk_g[0,25]:I*4,'//
      $          'pid_g(ntrk_g)[0,50]:I*4,xvertex_g,yvertex_g,'//
@@ -118,7 +125,7 @@ c     get any free IO channel
      $          'gphirad(ntrk_g)')
         endif
 
-      else if(bigcal_ntuple_type.eq.3) then ! col-wise ntuple for cosmics analysis
+      else if(bigcal_ntuple_type.eq.2) then ! col-wise ntuple for cosmics analysis
 
         !write(*,*) 'booking cosmic hits ntuple:'
 

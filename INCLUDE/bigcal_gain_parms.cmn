@@ -118,31 +118,18 @@
      $     bigcal_trig_adc_threshold(BIGCAL_TRIG_NGROUP) 
 
 *     calibration constants:
-      real*4 bigcal_prot_cfac
-      real*4 bigcal_rcs_cfac
-      real*4 bigcal_trig_cfac
+*     cfac converts ADC to amplitude
+*     gain_cor adjust for small drifts detected since last calibration
+      real*4 bigcal_prot_cfac ! E = cfac * adc
+      real*4 bigcal_rcs_cfac ! E = cfac * adc
+      real*4 bigcal_trig_cfac ! E = cfac * adc      
+      real*4 bigcal_prot_gain_cor
+      real*4 bigcal_rcs_gain_cor 
+      real*4 bigcal_trig_gain_cor
       common/bigcal_calib_const/
      $     bigcal_prot_cfac(BIGCAL_PROT_NPMT),
      $     bigcal_rcs_cfac(BIGCAL_RCS_NPMT),
-     $     bigcal_trig_cfac(BIGCAL_TRIG_NGROUP)
-*     relative gains and correction factors. unclear at this moment if and how we will 
-*     use these parameters. 
-      real*4 bigcal_prot_gain_last ! relative gain at most recent calibration
-      real*4 bigcal_prot_gain_now ! current relative gain (how is this determined?) 
-      real*4 bigcal_prot_gain_cor ! correction factor = now/last
-      real*4 bigcal_rcs_gain_last 
-      real*4 bigcal_rcs_gain_now
-      real*4 bigcal_rcs_gain_cor
-      real*4 bigcal_trig_gain_last
-      real*4 bigcal_trig_gain_now
-      real*4 bigcal_trig_gain_cor
-      common/bigcal_gain_monitor/
-     $     bigcal_prot_gain_last(BIGCAL_PROT_NPMT),
-     $     bigcal_prot_gain_now(BIGCAL_PROT_NPMT),
-     $     bigcal_prot_gain_cor(BIGCAL_PROT_NPMT),
-     $     bigcal_rcs_gain_last(BIGCAL_RCS_NPMT),
-     $     bigcal_rcs_gain_now(BIGCAL_RCS_NPMT),
-     $     bigcal_rcs_gain_cor(BIGCAL_RCS_NPMT),
-     $     bigcal_trig_gain_last(BIGCAL_TRIG_NGROUP),
-     $     bigcal_trig_gain_now(BIGCAL_TRIG_NGROUP),
-     $     bigcal_trig_gain_cor(BIGCAL_TRIG_NGROUP)
+     $     bigcal_trig_cfac(BIGCAL_TRIG_NGROUP),
+     $     bigcal_prot_gain_cor(bigcal_prot_npmt),
+     $     bigcal_rcs_gain_cor(bigcal_rcs_npmt),
+     $     bigcal_trig_gain_cor(bigcal_trig_ngroup)

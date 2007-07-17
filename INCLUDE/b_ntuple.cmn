@@ -47,14 +47,18 @@
 
       integer*4 nclust
       integer*4 ncellclust(maxnclust)
+      integer*4 ncellx(maxnclust)
+      integer*4 ncelly(maxnclust)
       integer*4 ncell8clust(maxnclust)
       integer*4 ncell64clust(maxnclust)
       integer*4 iycell(maxncellclust,maxnclust)
       integer*4 ixcell(maxncellclust,maxnclust)
       integer*4 irow8hit(10,maxnclust)
       integer*4 icol8hit(10,maxnclust)
+      integer*4 nhit8clust(10,maxnclust)
       integer*4 irow64hit(6,maxnclust)
       integer*4 icol64hit(6,maxnclust)
+      integer*4 nhit64clust(6,maxnclust)
       real*4 xcell(maxncellclust,maxnclust)
       real*4 ycell(maxncellclust,maxnclust)
       real*4 eblock(maxncellclust,maxnclust)
@@ -64,6 +68,8 @@
       real*4 ymoment(maxnclust)
       real*4 tclust8(maxnclust)
       real*4 tclust64(maxnclust)
+      real*4 trms8(maxnclust)
+      real*4 trms64(maxnclust)
       real*4 xclust(maxnclust)
       real*4 yclust(maxnclust)
       real*4 eclust(maxnclust)
@@ -83,14 +89,18 @@
       common/ClustBlock/
      $     nclust,
      $     ncellclust,
+     $     ncellx,
+     $     ncelly,
      $     ncell8clust,
      $     ncell64clust,
      $     iycell,
      $     ixcell,
      $     irow8hit,
      $     icol8hit,
+     $     nhit8clust,
      $     irow64hit,
      $     icol64hit,
+     $     nhit64clust,
      $     xcell,
      $     ycell,
      $     eblock,
@@ -100,6 +110,8 @@
      $     ymoment,
      $     tclust8,
      $     tclust64,
+     $     trms8,
+     $     trms64,
      $     xclust,
      $     yclust,
      $     eclust,
@@ -112,6 +124,25 @@
      $     py,
      $     pz,
      $     ctime_clust
+
+      integer*4 nmax
+      logical edge_max(maxnclust)
+      logical not_enough(maxnclust)
+      logical too_long_x(maxnclust)
+      logical too_long_y(maxnclust)
+      logical below_thresh(maxnclust)
+      logical above_max(maxnclust)
+      logical second_max(maxnclust)
+      common/bad_clust/
+     $     nmax,
+     $     edge_max,
+     $     not_enough,
+     $     too_long_x,
+     $     too_long_y,
+     $     below_thresh,
+     $     above_max,
+     $     second_max
+
 
 *     in case of Monte Carlo analysis, actual event info for comparison to reconstructed:
 *     one "vertex" per event is assumed. Fill if and only if cluster ntuple gets filled.

@@ -167,15 +167,21 @@ c     here's the key part: fill the raw hit arrays!!!
          jflag = 7
 
 c     override bypass flags from parameter files: 
-         bbypass_prot = 0
-         bbypass_rcs = 0
-         bbypass_sum8 = 1
-         bbypass_sum64 = 1
-         bbypass_find_clusters = 0
-         bbypass_calc_cluster_time = 1
-         bbypass_calc_shower_coord = 0
-         bbypass_calc_physics = 0
+c$$$         bbypass_prot = 0
+c$$$         bbypass_rcs = 0
+c$$$         bbypass_sum8 = 1
+c$$$         bbypass_sum64 = 1
+c$$$         bbypass_find_clusters = 0
+c$$$         bbypass_calc_cluster_time = 1
+c$$$         bbypass_calc_shower_coord = 0
+c$$$         bbypass_calc_physics = 0
+c     BAD PUCKETT! DON'T hardwire things into the code, mmm'kay?
+
+         !write(*,*) 'entering b_reconstruction'
+
          call b_reconstruction(abort,err)
+         
+         !write(*,*) 'finished b_reconstruction'
 
          if(abort) then
             call g_add_path(here,err)

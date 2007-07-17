@@ -23,13 +23,12 @@ c$$$     $     BIGCAL_MID_NCLSTR.gt.0) then
 c$$$         call b_ntuple_keep(ABORT,err)
 c$$$      endif
 
-      if(bigcal_ntuple_type.le.2)then
-        if(bigcal_prot_nclstr.gt.0.or.bigcal_rcs_nclstr.gt.0.or.
-     $       bigcal_mid_nclstr.gt.0) then
+      if(bigcal_ntuple_type.eq.1)then
+        if(bigcal_all_nclstr.gt.0.or.bigcal_nmaxima.gt.0) then
           call b_ntuple_keep(ABORT,err)
         endif
-      else if(bigcal_ntuple_type.eq.3)then 
-        call b_ntuple_keep(ABORT,err)
+      else if(bigcal_ntuple_type.eq.2)then 
+         call b_ntuple_keep(ABORT,err)
       endif
       
       if(abort) then
