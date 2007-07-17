@@ -42,9 +42,9 @@
           ph = BIGCAL_TDC_SUM8(itdc)
         endif
         thit = BIGCAL_TDC(ihit) * bigcal_tdc_to_time
+        thit = thit - bigcal_g8_time_offset(itdc)
         thit = thit - bigcal_g8_phc_coeff(itdc) * 
      $       sqrt(max(0.,(ph/bigcal_g8_minph(itdc)-1.)))
-        thit = thit - bigcal_g8_time_offset(itdc)
         if(abs(thit - bigcal_window_center).le.bigcal_window_slop)then
           ngood = ngood + 1
           BIGCAL_TIME_IROW(ngood) = irow

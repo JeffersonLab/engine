@@ -7,7 +7,8 @@ osources = b_analyze_pedestal.f b_calc_cluster_time.f b_calc_pedestal.f b_calc_p
 	b_init_histid.f b_init_physics.f b_init_shower.f b_init_tof.f b_print_raw_adc.f \
 	b_print_raw_tdc.f b_print_raw_trig.f b_raw_dump_all.f b_reconstruction.f b_register_param.f \
 	b_report_bad_data.f b_sparsify_prot.f b_sparsify_rcs.f b_strip_tdc.f b_strip_trig.f \
-	b_trans_prot.f b_trans_rcs.f b_trans_tdc.f b_trans_trig.f b_print_cluster.f
+	b_trans_prot.f b_trans_rcs.f b_trans_tdc.f b_trans_trig.f b_print_cluster.f \
+	b_fill_bigcal_arrays.f b_add_neighbors.f 
 makeregstuff = r_bigcal_geometry.f r_bigcal_gain_parms.f r_bigcal_tof_parms.f r_bigcal_shower_parms.f \
 	r_bigcal_bypass_switches.f 
 

@@ -21,35 +21,37 @@
 c     calculate gain correction factors. hopefully last and current gain factors
 c     are correctly read in from CTP parm files
 
-      do ix=1,BIGCAL_PROT_NX
-         do iy=1,BIGCAL_PROT_NY
-            icell=ix + (iy-1)*BIGCAL_PROT_NX
-           
-            gainold = bigcal_prot_gain_last(icell)
-            gainnew = bigcal_prot_gain_now(icell)
+c$$$      do ix=1,BIGCAL_PROT_NX
+c$$$         do iy=1,BIGCAL_PROT_NY
+c$$$            icell=ix + (iy-1)*BIGCAL_PROT_NX
+c$$$           
+c$$$            gainold = bigcal_prot_gain_last(icell)
+c$$$            gainnew = bigcal_prot_gain_now(icell)
+c$$$
+c$$$            bigcal_prot_gain_cor(icell) = gainnew / gainold
+c$$$
+c$$$         enddo
+c$$$      enddo
+c$$$
+c$$$      do ix=1,BIGCAL_RCS_NX
+c$$$         do iy=1,BIGCAL_RCS_NY
+c$$$            icell = ix + (iy-1)*BIGCAL_RCS_NX
+c$$$
+c$$$            gainold = bigcal_rcs_gain_last(icell)
+c$$$            gainnew = bigcal_rcs_gain_now(icell)
+c$$$
+c$$$            bigcal_rcs_gain_cor(icell) = gainnew / gainold
+c$$$            
+c$$$         enddo
+c$$$      enddo
+c$$$
+c$$$      do ilogic=1,BIGCAL_ATRIG_MAXHITS
+c$$$         gainold = bigcal_trig_gain_last(ilogic)
+c$$$         gainnew = bigcal_trig_gain_now(ilogic)
+c$$$         bigcal_trig_gain_cor(ilogic) = gainnew / gainold
+c$$$      enddo
 
-            bigcal_prot_gain_cor(icell) = gainnew / gainold
-
-         enddo
-      enddo
-
-      do ix=1,BIGCAL_RCS_NX
-         do iy=1,BIGCAL_RCS_NY
-            icell = ix + (iy-1)*BIGCAL_RCS_NX
-
-            gainold = bigcal_rcs_gain_last(icell)
-            gainnew = bigcal_rcs_gain_now(icell)
-
-            bigcal_rcs_gain_cor(icell) = gainnew / gainold
-            
-         enddo
-      enddo
-
-      do ilogic=1,BIGCAL_ATRIG_MAXHITS
-         gainold = bigcal_trig_gain_last(ilogic)
-         gainnew = bigcal_trig_gain_now(ilogic)
-         bigcal_trig_gain_cor(ilogic) = gainnew / gainold
-      enddo
+c     Decided gain_last, gain_now are redundant. Just use cfac and gain_cor!!!!
 
       return 
       end

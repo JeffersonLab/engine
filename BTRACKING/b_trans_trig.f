@@ -52,9 +52,9 @@
             ph = 0.
           endif
           hit_time = bigcal_ttrig_tdc_dec(ihit) * bigcal_tdc_to_time
+          hit_time = hit_time - bigcal_g64_time_offset(icell64)
           hit_time = hit_time - bigcal_g64_phc_coeff(icell64) * 
      $         sqrt(max(0.,(ph/bigcal_g64_minph(icell64)-1.)))
-          hit_time = hit_time - bigcal_g64_time_offset(icell64)
           if(abs(hit_time - bigcal_window_center).le.bigcal_window_slop) 
      $         then
             ngood = ngood + 1

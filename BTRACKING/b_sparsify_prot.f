@@ -40,6 +40,7 @@ c     fill decoded data arrays
           icell = icol + BIGCAL_PROT_NX*(irow - 1)
           adc_val = BIGCAL_PROT_ADC_RAW(ihit)
           BIGCAL_PROT_RAW_DET(icell) = adc_val
+          BIGCAL_ALL_RAW_DET(icell) = adc_val
           if(adc_val.ge.0) then 
             BIGCAL_PROT_ADC_DECODED(icell) = float(adc_val) - 
      $           BIGCAL_PROT_PED_MEAN(icell)
