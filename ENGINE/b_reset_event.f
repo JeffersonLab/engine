@@ -270,22 +270,22 @@ c      bigcal_phideg = 0.
         bigcal_track_coin_time(i) = 0.
       enddo
 
-      if(gen_bigcal_mc.ne.0) then
-         !override pedestals info from param file: set all to zero for monte carlo events:
-         !also override calibration constants:
-         do i=1,bigcal_prot_maxhits
-            bigcal_prot_ped_mean(i) = 0.0
-            bigcal_prot_ped_rms(i) = 0.0
-            bigcal_prot_adc_threshold(i) = 0.0
-            bigcal_prot_cfac(i) = 1./950.79
-         enddo
-         do i=1,bigcal_rcs_maxhits
-            bigcal_rcs_ped_mean(i) = 0.0
-            bigcal_rcs_ped_rms(i) = 0.0
-            bigcal_rcs_adc_threshold(i) = 0.0
-            bigcal_rcs_cfac(i) = 1./911.57
-         enddo
-      endif
+c$$$      if(gen_bigcal_mc.ne.0) then
+c$$$         !override pedestals info from param file: set all to zero for monte carlo events:
+c$$$         !also override calibration constants:
+c$$$         do i=1,bigcal_prot_maxhits
+c$$$            bigcal_prot_ped_mean(i) = 0.0
+c$$$            bigcal_prot_ped_rms(i) = 0.0
+c$$$            bigcal_prot_adc_threshold(i) = 0.0
+c$$$            bigcal_prot_cfac(i) = 1./950.79
+c$$$         enddo
+c$$$         do i=1,bigcal_rcs_maxhits
+c$$$            bigcal_rcs_ped_mean(i) = 0.0
+c$$$            bigcal_rcs_ped_rms(i) = 0.0
+c$$$            bigcal_rcs_adc_threshold(i) = 0.0
+c$$$            bigcal_rcs_cfac(i) = 1./911.57
+c$$$         enddo
+c$$$      endif
 
 c     clear out cluster ntuple variables:
 
