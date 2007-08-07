@@ -91,6 +91,11 @@ c      include 'gen_constants.par'
         bigcal_all_ecell(i) = 0.
         bigcal_all_xgood(i) = 0.
         bigcal_all_ygood(i) = 0.
+        b_all_run_clst_good(i) = 0
+        b_all_run_clst_bad(i) = 0
+        b_all_run_clst_eff(i) = 0.
+        b_all_run_Esum(i) = 0.
+        b_all_run_Enum(i) = 0
       enddo
       
       bigcal_rcs_nhit = 0
@@ -113,15 +118,20 @@ c      include 'gen_constants.par'
         bigcal_all_ecell(i+bigcal_prot_maxhits) = 0.
         bigcal_all_xgood(i+bigcal_prot_maxhits) = 0.
         bigcal_all_ygood(i+bigcal_prot_maxhits) = 0.
+        b_all_run_clst_good(i+bigcal_prot_maxhits) = 0
+        b_all_run_clst_bad(i+bigcal_prot_maxhits) = 0
+        b_all_run_clst_eff(i+bigcal_prot_maxhits) = 0.
+        b_all_run_Esum(i+bigcal_prot_maxhits) = 0.
+        b_all_run_Enum(i+bigcal_prot_maxhits) = 0
       enddo
 
       bigcal_iymax_adc = 0
       bigcal_ixmax_adc = 0
       bigcal_max_adc = 0.
 
-      bigcal_iymax_final = 0
-      bigcal_ixmax_final = 0
-      bigcal_max_adc_final = 0.
+c$$$      bigcal_iymax_final = 0
+c$$$      bigcal_ixmax_final = 0
+c$$$      bigcal_max_adc_final = 0.
 
 *     zero "detector" arrays:
       
