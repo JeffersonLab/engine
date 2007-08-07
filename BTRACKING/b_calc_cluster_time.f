@@ -181,6 +181,10 @@ c     the tdc channel is unique!!!!
      $                 bigcal_ttrig_det_ngood(icell64)
                   bigcal_all_clstr_irow64(iclust,n64) = irow64
                   bigcal_all_clstr_icol64(iclust,n64) = icol64
+                  bigcal_all_clstr_A64(iclust,n64) = 
+     $                 bigcal_atrig_good_det(icell64)
+                  bigcal_all_clstr_sum64(iclust,n64) = 
+     $                 bigcal_atrig_sum64(icell64)
                   
                   do ihit64=1,bigcal_ttrig_det_ngood(icell64)
                      thit = bigcal_ttrig_good_det(icell64,ihit64)
@@ -229,6 +233,10 @@ c     the trig. tdc channel is unique!!!!!!!!!!!!!!!!!!!!!!!!!!
      $                 bigcal_ttrig_det_ngood(icell64)
                   bigcal_all_clstr_irow64(iclust,n64) = irow64
                   bigcal_all_clstr_icol64(iclust,n64) = icol64
+                  bigcal_all_clstr_A64(iclust,n64) = 
+     $                 bigcal_atrig_good_det(icell64)
+                  bigcal_all_clstr_sum64(iclust,n64) = 
+     $                 bigcal_atrig_sum64(icell64)
 
                   do ihit64=1,bigcal_ttrig_det_ngood(icell64)
                     thit = bigcal_ttrig_good_det(icell64,ihit64)
