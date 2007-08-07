@@ -1,0 +1,55 @@
+*%%   include 'bigcal_data_structures.cmn'
+*
+*     CTPTYPE=parm
+*
+      integer*4 bid_bcal_row
+      integer*4 bid_bcal_col
+      integer*4 bid_bcal_rowcol
+      integer*4 bid_bcal_prot_eff
+      integer*4 bid_bcal_rcs_eff
+      integer*4 bid_bcal_tadcvsum64
+      integer*4 bid_bcal_trchvmax64
+      integer*4 bid_bcal_ttdcvtdc
+      integer*4 bid_bcal_xclust
+      integer*4 bid_bcal_yclust
+      integer*4 bid_bcal_eclust
+      integer*4 bid_bcal_exy
+      integer*4 bid_bcal_xy
+      integer*4 bid_bcal_ncellclst
+      integer*4 bid_bcal_nxclust
+      integer*4 bid_bcal_nyclust
+      integer*4 bid_bcal_theta
+      integer*4 bid_bcal_phi
+      integer*4 bid_bcal_xmom
+      integer*4 bid_bcal_ymom
+      integer*4 bid_bcal_tmean
+      integer*4 bid_bcal_trms
+      integer*4 bid_bcal_nxny
+      integer*4 bid_btdc(bigcal_max_tdc)
+      integer*4 bid_bttdc(bigcal_ttrig_maxgroups)
+      common/bigcal_hist_id/
+     $     bid_bcal_row,
+     $     bid_bcal_col,
+     $     bid_bcal_rowcol,
+     $     bid_bcal_prot_eff,
+     $     bid_bcal_rcs_eff,
+     $     bid_bcal_tadcvsum64,
+     $     bid_bcal_trchvmax64,
+     $     bid_bcal_ttdcvtdc,
+     $     bid_bcal_xclust,
+     $     bid_bcal_yclust,
+     $     bid_bcal_eclust,
+     $     bid_bcal_exy,
+     $     bid_bcal_xy,
+     $     bid_bcal_ncellclst,
+     $     bid_bcal_nxclust,
+     $     bid_bcal_nyclust,
+     $     bid_bcal_theta,
+     $     bid_bcal_phi,
+     $     bid_bcal_xmom,
+     $     bid_bcal_ymom,
+     $     bid_bcal_tmean,
+     $     bid_bcal_trms,
+     $     bid_bcal_nxny,
+     $     bid_btdc,
+     $     bid_bttdc

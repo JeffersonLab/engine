@@ -6,13 +6,13 @@
       character*80 b_report_output_filename
       character*80 b_threshold_output_filename
       character*80 b_pedestal_output_filename
-      character*80 b_angle_output_filename ! do we need this? Wait and see how
-                                           ! corresponding HMS file is used  
+      character*80 b_tree_filename
+
       common/bigcal_filenames/
      $     b_report_template_filename,
      $     b_report_blockname,
      $     b_report_output_filename,
      $     b_threshold_output_filename,
      $     b_pedestal_output_filename,
-     $     b_angle_output_filename
+     $     b_tree_filename
       
