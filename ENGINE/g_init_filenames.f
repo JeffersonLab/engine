@@ -23,6 +23,9 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
+* Revision 1.19.6.2  2007/08/07 19:03:38  puckett
+* added initialization for tree filenames
+*
 * Revision 1.19.6.1  2007/05/15 02:55:01  jones
 * Start to Bigcal code
 *
@@ -103,6 +106,7 @@
       include 'sos_filenames.cmn'
       include 'coin_filenames.cmn'
       include 'bigcal_filenames.cmn'
+      include 'gep_filenames.cmn'
       include 'gen_routines.dec'
       include 'gen_run_info.cmn'
 *
@@ -163,7 +167,11 @@
 *
       h_angle_output_filename = ' '
       s_angle_output_filename = ' '
-      b_angle_output_filename = ' ' ! add BigCal
+c      b_angle_output_filename = ' ' ! add BigCal
+      h_tree_filename = ' '
+      b_tree_filename = ' '
+      gep_tree_filename = ' '
+      
 *
       g_label = ' '                     ! Label for reports etc.
 *
