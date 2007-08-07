@@ -15,6 +15,7 @@
       include 'bigcal_tof_parms.cmn'
       include 'bigcal_geometry.cmn'
 
+      integer i
       integer ihit,jhit,khit
       integer irow,jrow,krow
       integer icol,jcol,kcol
@@ -78,6 +79,7 @@ c     Strategy: Find Maximum, then build cluster around it using "add_neighbors"
             ihitmax = ihit
          endif
       enddo
+
 c     check that max is at least one block away from the edge
       if(ixmax.ge.2.and.iymax.ge.2.and.ixmax.le.31.and.iymax.le.55.and.
      $     .not. (iymax.gt.32.and.ixmax.gt.29) ) then
@@ -285,6 +287,13 @@ c     SO FILL THE CLUSTER ARRAY!!!
          bigcal_all_clstr_iymax(ncluster) = cluster_temp_irow(1)
          bigcal_all_clstr_ixmax(ncluster) = cluster_temp_icol(1)
         
+         bigcal_all_clstr_iylo(ncluster) = iylo
+         bigcal_all_clstr_iyhi(ncluster) = iyhi
+         do i=0,2
+            bigcal_all_clstr_ixlo(ncluster,i+1) = ixlo(i)
+            bigcal_all_clstr_ixhi(ncluster,i+1) = ixhi(i)
+         enddo
+
          xmom_clst = 0.
          ymom_clst = 0.
 
@@ -310,7 +319,7 @@ c     SO FILL THE CLUSTER ARRAY!!!
 
             xmom_clst = xmom_clst + ecell*(xcell-xcenter)/esum
             ymom_clst = ymom_clst + ecell*(ycell-ycenter)/esum
-
+           
             do ihit=1,bigcal_all_ngood
                if(bigcal_all_iygood(ihit).eq.cluster_temp_irow(icell)
      $              .and.bigcal_all_ixgood(ihit).eq.cluster_temp_icol(icell)) 
@@ -341,12 +350,18 @@ c     SO FILL THE CLUSTER ARRAY!!!
      $        (iymax.gt.32.and.ixmax.eq.30)) then
             nmaximum = nmaximum + 1
             bigcal_edge_max(nmaximum) = .true.
+            bigcal_not_enough(nmaximum) = .false.
+            bigcal_too_long_x(nmaximum) = .false.
+            bigcal_too_long_y(nmaximum) = .false.
+            bigcal_below_cut(nmaximum) = .false.
+            bigcal_above_max(nmaximum) = .false.
+            bigcal_second_max(nmaximum) = .false.
          endif
       endif
       
  104  continue
 
-      if(found_cluster) goto 102
+      if(found_cluster.and.ncluster.lt.bigcal_all_nclstr_max) goto 102
 
       bigcal_all_nclstr = ncluster
       bigcal_nmaxima = nmaximum
