@@ -60,7 +60,7 @@ c     get any free IO channel
 
       call HCDIR(directory,'R') !CERNLIB read current directory
   
-      if(bigcal_ntuple_type.ne.3) then
+      if(bigcal_ntuple_type.eq.1) then
         recL = default_recl
         call HROPEN(io,name,file,'N',recL,status)
       else
@@ -89,7 +89,8 @@ c     get any free IO channel
       
       if(bigcal_ntuple_type.eq.1) then ! col-wise ntuple for cluster analysis
         call HBNT(id,title,' ')
-        call HBNAME(id,'ClustBlock',nclust,'nclust[0,25]:I*4,'//
+        call HBNAME(id,'ClustBlock',gid,
+     $       'gid:I*4,gtype[5,6]:I*4,nclust[0,25]:I*4,'//
      $       'ncellclust(nclust)[0,25]:I*4,'//
      $       'ncellx(nclust):I*4,ncelly(nclust):I*4,'//
      $       'ncell8clust(nclust)[0,10]:I*4,'//
@@ -104,7 +105,7 @@ c     get any free IO channel
      $       'nhit64clust(6,nclust)[0,8]:I*4,'//
      $       'xcell(25,nclust),ycell(25,nclust),'//
      $       'eblock(25,nclust),tcell8(10,8,nclust),'//
-     $       'tcell64(6,8,nclust),'//
+     $       'tcell64(6,8,nclust),a64(6,nclust),s64(6,nclust),'//
      $       'xmoment(nclust),ymoment(nclust),tclust8(nclust),'//
      $       'tclust64(nclust),trms8(nclust),trms64(nclust),'//
      $       'xclust(nclust),yclust(nclust),'//
@@ -115,6 +116,9 @@ c     get any free IO channel
      $       'edge_max(nmax):L,not_enough(nmax):L,too_long_x(nmax):L,'//
      $       'too_long_y(nmax):L,below_thresh(nmax):L,'//
      $       'above_max(nmax):L,second_max(nmax):L')
+        call HBNAME(id,'bonline',ngooda,'ngooda:I*4,ngoodt:I*4,'//
+     $       'ngoodta:I*4,ngoodtt:I*4,irowmax:I*4,icolmax:I*4,'//
+     $       'max_adc:R*4')
 
         if(gen_bigcal_mc.ne.0) then
            call HBNAME(id,'MC_Clust',ntrk_g,'ntrk_g[0,25]:I*4,'//

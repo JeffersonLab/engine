@@ -18,13 +18,13 @@ c      include 'gen_scalers.cmn'
 
       logical HEXIST ! CERNLIB function
 
-      logical middlebest
+c      logical middlebest
 
       integer m,np,nr,nm,irow,icol,ihit,jhit,itdc
-      real ep,er,em
-      integer iybest,ixbest,xclst,yclst,Eclst,xmom,ymom,t8avg,t64avg
+c      real ep,er,em
+c      integer iybest,ixbest,xclst,yclst,Eclst,xmom,ymom,t8avg,t64avg
       integer L8sum,L64sum,iydiff,ixdiff,icell,jcell,iarray
-      real ecell(BIGCAL_CLSTR_NCELL_MAX)
+c      real ecell(BIGCAL_CLSTR_NCELL_MAX)
 
 c      integer itype
       integer jclust,iclust,imax
@@ -53,7 +53,10 @@ c      integer itype
       endif
 
       if(bigcal_ntuple_type.eq.1) then
+         gid = gen_event_ID_number
+         gtype = gen_event_type
          nclust = bigcal_all_nclstr
+         
          do iclust = 1,nclust
             ncellclust(iclust) = bigcal_all_clstr_ncell(iclust)
             ncellx(iclust) = bigcal_all_clstr_ncellx(iclust)
@@ -67,6 +70,14 @@ c      integer itype
                ycell(icell,iclust) = bigcal_all_clstr_ycell(iclust,icell)
                eblock(icell,iclust) = bigcal_all_clstr_ecell(iclust,icell)
             enddo
+c     zero all cells above ncellclust
+            do icell=ncellclust(iclust)+1,bigcal_clstr_ncell_max
+               iycell(icell,iclust) = 0
+               ixcell(icell,iclust) = 0
+               xcell(icell,iclust) = 0.
+               ycell(icell,iclust) = 0.
+               eblock(icell,iclust) = 0.
+            enddo
             
             do icell=1,ncell8clust(iclust)
                irow8hit(icell,iclust) = bigcal_all_clstr_irow8(iclust,icell)
@@ -75,14 +86,42 @@ c      integer itype
                do ihit=1,nhit8clust(icell,iclust)
                   tcell8(icell,ihit,iclust) = bigcal_all_clstr_tcell8(iclust,icell,ihit)
                enddo
+c     zero all hits above nhit8clust(icell,iclust)
+               do ihit=nhit8clust(icell,iclust)+1,8
+                  tcell8(icell,ihit,iclust) = 0.
+               enddo
+            enddo
+c     zero all cells and all hits of all cells above ncell8clust
+            do icell=ncell8clust(iclust)+1,10
+               irow8hit(icell,iclust) = 0
+               icol8hit(icell,iclust) = 0
+               nhit8clust(icell,iclust) = 0
+               do ihit=1,8
+                  tcell8(icell,ihit,iclust) = 0.
+               enddo
             enddo
 
             do icell=1,ncell64clust(iclust)
                irow64hit(icell,iclust) = bigcal_all_clstr_irow64(iclust,icell)
                icol64hit(icell,iclust) = bigcal_all_clstr_icol64(iclust,icell)
                nhit64clust(icell,iclust) = bigcal_all_clstr_nhit64(iclust,icell)
+               a64(icell,iclust) = bigcal_all_clstr_a64(iclust,icell)
+               s64(icell,iclust) = bigcal_all_clstr_sum64(iclust,icell)
                do ihit=1,nhit64clust(icell,iclust)
                   tcell64(icell,ihit,iclust) = bigcal_all_clstr_tcell64(iclust,icell,ihit)
+               enddo
+c     zero all hits above nhit64clust(icell,iclust)
+               do ihit=nhit64clust(icell,iclust)+1,8
+                  tcell64(icell,ihit,iclust) = 0.
+               enddo
+            enddo
+c     zero all cells and all hits of all cells above ncell64clust
+            do icell=ncell64clust(iclust)+1,6
+               irow64hit(icell,iclust) = 0
+               icol64hit(icell,iclust) = 0
+               nhit64clust(icell,iclust) = 0
+               do ihit=1,8
+                  tcell64(icell,ihit,iclust) = 0.
                enddo
             enddo
 
@@ -117,7 +156,15 @@ c      integer itype
             above_max(imax) = bigcal_above_max(imax)
             second_max(imax) = bigcal_second_max(imax)
          enddo
-         
+         ngooda = bigcal_all_ngood
+         ngoodt = bigcal_time_ngood
+         ngoodta = bigcal_atrig_ngood
+         ngoodtt = bigcal_ttrig_ngood
+c$$$         write(*,*) '(rowmax,colmax,adcmax)=',bigcal_iymax_adc,
+c$$$     $          bigcal_ixmax_adc,bigcal_max_adc
+         irowmax = bigcal_iymax_adc
+         icolmax = bigcal_ixmax_adc
+         max_adc = bigcal_max_adc
       else if(bigcal_ntuple_type.eq.2) then
          nahit = 0
          if(bigcal_prot_ngood.gt.0) then
