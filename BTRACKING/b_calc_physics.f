@@ -13,8 +13,10 @@
 c      include 'gen_units.par'
       include 'gen_constants.par'
       include 'gen_data_structures.cmn'
+      include 'bigcal_hist_id.cmn'
 
       integer i,j,k,ntrack,itrackmax,nprot,nrcs,nmid
+      integer irow,icol,icell
       real E,x,y,z,t,R,L,tof,Rperp
       real xrot,zrot
       real thetadeg,thetarad,phideg,phirad
@@ -36,6 +38,7 @@ c      include 'gen_units.par'
 c$$$      nprot = 0
 c$$$      nrcs = 0
 c$$$      nmid = 0
+c     this routine also fills many standard histograms
 
       if(BIGCAL_ALL_NCLSTR.gt.0) then
          do i=1,BIGCAL_ALL_NCLSTR
@@ -44,7 +47,32 @@ c            nprot = nprot + 1
             x = BIGCAL_ALL_CLSTR_X(i)
             y = BIGCAL_ALL_CLSTR_Y(i)
             E = BIGCAL_ALL_CLSTR_ETOT(i)
+            call hf1(bid_bcal_xclust,x,1.0)
+            call hf1(bid_bcal_yclust,y,1.0)
+            call hf1(bid_bcal_xmom,bigcal_all_clstr_xmom(i),1.0)
+            call hf1(bid_bcal_ymom,bigcal_all_clstr_ymom(i),1.0)
+            call hf1(bid_bcal_eclust,E,1.0)
+            call hf1(bid_bcal_ncellclst,float(bigcal_all_clstr_ncell(i)),1.0)
+            call hf1(bid_bcal_nxclust,float(bigcal_all_clstr_ncellx(i)),1.0)
+            call hf1(bid_bcal_nyclust,float(bigcal_all_clstr_ncelly(i)),1.0)
+            call hf2(bid_bcal_nxny,float(bigcal_all_clstr_ncellx(i)),
+     $           float(bigcal_all_clstr_ncelly(i)),1.0)
+            call hf2(bid_bcal_xy,x,y,1.0)
             t = BIGCAL_ALL_CLSTR_T8MEAN(i)
+            call hf1(bid_bcal_tmean,t,1.0)
+            call hf1(bid_bcal_trms,bigcal_all_clstr_t8rms(i),1.0)
+c     increment energy sum 
+            irow = bigcal_all_clstr_iymax(i)
+            icol = bigcal_all_clstr_ixmax(i)
+
+            if(irow.le.32) then
+               icell = icol + 32*(irow-1)
+            else 
+               icell = icol + 30*(irow-33) + bigcal_prot_maxhits
+            endif
+
+            b_all_run_Esum(icell) = b_all_run_Esum(icell)+E
+            b_all_run_Enum(icell) = b_all_run_Enum(icell)+1
 
 c     correct every track for energy loss. BigCal is always electron arm
 c     need to set up eloss params for BigCal absorber!
@@ -56,10 +84,12 @@ c     need to set up eloss params for BigCal absorber!
 
             thetarad = acos(zrot/L)
             thetadeg = 180./tt * thetarad
+            call hf1(bid_bcal_theta,thetadeg,1.0)
 
             phirad = atan2(y,xrot)
             phideg = 180./tt * phirad
- 
+            call hf1(bid_bcal_phi,phideg,1.0)
+
             gamma = E / m_e
             beta = sqrt(1. - 1./gamma**2)
 
@@ -98,6 +128,38 @@ c            Rperp = L*sin(thetarad)
             BIGCAL_TRACK_BETA(ntrack) = beta
             BIGCAL_TRACK_TOF(ntrack) = tof
             BIGCAL_TRACK_COIN_TIME(ntrack) = t - tof ! "vertex" time
+
+c     increment some efficiency sums:
+            do irow=bigcal_all_clstr_iylo(i),
+     $           bigcal_all_clstr_iyhi(i)
+               if(irow.le.32) then
+                  do icol=bigcal_all_clstr_ixlo(i,2),
+     $                 bigcal_all_clstr_ixhi(i,2)
+                     icell=icol+32*(irow-1)
+                     if(bigcal_prot_good_det(icell).gt.b_cell_cut_prot)
+     $                    then
+                        b_all_run_clst_good(icell) = 
+     $                       b_all_run_clst_good(icell) + 1
+                     else
+                        b_all_run_clst_bad(icell) = 
+     $                       b_all_run_clst_bad(icell) + 1
+                     endif
+                  enddo
+               else
+                  do icol=bigcal_all_clstr_ixlo(i,3),
+     $                 bigcal_all_clstr_ixhi(i,3)
+                     icell=icol + 30*(irow-33) + bigcal_prot_maxhits
+                     if(bigcal_rcs_good_det(icell-bigcal_prot_maxhits)
+     $                    .gt.b_cell_cut_rcs) then
+                        b_all_run_clst_good(icell) = 
+     $                       b_all_run_clst_good(icell) + 1
+                     else 
+                        b_all_run_clst_bad(icell) = 
+     $                       b_all_run_clst_bad(icell) + 1
+                     endif
+                  enddo
+               endif
+            enddo
          enddo
          bigcal_phys_ntrack = ntrack
       endif
