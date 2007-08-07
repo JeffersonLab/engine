@@ -47,11 +47,11 @@ c     all clusters are already sorted in order of decreasing amplitude, so cell 
      $        xpar(4)*xmom**2 + xpar(5)*xmom + xpar(6))
          ydiff = ypar(1) * atan(ypar(2)*ymom**4 + ypar(3)*ymom**3 + 
      $        ypar(4)*ymom**2 + ypar(5)*ymom + ypar(6))
-         
+
          bigcal_all_clstr_x(i) = xcenter + xdiff
          bigcal_all_clstr_y(i) = ycenter + ydiff
-         
+
       enddo
-      
+
       return 
       end

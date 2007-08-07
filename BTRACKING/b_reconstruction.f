@@ -51,9 +51,8 @@
             return
          endif
       endif
-      bigcal_max_adc_final = bigcal_max_adc
-      bigcal_iymax_final = bigcal_iymax_adc
-      bigcal_ixmax_final = bigcal_ixmax_adc
+
+      bigcal_all_ngood = bigcal_prot_ngood + bigcal_rcs_ngood
 
 ***********  convert BigCal group-of-8 raw TDC to go8 decoded TDC *********
       if(bbypass_sum8.eq.0) then
@@ -112,11 +111,11 @@ c$$$      if(gen_bigcal_mc.ne.0.and. .not.mc_trig) return
 
          !write(*,*) 'entering b_fill_bigcal_arrays'
 
-         call b_fill_bigcal_arrays(abort,err)
-         if(ABORT) then 
-            call g_add_path(here,err)
-            return
-         endif
+c$$$         call b_fill_bigcal_arrays(abort,err)
+c$$$         if(ABORT) then 
+c$$$            call g_add_path(here,err)
+c$$$            return
+c$$$         endif
 
          !write(*,*) 'entering b_find_clusters'
 
