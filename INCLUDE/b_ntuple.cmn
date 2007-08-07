@@ -29,6 +29,7 @@
       character*80 b_Ntuple_title
       character*132 b_Ntuple_directory
       character*256 b_Ntuple_file
+c      character*256 b_tree_filename
       character*8 b_Ntuple_tag(BMAX_Ntuple_size)
       integer b_Ntuple_max_segmentevents
 *
@@ -41,10 +42,13 @@
       common/BIGCAL_Ntuple/
      $     b_Ntuple_exists,b_Ntuple_ID,b_Ntuple_size,b_Ntuple_IOchannel,
      $     b_Ntuple_name,b_Ntuple_title,b_Ntuple_directory,
-     $     b_Ntuple_file,b_Ntuple_tag,b_Ntuple_max_segmentevents,
+     $     b_Ntuple_file,b_Ntuple_tag,
+     $     b_Ntuple_max_segmentevents,
      $     b_Ntuple_segmentevents,b_Ntuple_filesegments,
      $     b_Ntuple_contents,bigcal_ntuple_type
 
+      integer*4 gid
+      integer*4 gtype
       integer*4 nclust
       integer*4 ncellclust(maxnclust)
       integer*4 ncellx(maxnclust)
@@ -64,6 +68,8 @@
       real*4 eblock(maxncellclust,maxnclust)
       real*4 tcell8(10,8,maxnclust)
       real*4 tcell64(6,8,maxnclust)
+      real*4 a64(6,maxnclust)
+      real*4 s64(6,maxnclust)
       real*4 xmoment(maxnclust)
       real*4 ymoment(maxnclust)
       real*4 tclust8(maxnclust)
@@ -87,6 +93,8 @@
       real*4 ctime_clust(maxnclust)
       
       common/ClustBlock/
+     $     gid,
+     $     gtype,
      $     nclust,
      $     ncellclust,
      $     ncellx,
@@ -106,6 +114,8 @@
      $     eblock,
      $     tcell8,
      $     tcell64,
+     $     a64,
+     $     s64,
      $     xmoment,
      $     ymoment,
      $     tclust8,
@@ -142,7 +152,22 @@
      $     below_thresh,
      $     above_max,
      $     second_max
-
+*     For online basic detector checks, include a list of additional basic variables:
+      integer*4 ngooda
+      integer*4 ngoodt
+      integer*4 ngoodta
+      integer*4 ngoodtt
+      integer*4 irowmax
+      integer*4 icolmax
+      real*4 max_adc
+      common/bonline/
+     $     ngooda,
+     $     ngoodt,
+     $     ngoodta,
+     $     ngoodtt,
+     $     irowmax,
+     $     icolmax,
+     $     max_adc
 
 *     in case of Monte Carlo analysis, actual event info for comparison to reconstructed:
 *     one "vertex" per event is assumed. Fill if and only if cluster ntuple gets filled.

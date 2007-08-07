@@ -10,7 +10,7 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
-* Revision 1.24.6.4  2007/06/28 22:10:54  puckett
+* Revision 1.24.6.5  2007/08/07 19:06:06  puckett
 * *** empty log message ***
 *
 * Revision 1.24.6.3  2007/06/20 18:26:32  puckett
@@ -165,6 +165,7 @@
 *     Load and book all the CTP files
 *
 *
+
       if((first_time.or.g_parm_rebook).and.g_ctp_parm_filename.ne.' ') then
         file = g_ctp_parm_filename
         call g_sub_run_number(file,gen_run_number)
@@ -180,6 +181,7 @@
 *     to it to set CTP variables.  Parameters placed in this file will
 *     override values defined in the CTP input files.
 *
+
       if(.not.ABORT.and.g_ctp_kinematics_filename.ne.' ') then
         write(6,'(a,a60)') 'KINEMATICS FROM ',g_ctp_kinematics_filename(1:60)
         call g_ctp_database(ABORT, err
@@ -189,6 +191,7 @@
         endif
       ENDIF
 *
+
       if((first_time.or.g_test_rebook).and.g_ctp_test_filename.ne.' ') then
         file = g_ctp_test_filename
         call g_sub_run_number(file,gen_run_number)

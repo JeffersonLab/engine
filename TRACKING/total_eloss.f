@@ -16,8 +16,8 @@
 *-    Created   1-Dec-1995  Rolf Ent
 *
 * $Log$
-* Revision 1.8.20.1  2007/07/17 23:07:48  puckett
-* new cluster finding algorithm and some changes to data structures
+* Revision 1.8.20.2  2007/08/07 19:12:46  puckett
+* *** empty log message ***
 *
 * Revision 1.8  2003/09/05 20:06:07  jones
 * Merge in online03 changes (mkj)
