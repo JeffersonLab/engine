@@ -21,6 +21,7 @@
       call r_bigcal_shower_parms
 
       call r_bigcal_bypass_switches
+      call r_bigcal_hist_id
 
 c$$$      call r_bigcal_statistics
 c$$$      call r_bigcal_pedestals
