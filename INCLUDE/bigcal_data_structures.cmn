@@ -53,16 +53,19 @@ c$$$      parameter(BIGCAL_MID_NCLSTR_MAX=5)
       integer*4 BIGCAL_ALL_NCLSTR_MAX
       parameter(BIGCAL_ALL_NCLSTR_MAX=25) ! must equal sum of prot, rcs, and mid or problems will happen
 
+c     make these parameters instead (see bigcal_clstr_cuts common block) 
+c     except that we don't want clstr_ncell_max changed because the 
+c     structure of the ntuple depends on it.
       integer*4 BIGCAL_CLSTR_NCELL_MAX
-      parameter(BIGCAL_CLSTR_NCELL_MAX=25) ! maximum cluster size is 5x5
+      parameter(BIGCAL_CLSTR_NCELL_MAX=25)
+c$$$
+c$$$      integer*4 BIGCAL_CLSTR_NCELLX_MAX
+c$$$      parameter(BIGCAL_CLSTR_NCELLX_MAX=8)
+c$$$      integer*4 BIGCAL_CLSTR_NCELLY_MAX
+c$$$      parameter(BIGCAL_CLSTR_NCELLY_MAX=8)
 
-      integer*4 BIGCAL_CLSTR_NCELLX_MAX
-      parameter(BIGCAL_CLSTR_NCELLX_MAX=8)
-      integer*4 BIGCAL_CLSTR_NCELLY_MAX
-      parameter(BIGCAL_CLSTR_NCELLY_MAX=8)
-
-      integer*4 BIGCAL_CLSTR_NCELL_MIN
-      parameter(BIGCAL_CLSTR_NCELL_MIN=2)
+c$$$      integer*4 BIGCAL_CLSTR_NCELL_MIN
+c$$$      parameter(BIGCAL_CLSTR_NCELL_MIN=2)
 *     tdc and trigger array dimensions
       integer*4 BIGCAL_MAX_TDC
       parameter (BIGCAL_MAX_TDC=224) 
@@ -278,22 +281,17 @@ c$$$      parameter(BIGCAL_MID_NCLSTR_MAX=5)
 *     diagnostic variables for some initial histograms to check sanity of data
 
       integer*4 BIGCAL_IYMAX_ADC
-      integer*4 BIGCAL_IYMAX_FINAL
       integer*4 BIGCAL_IXMAX_ADC
-      integer*4 BIGCAL_IXMAX_FINAL
       real*4 BIGCAL_MAX_ADC
-      real*4 BIGCAL_MAX_ADC_FINAL
       common/BIGCAL_SIGNAL_MAX/
      $     bigcal_iymax_adc,
      $     bigcal_ixmax_adc,
-     $     bigcal_max_adc,
-     $     bigcal_iymax_final,
-     $     bigcal_ixmax_final,
-     $     bigcal_max_adc_final
-
+     $     bigcal_max_adc
 
 *     "detector" arrays: organize the data for histogramming and 
 *     analysis purposes. define only "raw" and "good" arrays:
+*     also define cumulative quantities that get incremented during
+*     the run for efficiency calculations:
       integer*4 BIGCAL_PROT_RAW_DET(BIGCAL_PROT_MAXHITS)
       integer*4 BIGCAL_RCS_RAW_DET(BIGCAL_RCS_MAXHITS)
       integer*4 BIGCAL_ALL_RAW_DET(BIGCAL_ALL_MAXHITS)
@@ -333,6 +331,20 @@ c$$$      parameter(BIGCAL_MID_NCLSTR_MAX=5)
      $     BIGCAL_ATRIG_SUM64,
      $     BIGCAL_TTRIG_GOOD_DET
 
+*     define cumulative quantities for the whole run which will 
+*     compute the cell-by-cell hits/clusters efficiency and average energy
+      integer*4 b_all_run_clst_good(bigcal_all_maxhits)
+      integer*4 b_all_run_clst_bad(bigcal_all_maxhits)
+      integer*4 b_all_run_Enum(bigcal_all_maxhits)
+      real*4 b_all_run_clst_eff(bigcal_all_maxhits)
+      real*4 b_all_run_Esum(bigcal_all_maxhits)
+      common/bigcal_clust_eff/
+     $     b_all_run_clst_good,
+     $     b_all_run_clst_bad,
+     $     b_all_run_Enum,
+     $     b_all_run_clst_eff,
+     $     b_all_run_Esum
+
 *     arrays for middle section hits to find clusters in the boundary rows:
       
 c$$$      real*4 BIGCAL_MID_EHIT(30:35,32)
@@ -351,12 +363,18 @@ c$$$     $     BIGCAL_MID_YHIT
 *     CTPTYPE=parm
 *
 *     cluster and cell cuts!!
+      integer*4 BIGCAL_CLSTR_NCELL_MIN
+      integer*4 BIGCAL_CLSTR_NCELLX_MAX
+      integer*4 BIGCAL_CLSTR_NCELLY_MAX
       real*4 B_CLUSTER_CUT ! min. cluster energy
       real*4 B_CLUSTER_MAX ! max. cluster energy
       real*4 B_CELL_CUT_RCS ! min cell energy, RCS
       real*4 B_CELL_CUT_PROT ! min cell energy, Prot
       real*4 B_MIN_EMAX ! minimum energy of maximum cell
       common/BIGCAL_CLSTR_CUTS/
+     $     BIGCAL_CLSTR_NCELL_MIN,
+     $     BIGCAL_CLSTR_NCELLX_MAX,
+     $     BIGCAL_CLSTR_NCELLY_MAX,
      $     B_CLUSTER_CUT,
      $     B_CLUSTER_MAX,
      $     B_CELL_CUT_PROT,
@@ -380,6 +398,10 @@ c$$$     $     BIGCAL_MID_YHIT
       integer*4 BIGCAL_ALL_CLSTR_NCELLY(BIGCAL_ALL_NCLSTR_MAX)
       integer*4 BIGCAL_ALL_CLSTR_IYMAX(BIGCAL_ALL_NCLSTR_MAX)
       integer*4 BIGCAL_ALL_CLSTR_IXMAX(BIGCAL_ALL_NCLSTR_MAX)
+      integer*4 BIGCAL_ALL_CLSTR_IYLO(BIGCAL_ALL_NCLSTR_MAX)
+      integer*4 BIGCAL_ALL_CLSTR_IYHI(BIGCAL_ALL_NCLSTR_MAX)
+      integer*4 BIGCAL_ALL_CLSTR_IXLO(BIGCAL_ALL_NCLSTR_MAX,3)
+      integer*4 BIGCAL_ALL_CLSTR_IXHI(BIGCAL_ALL_NCLSTR_MAX,3)
       integer*4 BIGCAL_ALL_CLSTR_IYCELL(BIGCAL_ALL_NCLSTR_MAX,BIGCAL_CLSTR_NCELL_MAX)
       integer*4 BIGCAL_ALL_CLSTR_IXCELL(BIGCAL_ALL_NCLSTR_MAX,BIGCAL_CLSTR_NCELL_MAX)
       integer*4 BIGCAL_ALL_CLSTR_NCELL8(BIGCAL_ALL_NCLSTR_MAX)
@@ -395,6 +417,8 @@ c$$$     $     BIGCAL_MID_YHIT
       real*4 BIGCAL_ALL_CLSTR_ECELL(BIGCAL_ALL_NCLSTR_MAX,BIGCAL_CLSTR_NCELL_MAX) 
       real*4 BIGCAL_ALL_CLSTR_TCELL8(BIGCAL_ALL_NCLSTR_MAX,10,8) ! max of 10 unique sum8, 8 hits per tdc 
       real*4 BIGCAL_ALL_CLSTR_TCELL64(BIGCAL_ALL_NCLSTR_MAX,6,8) ! max of 6 unique sum64, 8 hits per tdc
+      real*4 BIGCAL_ALL_CLSTR_A64(BIGCAL_ALL_NCLSTR_MAX,6) ! trigger group amplitudes
+      real*4 BIGCAL_ALL_CLSTR_SUM64(BIGCAL_ALL_NCLSTR_MAX,6) ! sum of blocks comprising group
       real*4 BIGCAL_ALL_CLSTR_XMOM(BIGCAL_ALL_NCLSTR_MAX)
       real*4 BIGCAL_ALL_CLSTR_YMOM(BIGCAL_ALL_NCLSTR_MAX)
       real*4 BIGCAL_ALL_CLSTR_X(BIGCAL_ALL_NCLSTR_MAX) 
@@ -412,6 +436,10 @@ c$$$     $     BIGCAL_MID_YHIT
      $     BIGCAL_ALL_CLSTR_NCELLY,
      $     BIGCAL_ALL_CLSTR_IYMAX,
      $     BIGCAL_ALL_CLSTR_IXMAX,
+     $     BIGCAL_ALL_CLSTR_IYLO,
+     $     BIGCAL_ALL_CLSTR_IYHI,
+     $     BIGCAL_ALL_CLSTR_IXLO,
+     $     BIGCAL_ALL_CLSTR_IXHI,
      $     BIGCAL_ALL_CLSTR_IYCELL,
      $     BIGCAL_ALL_CLSTR_IXCELL,
      $     BIGCAL_ALL_CLSTR_NCELL8,
@@ -427,6 +455,8 @@ c$$$     $     BIGCAL_MID_YHIT
      $     BIGCAL_ALL_CLSTR_ECELL,
      $     BIGCAL_ALL_CLSTR_TCELL8,
      $     BIGCAL_ALL_CLSTR_TCELL64,
+     $     BIGCAL_ALL_CLSTR_A64,
+     $     BIGCAL_ALL_CLSTR_SUM64,
      $     BIGCAL_ALL_CLSTR_XMOM,
      $     BIGCAL_ALL_CLSTR_YMOM,
      $     BIGCAL_ALL_CLSTR_X,
