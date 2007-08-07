@@ -2,7 +2,7 @@
 # variable ROOTSYS is undefined, or uncomment "#ROOTSYS=" line below.
 # The same must be done in CTP/Makefile.Unix
 
-#ROOTSYS=
+ROOTSYS=
 
 
 disp_objs = glvolu.o 
