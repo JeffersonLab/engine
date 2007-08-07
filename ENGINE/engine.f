@@ -8,8 +8,8 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
-* Revision 1.42.8.5  2007/07/17 22:55:50  puckett
-* new cluster finding algorithm and some changes to data structures
+* Revision 1.42.8.6  2007/08/07 19:02:22  puckett
+* added run number substitution for tree filenames
 *
 * Revision 1.42.8.4  2007/06/26 16:36:45  puckett
 * latest changes for monte carlo analysis, latest fixes for cluster finding routine
@@ -318,6 +318,13 @@ c
           call G_add_path(here,err)
         endif
       ENDIF
+c     initialize CTP ROOT trees: substitute run number into filename!!!!
+      if(.not.abort) then
+         call g_tree_init(abort,err)
+         if(abort) then
+            call g_add_path(here,err)
+         endif
+      endif
 
       !write(*,*) 'CTP database file processed'
 
@@ -596,6 +603,9 @@ c           call get_bigcal_mc_event(gen_bigcal_mc,ABORT,err)
            !write(*,*) 'Entering monte carlo reconstruction'
 
            call bigcal_mc_reconstruction(gen_bigcal_mc,ABORT,err)
+
+c$$$           write(*,*) '(rowmax,colmax,adcmax)=',bigcal_iymax_adc,
+c$$$     $          bigcal_ixmax_adc,bigcal_max_adc
            
            EoF = EOF_MC_DAT
 
