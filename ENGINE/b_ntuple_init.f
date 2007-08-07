@@ -111,7 +111,7 @@ c     choose ntuple type based on input argument
          pat= ':created BigCal ntuple'
          call G_add_path(here,pat)
          call G_log_message('INFO: '//pat)
-      endif
+      endif  
 
       return 
       end

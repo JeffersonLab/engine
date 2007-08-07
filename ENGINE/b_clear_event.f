@@ -31,15 +31,13 @@ c      include 'bigcal_statistics.cmn'
       BIGCAL_RCS_NHIT = 0
       BIGCAL_PROT_NGOOD = 0
       BIGCAL_RCS_NGOOD = 0
+      bigcal_all_ngood = 0
 c$$$      bigcal_all_nclstr = 0
 c$$$      bigcal_phys_ntrack = 0
 
       bigcal_max_adc = 0.
       bigcal_iymax_adc = 0
       bigcal_ixmax_adc = 0
-c      bigcal_max_adc_final = 0.
-      bigcal_iymax_final = 0
-      bigcal_ixmax_final = 0
 
 *     zero "detector" arrays:
       
@@ -133,6 +131,10 @@ c$$$        bigcal_track_coin_time(i) = 0.
 c$$$      enddo
 
       nclust = 0
+      nmax = 0
+      ntrk_g = 0
+
+      bigcal_itrack_best = 0
 
 *     don't need to do anything with hit arrays, since they are filled dynamically
 *     (other than zeroing the numbers of hits)
