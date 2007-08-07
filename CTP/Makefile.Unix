@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.21.8.1  2007/08/07 18:50:57  puckett
+# Don't want CTP Root trees anymore
+#
 # Revision 1.21  2004/07/08 20:04:33  saw
 # CTP ROOT trees will be compiled in if ROOTSYS is defined.
 # Build dummy CTP ROOT tree commands when ROOTSYS not defined.
@@ -73,7 +76,7 @@
 # variable ROOTSYS is undefined, or uncomment "#ROOTSYS=" line below.
 # The same must be done in EXE/Makefile
 
-#ROOTSYS=
+ROOTSYS=
 
 
 NEWSTYLE = 1
