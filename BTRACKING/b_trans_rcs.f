@@ -15,6 +15,7 @@
       include 'bigcal_data_structures.cmn'
       include 'bigcal_gain_parms.cmn'
       include 'bigcal_geometry.cmn'
+      include 'bigcal_hist_id.cmn'
 *
 *     start by sparsifying the raw data:       
 *
@@ -47,6 +48,11 @@
             bigcal_ixmax_adc = icol
           endif
           
+          call hf1(bid_bcal_row,float(irow+bigcal_prot_ny),1.0)
+          call hf1(bid_bcal_col,float(icol),1.0)
+          call hf2(bid_bcal_rowcol,float(icol),float(irow+
+     $         bigcal_prot_ny),1.0)
+
 *     question of whether to group by hits or cells. 
 *     seems most logical and efficient to go by hits only and not 
 *     have to keep passing around the full array of cells with lots of 
@@ -57,6 +63,17 @@
           BIGCAL_RCS_YGOOD(ihit) = BIGCAL_RCS_YCENTER(icell)
 *     Fill detector array and increment sums of 8 and sums of 64
           BIGCAL_RCS_GOOD_DET(icell) = BIGCAL_RCS_ECELL(ihit)
+*     Fill "all detector" array
+          bigcal_all_adc_good(ihit+bigcal_prot_ngood) = bigcal_rcs_adc_good(ihit)
+          bigcal_all_ecell(ihit+bigcal_prot_ngood) = bigcal_rcs_ecell(ihit)
+          bigcal_all_xgood(ihit+bigcal_prot_ngood) = bigcal_rcs_xgood(ihit)
+          bigcal_all_ygood(ihit+bigcal_prot_ngood) = bigcal_rcs_ygood(ihit)
+          
+          bigcal_all_iygood(ihit+bigcal_prot_ngood) = irow+bigcal_prot_ny
+          bigcal_all_ixgood(ihit+bigcal_prot_ngood) = icol
+
+          bigcal_all_good_det(icell+bigcal_prot_maxhits) = bigcal_rcs_ecell(ihit)
+
 c     BIGCAL_RCS_GOOD_HIT(icell) = .true.
           irow8 = irow + BIGCAL_PROT_NY
           if(icol.lt.16) then 
@@ -70,15 +87,24 @@ c     BIGCAL_RCS_GOOD_HIT(icell) = .true.
           ihalf64 = icol / 16 + 1
           ig64 = ihalf64 + 2*(igroup64-1)
           
+c$$$          bigcal_tdc_sum8(ig8) = bigcal_tdc_sum8(ig8) + 
+c$$$     $         BIGCAL_RCS_ECELL(ihit)
+c$$$          bigcal_atrig_sum64(ig64) = bigcal_atrig_sum64(ig64) + 
+c$$$     $         BIGCAL_RCS_ECELL(ihit)
+c$$$          if( mod(irow8-1,3) .eq.0)then ! overlap row, also increment previous group
+c$$$            bigcal_atrig_sum64(ig64-2) = bigcal_atrig_sum64(ig64-2) +
+c$$$     $           bigcal_rcs_ecell(ihit)
+c$$$          endif
+          
           bigcal_tdc_sum8(ig8) = bigcal_tdc_sum8(ig8) + 
-     $         BIGCAL_RCS_ECELL(ihit)
+     $         BIGCAL_RCS_ADC_GOOD(ihit)
           bigcal_atrig_sum64(ig64) = bigcal_atrig_sum64(ig64) + 
-     $         BIGCAL_RCS_ECELL(ihit)
+     $         BIGCAL_RCS_ADC_GOOD(ihit)
           if( mod(irow8-1,3) .eq.0)then ! overlap row, also increment previous group
             bigcal_atrig_sum64(ig64-2) = bigcal_atrig_sum64(ig64-2) +
-     $           bigcal_rcs_ecell(ihit)
+     $           bigcal_rcs_adc_good(ihit)
           endif
-          
+
         enddo
       endif
 

@@ -12,6 +12,7 @@
       include 'bigcal_data_structures.cmn'
       include 'bigcal_bypass_switches.cmn'
       include 'bigcal_tof_parms.cmn'
+      include 'bigcal_hist_id.cmn'
 
       integer*4 ihit,igroup,irow,itdc,ngood,thitnum
       real*4 thit ! hit time
@@ -51,6 +52,9 @@
           BIGCAL_TIME_IGROUP(ngood) = igroup
           BIGCAL_HIT_TIME(ngood) = thit
           bigcal_tdc_good(ngood) = bigcal_tdc(ihit)
+c     fill tdc histogram:
+          call hf1(bid_btdc(itdc),thit,1.0)
+
 c     ! also fill "detector" array (arrays over tdc# as opposed to hits)
           if(bigcal_tdc_det_ngood(itdc).lt.8)then
             bigcal_tdc_det_ngood(itdc)=bigcal_tdc_det_ngood(itdc) + 1
