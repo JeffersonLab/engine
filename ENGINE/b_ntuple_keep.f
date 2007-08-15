@@ -56,7 +56,11 @@ c      integer itype
          gid = gen_event_ID_number
          gtype = gen_event_type
          nclust = bigcal_all_nclstr
-         
+         nclust8 = nclust
+         nclust64 = nclust
+         ntrack = nclust
+         ibest = bigcal_itrack_best
+
          do iclust = 1,nclust
             ncellclust(iclust) = bigcal_all_clstr_ncell(iclust)
             ncellx(iclust) = bigcal_all_clstr_ncellx(iclust)
@@ -138,6 +142,7 @@ c     zero all cells and all hits of all cells above ncell64clust
 
             thetarad(iclust) = bigcal_track_thetarad(iclust)
             phirad(iclust) = bigcal_track_phirad(iclust)
+            energy(iclust) = bigcal_track_energy(iclust)
             xface(iclust) = bigcal_track_xface(iclust)
             yface(iclust) = bigcal_track_yface(iclust)
             zface(iclust) = bigcal_track_zface(iclust)
