@@ -371,6 +371,7 @@ c$$$     $     BIGCAL_MID_YHIT
       real*4 B_CELL_CUT_RCS ! min cell energy, RCS
       real*4 B_CELL_CUT_PROT ! min cell energy, Prot
       real*4 B_MIN_EMAX ! minimum energy of maximum cell
+      real*4 b_trig_cut ! for monte carlo analysis only: trig threshold
       common/BIGCAL_CLSTR_CUTS/
      $     BIGCAL_CLSTR_NCELL_MIN,
      $     BIGCAL_CLSTR_NCELLX_MAX,
@@ -379,7 +380,8 @@ c$$$     $     BIGCAL_MID_YHIT
      $     B_CLUSTER_MAX,
      $     B_CELL_CUT_PROT,
      $     B_CELL_CUT_RCS,
-     $     B_MIN_EMAX
+     $     B_MIN_EMAX,
+     $     b_trig_cut
 *     arrays of closest column number in row 33 to column number in row 32 
 *     and vice versa
       integer*4 bigcal_ixclose_prot(bigcal_prot_nx)
