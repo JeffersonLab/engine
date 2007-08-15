@@ -47,43 +47,94 @@ c      character*256 b_tree_filename
      $     b_Ntuple_segmentevents,b_Ntuple_filesegments,
      $     b_Ntuple_contents,bigcal_ntuple_type
 
+*     Basic event info:
+
       integer*4 gid
       integer*4 gtype
+      common/evinfo/
+     $     gid,
+     $     gtype
+
+*     ADC related quantities
+
       integer*4 nclust
       integer*4 ncellclust(maxnclust)
       integer*4 ncellx(maxnclust)
       integer*4 ncelly(maxnclust)
-      integer*4 ncell8clust(maxnclust)
-      integer*4 ncell64clust(maxnclust)
       integer*4 iycell(maxncellclust,maxnclust)
       integer*4 ixcell(maxncellclust,maxnclust)
-      integer*4 irow8hit(10,maxnclust)
-      integer*4 icol8hit(10,maxnclust)
-      integer*4 nhit8clust(10,maxnclust)
-      integer*4 irow64hit(6,maxnclust)
-      integer*4 icol64hit(6,maxnclust)
-      integer*4 nhit64clust(6,maxnclust)
       real*4 xcell(maxncellclust,maxnclust)
       real*4 ycell(maxncellclust,maxnclust)
       real*4 eblock(maxncellclust,maxnclust)
+      real*4 xmoment(maxnclust)
+      real*4 ymoment(maxnclust)
+      real*4 eclust(maxnclust)
+      real*4 xclust(maxnclust)
+      real*4 yclust(maxnclust)
+      common/clustblock/
+     $     nclust,
+     $     ncellclust,
+     $     ncellx,
+     $     ncelly,
+     $     iycell,
+     $     ixcell,
+     $     xcell,
+     $     ycell,
+     $     eblock,
+     $     xmoment,
+     $     ymoment,
+     $     eclust,
+     $     xclust,
+     $     yclust
+
+      integer*4 nclust8
+      integer*4 ncell8clust(maxnclust)
+      integer*4 irow8hit(10,maxnclust)
+      integer*4 icol8hit(10,maxnclust)
+      integer*4 nhit8clust(10,maxnclust)
       real*4 tcell8(10,8,maxnclust)
+      real*4 tclust8(maxnclust)
+      real*4 trms8(maxnclust)
+      common/clusttdc/
+     $     nclust8,
+     $     ncell8clust,
+     $     irow8hit,
+     $     icol8hit,
+     $     nhit8clust,
+     $     tcell8,
+     $     tclust8,
+     $     trms8
+
+*     trigger related quantities
+
+      integer*4 nclust64 ! copy of nclust
+      integer*4 ncell64clust(maxnclust)            
+      integer*4 irow64hit(6,maxnclust)
+      integer*4 icol64hit(6,maxnclust)
+      integer*4 nhit64clust(6,maxnclust)
       real*4 tcell64(6,8,maxnclust)
       real*4 a64(6,maxnclust)
       real*4 s64(6,maxnclust)
-      real*4 xmoment(maxnclust)
-      real*4 ymoment(maxnclust)
-      real*4 tclust8(maxnclust)
       real*4 tclust64(maxnclust)
-      real*4 trms8(maxnclust)
       real*4 trms64(maxnclust)
-      real*4 xclust(maxnclust)
-      real*4 yclust(maxnclust)
-      real*4 eclust(maxnclust)
-
-*     reconstructed physics quantities
+      common/clusttrig/
+     $     nclust64,
+     $     ncell64clust,
+     $     irow64hit,
+     $     icol64hit,
+     $     nhit64clust,
+     $     tcell64,
+     $     a64,
+     $     s64,
+     $     tclust64,
+     $     trms64
       
+*     reconstructed physics quantities
+      integer*4 ntrack
+      integer*4 ibest
       real*4 thetarad(maxnclust)
       real*4 phirad(maxnclust)
+      real*4 energy(maxnclust) ! corrected for eloss
       real*4 xface(maxnclust)
       real*4 yface(maxnclust)
       real*4 zface(maxnclust)
@@ -91,42 +142,12 @@ c      character*256 b_tree_filename
       real*4 py(maxnclust)
       real*4 pz(maxnclust)
       real*4 ctime_clust(maxnclust)
-      
-      common/ClustBlock/
-     $     gid,
-     $     gtype,
-     $     nclust,
-     $     ncellclust,
-     $     ncellx,
-     $     ncelly,
-     $     ncell8clust,
-     $     ncell64clust,
-     $     iycell,
-     $     ixcell,
-     $     irow8hit,
-     $     icol8hit,
-     $     nhit8clust,
-     $     irow64hit,
-     $     icol64hit,
-     $     nhit64clust,
-     $     xcell,
-     $     ycell,
-     $     eblock,
-     $     tcell8,
-     $     tcell64,
-     $     a64,
-     $     s64,
-     $     xmoment,
-     $     ymoment,
-     $     tclust8,
-     $     tclust64,
-     $     trms8,
-     $     trms64,
-     $     xclust,
-     $     yclust,
-     $     eclust,
+      common/clustphys/
+     $     ntrack,
+     $     ibest,
      $     thetarad,
      $     phirad,
+     $     energy,
      $     xface,
      $     yface,
      $     zface,
@@ -135,6 +156,8 @@ c      character*256 b_tree_filename
      $     pz,
      $     ctime_clust
 
+*     bad cluster flags:
+      
       integer*4 nmax
       logical edge_max(maxnclust)
       logical not_enough(maxnclust)
@@ -160,7 +183,7 @@ c      character*256 b_tree_filename
       integer*4 irowmax
       integer*4 icolmax
       real*4 max_adc
-      common/bonline/
+      common/bhits/
      $     ngooda,
      $     ngoodt,
      $     ngoodta,
