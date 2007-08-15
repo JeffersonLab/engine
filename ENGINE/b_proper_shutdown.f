@@ -45,7 +45,7 @@ c     calculate final "efficiencies" and fill histograms
          else 
             Eavg = 0.
          endif
-         call hf2(bid_bcal_exy,float(icol),float(irow),Eavg)
+         if(bid_bcal_exy.gt.0) call hf2(bid_bcal_exy,float(icol),float(irow),Eavg)
 
          if(b_all_run_clst_good(icell)+b_all_run_clst_bad(icell)
      $        .gt.0)then
@@ -56,9 +56,9 @@ c     calculate final "efficiencies" and fill histograms
             eff = 0.
          endif
          if(icell.le.bigcal_prot_maxhits) then
-            call hf1(bid_bcal_prot_eff,float(icell),eff)
+            if(bid_bcal_prot_eff.gt.0) call hf1(bid_bcal_prot_eff,float(icell),eff)
          else
-            call hf1(bid_bcal_rcs_eff,float(icell-bigcal_prot_maxhits),eff)
+            if(bid_bcal_rcs_eff.gt.0) call hf1(bid_bcal_rcs_eff,float(icell-bigcal_prot_maxhits),eff)
          endif
       enddo
 
