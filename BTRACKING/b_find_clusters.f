@@ -337,6 +337,11 @@ c     SO FILL THE CLUSTER ARRAY!!!
          bigcal_all_clstr_ymom(ncluster) = ymom_clst
          bigcal_all_clstr_etot(ncluster) = esum
 
+         if(bbypass_calc_shower_coord.ne.0) then ! use xcenter + xmom
+            bigcal_all_clstr_x(ncluster) = xcenter + xmom_clst
+            bigcal_all_clstr_y(ncluster) = ycenter + ymom_clst
+         endif
+
          if(bdebug_print_clusters.ne.0) then
             call b_print_cluster(ncluster,abort,err)
             if(abort) then

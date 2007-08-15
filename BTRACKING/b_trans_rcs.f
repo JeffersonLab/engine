@@ -48,9 +48,9 @@
             bigcal_ixmax_adc = icol
           endif
           
-          call hf1(bid_bcal_row,float(irow+bigcal_prot_ny),1.0)
-          call hf1(bid_bcal_col,float(icol),1.0)
-          call hf2(bid_bcal_rowcol,float(icol),float(irow+
+          if(bid_bcal_row.gt.0) call hf1(bid_bcal_row,float(irow+bigcal_prot_ny),1.0)
+          if(bid_bcal_col.gt.0) call hf1(bid_bcal_col,float(icol),1.0)
+          if(bid_bcal_rowcol.gt.0) call hf2(bid_bcal_rowcol,float(icol),float(irow+
      $         bigcal_prot_ny),1.0)
 
 *     question of whether to group by hits or cells. 

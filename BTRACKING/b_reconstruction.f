@@ -80,7 +80,7 @@
          do isum64=1,bigcal_atrig_maxhits
 c$$$         write(*,*) 'igroup,ihalf,sum64 = ',(isum64+1)/2,mod(isum64,2)+1
 c$$$     $        ,bigcal_atrig_sum64(isum64)
-            if(bigcal_atrig_sum64(isum64).ge.b_cluster_cut) then 
+            if(bigcal_atrig_sum64(isum64).ge.b_trig_cut) then 
                mc_trig=.true.
                ngood64 = ngood64 + 1
                bigcal_atrig_esum(ngood64) = bigcal_atrig_sum64(isum64)

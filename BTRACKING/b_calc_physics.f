@@ -47,32 +47,19 @@ c            nprot = nprot + 1
             x = BIGCAL_ALL_CLSTR_X(i)
             y = BIGCAL_ALL_CLSTR_Y(i)
             E = BIGCAL_ALL_CLSTR_ETOT(i)
-            call hf1(bid_bcal_xclust,x,1.0)
-            call hf1(bid_bcal_yclust,y,1.0)
-            call hf1(bid_bcal_xmom,bigcal_all_clstr_xmom(i),1.0)
-            call hf1(bid_bcal_ymom,bigcal_all_clstr_ymom(i),1.0)
-            call hf1(bid_bcal_eclust,E,1.0)
-            call hf1(bid_bcal_ncellclst,float(bigcal_all_clstr_ncell(i)),1.0)
-            call hf1(bid_bcal_nxclust,float(bigcal_all_clstr_ncellx(i)),1.0)
-            call hf1(bid_bcal_nyclust,float(bigcal_all_clstr_ncelly(i)),1.0)
-            call hf2(bid_bcal_nxny,float(bigcal_all_clstr_ncellx(i)),
+            if(bid_bcal_xclust.gt.0) call hf1(bid_bcal_xclust,x,1.0)
+            if(bid_bcal_yclust.gt.0) call hf1(bid_bcal_yclust,y,1.0)
+            if(bid_bcal_xmom.gt.0) call hf1(bid_bcal_xmom,bigcal_all_clstr_xmom(i),1.0)
+            if(bid_bcal_ymom.gt.0) call hf1(bid_bcal_ymom,bigcal_all_clstr_ymom(i),1.0)
+            if(bid_bcal_ncellclst.gt.0) call hf1(bid_bcal_ncellclst,float(bigcal_all_clstr_ncell(i)),1.0)
+            if(bid_bcal_nxclust.gt.0) call hf1(bid_bcal_nxclust,float(bigcal_all_clstr_ncellx(i)),1.0)
+            if(bid_bcal_nyclust.gt.0) call hf1(bid_bcal_nyclust,float(bigcal_all_clstr_ncelly(i)),1.0)
+            if(bid_bcal_nxny.gt.0) call hf2(bid_bcal_nxny,float(bigcal_all_clstr_ncellx(i)),
      $           float(bigcal_all_clstr_ncelly(i)),1.0)
-            call hf2(bid_bcal_xy,x,y,1.0)
+            if(bid_bcal_xy.gt.0) call hf2(bid_bcal_xy,x,y,1.0)
             t = BIGCAL_ALL_CLSTR_T8MEAN(i)
-            call hf1(bid_bcal_tmean,t,1.0)
-            call hf1(bid_bcal_trms,bigcal_all_clstr_t8rms(i),1.0)
-c     increment energy sum 
-            irow = bigcal_all_clstr_iymax(i)
-            icol = bigcal_all_clstr_ixmax(i)
-
-            if(irow.le.32) then
-               icell = icol + 32*(irow-1)
-            else 
-               icell = icol + 30*(irow-33) + bigcal_prot_maxhits
-            endif
-
-            b_all_run_Esum(icell) = b_all_run_Esum(icell)+E
-            b_all_run_Enum(icell) = b_all_run_Enum(icell)+1
+            if(bid_bcal_tmean.gt.0) call hf1(bid_bcal_tmean,t,1.0)
+            if(bid_bcal_trms.gt.0) call hf1(bid_bcal_trms,bigcal_all_clstr_t8rms(i),1.0)
 
 c     correct every track for energy loss. BigCal is always electron arm
 c     need to set up eloss params for BigCal absorber!
@@ -84,11 +71,11 @@ c     need to set up eloss params for BigCal absorber!
 
             thetarad = acos(zrot/L)
             thetadeg = 180./tt * thetarad
-            call hf1(bid_bcal_theta,thetadeg,1.0)
+            if(bid_bcal_theta.gt.0) call hf1(bid_bcal_theta,thetadeg,1.0)
 
             phirad = atan2(y,xrot)
             phideg = 180./tt * phirad
-            call hf1(bid_bcal_phi,phideg,1.0)
+            if(bid_bcal_phi.gt.0) call hf1(bid_bcal_phi,phideg,1.0)
 
             gamma = E / m_e
             beta = sqrt(1. - 1./gamma**2)
@@ -106,6 +93,21 @@ c$$$               eloss = 0.
 c$$$            endif
 
             E = E + eloss
+
+            if(bid_bcal_eclust.gt.0) call hf1(bid_bcal_eclust,E,1.0)
+
+c     increment energy sum 
+            irow = bigcal_all_clstr_iymax(i)
+            icol = bigcal_all_clstr_ixmax(i)
+
+            if(irow.le.32) then
+               icell = icol + 32*(irow-1)
+            else 
+               icell = icol + 30*(irow-33) + bigcal_prot_maxhits
+            endif
+
+            b_all_run_Esum(icell) = b_all_run_Esum(icell)+E
+            b_all_run_Enum(icell) = b_all_run_Enum(icell)+1
 
             mom = sqrt(E**2 - m_e**2) 
             beta = mom/E
