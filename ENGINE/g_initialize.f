@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.24.6.6  2007/08/15 21:44:21  puckett
+* Added gep (coincidence) report names to filename initialization
+*
 * Revision 1.24.6.5  2007/08/07 19:06:06  puckett
 * *** empty log message ***
 *
@@ -324,7 +327,7 @@ c     avoid divide-by-zero errors for BigCal:
         call h_init_histid(ABORT,err)
         call s_init_histid(ABORT,err)
         call b_init_histid(ABORT,err) ! add bigcal
-*        call gep_init_histid(ABORT,err) ! add GEp-coin
+        call gep_init_histid(ABORT,err) ! add GEp-coin
 *
         if(g_alias_filename.ne.' ') then
           file = g_alias_filename

@@ -23,6 +23,9 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
+* Revision 1.19.6.3  2007/08/15 21:44:21  puckett
+* Added gep (coincidence) report names to filename initialization
+*
 * Revision 1.19.6.2  2007/08/07 19:03:38  puckett
 * added initialization for tree filenames
 *
@@ -139,6 +142,7 @@
       g_report_template_filename = ' '
       c_report_template_filename = ' '
       b_report_template_filename = ' ' ! add BigCal
+      gep_report_template_filename = ' ' ! add GEp
       g_stats_template_filename = ' '
 *
       h_report_output_filename = ' '
@@ -146,6 +150,7 @@
       g_report_output_filename = ' '
       c_report_output_filename = ' '
       b_report_output_filename = ' ' ! add BigCal
+      gep_report_output_filename = ' ' ! add GEp
       g_stats_output_filename = ' '
       g_bad_output_filename = ' '
       g_epics_output_filename = ' '
@@ -155,6 +160,7 @@
       g_report_blockname = ' '
       c_report_blockname = ' '
       b_report_blockname = ' ' ! add BigCal
+      gep_report_blockname = ' '
       g_stats_blockname = ' '
 *
       h_threshold_output_filename = ' '
