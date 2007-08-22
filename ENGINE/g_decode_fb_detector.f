@@ -5,6 +5,12 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.2  2007/08/22 19:09:16  frw
+* added FPP
+*
+* Revision 1.24 frw
+* added processing of F1 TDCs
+*
 * Revision 1.23.20.1  2007/05/15 02:55:01  jones
 * Start to Bigcal code
 *
@@ -99,11 +105,13 @@
       integer counter,signal,sigtyp
 *
       include 'gen_decode_common.cmn'
+      include 'gen_decode_F1tdc.cmn'
       include 'gen_detectorids.par'
       include 'gen_scalers.cmn'
       include 'gen_event_info.cmn'
 *
-      integer h,hshift
+      integer h,hshift,i
+      integer*4 trigger_time
       integer subaddbit
       logical printerr  !flag to turn off printing of error after 1 time.
       logical firsttime
@@ -154,7 +162,7 @@
         endif
         slot = jiand(JISHFT(evfrag(pointer),-27),'1F'X)
         if(slot.ne.oslot.or.firsttime) then
-          if (slot.le.0 .or. slot.ge.26 .or. roc.le.0 .or. roc.ge.9) then
+          if (slot.le.0 .or. slot.ge.26 .or. roc.le.0 .or. roc.ge.G_DECODE_MAXSLOTS) then
 c$$$            write (6,'(a,i3,i3,i3,z10,a,i5,a,i8)') 'roc,slot,oslot,evfrag=',roc,
 c$$$     &           slot,oslot,evfrag(pointer),
 c$$$     $           '(p=',pointer,') for event #',gen_event_id_number
@@ -168,6 +176,7 @@ c$$$            write (6,'(a,i3)') '  Probably after slot',jiand(JISHFT(evfrag(p
         endif
         if(slot.ne.oslot) then
           oslot = slot
+         trigger_time = -1     !flag absence of header data via default of error
 
 c
 c     On 1881M's and 1877, a subaddress of zero could be a header word, so
@@ -179,7 +188,7 @@ c     1877 has a subaddress of zero, in which case it is the header word and mus
 c     be discarded.  If it is an 1881 or 1876, then the the first word of a
 c     new slot will have a subaddress of '7F' and later be discarded.
 c
-          if(subaddbit.eq.17) then      ! Is not an 1872A (which has not headers)
+          if(subaddbit.eq.17.and.g_decode_modtyp(roc,slot).eq.0) then      ! Is not an 1872A (which has not headers)
             if(jiand(evfrag(pointer),'00FE0000'X).eq.0) then ! probably a header
               if(jiand(evfrag(pointer),'07FF0000'X).ne.0) then
                 print *,"SHIT:misidentified real data word as a header"
@@ -190,9 +199,52 @@ c
               endif
             endif
           endif
-        endif
+
+        endif !oslot
 *
+*      * for F1 TDCs, the TDC counts are ABSOLUTE with a random zero value
+*      * to get the time relative to a triggering event, the trigger must be 
+*      * recorded as well in a TDC channel
+*      * a low-resolution measure of the trigger is provided in the data header
+*      * but this is insufficient for time measurements
+*      * it *is* however good for detecting roll-over of the free running
+*      * absolute time, as it overflows at the same time as the measured values
+*      * 
+*      * so we branch depending on externally supplied VME ROC flag
+*      *
+*      *  for F1 TDC, there are two types of data:
+*      *   header/trailer words and data words
+*      *
+*      *                                 ,overflow              Xor
+*      *  header/trailer: xxxx xxxx  0  ?  ?? ????  ???? ???? ?  ?  ?? ?  ???
+*      *                                     |        T_trigger       |   channel
+*      *                                 event no                  chip
+*      *
+*      *            data: xxxx xxxx  1 0  ?? ?  ???  ???? ???? ???? ????
+*      *                                  chip  chan ------ data -------
+*      *
+*      *  in both cases, the first 8 bits (xxxx xxxx) are as follows:
+*      *
+*      *      ???? ?   ???
+*      *        slot   error flags
+*      *
+*      *  data have 16 bits for TDC count, i.e. 0-65535
+*      *  but header's T_trigger only has 9 bits, i.e. 0-511
+*
+        if (g_decode_modtyp(roc,slot).eq.0) then  ! fastbus
         subadd = jiand(JISHFT(evfrag(pointer),-subaddbit),'7F'X)
+
+       elseif (g_decode_modtyp(roc,slot).eq.1) then  ! VME F1 TDC
+         if (jiand(ishft(evfrag(pointer),-23),'1'X).eq.0) then  !data
+           subadd = jiand(jishft(evfrag(pointer),-subaddbit),'3F'X)
+         else  !header
+           subadd = jiand(evfrag(pointer),'3F'X)
+           trigger_time = jiand(ishft(evfrag(pointer),-7),'1FF'X)
+           trigger_time = trigger_time*128 + 127  ! trigger time has 7 bits less resolution!!
+           pointer = pointer + 1
+            goto 987
+         endif
+       endif
 *
 *     If a module that uses a shift of 17 for the subaddress is in a slot
 *     that we havn't told the map file about, it's data will end up in the
@@ -217,6 +269,12 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddresses
               plane = g_decode_planemap(mappointer+subadd)
               counter = g_decode_countermap(mappointer+subadd)
               signal =jiand(evfrag(pointer),g_decode_slotmask(roc,slot))
+*     fix roll-over if module is F1 TDC
+             if (g_decode_modtyp(roc,slot).eq.1) then
+               if (signal.lt.trigger_time) then  ! roll-over!!
+                 signal = signal + F1TDC_WINDOW_SIZE(roc)
+               endif
+             endif
             else
               plane = jishft(roc,16) + slot
               counter = subadd
@@ -305,7 +363,8 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddresses
                 else if (sigtyp.eq.3) then
                   signal3(h) = signal
                 endif
-              endif
+              endif !multi-signal
+
             else if(hitcount.eq.maxhits .and. printerr) then ! Only print this message once
               print *,'g_decode_fb_detector: Max exceeded, did=',
      $             did,', max=',maxhits,': event',gen_event_id_number

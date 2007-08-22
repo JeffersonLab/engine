@@ -1,6 +1,12 @@
 *     hms_statistics.cmn
 *     common blocks containing event statistics for h_reconstruction
 * $Log$
+* Revision 1.12.20.1  2007/08/22 19:09:31  frw
+* added FPP
+*
+* Revision 1.13  2006/06/22 frw
+* added FPP variables
+*
 * Revision 1.12  2003/09/05 21:05:10  jones
 * Merge in online03 changes (mkj)
 *
@@ -187,3 +193,27 @@
       common/htrig_hodostatistics/
      &   htrig_hodoshouldflag,
      &   htrig_hododidflag
+
+*
+*  Focal Plane Polarimeter variables (frw 2006/06/22)
+*
+*
+*     CTPTYPE=event
+*
+      real*4 HFPP_stat_dist2closest	! distance to closest hit wire
+      integer*4 HFPP_stat_shouldhit	! # of wire fitted track passed
+      logical*4 HFPP_stat_diddhit	! true if shouldhit was hit (w/ slop)
+
+*     * now the same again with sequential plane numbers for CTP
+      integer*4 HFPP_stat_planeshould
+      logical*4 HFPP_stat_planedidd
+
+      common/HMS_FPP_stats/
+     &   HFPP_stat_dist2closest(H_FPP_N_DCSETS,H_FPP_N_DCINSET,
+     >  			    H_FPP_N_DCLAYERS,H_FPP_MAX_TRACKS),
+     &   HFPP_stat_shouldhit(H_FPP_N_DCSETS,H_FPP_N_DCINSET,
+     >  		            H_FPP_N_DCLAYERS,H_FPP_MAX_TRACKS),
+     &   HFPP_stat_diddhit(H_FPP_N_DCSETS,H_FPP_N_DCINSET,
+     >  		          H_FPP_N_DCLAYERS,H_FPP_MAX_TRACKS),
+     &   HFPP_stat_planeshould(H_FPP_N_PLANES,H_FPP_MAX_TRACKS),
+     &   HFPP_stat_planedidd(H_FPP_N_PLANES,H_FPP_MAX_TRACKS)

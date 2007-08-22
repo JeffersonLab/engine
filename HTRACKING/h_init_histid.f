@@ -7,7 +7,13 @@
 *     Date:      9 April 1994
 *
 * $Log$
-* Revision 1.8  2002/12/20 21:53:33  jones
+* Revision 1.8.24.1  2007/08/22 19:09:30  frw
+* added FPP
+*
+* Revision 1.10  2006/06/22 frw
+* added HMS FPP entries
+*
+* Revision 1.9  2002/12/20 21:53:33  jones
 * Modified by Hamlet for new HMS aerogel
 *
 * Revision 1.8  2002/10/05 (Hamlet)
@@ -68,6 +74,7 @@ c
       external thgetid
       integer*4 thgetid
       integer*4 plane,counter
+      integer*4 set,chamber,layer
 *
       include 'hms_data_structures.cmn'
       include 'hms_tracking.cmn'
@@ -251,6 +258,116 @@ c
       hidhaero_adc_pos_pedsubtr = thgetid('haeroadcpospedsubtr')
       hidhaero_adc_neg_pedsubtr = thgetid('haeroadcnegpedsubtr')
 c
+* HMS FPP
+
+      hidFPP_tdcROC = thgetid('hfpp_tdcroc')
+
+      do plane = 1,H_FPP_N_PLANES
+        if(plane.lt.10) then
+          write(histname,'(''hfpp_rawinclust'',i1)') plane
+          hidFPP_rawinclust(plane) = thgetid(histname)
+          write(histname,'(''hfpp_tdc'',i1)') plane
+          hidFPP_tdc(plane) = thgetid(histname)
+          write(histname,'(''hfpp_Tall'',i1)') plane
+          hidFPP_alltimes(plane) = thgetid(histname)
+          write(histname,'(''hfpp_Tone'',i1)') plane
+          hidFPP_time1(plane) = thgetid(histname)
+          write(histname,'(''hfpp_T12_'',i1)') plane
+          hidFPP_time12(plane) = thgetid(histname)
+          write(histname,'(''hfpp_rate1_'',i1)') plane
+          hidFPP_rate1(plane) = thgetid(histname)
+          write(histname,'(''hfpp_time'',i1)') plane
+          hidFPP_planetime(plane) = thgetid(histname)
+        else
+          write(histname,'(''hfpp_rawinclust'',i2)') plane
+          hidFPP_rawinclust(plane) = thgetid(histname)
+          write(histname,'(''hfpp_tdc'',i2)') plane
+          hidFPP_tdc(plane) = thgetid(histname)
+          write(histname,'(''hfpp_Tall'',i2)') plane
+          hidFPP_alltimes(plane) = thgetid(histname)
+          write(histname,'(''hfpp_Tone'',i2)') plane
+          hidFPP_time1(plane) = thgetid(histname)
+          write(histname,'(''hfpp_T12_'',i2)') plane
+          hidFPP_time12(plane) = thgetid(histname)
+          write(histname,'(''hfpp_rate1_'',i2)') plane
+          hidFPP_rate1(plane) = thgetid(histname)
+          write(histname,'(''hfpp_time'',i2)') plane
+          hidFPP_planetime(plane) = thgetid(histname)
+        endif
+      enddo
+
+      do set=1,H_FPP_N_DCSETS
+	write(histname,'(''hfpp_NickEff_'',i1)') set
+	hidFPP_NickEff(set) = thgetid(histname)
+
+	write(histname,'(''hfpp_'',i1,''ntrk'')') set
+	hidFPP_Ntrk(set) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''trk_chi2'')') set
+	hidFPP_trk_chi2(set) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''trk_mx'')') set		! focal plane coords
+	hidFPP_trk_mx(set) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''trk_bx'')') set		! focal plane coords
+	hidFPP_trk_bx(set) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''trk_my'')') set		! focal plane coords
+	hidFPP_trk_my(set) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''trk_by'')') set		! focal plane coords
+	hidFPP_trk_by(set) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''ntrkhit'')') set
+	hidFPP_Nhitontrk(set) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''ntrkraw'')') set
+	hidFPP_Nrawontrk(set) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''rough_mx'')') set	! chamber coords
+	hidFPP_trkrough(set,1) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''rough_bx'')') set	! chamber coords
+	hidFPP_trkrough(set,2) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''rough_my'')') set	! chamber coords
+	hidFPP_trkrough(set,3) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''rough_by'')') set	! chamber coords
+	hidFPP_trkrough(set,4) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''rough_chi2'')') set
+	hidFPP_trkrough(set,5) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''rough_nraw'')') set
+	hidFPP_trkrough(set,6) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''fine_mx'')') set	! chamber coords
+	hidFPP_fine_mx(set) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''fine_my'')') set	! chamber coords
+	hidFPP_fine_my(set) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''fine_bx'')') set	! chamber coords
+	hidFPP_fine_bx(set) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''fine_by'')') set	! chamber coords
+	hidFPP_fine_by(set) = thgetid(histname)
+
+	write(histname,'(''hfpp_'',i1,''sclose'')') set		! closest approach
+	hidFPP_sclose(set) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''zclose'')') set		! z at closets
+	hidFPP_zclose(set) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''theta'')') set		! polar theta
+	hidFPP_thetapol(set) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''phi'')') set		! polar phi
+	hidFPP_phipol(set) = thgetid(histname)
+
+	write(histname,'(''hfpp_'',i1,''distance'')') set	! track--wire dist
+	hidFPP_dist(set) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''linresol'')') set	! lin track resol
+	hidFPP_resol_lin(set) = thgetid(histname)
+	write(histname,'(''hfpp_'',i1,''angresol'')') set	! angular trk res
+	hidFPP_resol_ang(set) = thgetid(histname)
+      enddo
+
+      do set=1,H_FPP_N_DCSETS
+       do chamber=1,H_FPP_N_DCINSET
+        do layer=1,H_FPP_N_DCLAYERS
+	  write(histname,'(''hfpp_driftT_'',3i1)') set, chamber, layer
+	  hidFPP_driftT(set,chamber,layer) = thgetid(histname)
+	  write(histname,'(''hfpp_driftX_'',3i1)') set, chamber, layer
+	  hidFPP_driftX(set,chamber,layer) = thgetid(histname)
+	  write(histname,'(''hfpp_shouldhit_'',3i1)') set, chamber, layer
+	  hidFPP_should(set,chamber,layer) = thgetid(histname)
+	  write(histname,'(''hfpp_didhit_'',3i1)') set, chamber, layer
+	  hidFPP_did(set,chamber,layer) = thgetid(histname)
+	enddo
+       enddo
+      enddo
 
       RETURN
       END

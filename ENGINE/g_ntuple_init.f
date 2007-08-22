@@ -13,6 +13,12 @@
 *- 
 *-Created  6-September-1995 SAW
 * $Log$
+* Revision 1.1.24.3  2007/08/22 19:09:16  frw
+* added FPP
+*
+* Revision 1.1.25 frw
+* added call for FPP
+*
 * Revision 1.1.24.2  2007/06/04 14:56:05  puckett
 * changed hit array structure for trigger related signals
 *
@@ -49,6 +55,14 @@ c      write(*,*) 'about to call h_ntuple_init'
         call G_append(err,' & '//why)
       elseif(why.NE.' ') then
         err= why
+      endif
+      ABORT= ABORT .or. FAIL
+*
+      call h_fpp_nt_init(FAIL,why)
+      if(err.NE.' ' .and. why.NE.' ') then
+	call G_append(err,' & '//why)
+      elseif(why.NE.' ') then
+	err= why
       endif
       ABORT= ABORT .or. FAIL
 *     

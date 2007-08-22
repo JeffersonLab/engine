@@ -10,7 +10,7 @@
 *     Inputs:
 *
 *     fname      Name of file
-*     -          Allowed keywords. roc, slot, detector, nsubadd, mask
+*     -          Allowed keywords. roc, slot, detector, nsubadd, mask, module
 *     -          Numerical lines: Subadd, Plane, Counter, Signal
 *
 *     Outputs:
@@ -21,6 +21,13 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton Univ.; rewrote parsing
 * $Log$
+* Revision 1.7.24.1  2007/08/22 19:09:16  frw
+* added FPP
+*
+* Revision 1.8  4/2007  frw
+*    add new declaration statement to mapping file to indicate module
+*    type -- NOT used by fastbus and thus defaults to 0 if undeclared
+*
 * Revision 1.7  2002/09/25 14:40:33  jones
 *    Add call to G_IO_control to get spareID for unit number to open file
 *     and call at end to G_IO_control free the unit number.
@@ -70,7 +77,7 @@
       integer llen,lp,lpcom, lpeq, m                          ! Line pointers
       character*1 tab
       integer*4 roc, slot, subadd, mask
-      integer*4 did, plane, counter, signal, nsubadd, bsubadd
+      integer*4 did, plane, counter, signal, nsubadd, bsubadd, modtyp
       integer*4 lastroc, lastslot
       integer N_lines_read
 
@@ -88,6 +95,7 @@
 *     slot=
 *     detector=
 *     nsubadd=
+*     moduletype=
 *     A line with 4 comma separated numbers, Subadd, plane, "wire #", sigtyp
 *     sigtyp may be left blank (e.g. for wire chambers) in which case zero
 *     is assumed.
@@ -111,6 +119,7 @@
       N_lines_read= 0
       mask = 'FFF'x                     ! Default data mask
       bsubadd = 17                      ! Default LSB of channel field
+      modtyp = 0
 
       OK= .TRUE.
       DO WHILE (OK)
@@ -161,6 +170,7 @@
                   if(lpeq.gt.0) then
                      if(index(line(1:lpeq-1),'ROC').gt.0) then
                         read(line(lpeq+1:llen),'(i10)') roc
+			modtyp = 0  !init to fastbus for compatibility
                      else if(index(line(1:lpeq-1),'SLOT').gt.0) then
                         read(line(lpeq+1:llen),'(i10)') slot
                      else if(index(line(1:lpeq-1),'DET').gt.0) then
@@ -169,6 +179,8 @@
                         read(line(lpeq+1:llen),'(i10)') nsubadd
                      else if(index(line(1:lpeq-1),'BSUB').gt.0) then
                         read(line(lpeq+1:llen),'(i10)') bsubadd
+                     else if(index(line(1:lpeq-1),'MODU').gt.0) then
+                        read(line(lpeq+1:llen),'(i10)') modtyp
                      else if(index(line(1:lpeq-1),'MASK').gt.0) then
                         lp = index(line(lpeq+1:llen),'X')
                         if(lp.gt.0) llen = lpeq+lp-1
@@ -192,6 +204,7 @@
                         g_decode_subaddcnt(roc,slot) = nsubadd
                         g_decode_subaddbit(roc,slot) = bsubadd
                         g_decode_slotmask(roc,slot) = mask
+                        g_decode_modtyp(roc,slot) = modtyp
                         g_decode_nextpointer = g_decode_nextpointer +
      &                       nsubadd
                         lastroc = roc
@@ -208,6 +221,20 @@
      &                    +subadd ) = counter
                      g_decode_sigtypmap( g_decode_slotpointer(roc,slot)
      &                    +subadd ) = signal
+                     if (     did.le.G_DECODE_MAXDIDS
+     &		         .and.plane.le.G_DECODE_MAXPLANES
+     &		         .and.counter.le.G_DECODE_MAXCOUNTERS
+     &		         .and.signal.le.G_DECODE_MAXSIGNALS) then
+                       g_decode_roc(did,plane,counter,signal) = roc
+		     else
+		       print *,'\n Array limits insufficient!!'
+		       print *,'   max did =',G_DECODE_MAXDIDS ,'     got ',did
+		       print *,'   max plane =',G_DECODE_MAXPLANES ,'   got ',plane
+		       print *,'   max counter =',G_DECODE_MAXCOUNTERS ,' got ',counter
+		       print *,'   max signal =',G_DECODE_MAXSIGNALS ,'  got ',signal
+		       print *,'\n Update  gen_decode_common.cmn  and recompile!/n'
+		       STOP
+		     endif
                   EndIf
 
                endif

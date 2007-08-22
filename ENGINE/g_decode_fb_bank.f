@@ -27,6 +27,15 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.5  2007/08/22 19:09:16  frw
+* added FPP
+*
+* Revision 1.4  4/2007  frw
+* added handling of VME data
+*
+* Revision 1.33  2006/06/22 frw
+* added FPP
+*
 * Revision 1.32.20.4  2007/06/20 18:34:43  puckett
 * Added BigCal Monte Carlo analysis capability
 *
@@ -242,9 +251,46 @@ cajp
       slot = jiand(jishft(bank(pointer),-27),'1F'X)
       if(slot.gt.0.and.slot.le.G_DECODE_MAXSLOTS .and.
      $     roc.gt.0 .and. roc.le.g_decode_maxrocs) then
-c      write(6,*) 'pointer,roc,slot=',pointer,roc,slot
+
+*       * for F1 TDCs, the traditional subadd cut will not work!
+*       * we need the header word which contains the trigger time to
+*       * handle roll-over, but the header has the subadd at the very LSB 
+*       * 
+*       * so we branch depending on externally supplied VME ROC flag to
+*       * properly handle these headers and all data words
+*       * note that we really WANT to see the header words for trigger timing!
+*       *
+*       *  for F1 TDC, there are two types of data:
+*       *   header/trailer words and data words
+*       *
+*       *				  ,overflow		 Xor
+*       *  header/trailer: xxxx xxxx  0  ?  ?? ????  ???? ???? ?  ?  ?? ?  ???
+*       *				      |        T_trigger       |   channel
+*       *				  event no		    chip
+*       *
+*       *	     data: xxxx xxxx  1 0  ?? ?  ???  ???? ???? ???? ????
+*       *				   chip  chan ------ data -------
+*       *
+*       *  in both cases, the first 8 bits (xxxx xxxx) are as follows:
+*       *
+*       *      ???? ?	???
+*       *	 slot	error flags
+*       *
+*       *  data have 16 bits for TDC count, i.e. 0-65535
+*       *  but header's T_trigger only has 9 bits, i.e. 0-511
+*
+        if (g_decode_modtyp(roc,slot).eq.0) then ! FastBus
         subadd = jiand(jishft(bank(pointer),
      $       -g_decode_subaddbit(roc,slot)),'7F'X)
+
+	elseif (g_decode_modtyp(roc,slot).eq.1) then !VME F1 TDC
+	  if (jiand(ishft(bank(pointer),-23),'1'X).eq.0) then  !header
+	    subadd = jiand(bank(pointer),'3F'X)
+	  else  !data
+	    subadd = jiand(jishft( bank(pointer),
+     $                            -g_decode_subaddbit(roc,slot) ),'3F'X)
+	  endif
+	endif
 
 c        if (subadd .lt. '7F'X) then     ! Only valid subaddress
         if (subadd .lt. 255) then     ! Only valid subaddress
@@ -320,6 +366,19 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddress
 
 *            print *,'HAERO_TDC_POS',HAERO_TDC_POS
 *            print *,'HAERO_TDC_NEG',HAERO_TDC_NEG
+
+*
+*====================== HMS Focal Plane Polarimeter ==================
+*
+          else if (did.eq.HFPP_ID) then
+*
+* planes are DC layers of all chambers in order of increasing z-coord
+*
+            pointer = pointer +
+     $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
+     &           maxwords, did, 
+     $           H_FPP_MAX_RAWHITS, HFPP_raw_tot_hits,
+     $           HFPP_raw_plane, HFPP_raw_wire, 1, HFPP_raw_TDC, 0, 0, 0)
 
 *
 *

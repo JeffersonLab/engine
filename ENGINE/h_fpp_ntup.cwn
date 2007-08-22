@@ -1,0 +1,99 @@
+c common block of variables for column-wise Ntuple for HMS FPP
+***** these must NOT be used in the CTP system!!
+
+      integer MAX_cwn_goodhits
+      parameter (MAX_cwn_goodhits= 600)
+
+      integer MAX_cwn_tracks
+      parameter (MAX_cwn_tracks= 18)	!!! should be 2*H_FPP_MAX_TRACKS !!!
+
+      integer*4 cwnFPP_eventID	      ! seqential trigger no
+
+      integer*4 cwnFPP_evtcode	      ! overall FPP event descriptor
+
+      real*4    cwnFPP_hsdelta	      ! momentum delta of HMS track
+      real*4    cwnFPP_hstheta	      ! angle of HMS track in hall
+      real*4    cwnFPP_hsphi	      ! azimuth of HMS track in hall
+      real*4    cwnFPP_w	      ! missing mass of HMS track (incl.)
+      real*4    cwnFPP_hszbeam	      ! z-coord of beam*HMS track in target
+      real*4    cwnFPP_hsxfp	      ! x-coord of HMS track at FP
+      real*4    cwnFPP_hsyfp	      ! y-coord of HMS track at FP
+      real*4    cwnFPP_hsxpfp	      ! dx/dz of HMS track at FP
+      real*4    cwnFPP_hsypfp	      ! dy/dz of HMS track at FP
+
+      real*4    cwnFPP_trig_TDC1      ! TDC value of FPP trigger signal in VME 1
+      real*4    cwnFPP_trig_TDC2      ! TDC value of FPP trigger signal in VME 2
+
+      integer*4 cwnFPP_RawHits	      ! raw # of hits in FPP chambers
+
+      integer*4 cwnFPP_Nhits1	      ! # of wires with usable hit in layers 1-6 (either pol)
+      integer*4 cwnFPP_Hit1_pol	      ! polarimeter 1 or 2
+      integer*4 cwnFPP_Hit1_layer     ! layer # of each hit
+      integer*4 cwnFPP_Hit1_wire      ! wire # of each hit
+      integer*4 cwnFPP_Hit1_itrack    ! # of track hit is used in
+      real*4    cwnFPP_Hit1_time      ! corrected TDC time of each hit
+      real*4    cwnFPP_Hit1_drift     ! signed(!) drift distance
+      real*4    cwnFPP_Hit1_resid     ! signed(!) residual between drift & track
+
+      integer*4 cwnFPP_Ntracks	      ! # of tracks in upstream polarimeter
+      integer*4 cwnFPP_trk_pol	      ! upstream (1) or downstream (2) polarimeter
+      integer*4 cwnFPP_trk_num	      ! seq # of track in pol
+      integer*4 cwnFPP_trk_hits	      ! # of layers contributing
+      real*4    cwnFPP_simple_mx      ! simple track dx/dz in chamber coords
+      real*4    cwnFPP_simple_bx      ! 	     x-coord in chamber system
+      real*4    cwnFPP_simple_my      ! 	     dy/dz in chamber coords
+      real*4    cwnFPP_simple_by      ! 	     y-coord in chamber system
+      real*4    cwnFPP_full_mx        ! full track dx/dz in FP coords, upstream polarimeter
+      real*4    cwnFPP_full_bx        !  	  x-coord in FP system
+      real*4    cwnFPP_full_my        !  	  dy/dz in FP coords
+      real*4    cwnFPP_full_by        !  	  y-coord in FP system
+      real*4    cwnFPP_chi2	      ! 	   reduced chi**2
+      real*4    cwnFPP_zclose	      ! 	   z-coord of closest approach
+      real*4    cwnFPP_sclose	      ! 	   distance of closest approach
+      real*4    cwnFPP_theta	      ! 	   opening angle betw incident and re-scattered
+      real*4    cwnFPP_phi	      ! 	   azimuthal angle
+
+
+      COMMON /CWNtupleFPP/ cwnFPP_eventID,
+     & cwnFPP_evtcode,
+     & cwnFPP_hsdelta,
+     & cwnFPP_hstheta,
+     & cwnFPP_hsphi,
+     & cwnFPP_w,
+     & cwnFPP_hszbeam,
+     & cwnFPP_hsxfp,
+     & cwnFPP_hsyfp,
+     & cwnFPP_hsxpfp,
+     & cwnFPP_hsypfp,
+     &
+     & cwnFPP_trig_TDC1,
+     & cwnFPP_trig_TDC2,
+     &
+     & cwnFPP_RawHits,
+     &
+     & cwnFPP_Nhits1,
+     & cwnFPP_Hit1_pol(MAX_cwn_goodhits),
+     & cwnFPP_Hit1_layer(MAX_cwn_goodhits),
+     & cwnFPP_Hit1_wire(MAX_cwn_goodhits),
+     & cwnFPP_Hit1_iTrack(MAX_cwn_goodhits),
+     & cwnFPP_Hit1_time(MAX_cwn_goodhits),
+     & cwnFPP_Hit1_drift(MAX_cwn_goodhits),
+     & cwnFPP_Hit1_resid(MAX_cwn_goodhits),
+     &
+     & cwnFPP_Ntracks,
+     & cwnFPP_trk_pol(MAX_cwn_tracks),
+     & cwnFPP_trk_num(MAX_cwn_tracks),
+     & cwnFPP_trk_hits(MAX_cwn_tracks),
+     & cwnFPP_simple_mx(MAX_cwn_tracks),
+     & cwnFPP_simple_bx(MAX_cwn_tracks),
+     & cwnFPP_simple_my(MAX_cwn_tracks),
+     & cwnFPP_simple_by(MAX_cwn_tracks),
+     & cwnFPP_full_mx(MAX_cwn_tracks),
+     & cwnFPP_full_bx(MAX_cwn_tracks),
+     & cwnFPP_full_my(MAX_cwn_tracks),
+     & cwnFPP_full_by(MAX_cwn_tracks),
+     & cwnFPP_chi2(MAX_cwn_tracks),
+     & cwnFPP_zclose(MAX_cwn_tracks),
+     & cwnFPP_sclose(MAX_cwn_tracks),
+     & cwnFPP_theta(MAX_cwn_tracks),
+     & cwnFPP_phi(MAX_cwn_tracks)

@@ -5,9 +5,15 @@
 *
 *     Created:     D.F.Geesaman         22 May 1994
 * $Log$
-* Revision 1.6  2002/12/20 21:52:32  jones
-* Modified by Hamlet for new HMS aerogel
+* Revision 1.6.24.1  2007/08/22 19:09:31  frw
+* added FPP
 *
+*
+* Revision 1.8  2006/06/22
+* (frw) Add bypass switches for FPP
+*
+* Revision 1.7  2002/12/20 21:52:32  jones
+* Modified by Hamlet for new HMS aerogel
 *
 * Revision 1.6  2002/09/26
 * (Hamlet)) Add bypass switch for Aerogel
@@ -31,12 +37,14 @@
 *
       integer*4 hbypass_trans_scin
       integer*4 hbypass_trans_cer
+      integer*4 hbypass_trans_fpp
       integer*4 hbypass_trans_cal
       integer*4 hbypass_trans_dc
       integer*4 hbypass_track
       integer*4 hbypass_targ_trans
       integer*4 hbypass_tof
       integer*4 hbypass_cal
+      integer*4 hbypass_fpp
       integer*4 hbypass_cer
       integer*4 hbypass_haero
       integer*4 hbypass_physics
@@ -50,12 +58,14 @@
       common/hms_bypass_switches/
      &     hbypass_trans_scin,
      &     hbypass_trans_cer,
+     &     hbypass_trans_fpp,
      &     hbypass_trans_cal,
      &     hbypass_trans_dc,
      &     hbypass_track,
      &     hbypass_targ_trans,
      &     hbypass_tof,
      &     hbypass_cal,
+     &     hbypass_fpp,
      &     hbypass_cer,
      &     hbypass_haero,
      &     hbypass_physics,

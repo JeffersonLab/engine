@@ -1,5 +1,11 @@
 #
 # $Log$
+# Revision 1.28.16.5  2007/08/22 19:09:16  frw
+# added FPP
+#
+# Revision 1.29  2006/06/23 frw
+# added HMS FPP
+#
 # Revision 1.28.16.4  2007/08/15 21:40:59  puckett
 # Added call to skeleton routine "gep_init_histid" for coincidence histograms for later
 #
@@ -162,6 +168,10 @@ ntuple_source = g_ntuple_init.f g_ntuple_shutdown.f \
 	h_sv_nt_register.f h_sv_nt_shutdown.f \
 	s_sv_nt_init.f s_sv_nt_keep.f \
 	s_sv_nt_register.f s_sv_nt_shutdown.f \
+	h_fpp_nt_change.f h_fpp_nt_close.f \
+	h_fpp_nt_init.f h_fpp_nt_keep.f \
+	h_fpp_nt_open.f h_fpp_nt_register.f \
+	h_fpp_nt_shutdown.f \
 	b_ntuple_clear.f b_ntuple_init.f b_ntuple_keep.f \
 	b_ntuple_register.f b_ntuple_shutdown.f \
 	gep_ntuple_clear.f gep_ntuple_init.f gep_ntuple_keep.f \
@@ -169,7 +179,8 @@ ntuple_source = g_ntuple_init.f g_ntuple_shutdown.f \
 gmakeregstuff = r_gen_filenames.f r_gen_run_info.f r_gen_event_info.f \
 	r_gen_scalers.f r_gen_run_pref.f r_gen_data_structures.f
 cmakeregstuff = r_coin_filenames.f r_c_ntuple.f r_coin_data_structures.f
-hmakeregstuff = r_h_ntuple.f r_h_sieve_ntuple.f r_hms_data_structures.f
+hmakeregstuff = r_h_ntuple.f r_h_sieve_ntuple.f r_hms_data_structures.f \
+ 	r_hms_fpp_event.f r_h_fpp_ntuple.f
 smakeregstuff = r_s_ntuple.f r_sos_data_structures.f
 bmakeregstuff = r_b_ntuple.f r_bigcal_data_structures.f r_bigcal_filenames.f
 gepmakeregstuff = r_gep_ntuple.f r_gep_filenames.f r_gep_data_structures.f
@@ -236,8 +247,7 @@ ifeq ($(ARCH),IRIX)
 endif
 
 ifeq ($(ARCH),Linux)
-  CERN_ROOT = /usr/local/cernlib/98
-  OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -lc -lm
+  OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -lc -lm -lnsl
   DEPLIBS := $(DEPLIBS) $(LIBROOT)/libport.a
 
 $(LIBROOT)/libport.a:
@@ -314,6 +324,9 @@ else
 
 .PRECIOUS: ../r_%.f
 endif
+
+%.cwn:: ../%.cwn
+	$(CP) $< $@
 
 %.cmn ../%.cmn:: ../../INCLUDE/%.cmn
 	$(CP) $< $@

@@ -17,6 +17,12 @@
 *                add     hdc_xcenter
 *                        hdc_ycenter
 * $Log$
+* Revision 1.11.24.1  2007/08/22 19:09:31  frw
+* added FPP
+*
+* Revision 1.12  2006/06/22 frw
+* (frw) added FPP geometry variables, common block
+*
 * Revision 1.11  1996/09/04 15:49:59  saw
 * (JRA) Make hdc_nrwire integer
 *
@@ -163,3 +169,65 @@
      &     dmytst
 
 
+*
+*      CTPTYPE=parm
+*
+      integer*4 HFPP_Nwires     ! actual # of wires in each layer (plane!!)
+
+      integer*4 HFPP_plane2set     ! mapping from plane# to set#
+      integer*4 HFPP_plane2chamber ! mapping from plane# to chamber#
+      integer*4 HFPP_plane2layer   ! mapping from plane# to layer#
+
+*     * the following offsets and rotations are expressed in the HMS FP coords
+*     * thus they describe how the chamber set is positioned relative to the
+*     * other detectors;  we expect the rotation to be carried out before the
+*     * translation, i.e. the origins of the coord systems will coincide
+*     * the translation is however expressed in HMS FP coords
+*     * the chamber set coord system mirrors HMS trasport conventions, with the
+*     * z-axis going through the center of each layer;  the origin is midway
+*     * between the two cha,mbers of the set
+
+      real*4 HFPP_alpha         ! rotation angle alpha of each chamber set
+      real*4 HFPP_beta  	! rotation angle beta  of each chamber set
+      real*4 HFPP_gamma 	! rotation angle gamma of each chamber set
+
+      real*4 HFPP_Xoff	        ! x offset in lab of each chamber set (cm)
+      real*4 HFPP_Yoff	        ! y offset in lab of each chamber set (cm)
+      real*4 HFPP_Zoff	        ! z offset in lab of each chamber set (cm)
+
+
+      real*4 HFPP_layerZ        ! z coord of each LAYER in lab (cm)
+
+      real*4 HFPP_spacing       ! wire spacing of each layer
+
+      real*4 HFPP_resolution    ! track fit hit sigma**2 of each layer in layer
+
+      real*4 HFPP_layeroffset   ! offset of each layer (along its measure)
+
+      real*4 HFPP_Mrotation     ! coordinate rotation matrix from HMS to FPP
+      real*4 HFPP_Irotation     ! coordinate rotation matrix from FPP to HMS
+
+      real*4 HFPP_direction     ! direction of unit vector along layer''s measure
+                                ! based on parameter file variable  HFPP_layerangle
+
+      integer*4 HFPP_cardpos    ! is readout card on +v or -v side of chamber?
+                                ! where u is measuring coord, v is along wires and z is beam
+
+      common/HMS_FPP_geometry/
+     &     HFPP_Nwires(H_FPP_N_PLANES)
+     &   , HFPP_plane2set(H_FPP_N_PLANES),HFPP_plane2chamber(H_FPP_N_PLANES)
+     &   , HFPP_plane2layer(H_FPP_N_PLANES)
+     &   , HFPP_alpha(H_FPP_N_DCSETS)
+     &   , HFPP_beta(H_FPP_N_DCSETS)
+     &   , HFPP_gamma(H_FPP_N_DCSETS)
+     &   , HFPP_Xoff(H_FPP_N_DCSETS)
+     &   , HFPP_Yoff(H_FPP_N_DCSETS)
+     &   , HFPP_Zoff(H_FPP_N_DCSETS)
+     &   , HFPP_Mrotation(H_FPP_N_DCSETS,3,3)
+     &   , HFPP_Irotation(H_FPP_N_DCSETS,3,3)
+     &   , HFPP_direction(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS,2)
+     &   , HFPP_spacing(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
+     &   , HFPP_resolution(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
+     &   , HFPP_layerZ(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
+     &   , HFPP_layeroffset(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
+     &   , HFPP_cardpos(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS,H_FPP_MAX_WIRES)

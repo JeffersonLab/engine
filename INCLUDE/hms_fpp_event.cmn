@@ -1,0 +1,158 @@
+* hms_fpp_event.cmn
+*--------------------------------------------------------
+*    Hall C  HMS Focal Plane Polarimeter Code
+*
+*  Purpose: HMS FPP non-raw event common block variables
+* 
+*  Created by Frank R. Wesselmann,  February 2004
+*
+*--------------------------------------------------------
+
+*     The following include statments must precede the inclusion of this
+*     file in each routine that uses it.  The *%% syntax is also a
+*     directive to makereg to tell it to include the code in the program
+*     that it generates.
+*
+*%%   include 'hms_data_structures.cmn'
+*%%   include 'gen_decode_common.cmn'
+
+
+
+*
+*     CTPTYPE=event
+*
+* mid-level event variables but not quite raw -- use plane numbers
+      integer*4 HFPP_N_planehitsraw   ! actual # hits per plane
+      integer*4 HFPP_N_planehits      ! useable # hits per plane
+      integer*4 HFPP_Nlayershit_set   ! # of layers with usable hits per set of DCs
+      integer*4 HFPP_hit1idx          ! pointer to 1st hit on given wire
+      integer*4 HFPP_hit2idx          ! pointer to 2nd hit on given wire
+      integer*4 HFPP_trigger_TDC      ! TDC value of F1 TDC trigger
+*
+* high level event variables -- determined per event -- uses set,chamber,layer
+      integer*4 HFPP_NplaneClusters      ! # of clusters in each plane(!)
+      integer*4 HFPP_nClusters           ! # of clusters in each s,c,l
+      integer*4 HFPP_nHitsinCluster      ! # of raw hits grouped into cluster
+      integer*4 HFPP_ClusterinTrack      ! is this WIDE hit already used?
+      integer*4 HFPP_Clusters            ! index in raw hit array for hits
+
+      integer*4 HFPP_Nfreehits           ! # unused hits in layer
+      integer*4 HFPP_NlayersWfreehits    ! (# layers with >=MIN hits) in chamber
+      integer*4 HFPP_NsetlayersWfreehits ! (# layers with >=MIN hits) in set
+
+      real*4 HFPP_HitTime                ! drift time of ALL hits but only
+                                         !  good hits value is meaningful!
+
+      real*4 HFPP_drift_time             ! fully corrected drift time of hits on each wire
+      real*4 HFPP_drift_dist             ! drift distance of hits on each wire
+                                         !!! both only valid if hit is used in track
+
+      common/HMS_FPP_event/
+     &    HFPP_N_planehitsraw(H_FPP_N_PLANES)
+     &  , HFPP_N_planehits(H_FPP_N_PLANES)
+     &  , HFPP_Nlayershit_set(H_FPP_N_DCSETS)
+     &  , HFPP_hit1idx(H_FPP_N_PLANES,H_FPP_MAX_WIRES)
+     &  , HFPP_hit2idx(H_FPP_N_PLANES,H_FPP_MAX_WIRES)
+     &  , HFPP_NplaneClusters(H_FPP_N_PLANES)
+     &  , HFPP_nClusters(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
+     &  , HFPP_nHitsinCluster(H_FPP_N_DCSETS,H_FPP_N_DCINSET,
+     >                       H_FPP_N_DCLAYERS,H_FPP_MAX_CLUSTERS)
+     &  , HFPP_ClusterinTrack(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS,
+     >                     H_FPP_MAX_CLUSTERS)
+     &  , HFPP_Clusters(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS,
+     >                  H_FPP_MAX_CLUSTERS,H_FPP_MAX_HITSperCLUSTER)
+     &  , HFPP_Nfreehits(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
+     &  , HFPP_NlayersWfreehits(H_FPP_N_DCSETS,H_FPP_N_DCINSET)
+     &  , HFPP_NsetlayersWfreehits(H_FPP_N_DCSETS)
+     &  , HFPP_HitTime(H_FPP_MAX_RAWHITS)
+     &  , HFPP_drift_time(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS,
+     >                    H_FPP_MAX_WIRES)
+     &  , HFPP_drift_dist(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS,
+     >                    H_FPP_MAX_WIRES)
+     &  , HFPP_trigger_TDC(0:G_DECODE_MAXROCS)
+
+
+* readability constants to use when setting HFPP_eventclass
+*
+*      CTPTYPE=parm
+*
+      integer*4  H_FPP_ET_NOHITS	! no hits in DC set at all
+      parameter (H_FPP_ET_NOHITS=0)
+      integer*4  H_FPP_ET_FEWHITS	! insufficient hits in DC set (bit 0/1)
+      parameter (H_FPP_ET_FEWHITS=1)
+      integer*4  H_FPP_ET_BAD		! only tracks with bad chi2 (bit 2/3)
+      parameter (H_FPP_ET_BAD=4)
+      integer*4  H_FPP_ET_1GOOD		! only one track had good chi2 (<HFPP_min_chi2) (bit 4/5)
+      parameter (H_FPP_ET_1GOOD=16)
+      integer*4  H_FPP_ET_MANYGOOD	! >1 tracks and at least one had good chi2 (bit 6/7)
+      parameter (H_FPP_ET_MANYGOOD=64)
+      integer*4  H_FPP_ET_1GREAT	! only one track but that one had chi2 <HFPP_aOK_chi2 (bit 4/5 AND 8/9)
+      parameter (H_FPP_ET_1GREAT=272)
+      integer*4  H_FPP_ET_MANYGREAT	! >1 tracks and at least one had chi2 <HFPP_aOK_chi2 (bit 6/7 AND 8/9)
+      parameter (H_FPP_ET_MANYGREAT=320)
+
+
+* tracking variables -- determined per event
+*
+*     CTPTYPE=event
+*
+      integer*4 HFPP_eventclass      ! simple classification of tracking results
+                                     ! see above for details
+
+      integer*4 HFPP_N_tracks        ! actual # of tracks in set
+
+      integer*4 HFPP_track_Nlayers   ! # of layers with hits used on track
+      integer*4 HFPP_track_Nhits     ! # of raw hits used on track
+
+      integer*4 HFPP_TrackCluster    ! Clusters used in track
+      integer*4 HFPP_TrackHit        ! above cluster reduced to 1 wire
+
+      real*4 HFPP_track_residual     ! uTrack - (uWire + drift)
+      real*4 HFPP_track_resolution   !  similar but uses special tracking
+      real*4 HFPP_track_angresol     !  angular resolution
+
+      real*4 HFPP_track_x            ! x of track at focal plane usinf HMS FP coords
+      real*4 HFPP_track_y            ! y of track at focal plane
+      real*4 HFPP_track_dx           ! dx/dz of track
+      real*4 HFPP_track_dy           ! dy/dz of track
+      real*4 HFPP_track_chi2         ! chi**2/df of track
+
+      real*4 HFPP_track_theta        ! opening angle betw incident and re-scattered track
+      real*4 HFPP_track_phi          ! azimuthal angle
+
+      real*4 HFPP_track_sclose       ! closest approach between pre and post anaylser track
+      real*4 HFPP_track_zclose       ! z-coord of closest approach
+
+      real*4 HFPP_track_rough        ! simple fit results using in-set coordinates
+                                     ! dx/dz, x, dy/dz, y, chi2, N
+
+      real*4 HFPP_track_fine         ! full track params using in-set coordinates
+                                     ! dx/dz, x, dy/dz, y
+
+
+      common/HMS_FPP_track/
+     &    HFPP_eventclass
+     &  , HFPP_N_tracks(H_FPP_N_DCSETS)
+     &  , HFPP_track_Nlayers(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
+     &  , HFPP_track_Nhits(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
+     &  , HFPP_TrackCluster(H_FPP_N_DCSETS,H_FPP_N_DCINSET,
+     >                      H_FPP_N_DCLAYERS,H_FPP_MAX_TRACKS)
+     &  , HFPP_TrackHit(H_FPP_N_DCSETS,H_FPP_N_DCINSET,
+     >                  H_FPP_N_DCLAYERS,H_FPP_MAX_TRACKS)
+     &  , HFPP_track_x(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
+     &  , HFPP_track_dx(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
+     &  , HFPP_track_y(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
+     &  , HFPP_track_dy(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
+     &  , HFPP_track_chi2(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
+     &  , HFPP_track_rough(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS,6)
+     &  , HFPP_track_fine(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS,4)
+     &  , HFPP_track_sclose(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
+     &  , HFPP_track_zclose(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
+     &  , HFPP_track_theta(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
+     &  , HFPP_track_phi(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
+     &  , HFPP_track_residual(H_FPP_N_DCSETS,H_FPP_N_DCINSET,
+     >                        H_FPP_N_DCLAYERS,H_FPP_MAX_TRACKS)
+     &  , HFPP_track_resolution(H_FPP_N_DCSETS,H_FPP_N_DCINSET,
+     >                        H_FPP_N_DCLAYERS,H_FPP_MAX_TRACKS)
+     &  , HFPP_track_angresol(H_FPP_N_DCSETS,H_FPP_N_DCINSET,
+     >                        H_FPP_N_DCLAYERS,H_FPP_MAX_TRACKS)

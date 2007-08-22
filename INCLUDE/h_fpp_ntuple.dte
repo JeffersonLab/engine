@@ -1,0 +1,13 @@
+**************************begin: h_fpp_nt.dte ***********************
+*
+      data h_fpp_nt_exists/.FALSE./
+      data h_fpp_nt_ID/0/
+      data h_fpp_nt_file/' '/
+      data h_fpp_nt_name/' '/
+      data h_fpp_nt_title/' '/
+      data h_fpp_nt_directory/' '/
+      data h_fpp_nt_IOchannel/0/
+      data h_fpp_nt_tag/HMAX_FPPntuple_size*' '/
+      data h_fpp_nt_contents/HMAX_FPPntuple_size*0/
+*
+****************************end: h_fpp_nt.dte ***********************

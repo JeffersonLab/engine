@@ -14,6 +14,12 @@
 *     Created: 9-Feb-1994  Stephen A. Wood
 *
 * $Log$
+* Revision 1.12.24.1  2007/08/22 19:09:17  frw
+* added FPP
+*
+* Revision 1.13  2006/06/22 frw
+* added FPP structures
+*
 * Revision 1.12  1996/01/16 16:57:03  cdaq
 * no change
 *
@@ -75,6 +81,9 @@
 
       call r_h_sieve_ntuple
 
+      call r_hms_fpp_event
+      call r_h_fpp_ntuple
+
       call h_register_param(FAIL,why) ! TRACKING ROUTINE
       IF(err.NE.' ' .and. why.NE.' ') THEN   !keep warnings
         call G_append(err,' & '//why)
@@ -94,6 +103,16 @@
       if(ABORT .or. err.NE.' ') call G_add_path(here,err)
 *
       call h_sv_nt_register(FAIL,why)   ! Remove this when ctp files fixed
+      IF(err.NE.' ' .and. why.NE.' ') THEN  !keep warnings
+        call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+        err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL
+*
+      if(ABORT .or. err.NE.' ') call G_add_path(here,err)
+*
+      call h_fpp_nt_register(FAIL,why)   ! Remove this when ctp files fixed
       IF(err.NE.' ' .and. why.NE.' ') THEN  !keep warnings
         call G_append(err,' & '//why)
       ELSEIF(why.NE.' ') THEN

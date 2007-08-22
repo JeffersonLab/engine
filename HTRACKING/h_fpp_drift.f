@@ -1,0 +1,356 @@
+      SUBROUTINE h_fpp_drift(hit,RoughTrack,prop_delay,
+     >                       drift_time,drift_distance,ABORT,err)
+*--------------------------------------------------------
+*    Hall C  HMS Focal Plane Polarimeter Code
+*
+*  Purpose: determine fully corrected drift distance for raw hit
+* 
+*  Created by Frank R. Wesselmann,  February 2004
+*
+*--------------------------------------------------------
+
+      IMPLICIT NONE
+
+      include 'gen_decode_common.cmn'
+      INCLUDE 'hms_data_structures.cmn'
+      INCLUDE 'hms_fpp_params.cmn'
+      INCLUDE 'hms_geometry.cmn'
+      INCLUDE 'hms_fpp_event.cmn'
+
+      character*11 here
+      parameter (here= 'h_fpp_drift')
+
+      integer*4 hit             ! number of hit in raw hits array
+      real*4 RoughTrack(6)      ! rough track parameter for corrections
+      real*4 prop_delay         ! wire propagation delay
+      real*4 drift_time         ! fully corrected drift time
+      real*4 drift_distance     ! drift distance determ. from drift time
+
+      logical ABORT
+      character*(*) err
+
+      integer*4 Plane, Wire
+      integer*4 Set,Chamber,Layer
+      integer*4 ii,p
+      integer*4 binno,bin2
+
+      real*4 correction, bintime, fraction, a
+      real*8 mx8,my8,mu8,Px8,Py8,alpha8
+
+
+      ABORT= .FALSE.
+      err= ' '
+
+      drift_distance = H_FPP_BAD_DRIFT
+
+
+*     * get hit data from raw array
+      Plane = HFPP_raw_plane(hit)
+      Wire  = HFPP_raw_wire(hit)
+      drift_time = HFPP_HitTime(hit)
+
+      Set     = HFPP_plane2set(Plane)
+      Chamber = HFPP_plane2chamber(Plane)
+      Layer   = HFPP_plane2layer(Plane)
+
+
+
+********************  corrections to drift time *******************************
+
+* drift time is expected to measure time from particle interacting in drift
+* cell until the signal is seen on the sense wire, meaning we expect the
+* time values to be more positive for longer drift distances!
+* in reality, we only know the trigger signal time and the time when the
+* sense wire signal hits the TDC
+* since the length of the signal cables and the processing delays are
+* independent of the geometric event, we can consider them fixed and they are
+* absorbed into the drift map or the time offset
+* this leaves the following corrections:
+* - time of flight: interaction in lower-z layers are earlier (relative to
+*   trigger!) than higher-z ones
+* - wire walk correction: signal needs to propagate along sense wire to
+*   amplifier (readout) card and the path length depends on track geometry
+
+
+      if (.FALSE.) then
+*       * apply time of flight correction to offset trigger time?
+*       * we use the simple and consistent approach to correct based
+*       * on an externally FIXED velocity based on our absolute 
+*       * z position, so trigger time is interpreted to be valid at z=0
+*       * whatever offset is needed needs to be absorbed into HFPP_tDriftOffset
+*       * it might be nice if the particle speed was NOT fixed...
+	correction = (HFPP_layerZ(Set,Chamber,Layer)+HFPP_Zoff(Set)) / HFPP_particlespeed
+	drift_time = drift_time - correction 
+
+cfrw  we could also base the TOF speed on the HMS track speed, as follows:
+cfrw  p = hp_tar(HSNUM_FPTRACK)
+cfrw  speed = speed_of_light * p/sqrt(p*p+hpartmass*hpartmass)
+
+cfrw  actually, using the measured particle velocity, we can find ToF just like
+cfrw  HMS DCs do -- or could because they use fixed, pre-determined ToF to each layer --
+cfrw  but the event HMS reference time (hstart_time) is based on a corrected value,
+cfrw  determined in  h_trans_scin.f
+cfrw  using this approach, we get the velocity as  29.979*hbeta_pcent  where
+cfrw    hbeta_pcent = hpcentral/sqrt(hpcentral*hpcentral+hpartmass*hpartmass)
+cfrw  and the path is the wire z-coord in the same system as used by the hscin -- find
+cfrw  the parameter assingment of  hscin_1x_zpos  to get details;
+cfrw  the HMS reference time is calculated at z=0 is this system
+
+      endif
+
+
+
+
+      if (.TRUE.) then
+*       * apply wire propagation delay correction, supplied externally
+        drift_time = drift_time - prop_delay
+      endif
+
+
+
+
+
+
+********************  convert drift time to drift distance ********************
+
+      if (hfpp_drift_type.eq.1) then		! look-up table ***************
+
+          if (drift_time.lt.hfpp_drift_Tmin .or.
+     >        drift_time.gt.hfpp_drift_Tmax	 ) then   ! skip rare random/early hit
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          endif
+
+*         * find closest time bin for drift map
+          binno = 1 + int((drift_time-hfpp_drift_Tmin)/hfpp_drift_dT)
+          if (binno.lt.1 .or. binno.ge.hfpp_drift_Nbins) then	! should never happen
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          endif
+
+*         * interpolate between two relevant time bins
+          fraction = (drift_time-hfpp_drift_Tmin) / hfpp_drift_dT
+          binno = 1 + int(fraction)
+          fraction = fraction - float(binno) - 1.5  ! range -0.5 to 0.5
+
+          if (fraction.lt.0.0) then !below midpoint
+            fraction = -1.0*fraction
+            if (binno.eq.1) then  !already at bottom bin
+              drift_distance = 2.0 * (1.0-fraction) * hfpp_driftmap(Layer,binno)  !assume bottom edge of bin is 0 drift
+            else
+              drift_distance =      fraction  * hfpp_driftmap(Layer,binno-1)
+     >    		     + (1.0-fraction) * hfpp_driftmap(Layer,binno)
+            endif
+
+          else  		    !above midpoint
+            if (binno.eq.hfpp_drift_Nbins) then  !already at top bin
+              drift_distance = H_FPP_BAD_DRIFT
+              RETURN
+            else
+              drift_distance =      fraction  * hfpp_driftmap(Layer,binno+1)
+     >    		     + (1.0-fraction) * hfpp_driftmap(Layer,binno)
+            endif
+          endif
+
+          if (drift_distance.lt.0.0) then
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          endif
+
+
+      elseif (hfpp_drift_type.eq.2) then	! polynomial ******************
+
+          if (drift_time.lt.hfpp_drift_Tmin .or.
+     >        drift_time.gt.hfpp_drift_Tmax     ) then
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          endif
+
+          drift_distance = 0.0
+          do ii=1,hfpp_drift_Nterms(Layer)
+            p = hfpp_drift_orders(Layer,ii)
+            a = hfpp_drift_coeffs(Layer,ii)
+            drift_distance = drift_distance + a * drift_time**p
+          enddo !ii
+
+          if (drift_distance.gt.hfpp_drift_Xmax) then
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          endif
+
+      else					! bad selector ****************
+          drift_distance = H_FPP_BAD_DRIFT
+          RETURN
+      endif
+
+
+
+
+********************  corrections to drift distance ***************************
+
+
+      if (.FALSE.) then
+*       * apply out-of-plane correction IF NEEDED
+*       * this corrects for the fact that the drift distance is the
+*       * closest approach distance, which is not generally in the
+*       * wire plane, but the tracking uses the in-plane distance!
+*       * note that this is NOT a correction to the time but to the distance!
+*       * This correction may be obviated by the drift map if it gives the
+*       * in-layer coordinate already (as GARFIELD simulations might)...
+        Px8 = dble(HFPP_direction(Set,Chamber,Layer,1))   !projection of u onto x
+        Py8 = dble(HFPP_direction(Set,Chamber,Layer,2))   !projection of u onto y
+        mx8 = dble(RoughTrack(1))
+        my8 = dble(RoughTrack(3))
+        mu8 = Px8*mx8 + Py8*my8
+        alpha8 = datan(mu8)
+	if (alpha8.ne.0.d0) then
+          drift_distance = drift_distance * sngl(1.d0 / dabs(dcos(alpha8)))
+	endif
+      endif
+ 
+
+*     * make sure the result is meaningful!
+      if (drift_distance.gt.HFPP_maxdrift(Plane)) then
+        drift_distance = H_FPP_BAD_DRIFT
+      endif
+
+
+      RETURN
+      END
+
+
+c==============================================================================
+c==============================================================================
+c==============================================================================
+c==============================================================================
+
+
+      SUBROUTINE h_fpp_drift_init(ABORT,err)
+*--------------------------------------------------------
+*    Hall C  HMS Focal Plane Polarimeter Code
+*
+*  Purpose: tracking in one set of FPP drift chambers
+*           find best track fitted to wire centers
+*           test all possible permutations until good track found
+* 
+*  Created by Frank R. Wesselmann,  February 2004
+*
+*--------------------------------------------------------
+
+      IMPLICIT NONE
+
+      include 'gen_decode_common.cmn'
+      INCLUDE 'hms_data_structures.cmn'
+      INCLUDE 'hms_fpp_params.cmn'
+
+      character*16 here
+      parameter (here= 'h_fpp_drift_init')
+
+      logical ABORT
+      character*(*) err
+
+      integer LUN
+      integer*4 i,Plane
+      real*4 timebins(H_FPP_DRIFT_MAX_BINS)
+
+
+      hfpp_drift_type = 0
+
+      hfpp_drift_Nbins = 0
+      hfpp_drift_dT   = 0.0
+      hfpp_drift_Tmin = 0.0
+      hfpp_drift_Tmax = 0.0
+      hfpp_drift_Xmax = 0.0
+
+      do Plane=1,H_FPP_N_PLANES
+        hfpp_drift_Nterms(Plane) = 0
+      enddo
+
+      if (hfpp_driftmap_filename.eq.' ') then
+        RETURN
+      endif
+
+
+      call g_IO_control(LUN,'ANY',ABORT,err)  !get IO channel
+      open(LUN,file=hfpp_driftmap_filename,err=900)
+
+      read(LUN,*,err=900,end=900) hfpp_drift_type, hfpp_drift_Xmax
+
+
+
+      if (hfpp_drift_type.eq.1) then		! look-up table ***************
+
+          print *,'\n The selected drift map file uses a look-up table to determine'
+          print *,  ' the drift in the focal plane polarimeter chambers.\n'
+
+          read(LUN,*,err=900,end=900) hfpp_drift_Nbins
+
+	  if (hfpp_drift_Nbins.gt.H_FPP_DRIFT_MAX_BINS) then
+	    hfpp_drift_Nbins = H_FPP_DRIFT_MAX_BINS
+            write(err,*) 'Too many bins in FPP drift map ',hfpp_driftmap_filename
+            call g_rep_err(ABORT,err)
+	  endif
+
+          do i=1,hfpp_drift_Nbins
+	    read(LUN,*,err=900,end=900) 
+     >             timebins(i), (hfpp_driftmap(Plane,i),Plane=1,H_FPP_N_PLANES)
+	  enddo !i
+
+          if (hfpp_drift_Nbins.gt.2) then
+            hfpp_drift_dT = timebins(2) - timebins(1)      !midpoints of bin!!!
+            hfpp_drift_Tmin = timebins(1)
+     >      		    - 0.5*hfpp_drift_dT
+            hfpp_drift_Tmax = timebins(hfpp_drift_Nbins)
+     >                      + 0.5*hfpp_drift_dT
+          else
+            write(err,*) 'Only ',hfpp_drift_Nbins,' entries for FPP drift map ',hfpp_driftmap_filename
+            call g_rep_err(ABORT,err)
+          endif
+
+          if (hfpp_drift_Nbins.le.0) goto 900
+          if (hfpp_drift_dT.le.0.0) goto 900
+
+      elseif (hfpp_drift_type.eq.2) then	! polynomial ******************
+
+          print *,'\n The selected drift map file uses a polynomial to calculate'
+          print *,  ' the drift in the focal plane polarimeter chambers.\n'
+
+          read(LUN,*,err=900,end=900)
+     >      (hfpp_drift_Nterms(Plane),Plane=1,H_FPP_N_PLANES)
+
+          do Plane=1,H_FPP_N_PLANES
+            if (hfpp_drift_Nterms(Plane).gt.H_FPP_DRIFT_MAX_TERMS) then
+              hfpp_drift_Nterms(Plane) = H_FPP_DRIFT_MAX_TERMS
+            endif
+          enddo
+
+          do Plane=1,H_FPP_N_PLANES
+            read(LUN,*,err=900,end=900) 
+     >    	    (hfpp_drift_orders(Plane,i),
+     >    	     hfpp_drift_coeffs(Plane,i),i=1,hfpp_drift_Nterms(Plane))
+          enddo
+
+      else					! bad selector ****************
+          goto 900
+      endif
+
+      goto 990
+
+
+ 900  continue
+      err = 'error reading drift map '//hfpp_driftmap_filename
+      ABORT = .true.
+      call g_rep_err(ABORT,err)
+      goto 990
+
+
+ 990  continue
+      close(LUN)
+      call G_IO_control(LUN,'FREE',ABORT,err) !free up IO channel
+      IF(ABORT) THEN
+        call G_add_path(here,err)
+      ENDIF
+
+
+      RETURN
+      END

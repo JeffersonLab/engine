@@ -1,0 +1,130 @@
+* include file  hms_fpp_params.cmn
+*--------------------------------------------------------
+*    Hall C  HMS Focal Plane Polarimeter Code
+*
+*  Purpose: HMS FPP control and limit parameter
+* 
+*  Created by Frank R. Wesselmann,  February 2004
+*
+*--------------------------------------------------------
+
+*     The following include statments must precede the inclusion of this
+*     file in each routine that uses it.  The *%% syntax is also a
+*     directive to makereg to tell it to include the code in the program
+*     that it generates.
+*
+*%%   include 'hms_data_structures.cmn'
+*%%   include 'gen_decode_common.cmn'
+
+*
+*     CTPTYPE=parm
+*
+      integer*4 HFPP_minTDC          ! minimum TDC value to bother with hit
+      integer*4 HFPP_maxTDC          ! maximum TDC value to bother with hit
+
+      real*4 HFPP_tdc_time_per_channel ! hms FPP tdc calibration
+
+      real*4 HFPP_wirespeed          ! signal propagation speed on sense wires
+
+      real*4 HFPP_particlespeed      ! TOF speed of detected particle
+
+      real*4 HFPP_mintime            ! min hit time for meaningful drift (= 0 distance)
+      real*4 HFPP_maxtime            ! max hit time for meaningful drift (cut noise)
+
+      real*4 HFPP_maxdrift           ! maximum drift distance to allow by PLANE
+
+      real*4 HFPP_tDriftOffset       ! drift time offsets by PLANE and WIRE
+
+      integer*4 HFPP_optchamberhits  ! one chamber must have this many hits
+      integer*4 HFPP_minchamberhits  ! every chamber must have this many hits
+      integer*4 HFPP_minsethits      ! minimum # of layers with hits in set
+      integer*4 HFPP_maxcombos       ! maximum # of hit combinations
+                                     ! if there are more we skip event!
+
+      real*4 HFPP_min_chi2           ! minimum chi**2 for kept track
+      real*4 HFPP_aOK_chi2           ! sufficient chi**2 for extra hit
+
+      integer*4 HFPP_effic_dist      ! how far hit wire can be from track and
+                                     ! still be considered hit for "efficient"
+
+      common/HMS_FPP_limits/
+     &    HFPP_maxdrift(H_FPP_N_PLANES)
+     &  , HFPP_tDriftOffset(H_FPP_N_PLANES,H_FPP_MAX_WIRES)
+     &  , HFPP_minTDC
+     &  , HFPP_maxTDC
+     &  , HFPP_tdc_time_per_channel
+     &  , HFPP_wirespeed
+     &  , HFPP_particlespeed
+     &  , HFPP_mintime
+     &  , HFPP_maxtime
+     &  , HFPP_optchamberhits
+     &  , HFPP_minchamberhits
+     &  , HFPP_minsethits
+     &  , HFPP_maxcombos
+     &  , HFPP_min_chi2
+     &  , HFPP_aOK_chi2
+     &  , HFPP_effic_dist
+
+*
+*     CTPTYPE=parm
+*
+      integer*4 HFPP_my_ROCs(0:G_DECODE_MAXROCS)	! list of ROCs used for FPP
+      integer*4 HFPP_trigger_plane	! wire plane of TDC trigger time
+      integer*4 HFPP_trigger_wire	! wire in same that actually has data
+
+      integer*4 HFPP_calc_resolution	! switch to turn on resolution calc EXPENSIVE!
+      integer*4 HFPP_use_clusters	! use adjacent hits together for tracking
+      integer*4 HFPP_min_event_code	! lowest FPP event code to store in Ntuple
+
+      common/HMS_FPP_config/
+     &    HFPP_my_ROCs
+     &  , HFPP_trigger_plane
+     &  , HFPP_trigger_wire
+     &  , HFPP_calc_resolution
+     &  , HFPP_use_clusters
+     &  , HFPP_min_event_code
+
+*
+*     CTPTYPE=parm
+*
+      integer*4 H_FPP_DRIFT_MAX_BINS
+      parameter (H_FPP_DRIFT_MAX_BINS=1000)	! maximum # of entries in drift map
+
+      integer*4 H_FPP_DRIFT_MAX_TERMS
+      parameter (H_FPP_DRIFT_MAX_TERMS=10)	! maximum # of terms in polynomial
+
+      integer*4 hfpp_drift_type		! method of drift calculation:
+                                        !  1 = look-up table, time bins give distance
+					!  2 = polynomial
+
+      integer*4 hfpp_drift_Nbins	! actual # of entries in drift map
+      integer*4 hfpp_drift_Nterms	! actual # of terms in drift map polynomial
+
+      integer*4 hfpp_drift_orders	! order of terms in drift map polynomial
+      real*4 hfpp_drift_coeffs		! coefficient of terms in drift map polynomial
+
+      real*4 hfpp_drift_Tmin		! lowest acceptable drift time for this map
+      real*4 hfpp_drift_Tmax		! largest acceptable drift time for this map
+      real*4 hfpp_drift_dT		! time difference between entries in drift map
+      real*4 hfpp_drift_Xmax		! largest acceptable drift distance for this map
+      real*4 hfpp_driftmap		! dirft distances by time bins
+      character*80 hfpp_driftmap_filename
+
+      common/HMS_FPP_drift/
+     &    hfpp_drift_type
+     &  , hfpp_drift_Nbins
+     &  , hfpp_drift_Tmin, hfpp_drift_Tmax, hfpp_drift_dT
+     &  , hfpp_drift_Xmax
+     &  , hfpp_driftmap(H_FPP_N_PLANES,H_FPP_DRIFT_MAX_BINS)
+     &  , hfpp_drift_Nterms(H_FPP_N_PLANES)
+     &  , hfpp_drift_orders(H_FPP_N_PLANES,H_FPP_DRIFT_MAX_TERMS)
+     &  , hfpp_drift_coeffs(H_FPP_N_PLANES,H_FPP_DRIFT_MAX_TERMS)
+     &  , hfpp_driftmap_filename
+
+*
+*     CTPTYPE=parm
+*
+      real*4 HFPP_planeresolution	! expected tracking resolution, for chi2
+
+      common/HMS_FPP_remap/
+     &  HFPP_planeresolution(H_FPP_N_PLANES)

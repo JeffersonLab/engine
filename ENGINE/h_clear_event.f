@@ -12,6 +12,12 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *
 * $Log$
+* Revision 1.15.24.1  2007/08/22 19:09:16  frw
+* added FPP
+*
+* Revision 1.20  2004/04/26 19:53:33  frw
+* inserted FPP items
+*
 * Revision 1.15  2002/12/20 21:55:23  jones
 * Modified by Hamlet for new HMS aerogel
 *
@@ -83,9 +89,12 @@
       INCLUDE 'hms_scin_tof.cmn'
       INCLUDE 'hms_cer_parms.cmn'
       INCLUDE 'hms_calorimeter.cmn'
+      include 'gen_decode_common.cmn'
+      INCLUDE 'hms_fpp_event.cmn'
 
 *
       INTEGER plane,tube
+      integer*4 iSet, iChamber, iLayer, iPlane, iHit, i
 *
 *--------------------------------------------------------
 *
@@ -140,6 +149,40 @@
       HSNUM_FPTRACK = 0
       HSNUM_TARTRACK = 0
 *
+
+*     FPP items
+*
+*     * total number of raw TDC hits in the FPP DCs
+      hfpp_raw_tot_hits = 0
+
+*     * overall event descriptor for HMS FPP
+      HFPP_eventclass = H_FPP_ET_NOHITS
+
+cfrw -- should not be needed!!
+cfrw *     * drift times for all hits
+cfrw       do iHit=1, H_FPP_MAX_RAWHITS
+cfrw         HFPP_HitTime(iHit) = 0.0
+cfrw       enddo
+
+*     * number of raw hits in each plane
+      do iPlane=1, H_FPP_N_PLANES
+        HFPP_N_planehitsraw(iPlane) = 0
+        HFPP_N_planehits(iPlane)    = 0
+      enddo !iplane
+
+*     * number of hit clusters in each plane
+*     *  HFPP_nClusters(iSet,iChamber,iLayer) is positively inited in h_trans_fpp
+
+*     *  number of tracks in each set of DCs
+      do iSet=1, H_FPP_N_DCSETS
+        hfpp_N_tracks(iSet) = 0
+      enddo !iSet
+
+*     *  FPP F1 trigger time references
+      do i=0,G_DECODE_MAXROCS
+        HFPP_trigger_TDC(i) = -1
+      enddo
+
 
       call h_ntuple_clear
 

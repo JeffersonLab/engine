@@ -111,5 +111,7 @@
         call G_log_message('INFO: '//pat)
       ENDIF
 
+      h_Ntuple_segmentevents = 0
+
       RETURN
       END  

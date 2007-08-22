@@ -11,6 +11,12 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 * $Log$
+* Revision 1.15.24.1  2007/08/22 19:09:17  frw
+* added FPP
+*
+* Revision 1.20  2004/04/26 19:53:33  frw
+* inserted calls for FPP
+*
 * Revision 1.15  1996/09/04 14:40:46  saw
 * (JRA) Reorder some calls
 *
@@ -96,6 +102,15 @@
 *
 *-calculate secondary cerenkov parameters
       call h_init_cer(FAIL,why)
+      if(err.NE.' ' .and. why.NE.' ') then
+        call G_append(err,' & '//why)
+      elseif(why.NE.' ') then
+        err= why
+      endif
+      ABORT= ABORT .or. FAIL
+*
+*-calculate secondary FPP parameters
+      call h_init_fpp(FAIL,why)
       if(err.NE.' ' .and. why.NE.' ') then
         call G_append(err,' & '//why)
       elseif(why.NE.' ') then

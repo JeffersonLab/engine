@@ -11,6 +11,13 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 * $Log$
+* Revision 1.13.24.1  2007/08/22 19:09:30  frw
+* added FPP
+*
+*
+* Revision 1.20  2004/04/26 19:53:33  frw
+* inserted calls for FPP
+*
 * Revision 1.13  2002/12/20 21:53:33  jones
 * Modified by Hamlet for new HMS aerogel
 *
@@ -125,6 +132,17 @@ c      h_recon_num= h_recon_num + 1
 *     return
          endif                          ! end test on CER ABORT
       endif                             ! end test on hbypass_trans_cer
+*
+*     TRANSLATE FPP
+*     HMS_RAW_FPP ====> HMS_FPP_event
+*
+      If(hbypass_trans_fpp.eq.0) then
+         call h_trans_fpp(ABORT,err)
+         if(ABORT)  then
+            call G_add_path(here,err)
+*            return
+         endif                          ! end test on FPP ABORT
+      endif                             ! end test on hbypass_trans_fpp
 *
 *     Next Aerogel Cerenkov information
 *     HMS_DECODED_AERO====> HMS_TRACK_TESTS
@@ -243,6 +261,16 @@ c         err=":no tracks found!"
                return
             endif                       ! end test of H_PHYSICS ABORT
          endif                          ! end test on hbypass_physics
+*     
+*        process FPP information
+*     
+         if(hbypass_fpp.eq.0) then
+            call h_fpp(ABORT,err)
+            if(ABORT) then
+               call G_add_path(here,err)
+*               return
+            endif                       ! end test of h_fpp ABORT
+         endif                          ! end test on hbypass_fpp
 *     
       endif                             ! end test no tracks found       
 *     

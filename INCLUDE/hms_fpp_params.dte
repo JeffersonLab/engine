@@ -1,0 +1,218 @@
+*--------------------------------------------------------
+*    Hall C  HMS Focal Plane Polarimeter Code
+*
+*  Purpose: set immutable HMS FPP parameters
+*     this file is included by  h_init_fpp.f
+* 
+*  Created by Frank R. Wesselmann,  February 2004
+*
+*--------------------------------------------------------
+*
+*%%   include 'hms_data_structures.cmn'
+*%%   include 'hms_geometry.cmn'
+
+*     * these declarations are for LOCAL use only!!
+      integer*4 FPPNUMCARDS
+      parameter (FPPNUMCARDS=148)
+
+      integer*4 fpp_planemap(8,FPPNUMCARDS)
+
+      real*4 planeZ(H_FPP_N_DCLAYERS*H_FPP_N_DCINSET)
+      real*4 planeangle(H_FPP_N_DCLAYERS*H_FPP_N_DCINSET)
+      real*4 inplanespacing(H_FPP_N_DCLAYERS*H_FPP_N_DCINSET)
+      real*4 planeoffset(H_FPP_N_DCLAYERS*H_FPP_N_DCINSET)
+
+
+** number of wires per plane
+      data HFPP_Nwires/ 104, 83, 104,      104, 83, 104,
+     +                  104, 83, 104,      104, 83, 104/
+
+** z-position of chamber layers within each chamber set (pair)
+      data  planeZ/ -12.25, -10.65, -9.05,  9.05,  10.65,  12.25/
+
+* angle of wires in each plane relative to
+* positive x-axis -- in-layer axis goes from wire 1 to wire 104/83
+* we define chamber y to be along the wires and chamber x along measure
+* gamma of zero degrees has lowest wire at -x and highest at +x
+* thus x-layer has gamma=0, u has +45 and v has -45
+      data planeangle/  -45.0, 0.0, 45.0,    -45.0, 0.0, 45.0/
+
+* spacing of sense wires in each plane
+      data inplanespacing/  2.0, 2.0, 2.0,    2.0, 2.0, 2.0/
+
+* offset of layer along its measurement direction by plane
+* this is the difference between (wire no)*(spacing) and (coordinate)
+      data planeoffset/  -104.0, -84.0, -104.0,   -104.0, -84.0, -104.0/
+
+** Chamber Wire Numbers against card position mapping
+*
+* note that sometimes the wire numbering is backwards 
+* compared to the TDC channel numbering!
+* That is another reason for using this file:
+* to verify the cabling map that it has the proper channels in
+* decreasing order.  Actually used is only the value CARDPOS.
+*
+* plane is the linearized labeling for the drift chamber layers,
+* in order of increasing z
+* most of the code uses the (set,chamber,layer) notation instead
+*
+* position refers to the read-out card connector position that is
+* part of the chamber itself;  the numbering was defined by the
+* chamber builders and is indicated on the chambers by yellow labels
+*
+* cardpos indicates if readout of wire occurs from the +v or -v
+* side of wire, where (u,v) is the RH coord system of the layer
+*
+*   layers 1, 4, 7, 10 are +45
+*   layers 2, 5, 8, 11 are  0
+*   layers 3, 6, 9, 12 are -45
+
+*                        plane   set chamber layer    position  wire_lo  wire_hi  cardpos
+      data  fpp_planemap/ 1,      1,	1,     1,    	 1,	   8,	   1,	    1,
+     +                    1,      1,	1,     1,    	 2,	  16,	   9,	    1,
+     +                    1,      1,	1,     1,    	 3,	  24,	  17,	    1,
+     +                    1,      1,	1,     1,    	 4,	  32,	  25,	    1,
+     +                    1,      1,	1,     1,    	 5,	  40,	  33,	    1,
+     +                    1,      1,	1,     1,    	 6,	  48,	  41,	    1,
+     +                    1,      1,	1,     1,    	 7,	  56,	  49,	    1,
+     +                    1,      1,	1,     1,    	 8,	  57,	  64,	   -1,
+     +                    1,      1,	1,     1,    	 9,	  65,	  72,	   -1,
+     +                    1,      1,	1,     1,    	10,	  73,	  80,	   -1,
+     +                    1,      1,	1,     1,    	11,	  81,	  88,	   -1,
+     +                    1,      1,	1,     1,    	12,	  89,	  96,	   -1,
+     +                    1,      1,	1,     1,    	13,	  97,	 104,	   -1,
+     +  	          2,      1,	1,     2,    	 1,	   8,	   1,	    1,
+     +                    2,      1,	1,     2,    	 2,	  16,	   9,	    1,
+     +                    2,      1,	1,     2,    	 3,	  24,	  17,	    1,
+     +                    2,      1,	1,     2,    	 4,	  32,	  25,	    1,
+     +                    2,      1,	1,     2,    	 5,	  40,	  33,	    1,
+     +                    2,      1,	1,     2,    	 6,	  48,	  41,	    1,
+     +                    2,      1,	1,     2,    	 7,	  56,	  49,	    1,
+     +                    2,      1,	1,     2,    	 8,	  64,	  57,	    1,
+     +                    2,      1,	1,     2,    	 9,	  72,	  65,	    1,
+     +                    2,      1,	1,     2,    	10,	  80,	  73,	    1,
+     +                    2,      1,	1,     2,    	11,	  88,	  81,	    1,
+     +  	          3,      1,	1,     3,    	 1,	   1,	   8,	   -1,
+     +                    3,      1,	1,     3,    	 2,	   9,	  16,	   -1,
+     +                    3,      1,	1,     3,    	 3,	  17,	  24,	   -1,
+     +                    3,      1,	1,     3,    	 4,	  25,	  32,	   -1,
+     +                    3,      1,	1,     3,    	 5,	  33,	  40,	   -1,
+     +                    3,      1,	1,     3,    	 6,	  41,	  48,	   -1,
+     +                    3,      1,	1,     3,    	 7,	  49,	  56,	   -1,
+     +                    3,      1,	1,     3,    	 8,	  64,	  57,	    1,
+     +                    3,      1,	1,     3,    	 9,	  72,	  65,	    1,
+     +                    3,      1,	1,     3,    	10,	  80,	  73,	    1,
+     +                    3,      1,	1,     3,    	11,	  88,	  81,	    1,
+     +                    3,      1,	1,     3,    	12,	  96,	  89,	    1,
+     +                    3,      1,	1,     3,    	13,	 104,	  97,	    1,
+     +  	          4,      1,	2,     1,    	 1,	   8,	   1,	    1,
+     +  	          4,      1,	2,     1,    	 2,	  16,	   9,	    1,
+     +  	          4,      1,	2,     1,    	 3,	  24,	  17,	    1,
+     +  	          4,      1,	2,     1,    	 4,	  32,	  25,	    1,
+     +  	          4,      1,	2,     1,    	 5,	  40,	  33,	    1,
+     +  	          4,      1,	2,     1,    	 6,	  48,	  41,	    1,
+     +  	          4,      1,	2,     1,    	 7,	  56,	  49,	    1,
+     +  	          4,      1,	2,     1,    	 8,	  57,	  64,	   -1,
+     +  	          4,      1,	2,     1,    	 9,	  65,	  72,	   -1,
+     +  	          4,      1,	2,     1,    	10,	  73,	  80,	   -1,
+     +  	          4,      1,	2,     1,    	11,	  81,	  88,	   -1,
+     +  	          4,      1,	2,     1,    	12,	  89,	  96,	   -1,
+     +  	          4,      1,	2,     1,    	13,	  97,	 104,	   -1,
+     +  	          5,      1,	2,     2,    	 1,	   8,	   1,	    1,
+     +  	          5,      1,	2,     2,    	 2,	  16,	   9,	    1,
+     +  	          5,      1,	2,     2,    	 3,	  24,	  17,	    1,
+     +  	          5,      1,	2,     2,    	 4,	  32,	  25,	    1,
+     +  	          5,      1,	2,     2,    	 5,	  40,	  33,	    1,
+     +  	          5,      1,	2,     2,    	 6,	  48,	  41,	    1,
+     +  	          5,      1,	2,     2,    	 7,	  56,	  49,	    1,
+     +  	          5,      1,	2,     2,    	 8,	  64,	  57,	    1,
+     +  	          5,      1,	2,     2,    	 9,	  72,	  65,	    1,
+     +  	          5,      1,	2,     2,    	10,	  80,	  73,	    1,
+     +  	          5,      1,	2,     2,    	11,	  88,	  81,	    1,
+     +  	          6,      1,	2,     3,    	 1,	   1,	   8,	   -1,
+     +  	          6,      1,	2,     3,    	 2,	   9,	  16,	   -1,
+     +  	          6,      1,	2,     3,    	 3,	  17,	  24,	   -1,
+     +  	          6,      1,	2,     3,    	 4,	  25,	  32,	   -1,
+     +  	          6,      1,	2,     3,    	 5,	  33,	  40,	   -1,
+     +  	          6,      1,	2,     3,    	 6,	  41,	  48,	   -1,
+     +  	          6,      1,	2,     3,    	 7,	  49,	  56,	   -1,
+     +  	          6,      1,	2,     3,    	 8,	  64,	  57,	    1,
+     +  	          6,      1,	2,     3,    	 9,	  72,	  65,	    1,
+     +  	          6,      1,	2,     3,    	10,	  80,	  73,	    1,
+     +  	          6,      1,	2,     3,    	11,	  88,	  81,	    1,
+     +  	          6,      1,	2,     3,    	12,	  96,	  89,	    1,
+     +  	          6,      1,	2,     3,    	13,	 104,	  97,	    1,
+     +                    7,      2,	1,     1,    	 1,	   8,	   1,	    1,
+     +                    7,      2,	1,     1,    	 2,	  16,	   9,	    1,
+     +                    7,      2,	1,     1,    	 3,	  24,	  17,	    1,
+     +                    7,      2,	1,     1,    	 4,	  32,	  25,	    1,
+     +                    7,      2,	1,     1,    	 5,	  40,	  33,	    1,
+     +                    7,      2,	1,     1,    	 6,	  48,	  41,	    1,
+     +                    7,      2,	1,     1,    	 7,	  56,	  49,	    1,
+     +                    7,      2,	1,     1,    	 8,	  57,	  64,	   -1,
+     +                    7,      2,	1,     1,    	 9,	  65,	  72,	   -1,
+     +                    7,      2,	1,     1,    	10,	  73,	  80,	   -1,
+     +                    7,      2,	1,     1,    	11,	  81,	  88,	   -1,
+     +                    7,      2,	1,     1,    	12,	  89,	  96,	   -1,
+     +                    7,      2,	1,     1,    	13,	  97,	 104,	   -1,
+     +  	          8,      2,	1,     2,    	 1,	   8,	   1,	    1,
+     +                    8,      2,	1,     2,    	 2,	  16,	   9,	    1,
+     +                    8,      2,	1,     2,    	 3,	  24,	  17,	    1,
+     +                    8,      2,	1,     2,    	 4,	  32,	  25,	    1,
+     +                    8,      2,	1,     2,    	 5,	  40,	  33,	    1,
+     +                    8,      2,	1,     2,    	 6,	  48,	  41,	    1,
+     +                    8,      2,	1,     2,    	 7,	  56,	  49,	    1,
+     +                    8,      2,	1,     2,    	 8,	  64,	  57,	    1,
+     +                    8,      2,	1,     2,    	 9,	  72,	  65,	    1,
+     +                    8,      2,	1,     2,    	10,	  80,	  73,	    1,
+     +                    8,      2,	1,     2,    	11,	  88,	  81,	    1,
+     +  	          9,      2,	1,     3,    	 1,	   1,	   8,	   -1,
+     +                    9,      2,	1,     3,    	 2,	   9,	  16,	   -1,
+     +                    9,      2,	1,     3,    	 3,	  17,	  24,	   -1,
+     +                    9,      2,	1,     3,    	 4,	  25,	  32,	   -1,
+     +                    9,      2,	1,     3,    	 5,	  33,	  40,	   -1,
+     +                    9,      2,	1,     3,    	 6,	  41,	  48,	   -1,
+     +                    9,      2,	1,     3,    	 7,	  49,	  56,	   -1,
+     +                    9,      2,	1,     3,    	 8,	  64,	  57,	    1,
+     +                    9,      2,	1,     3,    	 9,	  72,	  65,	    1,
+     +                    9,      2,	1,     3,    	10,	  80,	  73,	    1,
+     +                    9,      2,	1,     3,    	11,	  88,	  81,	    1,
+     +                    9,      2,	1,     3,    	12,	  96,	  89,	    1,
+     +                    9,      2,	1,     3,    	13,	 104,	  97,	    1,
+     +  	         10,      2,	2,     1,    	 1,	   8,	   1,	    1,
+     +  	         10,      2,	2,     1,    	 2,	  16,	   9,	    1,
+     +  	         10,      2,	2,     1,    	 3,	  24,	  17,	    1,
+     +  	         10,      2,	2,     1,    	 4,	  32,	  25,	    1,
+     +  	         10,      2,	2,     1,    	 5,	  40,	  33,	    1,
+     +  	         10,      2,	2,     1,    	 6,	  48,	  41,	    1,
+     +  	         10,      2,	2,     1,    	 7,	  56,	  49,	    1,
+     +  	         10,      2,	2,     1,    	 8,	  57,	  64,	   -1,
+     +  	         10,      2,	2,     1,    	 9,	  65,	  72,	   -1,
+     +  	         10,      2,	2,     1,    	10,	  73,	  80,	   -1,
+     +  	         10,      2,	2,     1,    	11,	  81,	  88,	   -1,
+     +  	         10,      2,	2,     1,    	12,	  89,	  96,	   -1,
+     +  	         10,      2,	2,     1,    	13,	  97,	 104,	   -1,
+     +  	         11,      2,	2,     2,    	 1,	   8,	   1,	    1,
+     +  	         11,      2,	2,     2,    	 2,	  16,	   9,	    1,
+     +  	         11,      2,	2,     2,    	 3,	  24,	  17,	    1,
+     +  	         11,      2,	2,     2,    	 4,	  32,	  25,	    1,
+     +  	         11,      2,	2,     2,    	 5,	  40,	  33,	    1,
+     +  	         11,      2,	2,     2,    	 6,	  48,	  41,	    1,
+     +  	         11,      2,	2,     2,    	 7,	  56,	  49,	    1,
+     +  	         11,      2,	2,     2,    	 8,	  64,	  57,	    1,
+     +  	         11,      2,	2,     2,    	 9,	  72,	  65,	    1,
+     +  	         11,      2,	2,     2,    	10,	  80,	  73,	    1,
+     +  	         11,      2,	2,     2,    	11,	  88,	  81,	    1,
+     +  	         12,      2,	2,     3,    	 1,	   1,	   8,	   -1,
+     +  	         12,      2,	2,     3,    	 2,	   9,	  16,	   -1,
+     +  	         12,      2,	2,     3,    	 3,	  17,	  24,	   -1,
+     +  	         12,      2,	2,     3,    	 4,	  25,	  32,	   -1,
+     +  	         12,      2,	2,     3,    	 5,	  33,	  40,	   -1,
+     +  	         12,      2,	2,     3,    	 6,	  41,	  48,	   -1,
+     +  	         12,      2,	2,     3,    	 7,	  49,	  56,	   -1,
+     +  	         12,      2,	2,     3,    	 8,	  64,	  57,	    1,
+     +  	         12,      2,	2,     3,    	 9,	  72,	  65,	    1,
+     +  	         12,      2,	2,     3,    	10,	  80,	  73,	    1,
+     +  	         12,      2,	2,     3,    	11,	  88,	  81,	    1,
+     +  	         12,      2,	2,     3,    	12,	  96,	  89,	    1,
+     +  	         12,      2,	2,     3,    	13,	 104,	  97,	    1/

@@ -1,0 +1,35 @@
+**************************begin: h_fpp_nt.cmn ***********************
+*
+      integer HMAX_FPPntuple_size
+      parameter (HMAX_FPPntuple_size= 100)
+      integer default_h_fpp_nt_ID
+      parameter (default_h_fpp_nt_ID= 9013)
+*
+*     CTPTYPE=parm
+*
+      logical h_fpp_nt_exists
+      integer h_fpp_nt_ID
+      integer h_fpp_nt_IOchannel
+      character*80 h_fpp_nt_name
+      character*80 h_fpp_nt_title
+      character*132 h_fpp_nt_directory
+      character*256 h_fpp_nt_file
+      character*8 h_fpp_nt_tag(HMAX_FPPntuple_size)
+      integer HFPP_nt_max_segmentevents
+*
+*     CTPTYPE=event
+*
+      integer h_fpp_nt_segmentevents
+      integer h_fpp_nt_filesegments
+      real h_fpp_nt_contents(HMAX_FPPntuple_size)
+*
+      COMMON /HMS_FPP_Ntuple/ h_fpp_nt_exists,h_fpp_nt_ID,
+     &                     h_fpp_nt_IOchannel,
+     &                      h_fpp_nt_name,h_fpp_nt_title,
+     &                       h_fpp_nt_directory,h_fpp_nt_file,
+     &                        h_fpp_nt_tag,h_fpp_nt_contents,
+     >                    HFPP_nt_max_segmentevents,h_fpp_nt_segmentevents,
+     >                    h_fpp_nt_filesegments
+*
+****************************end: h_fpp_nt.cmn ***********************
+

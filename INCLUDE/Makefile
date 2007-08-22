@@ -1,5 +1,11 @@
 #
 # $Log$
+# Revision 1.10.24.2  2007/08/22 19:09:31  frw
+# added FPP
+#
+# Revision 1.11  2006/06/23 frw
+# added new HMS FPP commons
+#
 # Revision 1.10.24.1  2007/05/15 02:53:03  jones
 # Start to Bigcal code
 #
@@ -59,12 +65,15 @@ cmn = gen_data_structures.cmn gen_craw.cmn gen_decode_common.cmn \
 	coin_filenames.cmn \
 	hack_.cmn \
 	mc_structures.cmn sos_lucite_parms.cmn \
+	gen_decode_F1tdc.cmn \
+	hms_fpp_event.cmn  hms_fpp_params.cmn \
+	h_fpp_ntuple.cmn \
 	bigcal_data_structures.cmn \
 	bigcal_filenames.cmn bigcal_bypass_switches.cmn bigcal_gain_parms.cmn \
 	bigcal_geometry.cmn bigcal_shower_parms.cmn bigcal_tof_parms.cmn \
 	gep_data_structures.cmn gep_filenames.cmn
 
-dte = c_ntuple.dte gen_run_pref.dte h_sieve_ntuple.dte \
+dte = c_ntuple.dte gen_run_pref.dte h_sieve_ntuple.dte h_fpp_ntuple.dte \
 	gen_run_info.dte h_ntuple.dte s_ntuple.dte s_sieve_ntuple.dte \
 	gep_ntuple.dte b_ntuple.dte
 

@@ -5,6 +5,12 @@
 *     Author:   D. F. Geesaman          1 September 1993
 *
 * $Log$
+* Revision 1.12.20.1  2007/08/22 19:09:31  frw
+* added FPP
+*
+* Revision 1.13  2006/06/22 frw
+* added FPP definitions
+*
 * Revision 1.12  2003/09/05 20:39:18  jones
 * Merge in online03 changes (mkj)
 *
@@ -668,7 +674,72 @@
      &     HMISC_RAW_ADDR2(HMAX_MISC_HITS),
      &     HMISC_RAW_DATA(HMAX_MISC_HITS),
      &     HMISC_TOT_HITS
+
 *
+*      CTPTYPE=parm
+*
+*     constants definitions for Foacl Plane Polarimeter   (frw 2006/06/22)
+*     these are used for array limits etc.
+*                                          
+      integer*4  H_FPP_N_DCSETS        ! # of DC sets
+      parameter (H_FPP_N_DCSETS=2)
+
+      integer*4  H_FPP_N_DCINSET       ! # of DCs in one set
+      parameter (H_FPP_N_DCINSET=2)
+
+      integer*4  H_FPP_N_DCLAYERS      ! # of layers per DC
+      parameter (H_FPP_N_DCLAYERS=3)
+
+      integer*4  H_FPP_N_PLANES        ! sets * dc-in-set * layers
+      parameter (H_FPP_N_PLANES=12)
+
+      integer*4  H_FPP_MAX_WIRES       ! MAX # of wires per layer
+      parameter (H_FPP_MAX_WIRES=104)
+
+      integer*4  H_FPP_MAX_RAWperPLANE   ! MAX # of raw FPP DC hits per plane
+      parameter (H_FPP_MAX_RAWperPLANE=100)
+
+      integer*4  H_FPP_MAX_RAWHITS       ! MAX # of raw FPP DC hits total
+      parameter (H_FPP_MAX_RAWHITS=2400)
+
+      integer*4  H_FPP_MAX_CLUSTERS          ! MAX # of clusters per layer
+      parameter (H_FPP_MAX_CLUSTERS=15)
+
+      integer*4  H_FPP_MAX_HITSperCLUSTER    ! MAX # of hits to group into cluster hit
+      parameter (H_FPP_MAX_HITSperCLUSTER=3)
+
+      integer*4  H_FPP_MAX_TRACKS      ! MAX # of tracks per DC set
+      parameter (H_FPP_MAX_TRACKS=9)
+
+      integer*4  H_FPP_MAX_FITPOINTS   ! MAX # of space points to fit
+      parameter (H_FPP_MAX_FITPOINTS=18)
+
+* readability constants
+
+      real*4  H_FPP_BAD_COORD        ! identifies invalid coordinate
+      parameter (H_FPP_BAD_COORD=9999.9)
+
+      real*4  H_FPP_BAD_TIME        ! identifies invalid time
+      parameter (H_FPP_BAD_TIME=9999.9)
+
+      real*4  H_FPP_BAD_CHI2         ! identifies bad fit or no fit
+      parameter (H_FPP_BAD_CHI2=9876.54321)
+
+      real*4  H_FPP_BAD_DRIFT        ! identifies bad drift distance
+      parameter (H_FPP_BAD_DRIFT=0.0)
+
+*
+*     CTPTYPE=event
+*
+      integer*4 HFPP_raw_tot_hits   ! actual # of total FPP hits
+      integer*4 HFPP_raw_plane      ! array of plane number of hits
+      integer*4 HFPP_raw_wire       ! array of wire number of hits
+      integer*4 HFPP_raw_TDC        ! array of TDC value of hits
+
+      common/HMS_RAW_FPP/  HFPP_raw_tot_hits
+     &                   , HFPP_raw_plane(H_FPP_MAX_RAWHITS)
+     &                   , HFPP_raw_wire(H_FPP_MAX_RAWHITS)
+     &                   , HFPP_raw_TDC(H_FPP_MAX_RAWHITS)
 *
 *                                          
 *******************end: hms_data_structures.cmn*************************
@@ -677,221 +748,3 @@
 *     fortran-continuation-string: "&"
 *     comment-column: 35
 *     End:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

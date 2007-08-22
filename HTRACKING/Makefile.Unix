@@ -1,5 +1,11 @@
 #
 # $Log$
+# Revision 1.29.6.1  2007/08/22 19:09:29  frw
+# added FPP
+#
+# Revision 1.30  2006/06/23 frw
+# add FPP files
+#
 # Revision 1.29  2005/03/23 16:33:32  jones
 # Add new code s_select_best_track_prune.f (P Bosted)
 #
@@ -126,14 +132,19 @@ newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f \
         h_cal_calib.f h_aero.f h_fill_aero_raw_hist.f \
         h_sp_multiwire.f h_sp_destroy.f \
 	h_select_best_track_prune.f
+fppstuff = h_fill_fpp.f  h_fpp_drift.f  h_fpp.f \
+        h_fpp_fit.f  h_fpp_statistics.f  \
+        h_fpp_tracking.f  h_init_fpp.f  \
+        h_trans_fpp.f  h_fpp_geometry.f
 makeregstuff =	r_hms_filenames.f r_hms_scin_parms.f r_hms_scin_tof.f \
 	r_hms_calorimeter.f r_hms_id_histid.f r_hms_tracking.f \
 	r_hms_geometry.f r_hms_track_histid.f r_hms_recon_elements.f \
 	r_hms_physics_sing.f r_hms_bypass_switches.f r_hms_statistics.f \
-	r_hms_pedestals.f r_hms_cer_parms.f r_hms_aero_parms.f
+	r_hms_pedestals.f r_hms_cer_parms.f r_hms_aero_parms.f \
+	r_hms_fpp_params.f
 
 
-sources = $(osources) $(newstuff) $(newerstuff) $(makeregstuff)
+sources = $(osources) $(newstuff) $(newerstuff) $(fppstuff) $(makeregstuff)
 
 ifeq ($(ARCH),AIX)
 xsources := $(filter-out h_link_stubs.f h_track_tests.f ,$(sources))

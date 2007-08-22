@@ -8,6 +8,12 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.18.1  2007/08/22 19:09:17  frw
+* added FPP
+*
+* Revision 1.11  2006/06/22 frw
+* added FPP entries
+*
 * Revision 1.10  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -49,15 +55,15 @@
       logical ABORT
       character*(*) err
 *
-      INCLUDE 'h_ntuple.cmn'
       INCLUDE 'hms_data_structures.cmn'
+      INCLUDE 'h_ntuple.cmn'
       INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_event_info.cmn'
       INCLUDE 'hms_tracking.cmn'
       INCLUDE 'hms_physics_sing.cmn'
       INCLUDE 'hms_scin_tof.cmn'
       INCLUDE 'gen_scalers.cmn'
-      include 'hms_track_histid.cmn'  !temp junk.
+      INCLUDE 'hms_track_histid.cmn'  !temp junk.
 *
       logical HEXIST	!CERNLIB function
 *
@@ -75,7 +81,6 @@ c
       if (h_Ntuple_max_segmentevents .gt. 0) then
        if (h_Ntuple_segmentevents .gt. h_Ntuple_max_segmentevents) then
         call h_ntuple_change(ABORT,err)
-        h_Ntuple_segmentevents = 0
        else
         h_Ntuple_segmentevents = h_Ntuple_segmentevents +1
        endif

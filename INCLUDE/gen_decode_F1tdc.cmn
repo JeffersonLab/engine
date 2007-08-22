@@ -1,0 +1,26 @@
+*  frw  4/2007
+*
+* specifics for F1 TDC that are independent of detector
+*
+*  we REQUIRE  gen_decode_common.cmn  to be included FIRST!
+*
+*
+*     CTPTYPE=parm
+*     
+      INTEGER*4 G_F1_MULTIHIT
+      Parameter(G_F1_MULTIHIT=8)
+*
+      INTEGER*4 ESCIN_F1TDC_MODE(0:G_DECODE_MAXROCS)
+      INTEGER*4 F1TDC_WINDOW_SIZE(0:G_DECODE_MAXROCS)  !in counts NOT ns !!
+
+      Common/GEN_F1TDC/
+     &     ESCIN_F1TDC_MODE,
+     &     F1TDC_WINDOW_SIZE
+
+*
+*     CTPTYPE=event
+*     
+
+*     Local Variables:
+*     mode: fortran
+*     End:

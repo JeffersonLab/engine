@@ -11,6 +11,12 @@
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *
 * $Log$
+* Revision 1.6.24.1  2007/08/22 19:09:17  frw
+* added FPP
+*
+* Revision 1.7  frw
+* added FPP call
+*
 * Revision 1.6  1996/09/04 14:42:14  saw
 * (JRA) Make HSNUM_FPTRACK.gt.0 instead of HNTRACKS_FP .gt. 0 the
 *       criteria for adding to ntuples
@@ -38,7 +44,10 @@
       IMPLICIT NONE
       SAVE
 *
+      include 'gen_decode_common.cmn'
       include 'hms_data_structures.cmn'
+      INCLUDE 'hms_fpp_params.cmn'
+      INCLUDE 'hms_fpp_event.cmn'
 *
       character*50 here
       parameter (here= 'H_keep_results')
@@ -54,6 +63,15 @@
       err= ' '
 *
       if(HSNUM_FPTRACK.gt.0) call h_ntuple_keep(ABORT,err)! check for good tracks
+*
+      IF(ABORT) THEN
+         call G_add_path(here,err)
+      ELSE
+         err= ' '
+      ENDIF
+*
+*
+      if (HFPP_eventclass.ge.HFPP_min_event_code) call h_fpp_nt_keep(ABORT,err)
 *
       IF(ABORT) THEN
          call G_add_path(here,err)

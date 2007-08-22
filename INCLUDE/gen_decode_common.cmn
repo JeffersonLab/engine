@@ -3,6 +3,12 @@
 *     to logical detector identification.
 *
 *     $Log$
+*     Revision 1.4.24.3  2007/08/22 19:09:31  frw
+*     added FPP
+*
+*     Revision 1.5  4/2007  frw
+*     added flag to identify module type in VME bins -- unused for FastBus
+*
 *     Revision 1.4.24.2  2007/06/04 15:11:23  puckett
 *     changed hit array structure for trigger-related signals
 *
@@ -29,14 +35,26 @@
       parameter (G_DECODE_MAXROCS=15)            ! Largest ROC # + 1
       integer G_DECODE_MAXSLOTS
       parameter (G_DECODE_MAXSLOTS=25)          ! # slots in a FB crate
+
+      integer G_DECODE_MAXDIDS
+      parameter (G_DECODE_MAXDIDS=32)		! Largest DID #
+      integer G_DECODE_MAXPLANES
+      parameter (G_DECODE_MAXPLANES=15) 	! Largest plane #
+      integer G_DECODE_MAXCOUNTERS
+      parameter (G_DECODE_MAXCOUNTERS=200)	! Largest counter #
+      integer G_DECODE_MAXSIGNALS
+      parameter (G_DECODE_MAXSIGNALS=4) 	! Largest signal #
+
       integer*4 g_decode_slotpointer            ! Pointer into map arrays
       integer*4 g_decode_subaddcnt              ! Number of subadds per slot
       integer*4 g_decode_subaddbit              ! bit shift to get subadd
+      integer*4 g_decode_modtyp                 ! flag to identify module type
       integer*4 g_decode_slotmask
       integer*4 g_decode_didmap
       integer*4 g_decode_planemap, g_decode_countermap
       integer*4 g_decode_sigtypmap
       integer*4 g_decode_nextpointer            ! Next free in map arrays
+      integer*4 g_decode_roc
       common /UPCOMMON/
      $     g_decode_slotpointer(0:G_DECODE_MAXROCS, G_DECODE_MAXSLOTS),
      $     g_decode_subaddcnt(0:G_DECODE_MAXROCS,G_DECODE_MAXSLOTS),
@@ -46,7 +64,10 @@
      $     g_decode_planemap(G_DECODE_MAXWORDS),
      $     g_decode_countermap(G_DECODE_MAXWORDS),
      $     g_decode_sigtypmap(G_DECODE_MAXWORDS),
-     $     g_decode_nextpointer
+     $     g_decode_nextpointer,
+     $     g_decode_modtyp(0:G_DECODE_MAXROCS,G_DECODE_MAXSLOTS),
+     $     g_decode_roc(G_DECODE_MAXDIDS,G_DECODE_MAXPLANES,
+     $                  G_DECODE_MAXCOUNTERS,G_DECODE_MAXSIGNALS)
 
       integer*4 gmax_roc_with_adc
       integer*4 gmax_slot_with_adc

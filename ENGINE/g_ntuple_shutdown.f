@@ -12,6 +12,12 @@
 *- 
 *-   Created  30-June-1995 SAW
 *  $Log$
+*  Revision 1.2.24.2  2007/08/22 19:09:16  frw
+*  added FPP
+*
+*  Revision 1.2.25 frw
+*  added HMS FPP call
+*
 *  Revision 1.2.24.1  2007/05/15 02:55:01  jones
 *  Start to Bigcal code
 *
@@ -32,6 +38,8 @@
       character*(*) err
 *--------------------------------------------------------
       call h_ntuple_shutdown(ABORT,err)
+*
+      call h_fpp_nt_shutdown(ABORT,err)
 *
       call h_sv_nt_shutdown(ABORT,err)
 *
