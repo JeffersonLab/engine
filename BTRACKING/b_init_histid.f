@@ -91,6 +91,12 @@ c         write(*,*) 'histname=',histname
          bid_bttdc(2 + 2*(i-1)) = thgetid(histname)
       enddo
 
+      bid_bcal_empty = thgetid('bcal_empty')
+      bid_bcal_small = thgetid('bcal_small')
+      bid_bcal_cfac_old = thgetid('bcal_cfac_old')
+      bid_bcal_cfac_new = thgetid('bcal_cfac_new')
+      bid_bcal_oldxnew = thgetid('bcal_oldxnew')
+
       abort=.false.
       err=' '
       
