@@ -194,7 +194,7 @@ c      character*256 b_tree_filename
 
 *     in case of Monte Carlo analysis, actual event info for comparison to reconstructed:
 *     one "vertex" per event is assumed. Fill if and only if cluster ntuple gets filled.
-
+      integer*4 evid_g
       integer*4 ntrk_g
       integer*4 pid_g(maxnclust)
       real*4 xvertex_g
@@ -210,6 +210,7 @@ c      character*256 b_tree_filename
       real*4 gthetarad(maxnclust)
       real*4 gphirad(maxnclust)
       common/MC_Clust/
+     $     evid_g,
      $     ntrk_g,
      $     pid_g,
      $     xvertex_g,
