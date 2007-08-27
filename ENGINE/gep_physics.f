@@ -119,6 +119,9 @@ c     now rotate into calo-centered coordinate system:
       ycal_hexpect=yint_hexpect
       tcal_hexpect= hstime_at_fp - hstart_time_center + hspath_cor
 
+      gep_bx_expect_H = xcal_hexpect
+      gep_by_expect_H = ycal_hexpect
+
 c     how to choose? pick the track for which the quadrature sum of 
 c     sum( ((Eclust-Eexpect)/sigma)**2 + ((xclust-xexpect)/sigma)**2 + ((yclust-yexpect)/sigma)**2 ) is minimum
 c     the resolution parameters sigma should be CTP parms
