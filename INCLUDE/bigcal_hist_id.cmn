@@ -27,6 +27,11 @@
       integer*4 bid_bcal_nxny
       integer*4 bid_btdc(bigcal_max_tdc)
       integer*4 bid_bttdc(bigcal_ttrig_maxgroups)
+      integer*4 bid_bcal_empty
+      integer*4 bid_bcal_small
+      integer*4 bid_bcal_cfac_old
+      integer*4 bid_bcal_cfac_new
+      integer*4 bid_bcal_oldxnew
       common/bigcal_hist_id/
      $     bid_bcal_row,
      $     bid_bcal_col,
@@ -52,4 +57,9 @@
      $     bid_bcal_trms,
      $     bid_bcal_nxny,
      $     bid_btdc,
-     $     bid_bttdc
+     $     bid_bttdc,
+     $     bid_bcal_empty,
+     $     bid_bcal_small,
+     $     bid_bcal_cfac_old,
+     $     bid_bcal_cfac_new,
+     $     bid_bcal_oldxnew
