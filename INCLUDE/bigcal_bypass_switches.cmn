@@ -13,6 +13,8 @@
       integer*4 bdebug_print_tdc
       integer*4 bdebug_print_trig
       integer*4 bdebug_print_clusters
+      integer*4 bigcal_do_calibration
+      integer*4 bigcal_min_calib_events
 c      integer*4 bmake_tdc_hist
 c      integer*4 bmake_ttdc_hist
       integer*4 bluno ! logical unit number for debugging output
@@ -29,5 +31,7 @@ c      integer*4 bmake_ttdc_hist
      $     bdebug_print_tdc,
      $     bdebug_print_trig,
      $     bdebug_print_clusters,
+     $     bigcal_do_calibration,
+     $     bigcal_min_calib_events,
      $     bluno
       
