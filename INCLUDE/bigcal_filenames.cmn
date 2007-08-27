@@ -7,6 +7,11 @@
       character*80 b_threshold_output_filename
       character*80 b_pedestal_output_filename
       character*80 b_tree_filename
+      character*80 b_calib_matrix_filename
+      character*80 b_calib_parm_filename
+      character*80 b_calib_report_blockname
+      character*80 b_calib_report_template
+      character*80 b_calib_report_filename
 
       common/bigcal_filenames/
      $     b_report_template_filename,
@@ -14,5 +19,10 @@
      $     b_report_output_filename,
      $     b_threshold_output_filename,
      $     b_pedestal_output_filename,
-     $     b_tree_filename
+     $     b_tree_filename,
+     $     b_calib_matrix_filename,
+     $     b_calib_parm_filename,
+     $     b_calib_report_blockname,
+     $     b_calib_report_template,
+     $     b_calib_report_filename
       
