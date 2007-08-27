@@ -23,6 +23,9 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
+* Revision 1.19.6.4  2007/08/27 19:05:39  puckett
+* Added filenames relating to BigCal calibration
+*
 * Revision 1.19.6.3  2007/08/15 21:44:21  puckett
 * Added gep (coincidence) report names to filename initialization
 *
@@ -142,6 +145,7 @@
       g_report_template_filename = ' '
       c_report_template_filename = ' '
       b_report_template_filename = ' ' ! add BigCal
+      b_calib_report_template = ' '
       gep_report_template_filename = ' ' ! add GEp
       g_stats_template_filename = ' '
 *
@@ -160,6 +164,7 @@
       g_report_blockname = ' '
       c_report_blockname = ' '
       b_report_blockname = ' ' ! add BigCal
+      b_calib_report_blockname = ' '
       gep_report_blockname = ' '
       g_stats_blockname = ' '
 *
@@ -177,6 +182,16 @@ c      b_angle_output_filename = ' ' ! add BigCal
       h_tree_filename = ' '
       b_tree_filename = ' '
       gep_tree_filename = ' '
+
+c     the following is the name of the binary data file containing 
+c     the augmented matrix and vector of constants for the system of 
+c     linear equations to be solved for the BigCal calibration coefficients,
+c     accumulated over one or several runs until the desired number of events
+c     is reached (bigcal_min_calib_events)
+      
+      b_calib_matrix_filename = ' '
+      b_calib_parm_filename = ' '
+      b_calib_report_filename = ' '
       
 *
       g_label = ' '                     ! Label for reports etc.
