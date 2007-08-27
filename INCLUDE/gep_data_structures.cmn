@@ -11,6 +11,14 @@ c     resolution parameters for picking best bigcal track using hms info!
      $     GEP_sigma_ydiff,
      $     GEP_sigma_Ediff,
      $     GEP_sigma_tdiff
+c     event selection cuts for BigCal calibration:
+      real*4 gep_bcalib_cut_ctime
+      real*4 gep_bcalib_cut_dx
+      real*4 gep_bcalib_cut_dy
+      common/gep_bcalib/
+     $     gep_bcalib_cut_ctime,
+     $     gep_bcalib_cut_dx,
+     $     gep_bcalib_cut_dy
 
 *
 *     CTPTYPE=event
@@ -62,3 +70,11 @@ c     system for the polarization measurement.
      $     GEP_Pmiss,
      $     GEP_W2,
      $     GEP_Mmiss
+
+c     expected hit positions in the calorimeter from the HMS:
+      
+      real*4 GEP_bx_expect_H 
+      real*4 GEP_by_expect_H
+      common/gep_bcoord_expect/
+     $     GEP_bx_expect_H,
+     $     GEP_by_expect_H
