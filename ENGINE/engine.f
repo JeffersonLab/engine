@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.7  2007/08/27 19:01:38  puckett
+* Added call to BigCal calibration in engine.f
+*
 * Revision 1.42.8.6  2007/08/07 19:02:22  puckett
 * added run number substitution for tree filenames
 *
@@ -216,6 +219,8 @@ c
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
       include 'bigcal_data_structures.cmn' 
+      include 'bigcal_bypass_switches.cmn'
+      include 'bigcal_filenames.cmn'
       include 'hms_calorimeter.cmn' !for HMS calorimeter calibration
       include 'sos_calorimeter.cmn' !for SOS calorimeter calibration
 
@@ -952,9 +957,11 @@ c...  Calibrate HMS and SOS calorimeters.
       if(hdbg_tracks_cal.lt.0) call h_cal_calib(1)
 
       if(sdbg_tracks_cal.lt.0) call s_cal_calib(1)
-c...  No call to calibration routine for BigCal. We will write out a specialized "calibration" ntuple
-c...  on an as-needed basis.
-
+c...  call to calibration routine for BigCal. 
+      if(bigcal_do_calibration.ne.0) then
+         write(*,*) '*****CALLING BIGCAL CALIBRATION*****'
+         call bigcal_calib(abort,err)
+      endif
 c...
 
       print *,'    -------------------------------------'
