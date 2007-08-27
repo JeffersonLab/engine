@@ -144,7 +144,8 @@ c     get any free IO channel
         endif
 
         if(gen_bigcal_mc.ne.0) then
-           call HBNAME(id,'MC_Clust',ntrk_g,'ntrk_g[0,25]:I*4,'//
+           call HBNAME(id,'MC_Clust',evid_g,'evid_g:I*4,'//
+     $          'ntrk_g[0,25]:I*4,'//
      $          'pid_g(ntrk_g)[0,50]:I*4,xvertex_g,yvertex_g,'//
      $          'zvertex_g,pxgeant(ntrk_g),pygeant(ntrk_g),'//
      $          'pzgeant(ntrk_g),xgeant(ntrk_g),ygeant(ntrk_g),'//

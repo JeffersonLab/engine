@@ -33,6 +33,9 @@ c      include 'gen_constants.par'
          jflag = 0
          
          read(io_unit,end=101,err=102) iev_mc
+
+         evid_g = iev_mc
+
          read(io_unit,end=101,err=102) xv_mc,yv_mc,zv_mc
          read(io_unit,end=101,err=102) nvtrk_mc
 
