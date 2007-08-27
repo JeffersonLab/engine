@@ -560,6 +560,26 @@ c     bigcal_singles_physics: choose the best track!
      $     bigcal_eloss,
      $     bigcal_tof,
      $     bigcal_ctime
+c     variables for BigCal ep (or MC) calibration:
+      real*4 bigcal_matrix(bigcal_all_maxhits,bigcal_all_maxhits)
+      real*4 bigcal_vector(bigcal_all_maxhits)
+      integer*4 bigcal_matr_iflag
+      integer*4 bigcal_nmatr_event
+      integer*4 bigcal_matr_iochan
+      integer*4 bigcal_matr_nempty
+      integer*4 bigcal_matr_nsmalldiag
+      integer*4 bigcal_matr_iempty(bigcal_all_maxhits)
+      integer*4 bigcal_matr_ismalld(bigcal_all_maxhits)
+      common/bigcal_calibration/
+     $     bigcal_matrix,
+     $     bigcal_vector,
+     $     bigcal_matr_iflag,
+     $     bigcal_nmatr_event,
+     $     bigcal_matr_iochan,
+     $     bigcal_matr_nempty,
+     $     bigcal_matr_nsmalldiag,
+     $     bigcal_matr_iempty,
+     $     bigcal_matr_ismalld
 
 c     variables for reading Protvino Monte Carlo events ('.dat' style output!!!)
       
