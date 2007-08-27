@@ -8,6 +8,9 @@
 *     Added new detector ids for BigCal
 *
 *     $Log$
+*     Revision 1.8.24.3  2007/08/27 17:05:58  frw
+*     clean replay for GEp-III
+*
 *     Revision 1.8.24.2  2007/06/04 15:11:23  puckett
 *     changed hit array structure for trigger-related signals
 *
@@ -46,9 +49,9 @@
       integer MAXID, UNINST_ID, HDC_ID, HSCIN_ID, HCER_ID, HCAL_ID, HMISC_ID, 
      $     GMISC_ID, SDC_ID, SSCIN_ID, SCER_ID, SCAL_ID, SMISC_ID, SAER_ID,
      $     SLUC_ID, HAERO_ID, BIGCAL_PROT_ID, BIGCAL_RCS_ID,
-     $     BIGCAL_TDC_ID, BIGCAL_ATRIG_ID, BIGCAL_TTRIG_ID
+     $     BIGCAL_TDC_ID, BIGCAL_ATRIG_ID, BIGCAL_TTRIG_ID, HFPP_ID
 
-      parameter (MAXID=19)
+      parameter (MAXID=20)
       parameter (UNINST_ID=0)           ! Uninstrumented channels
       parameter (HDC_ID=1)
       parameter (HSCIN_ID=2)
@@ -57,6 +60,7 @@
       parameter (HMISC_ID=5)            ! Misclaneous FB channels
       parameter (GMISC_ID=6)             ! BPM/Raster data
       parameter (HAERO_ID=7) 
+      parameter (HFPP_ID=20)		! Focal Plane Polarimeter
 cajp 
       parameter (BIGCAL_PROT_ID=8) ! protvino glass ADCs
       parameter (BIGCAL_RCS_ID=9) ! RCS glass ADCs
