@@ -194,6 +194,12 @@ c      bigcal_prot_bad_clstr_flag(0) = 0
          bigcal_all_clstr_ncelly(i)= 0
          bigcal_all_clstr_iymax(i) = 0
          bigcal_all_clstr_ixmax(i) = 0
+         bigcal_all_clstr_iylo(i)=0
+         bigcal_all_clstr_iyhi(i) = 0
+         do j=1,3
+            bigcal_all_clstr_ixlo(i,j) = 0
+            bigcal_all_clstr_ixhi(i,j) = 0
+         enddo
          bigcal_all_clstr_ncell8(i) = 0
          bigcal_all_clstr_ncell64(i) = 0
          bigcal_all_clstr_xmom(i) = 0.
@@ -300,6 +306,11 @@ c$$$      endif
 c     clear out cluster ntuple variables:
 
       nclust = 0
+      nclust8 = 0
+      nclust64 = 0
+      ntrack = 0 
+      ibest = 0
+      nmax = 0
       do i=1,maxnclust
          ncellclust(i) = 0
          ncell8clust(i) = 0
@@ -341,8 +352,15 @@ c     clear out cluster ntuple variables:
          py(i) = 0.
          pz(i) = 0.
          ctime_clust(i) = 0.
+         edge_max(i) = .false.
+         not_enough(i) = .false.
+         too_long_x(i) = .false.
+         too_long_y(i) = .false.
+         below_thresh(i) = .false.
+         above_max(i) = .false.
+         second_max(i) = .false.
       enddo
-               
+
 c     clear out monte carlo event info variables:
       
       ntrk_g = 0
@@ -361,6 +379,10 @@ c     clear out monte carlo event info variables:
          gthetarad(i) = 0.
          gphirad(i) = 0.
       enddo
+
+      E_HMS = 0.
+      X_HMS = 0.
+      Y_HMS = 0.
 
       return
       end
