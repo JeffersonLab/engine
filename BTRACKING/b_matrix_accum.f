@@ -27,7 +27,7 @@
 
 c     
       
-      if(gen_bigcal_mc.ne.0) then
+      if(gen_bigcal_mc.ne.0.and.gen_bigcal_mc.ne.3) then
 c     for monte carlo-based calibration we are happy with using only events where there is one cluster
 c     corresponding to one electron
          if(nvtrk_mc.eq.1.and.pid_mc(1).eq.3.and.bigcal_all_nclstr.eq.1)

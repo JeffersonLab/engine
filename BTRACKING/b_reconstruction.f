@@ -157,7 +157,8 @@ c     if dealing with real data and not monte carlo, then the appropriate
 c     place to do the calibration matrix is in gep_reconstruction, because
 c     we need to know the incident electron energy, hence we need the hms
 c     info.
-      if(gen_bigcal_mc.ne.0.and.bigcal_do_calibration.ne.0) then
+      if(gen_bigcal_mc.ne.0.and.bigcal_do_calibration.ne.0.and.
+     $     gen_bigcal_mc.ne.3) then
          call b_matrix_accum(abort,err)
          if(abort) then
             call g_add_path(here,err)
