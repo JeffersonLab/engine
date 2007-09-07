@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.3  2007/09/07 16:08:05  puckett
+* put event type 3 option back in for call to h_reconstruction, just in case somebody wants to use it. Also added event type 7 and 8 for calls to b_reconstruction, for the case of the cosmic/light box trigger for bigcal
+*
 * Revision 1.13.24.2  2007/06/04 14:56:06  puckett
 * changed hit array structure for trigger related signals
 *
@@ -152,7 +155,8 @@ c      IF(gen_event_type.ge.1 .and. gen_event_type.le.3) then  !HMS/SOS/COIN tri
 *-HMS reconstruction
 c      IF(gen_event_type.eq.1 .or. gen_event_type.eq.3) then  !HMS/COIN trig
       
-      if(gen_event_type.eq.1 .or. gen_event_type .eq. 6) then !HMS/COIN trig
+      if(gen_event_type.eq.1 .or. gen_event_type .eq. 6 .or. 
+     $     gen_event_type .eq. 3) then               !HMS/COIN trig
          call H_reconstruction(FAIL,why)
         IF(err.NE.' ' .and. why.NE.' ') THEN
           call G_append(err,' & '//why)
@@ -173,7 +177,7 @@ c      IF(gen_event_type.eq.1 .or. gen_event_type.eq.3) then  !HMS/COIN trig
         ABORT= ABORT .or. FAIL
       ENDIF
 *-BIGCAL reconstruction
-      if(gen_event_type.eq.5 .or. gen_event_type.eq.6) then !BIGCAL/HMS-BIGCAL COIN
+      if(gen_event_type.ge.5 .and. gen_event_type.le.8) then !5.BIGCAL/6.HMS-BIGCAL COIN/7.COSMIC/8.LIGHT BOX
          !write(*,*) 'calling b_reconstruction'
          call B_reconstruction(FAIL,why)
          !write(*,*) 'b_reconstruction successful'
