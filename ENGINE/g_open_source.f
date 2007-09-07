@@ -10,6 +10,9 @@
 *-   Created  30-Nov-1993   Kevin B. Beard
 *
 * $Log$
+* Revision 1.5.24.3  2007/09/07 16:06:07  puckett
+* added 'gen_bigcal_mc.eq.3' flag to g_open_source
+*
 * Revision 1.5.24.2  2007/06/26 16:36:45  puckett
 * latest changes for monte carlo analysis, latest fixes for cluster finding routine
 *
@@ -65,7 +68,7 @@ c      include 'bigcal_bypass_switches.cmn'
 *
       file = g_data_source_filename
       if(gen_bigcal_mc.ne.0) then ! Monte Carlo!!!
-         if(gen_bigcal_mc.eq.1) then
+         if(gen_bigcal_mc.eq.1.or.gen_bigcal_mc.eq.3) then
             call g_IO_control(io_dat,'ANY',ABORT,err)
             if(abort) then
                call g_add_path(here,err)
