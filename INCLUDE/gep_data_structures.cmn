@@ -49,7 +49,7 @@ c     by defining both polar and azimuthal scattering angles theta and phi, we
 c     can define the unit vector in the q-direction, which defines the coord. 
 c     system for the polarization measurement. 
       
-      common/GEP_CPHYSICS/
+      common/GEPBLOCK/
      $     GEP_ctime_hms,
      $     GEP_ctime_cal,
      $     GEP_Q2,
