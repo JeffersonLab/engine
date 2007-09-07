@@ -131,6 +131,10 @@ c$$$        bigcal_track_coin_time(i) = 0.
 c$$$      enddo
 
       nclust = 0
+      nclust8 = 0
+      nclust64=0
+      ntrack = 0
+      ibest=0
       nmax = 0
       ntrk_g = 0
 
