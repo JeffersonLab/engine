@@ -49,11 +49,11 @@ c      character*256 b_tree_filename
 
 *     Basic event info:
 
-      integer*4 gid
-      integer*4 gtype
+      integer*4 bgid ! copy of gen_event_id_number
+      integer*4 bgtype ! copy of gen_event_type
       common/evinfo/
-     $     gid,
-     $     gtype
+     $     bgid,
+     $     bgtype
 
 *     ADC related quantities
 
@@ -225,6 +225,15 @@ c      character*256 b_tree_filename
      $     pgeant,
      $     gthetarad,
      $     gphirad
+
+*     in case of Coincidence analysis, HMS info for comparison to reconstructed: 
+      real*4 E_HMS
+      real*4 X_HMS
+      real*4 Y_HMS
+      common/hmsblk/
+     $     E_HMS,
+     $     X_HMS,
+     $     Y_HMS
 
       integer*4 nahit
       integer*4 xa(maxahit)
