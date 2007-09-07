@@ -10,6 +10,7 @@
       character*(*) err
 
       include 'gep_ntuple.cmn'
+c      include 'gep_data_structures.cmn'
 
       integer default_bank,default_recl
 
@@ -81,6 +82,13 @@ c     get any free IO channel
       title = gep_ntuple_title
 
       call HBOOKN(id,title,size,name,bank,gep_ntuple_tag) ! create ntuple
+c      call HBNT(id,title,' ')
+c$$$      call HBNAME(id,'GEPBLOCK',gep_evid,'gep_evid:I*4,'//
+c$$$     $     'gep_ctime_hms,gep_ctime_cal,gep_Q2,gep_Q2_H,'//
+c$$$     $     'gep_Q2_B,GEP_E_electron,GEP_P_proton,GEP_delta_p,'//
+c$$$     $     'gep_epsilon,gep_etheta_deg,gep_ptheta_deg,gep_ephi_deg,'//
+c$$$     $     'gep_pphi_deg,gep_Emiss,gep_Pmissx,gep_Pmissy,gep_Pmissz,'//
+c$$$     $     'gep_Pmiss,gep_W2,gep_Mmiss')
 
       call HCDIR(gep_ntuple_directory,'R') ! record ntuple directory
       call HCDIR(directory,' ')         ! reset CERNLIB directory
