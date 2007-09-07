@@ -11,11 +11,12 @@
       parameter(here='bigcal_mc_reconstruction')
 
       real xhat,yhat,zhat,pxh,pyh,pzh,xvh,yvh,zvh
+      real xvh_temp,yvh_temp,zvh_temp
       real tintercept,xintercept,yintercept,zintercept
       real gbthetarad
       parameter(gbthetarad=1.1868239)
       real gbrcm
-      parameter(gbrcm=440.0)
+      parameter(gbrcm=448.0)
 
       include 'bigcal_data_structures.cmn'
       include 'gen_run_info.cmn'
@@ -27,7 +28,7 @@ c      include 'gen_constants.par'
       abort=.false.
       err=' '
 
-      if(iflag.eq.1) then !bigcal mc .dat file
+      if(iflag.eq.1.or.iflag.eq.3) then !bigcal mc .dat file
          io_unit = g_data_source_in_hndl
 
          jflag = 0
@@ -98,10 +99,15 @@ c$$$               zhat = pzgeant(i) / pgeant(i)
 
                gthetarad(i) = acos(zhat)
                gphirad(i) = atan2(yhat,xhat)
-
-               xvh = xv_mc+(bigcal_r_tgt-gbrcm)*sin(gbthetarad)
+c     translate
+               xvh_temp = xv_mc + (bigcal_r_tgt - gbrcm)*sin(gbthetarad)
+               zvh_temp = zv_mc + (bigcal_r_tgt - gbrcm)*cos(gbthetarad)
+c     rotate
+               xvh = xvh_temp*cos(bigcal_theta_rad-gbthetarad) + 
+     $              zvh_temp*sin(bigcal_theta_rad-gbthetarad)
                yvh = yv_mc
-               zvh = zv_mc+(bigcal_r_tgt-gbrcm)*cos(gbthetarad)
+               zvh = -xvh_temp*sin(bigcal_theta_rad-gbthetarad) + 
+     $              zvh_temp*cos(bigcal_theta_rad-gbthetarad)
 
                xvertex_g = xvh
                yvertex_g = yvh
@@ -169,6 +175,16 @@ c     here's the key part: fill the raw hit arrays!!!
 
          jflag = 7
 
+c     read proton data if it's there:
+
+         if(gen_bigcal_mc.eq.3) then
+            read(io_unit,end=101,err=102) iev_p_mc
+            read(io_unit,end=101,err=102) pp_mc,ptheta_mc,pphi_mc,
+     $           xv_p_mc,yv_p_mc,zv_p_mc
+         endif
+
+         jflag = 8
+
 c     override bypass flags from parameter files: 
 c$$$         bbypass_prot = 0
 c$$$         bbypass_rcs = 0
@@ -184,6 +200,10 @@ c     BAD PUCKETT! DON'T hardwire things into the code, mmm'kay?
 
          call b_reconstruction(abort,err)
          
+         if(gen_bigcal_mc.eq.3) then
+            call gep_reconstruction(abort,err)
+         endif
+
          !write(*,*) 'finished b_reconstruction'
 
          if(abort) then
