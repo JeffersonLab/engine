@@ -3,6 +3,9 @@
 *     to logical detector identification.
 *
 *     $Log$
+*     Revision 1.4.24.5  2007/09/07 21:55:07  puckett
+*     increased maxplanes and maxcounters to accomodate '999,999' for FPP reference time. Also changed range of index 4 of array g_decode_roc so that it runs from 0 to 4 instead of 1 to 4. Frank is looking into what part of the code tries to access the zero-the element
+*
 *     Revision 1.4.24.4  2007/08/27 20:24:42  puckett
 *     Increased "max planes" from 15 to 56 since each row (1-56) is considered a "plane" for purposes of the decode map.
 *
@@ -42,9 +45,9 @@
       integer G_DECODE_MAXDIDS
       parameter (G_DECODE_MAXDIDS=32)		! Largest DID #
       integer G_DECODE_MAXPLANES
-      parameter (G_DECODE_MAXPLANES=56) 	! Largest plane #
+      parameter (G_DECODE_MAXPLANES=999) 	! Largest plane #
       integer G_DECODE_MAXCOUNTERS
-      parameter (G_DECODE_MAXCOUNTERS=200)	! Largest counter #
+      parameter (G_DECODE_MAXCOUNTERS=999)	! Largest counter #
       integer G_DECODE_MAXSIGNALS
       parameter (G_DECODE_MAXSIGNALS=4) 	! Largest signal #
 
@@ -70,7 +73,7 @@
      $     g_decode_nextpointer,
      $     g_decode_modtyp(0:G_DECODE_MAXROCS,G_DECODE_MAXSLOTS),
      $     g_decode_roc(G_DECODE_MAXDIDS,G_DECODE_MAXPLANES,
-     $                  G_DECODE_MAXCOUNTERS,G_DECODE_MAXSIGNALS)
+     $                  G_DECODE_MAXCOUNTERS,0:G_DECODE_MAXSIGNALS)
 
       integer*4 gmax_roc_with_adc
       integer*4 gmax_slot_with_adc
