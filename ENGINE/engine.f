@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.8  2007/09/07 16:04:35  puckett
+* updated bigcal monte carlo reconstruction to include protons.
+*
 * Revision 1.42.8.7  2007/08/27 19:01:38  puckett
 * Added call to BigCal calibration in engine.f
 *
@@ -604,6 +607,9 @@ c     !!!!!!!!!!!!!!!!!!!!!!!!!!!IF BIGCAL MONTE CARLO DATA, DO ALL EVENT REPLAY
         if(gen_bigcal_mc.ne.0) then
 c           call get_bigcal_mc_event(gen_bigcal_mc,ABORT,err)
            gen_event_type = 5
+           if(gen_bigcal_mc.eq.3) then ! fake proton data included
+              gen_event_type = 6
+           endif
            
            !write(*,*) 'Entering monte carlo reconstruction'
 
@@ -624,6 +630,7 @@ c$$$           sum_recorded=sum_recorded+1
 c$$$           total_event_count= total_event_count+1
            
            groupname='bigcal'
+           if(gen_bigcal_mc.eq.3) groupname='gep'
            call g_keep_results(groupname,ABORT,err)
 
            if(abort) then 
@@ -826,7 +833,8 @@ c
                   else if (gen_event_type.eq.4) then
                     start_time=time()     !reset start time for analysis rate
                     groupname='ped'
-                 else if (gen_event_type.eq.5) then
+                 else if (gen_event_type.eq.5.or.gen_event_type.eq.7.or.
+     $                   gen_event_type.eq.8) then
                     groupname = 'bigcal'
                  else if (gen_event_type.eq.6) then
                     groupname = 'gep'
