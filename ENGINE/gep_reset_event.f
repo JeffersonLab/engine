@@ -35,5 +35,8 @@
       gep_w2 = 0.
       gep_mmiss = 0.
 
+      gep_bx_expect_H = 0.
+      gep_by_expect_H = 0.
+
       return
       end
