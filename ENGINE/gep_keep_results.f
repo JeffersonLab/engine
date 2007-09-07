@@ -3,6 +3,7 @@
       implicit none
       save
 
+c      include 'gen_event_info.cmn'
       include 'gep_data_structures.cmn'
       include 'hms_data_structures.cmn'
       include 'bigcal_data_structures.cmn'
@@ -17,6 +18,7 @@
       err=' '
 
       if(HSNUM_FPTRACK.gt.0 .and. BIGCAL_PHYS_NTRACK .gt. 0) then
+c         gep_evid = gen_event_id_number
          call gep_ntuple_keep(abort,err)
       endif
       if(abort) then
