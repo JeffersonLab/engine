@@ -75,7 +75,8 @@
       endif
 
       m=0
-
+      m=m+1
+      gep_ntuple_tag(m) = 'evid' ! gen_event_id_number
       m=m+1
       gep_ntuple_tag(m) = 'ctimeh' ! hms coin. time
       m=m+1

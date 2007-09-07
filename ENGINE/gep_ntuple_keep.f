@@ -34,7 +34,9 @@
       endif         
 
       m=0
-
+      
+      m=m+1
+      gep_ntuple_contents(m) = float(gen_event_id_number)
       m=m+1
       gep_ntuple_contents(m) = GEP_ctime_hms
       m=m+1
@@ -82,7 +84,8 @@
      $        '$',gep_ntuple_ID,' ',0.,' ',err)
          call G_add_path(here,err)
       else
-         call HFN(gep_ntuple_ID,gep_ntuple_contents)
+c         call HFNT(gep_ntuple_ID)
+         call HFN(gep_ntuple_id,gep_ntuple_contents)
       endif
       
       return 
