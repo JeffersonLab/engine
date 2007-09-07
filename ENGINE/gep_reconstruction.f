@@ -19,6 +19,7 @@ c      include 'gep_bypass_switches.cmn'
       err=' '
 
 c      if(gepbypass_physics.eq.0) then
+
       call gep_physics(abort,err)
       if(abort) then 
          call G_add_path(here,err)
