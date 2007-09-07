@@ -91,7 +91,7 @@ c     get any free IO channel
       if(bigcal_ntuple_type.eq.1) then ! col-wise ntuple for cluster analysis
         call HBNT(id,title,' ')
 
-        call HBNAME(id,'evinfo',gid,'gid:I*4,gtype[5,6]:I*4')
+        call HBNAME(id,'bevinfo',bgid,'bgid:I*4,bgtype[5,6]:I*4')
         call HBNAME(id,'bhits',ngooda,'ngooda:I*4,ngoodt:I*4,'//
      $       'ngoodta:I*4,ngoodtt:I*4,irowmax:I*4,icolmax:I*4,'//
      $       'max_adc:R*4')
@@ -129,7 +129,7 @@ c     get any free IO channel
            
            if(bbypass_calc_physics.eq.0) then
               call HBNAME(id,'clustphys',ntrack,'ntrack[0,25]:I*4,'//
-     $             'ibest[0,ntrack]:I*4,thetarad(ntrack),'//
+     $             'ibest[0,25]:I*4,thetarad(ntrack),'//
      $             'phirad(ntrack),energy(ntrack),'//
      $             'xface(ntrack),yface(ntrack),'//
      $             'zface(ntrack),px(ntrack),py(ntrack),pz(ntrack),'//
@@ -153,6 +153,10 @@ c     get any free IO channel
      $          'gphirad(ntrk_g)')
         endif
 
+        if(gen_run_enable(6).ne.0.and.(gen_bigcal_mc.eq.3.or.
+     $       gen_bigcal_mc.eq.0)) then
+           call HBNAME(id,'hmsblk',E_HMS,'E_HMS,X_HMS,Y_HMS')
+        endif
       else if(bigcal_ntuple_type.eq.2) then ! col-wise ntuple for cosmics analysis
 
         !write(*,*) 'booking cosmic hits ntuple:'

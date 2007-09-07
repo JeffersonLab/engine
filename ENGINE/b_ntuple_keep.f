@@ -11,8 +11,9 @@
 
       include 'b_ntuple.cmn'
       include 'bigcal_data_structures.cmn'
-      include 'gen_data_structures.cmn'
       include 'gen_event_info.cmn'
+      include 'gen_data_structures.cmn'
+      include 'gep_data_structures.cmn'
 c      include 'gen_scalers.cmn'
       
 
@@ -31,6 +32,9 @@ c      integer itype
       integer nhit_tdc(224)
       integer nhit_ttdc(42)
       integer nhit_tadc(38)
+
+      real Mp
+      parameter(Mp=.938272)
 
       do ihit=1,224
         nhit_tdc(ihit) = 0
@@ -53,8 +57,8 @@ c      integer itype
       endif
 
       if(bigcal_ntuple_type.eq.1) then
-         gid = gen_event_ID_number
-         gtype = gen_event_type
+         bgid = gen_event_ID_number
+         bgtype = gen_event_type
          nclust = bigcal_all_nclstr
          nclust8 = nclust
          nclust64 = nclust
@@ -170,6 +174,15 @@ c$$$     $          bigcal_ixmax_adc,bigcal_max_adc
          irowmax = bigcal_iymax_adc
          icolmax = bigcal_ixmax_adc
          max_adc = bigcal_max_adc
+         if(bgtype.eq.6) then
+            X_HMS = GEP_bx_expect_H
+            Y_HMS = GEP_by_expect_H
+            E_HMS = gebeam - GEP_Q2_H / (2.*Mp)
+         else
+            X_HMS = 0.
+            Y_HMS = 0.
+            E_HMS = 0.
+         endif
       else if(bigcal_ntuple_type.eq.2) then
          nahit = 0
          if(bigcal_prot_ngood.gt.0) then
