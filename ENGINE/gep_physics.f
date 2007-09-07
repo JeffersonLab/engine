@@ -9,14 +9,15 @@
       logical abort
       character*(*) err
       
+      include 'gen_run_info.cmn'
       include 'gen_data_structures.cmn'
       include 'hms_data_structures.cmn'
+      include 'hms_scin_parms.cmn'
       include 'bigcal_data_structures.cmn'
       include 'gep_data_structures.cmn'
       include 'gen_constants.par'
       include 'hms_scin_tof.cmn'
       include 'hms_physics_sing.cmn'
-      include 'hms_scin_parms.cmn'
       include 'bigcal_tof_parms.cmn'
       include 'bigcal_gain_parms.cmn'
       include 'bigcal_shower_parms.cmn'
@@ -56,6 +57,22 @@ c     from BigCal assuming elastic kinematics!!!
 
       real PI
       parameter(PI=3.14159265359)
+
+      if(gen_bigcal_mc.eq.3) then ! fill HMS info from Monte Carlo:
+         hsnum_fptrack = 1
+         hsp = pp_mc
+         hsdelta = (hsp - hpcentral)/hpcentral
+         hsenergy = sqrt(hsp**2 + Mp**2)
+         hstheta = ptheta_mc*PI/180.
+         hsphi = (- pphi_mc - 90.)*PI/180.
+         hszbeam = zv_p_mc
+         gbeam_x = -yv_p_mc
+         gbeam_y = xv_p_mc
+      endif
+
+      if(hsnum_fptrack.le.0.or.bigcal_phys_ntrack.le.0) then
+         return
+      endif
 
       Me = mass_electron ! convenient shorthand
 
@@ -118,6 +135,9 @@ c     now rotate into calo-centered coordinate system:
       xcal_hexpect=xint_hexpect*bigcal_costheta-zint_hexpect*bigcal_sintheta
       ycal_hexpect=yint_hexpect
       tcal_hexpect= hstime_at_fp - hstart_time_center + hspath_cor
+      if(gen_bigcal_mc.eq.3) then
+         tcal_hexpect = 0.0
+      endif
 
       gep_bx_expect_H = xcal_hexpect
       gep_by_expect_H = ycal_hexpect
@@ -142,8 +162,11 @@ c     correct angles since we know vertex:
       epathlength = sqrt(edx**2 + edy**2 + edz**2)
 
       bigcal_thetarad = acos(edz/epathlength)
-      bigcal_phirad = atan2(edy,edz)
+      bigcal_phirad = atan2(edy,edx)
       
+      bigcal_track_thetarad(ibest_cal) = bigcal_thetarad
+      bigcal_track_phirad(ibest_cal) = bigcal_phirad
+
       bigcal_energy = bigcal_track_energy(ibest_cal)
       
 c     correct tof:
@@ -162,11 +185,15 @@ c     correct tof:
 
       bigcal_eloss = bigcal_track_eloss(ibest_cal)
       bigcal_time = bigcal_track_time(ibest_cal)
-      bigcal_ctime = bigcal_track_time(ibest_cal) - tof
+      bigcal_ctime = bigcal_track_time(ibest_cal) - bigcal_tof
 
       gep_ctime_hms = hstime_at_fp - hstart_time_center + hspath_cor
       gep_ctime_cal = bigcal_ctime
 
+      if(gen_bigcal_mc.eq.3) then 
+         gep_ctime_hms = 0.
+         gep_ctime_cal = 0.
+      endif
 
 c     compute Q2 three different ways:
 c     Q2_Cal uses only BigCal information except for hms vertex info
@@ -208,6 +235,21 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       integer itrack,ibest
       real diffsum,mindiffsum
       real E_cal,X_cal,Y_cal,T_cal
+
+c     if the user has not defined something reasonable, then set by hand here:
+
+      if(GEP_sigma_Ediff.lt..001.or.GEP_sigma_Ediff.gt.10.0) then
+         GEP_sigma_Ediff = .06
+      endif
+      if(GEP_sigma_Xdiff.lt..001.or.GEP_sigma_Xdiff.gt.100.0) then
+         GEP_sigma_Xdiff = 1.0
+      endif
+      if(GEP_sigma_Ydiff.lt..001.or.GEP_sigma_Ydiff.gt.100.0) then
+         GEP_sigma_Ydiff  =1.0
+      endif
+      if(GEP_sigma_Tdiff.lt..001.or.GEP_sigma_Tdiff.gt.1000.0) then
+         GEP_sigma_Tdiff = 10.0
+      endif
 
       if(bigcal_phys_ntrack.gt.0) then
          do itrack = 1,bigcal_phys_ntrack
