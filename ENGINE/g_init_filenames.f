@@ -23,6 +23,9 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
+* Revision 1.19.6.5  2007/09/07 16:05:29  puckett
+* removed initialization of filenames for bigcal calibration reports, no longer used, this info will go in regular bigcal report
+*
 * Revision 1.19.6.4  2007/08/27 19:05:39  puckett
 * Added filenames relating to BigCal calibration
 *
@@ -145,7 +148,7 @@
       g_report_template_filename = ' '
       c_report_template_filename = ' '
       b_report_template_filename = ' ' ! add BigCal
-      b_calib_report_template = ' '
+c      b_calib_report_template = ' ' ! not used, make part of bigcal report
       gep_report_template_filename = ' ' ! add GEp
       g_stats_template_filename = ' '
 *
@@ -164,7 +167,7 @@
       g_report_blockname = ' '
       c_report_blockname = ' '
       b_report_blockname = ' ' ! add BigCal
-      b_calib_report_blockname = ' '
+c      b_calib_report_blockname = ' ' ! not used, make part of bigcal report
       gep_report_blockname = ' '
       g_stats_blockname = ' '
 *
@@ -191,7 +194,7 @@ c     is reached (bigcal_min_calib_events)
       
       b_calib_matrix_filename = ' '
       b_calib_parm_filename = ' '
-      b_calib_report_filename = ' '
+c      b_calib_report_filename = ' ' ! not used
       
 *
       g_label = ' '                     ! Label for reports etc.
