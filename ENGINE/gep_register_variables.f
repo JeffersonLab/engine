@@ -24,5 +24,13 @@
 
       if(abort .or. err.ne.' ') call g_add_path(here,err)
 
+      call gep_ntuple_register(FAIL,why)    ! remove this when ctp files fixed
+      if(err.ne.' '.and.why.ne.' ') then
+         call G_append(err,' & '//why)
+      else if(why.ne.' ') then
+         err=why
+      endif
+      abort = abort.or.fail
+
       return 
       end
