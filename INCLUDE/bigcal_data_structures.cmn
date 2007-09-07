@@ -588,16 +588,20 @@ c     variables for reading Protvino Monte Carlo events ('.dat' style output!!!)
       integer*4 pid_mc(100)
       integer*4 isum_mc(2),ix_mc,iy_mc
       integer*4 idesum_mc(2)
+      integer*4 iev_p_mc
       real*4 xv_mc,yv_mc,zv_mc,px_mc(100),py_mc(100),pz_mc(100)
       real*4 esum_mc(2)
       real*4 allde_mc(2)
       real*4 npe_mc,dedx_mc
+      real*4 pp_mc,ptheta_mc,pphi_mc,xv_p_mc,yv_p_mc,zv_p_mc
       logical EOF_MC_DAT
 
       common/BIGCAL_MC_STUFF/
      $     iev_mc,nvtrk_mc,pid_mc,isum_mc,ix_mc,iy_mc,
-     $     idesum_mc,
+     $     idesum_mc,iev_p_mc,
      $     xv_mc,yv_mc,zv_mc,px_mc,py_mc,pz_mc,esum_mc,
-     $     allde_mc,npe_mc,dedx_mc,EOF_MC_DAT
+     $     allde_mc,npe_mc,dedx_mc,
+     $     pp_mc,ptheta_mc,pphi_mc,xv_p_mc,yv_p_mc,zv_p_mc,
+     $     EOF_MC_DAT
 
       
