@@ -1,5 +1,6 @@
 NEWSTYLE=1
 include ../../etc/Makefile
+include ../../etc/Makefile.flags
 
 
 osources = b_analyze_pedestal.f b_calc_cluster_time.f b_calc_pedestal.f b_calc_physics.f \

@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.10.24.3  2007/09/10 20:08:02  pcarter
+# Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+#
 # Revision 1.10.24.2  2007/08/22 19:09:31  frw
 # added FPP
 #
@@ -40,6 +43,7 @@
 # Initial revision
 #
 ##include $(Csoft)/etc/Makefile
+.DELETE_ON_ERROR: ;
 
 ntuples = c_ntuple.cmn h_ntuple.cmn s_ntuple.cmn b_ntuple.cmn gep_ntuple.cmn
 
@@ -90,6 +94,7 @@ include_files = $(cmn) $(dte) $(par) $(dec) $(oneev)
 
 install-dirs :=
 
+.PHONY: all
 
 all : $(include_files)
 

@@ -1,13 +1,12 @@
-MYOS := $(subst -,,$(shell uname))
+.DELETE_ON_ERROR: ;
 
-CFLAGS=-L../../$(MYOS)/lib
+.PHONY: all
 
-CC=gcc
+override CFLAGS += -L../../$(MYOS)/lib
 
 all: syncfilter
 
 syncfilter: syncfilter.c ../../$(MYOS)/lib/libcoda.a
-
-	gcc $(CFLAGS) -o syncfilter syncfilter.c -lcoda
-	cp  syncfilter ../../$(MYOS)/bin/syncfilter
-	rm syncfilter
+	$(CC) $(CFLAGS) -o syncfilter syncfilter.c -lcoda
+	$(CP) syncfilter ../../$(MYOS)/bin/syncfilter
+	$(RM) syncfilter

@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.29.6.2  2007/09/10 20:08:02  pcarter
+# Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+#
 # Revision 1.29.6.1  2007/08/22 19:09:29  frw
 # added FPP
 #
@@ -99,6 +102,7 @@
 #
 NEWSTYLE = 1
 include ../../etc/Makefile
+include ../../etc/Makefile.flags
 
 osources = h_cal.f h_cer.f h_chamnum.f h_dpsifun.f \
 	h_drift_dist_calc.f h_drift_time_calc.f h_fcnchisq.f \
@@ -146,7 +150,7 @@ makeregstuff =	r_hms_filenames.f r_hms_scin_parms.f r_hms_scin_tof.f \
 
 sources = $(osources) $(newstuff) $(newerstuff) $(fppstuff) $(makeregstuff)
 
-ifeq ($(ARCH),AIX)
+ifeq ($(MYOS),AIX)
 xsources := $(filter-out h_link_stubs.f h_track_tests.f ,$(sources))
 sources = h_link_stubs_aix.f h_track_tests_aix.f $(xsources)
 ../h_%_aix.f : ../h_%.f

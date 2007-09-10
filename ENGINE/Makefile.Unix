@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.28.16.6  2007/09/10 20:08:01  pcarter
+# Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+#
 # Revision 1.28.16.5  2007/08/22 19:09:16  frw
 # added FPP
 #
@@ -117,6 +120,7 @@
 #
 NEWSTYLE = 1
 include ../../etc/Makefile
+include ../../etc/Makefile.flags
 
 decode_source = g_decode_clear.f g_decode_config.f g_decode_event_by_banks.f \
 	g_decode_fb_bank.f g_decode_fb_detector.f \
@@ -191,14 +195,14 @@ libsources =  $(coin_source) $(sos_source) $(hms_source) $(general_source) \
 	$(cmakeregstuff) $(hmakeregstuff) $(smakeregstuff)  $(bmakeregstuff) \
 	$(gepmakeregstuff)
 
-ifeq ($(ARCH),AIX)
+ifeq ($(MYOS),AIX)
 xlibsources := $(filter-out g_decode_config.f,$(libsources))
 libsources = g_decode_config_aix.f $(xlibsources)
 ../g_%_aix.f : ../g_%.f
 	sed -e "s/READONLY/action='read'/"< $< > $@	
 endif
 
-ifeq ($(ARCH),Linux)
+ifeq ($(MYOS),Linux)
 xlibsources := $(filter-out g_decode_config.f,$(libsources))
 libsources = g_decode_config_linux.f $(xlibsources)
 # F2C doesn't know about READONLY
@@ -224,48 +228,48 @@ DEPLIBS = $(LIBROOT)/libengine.a \
 	$(LIBROOT)/libutils.a #$(LIBROOT)/libctp.a
 #$(LIBROOT)/libgmc.a 
 
-ifeq ($(ARCH),HPUX)
+ifeq ($(MYOS),HPUX)
 #  OTHERLIBS = -Wl,-L$(CODA)/HP_UX/lib \
 #	-lcoda -Wl,-L$(CERN_ROOT)/lib -lpacklib
   OTHERLIBS = -Wl,-L$(CERN_ROOT)/lib -lpacklib -lU77 -lm
 endif
 
-ifeq ($(ARCH),ULTRIX)
+ifeq ($(MYOS),ULTRIX)
   RPCLIBDIR = /usr/site1/rpc/usr/lib
   OTHERLIBS = -L$(CODA)/ULTRIX/lib -lcoda -L$(CERN_ROOT)/lib -lpacklib \
 	-L$(RPCLIBDIR) -lrpclib
 endif
 
-ifeq ($(ARCH),OSF1)
+ifeq ($(MYOS),OSF1)
   OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib
   FLDFLAGS= -g -Wl,-taso
 endif
 
-ifeq ($(ARCH),IRIX)
+ifeq ($(MYOS),IRIX)
   RPCLIBDIR = /usr/lib
   OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -L$(RPCLIBDIR) -lrpcsvc
 endif
 
-ifeq ($(ARCH),Linux)
+ifeq ($(MYOS),Linux)
   OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -lc -lm -lnsl
   DEPLIBS := $(DEPLIBS) $(LIBROOT)/libport.a
 
 $(LIBROOT)/libport.a:
-	@make -C ../../PORT 
+	$(MAKE) -C ../../PORT 
 endif
 
-ifeq ($(ARCH),SunOS)
+ifeq ($(MYOS),SunOS)
   OTHERLIBS = -L$(LIBROOT) -lctpclient -lctp -L$(CERN_ROOT)/lib \
 	-lgeant$(GEANTVER) -lpawlib -lgraflib -lgrafX11 -lpacklib -lmathlib \
 	-lnsl -lsocket -lX11
 endif
 
-ifeq ($(ARCH),AIX)
+ifeq ($(MYOS),AIX)
   OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib
   DEPLIBS := $(DEPLIBS) $(LIBROOT)/libport.a
 endif
 
-#ifeq ($(ARCH),Linux)
+#ifeq ($(MYOS),Linux)
 ## F2C doesn't know about READONLY
 #../g_decode_config.f : $(NFSDIRECTORY)/ENGINE/g_decode_config.f
 #	sed -e "s/,READONLY//" $< > $@
@@ -279,34 +283,34 @@ endif
 ##libengine.a: $(engine_members)
 
 $(LIBROOT)/libutils.a:
-	@make -C ../../UTILSUBS
+	$(MAKE) -C ../../UTILSUBS
 
 $(LIBROOT)/libtracking.a:
-	@make -C ../../TRACKING
+	$(MAKE) -C ../../TRACKING
 
 $(LIBROOT)/libhtracking.a:
-	@make -C ../../HTRACKING
+	$(MAKE) -C ../../HTRACKING
 
 $(LIBROOT)/libstracking.a:
-	@make -C ../../STRACKING
+	$(MAKE) -C ../../STRACKING
 $(LIBROOT)/libbtracking.a:
-	@make -C ../../BTRACKING
+	$(MAKE) -C ../../BTRACKING
 
 $(LIBROOT)/libctp.a:
-	@make -C ../../CTP
+	$(MAKE) -C ../../CTP
 
 $(LIBROOT)/libhack.a:
-	@make -C ../../HACK
+	$(MAKE) -C ../../HACK
 
-ifeq ($(ARCH),OSF1)
+ifeq ($(MYOS),OSF1)
 engine: $(DEPLIBS)
 	$(AR) x $(LIBROOT)/libengine.a engine.o
-	$(F77) $(FLDFLAGS) -o engine engine.o $(DEPLIBS) $(OTHERLIBS)
+	$(FC) $(FLDFLAGS) -o engine engine.o $(DEPLIBS) $(OTHERLIBS)
 	$(RM) engine.o
 else
 engine: $(DEPLIBS)
 	$(AR) x $(LIBROOT)/libengine.a engine.o
-	$(F77) $(FFLAGS) -o engine engine.o $(DEPLIBS) $(OTHERLIBS)
+	$(FC) $(FFLAGS) -o engine engine.o $(DEPLIBS) $(OTHERLIBS)
 	$(RM) engine.o
 endif
 

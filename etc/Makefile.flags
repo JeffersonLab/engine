@@ -1,0 +1,15 @@
+# We don't want to keep appending these options to FFLAGS, so only
+# do it the first time through
+ifeq ($(MAKELEVEL),2)
+  ifeq ($(MYOS),Linux)
+    override FFLAGS += -I. -fno-automatic
+    ifeq ($(GCCVERSION),3)
+      override FFLAGS += -finit-local-zero
+    else
+#      $(warning Warning: Cant use -finit-local-zero with gfortran.)
+    endif
+  endif
+
+# None of $(INCS) $(DEFS) $(EXTRA) are set, and no programs read the macros defined below 
+#  override CFLAGS += $(INCS) $(DEFS) $(EXTRA) -D$(MYOS) -DOSTYPE="\"$(MYOS)\"" -DVERSION=$(CSOFT_VERSION) -DDAYTIME=$(TIMESTAMP)
+endif
