@@ -18,6 +18,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.2.24.1  2007/09/10 21:32:47  pcarter
+ *   Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+ *
  *   Revision 1.2  1999/11/04 20:34:04  saw
  *   Alpha compatibility.
  *   New RPC call needed for root event display.
@@ -92,6 +95,14 @@ davar_ackmessage_1(char **argp, CLIENT *clnt)
 
 	return(&result);
 }
+
+int *
+davar_ackmessage_1_svc(char **argp, struct svc_req *svc)
+{
+	CLIENT *clnt;
+	return(davar_ackmessage_1(argp,clnt));
+}
+
 NAMELIST * 
 davar_getlist_1(char **argp, CLIENT *clnt)
 {
@@ -111,6 +122,12 @@ davar_getlist_1(char **argp, CLIENT *clnt)
 	return(&result);
 }
 
+NAMELIST * 
+davar_getlist_1_svc(char **argp, struct svc_req *svc)
+{
+	CLIENT *clnt;
+	return(davar_getlist_1(argp,clnt));
+}
 
 
 RVALLIST *davar_readmultiple_1(NAMELIST *argp, CLIENT *clnt)
@@ -143,6 +160,12 @@ RVALLIST *davar_readmultiple_1(NAMELIST *argp, CLIENT *clnt)
   return(&result);
 }    
 
+RVALLIST *davar_readmultiple_1_svc(NAMELIST *argp, struct svc_req *svc)
+{
+	CLIENT *clnt;
+	return(davar_readmultiple_1(argp,clnt));
+}
+
 ERRLIST *davar_writemultiple_1(WVALLIST *argp, CLIENT *clnt)
 {
   static ERRLIST result;
@@ -159,6 +182,12 @@ ERRLIST *davar_writemultiple_1(WVALLIST *argp, CLIENT *clnt)
   }
   return(&result);
 }    
+
+ERRLIST *davar_writemultiple_1_svc(WVALLIST *argp, struct svc_req *svc) 
+{
+	CLIENT *clnt;
+	return(davar_writemultiple_1(argp,clnt));
+}
 
 daVarCallBackList *thCallBackListP=0;
 
@@ -219,6 +248,13 @@ int *davar_readmultiple_test_1(TESTNAMELIST *argp, CLIENT *clnt)
   result = S_SUCCESS;
   return(&result);
 }
+
+int *davar_readmultiple_test_1_svc(TESTNAMELIST *argp, struct svc_req *svc)
+{			
+	CLIENT *clnt;
+	return(davar_readmultiple_test_1(argp,clnt));
+}
+	
 int *
 davar_readmultiple_test_cb_1(argp, clnt)
 	RVALLIST *argp;
@@ -247,6 +283,13 @@ davar_readmultiple_test_cb_1(argp, clnt)
 	}
 	return (&clnt_res);
 }
+
+int *davar_readmultiple_test_cb_1_svc(RVALLIST *argp, struct svc_req *svc)
+{			
+	CLIENT *clnt;
+	return(davar_readmultiple_test_cb_1(argp,clnt));
+}
+
 WVALLIST *davar_readpatternmatch_1(char **argp, CLIENT *clnt)
 {
   static WVALLIST result;
@@ -289,6 +332,12 @@ WVALLIST *davar_readpatternmatch_1(char **argp, CLIENT *clnt)
   /*  daVarFreeList(vlist);*/
   return(&result);
 }    
+
+WVALLIST *davar_readpatternmatch_1_svc(char **argp, struct svc_req *svc)
+{
+	CLIENT *clnt;
+	return(davar_readpatternmatch_1(argp,clnt));
+}
 
 int daVarCallBack()
 /* Scan the list of pending readmultiple requests.  Make a call back for

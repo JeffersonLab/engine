@@ -16,6 +16,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.1.24.1  2007/09/10 21:32:47  pcarter
+ *   Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+ *
  *   Revision 1.1  1998/12/07 22:11:14  saw
  *   Initial setup
  *
@@ -52,7 +55,7 @@ int thTokToPtr(char *token, int create, int intonly, daVarStruct *varp);
 int thCleanLine(char *s);
 /*float argtoFloat(daVarStruct *x);*/
 int argtoInt(daVarStruct *x);
-char *strcasestr(char *s1, char *s2);
+char *strcasestr(const char *s1, const char *s2);
 
 struct daVarStructList {
   struct daVarStructList *next;
