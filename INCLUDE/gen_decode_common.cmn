@@ -3,11 +3,14 @@
 *     to logical detector identification.
 *
 *     $Log$
+*     Revision 1.4.24.6  2007/09/10 21:18:13  frw
+*     fixed FPP related arrays and limits
+*
 *     Revision 1.4.24.5  2007/09/07 21:55:07  puckett
-*     increased maxplanes and maxcounters to accomodate '999,999' for FPP reference time. Also changed range of index 4 of array g_decode_roc so that it runs from 0 to 4 instead of 1 to 4. Frank is looking into what part of the code tries to access the zero-the element
+*     increased maxplanes, maxcounters to 999,changed range of index 4 of array g_decode_roc
 *
 *     Revision 1.4.24.4  2007/08/27 20:24:42  puckett
-*     Increased "max planes" from 15 to 56 since each row (1-56) is considered a "plane" for purposes of the decode map.
+*     Increased "max planes" from 15 to 56
 *
 *     Revision 1.4.24.3  2007/08/22 19:09:31  frw
 *     added FPP
@@ -42,14 +45,12 @@
       integer G_DECODE_MAXSLOTS
       parameter (G_DECODE_MAXSLOTS=25)          ! # slots in a FB crate
 
-      integer G_DECODE_MAXDIDS
-      parameter (G_DECODE_MAXDIDS=32)		! Largest DID #
       integer G_DECODE_MAXPLANES
-      parameter (G_DECODE_MAXPLANES=999) 	! Largest plane #
+      parameter (G_DECODE_MAXPLANES=99) 	! Largest plane #
       integer G_DECODE_MAXCOUNTERS
       parameter (G_DECODE_MAXCOUNTERS=999)	! Largest counter #
       integer G_DECODE_MAXSIGNALS
-      parameter (G_DECODE_MAXSIGNALS=4) 	! Largest signal #
+      parameter (G_DECODE_MAXSIGNALS=3) 	! Largest signal #
 
       integer*4 g_decode_slotpointer            ! Pointer into map arrays
       integer*4 g_decode_subaddcnt              ! Number of subadds per slot
@@ -72,7 +73,7 @@
      $     g_decode_sigtypmap(G_DECODE_MAXWORDS),
      $     g_decode_nextpointer,
      $     g_decode_modtyp(0:G_DECODE_MAXROCS,G_DECODE_MAXSLOTS),
-     $     g_decode_roc(G_DECODE_MAXDIDS,G_DECODE_MAXPLANES,
+     $     g_decode_roc(0:MAXID,G_DECODE_MAXPLANES,
      $                  G_DECODE_MAXCOUNTERS,0:G_DECODE_MAXSIGNALS)
 
       integer*4 gmax_roc_with_adc

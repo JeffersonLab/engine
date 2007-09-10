@@ -21,6 +21,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton Univ.; rewrote parsing
 * $Log$
+* Revision 1.7.24.2  2007/09/10 21:18:13  frw
+* fixed FPP related arrays and limits
+*
 * Revision 1.7.24.1  2007/08/22 19:09:16  frw
 * added FPP
 *
@@ -221,14 +224,14 @@
      &                    +subadd ) = counter
                      g_decode_sigtypmap( g_decode_slotpointer(roc,slot)
      &                    +subadd ) = signal
-                     if (     did.le.G_DECODE_MAXDIDS
+                     if (     did.le.MAXID
      &		         .and.plane.le.G_DECODE_MAXPLANES
      &		         .and.counter.le.G_DECODE_MAXCOUNTERS
      &		         .and.signal.le.G_DECODE_MAXSIGNALS) then
                        g_decode_roc(did,plane,counter,signal) = roc
 		     else
 		       print *,'\n Array limits insufficient!!'
-		       print *,'   max did =',G_DECODE_MAXDIDS ,'     got ',did
+		       print *,'   max did =',MAXID ,'     got ',did
 		       print *,'   max plane =',G_DECODE_MAXPLANES ,'   got ',plane
 		       print *,'   max counter =',G_DECODE_MAXCOUNTERS ,' got ',counter
 		       print *,'   max signal =',G_DECODE_MAXSIGNALS ,'  got ',signal
