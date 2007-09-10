@@ -5,6 +5,9 @@
 *     space point.
 *     d. f. geesaman           17 January 1994
 * $Log$
+* Revision 1.13.24.1  2007/09/10 20:28:00  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.13  1999/02/23 18:39:52  csa
 * (JRA) Correct two typos in 4/6 code
 *
@@ -51,7 +54,8 @@
       include 'hms_tracking.cmn'
       include 'hms_geometry.cmn'
 *
-      externaljbit                            ! cernlib bit routine
+      external jbit                     ! cernlib bit routine
+      external jibset
       integer*4 jbit
       integer*4 jibset                  ! Declare to help f2c
 *

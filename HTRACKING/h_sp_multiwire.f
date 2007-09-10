@@ -38,9 +38,12 @@
       integer*4 point,plane,n1,n2,n3,ntot,nspace_points_check
       integer*4 i,j,k,hit,hit1,hit2,temp,newsp_num,endhit
       integer*4 nspace_points_new, nhits_plane(hdc_planes_per_chamber)
+c      integer*4 nspace_points_new, nhits_plane(100) !Phil
       integer*4 nspace_points_tot,nplanes_mult,nplanes_hit,nplanes_single
       integer*4 hits_plane(hdc_planes_per_chamber,hmax_hits_per_point+1)
+c      integer*4 hits_plane(100,hmax_hits_per_point+1) !Phil
       integer*4 maxplane(hdc_planes_per_chamber)
+c      integer*4 maxplane(100) !Phil
       integer*4 hit_order(hmax_hits_per_point)
 *
 *     temporary initialization

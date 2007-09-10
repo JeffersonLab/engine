@@ -33,9 +33,11 @@
       integer*4 point,oldpoint,plane,ich
       integer*4 j,hit,nspace_points_good
       integer*4 nhits_plane(hdc_planes_per_chamber)
+c      integer*4 nhits_plane(100) !Phil
       integer*4 space_points_temp(hmax_space_points,2)      
       integer*4 space_point_hits_temp(hmax_space_points,hmax_hits_per_point+2)
       integer*4 nplanes_hit,space_points_good(nspace_points)
+c      integer*4 nplanes_hit,space_points_good(100) !Phil
 *
 *     temporary initialization
       ABORT= .FALSE.

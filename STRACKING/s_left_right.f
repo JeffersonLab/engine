@@ -9,6 +9,9 @@
 *     space point.
 *     d. f. geesaman           31 August 1993
 * $Log$
+* Revision 1.12.24.1  2007/09/10 20:28:01  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.12  1999/11/04 20:36:47  saw
 * Linux/G77 compatibility fixes
 *
@@ -56,6 +59,7 @@
       include 'sos_geometry.cmn'
 *
       external jbit                     ! cernlib bit routine
+      external jieor, jibset
       integer*4 jbit
       integer*4 jibset                  ! Declare to help f2c
       integer*4 jieor                   ! Declare to help f2c

@@ -12,6 +12,9 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log$
+*- Revision 1.1.8.1  2007/09/10 20:28:01  pcarter
+*- Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*-
 *- Revision 1.1  2005/03/23 16:33:32  jones
 *- Add new code s_select_best_track_prune.f (P Bosted)
 *-
@@ -45,7 +48,7 @@ c
       logical first,keep(1000)
       real*4 chi2perdeg,chi2min,betap,p
 c
-      integer*4 i,j
+c      integer*4 i,j
       data first /.true./
 *--------------------------------------------------------
 *
@@ -67,7 +70,7 @@ c
         hprune_df    = max(1,  hprune_df)
         hprune_chibeta= max(2.,  hprune_chibeta)
         hprune_fptime= max(5.,  hprune_fptime)
-        hprune_npmt  = max(6.,  hprune_npmt)  
+        hprune_npmt  = max(6,  hprune_npmt)  
         write(*,'(1x,'' using following HMS limits''/
      >    1x,''abs(xptar)<'',f6.3/
      >    1x,''abs(yptar)<'',f6.3/

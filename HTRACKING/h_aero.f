@@ -1,6 +1,9 @@
        SUBROUTINE H_AERO(ABORT,err)
 *-
 * $Log$
+* Revision 1.4.14.1  2007/09/10 20:28:00  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.4  2004/02/27 14:35:20  jones
 * Summed npe is incremented for all pmts regardless of whether they are
 * above or below the pedestal.  Summing only pmts above the pedestal results
@@ -62,9 +65,9 @@
 *--------------------------------------------------------
 *
 
-D      print*,'h_aero: haero_pos_gain =',haero_pos_gain
-D      print*,'h_aero: haero_neg_gain =',haero_neg_gain
-D      pause
+c      print*,'h_aero: haero_pos_gain =',haero_pos_gain
+c      print*,'h_aero: haero_neg_gain =',haero_neg_gain
+c      pause
 
       ABORT= .FALSE.
       err= ' '

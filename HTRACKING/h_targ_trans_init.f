@@ -7,6 +7,9 @@
 *
 * Version:  0.1 (In development)
 * $Log$
+* Revision 1.6.16.1  2007/09/10 20:28:01  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.6  2004/02/19 16:41:45  jones
 * Can set filename for the HMS matrix elements using the parameter
 * h_recon_coeff_filename . If parameter is not set then uses
@@ -99,7 +102,7 @@ c      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
          write(*,*) ' ********'
          write(*,*) ' Opening HMS matrix element file ',h_recon_coeff_filename
          write(*,*) ' ********'
-      open (unit=chan,status='old',name=h_recon_coeff_filename,err=92)
+      open (unit=chan,status='old',file=h_recon_coeff_filename,err=92)
 
 
 * Read header comments.
