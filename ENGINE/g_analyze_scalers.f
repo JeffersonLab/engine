@@ -1,6 +1,9 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
+* Revision 1.15.20.1  2007/09/10 20:33:37  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.15  2003/09/05 20:54:41  jones
 * Merge in online03 changes (mkj)
 *
@@ -56,6 +59,7 @@ c
 *
       implicit none
       save
+      external jishft, jiand, jieor
       integer*4 event(*)
 *
       character*17 here

@@ -15,6 +15,9 @@
 *-
 *-     Created   3-Dec-1993   Kevin Beard, Hampton U.
 *-    $Log$
+*-    Revision 1.6.24.2  2007/09/10 20:33:37  pcarter
+*-    Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*-
 *-    Revision 1.6.24.1  2007/05/15 02:55:01  jones
 *-    Start to Bigcal code
 *-
@@ -40,6 +43,7 @@
       IMPLICIT NONE
       SAVE
 *
+      external jiand, jieor
       integer*4 event(*)
 *
       character*30 here

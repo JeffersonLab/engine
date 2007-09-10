@@ -10,6 +10,9 @@
 *- 
 *-   Created  17-May-1994   Kevin B. Beard, Hampton U.
 * $Log$
+* Revision 1.7.24.1  2007/09/10 20:33:37  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.7  1999/11/04 20:35:16  saw
 * Linux/G77 compatibility fixes
 *
@@ -36,6 +39,7 @@
 *--------------------------------------------------------
       IMPLICIT NONE
       SAVE
+      external jishft, jiand, jieor, bjtest
 *
       character*23 here
       parameter (here= 'G_examine_control_event')

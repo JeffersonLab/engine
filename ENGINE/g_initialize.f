@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.24.6.7  2007/09/10 20:33:37  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.24.6.6  2007/08/15 21:44:21  puckett
 * Added gep (coincidence) report names to filename initialization
 *
@@ -145,7 +148,6 @@
 *
       character*132 file
       logical*4 first_time                      ! Allows routine to be called 
-      save first_time
       data first_time /.true./                  ! by online code
 *
 *--------------------------------------------------------

@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.6  2007/09/10 20:33:37  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.32.20.5  2007/08/22 19:09:16  frw
 * added FPP
 *
@@ -136,6 +139,7 @@
 *
       implicit none
       SAVE
+      external jishft, jiand, jieor
 *
       character*16 here
       parameter (here='g_decode_fb_bank')

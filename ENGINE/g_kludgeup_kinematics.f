@@ -1,6 +1,9 @@
       SUBROUTINE G_klugeup_kinematics(ABORT,err)
 *--------------------------------------------------------
 * $Log$
+* Revision 1.3.24.1  2007/09/10 20:33:37  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.3  1996/09/04 14:38:32  saw
 * (JRA) Initialize problems logical
 *
@@ -13,6 +16,7 @@
 *--------------------------------------------------------
       IMPLICIT NONE
       SAVE
+      external jishft, jiand
 *
       character*21 here
       parameter (here= 'g_klugeup_kinematics')

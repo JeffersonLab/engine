@@ -1,5 +1,8 @@
       subroutine g_examine_picture_event
 * $Log$
+* Revision 1.1.6.2  2007/09/10 20:33:37  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.1.6.1  2007/05/15 02:54:45  jones
 * Start to Bigcal code
 *
@@ -13,6 +16,7 @@
 *--------------------------------------------------------
       implicit none
       save
+      external jishft
 
       character buffer*12000
       character*80 file

@@ -11,6 +11,9 @@
 *-   Created  30-Nov-1995   John Arrington, Caltech.
 *-
 * $Log$
+* Revision 1.4.20.1  2007/09/10 20:33:37  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.4  2003/09/05 15:37:28  jones
 * Merge in online03 changes (mkj)
 *
@@ -29,6 +32,7 @@
 *--------------------------------------------------------
       IMPLICIT NONE
       SAVE
+      external jishft, jiand, jieor
 *
       character*18 here
       parameter (here= 'G_examine_go_info')

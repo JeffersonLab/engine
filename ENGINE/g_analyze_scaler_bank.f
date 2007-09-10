@@ -1,6 +1,9 @@
       subroutine g_analyze_scaler_bank(event,ABORT,err)
 *     
 *     $Log$
+*     Revision 1.4.14.1  2007/09/10 20:33:37  pcarter
+*     Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 *     Revision 1.4  2004/05/11 18:31:22  jones
 *     If using syncfilter and time between scaler reads is larger than 2.5 seconds
 *     then set "skip_event" to true so that g_beam_on_run_time and g_beam_on_bcm_charge are not updated and events are skipped
@@ -27,6 +30,7 @@
 
       implicit none
       save
+      external jishft, jiand, jieor
       integer*4 event(*)
 *     
       character*17 here

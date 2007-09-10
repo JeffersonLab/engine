@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.9  2007/09/10 20:33:37  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.42.8.8  2007/09/07 16:04:35  puckett
 * updated bigcal monte carlo reconstruction to include protons.
 *
@@ -204,6 +207,7 @@ c      program engine
 c
       IMPLICIT NONE
       SAVE
+      external jishft, jiand, jieor
 
       character*6 here
       parameter (here= 'Engine')
@@ -1064,8 +1068,9 @@ c...
       implicit none
       integer iarg
       character*132 arg
-      integer iargc
-      external iargc
+c iargc is a GNU extension (intrinsic)
+c      integer iargc
+c      external iargc
       logical outputflag
 *
 * Process command line args that set CTP variables

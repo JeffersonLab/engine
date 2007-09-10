@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.3  2007/09/10 20:33:37  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.23.20.2  2007/08/22 19:09:16  frw
 * added FPP
 *
@@ -93,6 +96,7 @@
 *----------------------------------------------------------------------
       implicit none
       SAVE
+      external jishft, jiand, jieor
 *
 *     The following arguments don't get modified.
       integer*4 roc,evfrag(*),length,did,maxhits,signalcount

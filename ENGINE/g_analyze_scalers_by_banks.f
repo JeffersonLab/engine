@@ -15,6 +15,9 @@
 *-
 *-     Created   20-Jun-1998   Stephen Wood
 *-    $Log$
+*-    Revision 1.2.24.1  2007/09/10 20:33:37  pcarter
+*-    Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*-
 *-    Revision 1.2  1999/11/04 20:35:15  saw
 *-    Linux/G77 compatibility fixes
 *-
@@ -24,6 +27,7 @@
 *-----------------------------------------------------------------------
       IMPLICIT NONE
       SAVE
+      external jishft, jiand, jieor
 *
       integer*4 event(*)
 *
