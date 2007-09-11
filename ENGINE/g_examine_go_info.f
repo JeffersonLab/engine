@@ -11,6 +11,9 @@
 *-   Created  30-Nov-1995   John Arrington, Caltech.
 *-
 * $Log$
+* Revision 1.4.20.2  2007/09/11 19:14:17  frw
+* fixed FPP related arrays and limits
+*
 * Revision 1.4.20.1  2007/09/10 20:33:37  pcarter
 * Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *
@@ -41,6 +44,7 @@
       LOGICAL ABORT
       CHARACTER*(*) err
 *
+      include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       include 'gen_run_info.cmn'
 *

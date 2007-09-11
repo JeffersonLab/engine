@@ -3,6 +3,9 @@
 *     to logical detector identification.
 *
 *     $Log$
+*     Revision 1.4.24.7  2007/09/11 19:14:18  frw
+*     fixed FPP related arrays and limits
+*
 *     Revision 1.4.24.6  2007/09/10 21:18:13  frw
 *     fixed FPP related arrays and limits
 *
@@ -37,6 +40,7 @@
 * Revision 1.1  1994/02/07  19:36:23  cdaq
 * Initial revision
 *
+*%%   include 'gen_detectorids.par'
 *
       integer G_DECODE_MAXWORDS                 ! Must exceed number of
       parameter (G_DECODE_MAXWORDS=10000)        ! installed FB channels

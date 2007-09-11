@@ -1,6 +1,9 @@
       subroutine g_calc_beam_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.4.20.1  2007/09/11 19:14:17  frw
+* fixed FPP related arrays and limits
+*
 * Revision 1.4  2003/09/05 15:33:55  jones
 * Merge in online03 changes (mkj)
 *
@@ -35,6 +38,7 @@ c
       character*132 file
 *
       INCLUDE 'gen_data_structures.cmn'
+      include 'gen_detectorids.par'
       INCLUDE 'gen_decode_common.cmn'
       INCLUDE 'gen_run_info.cmn'
       INCLUDE 'hms_filenames.cmn'

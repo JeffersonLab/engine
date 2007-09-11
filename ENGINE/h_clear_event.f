@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *
 * $Log$
+* Revision 1.15.24.2  2007/09/11 19:14:17  frw
+* fixed FPP related arrays and limits
+*
 * Revision 1.15.24.1  2007/08/22 19:09:16  frw
 * added FPP
 *
@@ -89,6 +92,7 @@
       INCLUDE 'hms_scin_tof.cmn'
       INCLUDE 'hms_cer_parms.cmn'
       INCLUDE 'hms_calorimeter.cmn'
+      include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       INCLUDE 'hms_fpp_event.cmn'
 

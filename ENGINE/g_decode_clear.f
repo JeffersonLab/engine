@@ -15,6 +15,9 @@
 *-     by Steve Wood
 *-      modified by Kevin Beard Dec.3,1993
 * $Log$
+* Revision 1.3.24.1  2007/09/11 19:14:17  frw
+* fixed FPP related arrays and limits
+*
 * Revision 1.3  1996/01/16 20:31:54  cdaq
 * (SAW) Start "roc" index at zero instead of one.
 *
@@ -31,8 +34,8 @@
       character*(*) error
       integer roc,slot,i
 *
-      include 'gen_decode_common.cmn'
       include 'gen_detectorids.par'
+      include 'gen_decode_common.cmn'
 *
 *     Clear out slotpointer and subaddcount and mask arrays.
 *

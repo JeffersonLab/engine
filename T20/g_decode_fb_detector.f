@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.1.24.1  2007/09/11 19:14:18  frw
+* fixed FPP related arrays and limits
+*
 * Revision 1.1  1998/12/01 20:58:30  saw
 * Initial revision
 *
@@ -80,8 +83,8 @@
       integer pointer,newdid,subadd,slot,mappointer,plane
       integer counter,signal,sigtyp
 *
-      include 'gen_decode_common.cmn'
       include 'gen_detectorids.par'
+      include 'gen_decode_common.cmn'
       include 'gen_scalers.cmn'
       include 'gen_event_info.cmn'
       integer iscaler,nscalers

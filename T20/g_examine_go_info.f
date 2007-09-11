@@ -11,6 +11,9 @@
 *-   Created  30-Nov-1995   John Arrington, Caltech.
 *-
 * $Log$
+* Revision 1.1.24.1  2007/09/11 19:14:18  frw
+* fixed FPP related arrays and limits
+*
 * Revision 1.1  1997/05/23 20:39:42  saw
 * Initial revision
 *
@@ -26,6 +29,7 @@
       LOGICAL ABORT
       CHARACTER*(*) err
 *
+      include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       include 'gen_run_info.cmn'
 *

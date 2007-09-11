@@ -29,6 +29,7 @@
 
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_geometry.cmn'
+      include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       INCLUDE 'hms_fpp_event.cmn'
 

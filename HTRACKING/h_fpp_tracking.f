@@ -11,6 +11,7 @@
 
       IMPLICIT NONE
 
+      include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_geometry.cmn'
@@ -186,6 +187,7 @@ c==============================================================================
 
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_geometry.cmn'
+      include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       INCLUDE 'hms_fpp_event.cmn'
       INCLUDE 'hms_fpp_params.cmn'
@@ -311,6 +313,7 @@ c==============================================================================
 
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_geometry.cmn'
+      include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       INCLUDE 'hms_fpp_event.cmn'
       INCLUDE 'hms_fpp_params.cmn'
@@ -699,6 +702,7 @@ c==============================================================================
       IMPLICIT NONE
 
       INCLUDE 'hms_data_structures.cmn'
+      include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       INCLUDE 'hms_fpp_event.cmn'
       INCLUDE 'hms_fpp_params.cmn'
@@ -880,6 +884,7 @@ c==============================================================================
       IMPLICIT NONE
 
       INCLUDE 'hms_data_structures.cmn'
+      include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       INCLUDE 'hms_fpp_event.cmn'
       INCLUDE 'hms_fpp_params.cmn'

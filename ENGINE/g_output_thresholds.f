@@ -1,6 +1,9 @@
       subroutine g_output_thresholds(lunout,roc,slot,signalcount,
      &               elements_per_plane,signal0,signal1,sigma0,sigma1)
 * $Log$
+* Revision 1.7.20.1  2007/09/11 19:14:17  frw
+* fixed FPP related arrays and limits
+*
 * Revision 1.7  2003/09/05 15:53:04  jones
 * Merge in online03 changes (mkj)
 *
@@ -42,8 +45,8 @@
       integer*4 ich,ind,istart
       logical annoying_message
 *
-      INCLUDE 'gen_decode_common.cmn'
       INCLUDE 'gen_detectorids.par'
+      INCLUDE 'gen_decode_common.cmn'
 
       annoying_message=.true.
 

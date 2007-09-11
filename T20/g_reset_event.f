@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
 * $Log$
+* Revision 1.1.24.1  2007/09/11 19:14:18  frw
+* fixed FPP related arrays and limits
+*
 * Revision 1.1  1998/12/01 21:00:36  saw
 * Initial revision
 *
@@ -70,6 +73,7 @@
       integer hit,chan,roc,slot
 *
       INCLUDE 'gen_data_structures.cmn'
+      include 'gen_detectorids.par'
       INCLUDE 'gen_decode_common.cmn'
       INCLUDE 'gen_misc.cmn'
 *

@@ -10,6 +10,7 @@
 
       IMPLICIT NONE
 
+      include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_fpp_params.cmn'

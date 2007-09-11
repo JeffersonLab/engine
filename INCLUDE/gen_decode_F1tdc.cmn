@@ -2,7 +2,7 @@
 *
 * specifics for F1 TDC that are independent of detector
 *
-*  we REQUIRE  gen_decode_common.cmn  to be included FIRST!
+*%%   include 'gen_decode_common.cmn'
 *
 *
 *     CTPTYPE=parm

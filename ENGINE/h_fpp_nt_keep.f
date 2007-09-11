@@ -20,6 +20,7 @@
       INCLUDE 'gen_event_info.cmn'
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_physics_sing.cmn'
+      include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       INCLUDE 'hms_fpp_event.cmn'
       INCLUDE 'hms_fpp_params.cmn'

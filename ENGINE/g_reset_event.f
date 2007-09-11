@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
 * $Log$
+* Revision 1.11.24.3  2007/09/11 19:14:17  frw
+* fixed FPP related arrays and limits
+*
 * Revision 1.11.24.2  2007/06/04 14:56:06  puckett
 * changed hit array structure for trigger related signals
 *
@@ -75,6 +78,7 @@
       integer hit,chan,roc,slot
 *
       INCLUDE 'gen_data_structures.cmn'
+      include 'gen_detectorids.par'
       INCLUDE 'gen_decode_common.cmn'
       include 'gen_run_info.cmn'
 *

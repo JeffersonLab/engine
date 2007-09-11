@@ -11,6 +11,9 @@
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *
 * $Log$
+* Revision 1.6.24.2  2007/09/11 19:14:17  frw
+* fixed FPP related arrays and limits
+*
 * Revision 1.6.24.1  2007/08/22 19:09:17  frw
 * added FPP
 *
@@ -44,6 +47,7 @@
       IMPLICIT NONE
       SAVE
 *
+      include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       include 'hms_data_structures.cmn'
       INCLUDE 'hms_fpp_params.cmn'

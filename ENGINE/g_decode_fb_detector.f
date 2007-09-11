@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.4  2007/09/11 19:14:17  frw
+* fixed FPP related arrays and limits
+*
 * Revision 1.23.20.3  2007/09/10 20:33:37  pcarter
 * Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *
@@ -108,9 +111,9 @@
       integer pointer,newdid,subadd,slot,mappointer,plane
       integer counter,signal,sigtyp
 *
+      include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       include 'gen_decode_F1tdc.cmn'
-      include 'gen_detectorids.par'
       include 'gen_scalers.cmn'
       include 'gen_event_info.cmn'
 *

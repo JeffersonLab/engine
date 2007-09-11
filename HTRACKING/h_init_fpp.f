@@ -10,6 +10,7 @@
 
       IMPLICIT NONE
 
+      include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_fpp_params.cmn'
@@ -149,6 +150,7 @@
 
 
 *     * calculate the rotation matrices for chamber sets
+*     * definition of Euler rotation angles as per  G. Arfken, pp.199
       do iset=1, H_FPP_N_DCSETS
 
             sinalpha = sin( HFPP_alpha(iset) *pi/180.)
@@ -161,15 +163,15 @@
 
 *           * matrix is such that:  (x,y,z CHAMBER) = [M] x (x,y,z HMS)
 *
-*           *      ,-- 1=x,2=y,3=z in layer's coords
+*           *      ,---- 1=x,2=y,3=z in layer's coords
 *           *      | ,-- 1=x,2=y,3=z in lab coords
             matrix(1,1)  =      cosalpha*cosbeta*cosgamma - sinalpha*singamma
             matrix(1,2)  =      sinalpha*cosbeta*cosgamma + cosalpha*singamma
-            matrix(1,3)  = -1.0*         sinbeta*cosgamma
+            matrix(1,3)  =      cosalpha*sinbeta
 
             matrix(2,1)  = -1.0*cosalpha*cosbeta*singamma - sinalpha*cosgamma
             matrix(2,2)  = -1.0*sinalpha*cosbeta*singamma + cosalpha*cosgamma
-            matrix(2,3)  =               sinbeta*singamma
+            matrix(2,3)  =      sinalpha*sinbeta
 
             matrix(3,1)  =      cosalpha*sinbeta
             matrix(3,2)  =      sinalpha*sinbeta
@@ -177,7 +179,7 @@
 
 *           * INVERSE matrix is such that:  (x,y,z HMS) = [M-1] x (x,y,z CHAMBER)
 *
-*           *       ,-- 1=x,2=y,3=z in lab coords
+*           *       ,---- 1=x,2=y,3=z in lab coords
 *           *       | ,-- 1=x,2=y,3=z in layer's coords
             Imatrix(1,1) =	cosalpha*cosbeta*cosgamma - sinalpha*singamma
             Imatrix(1,2) = -1.0*cosalpha*cosbeta*singamma - sinalpha*cosgamma
@@ -191,11 +193,11 @@
             Imatrix(3,2) =	         sinbeta*singamma
             Imatrix(3,3) =	         cosbeta
 
-
 *           * now copy the easy-to-read local matrix to the shared array
+*           * note the reversal of indices between the matrices!!
             do ilab=1,3
               do iloc=1,3
-                HFPP_Mrotation(iset,ilab,iloc) =  matrix(ilab,iloc)
+                HFPP_Mrotation(iset,iloc,ilab) =  matrix(iloc,ilab)
                 HFPP_Irotation(iset,ilab,iloc) = Imatrix(ilab,iloc)
               enddo !iloc
             enddo !ilab
