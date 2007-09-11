@@ -116,13 +116,14 @@ c     get any free IO channel
               endif
               
               if(bbypass_sum64.eq.0) then
-                 call HBNAME(id,'clustttdc',nclust64,
+                 call HBNAME(id,'clusttrig',nclust64,
      $                'nclust64[0,25]:I*4,'//
      $                'ncell64clust(nclust64)[0,6]:I*4,'//
      $                'irow64hit(6,nclust64)[0,19]:I*4,'//
      $                'icol64hit(6,nclust64)[0,2]:I*4,'//
      $                'nhit64clust(6,nclust64)[0,8]:I*4,'//
-     $                'tcell64(6,8,nclust64),tclust64(nclust64),'//
+     $                'tcell64(6,8,nclust64),a64(6,nclust64),'//
+     $                's64(6,nclust64),tclust64(nclust64),'//
      $                'trms64(nclust64)')
               endif
            endif
