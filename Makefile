@@ -4,6 +4,7 @@
 
 .DELETE_ON_ERROR: ;
 
+# Put any variables needed by all makefiles in etc/Makefile.variables
 include etc/Makefile.variables
 
 .PHONY: all info coda ctp engine exe hack htracking include oneev online port \
@@ -58,9 +59,10 @@ utilsubs:
 
 clean:
 	-$(RM) */O.$(MYOS)/*.[do]
-	-(cd ../$(MYOS)/lib; $(RM) libcoda.a libctpclient_root.a libctp_root.a \
+	-rm ../$(MYOS)/lib/*.a
+#	-(cd ../$(MYOS)/lib; $(RM) libcoda.a libctpclient_root.a libctp_root.a \
 	    libengine.a libhack.a libhtracking.a libport.a libstracking.a \
-	    libtracking.a libutils.a )
+	    libtracking.a libutils.a libbtracking.a libctp.a libctpclient.a )
 	-(cd ../$(MYOS)/bin; $(RM) engine_replay makereg syncfilter)
 	-$(RM) CTP/daVarRpc_svc.c CTP/daVarRpc_xdr.c CTP/daVarRpc_clnt.c CTP/daVarRpc.h
 
