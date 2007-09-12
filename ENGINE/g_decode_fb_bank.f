@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.8  2007/09/12 19:25:48  puckett
+* commented out diagnostic message, don't want this printing out for every event
+*
 * Revision 1.32.20.7  2007/09/12 14:40:03  brash
 * *** empty log message ***
 *
@@ -381,7 +384,7 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddress
 *
 * planes are DC layers of all chambers in order of increasing z-coord
 *
-            write(*,*) 'did = fpp, decoding fpp data'
+c            write(*,*) 'did = fpp, decoding fpp data'
             pointer = pointer +
      $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &           maxwords, did, 
