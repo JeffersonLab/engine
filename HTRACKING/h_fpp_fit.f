@@ -131,7 +131,7 @@ c==============================================================================
       real*4 Sigma2s(H_FPP_MAX_FITPOINTS)
       real*4 Projects(H_FPP_MAX_FITPOINTS,3)
       real*4 Drifts(H_FPP_MAX_FITPOINTS)
-      real*4 BestTrack(5)  ! does NOT include hit count
+      real*4 BestTrack(6)  ! does NOT include hit count
 
 
 ** now we use the supplied hits and the absolute drift distance (in layer!)
@@ -142,7 +142,7 @@ c==============================================================================
       real*4 HitPos(H_FPP_MAX_FITPOINTS,2)
       real*4 DriftAbs(H_FPP_MAX_FITPOINTS), driftreal(H_FPP_MAX_FITPOINTS)
       real*4 BestDrifts(H_FPP_MAX_FITPOINTS)
-      real*4 Track(5)  ! does NOT include hit count
+      real*4 Track(6)  ! does NOT include hit count
 
       integer*4 iHit, attempts, toggleat, ii
 

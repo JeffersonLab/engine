@@ -17,6 +17,7 @@
       INCLUDE 'hms_fpp_params.cmn'
       INCLUDE 'hms_geometry.cmn'
       INCLUDE 'hms_fpp_event.cmn'
+      INCLUDE 'hms_bypass_switches.cmn'
 
       character*11 here
       parameter (here= 'h_fpp_drift')
@@ -44,7 +45,6 @@
 
       drift_distance = H_FPP_BAD_DRIFT
 
-
 *     * get hit data from raw array
       Plane = HFPP_raw_plane(hit)
       Wire  = HFPP_raw_wire(hit)
@@ -53,9 +53,13 @@
       Set     = HFPP_plane2set(Plane)
       Chamber = HFPP_plane2chamber(Plane)
       Layer   = HFPP_plane2layer(Plane)
-
-
-
+      
+      if(hbypass_trans_fpp.eq.2) then
+              drift_distance = abs(HFPP_drift_dist(Set,Chamber,Layer,Wire))
+c              write(*,*)'Drift Distance = ',drift_distance
+              return
+      endif      
+      
 ********************  corrections to drift time *******************************
 
 * drift time is expected to measure time from particle interacting in drift
@@ -274,9 +278,10 @@ c==============================================================================
 
 
       call g_IO_control(LUN,'ANY',ABORT,err)  !get IO channel
+c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename 
       open(LUN,file=hfpp_driftmap_filename,err=900)
 
-      read(LUN,*,err=900,end=900) hfpp_drift_type, hfpp_drift_Xmax
+      read(LUN,*,err=901,end=900) hfpp_drift_type, hfpp_drift_Xmax
 
 
 
@@ -285,7 +290,7 @@ c==============================================================================
           print *,'\n The selected drift map file uses a look-up table to determine'
           print *,  ' the drift in the focal plane polarimeter chambers.\n'
 
-          read(LUN,*,err=900,end=900) hfpp_drift_Nbins
+          read(LUN,*,err=902,end=900) hfpp_drift_Nbins
 
 	  if (hfpp_drift_Nbins.gt.H_FPP_DRIFT_MAX_BINS) then
 	    hfpp_drift_Nbins = H_FPP_DRIFT_MAX_BINS
@@ -294,7 +299,7 @@ c==============================================================================
 	  endif
 
           do i=1,hfpp_drift_Nbins
-	    read(LUN,*,err=900,end=900) 
+	    read(LUN,*,err=902,end=900) 
      >             timebins(i), (hfpp_driftmap(Plane,i),Plane=1,H_FPP_N_PLANES)
 	  enddo !i
 
@@ -309,15 +314,15 @@ c==============================================================================
             call g_rep_err(ABORT,err)
           endif
 
-          if (hfpp_drift_Nbins.le.0) goto 900
-          if (hfpp_drift_dT.le.0.0) goto 900
+          if (hfpp_drift_Nbins.le.0) goto 902
+          if (hfpp_drift_dT.le.0.0) goto 902
 
       elseif (hfpp_drift_type.eq.2) then	! polynomial ******************
 
           print *,'\n The selected drift map file uses a polynomial to calculate'
           print *,  ' the drift in the focal plane polarimeter chambers.\n'
 
-          read(LUN,*,err=900,end=900)
+          read(LUN,*,err=903,end=900)
      >      (hfpp_drift_Nterms(Plane),Plane=1,H_FPP_N_PLANES)
 
           do Plane=1,H_FPP_N_PLANES
@@ -327,20 +332,44 @@ c==============================================================================
           enddo
 
           do Plane=1,H_FPP_N_PLANES
-            read(LUN,*,err=900,end=900) 
+            read(LUN,*,err=903,end=900) 
      >    	    (hfpp_drift_orders(Plane,i),
      >    	     hfpp_drift_coeffs(Plane,i),i=1,hfpp_drift_Nterms(Plane))
           enddo
 
       else					! bad selector ****************
-          goto 900
+          goto 904
       endif
 
       goto 990
 
 
  900  continue
-      err = 'error reading drift map '//hfpp_driftmap_filename
+      err = 'error opening drift map file: '//hfpp_driftmap_filename
+      ABORT = .true.
+      call g_rep_err(ABORT,err)
+      goto 990
+
+ 901  continue
+      err = 'error reading drift map file header: '//hfpp_driftmap_filename
+      ABORT = .true.
+      call g_rep_err(ABORT,err)
+      goto 990
+
+ 902  continue
+      err = 'error reading drift map - bad lookup table: '//hfpp_driftmap_filename
+      ABORT = .true.
+      call g_rep_err(ABORT,err)
+      goto 990
+
+ 903  continue
+      err = 'error reading drift map - bad polynomial: '//hfpp_driftmap_filename
+      ABORT = .true.
+      call g_rep_err(ABORT,err)
+      goto 990
+
+ 904  continue
+      err = 'error reading drift map - unknown drift map type: '//hfpp_driftmap_filename
       ABORT = .true.
       call g_rep_err(ABORT,err)
       goto 990

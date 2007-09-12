@@ -2,7 +2,7 @@ c common block of variables for column-wise Ntuple for HMS FPP
 ***** these must NOT be used in the CTP system!!
 
       integer MAX_cwn_goodhits
-      parameter (MAX_cwn_goodhits= 600)
+      parameter (MAX_cwn_goodhits= 12)
 
       integer MAX_cwn_tracks
       parameter (MAX_cwn_tracks= 18)	!!! should be 2*H_FPP_MAX_TRACKS !!!

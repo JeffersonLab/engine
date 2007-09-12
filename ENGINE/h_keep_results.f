@@ -11,6 +11,9 @@
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *
 * $Log$
+* Revision 1.6.24.3  2007/09/12 14:40:03  brash
+* *** empty log message ***
+*
 * Revision 1.6.24.2  2007/09/11 19:14:17  frw
 * fixed FPP related arrays and limits
 *
@@ -75,6 +78,7 @@
       ENDIF
 *
 *
+c      write(*,*)'Calling h_fpp_nt_keep:',HFPP_eventclass,HFPP_min_event_code
       if (HFPP_eventclass.ge.HFPP_min_event_code) call h_fpp_nt_keep(ABORT,err)
 *
       IF(ABORT) THEN

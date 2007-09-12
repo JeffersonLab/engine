@@ -15,7 +15,9 @@
 
       character*13 here
       parameter (here='h_fpp_nt_open')
-
+      integer Nwpawc,h,nh
+      parameter (Nwpawc=150000)
+      
       logical ABORT
       character*(*) err
 
@@ -25,11 +27,14 @@
       include 'h_fpp_ntup.cwn'
 
       integer iquest
-      common/QUEST/iquest(100)
+      common /PAWC/ h(Nwpawc)
+      common /QUEST/ iquest(100)
 
       integer default_recL, default_bufS
-      parameter (default_recL= 8191)    !record length
-      parameter (default_bufS= 8176)    !record length
+c      parameter (default_recL= 8191)    !record length
+c      parameter (default_bufS= 8176)    !record length
+      parameter (default_recL= 4096)    !record length
+      parameter (default_bufS= 4096)    !record length
       character*80 title,file
       character*80 directory,name
       character*1000 pat,msg
@@ -74,14 +79,16 @@
         RETURN
       ENDIF
 
-
+      nh=Nwpawc
+c      call HLIMIT(nh)
+      
       recL = default_recL
       bufS = default_bufS
-      iquest(10) = 65000
+      iquest(10) = 256000
 
 *-open New *.rzdat file-
       CALL HCDIR(directory,'R')       !CERNLIB read current directory
-      call HROPEN(io,name,file,'NQ',recL,status) 
+      call HROPEN(io,name,file,'NQE',recL,status) 
 
       ABORT= status.NE.0
       IF(ABORT) THEN
@@ -134,11 +141,11 @@
      1 //',trig_TDC1:I*4'
      1 //',trig_TDC2:I*4'
      1 
-     1// ',RawHits[0,2400]:U*4'
+     1// ',RawHits[0,24]:U*4'
      1
-     1// ',Nhits1[0,600]:U*4'
+     1// ',Nhits1[0,12]:U*4'
      1// ',h1_Pol(Nhits1)[1,2]:U*4'
-     1// ',h1_Layer(Nhits1)[0,6]:U*4'
+     1// ',h1_Layer(Nhits1)[0,12]:U*4'
      1// ',h1_Wire(Nhits1)[0,104]:U*4'
      1// ',h1_on_trk(Nhits1)[0,18]:U*4'
      1// ',h1_time(Nhits1):R'
@@ -146,7 +153,7 @@
      1// ',h1_resid(Nhits1):R'
      1
      1// ',Ntrack[0,18]:U*4'
-     1// ',polar(Ntrack)[1,2]:U*4'
+     1// ',polar(Ntrack)[0,2]:U*4'
      1// ',trackNo(Ntrack)[0,9]:U*4'
      1// ',trk_hits(Ntrack)[0,6]:U*4'
      1// ',trk_s_mx(Ntrack):R'
@@ -163,7 +170,6 @@
      1// ',trk_theta(Ntrack):R'
      1// ',trk_phi(Ntrack):R'
      1 )
-
 
       call HCDIR(h_fpp_nt_directory,'R')      !record Ntuple directory
       CALL HCDIR(directory,' ')       !reset CERNLIB directory
@@ -186,8 +192,6 @@
         call G_add_path(here,pat)
         call G_log_message('INFO: '//pat)
       ENDIF
-
-
 
       h_fpp_nt_segmentevents = 0
 

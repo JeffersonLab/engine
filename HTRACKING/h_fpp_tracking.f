@@ -74,7 +74,6 @@
 
 *     * see if we have enough hits to bother with tracking
       call h_fpp_tracking_FreeHitCount(DCset,sufficient_hits)
-
 *     * try to make tracks while we have hits and room to store tracks
       do while (sufficient_hits .and. (HFPP_N_tracks(DCset).lt.H_FPP_MAX_TRACKS))
 
@@ -268,8 +267,7 @@ c==============================================================================
 
 *             * get next useful combo
               call h_fpp_tracking_NextHitCombo(DCset,nHitsRequired,nHitsInTrack, HitCluster)
-
-          enddo !while permutations to try
+             enddo !while permutations to try
 
           if (iterations.gt.HFPP_maxcombos) then
             SimpleTrack(5) = H_FPP_BAD_CHI2
@@ -324,6 +322,8 @@ c==============================================================================
       integer*4 DCset		! IN set of FPP DCs we are working on
       integer*4 HitClusters(H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
 				! IN hit clusters to fit to
+      integer*4 i
+
       real*4 SimpleTrack(6)	! IN track based on wire positions only
       logical*4 track_good	! OUT flag
       real*4 DriftTrack(6)	! OUT drift based track in chamber coords
@@ -371,6 +371,9 @@ c==============================================================================
 	   x = SimpleTrack(1)*z + SimpleTrack(2)
            y = SimpleTrack(3)*z + SimpleTrack(4)
 
+c           write(*,*)'----- fpp-tracking ----'
+c           write(*,*)'xyz = ',x,y,z
+
 *          * calculate time delay due to signal propagating along sense wire
 *          * depends on position of event along wire, which side the read-out card
 *          * is on, and the propagation speed
@@ -386,6 +389,7 @@ c==============================================================================
 
 *             * fix the sign depending on readout card being on +v or -v side!
               WirePropagation = roughv * float(HFPP_cardpos(DCset,iChamber,iLayer,iWire))
+c              write(*,*)'Calling h_fpp_drift ... ',WirePropagation
               call h_fpp_drift(iHit,SimpleTrack,WirePropagation,
      >                         mydriftT,mydriftX,ABORT,err)
 
@@ -441,14 +445,23 @@ c==============================================================================
 
 *         * save signed drifts
 	  do iHit=1,nPoints
-            iChamber = All_Chambers(nPoints)
-            iLayer   = All_Layers(nPoints)  
-	    iWire    = All_Wires(nPoints)   
+            iChamber = All_Chambers(iHit)
+            iLayer   = All_Layers(iHit)  
+	    iWire    = All_Wires(iHit)   
 	    HFPP_drift_dist(DCset,iChamber,iLayer,iWire) = Drifts(iHit)
 	  enddo !iHit
           track_good = .true.
 
       elseif (nPoints.gt.HFPP_minsethits) then
+          write(*,*)'did not find track on first interation!!!'
+          write(*,*)'HMS: ',hsxp_fp,hsyp_fp
+          write(*,*)newTrack(1),newTrack(3),newTrack(5)
+	  do i=1,nPoints
+            iChamber = All_Chambers(i)
+            iLayer   = All_Layers(i)  
+	    iWire    = All_Wires(i)   
+            write(*,*)iWire,Drifts(i),HFPP_drift_dist(DCset,iChamber,iLayer,iWire)
+          enddo 
 *         * apparently we were not able to find a good track
 *         * we now try dropping each cluster, one at a time, to see if a good track
 *         * can be found -- note that this corresponds to ignoring one layer at a time
@@ -497,6 +510,14 @@ c==============================================================================
 	   enddo !LSkip
 	  enddo !CSkip
 
+          write(*,*)'After Iterating ...'
+          write(*,*)DriftTrack(1),DriftTrack(3),DriftTrack(5)
+	  do i=1,nPoints
+            iChamber = All_Chambers(i)
+            iLayer   = All_Layers(i)  
+	    iWire    = All_Wires(i)   
+            write(*,*)iWire,Drifts(i),HFPP_drift_dist(DCset,iChamber,iLayer,iWire)
+          enddo 
 
           if (     (DriftTrack(5).le.HFPP_min_chi2)
      >        .and.(DriftTrack(5).ge.0.0)

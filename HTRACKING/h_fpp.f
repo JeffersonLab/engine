@@ -37,7 +37,8 @@
 *     * do tracking in each set of chambers separately
       do iset=1, H_FPP_N_DCSETS
         if (HFPP_Nlayershit_set(iset) .ge. HFPP_minsethits) then
-
+c          write(*,*)'Calling fpp_tracking ->'
+c          write(*,*)'iset,layers = ',iset,HFPP_Nlayershit_set(iset)
           call h_fpp_tracking(iset,ABORT,err)
           if (ABORT) then
             call g_add_path(here,err)

@@ -21,6 +21,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton Univ.; rewrote parsing
 * $Log$
+* Revision 1.7.24.3  2007/09/12 14:40:02  brash
+* *** empty log message ***
+*
 * Revision 1.7.24.2  2007/09/10 21:18:13  frw
 * fixed FPP related arrays and limits
 *
@@ -197,7 +200,6 @@
                      endif
                   endif
                else
-
                   read(line(1:llen),'(4i15)') subadd, plane, counter,
      $                 signal
                   If(OK .and. (roc.ne.lastroc.or.slot.ne.lastslot)) Then
@@ -224,6 +226,9 @@
      &                    +subadd ) = counter
                      g_decode_sigtypmap( g_decode_slotpointer(roc,slot)
      &                    +subadd ) = signal
+c			write(*,*)G_DECODE_MAXDIDS,G_DECODE_MAXPLANES,
+c     &			G_DECODE_MAXSIGNALS,G_DECODE_MAXCOUNTERS
+c			write(*,*)did,counter,plane,signal
                      if (     did.le.MAXID
      &		         .and.plane.le.G_DECODE_MAXPLANES
      &		         .and.counter.le.G_DECODE_MAXCOUNTERS

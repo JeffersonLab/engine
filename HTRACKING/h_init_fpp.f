@@ -136,7 +136,7 @@
      >       HFPP_direction(iset,ichamber,ilayer,1),HFPP_direction(iset,ichamber,ilayer,2),
      >       HFPP_layeroffset(iset,ichamber,ilayer), HFPP_Nwires(iplane),
      >       HFPP_spacing(iset,ichamber,ilayer), HFPP_resolution(iset,ichamber,ilayer),
-     >       HFPP_gamma(iPlane)
+     >       HFPP_gamma(iset)
            enddo
         enddo
        enddo

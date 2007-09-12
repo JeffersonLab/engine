@@ -41,6 +41,7 @@
 *
       IF(.NOT.h_fpp_nt_exists) RETURN       !nothing to do
 
+c      write(*,*)'Segments: ',h_fpp_nt_segmentevents,HFPP_nt_max_segmentevents
       if (HFPP_nt_max_segmentevents .gt. 0) then
         if (h_fpp_nt_segmentevents .gt. HFPP_nt_max_segmentevents) then
           call h_fpp_nt_change(ABORT,err)
@@ -52,11 +53,13 @@
 ************************************************
 
       cwnFPP_eventID = gen_event_ID_number
+      if(HFPP_eventclass.gt.63)HFPP_eventclass=63
       cwnFPP_evtcode = HFPP_eventclass
 
 
 *******  standard HMS info
-
+c      write(*,*)HSDELTA,HSTHETA,HSPHI,HINVMASS
+c      WRITE(*,*)HSZBEAM,HSX_FP,HSY_FP,HSXP_FP,HSYP_FP
       cwnFPP_hsdelta = HSDELTA
       cwnFPP_hstheta = HSTHETA
       cwnFPP_hsphi   = HSPHI
@@ -69,7 +72,9 @@
 
 
 *******  global FPP info
-
+c      WRITE(*,*)HFPP_TRIGGER_TDC(1)
+c      WRITE(*,*)HFPP_TRIGGER_TDC(2)
+c      WRITE(*,*)HFPP_RAW_TOT_HITS
       cwnFPP_trig_TDC1 = HFPP_trigger_TDC(1)
       cwnFPP_trig_TDC2 = HFPP_trigger_TDC(2)
 
@@ -88,18 +93,22 @@
             do iHit=1,HFPP_nHitsinCluster(iSet,iCham,iLay,cluster)
               n = min(n+1,MAX_cwn_goodhits)
               iRaw = HFPP_Clusters(iSet,iCham,iLay,cluster,iHit)
-
+c              write(*,*)iraw
+c                write(*,*)iSet,HFPP_raw_plane(iRaw),HFPP_raw_wire(iRaw),
+c     >              HFPP_HitTime(iRaw)  
               cwnFPP_Hit1_pol(n)    = iSet
               cwnFPP_Hit1_layer(n)  = HFPP_raw_plane(iRaw)
               cwnFPP_Hit1_wire(n)   = HFPP_raw_wire(iRaw)
               cwnFPP_Hit1_time(n)   = HFPP_HitTime(iRaw)
-
 	      if (iTrk.le.0) then
-	        cwnFPP_Hit1_itrack(n) = 0
+                cwnFPP_Hit1_itrack(n) = 0
 	        cwnFPP_Hit1_drift(n)  = H_FPP_BAD_DRIFT
 	        cwnFPP_Hit1_resid(n)  = H_FPP_BAD_DRIFT
 	      else
 	        iWire = HFPP_raw_wire(iRaw)
+c                write(*,*)iTrk,
+c     >                HFPP_drift_dist(iSet,iCham,iLay,iWire),
+c     >                HFPP_track_residual(iSet,iCham,iLay,iTrk)
 	        cwnFPP_Hit1_itrack(n) = iTrk
 	        cwnFPP_Hit1_drift(n)  = HFPP_drift_dist(iSet,iCham,iLay,iWire)
 	        cwnFPP_Hit1_resid(n)  = HFPP_track_residual(iSet,iCham,iLay,iTrk)
@@ -118,34 +127,50 @@
       enddo
       if (k.ne.n) print *,' ERROR in ',here,': hit count mismatch set ',iSet,': ',k,' != ',n
 
-
 *******  FPP tracks
 
       n=0
       do iSet=1,2  ! Upstream & downstream polarimeter
        do iTrk=1,HFPP_N_tracks(iSet)
-	 cwnFPP_trk_pol(iTrk) = iSet
-	 cwnFPP_trk_num(iTrk) = iTrk
+c         write(*,*)iSet,iTrk,HFPP_N_tracks(iSet)
+c         write(*,*)iSet,iTrk
+c         write(*,*)HFPP_track_Nlayers(iSet,iTrk)
+c         write(*,*)HFPP_track_rough(iSet,iTrk,1),
+c     >          HFPP_track_rough(iSet,iTrk,2),
+c     >          HFPP_track_rough(iSet,iTrk,3),
+c     >          HFPP_track_rough(iSet,iTrk,4)
+c         write(*,*)HFPP_track_dx(iSet,iTrk),
+c     >          HFPP_track_x(iSet,iTrk),
+c     >          HFPP_track_dy(iSet,iTrk),
+c     >          HFPP_track_y(iSet,iTrk)
+c         write(*,*)HFPP_track_chi2(iSet,iTrk),
+c     >          HFPP_track_zclose(iSet,iTrk),
+c     >          HFPP_track_sclose(iSet,iTrk)
+c         write(*,*)HFPP_track_theta(iSet,iTrk),
+c     >          HFPP_track_phi(iSet,iTrk)
+         n=n+1      
+	 cwnFPP_trk_pol(n) = iSet
+	 cwnFPP_trk_num(n) = iTrk
 
-	 cwnFPP_trk_hits(iTrk) = HFPP_track_Nlayers(iSet,iTrk)    ! # of layers w/hit on track
+	 cwnFPP_trk_hits(n) = HFPP_track_Nlayers(iSet,iTrk)    ! # of layers w/hit on track
 
-	 cwnFPP_simple_mx(iTrk)   = HFPP_track_rough(iSet,iTrk,1)    ! simple (=no drift) track
-	 cwnFPP_simple_bx(iTrk)   = HFPP_track_rough(iSet,iTrk,2)
-	 cwnFPP_simple_my(iTrk)   = HFPP_track_rough(iSet,iTrk,3)
-	 cwnFPP_simple_by(iTrk)   = HFPP_track_rough(iSet,iTrk,4)
+	 cwnFPP_simple_mx(n)   = HFPP_track_rough(iSet,iTrk,1)    ! simple (=no drift) track
+	 cwnFPP_simple_bx(n)   = HFPP_track_rough(iSet,iTrk,2)
+	 cwnFPP_simple_my(n)   = HFPP_track_rough(iSet,iTrk,3)
+	 cwnFPP_simple_by(n)   = HFPP_track_rough(iSet,iTrk,4)
 
-	 cwnFPP_full_mx(iTrk)	  = HFPP_track_dx(iSet,iTrk)	    ! track w/ drift
-	 cwnFPP_full_bx(iTrk)	  = HFPP_track_x(iSet,iTrk)
-	 cwnFPP_full_my(iTrk)	  = HFPP_track_dy(iSet,iTrk)
-	 cwnFPP_full_by(iTrk)	  = HFPP_track_y(iSet,iTrk)
+	 cwnFPP_full_mx(n)	  = HFPP_track_dx(iSet,iTrk)	    ! track w/ drift
+	 cwnFPP_full_bx(n)	  = HFPP_track_x(iSet,iTrk)
+	 cwnFPP_full_my(n)	  = HFPP_track_dy(iSet,iTrk)
+	 cwnFPP_full_by(n)	  = HFPP_track_y(iSet,iTrk)
 
-	 cwnFPP_chi2(iTrk)        = HFPP_track_chi2(iSet,iTrk)
+	 cwnFPP_chi2(n)        = HFPP_track_chi2(iSet,iTrk)
 
-         cwnFPP_zclose(iTrk)      = HFPP_track_zclose(iSet,iTrk)
-         cwnFPP_sclose(iTrk)      = HFPP_track_sclose(iSet,iTrk)
+         cwnFPP_zclose(n)      = HFPP_track_zclose(iSet,iTrk)
+         cwnFPP_sclose(n)      = HFPP_track_sclose(iSet,iTrk)
 
-         cwnFPP_theta(iTrk)       = HFPP_track_theta(iSet,iTrk)
-         cwnFPP_phi(iTrk)         = HFPP_track_phi(iSet,iTrk)
+         cwnFPP_theta(n)       = HFPP_track_theta(iSet,iTrk)
+         cwnFPP_phi(n)         = HFPP_track_phi(iSet,iTrk)
        enddo !iTrk
       enddo !iSet
       cwnFPP_Ntracks = n

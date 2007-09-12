@@ -1,5 +1,8 @@
       subroutine g_examine_picture_event
 * $Log$
+* Revision 1.1.6.3  2007/09/12 14:40:03  brash
+* *** empty log message ***
+*
 * Revision 1.1.6.2  2007/09/10 20:33:37  pcarter
 * Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *
@@ -18,7 +21,7 @@
       save
       external jishft
 
-      character buffer*12000
+      character buffer*100000
       character*80 file
       equivalence (craw(5), buffer)
       integer i,j,evlen

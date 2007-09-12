@@ -8,6 +8,9 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
+* Revision 1.27.20.1  2007/09/12 14:40:03  brash
+* *** empty log message ***
+*
 * Revision 1.27  2003/04/01 13:55:09  jones
 * Add variables hntracks_max_fp and h_remove_sppt_if_one_y_plane to
 * hms_tracking.cmn
@@ -152,7 +155,7 @@
       integer*4 hmax_space_points   ! maximum number of space points
       parameter (hmax_space_points=50)
       integer*4 hmax_hits_per_point ! maximum number of hits per point
-      parameter (hmax_hits_per_point=20)
+      parameter (hmax_hits_per_point=1000)
       integer*4 hnum_fpray_param    ! number of ray parameters in focal plane
       parameter (hnum_fpray_param=4)
       integer*4 hdc_num_cards       ! #/discriminator cards

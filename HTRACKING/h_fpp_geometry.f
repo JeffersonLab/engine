@@ -345,11 +345,21 @@ c==============================================================================
       dtheta = dacos(r_f(3))		! z = cos(theta)
 
       if (r_f(1).ne.0.d0) then
-        dphi = datan( r_f(2)/r_f(1) )	! y/x = tan(phi)
+        if (r_f(1).gt.0.d0) then
+          if (r_f(2).gt.0.d0) then         
+            dphi = datan( r_f(2)/r_f(1) )	! y/x = tan(phi)
+          else
+            dphi = datan( r_f(2)/r_f(1) )	! y/x = tan(phi)
+            dphi = dphi + 6.28318d0
+          endif
+        else
+          dphi = datan( r_f(2)/r_f(1) )	! y/x = tan(phi)
+          dphi = dphi + 3.14159d0
+        endif                
       elseif (r_f(2).gt.0.d0) then
-        dphi = 1.5708d0			! phi = +90
+        dphi = 1.57080d0			! phi = +90
       elseif (r_f(2).lt.0.d0) then
-        phi = -1.5708d0			! phi = -90
+        phi = 4.71239d0			! phi = +270
       else
         dphi = 0.d0			! phi undefined if theta=0 or r=0
       endif

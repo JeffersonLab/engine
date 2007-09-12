@@ -65,7 +65,7 @@
      &  , HFPP_Nfreehits(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
      &  , HFPP_NlayersWfreehits(H_FPP_N_DCSETS,H_FPP_N_DCINSET)
      &  , HFPP_NsetlayersWfreehits(H_FPP_N_DCSETS)
-     &  , HFPP_HitTime(H_FPP_MAX_RAWHITS)
+     &  , HFPP_HitTime(0:H_FPP_MAX_RAWHITS)
      &  , HFPP_drift_time(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS,
      >                    H_FPP_MAX_WIRES)
      &  , HFPP_drift_dist(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS,
