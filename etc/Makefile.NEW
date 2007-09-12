@@ -69,11 +69,11 @@ all:  $(SUBDIRNAME) $(SUBDIRNAME)/Makefile
 	$(MAKE) -C $(SUBDIRNAME)
 
 ../$(MAKEFILENAME):
-	echo change in ../$(MAKEFILENAME)
+	@echo change in ../$(MAKEFILENAME)
 	(cd $(SUBDIRNAME) ; ln -f -s ../$(MAKEFILENAME) Makefile)
 
 $(SUBDIRNAME)/Makefile: ../$(MAKEFILENAME)
-	echo copy ../$(MAKEFILENAME)
+	@echo copy ../$(MAKEFILENAME)
 	(cd $(SUBDIRNAME) ; ln -f -s ../$(MAKEFILENAME) Makefile)
 
 $(SUBDIRNAME):
