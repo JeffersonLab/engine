@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.10  2007/09/12 19:18:46  puckett
+* fixed incorrect usages of array index of gen_run_enable
+*
 * Revision 1.42.8.9  2007/09/10 20:33:37  pcarter
 * Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *
@@ -316,6 +319,11 @@ c
          err= ' '
       ENDIF
 
+      !write(*,*) 'after processing engine config file, gen_run_enable=',
+c     $     gen_run_enable
+      !write(*,*) 'after processing engine config file, gen_bigcal_mc=',
+c     $     gen_bigcal_mc
+
       call engine_command_line(.false.) ! Set CTP vars from command line
 *
 * If there is a g_ctp_database_filename set, pass the run number
@@ -330,6 +338,12 @@ c
           call G_add_path(here,err)
         endif
       ENDIF
+
+      !write(*,*) 'after processing ctp database file, gen_run_enable=',
+c     $     gen_run_enable
+      !write(*,*) 'after processing ctp database file, gen_bigcal_mc=',
+c     $     gen_bigcal_mc
+
 c     initialize CTP ROOT trees: substitute run number into filename!!!!
       if(.not.abort) then
          call g_tree_init(abort,err)
@@ -512,7 +526,7 @@ c      endif
       call engine_command_line(.false.) ! Set CTP vars from command line
 c 
       !write(*,*) 'about to call h_fieldcorr'
-      if(gen_run_enable(1).ne.0) then
+      if(gen_run_enable(0).ne.0) then
         call h_fieldcorr(ABORT,err)
       endif
 c
@@ -522,7 +536,7 @@ c    applies to experiments using fieldxx.f programs before field02.f
 c    parameter genable_hms_fieldcorr is switch to determine
 c    whether fix is applied.
 c
-      if(gen_run_enable(2).ne.0) then
+      if(gen_run_enable(1).ne.0) then
         call s_fieldcorr(ABORT,err)
       endif
 c
