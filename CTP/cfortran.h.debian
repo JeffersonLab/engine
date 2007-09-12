@@ -1,6 +1,7 @@
 /* cfortran.h  4.4 */
 /* http://www-zeus.desy.de/~burow/cfortran/                   */
 /* Burkhard Burow  burow@desy.de                 1990 - 2002. */
+/* This vresion of cfortran.h is from Debian and has support for gfortran. */
 
 #ifndef __CFORTRAN_LOADED
 #define __CFORTRAN_LOADED

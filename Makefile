@@ -4,8 +4,8 @@
 
 .DELETE_ON_ERROR: ;
 
-# If you're not using GCC version 3 or 4 and Linux, you'll proably need to make
-# some changes to the makefiles and possibly the source code.
+# If you're not using GCC version 3 or 4 and Linux or Mac OS X, you'll proably
+# need to make some changes to the makefiles and possibly the source code.
 getversion = --version | head -1 | sed 's/.*) //' | sed 's/\..*//'
 gccversion = $(shell gcc $(getversion))
 g77flags = -Wimplicit
@@ -22,7 +22,12 @@ CXX = g++
 ifeq ($(gccversion),4)
   ifeq ($(shell gfortran $(getversion)),4)
     FC = gfortran
-    CFLAGS += -DgFortran # for cfortran.h
+    # cfortran.h wants gFortran to be defined
+    # We have two versions of cfortran.h: one from NetCDF and one from Debian
+    # Both versions support GCC 4, whereas the official version does not
+    # We use NetCDF's cfortran.h at the moment
+    # The other version is in CTP/cfortran.h.debian
+    CFLAGS += -DgFortran
     CXXFLAGS += -DgFortran
   else
     # this happens if you're using a JLab RHEL3 system and have typed "use gcc/4.1.1"
