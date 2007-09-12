@@ -1,5 +1,7 @@
 .DELETE_ON_ERROR: ;
 
+include ../etc/Makefile.variables
+
 .PHONY: all
 
 override CFLAGS += -L../../$(MYOS)/lib

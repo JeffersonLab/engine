@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.10.24.4  2007/09/12 10:35:15  pcarter
+# Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+#
 # Revision 1.10.24.3  2007/09/10 20:08:02  pcarter
 # Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 #
@@ -44,6 +47,8 @@
 #
 ##include $(Csoft)/etc/Makefile
 .DELETE_ON_ERROR: ;
+
+include ../etc/Makefile.variables
 
 ntuples = c_ntuple.cmn h_ntuple.cmn s_ntuple.cmn b_ntuple.cmn gep_ntuple.cmn
 

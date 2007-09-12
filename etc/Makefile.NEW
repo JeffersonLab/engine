@@ -1,5 +1,7 @@
 .DELETE_ON_ERROR: ;
 
+include ../etc/Makefile.variables
+
 MAKEFILENAME = Makefile.Unix
 
 ifeq ($(MYOS),HPUX)
