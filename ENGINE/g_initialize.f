@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.24.6.8  2007/09/12 19:26:31  puckett
+* *** empty log message ***
+*
 * Revision 1.24.6.7  2007/09/10 20:33:37  pcarter
 * Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *
@@ -393,6 +396,9 @@ c      !write(*,*) 'about to call b_initialize'
 *
 *-BigCal initialize
       
+      !write(*,*) 'before call to b_initialize, gen_run_enable=',gen_run_enable
+      !write(*,*) 'before call to b_initialize, gen_bigcal_mc=',gen_bigcal_mc
+
       call B_initialize(BIGCAL_ABORT,BIGCAL_err)
       
 *
@@ -433,6 +439,9 @@ c      write(*,*) 'about to call GEP_initialize'
          call GEP_initialize(ABORT,err) ! clone of C_initialize for now
       endif
       
+      !write(*,*) 'before call to g_ntuple_init, gen_run_enable=',gen_run_enable
+      !write(*,*) 'before call to g_ntuple_init, gen_bigcal_mc=',gen_bigcal_mc
+
 c     write(*,*) 'about to call g_ntuple_init'
       call g_ntuple_init(HACK_ABORT,HACK_err) ! Ingore error return for now
 *

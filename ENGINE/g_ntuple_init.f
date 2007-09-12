@@ -13,6 +13,9 @@
 *- 
 *-Created  6-September-1995 SAW
 * $Log$
+* Revision 1.1.24.4  2007/09/12 19:26:31  puckett
+* *** empty log message ***
+*
 * Revision 1.1.24.3  2007/08/22 19:09:16  frw
 * added FPP
 *
@@ -94,7 +97,9 @@ c     !write(*,*) 'about to call s_sv_nt_init'
       endif
       ABORT= ABORT .or. FAIL
 *     
-      
+      !write(*,*) 'before call to b_ntuple_init, gen_run_enable=',gen_run_enable
+      !write(*,*) 'before call to b_ntuple_init, gen_bigcal_mc=',gen_bigcal_mc
+
       !write(*,*) 'about to call b_ntuple_init'
       call b_ntuple_init(FAIL,why)
       !write(*,*) 'b_ntuple_init successful'
