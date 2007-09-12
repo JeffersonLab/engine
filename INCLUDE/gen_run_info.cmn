@@ -2,6 +2,9 @@
 *- 
 *-   Created   22-Apr-1994   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.7.24.3  2007/09/12 19:29:42  puckett
+* fixed incorrect usage of array index of gen_run_enable(type)
+*
 * Revision 1.7.24.2  2007/06/20 18:38:23  puckett
 * Added BigCal Monte Carlo analysis capability
 *
@@ -57,7 +60,7 @@
       INTEGER gen_run_hist_dump_interval
       INTEGER gen_run_starting_event,gen_run_stopping_event
       INTEGER gen_analyze_beamline      !1=enable beamline, 0=disable
-      integer gen_bigcal_mc             !0=disable, 1=dat, 2=ntup
+      integer gen_bigcal_mc             !0=disable, 1=dat, 2=ntup, 3=dat with proton
 *
       COMMON /gen_run_cntrl/ gen_run_starting_event,
      &     gen_run_stopping_event,
@@ -79,8 +82,8 @@
       equivalence (gtrig2,gen_run_enable(1))
       equivalence (gtrig3,gen_run_enable(2))
       equivalence (gtrig4,gen_run_enable(3))
-      equivalence (gtrig5,gen_run_enable(5))
-      equivalence (gtrig6,gen_run_enable(6))
+      equivalence (gtrig5,gen_run_enable(4))
+      equivalence (gtrig6,gen_run_enable(5))
       equivalence (gbeam,gen_analyze_beamline)
       equivalence (gmc,gen_bigcal_mc)
 
