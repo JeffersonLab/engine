@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.28.16.7  2007/09/13 04:02:17  brash
+# Implement some minor changes to fix Mac OS X runtime errors ... ejb
+#
 # Revision 1.28.16.6  2007/09/10 20:08:01  pcarter
 # Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 #
@@ -251,7 +254,11 @@ ifeq ($(MYOS),IRIX)
 endif
 
 ifeq ($(MYOS),Linux)
-  OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -lc -lm -lnsl
+  ifeq ($(MYREALOS),Darwin)
+     OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -lc -lm
+  else
+     OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -lc -lm -lnsl
+  endif
   DEPLIBS := $(DEPLIBS) $(LIBROOT)/libport.a
 
 $(LIBROOT)/libport.a:

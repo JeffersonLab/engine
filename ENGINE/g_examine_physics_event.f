@@ -11,6 +11,9 @@
 *- 
 *-   Created  17-May-1994   Kevin B. Beard, Hampton U.
 * $Log$
+* Revision 1.4.24.2  2007/09/13 04:02:17  brash
+* Implement some minor changes to fix Mac OS X runtime errors ... ejb
+*
 * Revision 1.4.24.1  2007/09/10 20:33:37  pcarter
 * Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *
@@ -49,13 +52,14 @@ ccc      LOGICAL process
 *
       integer evtype
       logical eventidbank, nontrivial
-      integer EventIDbank_size,EventIDbank_desc
+      integer*8 EventIDbank_size,EventIDbank_desc_hex,EventIDbank_desc
 *
       integer*4 jiand,jishft,jieor
 *
       parameter (EventIDbank_size= 4)
-      parameter (EventIDbank_desc= 'C0000100'x)  !from CODA manual
+      parameter (EventIDbank_desc_hex= '40000100'x)  !from CODA manual
 *
+      EventIDbank_desc=-1*EventIDbank_desc_hex+512
       gen_event_sequence_N= gen_event_sequence_N+1  !from beginning
 *
       if(jieor(jiand(buffer(2),'FFFF'x),'10CC'x).ne.0) then
@@ -91,6 +95,9 @@ ccc      process= gen_run_enable(EvType)
      &        buffer(3).EQ.EventIDbank_size  
      &        .and. buffer(4).EQ.EventIDbank_desc
 *     
+c         write(*,*)'Event info: ',buffer(1),buffer(3),buffer(4)
+c         write(*,*)'Event into 2:',
+c     &                  EventIDbank_size,EventIDbank_desc,EventIDbank
          if(EventIDbank) then
 *
             gen_event_ID_number= buffer(5)

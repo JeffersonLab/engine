@@ -77,7 +77,11 @@ endif
 ifeq ($(MYOS),Linux)  
    override FFLAGS += -I$(Csoft)/INCLUDE
    DISPFLAGS=$(FFLAGS)
-   OTHERLIBS += -L$(CERN_ROOT)/lib -lpacklib -lc -lm -lnsl
+   ifeq ($(MYREALOS),Darwin)
+      OTHERLIBS += -L$(CERN_ROOT)/lib -lpacklib -lc -lm
+   else
+      OTHERLIBS += -L$(CERN_ROOT)/lib -lpacklib -lc -lm -lnsl
+   endif 
    OURLIBS := $(OURGENLIBS) $(LIBROOT)/libport.a
 endif
 

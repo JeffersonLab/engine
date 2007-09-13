@@ -1,6 +1,9 @@
       subroutine h_dump_peds(ABORT,err)
 *
 * $Log$
+* Revision 1.7.24.1  2007/09/13 04:02:18  brash
+* Implement some minor changes to fix Mac OS X runtime errors ... ejb
+*
 * Revision 1.7  2002/12/20 21:53:34  jones
 * Modified by Hamlet for new HMS aerogel
 *
@@ -150,7 +153,7 @@
 *
       write(SPAREID,*) 'hcer_ped = '
       write(SPAREID,113) (hcer_ped(pmt),pmt=1,hmax_cer_hits)
-113   format (f5.1,',',f5.1)
+113   format (i6,',',i6)
 
 *
 *

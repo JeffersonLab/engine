@@ -1,6 +1,9 @@
       subroutine s_dump_peds(ABORT,err)
 *
 * $Log$
+* Revision 1.6.24.1  2007/09/13 04:02:18  brash
+* Implement some minor changes to fix Mac OS X runtime errors ... ejb
+*
 * Revision 1.6  1999/01/29 17:34:58  saw
 * Add variables for second tubes on shower counter
 *
@@ -141,7 +144,7 @@
 *
       write(SPAREID,*) 'scer_ped = '
       write(SPAREID,113) (scer_ped(pmt),pmt=1,smax_cer_hits)
-113   format (3(f5.1,','),f5.1)
+113   format (3(i6,','),i6)
 
       close(SPAREID)
 

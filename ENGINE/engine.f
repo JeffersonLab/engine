@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.11  2007/09/13 04:02:17  brash
+* Implement some minor changes to fix Mac OS X runtime errors ... ejb
+*
 * Revision 1.42.8.10  2007/09/12 19:18:46  puckett
 * fixed incorrect usages of array index of gen_run_enable
 *
@@ -430,6 +433,9 @@ c
 *
         if(.not.problems) then
            gen_event_type = jishft(craw(2),-16)
+           !write(*,*)'gen_event_type = ',gen_event_type
+           !write(*,*)'gen_MAX_trigger_types = ',gen_MAX_trigger_types
+
           if(gen_event_type.le.gen_MAX_trigger_types) then
             recorded_events(gen_event_type)=recorded_events(gen_event_type)+1
             if (gen_event_type.ne.0) sum_recorded=sum_recorded+1
@@ -685,7 +691,7 @@ c     !!!!!!!!!!!!!!!!!!!!!!!!!!!END BIGCAL MONTE CARLO EVENT REPLAY!!!!!!!!!!!!
 *
         if (.not.problems) then
            gen_event_type = jishft(craw(2),-16)
-          !write(*,*) 'gen_event_type = ',gen_event_type
+           !write(*,*) 'gen_event_type = ',gen_event_type
 
           if(gen_event_type.le.gen_MAX_trigger_types) then
             recorded_events(gen_event_type)=recorded_events(gen_event_type)+1
@@ -785,13 +791,13 @@ c        may need to change some of this stuff to look at the testlab data.
                endif
 c
 c
-              if(gen_event_type.le.gen_MAX_trigger_types .and.
-     $           gen_run_enable(gen_event_type-1).ne.0) then
+              if(gen_event_type.le.gen_MAX_trigger_types) then
+               if(gen_run_enable(gen_event_type-1).ne.0) then
 c
                if ( insync .eq. 1 .and. gen_event_type .le. 3 .and. syncfilter_on ) then
                   skipped_badsync_events(gen_event_type)=skipped_badsync_events(gen_event_type) + 1
                   sum_analyzed_skipped = sum_analyzed_skipped + 1
-                   goto 868
+                  goto 868
                endif
                if ( skip_events .and. gen_event_type .le. 3 .and. syncfilter_on ) then
                   skipped_badsync_events(gen_event_type)=skipped_badsync_events(gen_event_type) + 1
@@ -851,10 +857,10 @@ c
                   else if (gen_event_type.eq.4) then
                     start_time=time()     !reset start time for analysis rate
                     groupname='ped'
-                 else if (gen_event_type.eq.5.or.gen_event_type.eq.7.or.
+                  else if (gen_event_type.eq.5.or.gen_event_type.eq.7.or.
      $                   gen_event_type.eq.8) then
                     groupname = 'bigcal'
-                 else if (gen_event_type.eq.6) then
+                  else if (gen_event_type.eq.6) then
                     groupname = 'gep'
                   else
                     write(6,*) 'gen_event_type= ',gen_event_type,' for call to g_keep_results'
@@ -902,6 +908,7 @@ c
                     if(rpc_control.gt.0) rpc_control = rpc_control - 1
                   endif
 
+                endif
                 endif
               else if (gen_event_type.eq.131 .or. gen_event_type.eq.132) then ! EPICS event
                 call g_examine_epics_event

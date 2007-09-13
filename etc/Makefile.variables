@@ -49,6 +49,11 @@ RM = rm -f
 # This program has only been tested under Linux and Mac OS X lately
 # For either Mac or Linux, this variable should be set to Linux
 MYOS = Linux
+#
+# There are a couple places in the Makefiles where libraries are chosen for linking.  
+# It is helpful to know in these situations what the real OS is - i.e. Linux vs. MacOSX(Darwin)
+# 
+MYREALOS := $(subst -,,$(shell uname))
 
 # Once upon a time, there were variables named $(MYOS), $(OSTYPE), and $(ARCH)
 # but they all tended to be set to the same value. We only use MYOS now, and

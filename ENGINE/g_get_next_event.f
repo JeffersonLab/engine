@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified 1-Dec-1993    KBB: borrowed L.Dennis's hall B routines
 * $Log$
+* Revision 1.5.24.1  2007/09/13 04:02:17  brash
+* Implement some minor changes to fix Mac OS X runtime errors ... ejb
+*
 * Revision 1.5  2002/09/25 13:50:49  jones
 *    a.  include file gen_run_info.cmn
 *    b.  add code for segmented runs
@@ -50,7 +53,7 @@
 *
       integer g_important_length
 *
-      integer maxsize
+      integer maxsize,i
       integer*4 status
       integer*4 evread, evclose, evopen    ! Coda event read routine
       character*132 file
@@ -71,6 +74,12 @@
         maxsize= LENGTH_CRAW
 
         status = evread(g_data_source_in_hndl,CRAW,maxsize)
+
+c        write(*,*)'Event data -------'
+c        do i=1,10
+c                write(*,*)'event data: ',i,CRAW(i)
+c        enddo
+              
 
         if(status.ne.0) then
            if(g_segment.ge.0) then ! This is a segmented run, look for more
