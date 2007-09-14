@@ -74,6 +74,7 @@
           bigcal_all_iygood(ihit) = irow
           bigcal_all_ixgood(ihit) = icol
 
+          bigcal_all_adc_det(icell) = bigcal_prot_adc_good(ihit)
           bigcal_all_good_det(icell) = bigcal_prot_ecell(ihit)
 
 c     BIGCAL_PROT_GOOD_HIT(icell) = .true.

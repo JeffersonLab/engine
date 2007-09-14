@@ -45,7 +45,7 @@ c$$$      bigcal_phys_ntrack = 0
          BIGCAL_PROT_RAW_DET(i) = 0
          BIGCAL_PROT_GOOD_DET(i) = 0.
 c         BIGCAL_PROT_GOOD_HIT(i) = .false.
-         bigcal_all_raw_det(i) = 0
+         bigcal_all_adc_det(i) = 0.
          bigcal_all_good_det(i) = 0.
       enddo
 
@@ -53,7 +53,7 @@ c         BIGCAL_PROT_GOOD_HIT(i) = .false.
          BIGCAL_RCS_RAW_DET(i) = 0
          BIGCAL_RCS_GOOD_DET(i) = 0.
 c         BIGCAL_RCS_GOOD_HIT(i) = .false.
-         bigcal_all_raw_det(i+bigcal_prot_maxhits)=0
+         bigcal_all_adc_det(i+bigcal_prot_maxhits)=0.
          bigcal_all_good_det(i+bigcal_prot_maxhits) = 0.
       enddo
 

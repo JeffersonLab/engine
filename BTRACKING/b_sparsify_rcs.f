@@ -43,7 +43,6 @@ c     then we can assume from here on out that RCS_IY starts at 1 and goes to 24
           icell = icol + BIGCAL_RCS_NX*(irow - 1)
           adc_val = BIGCAL_RCS_ADC_RAW(ihit)
           BIGCAL_RCS_RAW_DET(icell) = adc_val
-          BIGCAL_ALL_RAW_DET(icell+bigcal_prot_maxhits) = adc_val
 c          BIGCAL_ALL_RAW_DET(icell+bigcal_prot_maxhits) = adc_val
           if(adc_val.ge.0) then 
             BIGCAL_RCS_ADC_DECODED(icell) = float(adc_val) - 

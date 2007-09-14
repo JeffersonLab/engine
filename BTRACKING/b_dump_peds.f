@@ -29,9 +29,13 @@
          return
       endif
 
-      write(spareid,*) 'these are the values that were used '
-      write(spareid,*)  'for the analysis (from the param file 
-     $     or ped. events)'
+      write(spareid,*) ';these are the values that were used '
+      write(spareid,*) ';for the analysis (from the param file'// 
+     $     ' or ped. events)'
+      write(spareid,666) 'bigcal_prot_min_peds = ',bigcal_prot_min_peds
+      write(spareid,666) 'bigcal_rcs_min_peds = ',bigcal_rcs_min_peds
+      write(spareid,666) 'bigcal_trig_min_peds = ',bigcal_trig_min_peds
+ 666  format(A24,I6)
       write(spareid,*) 'bigcal_prot_ped_mean = '
       do irow=1,bigcal_prot_ny
          write(spareid,100) (bigcal_prot_ped_mean(icol+bigcal_prot_nx*

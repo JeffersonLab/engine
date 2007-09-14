@@ -235,6 +235,7 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       integer itrack,ibest
       real diffsum,mindiffsum
       real E_cal,X_cal,Y_cal,T_cal
+      real T_H,X_H,Y_H,E_H
 
 c     if the user has not defined something reasonable, then set by hand here:
 

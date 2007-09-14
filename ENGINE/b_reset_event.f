@@ -139,7 +139,7 @@ c$$$      bigcal_max_adc_final = 0.
          BIGCAL_PROT_RAW_DET(i) = 0
          BIGCAL_PROT_GOOD_DET(i) = 0.
 c         BIGCAL_PROT_GOOD_HIT(i) = .false.
-         BIGCAL_ALL_RAW_DET(i) = 0
+         BIGCAL_ALL_ADC_DET(i) = 0.
          BIGCAL_ALL_GOOD_DET(i) = 0.
       enddo
 
@@ -147,7 +147,7 @@ c         BIGCAL_PROT_GOOD_HIT(i) = .false.
          BIGCAL_RCS_RAW_DET(i) = 0
          BIGCAL_RCS_GOOD_DET(i) = 0.
 c         BIGCAL_RCS_GOOD_HIT(i) = .false.
-         BIGCAL_ALL_RAW_DET(i+bigcal_prot_maxhits) = 0
+         BIGCAL_ALL_ADC_DET(i+bigcal_prot_maxhits) = 0.
          BIGCAL_ALL_GOOD_DET(i+bigcal_prot_maxhits) = 0.
       enddo
 
