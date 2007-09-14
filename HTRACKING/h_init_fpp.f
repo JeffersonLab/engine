@@ -167,11 +167,11 @@
 *           *      | ,-- 1=x,2=y,3=z in lab coords
             matrix(1,1)  =      cosalpha*cosbeta*cosgamma - sinalpha*singamma
             matrix(1,2)  =      sinalpha*cosbeta*cosgamma + cosalpha*singamma
-            matrix(1,3)  =      cosalpha*sinbeta
+            matrix(1,3)  = -1.0*         sinbeta*cosgamma
 
             matrix(2,1)  = -1.0*cosalpha*cosbeta*singamma - sinalpha*cosgamma
             matrix(2,2)  = -1.0*sinalpha*cosbeta*singamma + cosalpha*cosgamma
-            matrix(2,3)  =      sinalpha*sinbeta
+            matrix(2,3)  =               sinbeta*singamma
 
             matrix(3,1)  =      cosalpha*sinbeta
             matrix(3,2)  =      sinalpha*sinbeta
