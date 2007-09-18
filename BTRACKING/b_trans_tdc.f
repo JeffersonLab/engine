@@ -53,8 +53,8 @@
           BIGCAL_HIT_TIME(ngood) = thit
           bigcal_tdc_good(ngood) = bigcal_tdc(ihit)
 c     fill tdc histogram:
-          if(bid_btdc(itdc).gt.0) call hf1(bid_btdc(itdc),thit,1.0)
-
+          if(bid_btdc(itdc).gt.0) call hf1(bid_btdc(itdc),bigcal_tdc(ihit),1.0)
+          
 c     ! also fill "detector" array (arrays over tdc# as opposed to hits)
           if(bigcal_tdc_det_ngood(itdc).lt.8)then
             bigcal_tdc_det_ngood(itdc)=bigcal_tdc_det_ngood(itdc) + 1

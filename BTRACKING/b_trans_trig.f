@@ -36,6 +36,9 @@
           icell64 = icol64 + 2*(irow64 - 1)
           bigcal_atrig_esum(ihit) = bigcal_trig_cfac(icell64) *
      $         bigcal_atrig_adc_good(ihit)*bigcal_trig_gain_cor(icell64)
+          
+          if(bid_btadc(icell64).gt.0) call hf1(bid_btadc(icell64),
+     $         bigcal_atrig_adc_good(ihit),1.0)
 
           bigcal_atrig_good_det(icell64) = bigcal_atrig_esum(ihit)
           if(bid_bcal_tadcvsum64.gt.0) then
@@ -98,7 +101,8 @@ c     the maximum belongs
                bigcal_ttrig_tdc_good(ngood) = bigcal_ttrig_tdc_dec(ihit)
 c     fill trig tdc histogram
                
-               if(bid_bttdc(icell64).gt.0) call hf1(bid_bttdc(icell64),hit_time,1.0)
+               if(bid_bttdc(icell64).gt.0) call hf1(bid_bttdc(icell64),
+     $              bigcal_ttrig_tdc_good(ngood),1.0)
                
                if(bigcal_ttrig_det_ngood(icell64).lt.8) then
                   bigcal_ttrig_det_ngood(icell64) = 

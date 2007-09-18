@@ -54,6 +54,7 @@
           if(bid_bcal_row.gt.0) call hf1(bid_bcal_row,float(irow),1.0)
           if(bid_bcal_col.gt.0) call hf1(bid_bcal_col,float(icol),1.0)
           if(bid_bcal_rowcol.gt.0) call hf2(bid_bcal_rowcol,float(icol),float(irow),1.0)
+          if(bid_badc(icell).gt.0) call hf1(bid_badc(icell),bigcal_prot_adc_good(ihit),1.0)
 *     question of whether to group by hits or cells. 
 *     seems most logical and efficient to go by hits only and not 
 *     have to keep passing around the full array of cells with lots of 

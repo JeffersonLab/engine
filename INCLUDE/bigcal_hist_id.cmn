@@ -25,7 +25,9 @@
       integer*4 bid_bcal_tmean
       integer*4 bid_bcal_trms
       integer*4 bid_bcal_nxny
+      integer*4 bid_badc(bigcal_all_maxhits)
       integer*4 bid_btdc(bigcal_max_tdc)
+      integer*4 bid_btadc(bigcal_atrig_maxhits)
       integer*4 bid_bttdc(bigcal_ttrig_maxgroups)
       integer*4 bid_bcal_empty
       integer*4 bid_bcal_small
@@ -56,7 +58,9 @@
      $     bid_bcal_tmean,
      $     bid_bcal_trms,
      $     bid_bcal_nxny,
+     $     bid_badc,
      $     bid_btdc,
+     $     bid_btadc,
      $     bid_bttdc,
      $     bid_bcal_empty,
      $     bid_bcal_small,

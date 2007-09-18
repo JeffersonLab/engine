@@ -52,6 +52,9 @@
           if(bid_bcal_col.gt.0) call hf1(bid_bcal_col,float(icol),1.0)
           if(bid_bcal_rowcol.gt.0) call hf2(bid_bcal_rowcol,float(icol),float(irow+
      $         bigcal_prot_ny),1.0)
+          if(bid_badc(icell+bigcal_prot_maxhits).gt.0) 
+     $         call hf1(bid_badc(icell+bigcal_prot_maxhits),
+     $         bigcal_rcs_adc_good(ihit),1.0)
 
 *     question of whether to group by hits or cells. 
 *     seems most logical and efficient to go by hits only and not 

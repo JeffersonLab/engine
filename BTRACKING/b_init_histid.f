@@ -11,7 +11,7 @@
 
       external thgetid
       integer*4 thgetid
-      integer i,irow,tens,ones
+      integer i,j,irow,tens,ones,itens,iones,jtens,jones,icell
       
       include 'bigcal_data_structures.cmn'
       include 'bigcal_gain_parms.cmn'
@@ -58,37 +58,79 @@ c     need to hardcode some:
       bid_bcal_theta = thgetid('bcal_thetaclst')
       bid_bcal_phi = thgetid('bcal_phiclst')
 
+      do i=1,32
+         itens = i/10
+         iones = mod(i,10)
+         do j=1,32
+            jtens = j/10
+            jones = mod(j,10)
+
+            icell = j + 32*(i-1)
+
+            histname='ADC'//char(itens+ichar('0'))//
+     $           char(iones+ichar('0'))//char(jtens+ichar('0'))//
+     $           char(jones+ichar('0'))
+            bid_badc(icell) = thgetid(histname)
+         enddo
+      enddo
+
+      do i=33,56
+         itens = i/10
+         iones = mod(i,10)
+         do j=1,30
+            jtens = j/10
+            jones = mod(j,10)
+            
+            icell = 1024 + j + 30*(i-33)
+
+            histname='ADC'//char(itens+ichar('0'))//
+     $           char(iones+ichar('0'))//char(jtens+ichar('0'))//
+     $           char(jones+ichar('0'))
+            bid_badc(icell) = thgetid(histname)
+         enddo
+      enddo
+
       do i=1,56
          tens = i/10
          ones = mod(i,10)
-         histname = 'btdc_'//char(tens + ichar('0'))//
+         histname = 'TDC'//char(tens + ichar('0'))//
      $        char(ones + ichar('0'))//'A'
          bid_btdc(1 + 4*(i-1) ) = thgetid(histname)
-         histname = 'btdc_'//char(tens + ichar('0'))//
+         histname = 'TDC'//char(tens + ichar('0'))//
      $        char(ones + ichar('0'))//'B'
          bid_btdc(2 + 4*(i-1) ) = thgetid(histname)
-         histname = 'btdc_'//char(tens + ichar('0'))//
+         histname = 'TDC'//char(tens + ichar('0'))//
      $        char(ones + ichar('0'))//'C'
          bid_btdc(3 + 4*(i-1) ) = thgetid(histname)
-         histname = 'btdc_'//char(tens + ichar('0'))//
+         histname = 'TDC'//char(tens + ichar('0'))//
      $        char(ones + ichar('0'))//'D'
          bid_btdc(4 + 4*(i-1) ) = thgetid(histname)
       enddo
       
-      do i=1,19
+      do i=1,21
          irow = 1 + 3*(i-1)
          tens = irow/10
          ones = mod(irow,10)
 
-         histname = 'bttdc_'//char(tens + ichar('0'))//
+         histname = 'TTDC'//char(tens + ichar('0'))//
      $        char(ones + ichar('0'))//'AB'
 c         write(*,*) 'histname=',histname
          bid_bttdc(1 + 2*(i-1)) = thgetid(histname)
          
-         histname = 'bttdc_'//char(tens + ichar('0'))//
+         histname = 'TTDC'//char(tens + ichar('0'))//
      $        char(ones + ichar('0'))//'CD'
 c         write(*,*) 'histname=',histname
          bid_bttdc(2 + 2*(i-1)) = thgetid(histname)
+
+         if(i.lt.20) then
+            histname = 'TADC'//char(tens+ichar('0'))//
+     $           char(ones+ichar('0'))//'AB'
+            bid_btadc(1 + 2*(i-1)) = thgetid(histname)
+            histname = 'TADC'//char(tens+ichar('0'))//
+     $           char(ones+ichar('0'))//'CD'
+            bid_btadc(2 + 2*(i-1)) = thgetid(histname)
+         endif
+
       enddo
 
       bid_bcal_empty = thgetid('bcal_empty')
