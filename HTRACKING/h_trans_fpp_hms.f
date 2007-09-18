@@ -32,11 +32,12 @@
       integer*4 Ccount, hitno, rawhitidx, tdiff
       integer*4 iSet, iChamber, iLayer, iPlane, iWire, iHit, iCluster, ROC
       real*4 zlocal,xlocal,ylocal,uCoord,uCoord_wire,drift_dist_local
-      integer*4 iWireHit,iSetScatter,i
+      integer*4 iWireHit,iSetScatter,i,j
       real*4 hit1time(H_FPP_MAX_WIRES), hit2time(H_FPP_MAX_WIRES)
       real*4 xsmear,ysmear
       real*8 grnd,zScatter,rnum,t1,t2,t3,t4,t5,t6,poisson,mu,mu2,x,ga
       real*8 xp_local,yp_local,xhms,yhms,deltaz,phi_local,theta_local
+      real*8 r_in(3),r_fin(3),M(3,3),magnitude,alpha,beta,xin,yin,zin
       
       ABORT= .FALSE.
       err= ' '
@@ -87,6 +88,46 @@ c
       phi_local=rnum*2.0*3.14159265
       xp_local=sin(theta_local)*cos(phi_local)/cos(theta_local)
       yp_local=sin(theta_local)*sin(phi_local)/cos(theta_local)
+
+      beta = datan(dble(hsyp_fp))
+      alpha = datan(dble(hsxp_fp)*dcos(beta))
+
+      M(1,1) = dcos(alpha)
+      M(1,2) = -1.d0*dsin(alpha)*dsin(beta)
+      M(1,3) = dsin(alpha)*dcos(beta)
+
+      M(2,1) = 0.d0
+      M(2,2) = dcos(beta)
+      M(2,3) = dsin(beta)
+
+      M(3,1) = -1.d0*dsin(alpha)
+      M(3,2) = -1.d0*dcos(alpha)*dsin(beta)
+      M(3,3) = dcos(alpha)*dcos(beta)
+
+c   Normalize new direction vector
+
+      xin = dble(xp_local)
+      yin = dble(yp_local)
+      zin = 1.d0
+      magnitude = dsqrt(xin*xin+yin*yin+zin*zin)
+      r_in(1)=xin/magnitude
+      r_in(2)=yin/magnitude
+      r_in(3)=zin/magnitude
+
+      do i=1,3
+        r_fin(i)=0.d0
+        do j=1,3
+          r_fin(i)=r_fin(i)+M(i,j)*r_in(j)
+        enddo
+      enddo
+
+c      write(*,*)r_fin(1),r_fin(2),r_fin(3)
+
+      xp_local = r_fin(1)/r_fin(3)
+      yp_local = r_fin(2)/r_fin(3)
+
+c      write(*,*)'xp,yp final: ',xp_local,yp_local
+      
       xhms=hsx_fp+hsxp_fp*zScatter
       yhms=hsy_fp+hsyp_fp*zScatter
                 
@@ -101,6 +142,7 @@ c      write(*,*)'x,y,z scatter: ',xhms,yhms,zScatter
 c
 c now, loop over both sets
 c
+c      write(*,*)'HMS: ',hsxp_fp,hsyp_fp
       do iSet=1, H_FPP_N_DCSETS
 
         HFPP_Nlayershit_set(iSet) = 0
@@ -148,7 +190,7 @@ c           write(*,*)'Xlocal,Ylocal,Zlocal: ',xlocal,ylocal,zlocal
 c
 c Choose smearing of drift distance ...
 c                
-c          xsmear=0.0
+c           xsmear=0.0
            xsmear=-0.02+.04*grnd()
            
            uCoord = HFPP_direction(iSet,iChamber,iLayer,1)*xlocal+

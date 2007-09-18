@@ -306,19 +306,21 @@ c==============================================================================
       real*8 M(3,3)		! rotation matrix: (row,column)
       real*8 r_i(3)		! unit vector along "new" track before rotation
       real*8 r_f(3)		! unit vector along "new" track after rotation
+      real*8 r_in(3)		! unit vector along "in" track before rotation
+      real*8 r_fin(3)		! unit vector along "in" track after rotation
       real*8 magnitude
       real*8 dtheta,dphi	! for convenience, double precision versions of OUT
-      real*8 x,y,z
+      real*8 x,y,z,xin,yin,zin
 
       integer i,j
 
 
 *     * figure out rotation matrix
 
-c      write(*,*)mx_ref,my_ref,mx_new,my_new
+c      write(*,*)'Theta calculation 1: ',mx_ref,mx_new,my_ref,my_new
 
-      alpha = datan(dble(mx_ref))     ! this ought to be safe as the negative angle works
       beta  = datan(dble(my_ref))
+      alpha = datan(dble(mx_ref)*dcos(beta))     ! this ought to be safe as the negative angle works
 
       M(1,1) =       dcos(alpha)
       M(1,2) = -1.d0*dsin(alpha)*dsin(beta)
@@ -332,6 +334,26 @@ c      write(*,*)mx_ref,my_ref,mx_new,my_new
       M(3,2) =       dcos(alpha)*dsin(beta)
       M(3,3) =       dcos(alpha)*dcos(beta)
 
+*     * normalize incoming vector
+
+      xin = dble(mx_ref)
+      yin = dble(my_ref)
+      zin = 1.d0
+      magnitude = dsqrt(xin*xin+yin*yin+zin*zin)
+      r_in(1)=xin/magnitude
+      r_in(2)=yin/magnitude
+      r_in(3)=zin/magnitude
+      
+      do i=1,3
+        r_fin(i) = 0.d0
+	do j=1,3
+	  r_fin(i) = r_fin(i) + M(i,j)*r_in(j)
+	enddo !j
+      enddo !i
+
+c      write(*,*)r_in(1),r_in(2),r_in(3)
+c      write(*,*)r_fin(1),r_fin(2),r_fin(3)
+      
 *     * normalize direction vector
 
       x = dble(mx_new)
@@ -342,7 +364,6 @@ c      write(*,*)mx_ref,my_ref,mx_new,my_new
       r_i(2) = y / magnitude
       r_i(3) = z / magnitude
 
-c      write(*,*)r_i(1),r_i(2),r_i(3)
 
 *     * rotate vector of interest
 
@@ -353,6 +374,7 @@ c      write(*,*)r_i(1),r_i(2),r_i(3)
 	enddo !j
       enddo !i
 
+c      write(*,*)r_i(1),r_i(2),r_i(3)
 c      write(*,*)r_f(1),r_f(2),r_f(3)
 
 *     * find polar angles
