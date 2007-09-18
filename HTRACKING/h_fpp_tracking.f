@@ -381,7 +381,7 @@ c           write(*,*)'xyz = ',x,y,z
            roughv = y * HFPP_direction(DCset,iChamber,iLayer,1) 
      >     	  - x * HFPP_direction(DCset,iChamber,iLayer,2)
            roughv =  roughv / HFPP_wirespeed	! convert distance to time value
-
+           
            do iRaw = 1,HFPP_nHitsinCluster(DCset,iChamber,iLayer,iCluster)
 
               iHit = HFPP_Clusters(DCset,iChamber,iLayer,iCluster,iRaw)
@@ -393,7 +393,8 @@ c              write(*,*)'Calling h_fpp_drift ... ',WirePropagation
               call h_fpp_drift(iHit,SimpleTrack,WirePropagation,
      >                         mydriftT,mydriftX,ABORT,err)
 
-	      if (mydriftX.ne.H_FPP_BAD_DRIFT) then
+c              write(*,*)'iRaw,mydriftX =',iRaw,iHit,mydriftX
+              if (mydriftX.ne.H_FPP_BAD_DRIFT) then
 	     	nPoints = nPoints + 1
 
 		if (nPoints.gt.H_FPP_MAX_FITPOINTS) then
@@ -438,6 +439,12 @@ c              write(*,*)'Calling h_fpp_drift ... ',WirePropagation
       DriftTrack(5) = newTrack(5)  ! chi2/df
       DriftTrack(6) = float(nPoints)
 
+c      if(newtrack(5).gt.0.00001) then
+c                write(*,*)'First iteration: ',newTrack(1),newTrack(3),newTrack(5)
+c                write(*,*)'HMS: ',hsxp_fp,hsyp_fp
+c                write(*,*)'min chi2 = ',HFPP_min_chi2
+c                write(*,*)'npoints,min = ',nPoints,HFPP_minsethits
+c      endif
 
       if (     (newTrack(5).le.HFPP_min_chi2)
      >    .and.(newTrack(5).ge.0.0)
@@ -453,15 +460,16 @@ c              write(*,*)'Calling h_fpp_drift ... ',WirePropagation
           track_good = .true.
 
       elseif (nPoints.gt.HFPP_minsethits) then
-          write(*,*)'did not find track on first interation!!!'
-          write(*,*)'HMS: ',hsxp_fp,hsyp_fp
-          write(*,*)newTrack(1),newTrack(3),newTrack(5)
-	  do i=1,nPoints
-            iChamber = All_Chambers(i)
-            iLayer   = All_Layers(i)  
-	    iWire    = All_Wires(i)   
-            write(*,*)iWire,Drifts(i),HFPP_drift_dist(DCset,iChamber,iLayer,iWire)
-          enddo 
+c          write(*,*)'did not find track on first interation!!!'
+c          write(*,*)'HMS: ',hsxp_fp,hsyp_fp
+c          write(*,*)newTrack(1),newTrack(3),newTrack(5)
+c	  do i=1,nPoints
+c           iChamber = All_Chambers(i)
+c            iLayer   = All_Layers(i)  
+c	    iWire    = All_Wires(i)   
+c            write(*,*)iWire,Drifts(i),HFPP_drift_dist(DCset,iChamber,iLayer,iWire)
+c          enddo 
+
 *         * apparently we were not able to find a good track
 *         * we now try dropping each cluster, one at a time, to see if a good track
 *         * can be found -- note that this corresponds to ignoring one layer at a time
@@ -510,14 +518,14 @@ c              write(*,*)'Calling h_fpp_drift ... ',WirePropagation
 	   enddo !LSkip
 	  enddo !CSkip
 
-          write(*,*)'After Iterating ...'
-          write(*,*)DriftTrack(1),DriftTrack(3),DriftTrack(5)
-	  do i=1,nPoints
-            iChamber = All_Chambers(i)
-            iLayer   = All_Layers(i)  
-	    iWire    = All_Wires(i)   
-            write(*,*)iWire,Drifts(i),HFPP_drift_dist(DCset,iChamber,iLayer,iWire)
-          enddo 
+c          write(*,*)'After Iterating ...'
+c          write(*,*)DriftTrack(1),DriftTrack(3),DriftTrack(5)
+c	  do i=1,nPoints
+c            iChamber = All_Chambers(i)
+c            iLayer   = All_Layers(i)  
+c	    iWire    = All_Wires(i)   
+c            write(*,*)iWire,Drifts(i),HFPP_drift_dist(DCset,iChamber,iLayer,iWire)
+c          enddo 
 
           if (     (DriftTrack(5).le.HFPP_min_chi2)
      >        .and.(DriftTrack(5).ge.0.0)
@@ -616,7 +624,7 @@ c              write(*,*)'Calling h_fpp_drift ... ',WirePropagation
 	  FPPtrack(3) = HFPP_track_dy(DCset,iTrack)
 	  FPPtrack(4) = HFPP_track_y(DCset,iTrack)
 
-	  call h_fpp_closest(HMStrack,FPPtrack,sclose,zclose)
+	  call h_fpp_closest(HMStrack,FPPtrack,HFPP_Zoff(DCset),sclose,zclose)
 
           HFPP_track_sclose(DCset,iTrack) = sclose
           HFPP_track_zclose(DCset,iTrack) = zclose

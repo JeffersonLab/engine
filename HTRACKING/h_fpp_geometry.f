@@ -198,7 +198,7 @@ c==============================================================================
 c==============================================================================
 
 
-      SUBROUTINE h_fpp_closest(Track1,Track2,sclose,zclose)
+      SUBROUTINE h_fpp_closest(Track1,Track2,ztrack2,sclose,zclose)
 *--------------------------------------------------------
 *    Hall C  HMS Focal Plane Polarimeter Code
 *
@@ -215,34 +215,35 @@ c==============================================================================
       INCLUDE 'hms_data_structures.cmn'
 
       real*4 Track1(4), Track2(4)  ! IN mx,bx,my,by of two tracks
+      real*4 ztrack2               ! central z-position of FPP set 
       real*4 sclose                ! OUT distance at closest approach
       real*4 zclose                ! OUT average z-coordinate at c.a.
 
-      real*4 mx1,my1,bx1,by1
-      real*4 mx2,my2,bx2,by2
-      real*4 a1,a2,b,c1,c2
-      real*4 x1,x2,y1,y2,z1,z2
-      real*4 denom
+      real*8 mx1,my1,bx1,by1
+      real*8 mx2,my2,bx2,by2
+      real*8 a1,a2,b,c1,c2
+      real*8 x1,x2,y1,y2,z1,z2
+      real*8 denom
 
 
-      mx1 = Track1(1)
-      bx1 = Track1(2)
-      my1 = Track1(3)
-      by1 = Track1(4)
+      mx1 = Track1(1)*1.0d0
+      bx1 = Track1(2)*1.0d0
+      my1 = Track1(3)*1.0d0
+      by1 = Track1(4)*1.0d0
  
-      mx2 = Track2(1)
-      bx2 = Track2(2)
-      my2 = Track2(3)
-      by2 = Track2(4)
+      mx2 = Track2(1)*1.0d0
+      bx2 = Track2(2)*1.0d0
+      my2 = Track2(3)*1.0d0
+      by2 = Track2(4)*1.0d0
 
       a1 = mx1*mx1 + my1*my1 + 1
       a2 = mx2*mx2 + my2*my2 + 1
       b  = mx1*mx2 + my1*my2 + 1
-      c1 = (bx1 - bx2)*mx1 + (by1 - by2)*my1
-      c2 = (bx1 - bx2)*mx2 + (by1 - by2)*my2
+      c1 = (bx1 - bx2)*mx1 + (by1 - by2)*my1 - ztrack2
+      c2 = (bx1 - bx2)*mx2 + (by1 - by2)*my2 - ztrack2
       
       denom = b*b - a1*a2
-      if (denom.eq.0.0) then
+      if (denom.eq.0.0d0) then
 	zclose = H_FPP_BAD_COORD
 	sclose = H_FPP_BAD_COORD
       else
@@ -255,9 +256,17 @@ c==============================================================================
 	x2 = z2 * mx2 + bx2
 	y2 = z2 * my2 + by2
 
-	zclose = 0.5*(z1 + z2)
-	sclose = sqrt( (x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2 )
+	zclose = 0.5d0*(z1 + z2 + ztrack2)
+	sclose = sqrt( (x1-x2)**2 + (y1-y2)**2 + (z1-z2-ztrack2)**2 )
       endif
+
+c      write(*,*)'Zclose calculation 1: ',mx1,mx2,my1,my2
+c      write(*,*)'Zclose calculation 2: ',bx1,bx2,by1,by2
+c      write(*,*)'Zclose calculation 2a:',b,denom
+c      write(*,*)'Zclose calculation 2b:',a1,a2,c1,c2
+c      write(*,*)'Zclose calculation 3: ',ztrack2,z1,z2
+c      write(*,*)'Zclose calculation 4: ',x1,x2,y1,y2
+c      write(*,*)'Zclose calculation 5: ',zclose,sclose
 
       RETURN
       END
@@ -306,6 +315,8 @@ c==============================================================================
 
 *     * figure out rotation matrix
 
+c      write(*,*)mx_ref,my_ref,mx_new,my_new
+
       alpha = datan(dble(mx_ref))     ! this ought to be safe as the negative angle works
       beta  = datan(dble(my_ref))
 
@@ -324,12 +335,14 @@ c==============================================================================
 *     * normalize direction vector
 
       x = dble(mx_new)
-      x = dble(my_new)
+      y = dble(my_new)
       z = 1.d0
       magnitude = dsqrt(x*x + y*y + z*z)
       r_i(1) = x / magnitude
       r_i(2) = y / magnitude
       r_i(3) = z / magnitude
+
+c      write(*,*)r_i(1),r_i(2),r_i(3)
 
 *     * rotate vector of interest
 
@@ -339,6 +352,8 @@ c==============================================================================
 	  r_f(i) = r_f(i) + M(i,j)*r_i(j)
 	enddo !j
       enddo !i
+
+c      write(*,*)r_f(1),r_f(2),r_f(3)
 
 *     * find polar angles
 
@@ -366,6 +381,8 @@ c==============================================================================
       
       theta = sngl(dtheta)
       phi   = sngl(dphi)
+
+c      write(*,*)'Theta, phi = ',theta*180.0/3.14159265,phi*180.0/3.14159265
 
 
       RETURN

@@ -16,7 +16,6 @@
 *%%   include 'hms_data_structures.cmn'
 *%%   include 'gen_detectorids.par'
 *%%   include 'gen_decode_common.cmn'
-
 *
 *     CTPTYPE=parm
 *
@@ -125,7 +124,7 @@
 *
 *     CTPTYPE=parm
 *
-      real*4 HFPP_planeresolution	! expected tracking resolution, for chi2
+      real*4 HFPP_planeresolution ! expected tracking resolution, for chi2
 
       common/HMS_FPP_remap/
      &  HFPP_planeresolution(H_FPP_N_PLANES)
