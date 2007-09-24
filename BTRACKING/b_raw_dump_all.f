@@ -5,7 +5,7 @@
 
       character*50 here
       parameter (here= 'b_raw_dump_all')
-*
+*      
       logical ABORT
       character*(*) err
 

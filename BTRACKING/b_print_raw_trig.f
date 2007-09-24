@@ -13,6 +13,7 @@
       include 'bigcal_gain_parms.cmn'
       include 'bigcal_tof_parms.cmn'
       include 'bigcal_bypass_switches.cmn'
+      include 'gen_event_info.cmn'
 
       character*20 c1
       parameter(c1='BIGCAL_TTRIG_NHIT = ')
@@ -33,6 +34,7 @@
       err = ' '
       
       if(BIGCAL_TTRIG_NHIT.gt.0) then
+         write(bluno,99) 'gen_event_id_number=',gen_event_id_number
          write(bluno,100) c1,BIGCAL_TTRIG_NHIT
          write(bluno,101) c2,c3,c5
          write(bluno,102) 
@@ -42,14 +44,15 @@
       endif
 
       if(BIGCAL_ATRIG_NHIT.gt.0) then
-        write(bluno,100) c6,BIGCAL_ATRIG_NHIT
-        write(bluno,101) c2,c3,c4
-        write(bluno,102) 
-     $       (BIGCAL_ATRIG_IHALF(j),BIGCAL_ATRIG_IGROUP(j),
-     $       BIGCAL_ATRIG_ADC_RAW(j),j=1,BIGCAL_ATRIG_NHIT)
+         write(bluno,99) 'gen_event_id_number=',gen_event_id_number
+         write(bluno,100) c6,BIGCAL_ATRIG_NHIT
+         write(bluno,101) c2,c3,c4
+         write(bluno,102) 
+     $        (BIGCAL_ATRIG_IHALF(j),BIGCAL_ATRIG_IGROUP(j),
+     $        BIGCAL_ATRIG_ADC_RAW(j),j=1,BIGCAL_ATRIG_NHIT)
       endif
 
-
+ 99   format(A20,I7)
  100  format(A20,I5)
  101  format(A10,A11,A12)
  102  format(I10,I11,I12)

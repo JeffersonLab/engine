@@ -12,6 +12,7 @@
       include 'bigcal_data_structures.cmn'
       include 'bigcal_gain_parms.cmn'
       include 'bigcal_bypass_switches.cmn'
+      include 'gen_event_info.cmn'
 
       character*19 c1
       parameter(c1='BIGCAL_PROT_NHIT = ')
@@ -30,6 +31,7 @@
       ABORT=.false.
       err = ' '
       if(BIGCAL_PROT_NHIT.gt.0) then
+         write(bluno,99) 'gen_event_id_number=',gen_event_id_number
          write(bluno,100) c1,BIGCAL_PROT_NHIT
          write(bluno,101) c2,c3,c4
          write(bluno,102) 
@@ -37,13 +39,14 @@
      $        BIGCAL_PROT_ADC_RAW(j),j=1,BIGCAL_PROT_NHIT)
       endif
       if(BIGCAL_RCS_NHIT.gt.0) then
+         write(bluno,99) 'gen_event_id_number=',gen_Event_id_number
          write(bluno,103) c5,BIGCAL_RCS_NHIT
          write(bluno,101) c2,c3,c4
          write(bluno,102) 
      $        (BIGCAL_RCS_IY(j),BIGCAL_RCS_IX(j),
      $        BIGCAL_RCS_ADC_RAW(j),j=1,BIGCAL_RCS_NHIT)
       endif
-
+ 99   format(A20,I7)
  100  FORMAT(A19,I5)
  101  FORMAT(2A7,A10)
  102  FORMAT(2I7,I10)
