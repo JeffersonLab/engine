@@ -23,6 +23,9 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
+* Revision 1.19.6.6  2007/09/24 20:37:50  puckett
+* added BigCal debugging output file
+*
 * Revision 1.19.6.5  2007/09/07 16:05:29  puckett
 * removed initialization of filenames for bigcal calibration reports, no longer used, this info will go in regular bigcal report
 *
@@ -194,6 +197,7 @@ c     is reached (bigcal_min_calib_events)
       
       b_calib_matrix_filename = ' '
       b_calib_parm_filename = ' '
+      b_debug_output_filename = ' '
 c      b_calib_report_filename = ' ' ! not used
       
 *
