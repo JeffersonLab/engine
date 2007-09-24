@@ -1,5 +1,8 @@
 **************** begin: gen_pawspace.cmn **********************
 *     $Log$
+*     Revision 1.2.24.1  2007/09/24 20:40:23  puckett
+*     Increased PAW memory to accomodate BigCal histograms for each channel
+*
 *     Revision 1.2  1994/04/12 20:46:15  cdaq
 *     Increase size of common to 1000000
 *
@@ -10,7 +13,7 @@
 *-sizes of CERNLIB working space
 *
       INTEGER G_sizeHBOOK,G_sizeHIGZ,G_sizeKUIP,G_sizePAW
-      PARAMETER (G_sizeHBOOK= 1000000)
+      PARAMETER (G_sizeHBOOK= 3000000)
       PARAMETER (G_sizeHIGZ=   50000)
       PARAMETER (G_sizeKUIP=   75000)
       PARAMETER (G_sizePAW=G_sizeHIGZ+G_sizeKUIP+
