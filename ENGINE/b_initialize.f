@@ -17,6 +17,7 @@
       integer*4 iochan
       integer*4 i,j
       
+      include 'gen_run_info.cmn'
       include 'bigcal_data_structures.cmn'
       include 'bigcal_filenames.cmn'
       include 'bigcal_bypass_switches.cmn'
@@ -117,7 +118,21 @@ c     shut down the file:
          endif
          close(iochan)
       endif
-      
+c     initialize debugging output file:
+      if(bdebug_print_adc.ne.0 .or. bdebug_print_tdc.ne.0.or.bdebug_print_trig
+     $     .ne.0) then
+         if(b_debug_output_filename.ne.' ') then
+            filename = b_debug_output_filename
+         else
+            filename = 'scalers/rawbigcal_%d.txt'
+         endif
+
+         call g_sub_run_number(filename,gen_run_number)
+
+         open(unit=bluno,file=filename,form='formatted',status='unknown')
+
+      endif
+
       if(abort .or. err.ne.' ') call g_add_path(here,err)
 
       return 
