@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.5  2007/09/24 20:37:20  puckett
+* *** empty log message ***
+*
 * Revision 1.23.20.4  2007/09/11 19:14:17  frw
 * fixed FPP related arrays and limits
 *
@@ -69,7 +72,7 @@
 *       on new 1881M/1877 modules while maintaining backward compatibility.
 *
 * Revision 1.9  1994/10/20  12:34:55  cdaq
-* (SAW) Only print out "Max exceeded, did=" meesage once
+* (SAW) Only print out "Max exceeded did=" meesage once
 *
 * Revision 1.8  1994/06/27  02:14:18  cdaq
 * (SAW) Ignore all words that start with DC
