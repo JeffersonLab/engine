@@ -120,7 +120,7 @@ c     shut down the file:
       endif
 c     initialize debugging output file:
       if(bdebug_print_adc.ne.0 .or. bdebug_print_tdc.ne.0.or.bdebug_print_trig
-     $     .ne.0) then
+     $     .ne.0.or.bdebug_print_bad.ne.0) then
          if(b_debug_output_filename.ne.' ') then
             filename = b_debug_output_filename
          else

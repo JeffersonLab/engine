@@ -42,6 +42,7 @@ c      include 'gen_constants.par'
       
       bigcal_atrig_nhit = 0
       bigcal_atrig_ngood = 0
+      bigcal_atrig_nbad = 0
       do i=1,bigcal_atrig_maxhits
         bigcal_atrig_igroup(i) = 0
         bigcal_atrig_ihalf(i) = 0
@@ -51,6 +52,12 @@ c      include 'gen_constants.par'
         bigcal_atrig_adc_dec(i) = 0.
         bigcal_atrig_adc_good(i) = 0.
         bigcal_atrig_esum(i) = 0.
+
+        bigcal_atrig_igroup_bad(i) = 0
+        bigcal_atrig_ihalf_bad(i) = 0
+        bigcal_atrig_adc_bad(i) = 0
+
+        bigcal_atrig_nhit_ch(i) = 0
       enddo
 
       bigcal_ttrig_nhit = 0
@@ -73,6 +80,7 @@ c      include 'gen_constants.par'
 
       bigcal_prot_nhit = 0
       bigcal_prot_ngood = 0
+      bigcal_prot_nbad = 0
       do i=1,bigcal_prot_maxhits
         bigcal_prot_iy(i) = 0
         bigcal_prot_ix(i) = 0
@@ -84,6 +92,12 @@ c      include 'gen_constants.par'
         bigcal_prot_ecell(i) = 0.
         bigcal_prot_xgood(i) = 0.
         bigcal_prot_ygood(i) = 0.
+
+        bigcal_prot_iybad(i) = 0
+        bigcal_prot_ixbad(i) = 0
+        bigcal_prot_adc_bad(i) = 0
+
+        bigcal_prot_nhit_ch(i) = 0
 
         bigcal_all_iygood(i) = 0
         bigcal_all_ixgood(i) = 0
@@ -100,6 +114,7 @@ c      include 'gen_constants.par'
       
       bigcal_rcs_nhit = 0
       bigcal_rcs_ngood = 0
+      bigcal_rcs_nbad = 0
       do i=1,bigcal_rcs_maxhits
         bigcal_rcs_iy(i) = 0
         bigcal_rcs_ix(i) = 0
@@ -111,6 +126,12 @@ c      include 'gen_constants.par'
         bigcal_rcs_ecell(i) = 0.
         bigcal_rcs_xgood(i) = 0.
         bigcal_rcs_ygood(i) = 0.
+
+        bigcal_rcs_iybad(i) = 0
+        bigcal_rcs_ixbad(i) = 0
+        bigcal_rcs_adc_bad(i) = 0
+
+        bigcal_rcs_nhit_ch(i) = 0
 
         bigcal_all_iygood(i+bigcal_prot_maxhits) = 0
         bigcal_all_ixgood(i+bigcal_prot_maxhits) = 0

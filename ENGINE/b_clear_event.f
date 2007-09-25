@@ -35,6 +35,10 @@ c      include 'bigcal_statistics.cmn'
 c$$$      bigcal_all_nclstr = 0
 c$$$      bigcal_phys_ntrack = 0
 
+      bigcal_prot_nbad = 0
+      bigcal_rcs_nbad = 0
+      bigcal_atrig_nbad = 0
+
       bigcal_max_adc = 0.
       bigcal_iymax_adc = 0
       bigcal_ixmax_adc = 0
@@ -47,6 +51,8 @@ c$$$      bigcal_phys_ntrack = 0
 c         BIGCAL_PROT_GOOD_HIT(i) = .false.
          bigcal_all_adc_det(i) = 0.
          bigcal_all_good_det(i) = 0.
+
+         bigcal_prot_nhit_ch(i) = 0
       enddo
 
       do i=1,BIGCAL_RCS_MAXHITS
@@ -55,6 +61,8 @@ c         BIGCAL_PROT_GOOD_HIT(i) = .false.
 c         BIGCAL_RCS_GOOD_HIT(i) = .false.
          bigcal_all_adc_det(i+bigcal_prot_maxhits)=0.
          bigcal_all_good_det(i+bigcal_prot_maxhits) = 0.
+         
+         bigcal_rcs_nhit_ch(i) = 0
       enddo
 
       do i=1,BIGCAL_MAX_TDC
@@ -71,6 +79,8 @@ c         BIGCAL_RCS_GOOD_HIT(i) = .false.
         bigcal_atrig_raw_det(i) = 0
         bigcal_atrig_good_det(i) = 0.
         bigcal_atrig_sum64(i) = 0.
+
+        bigcal_atrig_nhit_ch(i) = 0
       enddo
 
       do i=1,bigcal_ttrig_maxgroups

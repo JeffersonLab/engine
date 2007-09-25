@@ -70,6 +70,10 @@
             return
          endif
       endif
+
+      if(bdebug_print_bad.ne.0) then
+         call b_print_raw_bad(abort,err)
+      endif
   
 *     special check for monte carlo event analysis: check trigger sums:
       if(gen_bigcal_mc.ne.0) then

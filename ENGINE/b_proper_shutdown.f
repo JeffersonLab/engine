@@ -76,7 +76,7 @@ c     calculate final "efficiencies" and fill histograms
       endif
 
       if(bdebug_print_adc.ne.0 .or. bdebug_print_tdc.ne.0.or.bdebug_print_trig
-     $     .ne.0) then
+     $     .ne.0.or.bdebug_print_bad.ne.0) then
          close(bluno)
       endif
 

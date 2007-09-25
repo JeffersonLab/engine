@@ -15,8 +15,10 @@
 
       integer*4 ihit,igroup64,ihalf64,icell64,ngood,adc_raw,tdc_raw
       integer*4 thitnum
+      integer*4 nbad
       
       ngood = 0
+      nbad = 0
       
 *     do atrig first:
       do icell64=1,bigcal_atrig_maxhits
@@ -30,14 +32,32 @@
           ihalf64 = bigcal_atrig_ihalf(ihit)
           icell64 = ihalf64 + 2*(igroup64 - 1)
           adc_raw = bigcal_atrig_adc_raw(ihit)
-          bigcal_atrig_raw_det(icell64) = adc_raw
+c          bigcal_atrig_raw_det(icell64) = adc_raw
+
+          bigcal_atrig_nhit_ch(icell64) = bigcal_atrig_nhit_ch(icell64) + 1
+
+          if(bigcal_atrig_nhit_ch(icell64).eq.1) then
+             bigcal_atrig_raw_det(icell64) = adc_raw
+          endif
+          if(bigcal_atrig_nhit_ch(icell64).gt.1) then
+             nbad = nbad + 1
+             if(bigcal_atrig_nhit_ch(icell64).eq.2) then ! first bad hit
+                bigcal_atrig_igroup_bad(nbad) = igroup64
+                bigcal_atrig_ihalf_bad(nbad) = ihalf64
+                bigcal_atrig_adc_bad(nbad) = bigcal_atrig_raw_det(icell64)
+                nbad = nbad + 1
+             endif
+             bigcal_atrig_igroup_bad(nbad) = igroup64
+             bigcal_atrig_ihalf_bad(nbad) = ihalf64
+             bigcal_atrig_adc_bad(nbad) = adc_raw
+          endif
 
           if(adc_raw.ge.0) then
             bigcal_atrig_adc_dec(icell64) = float(adc_raw) - 
      $           bigcal_trig_ped_mean(icell64)
           endif
           
-          if(bigcal_atrig_adc_dec(icell64) .gt. 
+          if(bigcal_atrig_adc_dec(icell64) .ge. 
      $         bigcal_trig_adc_threshold(icell64)) then
             ngood = ngood + 1
             bigcal_atrig_adc_good(ngood) = bigcal_atrig_adc_dec(icell64)
@@ -48,6 +68,7 @@
       endif
       
       bigcal_atrig_ngood = ngood
+      bigcal_atrig_nbad = nbad
 
       ngood = 0 ! now do tdcs:
 

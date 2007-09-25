@@ -12,7 +12,7 @@ c     loop over all hits, subtract peds, apply thresholds, and
 c     fill decoded data arrays
 
       integer*4 ihit,icell
-      integer*4 ngood
+      integer*4 ngood,nbad
       integer*4 irow,icol
       integer*4 adc_val 
 *     check number of hits:
@@ -31,6 +31,7 @@ c     fill decoded data arrays
       enddo
 
       ngood = 0
+      nbad = 0
 
 *     loop over raw hits: 
       if(bigcal_prot_nhit.gt.0) then
@@ -39,14 +40,34 @@ c     fill decoded data arrays
           icol = BIGCAL_PROT_IX(ihit)
           icell = icol + BIGCAL_PROT_NX*(irow - 1)
           adc_val = BIGCAL_PROT_ADC_RAW(ihit)
-          BIGCAL_PROT_RAW_DET(icell) = adc_val
+
+          bigcal_prot_nhit_ch(icell) = bigcal_prot_nhit_ch(icell) + 1
+
+          if(bigcal_prot_nhit_ch(icell).eq.1) then
+             BIGCAL_PROT_RAW_DET(icell) = adc_val
+          endif
+          if(bigcal_prot_nhit_ch(icell).gt.1) then ! fill bad hits array
+             nbad = nbad + 1
+             if(bigcal_prot_nhit_ch(icell).eq.2) then ! first bad hit
+                bigcal_prot_iybad(nbad) = irow
+                bigcal_prot_ixbad(nbad) = icol
+c     bigcal_prot_raw_det(icell) should still contain the adc value of the first hit
+c     in this channel
+                bigcal_prot_adc_bad(nbad) = bigcal_prot_raw_det(icell)
+                nbad = nbad + 1
+             endif
+             bigcal_prot_iybad(nbad) = irow
+             bigcal_prot_ixbad(nbad) = icol
+             bigcal_prot_adc_bad(nbad) = adc_val
+          endif
+
 c          BIGCAL_ALL_RAW_DET(icell) = adc_val
           if(adc_val.ge.0) then 
             BIGCAL_PROT_ADC_DECODED(icell) = float(adc_val) - 
      $           BIGCAL_PROT_PED_MEAN(icell)
           endif
 c     "sparsify" the data
-          if(BIGCAL_PROT_ADC_DECODED(icell).gt.
+          if(BIGCAL_PROT_ADC_DECODED(icell).ge.
      $         BIGCAL_PROT_ADC_THRESHOLD(icell)) then
             ngood = ngood + 1
             BIGCAL_PROT_ADC_GOOD(ngood) = BIGCAL_PROT_ADC_DECODED(icell)
@@ -57,6 +78,6 @@ c     "sparsify" the data
       endif
 
       BIGCAL_PROT_NGOOD = ngood
-
+      bigcal_prot_nbad = nbad
       return
       end
