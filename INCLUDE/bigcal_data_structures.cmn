@@ -201,7 +201,7 @@ c$$$      parameter(BIGCAL_CLSTR_NCELL_MIN=2)
 
 * The hit arrays (ADCs): 
 *Protvino:
-      integer*4 BIGCAL_PROT_NHIT 
+      integer*4 BIGCAL_PROT_NHIT
       integer*4 BIGCAL_PROT_IY(BIGCAL_PROT_MAXHITS) 
       integer*4 BIGCAL_PROT_IX(BIGCAL_PROT_MAXHITS) 
       integer*4 BIGCAL_PROT_ADC_RAW(BIGCAL_PROT_MAXHITS) 
@@ -221,6 +221,44 @@ c$$$      parameter(BIGCAL_CLSTR_NCELL_MIN=2)
      $     BIGCAL_RCS_IX,
      $     BIGCAL_RCS_IY,
      $     BIGCAL_RCS_ADC_RAW
+
+* The bad hit arrays (regular and trigger ADCs):
+      integer*4 BIGCAL_PROT_NHIT_CH(BIGCAL_PROT_MAXHITS)
+      integer*4 BIGCAL_RCS_NHIT_CH(BIGCAL_RCS_MAXHITS)
+      integer*4 BIGCAL_ATRIG_NHIT_CH(BIGCAL_ATRIG_MAXHITS)
+
+      integer*4 BIGCAL_PROT_NBAD
+      integer*4 BIGCAL_PROT_IYBAD(BIGCAL_PROT_MAXHITS)
+      integer*4 BIGCAL_PROT_IXBAD(BIGCAL_PROT_MAXHITS)
+      integer*4 BIGCAL_PROT_ADC_BAD(BIGCAL_PROT_MAXHITS)
+      
+      integer*4 BIGCAL_RCS_NBAD
+      integer*4 BIGCAL_RCS_IYBAD(BIGCAL_RCS_MAXHITS)
+      integer*4 BIGCAL_RCS_IXBAD(BIGCAL_RCS_MAXHITS)
+      integer*4 BIGCAL_RCS_ADC_BAD(BIGCAL_RCS_MAXHITS)
+      
+      integer*4 BIGCAL_ATRIG_NBAD
+      integer*4 BIGCAL_ATRIG_IGROUP_BAD(BIGCAL_ATRIG_MAXHITS)
+      integer*4 BIGCAL_ATRIG_IHALF_BAD(BIGCAL_ATRIG_MAXHITS)
+      integer*4 BIGCAL_ATRIG_ADC_BAD(BIGCAL_ATRIG_MAXHITS)
+
+      common/BIGCAL_BAD_ADC/
+     $     BIGCAL_PROT_NHIT_CH,
+     $     BIGCAL_RCS_NHIT_CH,
+     $     BIGCAL_ATRIG_NHIT_CH,
+     $     BIGCAL_PROT_NBAD,
+     $     BIGCAL_RCS_NBAD,
+     $     BIGCAL_ATRIG_NBAD,
+     $     BIGCAL_PROT_IYBAD,
+     $     BIGCAL_PROT_IXBAD,
+     $     BIGCAL_PROT_ADC_BAD,
+     $     BIGCAL_RCS_IYBAD,
+     $     BIGCAL_RCS_IXBAD,
+     $     BIGCAL_RCS_ADC_BAD,
+     $     BIGCAL_ATRIG_IGROUP_BAD,
+     $     BIGCAL_ATRIG_IHALF_BAD,
+     $     BIGCAL_ATRIG_ADC_BAD
+      
 
 *decoded quantities for calorimeter ADCs: 
 
