@@ -215,7 +215,7 @@ c==============================================================================
       INCLUDE 'hms_data_structures.cmn'
 
       real*4 Track1(4), Track2(4)  ! IN mx,bx,my,by of two tracks
-      real*4 ztrack2               ! central z-position of FPP set 
+      real*4 ztrack2               ! central z-position of FPP set
       real*4 sclose                ! OUT distance at closest approach
       real*4 zclose                ! OUT average z-coordinate at c.a.
 
@@ -224,7 +224,6 @@ c==============================================================================
       real*8 a1,a2,b,c1,c2
       real*8 x1,x2,y1,y2,z1,z2
       real*8 denom
-
 
       mx1 = Track1(1)*1.0d0
       bx1 = Track1(2)*1.0d0
@@ -271,6 +270,105 @@ c      write(*,*)'Zclose calculation 5: ',zclose,sclose
       RETURN
       END
 
+c==============================================================================
+c==============================================================================
+c==============================================================================
+c==============================================================================
+
+
+      SUBROUTINE h_fpp_conetest(Track1,DCset,zclose,theta,icone)
+*--------------------------------------------------------
+*    Hall C  HMS Focal Plane Polarimeter Code
+*
+*  Purpose: Calculate FPP conetest variable - assumes elliptical projection
+*           onto the last layer of the 2nd chamber in a set.
+*
+*  Created by Edward J. Brash,  September 2007
+*
+*--------------------------------------------------------
+
+      IMPLICIT NONE
+
+      INCLUDE 'hms_data_structures.cmn'
+      INCLUDE 'hms_geometry.cmn'
+
+      real*4 Track1(4)  ! IN mx,bx,my,by of front track
+      integer*4 DCset 		   ! which chamber set we are in
+      real*4 zclose 	           ! previously calculated z of closest approach
+      real*4 theta                 ! polar scattering angle
+      integer*4 icone              ! Cone-test variable (1=pass, 0=fail)
+
+      real*8 mx1,my1,bx1,by1
+      real*4 ztrack2               ! central z-position of FPP set
+      real*4 zback_off             ! offset from cntrl. pos. of last layer
+      real*8 zback,xfront,yfront,ttheta
+      real*8 r1x,r1y,r2x,r2y,xmin,xmax,ymin,ymax
+      real*8 xpt1,xpt2,xpt3,xpt4,ypt1,ypt2,ypt3,ypt4,uCoord
+      integer*4 iSet,iChamber,iLayer,iWireHit,iPlane
+
+      mx1 = Track1(1)*1.0d0
+      bx1 = Track1(2)*1.0d0
+      my1 = Track1(3)*1.0d0
+      by1 = Track1(4)*1.0d0
+ 
+      xmin=HFPP_Xoff(DCset)-HFPP_Xsize(DCset)/2.0 
+      xmax=HFPP_Xoff(DCset)+HFPP_Xsize(DCset)/2.0 
+      ymin=HFPP_Yoff(DCset)-HFPP_Ysize(DCset)/2.0 
+      ymax=HFPP_Yoff(DCset)+HFPP_Ysize(DCset)/2.0 
+
+      icone=1
+
+      iSet=DCset
+	do iChamber=1, H_FPP_N_DCINSET
+       	   do iLayer=1, H_FPP_N_DCLAYERS
+	      
+              iPlane = H_FPP_N_DCLAYERS * H_FPP_N_DCINSET * (iSet-1)
+     >            + H_FPP_N_DCLAYERS * (iChamber-1)
+     >            + iLayer
+
+	      zback_off = HFPP_layerZ(iSet,iChamber,iLayer)
+	      ztrack2 = HFPP_Zoff(iSet)
+	      zback = ztrack2 + zback_off
+
+	      xfront = bx1 + mx1*zback
+      	      yfront = by1 + my1*zback
+
+      	      ttheta=tan(theta)
+
+              r1x = (zback-zclose)*(mx1 + (ttheta-mx1)/(1.0+ttheta*mx1))
+              r2x = (zback-zclose)*((ttheta+mx1)/(1.0-ttheta*mx1) - mx1)
+              r1y = (zback-zclose)*(my1 +
+     &           (ttheta-my1)/(1.0+ttheta*my1))
+              r2y = (zback-zclose)*((ttheta+my1)/(1.0-ttheta*my1)
+     &           - my1)
+
+              xpt1=xfront-abs(r1x)
+              ypt1=yfront
+              xpt2=xfront+abs(r2x)
+              ypt2=yfront
+              xpt3=xfront
+              ypt3=yfront-abs(r1y)
+              xpt4=xfront
+              ypt4=yfront+abs(r2y)
+
+             if(xpt1.lt.xmin)icone=0
+             if(xpt2.gt.xmax)icone=0
+             if(ypt3.lt.ymin)icone=0
+             if(ypt4.gt.ymax)icone=0
+              
+c              if(icone.eq.0) then
+c                write(*,*)'chamber limits ',xmin,xmax,ymin,ymax
+c                write(*,*)'(',xpt1,',',ypt1,')'
+c                write(*,*)'(',xpt2,',',ypt2,')'
+c                write(*,*)'(',xpt3,',',ypt3,')'
+c                write(*,*)'(',xpt4,',',ypt4,')'
+c              endif
+              
+	  enddo ! iLayer
+	enddo ! iChamber
+      
+      RETURN
+      END
 
 c==============================================================================
 c==============================================================================

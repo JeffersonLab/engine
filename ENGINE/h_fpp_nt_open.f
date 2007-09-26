@@ -156,6 +156,7 @@ c      call HLIMIT(nh)
      1// ',polar(Ntrack)[0,2]:U*4'
      1// ',trackNo(Ntrack)[0,9]:U*4'
      1// ',trk_hits(Ntrack)[0,6]:U*4'
+     1// ',trk_conet(Ntrack):I*4'
      1// ',trk_s_mx(Ntrack):R'
      1// ',trk_s_bx(Ntrack):R'
      1// ',trk_s_my(Ntrack):R'

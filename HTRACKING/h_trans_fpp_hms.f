@@ -206,7 +206,7 @@ c           write(*,*)'U-Coords = ',uCoord,uCoord_wire
 c           write(*,*)'Drift distance =',drift_dist_local
            if(iWireHit.le.0.or.iWireHit.gt.HFPP_Nwires(iPlane)) then
                 HFPP_raw_tot_hits=HFPP_raw_tot_hits-1
-                CYCLE
+                goto 1234
            endif   
            HFPP_drift_dist(iSet,iChamber,iLayer,iWireHit)=drift_dist_local
 c           write(*,*)'Slopes,dist,Wire ='
@@ -219,7 +219,9 @@ c           write(*,*)'Wire Number = ',iWireHit
            HFPP_N_planehits(iPlane)=1
            HFPP_Nlayershit_set(iSet) = HFPP_Nlayershit_set(iSet)+1
 	   HFPP_hit1idx(iPlane,iWireHit) = HFPP_raw_tot_hits
- 
+c           write(*,*)'Raw hits: ',iSet,iChamber,iLayer,iPlane,iWireHit,HFPP_raw_tot_hits
+           
+1234       continue 
          enddo ! iLayer
         enddo ! iChamber
       enddo ! iSet
@@ -231,7 +233,7 @@ c           write(*,*)'Wire Number = ',iWireHit
 *     * now turn raw hits per plane into CLUSTERS per (set,chamber,layer)
 *     * if clustering is not desired (HFPP_use_clusters), each cluster has 1 hit only
       do iSet=1, H_FPP_N_DCSETS
-       if (HFPP_Nlayershit_set(iSet).ge.HFPP_minsethits) then ! enough hits for tracking
+       if (HFPP_Nlayershit_set(iSet).ge.HFPP_minsethits-5) then ! enough hits for tracking
 
         do iChamber=1, H_FPP_N_DCINSET
          do iLayer=1, H_FPP_N_DCLAYERS
@@ -248,6 +250,7 @@ c           write(*,*)'Wire Number = ',iWireHit
 	     if (HFPP_hit1idx(iPlane,iWire).eq.0) then	! terminate any active cluster
 	        active_cluster = .false.
 	     else
+c                write(*,*)'Active cluster: ',iPlane,iWire,HFPP_hit1idx(iPlane,iWire)
 	        if (active_cluster) then	! add to active cluster
                   Ccount = HFPP_nHitsinCluster(iSet,iChamber,iLayer,iCluster) + 1
 	        else	!start new cluster
@@ -269,6 +272,8 @@ c           write(*,*)'Wire Number = ',iWireHit
            HFPP_nClusters(iSet,iChamber,iLayer) = iCluster
            HFPP_NplaneClusters(iPlane) = iCluster   !for CTP usage -- max 2d array
 
+c           write(*,*)"clustering:"
+c           write(*,*)iSet,iChamber,iLayer,iPlane,HFPP_nClusters(iSet,iChamber,iLayer)
          enddo !iLayer
         enddo !iChamber
 

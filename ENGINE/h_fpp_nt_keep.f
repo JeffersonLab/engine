@@ -92,6 +92,7 @@ c      WRITE(*,*)HFPP_RAW_TOT_HITS
 	    iTrk  = HFPP_ClusterinTrack(iSet,iCham,iLay,cluster)
             do iHit=1,HFPP_nHitsinCluster(iSet,iCham,iLay,cluster)
               n = min(n+1,MAX_cwn_goodhits)
+c              write(*,*)iSet,iCham,iLay,cluster,iHit,n
               iRaw = HFPP_Clusters(iSet,iCham,iLay,cluster,iHit)
 c              write(*,*)iraw
 c                write(*,*)iSet,HFPP_raw_plane(iRaw),HFPP_raw_wire(iRaw),
@@ -124,6 +125,7 @@ c     >                HFPP_track_residual(iSet,iCham,iLay,iTrk)
       k=0
       do i=1,H_FPP_N_PLANES
         k = k + HFPP_N_planehits(i)
+c        write(*,*)HFPP_N_planehits(i),k
       enddo
       if (k.ne.n) print *,' ERROR in ',here,': hit count mismatch set ',iSet,': ',k,' != ',n
 
@@ -168,6 +170,7 @@ c     >          HFPP_track_phi(iSet,iTrk)
 
          cwnFPP_zclose(n)      = HFPP_track_zclose(iSet,iTrk)
          cwnFPP_sclose(n)      = HFPP_track_sclose(iSet,iTrk)
+         cwnFPP_conetest(n)      = HFPP_track_conetest(iSet,iTrk)
 
          cwnFPP_theta(n)       = HFPP_track_theta(iSet,iTrk)
          cwnFPP_phi(n)         = HFPP_track_phi(iSet,iTrk)

@@ -39,6 +39,7 @@ c common block of variables for column-wise Ntuple for HMS FPP
       integer*4 cwnFPP_trk_pol	      ! upstream (1) or downstream (2) polarimeter
       integer*4 cwnFPP_trk_num	      ! seq # of track in pol
       integer*4 cwnFPP_trk_hits	      ! # of layers contributing
+      integer*4 cwnFPP_conetest	      ! fpp conetest variable
       real*4    cwnFPP_simple_mx      ! simple track dx/dz in chamber coords
       real*4    cwnFPP_simple_bx      ! 	     x-coord in chamber system
       real*4    cwnFPP_simple_my      ! 	     dy/dz in chamber coords
@@ -84,6 +85,7 @@ c common block of variables for column-wise Ntuple for HMS FPP
      & cwnFPP_trk_pol(MAX_cwn_tracks),
      & cwnFPP_trk_num(MAX_cwn_tracks),
      & cwnFPP_trk_hits(MAX_cwn_tracks),
+     & cwnFPP_conetest(MAX_cwn_tracks),
      & cwnFPP_simple_mx(MAX_cwn_tracks),
      & cwnFPP_simple_bx(MAX_cwn_tracks),
      & cwnFPP_simple_my(MAX_cwn_tracks),

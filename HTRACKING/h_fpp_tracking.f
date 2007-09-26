@@ -322,7 +322,7 @@ c==============================================================================
       integer*4 DCset		! IN set of FPP DCs we are working on
       integer*4 HitClusters(H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
 				! IN hit clusters to fit to
-      integer*4 i
+      integer*4 i,icone
 
       real*4 SimpleTrack(6)	! IN track based on wire positions only
       logical*4 track_good	! OUT flag
@@ -625,10 +625,15 @@ c          enddo
 	  FPPtrack(4) = HFPP_track_y(DCset,iTrack)
 
 	  call h_fpp_closest(HMStrack,FPPtrack,HFPP_Zoff(DCset),sclose,zclose)
-
+          
           HFPP_track_sclose(DCset,iTrack) = sclose
           HFPP_track_zclose(DCset,iTrack) = zclose
 
+	  icone=1
+
+          call h_fpp_conetest(HMStrack,DCset,zclose,theta,icone)
+
+	  HFPP_track_conetest(DCset,iTrack) = icone
 
 *         * determine resolution measure -- if requested
           if ((HFPP_calc_resolution.ne.0).and.(nPoints.gt.HFPP_minsethits)) then
