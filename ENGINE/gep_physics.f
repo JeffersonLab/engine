@@ -22,6 +22,7 @@
       include 'bigcal_gain_parms.cmn'
       include 'bigcal_shower_parms.cmn'
       include 'bigcal_geometry.cmn'
+      include 'bigcal_bypass_switches.cmn'
 
 c
 c     local variables:
@@ -33,6 +34,8 @@ c     that it is centered at +PI/2
 c     here we want to use the HMS singles physics info to choose the best track
 c     from BigCal assuming elastic kinematics!!!
       integer pick_best_cal_track
+
+c      logical fixed_bigcal
 
       real etheta_expect,ephi_expect
       real exhat,eyhat,ezhat,exhat_tar,eyhat_tar,ezhat_tar
@@ -58,6 +61,21 @@ c     from BigCal assuming elastic kinematics!!!
       real PI
       parameter(PI=3.14159265359)
 
+c     if the user has not defined something reasonable, then set by hand here:
+      
+      if(GEP_sigma_Ediff.lt..001.or.GEP_sigma_Ediff.gt.10.0) then
+         GEP_sigma_Ediff = .06
+      endif
+      if(GEP_sigma_Xdiff.lt..001.or.GEP_sigma_Xdiff.gt.100.0) then
+         GEP_sigma_Xdiff = 1.0
+      endif
+      if(GEP_sigma_Ydiff.lt..001.or.GEP_sigma_Ydiff.gt.100.0) then
+         GEP_sigma_Ydiff  =1.0
+      endif
+      if(GEP_sigma_Tdiff.lt..001.or.GEP_sigma_Tdiff.gt.1000.0) then
+         GEP_sigma_Tdiff = 10.0
+      endif
+
       if(gen_bigcal_mc.eq.3) then ! fill HMS info from Monte Carlo:
          hsnum_fptrack = 1
          hsp = pp_mc
@@ -70,7 +88,7 @@ c     from BigCal assuming elastic kinematics!!!
          gbeam_y = xv_p_mc
       endif
 
-      if(hsnum_fptrack.le.0.or.bigcal_phys_ntrack.le.0) then
+      if(hsnum_fptrack.le.0) then
          return
       endif
 
@@ -146,10 +164,27 @@ c     how to choose? pick the track for which the quadrature sum of
 c     sum( ((Eclust-Eexpect)/sigma)**2 + ((xclust-xexpect)/sigma)**2 + ((yclust-yexpect)/sigma)**2 ) is minimum
 c     the resolution parameters sigma should be CTP parms
 
+      if(b_use_bad_chan_list.ne.0) then
+c     check bigcal clusters, and, if necessary, fix clusters near the 
+c     expected electron position containing channels in the "bad" list
+
+c         fixed_bigcal = .false.
+*     fixed_bigcal will be true if any channels from the bad channel list are 
+*     filled with a guess and if any cluster is rebuilt or a new cluster is found
+         call gep_check_bigcal(gep_bx_expect_H,gep_by_expect_H,Eprime)
+      endif
+
+      call b_calc_physics(abort,err) ! reconstruct physics quantities for BigCal. 
+c     this routine should only get called once per event!!!!!!!!!!!!!!!!
+
+*     now pick up where we left off:
+
       ibest_cal = pick_best_cal_track(tcal_hexpect,xcal_hexpect,ycal_hexpect,Ecal_hexpect)
 
 c     now compute "missing" quantities using the track we have selected.
 c     first correct best calo track for vertex information which we now know from HMS reconstruction:
+
+      if(ibest_cal.eq.0) return
 
       bigcal_itrack_best = ibest_cal
 
@@ -236,21 +271,6 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       real diffsum,mindiffsum
       real E_cal,X_cal,Y_cal,T_cal
       real T_H,X_H,Y_H,E_H
-
-c     if the user has not defined something reasonable, then set by hand here:
-
-      if(GEP_sigma_Ediff.lt..001.or.GEP_sigma_Ediff.gt.10.0) then
-         GEP_sigma_Ediff = .06
-      endif
-      if(GEP_sigma_Xdiff.lt..001.or.GEP_sigma_Xdiff.gt.100.0) then
-         GEP_sigma_Xdiff = 1.0
-      endif
-      if(GEP_sigma_Ydiff.lt..001.or.GEP_sigma_Ydiff.gt.100.0) then
-         GEP_sigma_Ydiff  =1.0
-      endif
-      if(GEP_sigma_Tdiff.lt..001.or.GEP_sigma_Tdiff.gt.1000.0) then
-         GEP_sigma_Tdiff = 10.0
-      endif
 
       if(bigcal_phys_ntrack.gt.0) then
          do itrack = 1,bigcal_phys_ntrack

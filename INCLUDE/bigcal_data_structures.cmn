@@ -122,6 +122,7 @@ c$$$      parameter(BIGCAL_CLSTR_NCELL_MIN=2)
 
 *     decoded quantities for calorimeter TDCs:
 *     (filled by b_trans_tdc)
+
       integer*4 BIGCAL_TDC_NDECODED
       integer*4 BIGCAL_TDC_IROW(BIGCAL_TDC_MAXHITS) 
       integer*4 BIGCAL_TDC_IGROUP(BIGCAL_TDC_MAXHITS) 
@@ -258,7 +259,6 @@ c$$$      parameter(BIGCAL_CLSTR_NCELL_MIN=2)
      $     BIGCAL_ATRIG_IGROUP_BAD,
      $     BIGCAL_ATRIG_IHALF_BAD,
      $     BIGCAL_ATRIG_ADC_BAD
-      
 
 *decoded quantities for calorimeter ADCs: 
 
@@ -330,6 +330,8 @@ c$$$      parameter(BIGCAL_CLSTR_NCELL_MIN=2)
 *     analysis purposes. define only "raw" and "good" arrays:
 *     also define cumulative quantities that get incremented during
 *     the run for efficiency calculations:
+c     also define the list of bad channels:
+      logical bigcal_bad_chan_list(bigcal_all_maxhits) ! true = bad channel
       integer*4 BIGCAL_PROT_RAW_DET(BIGCAL_PROT_MAXHITS)
       integer*4 BIGCAL_RCS_RAW_DET(BIGCAL_RCS_MAXHITS)
       integer*4 BIGCAL_TDC_RAW_DET(BIGCAL_MAX_TDC,8) 
@@ -350,6 +352,7 @@ c$$$      parameter(BIGCAL_CLSTR_NCELL_MIN=2)
       real*4 BIGCAL_TTRIG_GOOD_DET(BIGCAL_TTRIG_MAXGROUPS,8)
       
       common/BIGCAL_DETECTOR/
+     $     bigcal_bad_chan_list,
      $     BIGCAL_PROT_RAW_DET,
      $     BIGCAL_RCS_RAW_DET,
      $     BIGCAL_TDC_RAW_DET,
@@ -436,6 +439,7 @@ c$$$     $     BIGCAL_MID_YHIT
       integer*4 BIGCAL_ALL_CLSTR_NCELL(BIGCAL_ALL_NCLSTR_MAX) 
       integer*4 BIGCAL_ALL_CLSTR_NCELLX(BIGCAL_ALL_NCLSTR_MAX)
       integer*4 BIGCAL_ALL_CLSTR_NCELLY(BIGCAL_ALL_NCLSTR_MAX)
+      integer*4 BIGCAL_ALL_CLSTR_NBADLIST(BIGCAL_ALL_NCLSTR_MAX)
       integer*4 BIGCAL_ALL_CLSTR_IYMAX(BIGCAL_ALL_NCLSTR_MAX)
       integer*4 BIGCAL_ALL_CLSTR_IXMAX(BIGCAL_ALL_NCLSTR_MAX)
       integer*4 BIGCAL_ALL_CLSTR_IYLO(BIGCAL_ALL_NCLSTR_MAX)
@@ -468,12 +472,14 @@ c$$$     $     BIGCAL_MID_YHIT
       real*4 BIGCAL_ALL_CLSTR_T8RMS(BIGCAL_ALL_NCLSTR_MAX)
       real*4 BIGCAL_ALL_CLSTR_T64MEAN(BIGCAL_ALL_NCLSTR_MAX)
       real*4 BIGCAL_ALL_CLSTR_T64RMS(BIGCAL_ALL_NCLSTR_MAX)
-      
+      logical bigcal_clstr_bad_chan(bigcal_all_nclstr_max,bigcal_clstr_ncell_max) ! is channel in the bad list?
+
       common/BIGCAL_CLUSTERS/
      $     BIGCAL_ALL_NCLSTR,
      $     BIGCAL_ALL_CLSTR_NCELL,
      $     BIGCAL_ALL_CLSTR_NCELLX,
      $     BIGCAL_ALL_CLSTR_NCELLY,
+     $     BIGCAL_ALL_CLSTR_NBADLIST,
      $     BIGCAL_ALL_CLSTR_IYMAX,
      $     BIGCAL_ALL_CLSTR_IXMAX,
      $     BIGCAL_ALL_CLSTR_IYLO,
@@ -505,7 +511,8 @@ c$$$     $     BIGCAL_MID_YHIT
      $     BIGCAL_ALL_CLSTR_T8MEAN,
      $     BIGCAL_ALL_CLSTR_T8RMS,
      $     BIGCAL_ALL_CLSTR_T64MEAN,
-     $     BIGCAL_ALL_CLSTR_T64RMS
+     $     BIGCAL_ALL_CLSTR_T64RMS,
+     $     bigcal_clstr_bad_chan
 
       integer BIGCAL_NMAXIMA ! number of maxima found
       logical BIGCAL_EDGE_MAX(BIGCAL_ALL_NCLSTR_MAX) ! maximum is at edge

@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.4  2007/10/08 19:22:59  puckett
+* Added bad channel list handling for BigCal
+*
 * Revision 1.13.24.3  2007/09/07 16:08:05  puckett
 * put event type 3 option back in for call to h_reconstruction, just in case somebody wants to use it. Also added event type 7 and 8 for calls to b_reconstruction, for the case of the cosmic/light box trigger for bigcal
 *
@@ -179,7 +182,9 @@ c      IF(gen_event_type.eq.1 .or. gen_event_type.eq.3) then  !HMS/COIN trig
 *-BIGCAL reconstruction
       if(gen_event_type.ge.5 .and. gen_event_type.le.8) then !5.BIGCAL/6.HMS-BIGCAL COIN/7.COSMIC/8.LIGHT BOX
          !write(*,*) 'calling b_reconstruction'
+         
          call B_reconstruction(FAIL,why)
+
          !write(*,*) 'b_reconstruction successful'
          IF(err.NE.' ' .and. why.NE.' ') THEN
             call G_append(err,' & '//why)
@@ -190,9 +195,9 @@ c      IF(gen_event_type.eq.1 .or. gen_event_type.eq.3) then  !HMS/COIN trig
       endif
 *-GEP-COIN reconstruction
       if(gen_event_type.eq.6) then !GEp-coin. trig
-         !write(*,*) 'calling gep_reconstruction'
+*         write(*,*) 'calling gep_reconstruction'
          call GEp_reconstruction(FAIL,why)
-         !write(*,*) 'gep_reconstruction successful'
+*         write(*,*) 'gep_reconstruction successful'
          if(err.ne.' '.and.why.ne.' ') then
             call G_append(err,' & '//why)
          else if(why.ne.' ') then

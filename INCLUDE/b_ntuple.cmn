@@ -59,10 +59,12 @@ c      character*256 b_tree_filename
 
       integer*4 nclust
       integer*4 ncellclust(maxnclust)
+      integer*4 ncellbad(maxnclust)
       integer*4 ncellx(maxnclust)
       integer*4 ncelly(maxnclust)
       integer*4 iycell(maxncellclust,maxnclust)
       integer*4 ixcell(maxncellclust,maxnclust)
+      logical cellbad(maxncellclust,maxnclust)
       real*4 xcell(maxncellclust,maxnclust)
       real*4 ycell(maxncellclust,maxnclust)
       real*4 eblock(maxncellclust,maxnclust)
@@ -74,10 +76,12 @@ c      character*256 b_tree_filename
       common/clustblock/
      $     nclust,
      $     ncellclust,
+     $     ncellbad,
      $     ncellx,
      $     ncelly,
      $     iycell,
      $     ixcell,
+     $     cellbad,
      $     xcell,
      $     ycell,
      $     eblock,

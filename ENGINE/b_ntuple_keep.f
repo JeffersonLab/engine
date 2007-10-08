@@ -67,6 +67,7 @@ c      integer itype
 
          do iclust = 1,nclust
             ncellclust(iclust) = bigcal_all_clstr_ncell(iclust)
+            ncellbad(iclust) = bigcal_all_clstr_nbadlist(iclust)
             ncellx(iclust) = bigcal_all_clstr_ncellx(iclust)
             ncelly(iclust) = bigcal_all_clstr_ncelly(iclust)
             ncell8clust(iclust) = bigcal_all_clstr_ncell8(iclust)
@@ -77,6 +78,7 @@ c      integer itype
                xcell(icell,iclust) = bigcal_all_clstr_xcell(iclust,icell)
                ycell(icell,iclust) = bigcal_all_clstr_ycell(iclust,icell)
                eblock(icell,iclust) = bigcal_all_clstr_ecell(iclust,icell)
+               cellbad(icell,iclust) = bigcal_clstr_bad_chan(iclust,icell)
             enddo
 c     zero all cells above ncellclust
             do icell=ncellclust(iclust)+1,bigcal_clstr_ncell_max
@@ -85,6 +87,7 @@ c     zero all cells above ncellclust
                xcell(icell,iclust) = 0.
                ycell(icell,iclust) = 0.
                eblock(icell,iclust) = 0.
+               cellbad(icell,iclust) = .false.
             enddo
             
             do icell=1,ncell8clust(iclust)

@@ -23,6 +23,9 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
+* Revision 1.19.6.7  2007/10/08 19:22:33  puckett
+* Added bad channel list handling for BigCal
+*
 * Revision 1.19.6.6  2007/09/24 20:37:50  puckett
 * added BigCal debugging output file
 *
@@ -198,6 +201,7 @@ c     is reached (bigcal_min_calib_events)
       b_calib_matrix_filename = ' '
       b_calib_parm_filename = ' '
       b_debug_output_filename = ' '
+      b_bad_chan_list_filename = ' '
 c      b_calib_report_filename = ' ' ! not used
       
 *

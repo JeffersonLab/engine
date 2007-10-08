@@ -99,8 +99,10 @@ c     get any free IO channel
         if(bbypass_find_clusters.eq.0) then
            call HBNAME(id,'clustblock',nclust,
      $          'nclust[0,25]:I*4,ncellclust(nclust)[0,25]:I*4,'//
+     $          'ncellbad(nclust)[0,25]:I*4,'//
      $          'ncellx(nclust),ncelly(nclust),iycell(25,nclust),'//
-     $          'ixcell(25,nclust),xcell(25,nclust),ycell(25,nclust),'//
+     $          'ixcell(25,nclust),cellbad(25,nclust):L,'//
+     $          'xcell(25,nclust),ycell(25,nclust),'//
      $          'eblock(25,nclust),xmoment(nclust),ymoment(nclust),'//
      $          'eclust(nclust),xclust(nclust),yclust(nclust)')
            if(bbypass_calc_cluster_time.eq.0) then

@@ -132,6 +132,15 @@ c     initialize debugging output file:
          open(unit=bluno,file=filename,form='formatted',status='unknown')
 
       endif
+c     initialize list of bad channels:
+      if(b_use_bad_chan_list.ne.0 .and. b_bad_chan_list_filename
+     $     .ne. ' ') then
+         call b_init_bad_list(abort,err)
+         if(abort) then
+            call g_add_path(here,err)
+            return 
+         endif
+      endif
 
       if(abort .or. err.ne.' ') call g_add_path(here,err)
 

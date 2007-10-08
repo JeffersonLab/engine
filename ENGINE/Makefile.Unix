@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.28.16.8  2007/10/08 19:19:05  puckett
+# Added bad channel list handling for BigCal
+#
 # Revision 1.28.16.7  2007/09/13 04:02:17  brash
 # Implement some minor changes to fix Mac OS X runtime errors ... ejb
 #
@@ -163,7 +166,7 @@ bigcal_source = b_clear_event.f b_initialize.f b_keep_results.f b_ntuple_change.
 gep_source = gep_clear_event.f gep_initialize.f gep_keep_results.f gep_ntuple_change.f \
 	gep_ntuple_close.f gep_ntuple_open.f gep_physics.f gep_proper_shutdown.f \
 	gep_reconstruction.f gep_register_variables.f gep_reset_event.f \
-	gep_tree_init.f gep_init_histid.f
+	gep_tree_init.f gep_init_histid.f gep_check_bigcal.f
 ntuple_source = g_ntuple_init.f g_ntuple_shutdown.f \
 	c_ntuple_clear.f c_ntuple_init.f c_ntuple_keep.f \
 	c_ntuple_register.f c_ntuple_shutdown.f \
