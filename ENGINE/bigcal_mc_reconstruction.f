@@ -33,12 +33,12 @@ c      include 'gen_constants.par'
 
          jflag = 0
          
-         read(io_unit,end=101,err=102) iev_mc
+         read(io_unit,end=101,err=101) iev_mc
 
          evid_g = iev_mc
 
-         read(io_unit,end=101,err=102) xv_mc,yv_mc,zv_mc
-         read(io_unit,end=101,err=102) nvtrk_mc
+         read(io_unit,end=101,err=101) xv_mc,yv_mc,zv_mc
+         read(io_unit,end=101,err=101) nvtrk_mc
 
 c$$$         xvertex_g = xv_mc
 c$$$         yvertex_g = yv_mc
@@ -52,7 +52,7 @@ c$$$         zvertex_g = zv_mc
          jflag = 1
          
          do i=1,nvtrk_mc
-            read(io_unit,end=101,err=102) pid_mc(i),px_mc(i),py_mc(i),
+            read(io_unit,end=101,err=101) pid_mc(i),px_mc(i),py_mc(i),
      $           pz_mc(i)
             if(i.le.25) then
                pid_g(i) = pid_mc(i)
@@ -136,8 +136,8 @@ c     rotate
 
          jflag = 2
 
-         read(io_unit,end=101,err=102) isum_mc
-         read(io_unit,end=101,err=102) esum_mc
+         read(io_unit,end=101,err=101) isum_mc
+         read(io_unit,end=101,err=101) esum_mc
 
          jflag = 3
 
@@ -145,7 +145,7 @@ c     rotate
          bigcal_rcs_nhit = isum_mc(2)
 c     here's the key part: fill the raw hit arrays!!!
          do i=1,isum_mc(1)
-            read(io_unit,end=101,err=102) ix_mc,iy_mc,npe_mc
+            read(io_unit,end=101,err=101) ix_mc,iy_mc,npe_mc
             bigcal_prot_ix(i) = ix_mc
             bigcal_prot_iy(i) = iy_mc
             bigcal_prot_adc_raw(i) = nint(npe_mc)
@@ -154,7 +154,7 @@ c     here's the key part: fill the raw hit arrays!!!
          jflag = 4
 
          do i=1,isum_mc(2)
-            read(io_unit,end=101,err=102) ix_mc,iy_mc,npe_mc
+            read(io_unit,end=101,err=101) ix_mc,iy_mc,npe_mc
             bigcal_rcs_ix(i) = ix_mc
             bigcal_rcs_iy(i) = iy_mc + 32
             bigcal_rcs_adc_raw(i) = nint(npe_mc)
@@ -162,14 +162,14 @@ c     here's the key part: fill the raw hit arrays!!!
          
          jflag = 5
 
-         read(io_unit,end=101,err=102) idesum_mc
-         read(io_unit,end=101,err=102) allde_mc
+         read(io_unit,end=101,err=101) idesum_mc
+         read(io_unit,end=101,err=101) allde_mc
          
          jflag = 6
 
          do i=1,2
             do j=1,idesum_mc(i)
-               read(io_unit,end=101,err=102) ix_mc,iy_mc,dedx_mc
+               read(io_unit,end=101,err=101) ix_mc,iy_mc,dedx_mc
             enddo
          enddo
 
@@ -178,8 +178,8 @@ c     here's the key part: fill the raw hit arrays!!!
 c     read proton data if it's there:
 
          if(gen_bigcal_mc.eq.3) then
-            read(io_unit,end=101,err=102) iev_p_mc
-            read(io_unit,end=101,err=102) pp_mc,ptheta_mc,pphi_mc,
+            read(io_unit,end=101,err=101) iev_p_mc
+            read(io_unit,end=101,err=101) pp_mc,ptheta_mc,pphi_mc,
      $           xv_p_mc,yv_p_mc,zv_p_mc
          endif
 
@@ -214,18 +214,7 @@ c     BAD PUCKETT! DON'T hardwire things into the code, mmm'kay?
          return
 
  101     write(*,*) 'end of file',g_data_source_filename,'reached'
-         if(jflag.ne.0) then
-            abort=.true.
-            err='unexpected EOF'
-            call g_add_path(here,err)
-            return
-         endif
          EOF_MC_DAT = .true.
-         return
-
- 102     abort=.true.
-         err='problem reading '//g_data_source_filename
-         call g_add_path(here,err)
          return
 
       else if(iflag.eq.2) then !wei's bigcal mc ntuple
