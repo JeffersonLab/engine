@@ -8,10 +8,12 @@
       character*16 here
       parameter (here= 'B_reconstruction')
       
+c      logical last_time
       logical ABORT
       logical mc_trig  ! check if at least one trig. sum is above b_cluster_cut
       integer isum64
       integer ngood64
+      integer revert(5)
       character*(*) err
 
       include 'bigcal_data_structures.cmn'
@@ -24,7 +26,31 @@
       include 'gen_units.par'
       include 'gen_scalers.cmn'
       include 'gen_run_info.cmn'
+      include 'gen_event_info.cmn'
 
+      revert(1) = b_use_bad_chan_list
+      revert(2) = bbypass_find_clusters
+      revert(3) = bbypass_calc_cluster_time
+      revert(4) = bbypass_calc_shower_coord
+      revert(5) = bbypass_calc_physics
+
+c      last_time = .false.
+
+c     for certain event types, disable parts of the analysis:
+c     don't add cells in the bad channel list to clusters for type 5
+c     (bigcal singles) events. We only want to use the bad channel list 
+c     to improve the efficiency of coincidence events.
+      if(gen_event_type.eq.5) then
+         b_use_bad_chan_list = 0
+c         last_time = .true.
+      endif
+      if(gen_event_type.gt.6) then
+         bbypass_find_clusters = 1
+         bbypass_calc_cluster_time = 1
+         bbypass_calc_shower_coord = 1
+         bbypass_calc_physics = 1
+      endif
+        
 ************  dump raw data ****************************
       call b_raw_dump_all(ABORT,err)
       if(ABORT) then
@@ -121,9 +147,9 @@ c$$$            call g_add_path(here,err)
 c$$$            return
 c$$$         endif
 
-         !write(*,*) 'entering b_find_clusters'
+c         write(*,*) 'entering b_find_clusters'
 
-         call b_find_clusters(ABORT,err)
+         call b_find_clusters(bigcal_all_nclstr,bigcal_nmaxima,ABORT,err)
          if(ABORT) then 
             call g_add_path(here,err)
             return
@@ -151,7 +177,8 @@ c$$$         endif
       endif
 *     
       if(bbypass_calc_physics.eq.0.and.bbypass_find_clusters.eq.0) then
-         call b_calc_physics(ABORT,err)
+         
+         if(gen_event_type.ne.6) call b_calc_physics(0,ABORT,err)
          if(ABORT) then
             call g_add_path(here,err)
             return
@@ -170,8 +197,16 @@ c     info.
          endif
       endif
       
-      !write(*,*) 'done with reconstruction'
-      
+      if(gen_event_type.eq.5) then
+         b_use_bad_chan_list = revert(1)
+      endif
+      if(gen_event_type.gt.6) then
+         bbypass_find_clusters = revert(2)
+         bbypass_calc_cluster_time = revert(3)
+         bbypass_calc_shower_coord = revert(4)
+         bbypass_calc_physics = revert(5)
+      endif
+      !write(*,*) 'done with reconstruction'      
 *
       return
       end

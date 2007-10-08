@@ -25,6 +25,12 @@ c      include 'gen_units.par'
       real mom,beta,c,eloss,gamma,log10betagamma
       real maxetot
 
+c      integer ilow,ihigh
+
+c      logical last_time
+
+      ntrack = 0
+
       ABORT=.false.
       err=' '
 
@@ -33,20 +39,26 @@ c      include 'gen_units.par'
       R = BIGCAL_R_TGT
       m_e = mass_electron
       c = speed_of_light
-
-      ntrack = 0
+   
 c$$$      nprot = 0
 c$$$      nrcs = 0
 c$$$      nmid = 0
 c     this routine also fills many standard histograms
 
       if(BIGCAL_ALL_NCLSTR.gt.0) then
-         do i=1,BIGCAL_ALL_NCLSTR
+         do i=1,bigcal_all_nclstr
             ntrack = ntrack + 1
 c            nprot = nprot + 1
             x = BIGCAL_ALL_CLSTR_X(i)
             y = BIGCAL_ALL_CLSTR_Y(i)
             E = BIGCAL_ALL_CLSTR_ETOT(i)
+            
+            if(bid_bcal_ixclust.gt.0) call hf1(bid_bcal_ixclust,
+     $           float(bigcal_all_clstr_ixmax(i)),1.0)
+            if(bid_bcal_iyclust.gt.0) call hf1(bid_bcal_iyclust,
+     $           float(bigcal_all_clstr_iymax(i)),1.0)
+            if(bid_bcal_rowcolclust.gt.0) call hf2(bid_bcal_rowcolclust,
+     $           float(bigcal_all_clstr_ixmax(i)),float(bigcal_all_clstr_iymax(i)),1.0)
             if(bid_bcal_xclust.gt.0) call hf1(bid_bcal_xclust,x,1.0)
             if(bid_bcal_yclust.gt.0) call hf1(bid_bcal_yclust,y,1.0)
             if(bid_bcal_xmom.gt.0) call hf1(bid_bcal_xmom,bigcal_all_clstr_xmom(i),1.0)
@@ -57,10 +69,12 @@ c            nprot = nprot + 1
             if(bid_bcal_nxny.gt.0) call hf2(bid_bcal_nxny,float(bigcal_all_clstr_ncellx(i)),
      $           float(bigcal_all_clstr_ncelly(i)),1.0)
             if(bid_bcal_xy.gt.0) call hf2(bid_bcal_xy,x,y,1.0)
+            
             t = BIGCAL_ALL_CLSTR_T8MEAN(i)
+            
             if(bid_bcal_tmean.gt.0) call hf1(bid_bcal_tmean,t,1.0)
             if(bid_bcal_trms.gt.0) call hf1(bid_bcal_trms,bigcal_all_clstr_t8rms(i),1.0)
-
+            
 c     correct every track for energy loss. BigCal is always electron arm
 c     need to set up eloss params for BigCal absorber!
             xrot = x * Costh + R * Sinth
@@ -71,12 +85,16 @@ c     need to set up eloss params for BigCal absorber!
 
             thetarad = acos(zrot/L)
             thetadeg = 180./tt * thetarad
+            
+c            if(last_time) then
             if(bid_bcal_theta.gt.0) call hf1(bid_bcal_theta,thetadeg,1.0)
-
+c            endif
             phirad = atan2(y,xrot)
             phideg = 180./tt * phirad
+            
+c            if(last_time) then
             if(bid_bcal_phi.gt.0) call hf1(bid_bcal_phi,phideg,1.0)
-
+c            endif
             gamma = E / m_e
             beta = sqrt(1. - 1./gamma**2)
 
@@ -94,8 +112,9 @@ c$$$            endif
 
             E = E + eloss
 
+c            if(last_time) then
             if(bid_bcal_eclust.gt.0) call hf1(bid_bcal_eclust,E,1.0)
-
+c            endif
 c     increment energy sum 
             irow = bigcal_all_clstr_iymax(i)
             icol = bigcal_all_clstr_ixmax(i)

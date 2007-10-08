@@ -1,4 +1,4 @@
-      subroutine b_find_clusters(ABORT,err)
+      subroutine b_find_clusters(ncluster,nmaximum,ABORT,err)
 
       implicit none
       save
@@ -23,7 +23,7 @@
       integer i8,j8,k8
       integer i64,j64,k64
       integer ixmax,iymax,ihitmax,nmaximum
-      integer ncluster,ncellclst,icellclst
+      integer ncluster,ncellclst,icellclst,nbadlist
       integer ixlo(0:2),ixhi(0:2),iylo,iyhi,lengthx,lengthy
       real emax,ecell,esum,xmom_clst,ymom_clst
       integer ix2max,iy2max,celldiffx,celldiffy
@@ -35,19 +35,21 @@
       real cluster_temp_ecell(bigcal_clstr_ncell_max)
       real cluster_temp_xcell(bigcal_clstr_ncell_max)
       real cluster_temp_ycell(bigcal_clstr_ncell_max)
+      logical cluster_temp_bad_chan(bigcal_clstr_ncell_max)
 
       real xcenter,ycenter,xcell,ycell
 
       real copyreal
       integer copyint
+      logical copybool
 
       abort=.false.
       err=' '
 
 c     Strategy: Find Maximum, then build cluster around it using "add_neighbors"
 
-      nmaximum = 0
-      ncluster = 0
+c      nmaximum = 0
+c      ncluster = 0
 
  102  continue
       found_cluster = .false.
@@ -59,6 +61,7 @@ c     Strategy: Find Maximum, then build cluster around it using "add_neighbors"
 
       icellclst = 0
       ncellclst = 0
+      nbadlist = 0
       
       do icell=1,bigcal_clstr_ncell_max
          cluster_temp_irow(icell) = 0
@@ -66,8 +69,11 @@ c     Strategy: Find Maximum, then build cluster around it using "add_neighbors"
          cluster_temp_ecell(icell) = 0.
          cluster_temp_xcell(icell) = 0.
          cluster_temp_ycell(icell) = 0.
+         cluster_temp_bad_chan(icell) = .false.
       enddo
-
+c     it should never happen that we find a max in a channel that is in the bad channels list
+c     because the routine that initializes the bad channel list zeroes the calibration constant, 
+c     so regardless of the adc value, the "ecell" value should be zero!
       do ihit=1,bigcal_all_ngood
          irow = bigcal_all_iygood(ihit)
          icol = bigcal_all_ixgood(ihit)
@@ -115,18 +121,27 @@ c     initialize all "bad cluster" flags to false
 
          bigcal_all_good_det(icell) = 0.
 
+         if(bigcal_bad_chan_list(icell)) then
+            bigcal_all_good_det(icell) = -1.
+            nbadlist = nbadlist + 1
+            cluster_temp_bad_chan(icellclst) = .true.
+         endif
+
          !write(*,*) 'found max, adding nearest neighbors'
 
 c     this is the nearest-neighbors adding loop!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- 103     call b_add_neighbors(icellclst,ncellclst,bigcal_clstr_ncell_max,
+ 103     call b_add_neighbors(icellclst,ncellclst,nbadlist,bigcal_clstr_ncell_max,
      $        cluster_temp_icol,cluster_temp_irow,cluster_temp_xcell,
-     $        cluster_temp_ycell,cluster_temp_ecell,abort,err)
+     $        cluster_temp_ycell,cluster_temp_ecell,
+     $        cluster_temp_bad_chan,abort,err)
          if(abort) then
             call g_add_path(here,err)
             return
          endif
          icellclst = icellclst + 1
          if(icellclst.le.ncellclst) goto 103
+
+         !write(*,*) 'finished adding nearest neighbors'
 c     end of the nearest-neighbors adding loop!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
          
 c 105     continue
@@ -160,6 +175,10 @@ c     if at least two cells, sort cluster array in order of decreasing energy:
                   copyreal = cluster_temp_ycell(icell)
                   cluster_temp_ycell(icell) = cluster_temp_ycell(jcell)
                   cluster_temp_ycell(jcell) = copyreal
+
+                  copybool = cluster_temp_bad_chan(icell)
+                  cluster_temp_bad_chan(icell) = cluster_temp_bad_chan(jcell)
+                  cluster_temp_bad_chan(jcell) = copybool
                endif
             enddo
          enddo
@@ -208,6 +227,13 @@ c     cluster has section overlap. Also accumulate esum
             esum = esum + cluster_temp_ecell(icell)
          enddo
 
+         if(nbadlist.gt.0) then
+c$$$            write(*,*) 'WARNING: cluster contains at least one'//
+c$$$     $           'channel from the bad channels list'
+c$$$            write(*,*) 'bypassing normal cluster checks'
+            goto 106            ! don't subject a cluster containing channels from the bad list to 
+c     the same checks as a cluster with no bad channels, just add it to the cluster array and move on.
+         endif
          lengthy = iyhi - iylo + 1
 
 c$$$         write(*,253) 'length y = ',lengthy
@@ -277,13 +303,18 @@ c$$$         write(*,254) 'esum = ',esum
 
 c     IF WE'VE MADE IT TO THIS POINT, IT SHOULD MEAN THAT ALL THE CLUSTER CHECKS WERE PASSED!!!
 c     SO FILL THE CLUSTER ARRAY!!!
+c     ALTERNATIVELY, IT MAY MEAN THAT THERE IS AT LEAST 1 BADLIST CHANNEL IN THE CLUSTER, AND WE 
+c     DON'T WANT TO STOP CLUSTER FINDING BECAUSE OF IT! IF A BADLIST CHANNEL IS ADJACENT TO THE MAXIMUM, 
+c     IT IS LIKELY THAT WE WILL FIND IT, BUT IF A BADLIST CHANNEL SHOULD HAVE BEEN THE MAXIMUM, THERE IS 
+c     ONLY A SMALL CHANCE OF FINDING A MAXIMUM NEXT TO IT, DEPENDING ON B_MIN_EMAX
          
-         found_cluster = .true.
+ 106     found_cluster = .true.
          ncluster = ncluster + 1
 
          bigcal_all_clstr_ncell(ncluster) = ncellclst
          bigcal_all_clstr_ncellx(ncluster) = lengthx
          bigcal_all_clstr_ncelly(ncluster) = lengthy
+         bigcal_all_clstr_nbadlist(ncluster) = nbadlist
          bigcal_all_clstr_iymax(ncluster) = cluster_temp_irow(1)
          bigcal_all_clstr_ixmax(ncluster) = cluster_temp_icol(1)
         
@@ -312,6 +343,8 @@ c     SO FILL THE CLUSTER ARRAY!!!
      $           cluster_temp_xcell(icell)
             bigcal_all_clstr_ycell(ncluster,icell) = 
      $           cluster_temp_ycell(icell)
+            bigcal_clstr_bad_chan(ncluster,icell) = 
+     $           cluster_temp_bad_chan(icell)
             
             xcell = cluster_temp_xcell(icell)
             ycell = cluster_temp_ycell(icell)
@@ -341,6 +374,14 @@ c     SO FILL THE CLUSTER ARRAY!!!
             bigcal_all_clstr_x(ncluster) = xcenter + xmom_clst
             bigcal_all_clstr_y(ncluster) = ycenter + ymom_clst
          endif
+
+c$$$         if(nbadlist.gt.0) then
+c$$$            call b_print_cluster(ncluster,abort,err)
+c$$$            if(abort) then
+c$$$               call g_add_path(here,err)
+c$$$               return
+c$$$            endif
+c$$$         endif
 
          if(bdebug_print_clusters.ne.0) then
             call b_print_cluster(ncluster,abort,err)

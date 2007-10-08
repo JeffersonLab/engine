@@ -13,7 +13,7 @@
       character*15 here
       parameter(here='b_print_cluster')
 
-      if(iclust.ge.1) then ! prot.
+      if(iclust.ge.1.and.iclust.le.bigcal_all_nclstr) then ! prot.
          write(*,101) 'BigCal Cluster #',iclust
          write(*,102) '(row,col) = (',bigcal_all_clstr_iymax(iclust),
      $        ', ',bigcal_all_clstr_ixmax(iclust),')'
@@ -25,10 +25,11 @@
          write(*,106) 'ncell = ',bigcal_all_clstr_ncell(iclust)
          
          do icell=1,bigcal_all_clstr_ncell(iclust)
-            write(*,107) 'Cell #',icell,', (row,col,E) = (',
+            write(*,107) 'Cell #',icell,', (row,col,E,bad?) = (',
      $           bigcal_all_clstr_iycell(iclust,icell),', ',
      $           bigcal_all_clstr_ixcell(iclust,icell),', ',
-     $           bigcal_all_clstr_ecell(iclust,icell),')'
+     $           bigcal_all_clstr_ecell(iclust,icell),', ',
+     $           bigcal_clstr_bad_chan(iclust,icell),')'
          enddo
       endif
 
@@ -38,7 +39,7 @@
  103  format(A14,F10.3)
  104  format(A10,F10.3)
  106  format(A8,I2)
- 107  format(A6,I2,A17,I2,A2,I2,A2,F8.5,A1)
+ 107  format(A6,I2,A25,I2,A2,I2,A2,F8.5,A2,L2,A1)
 
       return
       end
