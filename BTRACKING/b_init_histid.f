@@ -38,6 +38,10 @@ c     need to hardcode some:
       bid_bcal_prot_eff = thgetid('bcal_prot_eff')
       bid_bcal_rcs_eff = thgetid('bcal_rcs_eff')
       
+      bid_bcal_ixclust = thgetid('bcal_ixclust')
+      bid_bcal_iyclust = thgetid('bcal_iyclust')
+      bid_bcal_rowcolclust = thgetid('bcal_rowcolclust')
+
       bid_bcal_eclust = thgetid('bcal_eclust')
       
       bid_bcal_ncellclst = thgetid('bcal_ncellclust')
