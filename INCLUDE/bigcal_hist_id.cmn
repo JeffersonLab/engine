@@ -34,6 +34,9 @@
       integer*4 bid_bcal_cfac_old
       integer*4 bid_bcal_cfac_new
       integer*4 bid_bcal_oldxnew
+      integer*4 bid_bcal_ixclust
+      integer*4 bid_bcal_iyclust
+      integer*4 bid_bcal_rowcolclust
       common/bigcal_hist_id/
      $     bid_bcal_row,
      $     bid_bcal_col,
@@ -66,4 +69,7 @@
      $     bid_bcal_small,
      $     bid_bcal_cfac_old,
      $     bid_bcal_cfac_new,
-     $     bid_bcal_oldxnew
+     $     bid_bcal_oldxnew,
+     $     bid_bcal_ixclust,
+     $     bid_bcal_iyclust,
+     $     bid_bcal_rowcolclust
