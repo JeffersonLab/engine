@@ -18,6 +18,18 @@
       real*4 BIGCAL_PROT_YPAR(BIGCAL_PROT_NY,BIGCAL_SHOWER_NPAR)
       real*4 BIGCAL_RCS_XPAR(BIGCAL_RCS_NX,BIGCAL_SHOWER_NPAR)
       real*4 BIGCAL_RCS_YPAR(BIGCAL_RCS_NY,BIGCAL_SHOWER_NPAR)
+
+      integer*4 BIGCAL_SHAPE_OPT ! 1 = asymmetric, otherwise symmetric
+
+      real*4 BIGCAL_SSHAPE_A
+      real*4 BIGCAL_SSHAPE_B
+c      real*4 BIGCAL_SSHAPE_D
+      
+      real*4 BIGCAL_ASHAPE_A
+      real*4 BIGCAL_ASHAPE_BX
+      real*4 BIGCAL_ASHAPE_BY
+c      real*4 BIGCAL_ASHAPE_D
+
       common/bigcal_shower_parms/
      $     BIGCAL_PXDET_PAR,
      $     BIGCAL_PYDET_PAR,
@@ -26,7 +38,13 @@
      $     BIGCAL_PROT_XPAR,
      $     BIGCAL_PROT_YPAR,
      $     BIGCAL_RCS_XPAR,
-     $     BIGCAL_RCS_YPAR
+     $     BIGCAL_RCS_YPAR,
+     $     BIGCAL_SHAPE_OPT,
+     $     BIGCAL_SSHAPE_A,
+     $     BIGCAL_SSHAPE_B,
+     $     BIGCAL_ASHAPE_A,
+     $     BIGCAL_ASHAPE_BX,
+     $     BIGCAL_ASHAPE_BY
       
 
       
