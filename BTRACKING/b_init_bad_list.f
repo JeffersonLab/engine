@@ -38,10 +38,17 @@ c     get any free io channel
          nbad = nbad + 1
          if(row.le.32) then
             cell = col + 32*(row-1)
-            bigcal_prot_cfac(cell) = 0. 
+            bigcal_prot_cfac(cell) = 0.
+c     set a high threshold so that hits from the bad channel list will not make it into 
+c     the good hit array by accident
+            bigcal_prot_adc_threshold(cell) = 10000.
          else 
             cell = col + 30*(row-33) + 1024
             bigcal_rcs_cfac(cell-1024) = 0.
+c     set a high threshold so that hits from the bad channel list will not make it into 
+c     the good hit array by accident
+            bigcal_rcs_adc_threshold(cell) = 10000.
+   
          endif
          
          bigcal_bad_chan_list(cell) = .true.
