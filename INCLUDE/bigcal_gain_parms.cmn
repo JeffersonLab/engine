@@ -80,6 +80,7 @@
 *     CTPTYPE=parm
 *     
 *     parameters for analysis of ped events:
+      
       integer*4 bigcal_prot_min_peds
       integer*4 bigcal_prot_ped_limit
       integer*4 bigcal_rcs_min_peds
@@ -96,7 +97,12 @@
 
 *     Bigcal ADC pedestals for analysis of physics events:
       
-
+      real*4 bigcal_prot_min_thresh ! lower limit on (software) threshold
+      real*4 bigcal_prot_max_thresh ! upper limit on (software) threshold
+      real*4 bigcal_rcs_min_thresh ! lower limit on (software) threshold
+      real*4 bigcal_rcs_max_thresh ! upper limit on (software) threshold
+      real*4 bigcal_trig_min_thresh ! lower limit on (software) threshold
+      real*4 bigcal_trig_max_thresh ! upper limit on (software) threshold
       real*4 bigcal_prot_ped_mean
       real*4 bigcal_prot_ped_rms
       real*4 bigcal_prot_adc_threshold
@@ -107,6 +113,12 @@
       real*4 bigcal_trig_ped_rms
       real*4 bigcal_trig_adc_threshold
       common/bigcal_pedestals/
+     $     bigcal_prot_min_thresh,
+     $     bigcal_prot_max_thresh,
+     $     bigcal_rcs_min_thresh,
+     $     bigcal_rcs_max_thresh,
+     $     bigcal_trig_min_thresh,
+     $     bigcal_trig_max_thresh,
      $     bigcal_prot_ped_mean(BIGCAL_PROT_NPMT),
      $     bigcal_prot_ped_rms(BIGCAL_PROT_NPMT),
      $     bigcal_prot_adc_threshold(BIGCAL_PROT_NPMT),

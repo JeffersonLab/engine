@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.5  2007/10/10 16:24:31  puckett
+* *** empty log message ***
+*
 * Revision 1.13.24.4  2007/10/08 19:22:59  puckett
 * Added bad channel list handling for BigCal
 *
@@ -160,6 +163,9 @@ c      IF(gen_event_type.eq.1 .or. gen_event_type.eq.3) then  !HMS/COIN trig
       
       if(gen_event_type.eq.1 .or. gen_event_type .eq. 6 .or. 
      $     gen_event_type .eq. 3) then               !HMS/COIN trig
+
+c         write(*,*) 'calling HMS reconstruction, gen_event_type=',gen_event_type
+
          call H_reconstruction(FAIL,why)
         IF(err.NE.' ' .and. why.NE.' ') THEN
           call G_append(err,' & '//why)
