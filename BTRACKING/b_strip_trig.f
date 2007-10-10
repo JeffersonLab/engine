@@ -15,11 +15,12 @@
 
       integer*4 ihit,igroup64,ihalf64,icell64,ngood,adc_raw,tdc_raw
       integer*4 thitnum
-      integer*4 nbad
+      integer*4 nbad,nbad2
       
       ngood = 0
       nbad = 0
-      
+      nbad2 = 0
+
 *     do atrig first:
       do icell64=1,bigcal_atrig_maxhits
         bigcal_atrig_adc_dec(icell64) = -100.
@@ -41,6 +42,7 @@ c          bigcal_atrig_raw_det(icell64) = adc_raw
           endif
           if(bigcal_atrig_nhit_ch(icell64).gt.1) then
              nbad = nbad + 1
+             nbad2 = nbad2 + 1
              if(bigcal_atrig_nhit_ch(icell64).eq.2) then ! first bad hit
                 bigcal_atrig_igroup_bad(nbad) = igroup64
                 bigcal_atrig_ihalf_bad(nbad) = ihalf64
@@ -68,7 +70,8 @@ c          bigcal_atrig_raw_det(icell64) = adc_raw
       endif
       
       bigcal_atrig_ngood = ngood
-      bigcal_atrig_nbad = nbad
+      bigcal_atrig_nbad = nbad2
+      bigcal_atrig_badplusgood = nbad
 
       ngood = 0 ! now do tdcs:
 

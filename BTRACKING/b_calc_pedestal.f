@@ -33,6 +33,7 @@
          do icol=1,BIGCAL_PROT_NX
             icell = icol + (irow-1)*BIGCAL_PROT_NX
             numped = max(1.,float(bigcal_prot_ped_num(icell)))
+c            write(*,*) 'prot numped=',numped
             
             bigcal_prot_new_ped(icell)=bigcal_prot_ped_sum(icell)/numped
             sigma2=float(bigcal_prot_ped_sum2(icell))/numped - 
@@ -57,8 +58,8 @@
      $           .ne.0) then
                bigcal_prot_ped_mean(icell)=bigcal_prot_new_ped(icell)
                bigcal_prot_ped_rms(icell)=bigcal_prot_new_rms(icell)
-               bigcal_prot_adc_threshold(icell)=min(50.,max(10.,3.*
-     $              bigcal_prot_new_rms(icell)))
+               bigcal_prot_adc_threshold(icell)=min(bigcal_prot_max_thresh,
+     $              max(bigcal_prot_min_thresh,2.5*bigcal_prot_new_rms(icell)))
             endif
          enddo
       enddo
@@ -72,6 +73,8 @@
             icell = icol + (irow-1)*BIGCAL_RCS_NX
             numped = max(1.,float(bigcal_rcs_ped_num(icell)))
             
+c            write(*,*) 'rcs numped=',numped
+
             bigcal_rcs_new_ped(icell)=bigcal_rcs_ped_sum(icell)/numped
             sigma2=float(bigcal_rcs_ped_sum2(icell))/numped - 
      $           (bigcal_rcs_new_ped(icell))**2
@@ -95,8 +98,8 @@
      $           .ne.0) then
                bigcal_rcs_ped_mean(icell)=bigcal_rcs_new_ped(icell)
                bigcal_rcs_ped_rms(icell)=bigcal_rcs_new_rms(icell)
-               bigcal_rcs_adc_threshold(icell)=min(50.,max(10.,3.*
-     $              bigcal_rcs_new_rms(icell)))
+               bigcal_rcs_adc_threshold(icell)=min(bigcal_rcs_max_thresh,
+     $              max(bigcal_rcs_min_thresh,2.5*bigcal_rcs_new_rms(icell)))
             endif
          enddo
       enddo
@@ -110,6 +113,8 @@
             igr64 = ihalf + 2*(igroup-1)
             numped = max(1.,float(bigcal_trig_ped_num(igr64)))
             
+c            write(*,*) 'trig numped=',numped
+
             bigcal_trig_new_ped(igr64)=bigcal_trig_ped_sum(igr64)/numped
             sigma2=float(bigcal_trig_ped_sum2(igr64))/numped - 
      $           (bigcal_trig_new_ped(igr64))**2
@@ -133,8 +138,8 @@
      $           .ne.0) then
                bigcal_trig_ped_mean(igr64)=bigcal_trig_new_ped(igr64)
                bigcal_trig_ped_rms(igr64)=bigcal_trig_new_rms(igr64)
-               bigcal_trig_adc_threshold(igr64)=min(50.,max(10.,3.*
-     $              bigcal_trig_new_rms(igr64)))
+               bigcal_trig_adc_threshold(igr64)=min(bigcal_trig_max_thresh,
+     $              max(bigcal_trig_min_thresh,3.*bigcal_trig_new_rms(igr64)))
             endif
          enddo
       enddo
@@ -148,36 +153,41 @@ c     now we write thresholds to file for hardware sparsification:
          call g_sub_run_number(file,gen_run_number)
          open(unit=SPAREID,file=file,status='unknown')
 
-         write(SPAREID,*) '# This is the ADC threshold file generated 
-     $        automatically'
-         write(SPAREID,*) 'from the pedestal data, run #',gen_run_number
-
+         write(SPAREID,*) '# This is the ADC threshold file generated '// 
+     $       'automatically'
+         write(SPAREID,666)'# from the pedestal data, run ',gen_run_number
+         write(SPAREID,*) '# ROC11 (BigCal Protvino and trigger ADCs):'
+ 666     format(A31,I8)
          roc=11
-c     protvino ADCs are in ROC11, slots 3-10 and 14-21
+c     protvino ADCs are NO LONGER in ROC11, slots 3-10 and 14-21
+c     protvino ADCs are now in ROC11, slots 3-19
 
          signalcount=1
 
-         do slot=3,10
+         do slot=3,19
             write(spareid,*) 'slot=',slot
             call g_output_thresholds(spareid,roc,slot,signalcount,
      $           BIGCAL_PROT_NX,bigcal_prot_new_threshold,0,
      $           bigcal_prot_new_rms,0)
          enddo
             
-         do slot=14,21
-            write(spareid,*) 'slot=',slot
-            call g_output_thresholds(spareid,roc,slot,signalcount,
-     $           BIGCAL_PROT_NX,bigcal_prot_new_threshold,0,
-     $           bigcal_prot_new_rms,0)
-         enddo
+c$$$         do slot=14,21
+c$$$            write(spareid,*) 'slot=',slot
+c$$$            call g_output_thresholds(spareid,roc,slot,signalcount,
+c$$$     $           BIGCAL_PROT_NX,bigcal_prot_new_threshold,0,
+c$$$     $           bigcal_prot_new_rms,0)
+c$$$         enddo
 c     trigger ADCs are in roc 11, slot 22
-         slot=22
-         write(spareid,*) 'slot=',slot
-         call g_output_thresholds(spareid,roc,slot,signalcount,
-     $        2,bigcal_trig_new_threshold,0,
-     $        bigcal_trig_new_rms,0)
+c$$$         slot=22
+c$$$         write(spareid,*) 'slot=',slot
+c$$$         call g_output_thresholds(spareid,roc,slot,signalcount,
+c$$$     $        2,bigcal_trig_new_threshold,0,
+c$$$     $        bigcal_trig_new_rms,0)
 
 c     rcs ADCs are in ROC12, slots 6-11 and 15-20
+
+         write(SPAREID,*) '# ROC12 (BigCal RCS ADCs):'
+
          roc=12
          do slot=6,11
             write(spareid,*) 'slot=',slot

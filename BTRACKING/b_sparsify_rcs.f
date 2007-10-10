@@ -14,7 +14,7 @@ c     RCS_IY from detector map will be 33-56. Subtract 32 in this routine and
 c     then we can assume from here on out that RCS_IY starts at 1 and goes to 24
       
       integer*4 ihit,icell
-      integer*4 ngood,nbad
+      integer*4 ngood,nbad,nbad2
       integer*4 irow,icol
       integer*4 adc_val 
 
@@ -35,6 +35,7 @@ c     then we can assume from here on out that RCS_IY starts at 1 and goes to 24
 
       ngood = 0
       nbad = 0
+      nbad2 = 0
 
 *     loop over raw hits: 
       if(bigcal_rcs_nhit.gt.0) then
@@ -53,6 +54,7 @@ c          BIGCAL_ALL_RAW_DET(icell+bigcal_prot_maxhits) = adc_val
           endif
           if(bigcal_rcs_nhit_ch(icell).gt.1) then
              nbad = nbad + 1
+             nbad2 = nbad2 + 1
              if(bigcal_rcs_nhit_ch(icell).eq.2) then ! first bad hit
                 bigcal_rcs_iybad(nbad) = irow
                 bigcal_rcs_ixbad(nbad) = icol
@@ -81,7 +83,8 @@ c     "sparsify" the data
         enddo
       endif
       BIGCAL_RCS_NGOOD = ngood
-      bigcal_rcs_nbad = nbad
+      bigcal_rcs_nbad = nbad2
+      bigcal_rcs_badplusgood = nbad
 
       return
       end

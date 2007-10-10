@@ -20,6 +20,8 @@
 c     pedestals we need to analyze include protvino, rcs, and trigger
 c     procedure is to loop over all hits and accumulate ped sums: 
 
+c      write(*,*) 'bigcal_rcs_nhit=',bigcal_rcs_nhit
+
       do ihit=1,BIGCAL_PROT_NHIT
          irow = BIGCAL_PROT_IY(ihit)
          icol = BIGCAL_PROT_IX(ihit)
@@ -41,9 +43,12 @@ c     procedure is to loop over all hits and accumulate ped sums:
       enddo
 
       do ihit=1,BIGCAL_RCS_NHIT
-         irow = BIGCAL_RCS_IY(ihit)
+         irow = BIGCAL_RCS_IY(ihit)-32
          icol = BIGCAL_RCS_IX(ihit)
          icell = icol + BIGCAL_RCS_NX*(irow-1)
+
+c         write(*,*) 'icell,adc_raw,ped_limit=',icell,bigcal_rcs_adc_raw(icell),
+c     $        bigcal_rcs_ped_limit(icell)
 
          if(BIGCAL_RCS_ADC_RAW(ihit).le.bigcal_rcs_ped_limit(icell))
      $        then

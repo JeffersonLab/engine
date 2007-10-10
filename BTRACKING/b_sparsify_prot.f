@@ -12,7 +12,7 @@ c     loop over all hits, subtract peds, apply thresholds, and
 c     fill decoded data arrays
 
       integer*4 ihit,icell
-      integer*4 ngood,nbad
+      integer*4 ngood,nbad,nbad2
       integer*4 irow,icol
       integer*4 adc_val 
 *     check number of hits:
@@ -32,6 +32,7 @@ c     fill decoded data arrays
 
       ngood = 0
       nbad = 0
+      nbad2 = 0
 
 *     loop over raw hits: 
       if(bigcal_prot_nhit.gt.0) then
@@ -48,6 +49,7 @@ c     fill decoded data arrays
           endif
           if(bigcal_prot_nhit_ch(icell).gt.1) then ! fill bad hits array
              nbad = nbad + 1
+             nbad2 = nbad2 + 1
              if(bigcal_prot_nhit_ch(icell).eq.2) then ! first bad hit
                 bigcal_prot_iybad(nbad) = irow
                 bigcal_prot_ixbad(nbad) = icol
@@ -78,6 +80,8 @@ c     "sparsify" the data
       endif
 
       BIGCAL_PROT_NGOOD = ngood
-      bigcal_prot_nbad = nbad
+      bigcal_prot_nbad = nbad2
+      bigcal_prot_badplusgood = nbad
+
       return
       end
