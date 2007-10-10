@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.9  2007/10/10 13:13:24  puckett
+* *** empty log message ***
+*
 * Revision 1.32.20.8  2007/09/12 19:25:48  puckett
 * commented out diagnostic message, don't want this printing out for every event
 *
@@ -193,6 +196,10 @@ cajp
       roc = jiand(stat_roc,'1F'X)                ! Get ROC from header
 
       if(roc.eq.20.or.roc.eq.5) then
+        return                  ! scaler ROC
+      endif
+
+      if(roc.eq.21) then
         return                  ! scaler ROC
       endif
 *

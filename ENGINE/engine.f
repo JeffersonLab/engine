@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.12  2007/10/10 13:13:24  puckett
+* *** empty log message ***
+*
 * Revision 1.42.8.11  2007/09/13 04:02:17  brash
 * Implement some minor changes to fix Mac OS X runtime errors ... ejb
 *
@@ -909,12 +912,12 @@ c
                   endif
 
                 endif
-                endif
-              else if (gen_event_type.eq.131 .or. gen_event_type.eq.132) then ! EPICS event
+             endif
+             else if (gen_event_type.eq.131 .or. gen_event_type.eq.132) then ! EPICS event
                 call g_examine_epics_event
               endif
 
-	    endif    !if REAL physics event as opposed to scaler (evtype=0)
+           endif                !if REAL physics event as opposed to scaler (evtype=0)
 
          Else
               if(gen_event_type.eq.129) then
@@ -935,7 +938,7 @@ c
               call g_examine_go_info(CRAW,ABORT,err)
             else
               call g_examine_control_event(CRAW,ABORT,err)
-            endif
+           endif
             mss = err
          EndIf
       endif
