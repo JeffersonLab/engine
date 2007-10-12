@@ -1,6 +1,9 @@
       subroutine g_output_thresholds(lunout,roc,slot,signalcount,
      &               elements_per_plane,signal0,signal1,sigma0,sigma1)
 * $Log$
+* Revision 1.7.20.2  2007/10/12 02:03:44  puckett
+* *** empty log message ***
+*
 * Revision 1.7.20.1  2007/09/11 19:14:17  frw
 * fixed FPP related arrays and limits
 *
@@ -62,6 +65,11 @@
         do ich=1,g_decode_subaddcnt(roc,slot)
           ind=istart+ich-1
           pln=g_decode_planemap(ind)
+
+          if(roc.eq.12) then ! BigCal RCS part
+             pln = pln - 32
+          endif
+
           cnt=g_decode_countermap(ind)
           if (g_decode_didmap(ind).eq.UNINST_ID) then
             write(lunout,'(a6)') '  4000'  ! set threshold very high if there is no signal

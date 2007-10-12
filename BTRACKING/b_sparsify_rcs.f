@@ -20,6 +20,7 @@ c     then we can assume from here on out that RCS_IY starts at 1 and goes to 24
 
       include 'bigcal_data_structures.cmn'
       include 'bigcal_gain_parms.cmn'
+c      include 'bigcal_hist_id.cmn'
 
 *     check number of hits:
       err=' '
@@ -44,7 +45,11 @@ c     then we can assume from here on out that RCS_IY starts at 1 and goes to 24
           icol = BIGCAL_RCS_IX(ihit)
           icell = icol + BIGCAL_RCS_NX*(irow - 1)
           adc_val = BIGCAL_RCS_ADC_RAW(ihit)
-          
+
+c$$$          if(bid_badc(icell+bigcal_prot_maxhits).gt.0) 
+c$$$     $         call hf1(bid_badc(icell+bigcal_prot_maxhits),
+c$$$     $         float(adc_val),1.0)
+
 c          BIGCAL_ALL_RAW_DET(icell+bigcal_prot_maxhits) = adc_val
           
           bigcal_rcs_nhit_ch(icell) = bigcal_rcs_nhit_ch(icell) + 1
@@ -88,3 +93,4 @@ c     "sparsify" the data
 
       return
       end
+
