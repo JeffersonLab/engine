@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.6  2007/10/16 22:17:20  cdaq
+* fixed F1 decoding bug
+*
 * Revision 1.23.20.5  2007/09/24 20:37:20  puckett
 * *** empty log message ***
 *
@@ -245,7 +248,7 @@ c
         subadd = jiand(JISHFT(evfrag(pointer),-subaddbit),'7F'X)
 
        elseif (g_decode_modtyp(roc,slot).eq.1) then  ! VME F1 TDC
-         if (jiand(ishft(evfrag(pointer),-23),'1'X).eq.0) then  !data
+         if (jiand(ishft(evfrag(pointer),-23),'1'X).eq.1) then  !data
            subadd = jiand(jishft(evfrag(pointer),-subaddbit),'3F'X)
          else  !header
            subadd = jiand(evfrag(pointer),'3F'X)
