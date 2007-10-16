@@ -41,6 +41,9 @@
       
       ABORT= .FALSE.
       err= ' '
+      
+      print *,'\n You should not be here!!!\n'
+      STOP
 
 c      write(*,*)'Basic Track information: ',hsxp_fp,hsx_fp, hsyp_fp,hsy_fp
       
