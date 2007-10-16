@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.28.16.9  2007/10/16 19:44:00  cdaq
+# fixed F1TDC_WINDOW_SIZE declaration
+#
 # Revision 1.28.16.8  2007/10/08 19:19:05  puckett
 # Added bad channel list handling for BigCal
 #
@@ -187,7 +190,8 @@ ntuple_source = g_ntuple_init.f g_ntuple_shutdown.f \
 	gep_ntuple_clear.f gep_ntuple_init.f gep_ntuple_keep.f \
 	gep_ntuple_register.f gep_ntuple_shutdown.f
 gmakeregstuff = r_gen_filenames.f r_gen_run_info.f r_gen_event_info.f \
-	r_gen_scalers.f r_gen_run_pref.f r_gen_data_structures.f
+	r_gen_scalers.f r_gen_run_pref.f r_gen_data_structures.f \
+	r_gen_decode_F1tdc.f
 cmakeregstuff = r_coin_filenames.f r_c_ntuple.f r_coin_data_structures.f
 hmakeregstuff = r_h_ntuple.f r_h_sieve_ntuple.f r_hms_data_structures.f \
  	r_hms_fpp_event.f r_h_fpp_ntuple.f

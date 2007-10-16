@@ -2,6 +2,7 @@
 *
 * specifics for F1 TDC that are independent of detector
 *
+*%%   include 'gen_detectorids.par'
 *%%   include 'gen_decode_common.cmn'
 *
 *
