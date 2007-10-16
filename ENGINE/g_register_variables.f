@@ -19,6 +19,9 @@
 *     Modified: 24-May-1994 K.B.Beard
 *
 * $Log$
+* Revision 1.11.24.2  2007/10/16 19:51:19  cdaq
+* fixed F1TDC_WINDOW_SIZE declaration
+*
 * Revision 1.11.24.1  2007/05/15 02:55:01  jones
 * Start to Bigcal code
 *
@@ -97,6 +100,8 @@
       call r_gen_run_pref
 
       call r_gen_data_structures        ! Contains both HMS and SOS stuff
+
+      call r_gen_decode_F1tdc
 
 *HDISPLAY      call r_one_ev_io
 *
