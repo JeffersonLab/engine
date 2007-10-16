@@ -178,7 +178,7 @@ c         write(*,*) 'entering b_find_clusters'
 *     
       if(bbypass_calc_physics.eq.0.and.bbypass_find_clusters.eq.0) then
          
-         if(gen_event_type.ne.6) call b_calc_physics(0,ABORT,err)
+         if(gen_event_type.ne.6) call b_calc_physics(ABORT,err)
          if(ABORT) then
             call g_add_path(here,err)
             return
