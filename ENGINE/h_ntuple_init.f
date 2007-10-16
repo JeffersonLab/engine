@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.11.18.1  2007/10/16 20:20:31  cdaq
+* *** empty log message ***
+*
 * Revision 1.11  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -118,7 +121,7 @@ c
        endif
        write(*,*) ' Using segmented hms rzdat files first filename: ',file
        else
-         write(*,*) ' Not using segmented hms rzdat files first filename: ',file  
+         write(*,*) ' Not using segmented hms rzdat files.'  
       endif
 *
       m= 0

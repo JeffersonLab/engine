@@ -83,7 +83,7 @@ c
          endif
          write(*,*) ' Using segmented hms FPP rzdat files first filename: ',file
       else
-         write(*,*) ' Not using segmented hms FPP rzdat files first filename: ',file  
+         write(*,*) ' Not using segmented hms FPP rzdat files.'  
       endif
 
       call h_fpp_nt_open(file,ABORT,err)      

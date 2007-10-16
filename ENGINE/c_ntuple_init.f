@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.10.18.1  2007/10/16 20:20:31  cdaq
+* *** empty log message ***
+*
 * Revision 1.10  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -117,7 +120,7 @@
        endif
        write(*,*) ' Using segmented COIN rzdat files first filename: ',file
        else
-         write(*,*) ' Not using segmented COIN rzdat files first filename: ',file  
+         write(*,*) ' Not using segmented COIN rzdat files.' 
       endif
 *
 **********begin insert description of contents of COIN tuple ******
