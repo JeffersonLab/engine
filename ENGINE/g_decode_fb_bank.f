@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.10  2007/10/16 23:23:34  cdaq
+* fixed F1 data decoding
+*
 * Revision 1.32.20.9  2007/10/10 13:13:24  puckett
 * *** empty log message ***
 *
@@ -302,10 +305,10 @@ cajp
 
 	elseif (g_decode_modtyp(roc,slot).eq.1) then !VME F1 TDC
 	  if (jiand(ishft(bank(pointer),-23),'1'X).eq.0) then  !header
-	    subadd = jiand(bank(pointer),'3F'X)
+	    subadd = jiand(bank(pointer),'3F'X) + 1
 	  else  !data
 	    subadd = jiand(jishft( bank(pointer),
-     $                            -g_decode_subaddbit(roc,slot) ),'3F'X)
+     $                            -g_decode_subaddbit(roc,slot) ),'3F'X) + 1
 	  endif
 	endif
 

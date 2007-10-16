@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.7  2007/10/16 23:23:34  cdaq
+* fixed F1 data decoding
+*
 * Revision 1.23.20.6  2007/10/16 22:17:20  cdaq
 * fixed F1 decoding bug
 *
@@ -249,9 +252,9 @@ c
 
        elseif (g_decode_modtyp(roc,slot).eq.1) then  ! VME F1 TDC
          if (jiand(ishft(evfrag(pointer),-23),'1'X).eq.1) then  !data
-           subadd = jiand(jishft(evfrag(pointer),-subaddbit),'3F'X)
+           subadd = jiand(jishft(evfrag(pointer),-subaddbit),'3F'X) + 1
          else  !header
-           subadd = jiand(evfrag(pointer),'3F'X)
+           subadd = jiand(evfrag(pointer),'3F'X) + 1
            trigger_time = jiand(ishft(evfrag(pointer),-7),'1FF'X)
            trigger_time = trigger_time*128 + 127  ! trigger time has 7 bits less resolution!!
            pointer = pointer + 1
