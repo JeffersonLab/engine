@@ -46,10 +46,10 @@
 
 *     * find TDC trigger time!!  skip whatever we can!
       do rawhitidx=1, HFPP_raw_tot_hits
-	if (HFPP_raw_plane(rawhitidx).ne.HFPP_trigger_plane) CYCLE
+	if (HFPP_raw_plane(rawhitidx).lt.HFPP_trigger_plane) CYCLE
 	if (HFPP_raw_wire(rawhitidx) .ne.HFPP_trigger_wire)  CYCLE
 
-        ROC = g_decode_roc(HFPP_ID,HFPP_trigger_plane,HFPP_trigger_wire,1)
+        ROC = g_decode_roc(HFPP_ID,HFPP_trigger_plane,HFPP_trigger_wire,0)
 	HFPP_trigger_TDC(ROC) = HFPP_raw_TDC(rawhitidx)
       enddo !rawhitidx
 
