@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.8  2007/10/16 23:26:10  cdaq
+* *** empty log message ***
+*
 * Revision 1.23.20.7  2007/10/16 23:23:34  cdaq
 * fixed F1 data decoding
 *
@@ -251,6 +254,7 @@ c
         subadd = jiand(JISHFT(evfrag(pointer),-subaddbit),'7F'X)
 
        elseif (g_decode_modtyp(roc,slot).eq.1) then  ! VME F1 TDC
+*        * F1 uses 1 as the first channel, not 0!!!	
          if (jiand(ishft(evfrag(pointer),-23),'1'X).eq.1) then  !data
            subadd = jiand(jishft(evfrag(pointer),-subaddbit),'3F'X) + 1
          else  !header

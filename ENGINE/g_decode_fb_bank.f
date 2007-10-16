@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.11  2007/10/16 23:26:10  cdaq
+* *** empty log message ***
+*
 * Revision 1.32.20.10  2007/10/16 23:23:34  cdaq
 * fixed F1 data decoding
 *
@@ -304,6 +307,7 @@ cajp
      $       -g_decode_subaddbit(roc,slot)),'7F'X)
 
 	elseif (g_decode_modtyp(roc,slot).eq.1) then !VME F1 TDC
+*         * F1 uses 1 as the first channel, not 0!!!	
 	  if (jiand(ishft(bank(pointer),-23),'1'X).eq.0) then  !header
 	    subadd = jiand(bank(pointer),'3F'X) + 1
 	  else  !data
