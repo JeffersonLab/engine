@@ -7,6 +7,9 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.9.20.1  2007/10/17 15:52:54  cdaq
+* Added helicity stuff
+*
 * Revision 1.9  2003/09/05 15:17:37  jones
 * Merge in online03 changes (mkj)
 *
@@ -305,6 +308,18 @@
          gbeam_y  = gbeam_y  + gfry
          gbeam_yp = gbeam_yp + gfryp
       endif
+
+c     figure out helicity
+      if(gmisc_dec_data(1,2).ge.4000.and.gmisc_dec_data(2,2).lt.1000) then
+         gbeam_helicity = 1
+      else if(gmisc_dec_data(2,2).ge.4000.and.gmisc_dec_data(1,2).lt.1000) then
+         gbeam_helicity = -1
+      else
+         gbeam_helicity = 0
+      endif
+
+c$$$      write(*,*) 'h+ signal = ',gmisc_dec_data(1,2)
+c$$$      write(*,*) 'h- signal = ',gmisc_dec_data(2,2)
 
       return
       end
