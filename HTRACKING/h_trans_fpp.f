@@ -49,7 +49,8 @@
 	if (HFPP_raw_plane(rawhitidx).lt.HFPP_trigger_plane) CYCLE
 	if (HFPP_raw_wire(rawhitidx) .ne.HFPP_trigger_wire)  CYCLE
 
-        ROC = g_decode_roc(HFPP_ID,HFPP_trigger_plane,HFPP_trigger_wire,0)
+        ROC = g_decode_roc(HFPP_ID,HFPP_raw_plane(rawhitidx),
+     >                             HFPP_raw_wire(rawhitidx),0)
 	HFPP_trigger_TDC(ROC) = HFPP_raw_TDC(rawhitidx)
       enddo !rawhitidx
 
@@ -57,12 +58,12 @@
 *     * identify raw hits by planes -- assume unsorted raw data
       do rawhitidx=1, HFPP_raw_tot_hits
 
+	iPlane = HFPP_raw_plane(rawhitidx)
+	iWire  = HFPP_raw_wire(rawhitidx)
+
 *       * weed out obviously bad hits and thus speed up processing
         if ((HFPP_raw_TDC(rawhitidx).ge.HFPP_minTDC) .and.
      >      (HFPP_raw_TDC(rawhitidx).le.HFPP_maxTDC)) then
-
-	   iPlane = HFPP_raw_plane(rawhitidx)
-	   iWire  = HFPP_raw_wire(rawhitidx)
 
 	   if (iPlane.lt.1) CYCLE
 	   if (iWire.lt.1) CYCLE
@@ -74,7 +75,7 @@
 *          * thus we need to subtract the measured trigger time!
 *          * also account for the case that the wire hit times
 *          * may have rolled over but the trigger time did not!
-           ROC = g_decode_roc(HFPP_ID,iPlane,iWire,1)
+           ROC = g_decode_roc(HFPP_ID,iPlane,iWire,0)
 
 	   if (HFPP_trigger_TDC(ROC).lt.0) then  ! missing trigger time?!!
              call G_build_note(':(FPP) TDC data in ROC $ missing trigger reference!',
@@ -104,7 +105,10 @@
              hit_pointer(iPlane,hitno) = rawhitidx   ! local -- all raw hits
            endif
 
-        endif
+        else
+	  print *,' NOTE: FPP hit outside accepted time window: plane,wire,TDC= ',
+     >               iPlane,iWire,HFPP_raw_TDC(rawhitidx)
+	endif
       enddo !rawhitidx
 
 

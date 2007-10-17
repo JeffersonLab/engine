@@ -57,13 +57,5 @@ c          write(*,*)'iset,layers = ',iset,HFPP_Nlayershit_set(iset)
       endif
 
 
-*     * fill our histogramms -- Ntuple is filled in non-FPP HMS code
-      call h_fill_fpp(ABORT,err)
-      if (ABORT) then
-        call g_add_path(here,err)
-        return
-      endif
-
-
       RETURN
       END

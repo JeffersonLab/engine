@@ -11,6 +11,9 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 * $Log$
+* Revision 1.13.24.3  2007/10/17 19:38:50  cdaq
+* FPP fixes
+*
 * Revision 1.13.24.2  2007/09/12 14:40:03  brash
 * *** empty log message ***
 *
@@ -194,12 +197,14 @@ c      h_recon_num= h_recon_num + 1
 c         don't want error message every time a track is not found.
 c         ABORT=.FALSE.
 c         err=":no tracks found!"
-         return
       else
-*     Proceed if one or more track has been found
-*     
-*     Project tracks back to target
-*     HMS_FOCAL_PLANE  ====>  HMS_TARGET
+      
+         print *,' HMS track found!'
+      
+*        Proceed if one or more track has been found
+*        
+*        Project tracks back to target
+*        HMS_FOCAL_PLANE  ====>  HMS_TARGET
 *     
          if(hbypass_targ_trans.eq. 0) then
             call H_TARG_TRANS(ABORT,err,istat)
@@ -208,10 +213,10 @@ c         err=":no tracks found!"
                return
             endif                       ! end test on H_TARG_TRANS ABORT
          endif                          ! end test on hbypass_target_trans
-*     
-*     Now begin to process particle identification information
-*     First scintillator and time of flight
-*     HMS_RAW_SCIN ====> HMS_TRACK_TESTS
+*        
+*        Now begin to process particle identification information
+*        First scintillator and time of flight
+*        HMS_RAW_SCIN ====> HMS_TRACK_TESTS
 *
          if(hbypass_tof.eq.0) then
             call H_TOF(ABORT,err)
@@ -220,34 +225,34 @@ c         err=":no tracks found!"
                return
             endif                       ! end test of H_TOF ABORT
          endif                          ! end test on hbypass_tof
-*     Next Calorimeter information
-*     HMS_DECODED_CAL ====> HMS_TRACK_TESTS
+*        Next Calorimeter information
+*        HMS_DECODED_CAL ====> HMS_TRACK_TESTS
 *
          if(hbypass_cal.eq.0) then
             call H_CAL(ABORT,err)
             if(ABORT) then
                call G_add_path(here,err)
-*     return
+*           return
             endif                       ! end test of H_CAL ABORT
          endif                          ! end test on hbypass_cal
-*     Next Cerenkov information
-*     HMS_DECODED_CER ====> HMS_TRACK_TESTS
+*        Next Cerenkov information
+*        HMS_DECODED_CER ====> HMS_TRACK_TESTS
 *     
          if(hbypass_cer.eq.0) then
             call H_CER(ABORT,err)
             if(ABORT) then
                call G_add_path(here,err)
-*     return
+*         return
             endif                       ! end test of H_CER ABORT
          endif                          ! end test on hbypass_cer
 *     
-*     Dump HMS_TRACK_TESTS if hdebugprinttracktests is set
+*        Dump HMS_TRACK_TESTS if hdebugprinttracktests is set
          if( hdebugprinttracktests .ne. 0 ) then
             call h_prt_track_tests
          endif
 *     
-*     Combine results in HMS physics analysis
-*     HMS_TARGET + HMS_TRACK_TESTS ====>  HMS_PHYSICS
+*        Combine results in HMS physics analysis
+*        HMS_TARGET + HMS_TRACK_TESTS ====>  HMS_PHYSICS
 *     
          if(hbypass_track.eq.0) then
            call h_select_best_track(abort,err)
@@ -283,7 +288,15 @@ c         err=":no tracks found!"
          endif                          ! end test on hbypass_fpp
 *     
       endif                             ! end test no tracks found       
-*     
+
+
+*     * fill FPP histogramms even if no HMS track
+      call h_fill_fpp(ABORT,err)
+      if (ABORT) then
+        call g_add_path(here,err)
+        return
+      endif
+    
 *
 *     Successful return
       ABORT=.FALSE.

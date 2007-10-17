@@ -34,9 +34,9 @@
       integer*4 iCluster, Nraw, iRaw,hid,hid1,hid2, iROC, ii
       real*4 dist,time, istat
 
+
       ABORT= .FALSE.
       err= ' '
-
 
 *     * for each ROC, histogram TDC value of trigger reference
       hid = hidFPP_tdcROC
@@ -51,8 +51,10 @@
         iPlane = HFPP_raw_plane(iHit)
 	iWire  = HFPP_raw_wire(iHit)
         tdc = HFPP_raw_TDC(iHit)
-	hid = hidFPP_tdc(iPlane)
-	call hf2(hid,float(iWire),float(tdc),1.)
+	if (iPlane.le.H_FPP_N_PLANES) then
+	  hid = hidFPP_tdc(iPlane)
+	  call hf2(hid,float(iWire),float(tdc),1.)
+	endif
       enddo
 
 *     * for each plane, wire, histogram all hit times seen
@@ -60,8 +62,10 @@
         iPlane = HFPP_raw_plane(iHit)
 	iWire  = HFPP_raw_wire(iHit)
 	time  = HFPP_HitTime(iHit)
-	hid = hidFPP_alltimes(iPlane)
-	call hf2(hid,float(iWire),time,1.)
+	if (iPlane.le.H_FPP_N_PLANES) then
+	  hid = hidFPP_alltimes(iPlane)
+	  call hf2(hid,float(iWire),time,1.)
+	endif
       enddo
 
 *     * for each plane, wire, histogram times of first hit seen
