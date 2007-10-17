@@ -87,13 +87,20 @@
       integer*4 bigcal_rcs_ped_limit
       integer*4 bigcal_trig_min_peds
       integer*4 bigcal_trig_ped_limit
+      integer*4 bigcal_prot_nsparse ! hardware threshold in channels for Protvino 
+      integer*4 bigcal_rcs_nsparse ! hardware threshold in channels for RCS
+      integer*4 bigcal_trig_nsparse ! hardware threshold in channels for TRIG
+
       common/bigcal_ped_stat_parms/
      $     bigcal_prot_min_peds,
      $     bigcal_prot_ped_limit(BIGCAL_PROT_NPMT),
      $     bigcal_rcs_min_peds,
      $     bigcal_rcs_ped_limit(BIGCAL_RCS_NPMT),
      $     bigcal_trig_min_peds,
-     $     bigcal_trig_ped_limit(BIGCAL_TRIG_NGROUP)
+     $     bigcal_trig_ped_limit(BIGCAL_TRIG_NGROUP),
+     $     bigcal_prot_nsparse,
+     $     bigcal_rcs_nsparse,
+     $     bigcal_trig_nsparse
 
 *     Bigcal ADC pedestals for analysis of physics events:
       
