@@ -7,6 +7,9 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.9.20.2  2007/10/17 16:12:38  cdaq
+* Added handling of helicity ADC
+*
 * Revision 1.9.20.1  2007/10/17 15:52:54  cdaq
 * Added helicity stuff
 *
@@ -309,7 +312,7 @@
          gbeam_yp = gbeam_yp + gfryp
       endif
 
-c     figure out helicity
+c     figure out helicity from ADC signals:
       if(gmisc_dec_data(1,2).ge.4000.and.gmisc_dec_data(2,2).lt.1000) then
          gbeam_helicity = 1
       else if(gmisc_dec_data(2,2).ge.4000.and.gmisc_dec_data(1,2).lt.1000) then
@@ -318,8 +321,8 @@ c     figure out helicity
          gbeam_helicity = 0
       endif
 
-c$$$      write(*,*) 'h+ signal = ',gmisc_dec_data(1,2)
-c$$$      write(*,*) 'h- signal = ',gmisc_dec_data(2,2)
+c      write(*,*) 'h+ signal = ',gmisc_dec_data(1,2)
+c      write(*,*) 'h- signal = ',gmisc_dec_data(2,2)
 
       return
       end
