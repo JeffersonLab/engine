@@ -62,6 +62,13 @@ c     need to hardcode some:
       bid_bcal_theta = thgetid('bcal_thetaclst')
       bid_bcal_phi = thgetid('bcal_phiclst')
 
+      bid_bcal_ped_mean_prot = thgetid('bcal_ped_mean_prot')
+      bid_bcal_ped_mean_rcs  = thgetid('bcal_ped_mean_rcs')
+      bid_bcal_ped_mean_trig = thgetid('bcal_ped_mean_trig')
+      bid_bcal_ped_rms_prot = thgetid('bcal_ped_rms_prot')
+      bid_bcal_ped_rms_rcs = thgetid('bcal_ped_rms_rcs')
+      bid_bcal_ped_rms_trig = thgetid('bcal_ped_rms_trig')
+
       do i=1,32
          itens = i/10
          iones = mod(i,10)
