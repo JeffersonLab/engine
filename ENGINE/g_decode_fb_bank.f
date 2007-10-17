@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.12  2007/10/17 16:10:23  cdaq
+* Added analysis of roc21 (trigger supervisor) to decode the trig. type bits
+*
 * Revision 1.32.20.11  2007/10/16 23:26:10  cdaq
 * *** empty log message ***
 *
@@ -189,11 +192,10 @@ cajp
       integer*4 slotp                   ! temp variable
       integer*4 did                     ! Detector ID
       integer*4 g_decode_fb_detector    ! Detector unpacking routine
-      integer*4 last_first              ! Last word of first bank in || bank
+      integer*4 last_first,i              ! Last word of first bank in || bank
 *
       integer*4 jiand, jishft, jieor    ! Declare to help f2c
-
-
+      integer*4 hel_plus,hel_min
 
       banklength = bank(1) + 1          ! Bank length including count
       last_first = banklength
@@ -206,6 +208,18 @@ cajp
       endif
 
       if(roc.eq.21) then
+        hel_plus = 0
+        hel_min=0
+c$$$        write(*,*) ' banklength =',banklength
+c$$$        write(*,*) 'event = ',(bank(i),i=1,banklength)
+c$$$        write(*,*) ' event type = ',bank(banklength)
+c$$$        write(*,*) ' 2nd word = ',jishft(bank(4),-17)
+        hel_plus = jishft(bank(3),-21)
+        hel_plus = jishft(hel_plus,10)
+c        write(*,*) ' hel plus = ',hel_plus
+        hel_min = jishft(bank(3),-21)
+        hel_min = jishft(hel_min,11)
+c        write(*,*) ' hel min = ',hel_min
         return                  ! scaler ROC
       endif
 *
