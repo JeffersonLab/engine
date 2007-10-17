@@ -42,7 +42,7 @@ c            write(*,*) 'prot numped=',numped
             bigcal_prot_new_rms(icell) = sqrt(max(0.,sigma2))
 
             bigcal_prot_new_threshold(icell)=bigcal_prot_new_ped(icell)
-     $           + 10.
+     $           + bigcal_prot_nsparse
             if(abs(bigcal_prot_ped_mean(icell) - 
      $           bigcal_prot_new_ped(icell)).gt. 2.0 *
      $           bigcal_prot_new_rms(icell)) then
@@ -82,7 +82,7 @@ c            write(*,*) 'rcs numped=',numped
             bigcal_rcs_new_rms(icell) = sqrt(max(0.,sigma2))
 
             bigcal_rcs_new_threshold(icell)=bigcal_rcs_new_ped(icell)
-     $           + 10.
+     $           + bigcal_rcs_nsparse
             if(abs(bigcal_rcs_ped_mean(icell) - 
      $           bigcal_rcs_new_ped(icell)).gt. 2.0 *
      $           bigcal_rcs_new_rms(icell)) then
@@ -122,7 +122,7 @@ c            write(*,*) 'trig numped=',numped
             bigcal_trig_new_rms(igr64) = sqrt(max(0.,sigma2))
 
             bigcal_trig_new_threshold(igr64)=bigcal_trig_new_ped(igr64)
-     $           + 10.
+     $           + bigcal_trig_nsparse
             if(abs(bigcal_trig_ped_mean(igr64) - 
      $           bigcal_trig_new_ped(igr64)).gt. 2.0 *
      $           bigcal_trig_new_rms(igr64)) then
