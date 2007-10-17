@@ -44,6 +44,46 @@
       if (HFPP_raw_tot_hits .le. 0) RETURN
 
 
+*     * init storage
+      do iPlane=1,H_FPP_N_PLANES
+       do iWire=1,HFPP_Nwires(iPlane)
+         HFPP_hit1idx(iPlane,iWire) = 0
+       enddo
+      enddo
+
+      do iPlane=1,H_FPP_N_PLANES
+       do iWire=1,HFPP_Nwires(iPlane)
+         HFPP_hit2idx(iPlane,iWire) = 0
+       enddo
+      enddo
+
+      do iSet=1, H_FPP_N_DCSETS
+        HFPP_Nlayershit_set(iSet) = 0
+      enddo
+
+      do iSet=1, H_FPP_N_DCSETS
+       do iChamber=1, H_FPP_N_DCINSET
+        do iLayer=1, H_FPP_N_DCLAYERS
+         do iCluster=1, H_FPP_MAX_CLUSTERS
+           HFPP_nHitsinCluster(iSet,iChamber,iLayer,iCluster) = 0
+         enddo
+        enddo
+       enddo
+      enddo
+
+      do iSet=1, H_FPP_N_DCSETS
+       do iChamber=1, H_FPP_N_DCINSET
+        do iLayer=1, H_FPP_N_DCLAYERS
+          HFPP_nClusters(iSet,iChamber,iLayer) = 0
+        enddo
+       enddo
+      enddo
+
+      do iPlane=1,H_FPP_N_PLANES
+        HFPP_NplaneClusters(iPlane) = 0
+      enddo
+
+
 *     * find TDC trigger time!!  skip whatever we can!
       do rawhitidx=1, HFPP_raw_tot_hits
 	if (HFPP_raw_plane(rawhitidx).lt.HFPP_trigger_plane) CYCLE
@@ -116,53 +156,44 @@
 *     * find the earliest accpetable hit for each wire  -- assume unsorted raw data
 *     * also, determine # of layers with usefull hits to see if any tracking to be done
       do iSet=1, H_FPP_N_DCSETS
+       do iChamber=1, H_FPP_N_DCINSET
+        do iLayer=1, H_FPP_N_DCLAYERS
 
-        HFPP_Nlayershit_set(iSet) = 0
+          iPlane = H_FPP_N_DCLAYERS * H_FPP_N_DCINSET * (iSet-1)
+     >  	 + H_FPP_N_DCLAYERS * (iChamber-1)
+     >  	 + iLayer
 
-        do iChamber=1, H_FPP_N_DCINSET
-         do iLayer=1, H_FPP_N_DCLAYERS
+*         * check all hits in layer
+          do iHit=1, HFPP_N_planehitsraw(iPlane)
+            rawhitidx = hit_pointer(iPlane,iHit)
+            if (HFPP_HitTime(rawhitidx).lt.HFPP_mintime) CYCLE !skip too early hits
+            if (HFPP_HitTime(rawhitidx).gt.HFPP_maxtime) CYCLE !skip too late hits
 
-           iPlane = H_FPP_N_DCLAYERS * H_FPP_N_DCINSET * (iSet-1)
-     >            + H_FPP_N_DCLAYERS * (iChamber-1)
-     >            + iLayer
+            iWire  = HFPP_raw_wire(rawhitidx)
+            if (HFPP_hit1idx(iPlane,iWire).eq.0) then !first hit on wire, keep!
+              HFPP_hit1idx(iPlane,iWire) = rawhitidx
+              hit1time(iWire) = HFPP_HitTime(rawhitidx)
+              HFPP_N_planehits(iPlane) = HFPP_N_planehits(iPlane) + 1
+            elseif (HFPP_HitTime(rawhitidx).lt.hit1time(iWire)) then !replace if earlier
+              HFPP_hit2idx(iPlane,iWire) = HFPP_hit1idx(iPlane,iWire)
+              HFPP_hit1idx(iPlane,iWire) = rawhitidx
+              hit2time(iWire) = hit1time(iWire)
+              hit1time(iWire) = HFPP_HitTime(rawhitidx)
+            elseif (HFPP_hit2idx(iPlane,iWire).eq.0) then !first 2nd hit on wire, keep!
+              HFPP_hit2idx(iPlane,iWire) = rawhitidx
+              hit2time(iWire) = HFPP_HitTime(rawhitidx)
+            elseif (HFPP_HitTime(rawhitidx).lt.hit2time(iWire)) then !replace if earlier
+              HFPP_hit2idx(iPlane,iWire) = rawhitidx
+              hit2time(iWire) = HFPP_HitTime(rawhitidx)
+            endif
+          enddo
 
-*          * init storage
-           do iWire=1,HFPP_Nwires(iPlane)
-	     HFPP_hit1idx(iPlane,iWire) = 0
-	     HFPP_hit2idx(iPlane,iWire) = 0
-	   enddo
+          if (HFPP_N_planehits(iPlane) .gt. 0) then
+            HFPP_Nlayershit_set(iSet) = HFPP_Nlayershit_set(iSet)+1
+          endif
 
-*          * check all hits in layer
-           do iHit=1, HFPP_N_planehitsraw(iPlane)
-	     rawhitidx = hit_pointer(iPlane,iHit)
-	     if (HFPP_HitTime(rawhitidx).lt.HFPP_mintime) CYCLE !skip too early hits
-	     if (HFPP_HitTime(rawhitidx).gt.HFPP_maxtime) CYCLE !skip too late hits
-
-	     iWire  = HFPP_raw_wire(rawhitidx)
-	     if (HFPP_hit1idx(iPlane,iWire).eq.0) then !first hit on wire, keep!
-	       HFPP_hit1idx(iPlane,iWire) = rawhitidx
-	       hit1time(iWire) = HFPP_HitTime(rawhitidx)
-               HFPP_N_planehits(iPlane) = HFPP_N_planehits(iPlane) + 1
-	     elseif (HFPP_HitTime(rawhitidx).lt.hit1time(iWire)) then !replace if earlier
-	       HFPP_hit2idx(iPlane,iWire) = HFPP_hit1idx(iPlane,iWire)
-	       HFPP_hit1idx(iPlane,iWire) = rawhitidx
-	       hit2time(iWire) = hit1time(iWire)
-	       hit1time(iWire) = HFPP_HitTime(rawhitidx)
-	     elseif (HFPP_hit2idx(iPlane,iWire).eq.0) then !first 2nd hit on wire, keep!
-	       HFPP_hit2idx(iPlane,iWire) = rawhitidx
-	       hit2time(iWire) = HFPP_HitTime(rawhitidx)
-	     elseif (HFPP_HitTime(rawhitidx).lt.hit2time(iWire)) then !replace if earlier
-	       HFPP_hit2idx(iPlane,iWire) = rawhitidx
-	       hit2time(iWire) = HFPP_HitTime(rawhitidx)
-	     endif
-	   enddo
-
-           if (HFPP_N_planehits(iPlane) .gt. 0) then
-             HFPP_Nlayershit_set(iSet) = HFPP_Nlayershit_set(iSet)+1
-           endif
-
-         enddo !iLayer
-        enddo !iChamber
+        enddo !iLayer
+       enddo !iChamber
       enddo !iSet
 
 

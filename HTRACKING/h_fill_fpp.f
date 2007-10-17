@@ -38,6 +38,10 @@
       ABORT= .FALSE.
       err= ' '
 
+*     * check if we have any work to do
+      if (HFPP_raw_tot_hits .le. 0) RETURN
+
+
 *     * for each ROC, histogram TDC value of trigger reference
       hid = hidFPP_tdcROC
       do ii=0,G_DECODE_MAXROCS
@@ -74,9 +78,11 @@
 	hid2 = hidFPP_time1(iPlane)
         do iWire=1,HFPP_Nwires(iPlane)
 	  iHit = HFPP_hit1idx(iPlane,iWire)
-	  time = HFPP_HitTime(iHit)
-	  call hf1(hid1,time,1.)
-	  call hf2(hid2,float(iWire),time,1.)
+	  if (iHit.gt.0) then
+	    time = HFPP_HitTime(iHit)
+	    call hf1(hid1,time,1.)
+	    call hf2(hid2,float(iWire),time,1.)
+          endif
         enddo
       enddo
 
