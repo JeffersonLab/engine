@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.35.20.3  2007/10/17 15:51:27  cdaq
+* Added helicity flag
+*
 * Revision 1.35.20.2  2007/08/07 19:11:34  puckett
 * *** empty log message ***
 *
@@ -154,6 +157,7 @@
 *
 *     CTPTYPE=event
 *
+      integer*4 gbeam_helicity
       REAL*4 GBEAM_X,GBEAM_Y    !final beam position from bpm & raster info
       REAL*4 GBEAM_XP,GBEAM_YP  !final beam angles from bpm & raster info
       REAL*4 geloss
@@ -162,6 +166,7 @@
      &     GEBEAM,
      &     GPBEAM,
      &     G_BEAM_TARGET_S,
+     &     gbeam_helicity,
      &     GBEAM_X,GBEAM_Y,
      &     GBEAM_XP,GBEAM_YP,
      &     geloss
