@@ -10,6 +10,7 @@
       character*(*) err
 
       include 'bigcal_data_structures.cmn'
+      include 'bigcal_hist_id.cmn'
       include 'bigcal_gain_parms.cmn'
       include 'bigcal_filenames.cmn'
       include 'gen_run_info.cmn'
@@ -67,6 +68,17 @@ c            write(*,*) 'prot numped=',numped
                bigcal_prot_ped_rms(icell)=bigcal_prot_new_rms(icell)
                bigcal_prot_adc_threshold(icell)=min(bigcal_prot_max_thresh,
      $              max(bigcal_prot_min_thresh,2.5*bigcal_prot_new_rms(icell)))
+
+               if(bid_bcal_ped_mean_prot.gt.0) then
+                  call hf1(bid_bcal_ped_mean_prot,float(icell),
+     $                 bigcal_prot_ped_mean(icell))
+               endif
+               
+               if(bid_bcal_ped_rms_prot.gt.0) then
+                  call hf1(bid_bcal_ped_rms_prot,float(icell),
+     $                 bigcal_prot_ped_rms(icell))
+               endif
+
             endif
          enddo
       enddo
@@ -113,6 +125,15 @@ c            write(*,*) 'rcs numped=',numped
                bigcal_rcs_ped_rms(icell)=bigcal_rcs_new_rms(icell)
                bigcal_rcs_adc_threshold(icell)=min(bigcal_rcs_max_thresh,
      $              max(bigcal_rcs_min_thresh,2.5*bigcal_rcs_new_rms(icell)))
+               if(bid_bcal_ped_mean_rcs.gt.0) then
+                  call hf1(bid_bcal_ped_mean_rcs,float(icell),
+     $                 bigcal_rcs_ped_mean(icell))
+               endif
+               
+               if(bid_bcal_ped_rms_rcs.gt.0) then
+                  call hf1(bid_bcal_ped_rms_rcs,float(icell),
+     $                 bigcal_rcs_ped_rms(icell))
+               endif
             endif
          enddo
       enddo
@@ -159,6 +180,15 @@ c            write(*,*) 'trig numped=',numped
                bigcal_trig_ped_rms(igr64)=bigcal_trig_new_rms(igr64)
                bigcal_trig_adc_threshold(igr64)=min(bigcal_trig_max_thresh,
      $              max(bigcal_trig_min_thresh,3.*bigcal_trig_new_rms(igr64)))
+               if(bid_bcal_ped_mean_trig.gt.0) then
+                  call hf1(bid_bcal_ped_mean_trig,float(igr64),
+     $                 bigcal_trig_ped_mean(igr64))
+               endif
+               
+               if(bid_bcal_ped_rms_trig.gt.0) then
+                  call hf1(bid_bcal_ped_rms_trig,float(igr64),
+     $                 bigcal_trig_ped_rms(igr64))
+               endif
             endif
          enddo
       enddo

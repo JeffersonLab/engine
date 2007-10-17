@@ -37,6 +37,12 @@
       integer*4 bid_bcal_ixclust
       integer*4 bid_bcal_iyclust
       integer*4 bid_bcal_rowcolclust
+      integer*4 bid_bcal_ped_mean_prot
+      integer*4 bid_bcal_ped_mean_rcs
+      integer*4 bid_bcal_ped_mean_trig
+      integer*4 bid_bcal_ped_rms_prot
+      integer*4 bid_bcal_ped_rms_rcs
+      integer*4 bid_bcal_ped_rms_trig
       common/bigcal_hist_id/
      $     bid_bcal_row,
      $     bid_bcal_col,
@@ -72,4 +78,10 @@
      $     bid_bcal_oldxnew,
      $     bid_bcal_ixclust,
      $     bid_bcal_iyclust,
-     $     bid_bcal_rowcolclust
+     $     bid_bcal_rowcolclust,
+     $     bid_bcal_ped_mean_prot,
+     $     bid_bcal_ped_mean_rcs,
+     $     bid_bcal_ped_mean_trig,
+     $     bid_bcal_ped_rms_prot,
+     $     bid_bcal_ped_rms_rcs,
+     $     bid_bcal_ped_rms_trig
