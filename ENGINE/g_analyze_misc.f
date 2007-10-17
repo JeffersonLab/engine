@@ -7,6 +7,9 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.9.20.3  2007/10/17 19:30:14  cdaq
+* changed cutoffs for h+ and h- signals: >8000 for ON, <2000 for OFF
+*
 * Revision 1.9.20.2  2007/10/17 16:12:38  cdaq
 * Added handling of helicity ADC
 *
@@ -313,9 +316,9 @@
       endif
 
 c     figure out helicity from ADC signals:
-      if(gmisc_dec_data(1,2).ge.4000.and.gmisc_dec_data(2,2).lt.1000) then
+      if(gmisc_dec_data(1,2).gt.8000.and.gmisc_dec_data(2,2).lt.2000) then
          gbeam_helicity = 1
-      else if(gmisc_dec_data(2,2).ge.4000.and.gmisc_dec_data(1,2).lt.1000) then
+      else if(gmisc_dec_data(2,2).ge.8000.and.gmisc_dec_data(1,2).lt.2000) then
          gbeam_helicity = -1
       else
          gbeam_helicity = 0
