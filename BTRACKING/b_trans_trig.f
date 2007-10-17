@@ -102,7 +102,7 @@ c     the maximum belongs
 c     fill trig tdc histogram
                
                if(bid_bttdc(icell64).gt.0) call hf1(bid_bttdc(icell64),
-     $              bigcal_ttrig_tdc_good(ngood),1.0)
+     $              float(bigcal_ttrig_tdc_good(ngood)),1.0)
                
                if(bigcal_ttrig_det_ngood(icell64).lt.8) then
                   bigcal_ttrig_det_ngood(icell64) = 
