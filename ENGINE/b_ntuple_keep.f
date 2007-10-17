@@ -11,6 +11,7 @@
 
       include 'b_ntuple.cmn'
       include 'bigcal_data_structures.cmn'
+      include 'bigcal_gain_parms.cmn'
       include 'gen_event_info.cmn'
       include 'gen_data_structures.cmn'
       include 'gep_data_structures.cmn'
@@ -194,8 +195,8 @@ c$$$     $          bigcal_ixmax_adc,bigcal_max_adc
                irow = bigcal_prot_iygood(ihit)
                icell = icol + 32*(irow-1)
                if(icell.ge.1.and.icell.le.1024.and.
-     $              bigcal_prot_adc_good(ihit).ge.10..and.
-     $              bigcal_prot_adc_good(ihit).le.8192.) then
+     $              bigcal_prot_adc_good(ihit).ge.bigcal_prot_adc_threshold(icell)
+     $              .and. bigcal_prot_adc_good(ihit).le.8192.) then
                   nahit = nahit + 1
                   xa(nahit) = bigcal_prot_ixgood(ihit)
                   ya(nahit) = bigcal_prot_iygood(ihit)
@@ -210,8 +211,8 @@ c$$$     $          bigcal_ixmax_adc,bigcal_max_adc
                irow = bigcal_rcs_iygood(ihit)
                icell = icol + 30*(irow - 1)
                if(icell.ge.1.and.icell.le.720.and.
-     $              bigcal_rcs_adc_good(ihit).ge.10..and.
-     $              bigcal_rcs_adc_good(ihit).le.8192.) then
+     $              bigcal_rcs_adc_good(ihit).ge.bigcal_rcs_adc_threshold(icell)
+     $              .and. bigcal_rcs_adc_good(ihit).le.8192.) then
                   nahit = nahit + 1
                   xa(nahit) = bigcal_rcs_ixgood(ihit) + icol/16
                   ya(nahit) = bigcal_rcs_iygood(ihit) + 32
@@ -247,8 +248,8 @@ c$$$  $             yt(nthit),hn(nthit),tt(nthit)
                irow = bigcal_atrig_good_igroup(ihit)
                icell = icol + 2*(irow-1)
                if(icell.ge.1.and.icell.le.38.and.
-     $              bigcal_atrig_adc_good(ihit).ge.10.and.
-     $              bigcal_atrig_adc_good(ihit).le.8192.)then
+     $              bigcal_atrig_adc_good(ihit).ge.bigcal_trig_adc_threshold(icell)
+     $              .and.bigcal_atrig_adc_good(ihit).le.8192.)then
                   ntahit =  ntahit + 1
                   xta(ntahit) = icol
                   yta(ntahit) = irow
