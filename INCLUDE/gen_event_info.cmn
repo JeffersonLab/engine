@@ -2,6 +2,9 @@
 *- 
 *-   Created   22-Apr-1994   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.2.24.1  2007/10/17 16:04:23  cdaq
+* Added trig type array to hold trigger type information from TS
+*
 * Revision 1.2  1994/08/03 20:10:42  cdaq
 * (SAW) Add "CTPTYPE=event" directive for auto generation of CTP reg calls
 *
@@ -16,9 +19,10 @@
       INTEGER gen_event_ID_number,gen_event_type,gen_event_class
       INTEGER gen_event_ROC_summary
       INTEGER gen_event_sequence_N
+      INTEGER gen_event_trigtype(12) ! trigger type from trigger supervisor
 *
       COMMON /gen_event_info/ gen_event_ID_number,gen_event_type,
      &         gen_event_class,gen_event_ROC_summary,
-     &          gen_event_sequence_N
+     &          gen_event_sequence_N,gen_event_trigtype
 *
 ****************************end: gen_event_info.cmn ***********************
