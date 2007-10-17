@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.6  2007/10/17 16:08:08  cdaq
+* Changed if-block for beamline analysis. Now call for any event type 1-8 if flag is set
+*
 * Revision 1.13.24.5  2007/10/10 16:24:31  puckett
 * *** empty log message ***
 *
@@ -134,9 +137,11 @@
 *-Beamline reconstruction
 *-for GEp, avoid event types 2 and 3!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (No SOS!)
 c      IF(gen_event_type.ge.1 .and. gen_event_type.le.3) then  !HMS/SOS/COIN trig
-      if((gen_event_type.eq.1 .or. gen_event_type.eq.5 .or. 
-     $     gen_event_type.eq.6).and.gen_analyze_beamline.ne.0) then ! 1 = HMS singles, 5 = BigCal singles, 6 = HMS-BigCal coin.
+c$$$      if((gen_event_type.eq.1 .or. gen_event_type.eq.5 .or. 
+c$$$     $     gen_event_type.eq.6).and.gen_analyze_beamline.ne.0) then ! 1 = HMS singles, 5 = BigCal singles, 6 = HMS-BigCal coin.
         
+      if(gen_event_type.ge.1.and.gen_event_type.le.8.and.gen_analyze_beamline
+     $     .ne.0) then
          !write(*,*) 'calling g_trans_misc'
         call g_trans_misc(FAIL,why)
         !write(*,*) 'g_trans_misc successful'
