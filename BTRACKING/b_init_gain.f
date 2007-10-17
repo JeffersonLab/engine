@@ -27,18 +27,18 @@ c     initialize threshold limits: define sensible values if the user hasn't
 c     initialize ped_limit:
       do i=1,bigcal_all_maxhits
          if(i.le.1024) then
-            bigcal_prot_ped_limit(i) = 1000.
+            bigcal_prot_ped_limit(i) = 1000
            
          else
 c     write(*,*) 'rcs ped limit(',i-1024,')=',bigcal_rcs_ped_limit(i-1024)
             
-            bigcal_rcs_ped_limit(i-1024) = 1000.
+            bigcal_rcs_ped_limit(i-1024) = 1000
 c     write(*,*) 'rcs ped limit(',i-1024,')=',bigcal_rcs_ped_limit(i-1024)
          endif
       enddo
 c     trigger ADCs have WIDE pedestals (summing effect of all the noise)
       do i=1,bigcal_atrig_maxhits
-         bigcal_trig_ped_limit(i) = 1200.
+         bigcal_trig_ped_limit(i) = 1200
       enddo
 c     calculate gain correction factors. hopefully last and current gain factors
 c     are correctly read in from CTP parm files
