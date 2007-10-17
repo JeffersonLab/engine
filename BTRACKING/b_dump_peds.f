@@ -40,6 +40,9 @@
       write(spareid,667) 'bigcal_rcs_max_thresh = ',bigcal_rcs_max_thresh
       write(spareid,667) 'bigcal_trig_min_thresh = ',bigcal_trig_min_thresh
       write(spareid,667) 'bigcal_trig_max_thresh = ',bigcal_trig_max_thresh
+      write(spareid,666) 'bigcal_prot_nsparse = ',bigcal_prot_nsparse
+      write(spareid,666) 'bigcal_rcs_nsparse = ',bigcal_rcs_nsparse
+      write(spareid,666) 'bigcal_trig_nsparse = ',bigcal_trig_nsparse
  666  format(A30,I6)
  667  format(A30,F8.5)
       write(spareid,*) 'bigcal_prot_ped_mean = '
