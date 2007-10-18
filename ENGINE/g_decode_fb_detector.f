@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.10  2007/10/18 16:25:26  cdaq
+* fixed F1 handling bug
+*
 * Revision 1.23.20.9  2007/10/17 22:02:15  cdaq
 * fix FPP bugs
 *
@@ -261,7 +264,10 @@ c
          if (jiand(ishft(evfrag(pointer),-23),'1'X).eq.1) then  !data
            subadd = jiand(jishft(evfrag(pointer),-subaddbit),'3F'X) + 1
            signal =jiand(evfrag(pointer),g_decode_slotmask(roc,slot))
-	   if (signal.eq.65535) goto 987   ! skip overflow entries
+	   if (signal.eq.65535) then   ! skip overflow entries
+	     pointer = pointer + 1
+	     goto 987
+	   endif
          else  !header
            subadd = jiand(evfrag(pointer),'3F'X) + 1
            trigger_time = jiand(ishft(evfrag(pointer),-7),'1FF'X)
