@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.11  2007/10/19 00:15:20  cdaq
+* *** empty log message ***
+*
 * Revision 1.23.20.10  2007/10/18 16:25:26  cdaq
 * fixed F1 handling bug
 *
@@ -134,6 +137,9 @@
       include 'gen_decode_F1tdc.cmn'
       include 'gen_scalers.cmn'
       include 'gen_event_info.cmn'
+
+      include 'hms_data_structures.cmn'
+      include 'hms_id_histid.cmn'   
 *
       integer h,hshift,i
       integer*4 trigger_time
@@ -268,6 +274,11 @@ c
 	     pointer = pointer + 1
 	     goto 987
 	   endif
+	   
+*	   * histogram F1 raw hits
+           call hf2(hid_rawROC(roc),float(slot),float(subadd),1.)
+
+	   
          else  !header
            subadd = jiand(evfrag(pointer),'3F'X) + 1
            trigger_time = jiand(ishft(evfrag(pointer),-7),'1FF'X)

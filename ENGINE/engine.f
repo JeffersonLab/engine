@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.13  2007/10/19 00:15:20  cdaq
+* *** empty log message ***
+*
 * Revision 1.42.8.12  2007/10/10 13:13:24  puckett
 * *** empty log message ***
 *
@@ -270,8 +273,10 @@ c
 
       real*4 ebeam,phms,thms,psos,tsos,ntarg
       real*4 calangledeg,rcal,ycal
+      real*4 instrate,avrate
 
       integer start_time,lasttime
+      integer lasttime2,tdiff,report_incr
       integer time
       integer*4 preprocessor_keep_event
       external time
@@ -584,6 +589,7 @@ c$$$      call system(system_string)
       ENDDO
 
       since_cnt= 0
+      report_incr = 10
       problems= .false.
       EoF = .false.
 
@@ -613,7 +619,8 @@ c$$$      call system(system_string)
       rpc_pend = 0
 
       start_time=time()
-      lasttime=0.
+      lasttime=0
+      lasttime2 = 0
 c
 c Start data analysis
       if ( syncfilter_on) then
@@ -964,10 +971,24 @@ c
  667    continue
 
         since_cnt= since_cnt+1
-        if(since_cnt.GE.10000) then
-          print *,' event#',total_event_count,'      trigger#',physics_events
-          since_cnt= 0
-        endif
+
+*	* echo progress at least once every 3 minutes but no more than every 15 sec
+        if (mod(since_cnt,report_incr) .eq. 0) then
+	  avrate = float(since_cnt)/max(float(g_replay_time),0.001)
+          tdiff=g_replay_time-lasttime2
+	  instrate = report_incr/max(float(tdiff),0.001)
+	  write(6,'(''[47;34;1m Event = '',i9,4x,''trigger#'',i9,4x,''(time = '',i6,
+     >		    ''s, rate int= '',i5,''/s, diff= '',i5,''/s [49;0m'')')
+     >	      total_event_count,physics_events,g_replay_time,int(avrate),int(instrate)
+	  lasttime2 = g_replay_time
+          if (tdiff.lt.15) then
+            report_incr = report_incr*10
+          elseif(tdiff.gt.180) then
+            report_incr = report_incr/10
+	  endif
+	endif
+
+
 
         If(ABORT .or. mss.NE.' ') Then
           call G_add_path(here,mss)     !only if problems
@@ -1078,6 +1099,12 @@ c...
         ENDIF
       ENDDO
       endif
+
+      avrate = float(since_cnt)/max(float(g_replay_time),0.001)
+      tdiff=g_replay_time-lasttime2
+      write(6,'(''[47;34;1m Event #'',i9,'',  trigger #'',i9,'',  time = '',i6,
+     >	    	''s,  rate '',i5,''/s [49;0m'')')
+     >    total_event_count,physics_events,g_replay_time,int(avrate)
 
       ierr=thtreecloseg('all')
 
