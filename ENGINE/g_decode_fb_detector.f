@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.12  2007/10/19 00:16:19  cdaq
+* *** empty log message ***
+*
 * Revision 1.23.20.11  2007/10/19 00:15:20  cdaq
 * *** empty log message ***
 *
@@ -274,11 +277,6 @@ c
 	     pointer = pointer + 1
 	     goto 987
 	   endif
-	   
-*	   * histogram F1 raw hits
-           call hf2(hid_rawROC(roc),float(slot),float(subadd),1.)
-
-	   
          else  !header
            subadd = jiand(evfrag(pointer),'3F'X) + 1
            trigger_time = jiand(ishft(evfrag(pointer),-7),'1FF'X)
