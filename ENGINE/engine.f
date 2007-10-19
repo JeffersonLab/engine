@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.14  2007/10/19 14:57:08  cdaq
+* *** empty log message ***
+*
 * Revision 1.42.8.13  2007/10/19 00:15:20  cdaq
 * *** empty log message ***
 *
@@ -292,6 +295,8 @@ c
 
       print *
 
+c      ncalls_calc_ped = 0
+
       total_event_count= 0                      ! Need to register this
       lastdump=0
       physics_events=0
@@ -349,6 +354,8 @@ c     $     gen_bigcal_mc
           call G_add_path(here,err)
         endif
       ENDIF
+
+c      write(*,*) 'b_ntuple_max_segmentevents=',b_ntuple_max_segmentevents
 
       !write(*,*) 'after processing ctp database file, gen_run_enable=',
 c     $     gen_run_enable
@@ -1008,6 +1015,8 @@ c
 
 *
       ENDDO                     !found a problem or end of run
+
+c      write(*,*) 'ncalls_calc_ped=',ncalls_calc_ped
 
 c...  Calibrate HMS and SOS calorimeters.
 

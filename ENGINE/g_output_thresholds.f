@@ -1,6 +1,9 @@
       subroutine g_output_thresholds(lunout,roc,slot,signalcount,
      &               elements_per_plane,signal0,signal1,sigma0,sigma1)
 * $Log$
+* Revision 1.7.20.3  2007/10/19 14:50:45  cdaq
+* *** empty log message ***
+*
 * Revision 1.7.20.2  2007/10/12 02:03:44  puckett
 * *** empty log message ***
 *
@@ -86,7 +89,7 @@
                 annoying_message=.false.
               endif
               write(6,'(2x,i3,i5,i6,i11,2f11.1,f9.1)') roc,slot,ich,
-     &          g_threshold_readback(ich,roc,slot),signal0(element),delta_ped,delta_ped/(sigma0(element)+.001)
+     &             g_threshold_readback(ich,roc,slot),signal0(element),delta_ped,delta_ped/(sigma0(element)+.001)
             endif
           endif
         enddo
@@ -126,8 +129,8 @@
                   write(6,*) '  roc slot channel threshold  calc.thresh. delta  #sigma(pos. is OK).'
                   annoying_message=.false.
                 endif
-              write(6,'(2x,i3,i5,i6,i11,2f11.1,f9.1)') roc,slot,ich,
-     &          g_threshold_readback(ich,roc,slot),signal0(element),delta_ped,delta_ped/(sigma0(element)+.001)
+                write(6,'(2x,i3,i5,i6,i11,2f11.1,f9.1)') roc,slot,ich,
+     &               g_threshold_readback(ich,roc,slot),signal0(element),delta_ped,delta_ped/(sigma0(element)+.001)
               endif
             else if (sigtyp.eq.1) then
               write(lunout,'(i6)') nint(signal1(element))

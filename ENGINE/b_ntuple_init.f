@@ -68,6 +68,8 @@ c$$$      data b_ntuple_contents/bmax_ntuple_size*0/
       file = b_ntuple_file
       call g_sub_run_number(file,gen_run_number)
 
+c      write(*,*) 'b_ntuple_max_segmentevents=',b_ntuple_max_segmentevents
+
       if(b_ntuple_max_segmentevents.gt.0) then
          b_ntuple_filesegments = 1
          ifile = char(ichar('0')+b_ntuple_filesegments)
