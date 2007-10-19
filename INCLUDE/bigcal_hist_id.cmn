@@ -43,6 +43,10 @@
       integer*4 bid_bcal_ped_rms_prot
       integer*4 bid_bcal_ped_rms_rcs
       integer*4 bid_bcal_ped_rms_trig
+      integer*4 bid_bcal_pedw_prot
+      integer*4 bid_bcal_pedw_rcs
+      integer*4 bid_bcal_pedw_trig
+      integer*4 bid_bcal_raw_photodiode
       common/bigcal_hist_id/
      $     bid_bcal_row,
      $     bid_bcal_col,
@@ -84,4 +88,8 @@
      $     bid_bcal_ped_mean_trig,
      $     bid_bcal_ped_rms_prot,
      $     bid_bcal_ped_rms_rcs,
-     $     bid_bcal_ped_rms_trig
+     $     bid_bcal_ped_rms_trig,
+     $     bid_bcal_pedw_prot,
+     $     bid_bcal_pedw_rcs,
+     $     bid_bcal_pedw_trig,
+     $     bid_bcal_raw_photodiode
