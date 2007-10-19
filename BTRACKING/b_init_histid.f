@@ -68,6 +68,10 @@ c     need to hardcode some:
       bid_bcal_ped_rms_prot = thgetid('bcal_ped_rms_prot')
       bid_bcal_ped_rms_rcs = thgetid('bcal_ped_rms_rcs')
       bid_bcal_ped_rms_trig = thgetid('bcal_ped_rms_trig')
+      bid_bcal_pedw_prot = thgetid('bcal_pedw_prot')
+      bid_bcal_pedw_rcs = thgetid('bcal_pedw_rcs')
+      bid_bcal_pedw_trig = thgetid('bcal_pedw_trig')
+      bid_bcal_raw_photodiode = thgetid('bcal_raw_photodiode')
 
       do i=1,32
          itens = i/10
