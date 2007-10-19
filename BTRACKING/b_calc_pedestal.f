@@ -79,6 +79,10 @@ c            write(*,*) 'prot numped=',numped
      $                 bigcal_prot_ped_rms(icell))
                endif
 
+               if(bid_bcal_pedw_prot.gt.0) then
+                  call hf1(bid_bcal_pedw_prot,bigcal_prot_ped_rms(icell),1.)
+               endif
+
             endif
          enddo
       enddo
@@ -134,6 +138,11 @@ c            write(*,*) 'rcs numped=',numped
                   call hf1(bid_bcal_ped_rms_rcs,float(icell),
      $                 bigcal_rcs_ped_rms(icell))
                endif
+               
+               if(bid_bcal_pedw_rcs.gt.0) then
+                  call hf1(bid_bcal_pedw_rcs,bigcal_rcs_ped_rms(icell),1.)
+               endif
+               
             endif
          enddo
       enddo
@@ -189,6 +198,11 @@ c            write(*,*) 'trig numped=',numped
                   call hf1(bid_bcal_ped_rms_trig,float(igr64),
      $                 bigcal_trig_ped_rms(igr64))
                endif
+
+               if(bid_bcal_pedw_trig.gt.0) then
+                  call hf1(bid_bcal_pedw_trig,bigcal_trig_ped_rms(igr64),1.)
+               endif
+
             endif
          enddo
       enddo
