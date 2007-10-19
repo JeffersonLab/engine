@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.7  2007/10/19 14:49:41  cdaq
+* *** empty log message ***
+*
 * Revision 1.13.24.6  2007/10/17 16:08:08  cdaq
 * Changed if-block for beamline analysis. Now call for any event type 1-8 if flag is set
 *
@@ -128,10 +131,11 @@
 *  end of the pedestal handling call.
 *
       IF(update_peds) then
-         !write(*,*) 'calling g_calc_pedestal'
+         !write(*,*) 'calling g_calc_pedestal,evtype=',gen_event_type
         call g_calc_pedestal(ABORT,err)
         !write(*,*) 'g_calc_pedestal successful'
         update_peds = .false.
+        ncalls_calc_ped = ncalls_calc_ped + 1
       ENDIF
 *
 *-Beamline reconstruction
