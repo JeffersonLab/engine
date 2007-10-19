@@ -17,6 +17,7 @@
       integer*4 b_use_bad_chan_list
       integer*4 bigcal_do_calibration
       integer*4 bigcal_min_calib_events
+      integer*4 b_use_peds_in_hist
 c      integer*4 bmake_tdc_hist
 c      integer*4 bmake_ttdc_hist
       integer*4 bluno ! logical unit number for debugging output
@@ -37,5 +38,6 @@ c      integer*4 bmake_ttdc_hist
      $     b_use_bad_chan_list,
      $     bigcal_do_calibration,
      $     bigcal_min_calib_events,
+     $     b_use_peds_in_hist,
      $     bluno
       

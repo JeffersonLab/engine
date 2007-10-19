@@ -37,9 +37,10 @@
           bigcal_atrig_esum(ihit) = bigcal_trig_cfac(icell64) *
      $         bigcal_atrig_adc_good(ihit)*bigcal_trig_gain_cor(icell64)
           
-          if(bid_btadc(icell64).gt.0) call hf1(bid_btadc(icell64),
-     $         bigcal_atrig_adc_good(ihit),1.0)
-
+          if(bid_btadc(icell64).gt.0.and.b_use_peds_in_hist.eq.0) then
+             call hf1(bid_btadc(icell64),
+     $            bigcal_atrig_adc_good(ihit),1.0)
+          endif
           bigcal_atrig_good_det(icell64) = bigcal_atrig_esum(ihit)
           if(bid_bcal_tadcvsum64.gt.0) then
              call hf2(bid_bcal_tadcvsum64,bigcal_atrig_sum64(icell64),

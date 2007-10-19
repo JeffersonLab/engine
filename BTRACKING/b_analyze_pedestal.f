@@ -12,7 +12,8 @@
       include 'bigcal_data_structures.cmn'
       include 'bigcal_gain_parms.cmn'
       include 'bigcal_hist_id.cmn'
-      
+      include 'bigcal_bypass_switches.cmn'
+
       integer*4 ihit,jhit
       integer*4 irow,icol,icell
       
@@ -41,7 +42,7 @@ c      write(*,*) 'bigcal_rcs_nhit=',bigcal_rcs_nhit
      $             bigcal_prot_ped_sum(icell)/bigcal_prot_ped_num(icell)
             endif
 
-            if(bid_badc(icell).gt.0) then ! fill ADC hist for sanity check
+            if(bid_badc(icell).gt.0.and.b_use_peds_in_hist.ne.0) then ! fill ADC hist for sanity check
                call hf1(bid_badc(icell),float(bigcal_prot_adc_raw(ihit)),
      $              1.0)
             endif
@@ -68,7 +69,8 @@ c     $        bigcal_rcs_ped_limit(icell)
                bigcal_rcs_ped_limit(icell) = 100 + 
      $             bigcal_rcs_ped_sum(icell)/bigcal_rcs_ped_num(icell)
             endif
-            if(bid_badc(icell+bigcal_prot_maxhits).gt.0) then
+            if(bid_badc(icell+bigcal_prot_maxhits).gt.0.and.
+     $           b_use_peds_in_hist.ne.0) then
                call hf1(bid_badc(icell+bigcal_prot_maxhits),float(
      $              bigcal_rcs_adc_raw(ihit)),1.0)
             endif
@@ -93,7 +95,7 @@ c     $        bigcal_rcs_ped_limit(icell)
      $             bigcal_trig_ped_sum(icell)/bigcal_trig_ped_num(icell)
             endif
             
-            if(bid_btadc(icell).gt.0) then
+            if(bid_btadc(icell).gt.0.and.b_use_peds_in_hist.ne.0) then
                call hf1(bid_btadc(icell),float(bigcal_atrig_adc_raw(ihit)),
      $              1.0)
             endif

@@ -16,6 +16,7 @@
       include 'bigcal_gain_parms.cmn'
       include 'bigcal_geometry.cmn'
       include 'bigcal_hist_id.cmn'
+      include 'bigcal_bypass_switches.cmn'
 *
 *     start by sparsifying the raw data:       
 *
@@ -52,10 +53,11 @@
           if(bid_bcal_col.gt.0) call hf1(bid_bcal_col,float(icol),1.0)
           if(bid_bcal_rowcol.gt.0) call hf2(bid_bcal_rowcol,float(icol),float(irow+
      $         bigcal_prot_ny),1.0)
-          if(bid_badc(icell+bigcal_prot_maxhits).gt.0) 
-     $         call hf1(bid_badc(icell+bigcal_prot_maxhits),
-     $         bigcal_rcs_adc_good(ihit),1.0)
-
+          if(bid_badc(icell+bigcal_prot_maxhits).gt.0.and.b_use_peds_in_hist
+     $         .eq.0) then
+             call hf1(bid_badc(icell+bigcal_prot_maxhits),
+     $            bigcal_rcs_adc_good(ihit),1.0)
+          endif
 *     question of whether to group by hits or cells. 
 *     seems most logical and efficient to go by hits only and not 
 *     have to keep passing around the full array of cells with lots of 
