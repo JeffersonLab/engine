@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.13  2007/10/20 19:54:19  cdaq
+* Added decoding of ROC21 (TS) bank to get the trigger input bits
+*
 * Revision 1.32.20.12  2007/10/17 16:10:23  cdaq
 * Added analysis of roc21 (trigger supervisor) to decode the trig. type bits
 *
@@ -184,6 +187,7 @@
 cajp
       include 'bigcal_data_structures.cmn'
 cajp
+      include 'gep_hist_id.cmn'
 
       integer*4 pointer                 ! Pointer FB data word
       integer*4 banklength,maxwords
@@ -195,7 +199,9 @@ cajp
       integer*4 last_first,i              ! Last word of first bank in || bank
 *
       integer*4 jiand, jishft, jieor    ! Declare to help f2c
-      integer*4 hel_plus,hel_min
+      integer*4 hplus_ts,hmin_ts,quartet_ts,ntest,ts_input(9)
+
+      integer*4 ntrig
 
       banklength = bank(1) + 1          ! Bank length including count
       last_first = banklength
@@ -207,19 +213,67 @@ cajp
         return                  ! scaler ROC
       endif
 
+      ntrig = 0
+
       if(roc.eq.21) then
-        hel_plus = 0
-        hel_min=0
-c$$$        write(*,*) ' banklength =',banklength
-c$$$        write(*,*) 'event = ',(bank(i),i=1,banklength)
-c$$$        write(*,*) ' event type = ',bank(banklength)
-c$$$        write(*,*) ' 2nd word = ',jishft(bank(4),-17)
-        hel_plus = jishft(bank(3),-21)
-        hel_plus = jishft(hel_plus,10)
-c        write(*,*) ' hel plus = ',hel_plus
-        hel_min = jishft(bank(3),-21)
-        hel_min = jishft(hel_min,11)
-c        write(*,*) ' hel min = ',hel_min
+c        write(*,*) 'event = ',(bank(i),i=1,banklength)
+        do i=1,9
+          ntest = 2**(i-1)
+          ts_input(i) = 0
+          if ( jiand(bank(3),ntest)/ntest .eq. 1 ) then
+            ts_input(i) = 1
+            if(i.le.8) ntrig = ntrig + 1
+          endif
+          gen_event_trigtype(i) = ts_input(i)
+          if(gepid_gep_trigtype.gt.0) then
+            call hf1(gepid_gep_trigtype,float(i),float(ts_input(i)))
+          endif
+
+          if(gepid_gep_trigtype_v_evtype.gt.0) then
+            call hf2(gepid_gep_trigtype_v_evtype,float(gen_event_type),
+     $           float(i),float(ts_input(i)))
+          endif
+        enddo
+        hplus_ts = 0
+        hmin_ts=0
+        quartet_ts=0
+        if ( jiand(bank(3),512)/512 .eq. 1 ) quartet_ts = 1  
+        if ( jiand(bank(3),1024)/1024 .eq. 1 ) hplus_ts = 1  
+        if ( jiand(bank(3),2048)/2048 .eq. 1) hmin_ts = 1
+
+        gen_event_trigtype(10) = quartet_ts
+        gen_event_trigtype(11) = hplus_ts
+        gen_event_trigtype(12) = hmin_ts
+
+        if(gepid_gep_ntrigs.gt.0) then
+          call hf1(gepid_gep_ntrigs,float(ntrig),1.)
+        endif
+
+        if(gepid_gep_trigtype.gt.0) then
+          call hf1(gepid_gep_trigtype,10.,float(quartet_ts))
+          call hf1(gepid_gep_trigtype,11.,float(hplus_ts))
+          call hf1(gepid_gep_trigtype,12.,float(hmin_ts))
+        endif
+
+        if(gepid_gep_trigtype_v_evtype.gt.0) then
+          call hf2(gepid_gep_trigtype_v_evtype,float(gen_event_type),
+     $         10.,float(quartet_ts))
+          call hf2(gepid_gep_trigtype_v_evtype,float(gen_event_type),
+     $         11.,float(hplus_ts))
+          call hf2(gepid_gep_trigtype_v_evtype,float(gen_event_type),
+     $         12.,float(hmin_ts))
+        endif
+
+        if(hplus_ts.gt.0 .and. hmin_ts.eq.0) then
+          gbeam_helicity_TS = 1
+        else if(hplus_ts.eq.0 .and. hmin_ts .gt.0) then
+          gbeam_helicity_TS = -1
+        else
+          gbeam_helicity_TS = 0
+        endif
+
+c        write(*,*) ' hel min = ',hmin_ts,' hel plus = ',hplus_ts
+c     > ,ts_input
         return                  ! scaler ROC
       endif
 *
