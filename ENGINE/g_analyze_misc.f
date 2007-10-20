@@ -7,6 +7,9 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.9.20.4  2007/10/20 19:55:06  cdaq
+* Added more helicity analysis
+*
 * Revision 1.9.20.3  2007/10/17 19:30:14  cdaq
 * changed cutoffs for h+ and h- signals: >8000 for ON, <2000 for OFF
 *
@@ -317,12 +320,16 @@
 
 c     figure out helicity from ADC signals:
       if(gmisc_dec_data(1,2).gt.8000.and.gmisc_dec_data(2,2).lt.2000) then
-         gbeam_helicity = 1
+         gbeam_helicity_ADC = 1
       else if(gmisc_dec_data(2,2).ge.8000.and.gmisc_dec_data(1,2).lt.2000) then
-         gbeam_helicity = -1
+         gbeam_helicity_ADC = -1
       else
-         gbeam_helicity = 0
+         gbeam_helicity_ADC = 0
       endif
+
+c     for now just trust the trigger supervisor more than the ADC which can be noisy
+
+      gbeam_helicity = gbeam_helicity_TS
 
 c      write(*,*) 'h+ signal = ',gmisc_dec_data(1,2)
 c      write(*,*) 'h- signal = ',gmisc_dec_data(2,2)
