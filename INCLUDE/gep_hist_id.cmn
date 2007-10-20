@@ -1,3 +1,13 @@
 *     
 *     CTPTYPE=parm
 *     
+
+      integer*4 gepid_gep_trigtype
+      integer*4 gepid_gep_evtype
+      integer*4 gepid_gep_trigtype_v_evtype
+      integer*4 gepid_gep_ntrigs
+      common/gep_hist_id/
+     $     gepid_gep_trigtype,
+     $     gepid_gep_evtype,
+     $     gepid_gep_trigtype_v_evtype,
+     $     gepid_gep_ntrigs
