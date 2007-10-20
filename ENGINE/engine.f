@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.15  2007/10/20 19:56:08  cdaq
+* Added filling of event type histogram
+*
 * Revision 1.42.8.14  2007/10/19 14:57:08  cdaq
 * *** empty log message ***
 *
@@ -243,6 +246,7 @@ c
       include 'bigcal_data_structures.cmn' 
       include 'bigcal_bypass_switches.cmn'
       include 'bigcal_filenames.cmn'
+      include 'gep_hist_id.cmn'
       include 'hms_calorimeter.cmn' !for HMS calorimeter calibration
       include 'sos_calorimeter.cmn' !for SOS calorimeter calibration
 
@@ -448,6 +452,7 @@ c
 *
         if(.not.problems) then
            gen_event_type = jishft(craw(2),-16)
+
            !write(*,*)'gen_event_type = ',gen_event_type
            !write(*,*)'gen_MAX_trigger_types = ',gen_MAX_trigger_types
 
@@ -710,6 +715,15 @@ c     !!!!!!!!!!!!!!!!!!!!!!!!!!!END BIGCAL MONTE CARLO EVENT REPLAY!!!!!!!!!!!!
            gen_event_type = jishft(craw(2),-16)
            !write(*,*) 'gen_event_type = ',gen_event_type
 
+c           write(*,*) 'gen_event_type=',gen_event_type
+c           write(*,*) 'gepid_gep_ev_type=',gepid_gep_evtype
+
+           if(gepid_gep_evtype.gt.0) then
+c              write(*,*) 'filling gep event type hist, gen_event_type=',
+     $             gen_event_type
+              call hf1(gepid_gep_evtype,float(gen_event_type),1.)
+           endif
+           
           if(gen_event_type.le.gen_MAX_trigger_types) then
             recorded_events(gen_event_type)=recorded_events(gen_event_type)+1
             if (gen_event_type.ne.0) sum_recorded=sum_recorded+1
