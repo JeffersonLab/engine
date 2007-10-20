@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.35.20.6  2007/10/20 19:52:02  cdaq
+* Added helicity_ADC and helicity_TS variables so we can compare
+*
 * Revision 1.35.20.5  2007/10/19 14:57:57  cdaq
 * *** empty log message ***
 *
@@ -164,7 +167,9 @@
 *     CTPTYPE=event
 *
       integer*4 ncalls_calc_ped
-      integer*4 gbeam_helicity ! value from ADC
+      integer*4 gbeam_helicity ! whatever we decide
+      integer*4 gbeam_helicity_ADC ! value from ADC
+      integer*4 gbeam_helicity_TS ! value from TS
       REAL*4 GBEAM_X,GBEAM_Y    !final beam position from bpm & raster info
       REAL*4 GBEAM_XP,GBEAM_YP  !final beam angles from bpm & raster info
       REAL*4 geloss
@@ -175,6 +180,8 @@
      &     G_BEAM_TARGET_S,
      &     ncalls_calc_ped,
      &     gbeam_helicity,
+     &     gbeam_helicity_ADC,
+     &     gbeam_helicity_TS,
      &     GBEAM_X,GBEAM_Y,
      &     GBEAM_XP,GBEAM_YP,
      &     geloss
