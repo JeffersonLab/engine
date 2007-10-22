@@ -11,6 +11,9 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 * $Log$
+* Revision 1.13.24.4  2007/10/22 18:14:53  cdaq
+* commented out print statement
+*
 * Revision 1.13.24.3  2007/10/17 19:38:50  cdaq
 * FPP fixes
 *
@@ -199,7 +202,7 @@ c         ABORT=.FALSE.
 c         err=":no tracks found!"
       else
       
-         print *,' HMS track found!'
+c         print *,' HMS track found!'
       
 *        Proceed if one or more track has been found
 *        
