@@ -11,6 +11,9 @@
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
 * $Log$
+* Revision 1.15.24.2  2007/10/22 15:16:52  cdaq
+* commented out diagnostic write statements
+*
 * Revision 1.15.24.1  2007/08/22 19:09:17  frw
 * added FPP
 *
@@ -91,6 +94,7 @@
       ABORT= ABORT .or. FAIL
 *
 *
+c      write(*,*) ' call  h_generate_geometry'
       call h_generate_geometry          ! Tracking routine
 *
 *-calculate secondary scintillator and time of flight parameters
