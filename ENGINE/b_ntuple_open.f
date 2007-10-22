@@ -61,16 +61,18 @@ c     get any free IO channel
 
       call HCDIR(directory,'R') !CERNLIB read current directory
   
-      if(bigcal_ntuple_type.eq.1) then
-        recL = default_recl
-        call HROPEN(io,name,file,'N',recL,status)
-      else
-        recL = 8191
-        iquest(10) = 65000
-        call HROPEN(io,name,file,'NQ',recL,status)
-      endif
-
-
+c$$$      if(bigcal_ntuple_type.eq.1) then
+c$$$        recL = default_recl
+c$$$        call HROPEN(io,name,file,'N',recL,status)
+c$$$      else
+c$$$        recL = 8191
+c$$$        iquest(10) = 65000
+c$$$        call HROPEN(io,name,file,'NQ',recL,status)
+c$$$      endif
+      
+      recL = 8191
+      iquest(10) = 65000
+      call HROPEN(io,name,file,'NQ',recL,status)
       
 
       ABORT= status.ne.0
@@ -89,7 +91,8 @@ c     get any free IO channel
       title = b_ntuple_title
       
       if(bigcal_ntuple_type.eq.1) then ! col-wise ntuple for cluster analysis
-        call HBNT(id,title,' ')
+         call hbset('BSIZE',8176,status)
+         call HBNT(id,title,' ')
 
         call HBNAME(id,'bevinfo',bgid,'bgid:I*4,bgtype[5,6]:I*4')
         call HBNAME(id,'bhits',ngooda,'ngooda:I*4,ngoodt:I*4,'//
