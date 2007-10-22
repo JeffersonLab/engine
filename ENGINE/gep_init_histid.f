@@ -22,7 +22,7 @@ c     miscellaneous hard-coded histograms for checkout
 
       gepid_gep_trigtype = thgetid('gep_trigtype')
       gepid_gep_evtype = thgetid('gep_evtype')
-      gepid_gep_trigtype_v_evtype = thgetid('gep_trigtype_v_evtype')
+      gepid_gep_trigtype_vs_evtype = thgetid('gep_trigtype_vs_evtype')
       gepid_gep_ntrigs = thgetid('gep_ntrigs')
 
       return 

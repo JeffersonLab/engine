@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.14  2007/10/22 15:47:44  cdaq
+* *** empty log message ***
+*
 * Revision 1.32.20.13  2007/10/20 19:54:19  cdaq
 * Added decoding of ROC21 (TS) bank to get the trigger input bits
 *
@@ -229,8 +232,8 @@ c        write(*,*) 'event = ',(bank(i),i=1,banklength)
             call hf1(gepid_gep_trigtype,float(i),float(ts_input(i)))
           endif
 
-          if(gepid_gep_trigtype_v_evtype.gt.0) then
-            call hf2(gepid_gep_trigtype_v_evtype,float(gen_event_type),
+          if(gepid_gep_trigtype_vs_evtype.gt.0) then
+            call hf2(gepid_gep_trigtype_vs_evtype,float(gen_event_type),
      $           float(i),float(ts_input(i)))
           endif
         enddo
@@ -255,12 +258,12 @@ c        write(*,*) 'event = ',(bank(i),i=1,banklength)
           call hf1(gepid_gep_trigtype,12.,float(hmin_ts))
         endif
 
-        if(gepid_gep_trigtype_v_evtype.gt.0) then
-          call hf2(gepid_gep_trigtype_v_evtype,float(gen_event_type),
+        if(gepid_gep_trigtype_vs_evtype.gt.0) then
+          call hf2(gepid_gep_trigtype_vs_evtype,float(gen_event_type),
      $         10.,float(quartet_ts))
-          call hf2(gepid_gep_trigtype_v_evtype,float(gen_event_type),
+          call hf2(gepid_gep_trigtype_vs_evtype,float(gen_event_type),
      $         11.,float(hplus_ts))
-          call hf2(gepid_gep_trigtype_v_evtype,float(gen_event_type),
+          call hf2(gepid_gep_trigtype_vs_evtype,float(gen_event_type),
      $         12.,float(hmin_ts))
         endif
 
