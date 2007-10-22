@@ -39,6 +39,8 @@
       err= ' '
       ABORT = .FALSE.
 *
+c      write(*,*)'In h_fp_nt_keep ...',h_fpp_nt_exists
+
       IF(.NOT.h_fpp_nt_exists) RETURN       !nothing to do
 
 c      write(*,*)'Segments: ',h_fpp_nt_segmentevents,HFPP_nt_max_segmentevents
