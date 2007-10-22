@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.16  2007/10/22 14:50:37  brash
+* Fixed typo in loop surrounding gepid_gep_evtype
+*
 * Revision 1.42.8.15  2007/10/20 19:56:08  cdaq
 * Added filling of event type histogram
 *
@@ -720,7 +723,7 @@ c           write(*,*) 'gepid_gep_ev_type=',gepid_gep_evtype
 
            if(gepid_gep_evtype.gt.0) then
 c              write(*,*) 'filling gep event type hist, gen_event_type=',
-     $             gen_event_type
+c     $             gen_event_type
               call hf1(gepid_gep_evtype,float(gen_event_type),1.)
            endif
            
