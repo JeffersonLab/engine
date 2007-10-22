@@ -63,7 +63,7 @@
 ** analysis time as there are fewer combinations using 5 out of 6
 ** hits than there are using 4 out of 6 hits (for example)
 
-
+c      write(*,*)'In fpp tracking routine ...'
       any_track = .false.
       any_good  = .false.
       any_great = .false.
@@ -153,6 +153,8 @@
         myclass = H_FPP_ET_BAD
       endif
 
+c      write(*,*)'Ntracks in set ',DCset,' = ',HFPP_N_tracks(DCset),
+c     &    ' myclass = ',myclass
       if (HFPP_eventclass.lt.myclass) then
         HFPP_eventclass = HFPP_eventclass
      >                  + myclass * 2**(DCset-1)

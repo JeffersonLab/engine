@@ -28,7 +28,7 @@
       ABORT= .FALSE.
       err= ' '
 
-
+c      write(*,*)'In h_fpp.f with hsnum_fptrack =',hsnum_fptrack
       if (hsnum_fptrack.le.0) return    ! No good HMS track
 *     * note that the above value is determined in h_select_best_track
 *     * so we have to wait until after it is called before we do the FPP!
@@ -36,9 +36,10 @@
 
 *     * do tracking in each set of chambers separately
       do iset=1, H_FPP_N_DCSETS
+c        write(*,*)'Calling fpp_tracking ->'
+c        write(*,*)'iset,layers,min = ',iset,HFPP_Nlayershit_set(iset),
+c     &   HFPP_minsethits
         if (HFPP_Nlayershit_set(iset) .ge. HFPP_minsethits) then
-c          write(*,*)'Calling fpp_tracking ->'
-c          write(*,*)'iset,layers = ',iset,HFPP_Nlayershit_set(iset)
           call h_fpp_tracking(iset,ABORT,err)
           if (ABORT) then
             call g_add_path(here,err)

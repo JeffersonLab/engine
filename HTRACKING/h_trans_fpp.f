@@ -41,6 +41,7 @@
 
 
 *     * check if we have any work to do
+c      write(*,*)'In h_trans_fpp ... ',HFPP_raw_tot_hits
       if (HFPP_raw_tot_hits .le. 0) RETURN
 
 

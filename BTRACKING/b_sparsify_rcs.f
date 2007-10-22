@@ -20,7 +20,7 @@ c     then we can assume from here on out that RCS_IY starts at 1 and goes to 24
 
       include 'bigcal_data_structures.cmn'
       include 'bigcal_gain_parms.cmn'
-      
+
 *     check number of hits:
       err=' '
       if(BIGCAL_RCS_NHIT.lt.0.or.BIGCAL_RCS_NHIT.gt.

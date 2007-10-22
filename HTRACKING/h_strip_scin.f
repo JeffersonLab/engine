@@ -7,6 +7,9 @@
 * h_strip_scin converts the raw hits to arrays over hits
 * with good TDC values.
 * $Log$
+* Revision 1.11.24.1  2007/10/22 15:22:50  cdaq
+* *** empty log message ***
+*
 * Revision 1.11  1999/02/23 18:49:18  csa
 * (JRA) Remove hdebugcalcpeds stuff
 *
@@ -69,6 +72,9 @@
       do ihit = 1 , hscin_all_tot_hits  ! pick out 'good' hits.
 
 **    Criteria for good hit is at least one valid tdc value.
+c         write(*,*) ihit,hscin_all_adc_pos(ihit),hscin_all_adc_neg(ihit),
+c     >hscin_all_tdc_pos(ihit),hscin_all_tdc_neg(ihit),
+c     > hscin_tdc_min,hscin_tdc_max
         if (((hscin_all_tdc_pos(ihit) .ge. hscin_tdc_min).and.
      1       (hscin_all_tdc_pos(ihit) .le. hscin_tdc_max)) .or. 
      2       ((hscin_all_tdc_neg(ihit) .ge. hscin_tdc_min).and.

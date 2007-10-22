@@ -8,6 +8,9 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change HPLANE_PARAM to individual arrays
 * $Log$
+* Revision 1.9.24.1  2007/10/22 15:23:06  cdaq
+* *** empty log message ***
+*
 * Revision 1.9  1999/02/10 18:23:48  csa
 * Added 4/6 tracking code (D. Meekins)
 *
@@ -58,7 +61,6 @@
 *     hdc_sigma(pln)       = sigma
 *
       hdc_planes_per_chamber = hdc_num_planes / hdc_num_chambers
-
       missing_card_no = .false.
       do j=1,hmax_num_dc_planes
         do i=1,hdc_max_wires_per_plane
