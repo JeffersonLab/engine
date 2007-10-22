@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.17  2007/10/22 18:38:59  cdaq
+* adjusted HMS FPP histos
+*
 * Revision 1.42.8.16  2007/10/22 14:50:37  brash
 * Fixed typo in loop surrounding gepid_gep_evtype
 *
@@ -1001,9 +1004,16 @@ c
 	  avrate = float(since_cnt)/max(float(g_replay_time),0.001)
           tdiff=g_replay_time-lasttime2
 	  instrate = report_incr/max(float(tdiff),0.001)
-	  write(6,'(''[47;34;1m Event = '',i9,4x,''trigger#'',i9,4x,''(time = '',i6,
-     >		    ''s, rate int= '',i5,''/s, diff= '',i5,''/s [49;0m'')')
+	  if (total_event_count.gt.99999.or.physics_events.gt.99999.or.
+     >        g_replay_time.gt.9999) then
+	    write(6,'(''[47;34;1m Event = '',i9,3x,''trigger#'',i9,4x,''(time = '',
+     >		    i6,''s, rate int= '',i5,''/s, diff= '',i5,''/s) [49;0m'')')
      >	      total_event_count,physics_events,g_replay_time,int(avrate),int(instrate)
+	  else
+	    write(6,'(''[47;34;1m Event = '',i5,3x,''trigger#'',i5,4x,''(time = '',
+     >		    i4,''s, rate int= '',i5,''/s, diff= '',i5,''/s) [49;0m'')')
+     >	      total_event_count,physics_events,g_replay_time,int(avrate),int(instrate)
+	  endif
 	  lasttime2 = g_replay_time
           if (tdiff.lt.15) then
             report_incr = report_incr*10

@@ -7,6 +7,9 @@
 *     Date:      9 April 1994
 *
 * $Log$
+* Revision 1.8.24.2  2007/10/22 18:39:10  cdaq
+* adjusted HMS FPP histos
+*
 * Revision 1.8.24.1  2007/08/22 19:09:30  frw
 * added FPP
 *
@@ -368,6 +371,9 @@ c
 	enddo
        enddo
       enddo
+
+      hid_rawROC(13) = thgetid('rawROC13')
+      hid_rawROC(14) = thgetid('rawROC14')
 
       RETURN
       END

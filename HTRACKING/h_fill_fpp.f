@@ -57,7 +57,7 @@
         tdc = HFPP_raw_TDC(iHit)
 	if (iPlane.le.H_FPP_N_PLANES) then
 	  hid = hidFPP_tdc(iPlane)
-	  call hf2(hid,float(iWire),float(tdc),1.)
+	  call hf2(hid,float(tdc),float(iWire),1.)
 	endif
       enddo
 
@@ -68,7 +68,7 @@
 	time  = HFPP_HitTime(iHit)
 	if (iPlane.le.H_FPP_N_PLANES) then
 	  hid = hidFPP_alltimes(iPlane)
-	  call hf2(hid,float(iWire),time,1.)
+	  call hf2(hid,time,float(iWire),1.)
 	endif
       enddo
 
@@ -81,7 +81,7 @@
 	  if (iHit.gt.0) then
 	    time = HFPP_HitTime(iHit)
 	    call hf1(hid1,time,1.)
-	    call hf2(hid2,float(iWire),time,1.)
+	    call hf2(hid2,time,float(iWire),1.)
           endif
         enddo
       enddo
@@ -92,9 +92,9 @@
 	  hit2 = HFPP_hit2idx(iPlane,iWire)
 	  if (hit2.gt.0) then
 	    iHit = HFPP_hit1idx(iPlane,iWire)
-	    time = HFPP_HitTime(iHit) - HFPP_HitTime(hit2)
+	    time = HFPP_HitTime(hit2) - HFPP_HitTime(iHit)
 	    hid = hidFPP_time12(iPlane)
-	    call hf2(hid,float(iWire),time,1.)
+	    call hf2(hid,time,float(iWire),1.)
           endif
 	enddo
       enddo
@@ -139,8 +139,8 @@
 		iWire = HFPP_raw_wire(iHit)
 		time = HFPP_drift_time(DCset,iChamber,iLayer,iWire)
 		dist = HFPP_drift_dist(DCset,iChamber,iLayer,iWire)
-        	call hf2(hid1,float(iWire),time,1.)
-        	call hf2(hid2,float(iWire),dist,1.)
+        	call hf2(hid1,time,float(iWire),1.)
+        	call hf2(hid2,dist,float(iWire),1.)
 	      enddo !iRaw
 	    endif
 	  enddo !iTrack

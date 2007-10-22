@@ -11,6 +11,9 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
+* Revision 1.13.24.2  2007/10/22 18:39:10  cdaq
+* adjusted HMS FPP histos
+*
 * Revision 1.13.24.1  2007/08/22 19:09:31  frw
 * added FPP
 *
@@ -178,6 +181,9 @@ c
 
       integer*4 hidFPP_resol_lin(H_FPP_N_DCSETS)
       integer*4 hidFPP_resol_ang(H_FPP_N_DCSETS)
+
+      integer*4 hid_rawROC(0:15)
+      
 c
       common/hms_fpp_histid/
      &     hidFPP_tdc,
@@ -200,7 +206,8 @@ c
      &     hidFPP_tdcROC,
      &     hidFPP_NickEff,
      &     hidFPP_sclose, hidFPP_zclose,
-     &     hidFPP_thetapol, hidFPP_phipol
+     &     hidFPP_thetapol, hidFPP_phipol,
+     &     hid_rawROC
 *
 *     CTPTYPE=parm
 *
