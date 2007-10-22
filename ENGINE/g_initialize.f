@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.24.6.9  2007/10/22 15:18:09  cdaq
+* fixed array index problem with gen_run_enable
+*
 * Revision 1.24.6.8  2007/09/12 19:26:31  puckett
 * *** empty log message ***
 *
@@ -145,7 +148,7 @@
       include 'gen_data_structures.cmn'
       include 'bigcal_data_structures.cmn' ! add BigCal
 *
-      integer ierr
+      integer ierr,i
       logical HMS_ABORT,SOS_ABORT, HACK_ABORT, BIGCAL_ABORT ! add flag for BigCal
       character*132 HMS_err,SOS_err, HACK_err, BIGCAL_err ! add err. message for BigCal
 *
@@ -380,15 +383,20 @@ c
         open(unit=G_LUN_EPICS_OUTPUT,file=file,status='unknown')
       endif
 
-      !write(*,*) 'about to call h_initialize'
+c      write(*,*) 'about to call h_initialize'
 
 *-HMS initialize
-      if(gen_run_enable(1).ne.0) then
+c$$$      write(*,*) 'gen_run_enable flags ->'
+c$$$      do i=0,15
+c$$$      	write(*,*) 'gen_run_able(',i,') = ',gen_run_enable(i)
+c$$$      enddo
+
+      if(gen_run_enable(0).ne.0) then
         call H_initialize(HMS_ABORT,HMS_err)
       endif
 *
 *-SOS initialize
-      if(gen_run_enable(2).ne.0) then
+      if(gen_run_enable(1).ne.0) then
         call S_initialize(SOS_ABORT,SOS_err)
       endif
 
