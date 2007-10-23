@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.35.20.7  2007/10/23 17:02:07  cdaq
+* Added eloss parameters for everything in front of BigCal: 4 inch Al absorber, .5 inch lucite, .75 inches Al (.5 in front plate and .25 in support frame for lucite)
+*
 * Revision 1.35.20.6  2007/10/20 19:52:02  cdaq
 * Added helicity_ADC and helicity_TS variables so we can compare
 *
@@ -226,7 +229,8 @@
       REAL*4 gfront_thk,gair_dens,gair_thk,gair_a,gair_z
       real*4 bscat_win_thk,bscat_win_den,bscat_win_a,bscat_win_z
       real*4 babs_thk,babs_den,babs_a,babs_z
-
+      real*4 bluc_thk,bluc_den,bluc_a,bluc_z
+      real*4 bfpl_thk,bfpl_den,bfpl_a,bfpl_z
 
       COMMON/TARG_LOSS/
      &     gelossdebug,gen_eloss_enable,
@@ -237,7 +241,9 @@
      &     gcell_radius,gz_cell,ga_cell,gcell_den,gwall_thk,gend_thk,
      &     gfront_thk,gair_dens,gair_thk,gair_a,gair_z,
      &     bscat_win_thk,bscat_win_den,bscat_win_a,bscat_win_z,
-     &     babs_thk,babs_den,babs_a,babs_z
+     &     babs_thk,babs_den,babs_a,babs_z,
+     &     bluc_thk,bluc_den,bluc_a,bluc_z,
+     &     bfpl_thk,bfpl_den,bfpl_a,bfpl_z
 
 *
 *     CTPTYPE=event
