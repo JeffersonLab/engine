@@ -118,7 +118,10 @@ cfrw  the HMS reference time is calculated at z=0 is this system
 
 ********************  convert drift time to drift distance ********************
 
-      if (hfpp_drift_type.eq.1) then		! look-up table ***************
+      if (hfpp_drift_type.eq.0) then		! no drift, use 0.5cm ***************
+          drift_distance = 0.5
+
+      elseif (hfpp_drift_type.eq.1) then		! look-up table ***************
 
           if (drift_time.lt.hfpp_drift_Tmin .or.
      >        drift_time.gt.hfpp_drift_Tmax	 ) then   ! skip rare random/early hit
@@ -273,6 +276,8 @@ c==============================================================================
       enddo
 
       if (hfpp_driftmap_filename.eq.' ') then
+        print *,'\n No drift map specified for the HMS FPP chambers.'
+        print *,  ' Using fixed drift distance of +/-0.5 cm, best fit.\n'
         RETURN
       endif
 

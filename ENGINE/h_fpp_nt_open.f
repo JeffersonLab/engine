@@ -124,6 +124,7 @@ c      call HLIMIT(nh)
 *  max layers per chamber pair = 6
 *  H_FPP_N_PLANES=12
 *  H_FPP_MAX_RAWHITS=2400
+*  MAX_cwn_goodhits= 100
 *  max hit1/set = N chamb * N lay * max cluster/layer * max hit/cluster = 270
 
       call HBNAME(id,'FPP1',cwnFPP_eventID,'eventID:U*4'
@@ -141,9 +142,9 @@ c      call HLIMIT(nh)
      1 //',trig_TDC1:I*4'
      1 //',trig_TDC2:I*4'
      1 
-     1// ',RawHits[0,24]:U*4'
+     1// ',RawHits[0,2400]:U*4'
      1
-     1// ',Nhits1[0,12]:U*4'
+     1// ',Nhits1[0,100]:U*4'
      1// ',h1_Pol(Nhits1)[1,2]:U*4'
      1// ',h1_Layer(Nhits1)[0,12]:U*4'
      1// ',h1_Wire(Nhits1)[0,104]:U*4'

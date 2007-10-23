@@ -30,10 +30,9 @@
 *
       logical HEXIST	!CERNLIB function
 *
-      real*4 jTime
       integer iSet,iTrk,iCham,iLay,iWire,cluster
-      integer iHit,jHit,iRaw,jRaw
-      integer i,k,n
+      integer iHit,iRaw
+      integer n
 *
 *--------------------------------------------------------
       err= ' '
@@ -124,12 +123,6 @@ c     >                HFPP_track_residual(iSet,iCham,iLay,iTrk)
       enddo !iSet
       cwnFPP_Nhits1 = n
 
-      k=0
-      do i=1,H_FPP_N_PLANES
-        k = k + HFPP_N_planehits(i)
-c        write(*,*)HFPP_N_planehits(i),k
-      enddo
-      if (k.ne.n) print *,' ERROR in ',here,': hit count mismatch set ',iSet,': ',k,' != ',n
 
 *******  FPP tracks
 
