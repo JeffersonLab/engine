@@ -72,9 +72,10 @@ c            nprot = nprot + 1
             
             t = BIGCAL_ALL_CLSTR_T8MEAN(i)
             
-            if(bid_bcal_tmean.gt.0) call hf1(bid_bcal_tmean,t,1.0)
-            if(bid_bcal_trms.gt.0) call hf1(bid_bcal_trms,bigcal_all_clstr_t8rms(i),1.0)
-            
+            if(bigcal_all_clstr_ncell8(i).gt.0) then
+               if(bid_bcal_tmean.gt.0) call hf1(bid_bcal_tmean,t,1.0)
+               if(bid_bcal_trms.gt.0) call hf1(bid_bcal_trms,bigcal_all_clstr_t8rms(i),1.0)
+            endif
 c     correct every track for energy loss. BigCal is always electron arm
 c     need to set up eloss params for BigCal absorber!
             xrot = x * Costh + R * Sinth
