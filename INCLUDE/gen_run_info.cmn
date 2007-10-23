@@ -2,6 +2,9 @@
 *- 
 *-   Created   22-Apr-1994   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.7.24.4  2007/10/23 13:27:44  cdaq
+* Added "gtrig7" and "gtrig8" equivalences for gen_run_enable
+*
 * Revision 1.7.24.3  2007/09/12 19:29:42  puckett
 * fixed incorrect usage of array index of gen_run_enable(type)
 *
@@ -73,7 +76,7 @@
 *
 *-shorter names for command line input
       integer grun,gstart,gstop,gdump,gtrig1,gtrig2,gtrig3,gtrig4 ! aliases
-      integer gtrig5,gtrig6,gbeam,gmc
+      integer gtrig5,gtrig6,gtrig7,gtrig8,gbeam,gmc
       equivalence (grun,gen_run_number)
       equivalence (gstart,gen_run_starting_event)
       equivalence (gstop,gen_run_stopping_event)
@@ -84,6 +87,8 @@
       equivalence (gtrig4,gen_run_enable(3))
       equivalence (gtrig5,gen_run_enable(4))
       equivalence (gtrig6,gen_run_enable(5))
+      equivalence (gtrig7,gen_run_enable(6))
+      equivalence (gtrig8,gen_run_enable(7))
       equivalence (gbeam,gen_analyze_beamline)
       equivalence (gmc,gen_bigcal_mc)
 
