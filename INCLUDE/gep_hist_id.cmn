@@ -6,8 +6,15 @@
       integer*4 gepid_gep_evtype
       integer*4 gepid_gep_trigtype_vs_evtype
       integer*4 gepid_gep_ntrigs
+      integer*4 gepid_gep_HMS1_rawtdc
+      integer*4 gepid_gep_HMS2_rawtdc
+      integer*4 gepid_gep_bigcal_rawtdc
+
       common/gep_hist_id/
      $     gepid_gep_trigtype,
      $     gepid_gep_evtype,
      $     gepid_gep_trigtype_vs_evtype,
-     $     gepid_gep_ntrigs
+     $     gepid_gep_ntrigs,
+     $     gepid_gep_HMS1_rawtdc,
+     $     gepid_gep_HMS2_rawtdc,
+     $     gepid_gep_bigcal_rawtdc
