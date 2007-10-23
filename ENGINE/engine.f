@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.18  2007/10/23 13:25:35  cdaq
+* commented out diagnostic message
+*
 * Revision 1.42.8.17  2007/10/22 18:38:59  cdaq
 * adjusted HMS FPP histos
 *
@@ -866,6 +869,8 @@ c
                   if(.NOT.problems) then
                     if (gen_event_type.ne.0) then	!physics events (not scalers)
                        !write(*,*) 'about to call g_reconstruction, trying to locate segfault'
+c                       write(*,*) 'calling g_reconstruction, gen_event_type=',
+c     $                      gen_event_type
                       call G_reconstruction(CRAW,ABORT,err) !COMMONs
                       !write(*,*) 'g_reconstruction finished successfully, no segfault'
                       physics_events = physics_events + 1
