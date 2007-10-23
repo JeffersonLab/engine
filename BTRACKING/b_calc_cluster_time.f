@@ -277,8 +277,18 @@ c     the trig. tdc channel is unique!!!!!!!!!!!!!!!!!!!!!!!!!!
          meant8 = t8sum / n8
          rmst8 = sqrt(t8sum2 / n8 - meant8**2)
 
+         if(n8.eq.0) then
+            meant8 = 0.
+            rmst8 = 0.
+         endif
+
          meant64 = t64sum / n64
          rmst64 = sqrt(t64sum2 / n64 - meant64**2)
+
+         if(n64.eq.0) then
+            meant64 = 0.
+            rmst64 = 0.
+         endif
 
          bigcal_all_clstr_t8mean(iclust) = meant8
          bigcal_all_clstr_t64mean(iclust) = meant64
