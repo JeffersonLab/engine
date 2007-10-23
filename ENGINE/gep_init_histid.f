@@ -24,6 +24,9 @@ c     miscellaneous hard-coded histograms for checkout
       gepid_gep_evtype = thgetid('gep_evtype')
       gepid_gep_trigtype_vs_evtype = thgetid('gep_trigtype_vs_evtype')
       gepid_gep_ntrigs = thgetid('gep_ntrigs')
+      gepid_gep_HMS1_rawtdc = thgetid('gep_HMS1_rawtdc')
+      gepid_gep_HMS2_rawtdc = thgetid('gep_HMS2_rawtdc')
+      gepid_gep_bigcal_rawtdc = thgetid('gep_bigcal_rawtdc')
 
       return 
       end
