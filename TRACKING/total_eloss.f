@@ -16,6 +16,9 @@
 *-    Created   1-Dec-1995  Rolf Ent
 *
 * $Log$
+* Revision 1.8.20.3  2007/10/23 17:04:04  cdaq
+* Added eloss calculation for materials in front of BigCal
+*
 * Revision 1.8.20.2  2007/08/07 19:12:46  puckett
 * *** empty log message ***
 *
@@ -132,6 +135,7 @@
       REAL*4 thick,thick_side,thick_front,e_loss,total_loss
       REAL*4 targ_win_loss,front_loss,back_loss,cell_wall_loss
       REAL*4 scat_win_loss,air_loss,h_win_loss,s_win_loss,b_abs_loss
+      REAL*4 b_luc_loss,b_fpl_loss
       REAL*4 electron
       REAL*8 beta_temp,gamma_temp,X_temp,frac_temp,p_temp
       REAL*4 velocity
@@ -190,8 +194,7 @@
          stop
       else if((arm.eq.3).and.((bscat_win_den.eq.0.0).or.
      $        (bscat_win_thk.eq.0.0).or.(bscat_win_z.eq.0).or.
-     $        (bscat_win_a.eq.0.0).or.(babs_z.eq.0.0).or.
-     $        (babs_a.eq.0.0))) then
+     $        (bscat_win_a.eq.0.0))) then
          write(6,*)
      $        'Total_eloss: Uninitialized BigCal window specs!!!'
          stop
@@ -234,6 +237,10 @@
  60            format(4(A12))
  70            format(10(A11))
  80            format(2x,I9,9(2x,f9.6))
+ 90            format(7(2x,A10))
+ 92            format(9(2x,A10))
+ 134           format(12x,6(2x,f10.9))
+ 136           format(12x,8(2x,f10.9))
 ***********************END SETUP******************************
 
 *******************************************************************************
@@ -536,19 +543,29 @@ c     air gap between the chamber and the entrance window!
 c     BigCal Al absorber loss (most significant)
          call loss(prt,babs_z,babs_a,babs_thk,babs_den,velocity,b_abs_loss) ! absorber
          total_loss = total_loss + b_abs_loss
+         
+c     BigCal lucite plate loss 
+         call loss(prt,bluc_z,bluc_a,bluc_thk,bluc_den,velocity,b_luc_loss) ! lucite
+         total_loss = total_loss + b_luc_loss
+c     BigCal front plate(plates) loss:
+         call loss(prt,bfpl_z,bfpl_a,bfpl_thk,bfpl_den,velocity,b_fpl_loss) ! front plate(s)
+         total_loss = total_loss + b_fpl_loss
+
          e_loss = total_loss
 
          if(gelossdebug.ne.0)then
             if(liquid) then
-               write(6,10)'liquid',
-     &              'back','cell_wall','scat_win','air','BigCal_win',
-     &              'total'
-               write(6,20) back_loss,cell_wall_loss,scat_win_loss,air_loss,
-     &              b_abs_loss,total_loss
+               write(6,92)'liquid',
+     &              'back','cell_wall','scat_win','air','BigCal_abs',
+     &              'BigCal_luc','BigCal_fpl','total'
+               write(6,136) back_loss,cell_wall_loss,scat_win_loss,air_loss,
+     &              b_abs_loss,b_luc_loss,b_fpl_loss,total_loss
             else
-               write(6,30)'solid',
-     &               'scat_win','air','BigCal_win','total'
-               write(6,40) scat_win_loss,air_loss,b_abs_loss,total_loss
+               write(6,90)'solid',
+     &               'scat_win','air','BigCal_abs','Bigcal_luc','BigCal fpl',
+     $              'total'
+               write(6,134) scat_win_loss,air_loss,b_abs_loss,b_luc_loss,b_fpl_loss,
+     $              total_loss
             endif
             write(6,*) ' '
          endif   
