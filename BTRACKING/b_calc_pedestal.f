@@ -211,28 +211,45 @@ c            write(*,*) 'trig numped=',numped
 
 c     now we write thresholds to file for hardware sparsification:
 
-      if(b_threshold_output_filename.ne.' ') then
-         file = b_threshold_output_filename
+      if(b_roc11_threshold_output_filename.ne.' ') then
+         file = b_roc11_threshold_output_filename
          call g_sub_run_number(file,gen_run_number)
          open(unit=SPAREID,file=file,status='unknown')
 
-         write(SPAREID,*) '# This is the ADC threshold file generated '// 
-     $       'automatically'
-         write(SPAREID,666)'# from the pedestal data, run ',gen_run_number
-         write(SPAREID,*) '# ROC11 (BigCal Protvino and trigger ADCs):'
- 666     format(A31,I8)
+c$$$         write(SPAREID,*) '# This is the ADC threshold file generated '// 
+c$$$     $       'automatically'
+c$$$         write(SPAREID,666)'# from the pedestal data, run ',gen_run_number
+c$$$         write(SPAREID,*) '# ROC11 (BigCal Protvino and trigger ADCs):'
+c$$$ 666     format(A31,I8)
          roc=11
 c     protvino ADCs are NO LONGER in ROC11, slots 3-10 and 14-21
 c     protvino ADCs are now in ROC11, slots 3-19
 
          signalcount=1
-
-         do slot=3,19
+c     change slot range to 3-20 since now we have several cables in slot 20
+         do slot=3,18
             write(spareid,*) 'slot=',slot
             call g_output_thresholds(spareid,roc,slot,signalcount,
      $           BIGCAL_PROT_NX,bigcal_prot_new_threshold,0,
      $           bigcal_prot_new_rms,0)
          enddo
+
+         slot=19
+         write(spareid,*) 'slot=',slot
+         call g_output_thresholds(spareid,roc,slot,signalcount,
+     $        2,bigcal_trig_new_threshold,0,
+     $        bigcal_trig_new_rms,0)
+         
+
+         slot=20
+         write(spareid,*) 'slot=',slot
+         call g_output_thresholds(spareid,roc,slot,signalcount,
+     $        bigcal_prot_nx,bigcal_prot_new_threshold,0,
+     $        bigcal_prot_new_rms,0)
+
+
+         close(spareid)
+      endif
             
 c$$$         do slot=14,21
 c$$$            write(spareid,*) 'slot=',slot
@@ -249,8 +266,12 @@ c$$$     $        bigcal_trig_new_rms,0)
 
 c     rcs ADCs are in ROC12, slots 6-11 and 15-20
 
-         write(SPAREID,*) '# ROC12 (BigCal RCS ADCs):'
+c$$$         write(SPAREID,*) '# ROC12 (BigCal RCS ADCs):'
 
+      if(b_roc12_threshold_output_filename.ne.' ') then
+         file=b_roc12_threshold_output_filename
+         call g_sub_run_number(file,gen_run_number)
+         open(unit=SPAREID,file=file,status='unknown')
          roc=12
          do slot=6,11
             write(spareid,*) 'slot=',slot
@@ -265,6 +286,9 @@ c     rcs ADCs are in ROC12, slots 6-11 and 15-20
      $           BIGCAL_RCS_NX,bigcal_rcs_new_threshold,0,
      $           bigcal_rcs_new_rms,0)
          enddo
+
+         close(spareid)
+
       endif
 
       return

@@ -42,6 +42,14 @@
 
       ABORT= .FALSE.
       err= ' '
+c
+c temporary kluge until we get a good drift map
+c
+c      write(*,*)'Setting drift distance to 1/2 cm'
+c
+      drift_time = 20.0
+      drift_distance = 0.1
+      return
 
       drift_distance = H_FPP_BAD_DRIFT
 

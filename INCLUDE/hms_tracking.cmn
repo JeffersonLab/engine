@@ -8,6 +8,9 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
+* Revision 1.27.20.2  2007/10/24 16:37:21  cdaq
+* *** empty log message ***
+*
 * Revision 1.27.20.1  2007/09/12 14:40:03  brash
 * *** empty log message ***
 *
@@ -279,6 +282,9 @@
       integer*4 hsingle_stub            ! switch to make tracks of all stubs
       integer*4 hSmallAngleApprox       ! switch for alternate L/R determ. of Y,Yprime planes
       integer*4 hluno                 ! logical unit number for debugging output
+
+      integer*4 hdumptof		! dumps tof fitting data from h_tof
+
       common/HMS_TRACKFLAGS/
      &     hluno,
      &     hdebugflagpsi,

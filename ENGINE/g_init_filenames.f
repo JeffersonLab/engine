@@ -23,6 +23,9 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
+* Revision 1.19.6.8  2007/10/24 16:37:07  cdaq
+* *** empty log message ***
+*
 * Revision 1.19.6.7  2007/10/08 19:22:33  puckett
 * Added bad channel list handling for BigCal
 *
@@ -179,7 +182,8 @@ c      b_calib_report_blockname = ' ' ! not used, make part of bigcal report
 *
       h_threshold_output_filename = ' '
       s_threshold_output_filename = ' '
-      b_threshold_output_filename = ' ' ! add BigCal
+      b_roc11_threshold_output_filename = ' ' ! add BigCal
+      b_roc12_threshold_output_filename = ' '
       g_pedestal_output_filename = ' '
       h_pedestal_output_filename = ' '
       s_pedestal_output_filename = ' '

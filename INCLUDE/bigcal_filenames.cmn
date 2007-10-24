@@ -4,7 +4,8 @@
       character*80 b_report_template_filename ! CTP file with bigcal report
       character*80 b_report_blockname
       character*80 b_report_output_filename
-      character*80 b_threshold_output_filename
+      character*80 b_roc11_threshold_output_filename
+      character*80 b_roc12_threshold_output_filename
       character*80 b_pedestal_output_filename
       character*80 b_tree_filename
       character*80 b_calib_matrix_filename
@@ -16,7 +17,8 @@
      $     b_report_template_filename,
      $     b_report_blockname,
      $     b_report_output_filename,
-     $     b_threshold_output_filename,
+     $     b_roc11_threshold_output_filename,
+     $     b_roc12_threshold_output_filename,
      $     b_pedestal_output_filename,
      $     b_tree_filename,
      $     b_calib_matrix_filename,

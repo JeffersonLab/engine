@@ -1,6 +1,12 @@
 * hms_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the hms time of flight.
 * $Log$
+* Revision 1.12.6.1  2007/10/24 16:37:21  cdaq
+* *** empty log message ***
+*
+* Revision 1.12.4.1  2007/05/02 21:16:08  jones
+* Add new internal arrays used  for adjusting scintillator timing using P Bosted's method.
+*
 * Revision 1.12  2005/03/15 21:14:28  jones
 * Add variables htof_tolerance and stof_tolerance to be used to filter the scintillator tdc hits and group them by time. ( P. Bosted)
 *
@@ -69,6 +75,12 @@
       real*4 hscin_pos_time_offset(hmax_scin_hits)
       real*4 hscin_neg_time_offset(hmax_scin_hits)
       real*4 hscin_time_fp(hmax_scin_hits)
+      real*4 hscin_pos_invadc_offset(hmax_scin_hits)
+      real*4 hscin_neg_invadc_offset(hmax_scin_hits)
+      real*4 hscin_pos_invadc_linear(hmax_scin_hits)
+      real*4 hscin_neg_invadc_linear(hmax_scin_hits)
+      real*4 hscin_pos_invadc_adc(hmax_scin_hits)
+      real*4 hscin_neg_invadc_adc(hmax_scin_hits)
 
 *
 *     CTPTYPE=parm
@@ -115,7 +127,13 @@
      &     hscin_time_fp,               !scin time (ave) projected to fp
      &     hstart_time_center,
      &     hstart_time_slop,
-     &     htof_tolerance
+     &     htof_tolerance,
+     >     hscin_pos_invadc_offset,
+     >     hscin_neg_invadc_offset,
+     >     hscin_pos_invadc_linear,
+     >     hscin_neg_invadc_linear,
+     >     hscin_pos_invadc_adc,
+     >     hscin_neg_invadc_adc
 
 *
 *     CTPTYPE=event
