@@ -325,13 +325,6 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
 
       read(LUN,*,err=901,end=900) hfpp_drift_type, hfpp_drift_Xmax
 
-      if (hfpp_drift_type.eq.3) then
-          print *,'\n The selected drift map file uses a REALLY simple look-up table to determine'
-          print *,  ' the drift in the focal plane polarimeter chambers. (ejb)\n'
-		do i=1,120
-			read(LUN,*,err=901,end=900)ejbtime(i),ejbdrift(i)
-		enddo
-      endif
 
       if (hfpp_drift_type.eq.1) then		! look-up table ***************
 
@@ -385,6 +378,12 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
      >    	     hfpp_drift_coeffs(Plane,i),i=1,hfpp_drift_Nterms(Plane))
           enddo
 
+      elseif (hfpp_drift_type.eq.3) then
+          print *,'\n The selected drift map file uses a REALLY simple look-up table to determine'
+          print *,  ' the drift in the focal plane polarimeter chambers. (ejb)\n'
+		do i=1,120
+			read(LUN,*,err=901,end=900)ejbtime(i),ejbdrift(i)
+		enddo
       else					! bad selector ****************
           goto 904
       endif
