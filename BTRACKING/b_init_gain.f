@@ -39,7 +39,20 @@ c     write(*,*) 'rcs ped limit(',i-1024,')=',bigcal_rcs_ped_limit(i-1024)
 c     trigger ADCs have WIDE pedestals (summing effect of all the noise)
       do i=1,bigcal_atrig_maxhits
          bigcal_trig_ped_limit(i) = 1200
+         bigcal_trig_cfac(i) = 1. ! don't use anything other than 1. for the trigger
+         bigcal_trig_gain_cor(i) = 1.
       enddo
+
+c     uncomment the following if you want to override the param file with some
+c     values.
+
+c$$$      do i=1,bigcal_prot_maxhits
+c$$$         bigcal_prot_cfac(i) = 1./950.79
+c$$$      enddo
+c$$$      do i=1,bigcal_rcs_maxhits
+c$$$         bigcal_rcs_cfac(i) = 1./911.57
+c$$$      enddo
+
 c     calculate gain correction factors. hopefully last and current gain factors
 c     are correctly read in from CTP parm files
 
