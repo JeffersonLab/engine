@@ -1,6 +1,9 @@
       subroutine g_calc_beam_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.4.20.2  2007/10/24 16:59:55  cdaq
+* added special handling for BigCal light source photodiode
+*
 * Revision 1.4.20.1  2007/09/11 19:14:17  frw
 * fixed FPP related arrays and limits
 *
@@ -42,6 +45,7 @@ c
       INCLUDE 'gen_decode_common.cmn'
       INCLUDE 'gen_run_info.cmn'
       INCLUDE 'hms_filenames.cmn'
+      include 'bigcal_gain_parms.cmn'
 *
       integer SPAREID
       parameter (SPAREID=67)
@@ -59,6 +63,14 @@ c
           gmisc_new_rms(imisc,2) = sqrt(max(0.,sig2))
           gmisc_new_adc_threshold(imisc,2)=gmisc_new_ped(imisc,2)+10.
           gmisc_dum_adc_threshold(imisc,2)=0   !don't sparsify USED channels.
+
+          if(imisc.eq.37) then !BigCal light source photodiode
+             bigcal_trig_new_ped(39) = gmisc_new_ped(imisc,2)
+             bigcal_trig_new_rms(39) = gmisc_new_rms(imisc,2)
+             bigcal_trig_new_threshold(39) = gmisc_new_ped(imisc,2) + 
+     $            bigcal_trig_nsparse
+          endif
+
           if (abs(gmisc_ped(imisc,2)-gmisc_new_ped(imisc,2))
      &                 .ge.(2.*gmisc_new_rms(imisc,2))) then
             ind = ind + 1
