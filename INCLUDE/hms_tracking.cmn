@@ -8,6 +8,9 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
+* Revision 1.27.20.3  2007/10/24 20:48:03  cdaq
+* *** empty log message ***
+*
 * Revision 1.27.20.2  2007/10/24 16:37:21  cdaq
 * *** empty log message ***
 *
@@ -287,6 +290,7 @@
 
       common/HMS_TRACKFLAGS/
      &     hluno,
+     &     hdumptof,
      &     hdebugflagpsi,
      &     hdebugflaggeometry,
      &     hdebugflagpr,
