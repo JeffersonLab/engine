@@ -33,7 +33,7 @@
 
       integer*4 Plane, Wire
       integer*4 Set,Chamber,Layer
-      integer*4 ii,p
+      integer*4 ii,p,i
       integer*4 binno,bin2
 
       real*4 correction, bintime, fraction, a
@@ -47,9 +47,9 @@ c temporary kluge until we get a good drift map
 c
 c      write(*,*)'Setting drift distance to 1/2 cm'
 c
-      drift_time = 100.0
-      drift_distance = 0.5
-      return
+c      drift_time = 100.0
+c      drift_distance = 0.5
+c      return
 
       drift_distance = H_FPP_BAD_DRIFT
 
@@ -61,6 +61,11 @@ c
       Set     = HFPP_plane2set(Plane)
       Chamber = HFPP_plane2chamber(Plane)
       Layer   = HFPP_plane2layer(Plane)
+
+c      write(*,*)'FPP Drift Distance Calculation'
+c      write(*,*)'Set,Chamber,Layer = ',Set,Chamber,Layer
+c      write(*,*)'Plane, Wire = ',Plane,Wire
+c      write(*,*)'Drift Time = ',drift_time
       
       if(hbypass_trans_fpp.eq.2) then
               drift_distance = abs(HFPP_drift_dist(Set,Chamber,Layer,Wire))
@@ -94,6 +99,7 @@ c              write(*,*)'Drift Distance = ',drift_distance
 *       * it might be nice if the particle speed was NOT fixed...
 	correction = (HFPP_layerZ(Set,Chamber,Layer)+HFPP_Zoff(Set)) / HFPP_particlespeed
 	drift_time = drift_time - correction 
+c        write(*,*)'Drift Time - first correction = ',drift_time
 
 cfrw  we could also base the TOF speed on the HMS track speed, as follows:
 cfrw  p = hp_tar(HSNUM_FPTRACK)
@@ -117,6 +123,7 @@ cfrw  the HMS reference time is calculated at z=0 is this system
       if (.TRUE.) then
 *       * apply wire propagation delay correction, supplied externally
         drift_time = drift_time - prop_delay
+c        write(*,*)'Drift Time - prop correction = ',drift_time
       endif
 
 
@@ -125,6 +132,7 @@ cfrw  the HMS reference time is calculated at z=0 is this system
 
 
 ********************  convert drift time to drift distance ********************
+c      write(*,*)'Drift type = ',hfpp_drift_type
 
       if (hfpp_drift_type.eq.0) then		! no drift, use 0.5cm ***************
           drift_distance = 0.5
@@ -189,6 +197,27 @@ cfrw  the HMS reference time is calculated at z=0 is this system
             drift_distance = drift_distance + a * drift_time**p
           enddo !ii
 
+          if (drift_distance.gt.hfpp_drift_Xmax) then
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          endif
+
+      elseif (hfpp_drift_type.eq.3) then !simple ejb time to dist calculation
+          do i=2,120
+               if (ejbtime(i).gt.drift_time) then
+                    drift_distance = ejbdrift(i)-
+     >			(ejbdrift(i)-ejbdrift(i-1))*((ejbtime(i)-drift_time)/
+     >                         (ejbtime(i)-ejbtime(i-1)))
+c	            if(abs(drift_distance).lt.1.28) then
+c		       write(*,*)'i = ',i,' ejbtimes =',ejbtime(i),ejbtime(i-1),
+c     >                       'Drift Time = ',
+c     >                       drift_time,' Distance = ',drift_distance
+c	            endif
+                    goto 9191
+               endif
+          enddo
+9191      continue
+          
           if (drift_distance.gt.hfpp_drift_Xmax) then
             drift_distance = H_FPP_BAD_DRIFT
             RETURN
@@ -296,7 +325,13 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
 
       read(LUN,*,err=901,end=900) hfpp_drift_type, hfpp_drift_Xmax
 
-
+      if (hfpp_drift_type.eq.3) then
+          print *,'\n The selected drift map file uses a REALLY simple look-up table to determine'
+          print *,  ' the drift in the focal plane polarimeter chambers. (ejb)\n'
+		do i=1,120
+			read(LUN,*,err=901,end=900)ejbtime(i),ejbdrift(i)
+		enddo
+      endif
 
       if (hfpp_drift_type.eq.1) then		! look-up table ***************
 

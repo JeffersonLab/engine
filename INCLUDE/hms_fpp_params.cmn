@@ -108,6 +108,10 @@
       real*4 hfpp_drift_dT		! time difference between entries in drift map
       real*4 hfpp_drift_Xmax		! largest acceptable drift distance for this map
       real*4 hfpp_driftmap		! dirft distances by time bins
+
+      real*4 ejbtime			! really simple time to distance calc
+      real*4 ejbdrift			! really simple time to distance calc
+
       character*80 hfpp_driftmap_filename
 
       common/HMS_FPP_drift/
@@ -119,7 +123,7 @@
      &  , hfpp_drift_Nterms(H_FPP_N_PLANES)
      &  , hfpp_drift_orders(H_FPP_N_PLANES,H_FPP_DRIFT_MAX_TERMS)
      &  , hfpp_drift_coeffs(H_FPP_N_PLANES,H_FPP_DRIFT_MAX_TERMS)
-     &  , hfpp_driftmap_filename
+     &  , hfpp_driftmap_filename, ejbtime(120), ejbdrift(120)
 
 *
 *     CTPTYPE=parm
