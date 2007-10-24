@@ -20,6 +20,7 @@ c common block of variables for column-wise Ntuple for HMS FPP
       real*4    cwnFPP_hsyfp	      ! y-coord of HMS track at FP
       real*4    cwnFPP_hsxpfp	      ! dx/dz of HMS track at FP
       real*4    cwnFPP_hsypfp	      ! dy/dz of HMS track at FP
+      integer*4 cwnFPP_helicity	      ! event by event beam helicity
 
       real*4    cwnFPP_trig_TDC1      ! TDC value of FPP trigger signal in VME 1
       real*4    cwnFPP_trig_TDC2      ! TDC value of FPP trigger signal in VME 2
@@ -66,6 +67,7 @@ c common block of variables for column-wise Ntuple for HMS FPP
      & cwnFPP_hsyfp,
      & cwnFPP_hsxpfp,
      & cwnFPP_hsypfp,
+     & cwnFPP_helicity,
      &
      & cwnFPP_trig_TDC1,
      & cwnFPP_trig_TDC2,

@@ -70,6 +70,7 @@ c      WRITE(*,*)HSZBEAM,HSX_FP,HSY_FP,HSXP_FP,HSYP_FP
       cwnFPP_hsyfp   = HSY_FP
       cwnFPP_hsxpfp  = HSXP_FP
       cwnFPP_hsypfp  = HSYP_FP
+      cwnFPP_helicity  = gbeam_helicity
 
 
 *******  global FPP info

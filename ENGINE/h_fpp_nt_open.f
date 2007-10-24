@@ -138,6 +138,7 @@ c      call HLIMIT(nh)
      1 //',hsyfp:R'
      1 //',hsxpfp:R'
      1 //',hsypfp:R'
+     1 //',helicity:I*4'
      1
      1 //',trig_TDC1:I*4'
      1 //',trig_TDC2:I*4'
