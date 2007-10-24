@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.24.6.10  2007/10/24 16:58:28  cdaq
+* Always call h_initialize
+*
 * Revision 1.24.6.9  2007/10/22 15:18:09  cdaq
 * fixed array index problem with gen_run_enable
 *
@@ -391,14 +394,14 @@ c$$$      do i=0,15
 c$$$      	write(*,*) 'gen_run_able(',i,') = ',gen_run_enable(i)
 c$$$      enddo
 
-      if(gen_run_enable(0).ne.0) then
-        call H_initialize(HMS_ABORT,HMS_err)
-      endif
+c      if(gen_run_enable(0).ne.0) then
+      call H_initialize(HMS_ABORT,HMS_err)
+c      endif
 *
 *-SOS initialize
-      if(gen_run_enable(1).ne.0) then
-        call S_initialize(SOS_ABORT,SOS_err)
-      endif
+c      if(gen_run_enable(1).ne.0) then
+c      call S_initialize(SOS_ABORT,SOS_err)
+c      endif
 
 c      !write(*,*) 'about to call b_initialize'
 *
