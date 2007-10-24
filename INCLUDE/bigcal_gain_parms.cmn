@@ -65,8 +65,8 @@
      $     bigcal_trig_change_irow(BIGCAL_TRIG_NGROUP),
      $     bigcal_trig_change_icol(BIGCAL_TRIG_NGROUP),
      $     bigcal_trig_ped_change(BIGCAL_TRIG_NGROUP),
-     $     bigcal_trig_new_rms(BIGCAL_TRIG_NGROUP),
-     $     bigcal_trig_new_ped(BIGCAL_TRIG_NGROUP)
+     $     bigcal_trig_new_rms(BIGCAL_TRIG_NGROUP+1),
+     $     bigcal_trig_new_ped(BIGCAL_TRIG_NGROUP+1)
 
       real*4 bigcal_prot_new_threshold
       real*4 bigcal_rcs_new_threshold
@@ -74,7 +74,7 @@
       common/bigcal_new_adc_threshold/
      $     bigcal_prot_new_threshold(BIGCAL_PROT_NPMT),
      $     bigcal_rcs_new_threshold(BIGCAL_RCS_NPMT),
-     $     bigcal_trig_new_threshold(BIGCAL_TRIG_NGROUP)
+     $     bigcal_trig_new_threshold(BIGCAL_TRIG_NGROUP+1)
 
 *
 *     CTPTYPE=parm
