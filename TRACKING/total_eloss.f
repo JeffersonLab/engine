@@ -16,6 +16,9 @@
 *-    Created   1-Dec-1995  Rolf Ent
 *
 * $Log$
+* Revision 1.8.20.4  2007/10/24 17:00:42  cdaq
+* some modifications for BigCal
+*
 * Revision 1.8.20.3  2007/10/23 17:04:04  cdaq
 * Added eloss calculation for materials in front of BigCal
 *
@@ -295,7 +298,7 @@
 **************************************************************************
 
        if ((type.eq.2).and.(tgthick.ne.0.).and.(dens.ne.0.)) then
-          crit_angle= atan(gcell_radius/(tgthick/dens/2))
+          crit_angle= atan(gcell_radius/(tgthick/dens/2.))
        else
           crit_angle= 0.45
        endif
