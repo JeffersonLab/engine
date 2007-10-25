@@ -20,6 +20,9 @@
 *-                           Dummy Shell routine
 *
 * $Log$
+* Revision 1.23.20.1  2007/10/25 00:06:54  cdaq
+* *** empty log message ***
+*
 * Revision 1.23  2003/11/28 14:57:03  jones
 * Added variable hsxp_tar_temp = hsxp_tar + h_oopcentral_offset  (MKJ)
 *
@@ -490,6 +493,7 @@ C-----------------------------------------------------------------------
 
       real*4 vec1(4)
       real*4 vec2(4)
+      integer*4 i
       
       scalar = 0
 

@@ -26,11 +26,8 @@
 
       real*4 uTrack, uWire
       real*4 mindist, rdist, rtime, residual, drift
-      real*4 HMStrack(4),FPPtrack(4)
 
       integer*4 iPlane, iSet, iCham, iLay, iClust, iTrk, iHit, iRaw, iWire, ii
-
-      integer*4 wires(H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
 
 
       ABORT= .FALSE.

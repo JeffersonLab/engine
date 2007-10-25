@@ -31,9 +31,7 @@
 
       integer*4 BestClusters(H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
 
-      integer*4 Nlayershit
       integer*4 myclass
-      integer*4 iTrack, iChamber, iLayer, iCluster, iRaw, iHit, iWire, ii
       logical*4 sufficient_hits, track_good, any_track, any_good, any_great
 
       ABORT= .FALSE.
@@ -324,7 +322,7 @@ c==============================================================================
       integer*4 DCset		! IN set of FPP DCs we are working on
       integer*4 HitClusters(H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
 				! IN hit clusters to fit to
-      integer*4 i,icone
+      integer*4 icone
 
       real*4 SimpleTrack(6)	! IN track based on wire positions only
       logical*4 track_good	! OUT flag
@@ -441,13 +439,6 @@ c              write(*,*)'iRaw,mydriftX =',iRaw,iHit,mydriftX
       DriftTrack(5) = newTrack(5)  ! chi2/df
       DriftTrack(6) = float(nPoints)
 
-c      if(newtrack(5).gt.0.00001) then
-c                write(*,*)'First iteration: ',newTrack(1),newTrack(3),newTrack(5)
-c                write(*,*)'HMS: ',hsxp_fp,hsyp_fp
-c                write(*,*)'min chi2 = ',HFPP_min_chi2
-c                write(*,*)'npoints,min = ',nPoints,HFPP_minsethits
-c      endif
-
       if (     (newTrack(5).le.HFPP_min_chi2)
      >    .and.(newTrack(5).ge.0.0)
      >    .and.(newTrack(5).ne.H_FPP_BAD_CHI2) ) then   ! store fit results
@@ -462,15 +453,6 @@ c      endif
           track_good = .true.
 
       elseif (nPoints.gt.HFPP_minsethits) then
-c          write(*,*)'did not find track on first interation!!!'
-c          write(*,*)'HMS: ',hsxp_fp,hsyp_fp
-c          write(*,*)newTrack(1),newTrack(3),newTrack(5)
-c	  do i=1,nPoints
-c           iChamber = All_Chambers(i)
-c            iLayer   = All_Layers(i)  
-c	    iWire    = All_Wires(i)   
-c            write(*,*)iWire,Drifts(i),HFPP_drift_dist(DCset,iChamber,iLayer,iWire)
-c          enddo 
 
 *         * apparently we were not able to find a good track
 *         * we now try dropping each cluster, one at a time, to see if a good track
@@ -519,15 +501,6 @@ c          enddo
 
 	   enddo !LSkip
 	  enddo !CSkip
-
-c          write(*,*)'After Iterating ...'
-c          write(*,*)DriftTrack(1),DriftTrack(3),DriftTrack(5)
-c	  do i=1,nPoints
-c            iChamber = All_Chambers(i)
-c            iLayer   = All_Layers(i)  
-c	    iWire    = All_Wires(i)   
-c            write(*,*)iWire,Drifts(i),HFPP_drift_dist(DCset,iChamber,iLayer,iWire)
-c          enddo 
 
           if (     (DriftTrack(5).le.HFPP_min_chi2)
      >        .and.(DriftTrack(5).ge.0.0)

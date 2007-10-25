@@ -129,6 +129,7 @@ c      call HLIMIT(nh)
 
       call HBNAME(id,'FPP1',cwnFPP_eventID,'eventID:U*4'
      1 //',evtcode[0,63]:U*4'
+     1 //',helicity[-1,1]:I*4'
      1 //',hsdelta:R'
      1 //',hstheta:R'
      1 //',hsphi:R'
@@ -138,7 +139,6 @@ c      call HLIMIT(nh)
      1 //',hsyfp:R'
      1 //',hsxpfp:R'
      1 //',hsypfp:R'
-     1 //',helicity:I*4'
      1
      1 //',trig_TDC1:I*4'
      1 //',trig_TDC2:I*4'

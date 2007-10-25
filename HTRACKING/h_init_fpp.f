@@ -29,7 +29,6 @@
 
       integer*4 iSet, iChamber, iLayer, iPlane, iWire
       integer*4 ilab, iloc, ii, wlo, whi, wstep, sign
-      real*4 gamma
       real*4 sinalpha, sinbeta, singamma
       real*4 cosalpha, cosbeta, cosgamma
       real*4 matrix(3,3)

@@ -303,8 +303,8 @@ c==============================================================================
       real*4 zback_off             ! offset from cntrl. pos. of last layer
       real*8 zback,xfront,yfront,ttheta
       real*8 r1x,r1y,r2x,r2y,xmin,xmax,ymin,ymax
-      real*8 xpt1,xpt2,xpt3,xpt4,ypt1,ypt2,ypt3,ypt4,uCoord
-      integer*4 iSet,iChamber,iLayer,iWireHit,iPlane
+      real*8 xpt1,xpt2,xpt3,xpt4,ypt1,ypt2,ypt3,ypt4
+      integer*4 iSet,iChamber,iLayer,iPlane
 
       mx1 = Track1(1)*1.0d0
       bx1 = Track1(2)*1.0d0

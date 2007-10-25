@@ -58,6 +58,7 @@ c common block of variables for column-wise Ntuple for HMS FPP
 
       COMMON /CWNtupleFPP/ cwnFPP_eventID,
      & cwnFPP_evtcode,
+     & cwnFPP_helicity,
      & cwnFPP_hsdelta,
      & cwnFPP_hstheta,
      & cwnFPP_hsphi,
@@ -67,7 +68,6 @@ c common block of variables for column-wise Ntuple for HMS FPP
      & cwnFPP_hsyfp,
      & cwnFPP_hsxpfp,
      & cwnFPP_hsypfp,
-     & cwnFPP_helicity,
      &
      & cwnFPP_trig_TDC1,
      & cwnFPP_trig_TDC2,

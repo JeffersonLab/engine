@@ -27,7 +27,7 @@
       logical ABORT
       character*(*) err
 
-      real*4 wirepos,x,y
+      real*4 wirepos
       real*4 Coords(H_FPP_MAX_FITPOINTS,2)
       real*4 Sigmas(H_FPP_MAX_FITPOINTS)
       real*4 Project(H_FPP_MAX_FITPOINTS,2)
