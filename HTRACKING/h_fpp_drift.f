@@ -280,6 +280,7 @@ c==============================================================================
 
       integer LUN
       integer*4 i,Plane
+      real*4 rflag
       real*4 timebins(H_FPP_DRIFT_MAX_BINS)
 
       real*4 ejbtime(120)			! really simple time to distance calc
@@ -310,13 +311,11 @@ c==============================================================================
 c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename 
       open(LUN,file=hfpp_driftmap_filename,err=900)
 
-      read(LUN,*,err=901,end=900) hfpp_drift_type, hfpp_drift_Xmax
+      read(LUN,*,err=901,end=900) rflag, hfpp_drift_Xmax
+      hfpp_drift_type = int(rflag)
 
 
       if (hfpp_drift_type.eq.1) then		! look-up table ***************
-
-          print *,'\n The selected drift map file uses a look-up table to determine'
-          print *,  ' the drift in the focal plane polarimeter chambers.\n'
 
           read(LUN,*,err=902,end=900) hfpp_drift_Nbins
 
@@ -344,6 +343,12 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
 
           if (hfpp_drift_Nbins.le.0) goto 902
           if (hfpp_drift_dT.le.0.0) goto 902
+
+          print *,'\n The selected drift map file uses a look-up table to determine'
+          print *,  ' the drift in the focal plane polarimeter chambers.'
+          print *,  ' The selected map has ',hfpp_drift_Nbins,' time bins and a maximum.'
+          print *,  ' drift distance of ',hfpp_drift_Xmax,' cm.\n'
+	  
 
       elseif (hfpp_drift_type.eq.2) then	! polynomial ******************
 
