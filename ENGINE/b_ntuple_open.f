@@ -94,7 +94,8 @@ c$$$      endif
          call hbset('BSIZE',8176,status)
          call HBNT(id,title,' ')
 
-        call HBNAME(id,'bevinfo',bgid,'bgid:I*4,bgtype[5,6]:I*4')
+        call HBNAME(id,'bevinfo',bgid,'bgid:I*4,bgtype:I*4,'//
+     $        'btrigtype:I*4')
         call HBNAME(id,'bhits',ngooda,'ngooda:I*4,ngoodt:I*4,'//
      $       'ngoodta:I*4,ngoodtt:I*4,irowmax:I*4,icolmax:I*4,'//
      $       'max_adc:R*4')
