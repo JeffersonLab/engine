@@ -56,11 +56,13 @@ c      write(*,*)'Segments: ',h_fpp_nt_segmentevents,HFPP_nt_max_segmentevents
       cwnFPP_eventID = gen_event_ID_number
       if(HFPP_eventclass.gt.63)HFPP_eventclass=63
       cwnFPP_evtcode = HFPP_eventclass
+      cwnFPP_helicity  = gbeam_helicity
 
 
 *******  standard HMS info
 c      write(*,*)HSDELTA,HSTHETA,HSPHI,HINVMASS
 c      WRITE(*,*)HSZBEAM,HSX_FP,HSY_FP,HSXP_FP,HSYP_FP
+c      write(*,*)'Beam helicity = ',gbeam_helicity_TS,gbeam_helicity
       cwnFPP_hsdelta = HSDELTA
       cwnFPP_hstheta = HSTHETA
       cwnFPP_hsphi   = HSPHI
@@ -70,7 +72,6 @@ c      WRITE(*,*)HSZBEAM,HSX_FP,HSY_FP,HSXP_FP,HSYP_FP
       cwnFPP_hsyfp   = HSY_FP
       cwnFPP_hsxpfp  = HSXP_FP
       cwnFPP_hsypfp  = HSYP_FP
-      cwnFPP_helicity  = gbeam_helicity
 
 
 *******  global FPP info
