@@ -38,6 +38,14 @@
       m=m+1
       gep_ntuple_contents(m) = float(gen_event_id_number)
       m=m+1
+      if(gen_event_trigtype(4).eq.1.and.gen_event_trigtype(5).eq.0) then
+         gep_ntuple_contents(m) = 1.
+      else if(gen_event_trigtype(5).eq.1.and.gen_event_trigtype(4).eq.0) then
+         gep_ntuple_contents(m) = 2.
+      else 
+         gep_ntuple_contents(m) = 3.
+      endif
+      m=m+1
       gep_ntuple_contents(m) = GEP_ctime_hms
       m=m+1
       gep_ntuple_contents(m) = GEP_ctime_cal
@@ -51,6 +59,8 @@
       gep_ntuple_contents(m) = GEP_E_electron
       m=m+1
       gep_ntuple_contents(m) = GEP_P_proton
+      m=m+1
+      gep_ntuple_contents(m) = GEP_Pel_htheta
       m=m+1
       gep_ntuple_contents(m) = GEP_delta_p
       m=m+1
