@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19.6.2  2007/10/26 16:44:55  pcarter
+* made the arguments to max() match data types -- GCC 4 is picky about that
+*
 * Revision 1.19.6.1  2007/10/24 16:37:16  cdaq
 * *** empty log message ***
 *
@@ -243,7 +246,7 @@
               if(htofusinginvadc.eq.1) then
                 time_pos(i) = time - hscin_pos_invadc_offset(hit) -
      >            path / hscin_pos_invadc_linear(hit) -
-     >            hscin_pos_invadc_adc(hit)/sqrt(max(20,adc_ph))
+     >            hscin_pos_invadc_adc(hit)/sqrt(max(20.,adc_ph))
               else
                 time = time - hscin_pos_phc_coeff(hit) *
      &               sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
@@ -268,7 +271,7 @@
               if(htofusinginvadc.eq.1) then
                 time_neg(i) = time + hscin_neg_invadc_offset(hit) -
      >            path / hscin_neg_invadc_linear(hit) -
-     >            hscin_neg_invadc_adc(hit)/sqrt(max(20,adc_ph))
+     >            hscin_neg_invadc_adc(hit)/sqrt(max(20.,adc_ph))
               else
                 time = time - hscin_neg_phc_coeff(hit) *
      &               sqrt(max(0.,(adc_ph/hscin_neg_minph(hit)-1.)))
@@ -373,7 +376,7 @@
               if(htofusinginvadc.eq.1) then
                 hscin_pos_time(hit)=time - hscin_pos_invadc_offset(hit) -
      >            path / hscin_pos_invadc_linear(hit) -
-     >            hscin_pos_invadc_adc(hit)/sqrt(max(20,adc_ph))
+     >            hscin_pos_invadc_adc(hit)/sqrt(max(20.,adc_ph))
               else
                 time = time - hscin_pos_phc_coeff(hit) *
      &               sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
@@ -418,7 +421,7 @@ c    >              1./sqrt(max(20,adc_ph))
               if(htofusinginvadc.eq.1) then
                 hscin_neg_time(hit)=time - hscin_neg_invadc_offset(hit) -
      >            path / hscin_neg_invadc_linear(hit) -
-     >            hscin_neg_invadc_adc(hit)/sqrt(max(20,adc_ph))
+     >            hscin_neg_invadc_adc(hit)/sqrt(max(20.,adc_ph))
               else
                 time = time - hscin_neg_phc_coeff(hit) *
      &               sqrt(max(0.,(adc_ph/hscin_neg_minph(hit)-1.)))
