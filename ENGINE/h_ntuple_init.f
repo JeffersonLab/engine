@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.11.18.2  2007/10/26 16:49:21  cdaq
+* added number of hdc hits to HMS ntuple
+*
 * Revision 1.11.18.1  2007/10/16 20:20:31  cdaq
 * *** empty log message ***
 *
@@ -195,6 +198,10 @@ c
       h_Ntuple_tag(m)= 'bpmc_x'
       m= m+1
       h_Ntuple_tag(m)= 'bpmc_y'
+      m= m+1
+      h_Ntuple_tag(m)= 'hdchits1'
+      m= m+1
+      h_Ntuple_tag(m)= 'hdchits2'
 
       h_Ntuple_size= m     !total size
 * Open ntuple
