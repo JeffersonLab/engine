@@ -50,7 +50,7 @@ c      logical fixed_bigcal
       real etint
       real edx,edy,edz,ethetacorr,ephicorr,epathlength,mom_corr
       real gamma_corr,beta_corr,tof
-      real Q2_cal,Q2_hms
+      real Q2_cal,Q2_hms,Q2_htheta,nu_htheta,pp_htheta
 
       real Mp
       parameter(Mp=.938272)
@@ -94,25 +94,60 @@ c     if the user has not defined something reasonable, then set by hand here:
 
       Me = mass_electron ! convenient shorthand
 
+c     calculate nu for elastic-ep:
+
       nu = sqrt(Mp**2 + hsp**2) - Mp
- 
+
+c     expected electron energy:
+
       Eprime = gebeam - nu
+
       Ecal_hexpect = Eprime
 
       pthetarad = hstheta
-      pphirad = hsphi
+      pphirad = hsphi - 3.*PI/2.
+
+c     calculate proton momentum (assuming elastic) from hstheta:
+
+      Q2_htheta = 4.*Mp**2*gebeam**2*(cos(hstheta))**2 / 
+     $     (Mp**2 + 2.*Mp*gebeam + gebeam**2*(sin(hstheta))**2)
+      nu_htheta = Q2_htheta / (2.*Mp)
+
+      pp_htheta = sqrt(nu_htheta**2 + 2.*Mp*nu_htheta)
 
 c     calculate electron angle from gebeam and hsp only, since the resolution of these quantities is better than 
 c     you can get using hstheta, the reason being the large Jacobian of the reaction. The error on etheta is
 c     magnified roughly by a factor hsp/Eprime compared to the error on hstheta, and this in turn gives a 
 c     large error on xcal,ycal
 
-      etheta_expect = acos(1. - Mp/gebeam * nu / Eprime)
-      
+      if(nu.ge.gebeam) then ! this is certainly not an elastic proton!!!!   
+         Eprime = 0.
+         etheta_expect = 0.
+         xcal_hexpect = -999.
+         ycal_hexpect = -999.
+         goto 173
+c     set Eprime and theta to zero and skip calculation of expected electron position:
+      else if(nu/Eprime.gt.2.*gebeam/Mp) then ! ep elastic is still kinematically forbidden!
+         Eprime = 0.
+         etheta_expect = 0.
+         xcal_hexpect = -999.
+         ycal_hexpect = -999.
+         goto 173
+      else ! if ep-elastic is not explicitly kinematically forbidden, then
+c     use elastic kinematics to predict the electron position and energy:
+c     since we have yet to put a cut on the correlation between hsp and pel(hstheta), 
+c     we won't always get a sensible value. Just want to prevent annoying divide-by-zero messages for now.
+         etheta_expect = acos(1. - Mp/gebeam * nu / Eprime)
+      endif
+         
       ! in BigCal coordinates, phi is centered at 0 for BigCal. In target coordinates, BigCal is 
       ! centered at +PI/2, while HMS is centered at -PI/2. However, since BigCal y means -target x
       ! we have to be careful. 
 
+      if(pphirad.gt.0) then 
+         pphirad = pphirad - PI
+      endif
+      
       ephi_expect = pphirad + PI
 
       ethetarad = etheta_expect 
@@ -129,11 +164,15 @@ c     now rotate to BigCal coordinates:
       eyhat = -exhat_tar
       ezhat = ezhat_tar
 
+      !write(*,*) 'exhat,eyhat,ezhat=',exhat,eyhat,ezhat
+
 c     vertex coordinates expressed in BigCal coordinate system
 
       vz = hszbeam ! along beamline
       vx = gbeam_y ! horizontal toward BigCal
       vy = -gbeam_x ! vertical up (target x is vertical down.)
+
+      !write(*,*) 'vertex xyz=',vx,vy,vz
 
 c     etint is the trajectory parameter, calculated at the intersection point with the face of BigCal,
 c     in other words, if e- position = vertex + et*ehat, where ehat is the unit trajectory vector and et is 
@@ -148,6 +187,8 @@ c     so we are calculating the intersection point of the e- trajectory expected
       yint_hexpect = vy + etint * eyhat
       zint_hexpect = vz + etint * ezhat
 
+      !write(*,*) 'xint,yint,zint=',xint_hexpect,yint_hexpect,zint_hexpect
+
 c     now rotate into calo-centered coordinate system:
 
       xcal_hexpect=xint_hexpect*bigcal_costheta-zint_hexpect*bigcal_sintheta
@@ -157,8 +198,12 @@ c     now rotate into calo-centered coordinate system:
          tcal_hexpect = 0.0
       endif
 
+ 173  continue
+
       gep_bx_expect_H = xcal_hexpect
       gep_by_expect_H = ycal_hexpect
+
+      !write(*,*) 'bigcal e_hms,x_hms,y_hms=',Eprime,xcal_hexpect,ycal_hexpect
 
 c     how to choose? pick the track for which the quadrature sum of 
 c     sum( ((Eclust-Eexpect)/sigma)**2 + ((xclust-xexpect)/sigma)**2 + ((yclust-yexpect)/sigma)**2 ) is minimum
@@ -242,8 +287,9 @@ c     corrected for HMS vertex info. Q2 from Ebeam, hsp alone (Q2_hms) may be ev
 c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       GEP_Q2_H = Q2_hms
       GEP_Q2_B = Q2_cal
-      GEP_E_electron = Eprime
+      GEP_E_electron = Eprime ! electron energy from HMS
       GEP_P_proton = hsp
+      GEP_Pel_htheta = pp_htheta
       GEP_delta_p = hsdelta
       GEP_epsilon = 1./(1.+2.*(1.+GEP_Q2/(4.*Mp**2))*(tan(bigcal_thetarad/2.))**2)
       GEP_etheta_deg = bigcal_thetarad * 180./PI
@@ -267,14 +313,23 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       include 'gep_data_structures.cmn'
       include 'bigcal_data_structures.cmn'
 
+      logical restore_E
       integer itrack,ibest
       real diffsum,mindiffsum
       real E_cal,X_cal,Y_cal,T_cal
       real T_H,X_H,Y_H,E_H
 
+      restore_E = .false.
+
       if(bigcal_phys_ntrack.gt.0) then
          do itrack = 1,bigcal_phys_ntrack
             E_cal = bigcal_track_energy(itrack)
+
+            if(E_cal .gt. 10.0) then ! divide by 1000
+               E_cal = E_cal / 1000.
+               restore_E = .true.
+            endif
+
             X_cal = bigcal_all_clstr_x(itrack)
             Y_cal = bigcal_all_clstr_y(itrack)
             T_cal = bigcal_track_time(itrack)
@@ -292,6 +347,9 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
                   ibest = itrack
                endif
             endif
+
+            if(restore_E) E_cal = E_cal * 1000.
+
          enddo
          pick_best_cal_track = ibest
       else
