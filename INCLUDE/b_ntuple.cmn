@@ -51,9 +51,11 @@ c      character*256 b_tree_filename
 
       integer*4 bgid ! copy of gen_event_id_number
       integer*4 bgtype ! copy of gen_event_type
+      integer*4 btrigtype
       common/bevinfo/
      $     bgid,
-     $     bgtype
+     $     bgtype,
+     $     btrigtype
 
 *     ADC related quantities
 
