@@ -39,7 +39,7 @@
  103  format(A14,F10.3)
  104  format(A10,F10.3)
  106  format(A8,I2)
- 107  format(A6,I2,A25,I2,A2,I2,A2,F8.5,A2,L2,A1)
+ 107  format(A6,I2,A25,I2,A2,I2,A2,F12.5,A2,L2,A1)
 
       return
       end
