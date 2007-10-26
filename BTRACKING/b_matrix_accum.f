@@ -11,8 +11,8 @@
       
       include 'bigcal_data_structures.cmn'
       include 'gen_run_info.cmn'
-      include 'bigcal_bypass_switches.cmn'
       include 'gen_event_info.cmn'
+      include 'bigcal_bypass_switches.cmn'
       include 'b_ntuple.cmn'
       include 'gep_data_structures.cmn'
       include 'gen_data_structures.cmn'
@@ -72,17 +72,22 @@ c     check rough position agreement (cell positions only! reconstructed positio
             endif              
          endif
          ! this was called from GEp reconstruction after selection of best track!!!
-      else if(bigcal_all_nclstr.ge.1.and.hsnum_fptrack.gt.0) then
+      else if(bigcal_all_nclstr.ge.1.and.hsnum_fptrack.gt.0.and.
+     $        gen_event_trigtype(5).eq.1) then
          Ee = gebeam - gep_Q2_H / (2.*.938272) ! E' = E - Q^2/2Mp, Q^2 as measured by HMS
 
          best = bigcal_itrack_best
          
 c     check event selection cuts for calibration: dx, dy, and ctime:
+c     also check elastic cut: This is crucial!!!
+c 
 
          if(abs(bigcal_all_clstr_x(best)-gep_bx_expect_H).lt.
      $        gep_bcalib_cut_dx.and.abs(bigcal_all_clstr_y(best) - 
      $        gep_by_expect_H).lt.gep_bcalib_cut_dy.and.abs(
-     $        gep_ctime_cal-gep_ctime_hms).lt.gep_bcalib_cut_ctime) then
+     $        gep_ctime_cal-gep_ctime_hms).lt.gep_bcalib_cut_ctime.and.
+     $        abs(gep_pel_htheta-gep_p_proton)/hpcentral.lt.gep_bcalib_cut_elastic
+     $        ) then
 
             bigcal_nmatr_event = bigcal_nmatr_event + 1
 
