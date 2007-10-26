@@ -78,6 +78,8 @@
       m=m+1
       gep_ntuple_tag(m) = 'evid' ! gen_event_id_number
       m=m+1
+      gep_ntuple_tag(m) = 'trigtype' ! trigger type
+      m=m+1
       gep_ntuple_tag(m) = 'ctimeh' ! hms coin. time
       m=m+1
       gep_ntuple_tag(m) = 'ctimeb' ! bigcal coin. time
@@ -91,6 +93,8 @@
       gep_ntuple_tag(m) = 'E_e' ! electron energy in GeV
       m=m+1
       gep_ntuple_tag(m) = 'P_p' ! proton momentum in GeV/c
+      m=m+1
+      gep_ntuple_tag(m) = 'Pel_htheta' ! elastic proton momentum for hstheta
       m=m+1
       gep_ntuple_tag(m) = 'delta' ! (p-p0)/p0 in %
       m=m+1
