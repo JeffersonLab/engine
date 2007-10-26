@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.18.2  2007/10/26 16:48:14  cdaq
+* Added number of chamber hits to HMS ntuple
+*
 * Revision 1.10.18.1  2007/08/22 19:09:17  frw
 * added FPP
 *
@@ -157,6 +160,10 @@ c
       h_Ntuple_contents(m)= gbpm_x(3)
       m= m+1
       h_Ntuple_contents(m)= gbpm_y(3)
+      m= m+1
+      h_Ntuple_contents(m)= hncham_hits(1)
+      m= m+1
+      h_Ntuple_contents(m)= hncham_hits(2)
 
 * Experiment dependent entries start here.
 
