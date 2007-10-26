@@ -15,10 +15,12 @@ c     event selection cuts for BigCal calibration:
       real*4 gep_bcalib_cut_ctime
       real*4 gep_bcalib_cut_dx
       real*4 gep_bcalib_cut_dy
+      real*4 gep_bcalib_cut_elastic ! cut on (hpel(hstheta)-hsp)/hpel(hstheta))
       common/gep_bcalib/
      $     gep_bcalib_cut_ctime,
      $     gep_bcalib_cut_dx,
-     $     gep_bcalib_cut_dy
+     $     gep_bcalib_cut_dy,
+     $     gep_bcalib_cut_elastic
 
 *
 *     CTPTYPE=event
@@ -30,6 +32,7 @@ c     event selection cuts for BigCal calibration:
       real*4 GEP_Q2_B ! Q2 from BigCal & HMS vertex, but no HMS momentum
       real*4 GEP_E_electron ! scattered electron energy in GeV
       real*4 GEP_P_proton ! scattered proton momentum in GeV
+      real*4 GEP_Pel_htheta ! proton momentum from spect. theta. assume elastic
       real*4 GEP_delta_p ! proton p - p0 in %, where p0 is HMS central mom.
       real*4 GEP_epsilon ! virtual photon long. polarization, usual definition
       real*4 GEP_etheta_deg ! electron scattering angle in degrees
@@ -57,6 +60,7 @@ c     system for the polarization measurement.
      $     GEP_Q2_B,
      $     GEP_E_electron,
      $     GEP_P_proton,
+     $     GEP_Pel_htheta,
      $     GEP_delta_p,
      $     GEP_epsilon,
      $     GEP_etheta_deg,
