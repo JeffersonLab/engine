@@ -147,7 +147,7 @@ c      write(*,*)'In h_trans_fpp ... ',HFPP_raw_tot_hits
            endif
 
         else
-	  print *,' NOTE: FPP hit outside accepted time window: plane,wire,TDC= ',
+	   write(77,*) ' NOTE: FPP hit outside accepted time window: plane,wire,TDC= ',
      >               iPlane,iWire,HFPP_raw_TDC(rawhitidx)
 	endif
       enddo !rawhitidx
