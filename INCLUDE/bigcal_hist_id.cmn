@@ -33,6 +33,7 @@
       integer*4 bid_bcal_small
       integer*4 bid_bcal_cfac_old
       integer*4 bid_bcal_cfac_new
+      integer*4 bid_bcal_cfac_dist
       integer*4 bid_bcal_oldxnew
       integer*4 bid_bcal_ixclust
       integer*4 bid_bcal_iyclust
@@ -79,6 +80,7 @@
      $     bid_bcal_small,
      $     bid_bcal_cfac_old,
      $     bid_bcal_cfac_new,
+     $     bid_bcal_cfac_dist,
      $     bid_bcal_oldxnew,
      $     bid_bcal_ixclust,
      $     bid_bcal_iyclust,
