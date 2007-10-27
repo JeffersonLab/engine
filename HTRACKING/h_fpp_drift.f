@@ -34,22 +34,18 @@
       integer*4 Plane, Wire
       integer*4 Set,Chamber,Layer
       integer*4 ii,p,i,j
-      integer*4 binno,bin2
+      integer*4 binno
 
-      real*4 correction, bintime, fraction, a
+      real*4 correction, fraction, a
       real*8 mx8,my8,mu8,Px8,Py8,alpha8
+
+      real*4 ejbtime			! really simple time to distance calc
+      real*4 ejbdrift			! really simple time to distance calc
+      common /HMS_FPP_ejbdrift/ ejbtime(120,4), ejbdrift(120,4)
 
 
       ABORT= .FALSE.
       err= ' '
-c
-c temporary kluge until we get a good drift map
-c
-c      write(*,*)'Setting drift distance to 1/2 cm'
-c
-c      drift_time = 100.0
-c      drift_distance = 0.5
-c      return
 
       drift_distance = H_FPP_BAD_DRIFT
 
@@ -62,14 +58,8 @@ c      return
       Chamber = HFPP_plane2chamber(Plane)
       Layer   = HFPP_plane2layer(Plane)
 
-c      write(*,*)'FPP Drift Distance Calculation'
-c      write(*,*)'Set,Chamber,Layer = ',Set,Chamber,Layer
-c      write(*,*)'Plane, Wire = ',Plane,Wire
-c      write(*,*)'Drift Time = ',drift_time
-      
       if(hbypass_trans_fpp.eq.2) then
               drift_distance = abs(HFPP_drift_dist(Set,Chamber,Layer,Wire))
-c              write(*,*)'Drift Distance = ',drift_distance
               return
       endif      
       
@@ -99,7 +89,6 @@ c              write(*,*)'Drift Distance = ',drift_distance
 *       * it might be nice if the particle speed was NOT fixed...
 	correction = (HFPP_layerZ(Set,Chamber,Layer)+HFPP_Zoff(Set)) / HFPP_particlespeed
 	drift_time = drift_time - correction 
-c        write(*,*)'Drift Time - first correction = ',drift_time
 
 cfrw  we could also base the TOF speed on the HMS track speed, as follows:
 cfrw  p = hp_tar(HSNUM_FPTRACK)
@@ -123,7 +112,6 @@ cfrw  the HMS reference time is calculated at z=0 is this system
       if (.TRUE.) then
 *       * apply wire propagation delay correction, supplied externally
         drift_time = drift_time - prop_delay
-c        write(*,*)'Drift Time - prop correction = ',drift_time
       endif
 
 
@@ -210,13 +198,6 @@ c      write(*,*)'Drift type = ',hfpp_drift_type
      >			(ejbdrift(i,j)-ejbdrift(i-1,j))*
      >			    ((ejbtime(i,j)-drift_time)/
      >                         (ejbtime(i,j)-ejbtime(i-1,j)))
-c	            if(abs(drift_distance).lt.0.001) then
-c		       write(*,*)Set,Chamber,j
-c   			write(*,*)ejbdrift(i,j),ejbdrift(i-1,j)
-c		       write(*,*)'i = ',i,' ejbtimes =',ejbtime(i,j),ejbtime(i-1,j),
-c     >                       'Drift Time = ',
-c     >                       drift_time,' Distance = ',drift_distance
-c	            endif
                     goto 9191
                endif
           enddo
@@ -301,8 +282,15 @@ c==============================================================================
 
       integer LUN
       integer*4 i,Plane
+      real*4 rflag
       real*4 timebins(H_FPP_DRIFT_MAX_BINS)
 
+      real*4 ejbtime			! really simple time to distance calc
+      real*4 ejbdrift			! really simple time to distance calc
+      common /HMS_FPP_ejbdrift/ ejbtime(120,4), ejbdrift(120,4)
+
+
+      write(6,'(''\n[47;34;1m FPP  Drift  Map: [49;0m'')')
 
       hfpp_drift_type = 0
 
@@ -317,8 +305,8 @@ c==============================================================================
       enddo
 
       if (hfpp_driftmap_filename.eq.' ') then
-        print *,'\n No drift map specified for the HMS FPP chambers.'
-        print *,  ' Using fixed drift distance of +/-0.5 cm, best fit.\n'
+        print *,' No drift map specified for the HMS FPP chambers.'
+        print *,' Using fixed drift distance of +/-0.5 cm, best fit.\n'
         RETURN
       endif
 
@@ -327,13 +315,11 @@ c==============================================================================
 c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename 
       open(LUN,file=hfpp_driftmap_filename,err=900)
 
-      read(LUN,*,err=901,end=900) hfpp_drift_type, hfpp_drift_Xmax
+      read(LUN,*,err=901,end=900) rflag, hfpp_drift_Xmax
+      hfpp_drift_type = int(rflag)
 
 
       if (hfpp_drift_type.eq.1) then		! look-up table ***************
-
-          print *,'\n The selected drift map file uses a look-up table to determine'
-          print *,  ' the drift in the focal plane polarimeter chambers.\n'
 
           read(LUN,*,err=902,end=900) hfpp_drift_Nbins
 
@@ -362,10 +348,16 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
           if (hfpp_drift_Nbins.le.0) goto 902
           if (hfpp_drift_dT.le.0.0) goto 902
 
+          print *,' The selected drift map file uses a look-up table to determine'
+          print *,' the drift in the focal plane polarimeter chambers.'
+          print *,' The selected map has ',hfpp_drift_Nbins,' time bins and a maximum.'
+          print *,' drift distance of ',hfpp_drift_Xmax,' cm.\n'
+	  
+
       elseif (hfpp_drift_type.eq.2) then	! polynomial ******************
 
-          print *,'\n The selected drift map file uses a polynomial to calculate'
-          print *,  ' the drift in the focal plane polarimeter chambers.\n'
+          print *,' The selected drift map file uses a polynomial to calculate'
+          print *,' the drift in the focal plane polarimeter chambers.\n'
 
           read(LUN,*,err=903,end=900)
      >      (hfpp_drift_Nterms(Plane),Plane=1,H_FPP_N_PLANES)
@@ -383,20 +375,20 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
           enddo
 
       elseif (hfpp_drift_type.eq.3) then
-          print *,'\n The selected drift map file uses a REALLY simple look-up table to determine'
-          print *,  ' the drift in the focal plane polarimeter chambers. (ejb)\n'
-		do i=1,120
-			read(LUN,*,err=901,end=900)ejbtime(i,1),ejbdrift(i,1)
-		enddo
-		do i=1,120
-			read(LUN,*,err=901,end=900)ejbtime(i,2),ejbdrift(i,2)
-		enddo
-		do i=1,120
-			read(LUN,*,err=901,end=900)ejbtime(i,3),ejbdrift(i,3)
-		enddo
-		do i=1,120
-			read(LUN,*,err=901,end=900)ejbtime(i,4),ejbdrift(i,4)
-		enddo
+          print *,' The selected drift map file uses a REALLY simple look-up table to determine'
+          print *,' the drift in the focal plane polarimeter chambers. (ejb)\n'
+	  do i=1,120
+	          read(LUN,*,err=901,end=900)ejbtime(i,1),ejbdrift(i,1)
+	  enddo
+	  do i=1,120
+	          read(LUN,*,err=901,end=900)ejbtime(i,2),ejbdrift(i,2)
+	  enddo
+	  do i=1,120
+	          read(LUN,*,err=901,end=900)ejbtime(i,3),ejbdrift(i,3)
+	  enddo
+	  do i=1,120
+	          read(LUN,*,err=901,end=900)ejbtime(i,4),ejbdrift(i,4)
+	  enddo
       else					! bad selector ****************
           goto 904
       endif

@@ -29,8 +29,6 @@
 
 ** z-position of chamber layers within each chamber set (pair)
       data  planeZ/ -12.25, -10.65, -9.05,  9.05,  10.65,  12.25/
-c      data  planeZ/ -12.25, -10.65, -9.05,  9.05,  10.65,  12.25,
-c     + 85.00, 86.85, 88.45, 106.55, 108.15, 109.75/
 
 * angle of wires in each plane relative to
 * positive x-axis -- in-layer axis goes from wire 1 to wire 104/83
@@ -38,19 +36,13 @@ c     + 85.00, 86.85, 88.45, 106.55, 108.15, 109.75/
 * gamma of zero degrees has lowest wire at -x and highest at +x
 * thus x-layer has gamma=0, u has +45 and v has -45
       data planeangle/  -45.0, 0.0, 45.0,    -45.0, 0.0, 45.0/
-c      data planeangle/  -45.0, 0.0, 45.0,    -45.0, 0.0, 45.0,
-c     + -45.0, 0.0, 45.0,    -45.0, 0.0, 45.0/
 
 * spacing of sense wires in each plane
       data inplanespacing/  2.0, 2.0, 2.0,    2.0, 2.0, 2.0/
-c      data inplanespacing/  2.0, 2.0, 2.0,    2.0, 2.0, 2.0,
-c     + 2.0, 2.0, 2.0,    2.0, 2.0, 2.0/
 
 * offset of layer along its measurement direction by plane
 * this is the difference between (wire no)*(spacing) and (coordinate)
       data planeoffset/  -104.0, -84.0, -104.0,   -104.0, -84.0, -104.0/
-c      data planeoffset/  -104.0, -84.0, -104.0,   -104.0, -84.0, -104.0,
-c     +  -104.0, -84.0, -104.0,   -104.0, -84.0, -104.0/
 
 ** Chamber Wire Numbers against card position mapping
 *

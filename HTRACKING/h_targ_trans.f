@@ -16,8 +16,8 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
-* Revision 1.16.24.1  2007/10/27 09:21:01  cdaq
-* Modifications to fpp ntuple (ejb)
+* Revision 1.16.24.2  2007/10/27 21:15:32  cdaq
+* fix erroneous submissions
 *
 * Revision 1.16  1999/02/23 18:50:38  csa
 * (JRA) Correct (another) hut(5) error
@@ -119,6 +119,7 @@
       ABORT= .FALSE.
       err= ' '
 * Check for correct initialization.
+
       if (h_recon_initted.ne.1) then
          istat = 2
          return
