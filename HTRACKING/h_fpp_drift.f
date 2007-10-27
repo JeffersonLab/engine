@@ -74,10 +74,16 @@
 * independent of the geometric event, we can consider them fixed and they are
 * absorbed into the drift map or the time offset
 * this leaves the following corrections:
+* - trigger time: corrections to the tirgger time to obtain the actual
+*   interaction time of the particle with the scintillator
 * - time of flight: interaction in lower-z layers are earlier (relative to
 *   trigger!) than higher-z ones
 * - wire walk correction: signal needs to propagate along sense wire to
 *   amplifier (readout) card and the path length depends on track geometry
+
+
+*     * correct trigger time
+      drift_time = drift_time - hstart_time
 
 
       if (.FALSE.) then
