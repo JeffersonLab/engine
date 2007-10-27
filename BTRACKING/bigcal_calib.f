@@ -153,6 +153,8 @@ c     --> gain_cor_new = 1
      $              float(i),bigcal_vector(i))
                if(bid_bcal_oldxnew.gt.0) call hf1(bid_bcal_oldxnew,
      $              float(i),bigcal_prot_cfac(i))
+               if(bid_bcal_cfac_dist.gt.0) call hf1(bid_bcal_cfac_dist,
+     $              bigcal_vector(i),1.)
             enddo
             
             do i=1,bigcal_rcs_maxhits
@@ -168,6 +170,8 @@ c     --> gain_cor_new = 1
      $              float(i+bigcal_prot_maxhits),bigcal_vector(i+bigcal_prot_maxhits))
                if(bid_bcal_oldxnew.gt.0) call hf1(bid_bcal_oldxnew,
      $              float(i+bigcal_prot_maxhits),bigcal_rcs_cfac(i))
+               if(bid_bcal_cfac_dist.gt.0) call hf1(bid_bcal_cfac_dist,
+     $              bigcal_vector(i+bigcal_prot_maxhits),1.)
             enddo
             
             write(iochan,*) 'bigcal_prot_cfac = '
