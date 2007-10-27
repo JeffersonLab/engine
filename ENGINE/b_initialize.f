@@ -68,7 +68,7 @@ c     default filename of 'outfiles/bigcal_calib'
          if(b_calib_matrix_filename.ne.' ') then
             filename = b_calib_matrix_filename
          else 
-            b_calib_matrix_filename = 'outfiles/bigcal_calib'
+            b_calib_matrix_filename = 'DATFILES/bigcal_calib'
             filename = b_calib_matrix_filename
          endif
          call g_IO_control(iochan,'ANY',ABORT,err)
