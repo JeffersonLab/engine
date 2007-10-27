@@ -60,6 +60,11 @@ c     calculate final "efficiencies" and fill histograms
          else
             if(bid_bcal_rcs_eff.gt.0) call hf1(bid_bcal_rcs_eff,float(icell-bigcal_prot_maxhits),eff)
          endif
+
+c         b_all_run_Enum(icell) = 0
+c         b_all_run_Esum(icell) = 0.
+         
+
       enddo
 
 
