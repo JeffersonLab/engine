@@ -152,6 +152,7 @@ c         write(*,*) 'histname=',histname
       bid_bcal_small = thgetid('bcal_small')
       bid_bcal_cfac_old = thgetid('bcal_cfac_old')
       bid_bcal_cfac_new = thgetid('bcal_cfac_new')
+      bid_bcal_cfac_dist = thgetid('bcal_cfac_dist')
       bid_bcal_oldxnew = thgetid('bcal_oldxnew')
 
       abort=.false.
