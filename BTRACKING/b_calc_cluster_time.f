@@ -275,15 +275,19 @@ c     the trig. tdc channel is unique!!!!!!!!!!!!!!!!!!!!!!!!!!
          bigcal_all_clstr_ncell64(iclust) = n64
 
          meant8 = t8sum / n8
-         rmst8 = sqrt(t8sum2 / n8 - meant8**2)
+         rmst8 = sqrt(max(0.,t8sum2 / n8 - meant8**2))
+
+         
 
          if(n8.eq.0) then
             meant8 = 0.
             rmst8 = 0.
          endif
 
+c         write(*,*) 't64sum,t64sum2,n64=',t64sum,t64sum2,n64
+
          meant64 = t64sum / n64
-         rmst64 = sqrt(t64sum2 / n64 - meant64**2)
+         rmst64 = sqrt(max(0.,t64sum2 / n64 - meant64**2))
 
          if(n64.eq.0) then
             meant64 = 0.
