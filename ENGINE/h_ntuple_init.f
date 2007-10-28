@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.11.18.3  2007/10/28 01:59:30  cdaq
+* *** empty log message ***
+*
 * Revision 1.11.18.2  2007/10/26 16:49:21  cdaq
 * added number of hdc hits to HMS ntuple
 *
@@ -179,21 +182,21 @@ c
 * Experiment dependent entries start here.
 c
       m= m+1
-      h_Ntuple_tag(m)= 'gfrx_raw'
+      h_Ntuple_tag(m)= 'S0X1padc'
       m= m+1
-      h_Ntuple_tag(m)= 'gfry_raw'
+      h_Ntuple_tag(m)= 'S0X1nadc'
       m= m+1
-      h_Ntuple_tag(m)= 'gbeam_x'
+      h_Ntuple_tag(m)= 'S0X2padc'
       m= m+1
-      h_Ntuple_tag(m)= 'gbeam_y'
+      h_Ntuple_tag(m)= 'S0X2nadc'
       m= m+1
-      h_Ntuple_tag(m)= 'bpma_x'
+      h_Ntuple_tag(m)= 'S0X1ptdc'
       m= m+1
-      h_Ntuple_tag(m)= 'bpma_y'
+      h_Ntuple_tag(m)= 'S0X1ntdc'
       m= m+1
-      h_Ntuple_tag(m)= 'bpmb_x'
+      h_Ntuple_tag(m)= 'S0X2ptdc'
       m= m+1
-      h_Ntuple_tag(m)= 'bpmb_y'
+      h_Ntuple_tag(m)= 'S0X2ntdc'
       m= m+1
       h_Ntuple_tag(m)= 'bpmc_x'
       m= m+1

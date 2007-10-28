@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.18.3  2007/10/28 01:59:24  cdaq
+* *** empty log message ***
+*
 * Revision 1.10.18.2  2007/10/26 16:48:14  cdaq
 * Added number of chamber hits to HMS ntuple
 *
@@ -59,6 +62,7 @@
       character*(*) err
 *
       INCLUDE 'hms_data_structures.cmn'
+      INCLUDE 'hms_scin_parms.cmn'
       INCLUDE 'h_ntuple.cmn'
       INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_event_info.cmn'
@@ -71,7 +75,11 @@
       logical HEXIST	!CERNLIB function
 *
       integer m
-
+c
+      integer pln,cnt,ihit
+      real s0x1padc,s0x1nadc,s0x2nadc,s0x2padc
+      real s0x1ptdc,s0x1ntdc,s0x2ntdc,s0x2ptdc
+c
       real proton_mass
       parameter ( proton_mass = 0.93827247 ) ! [GeV/c^2]
 *
@@ -140,22 +148,45 @@ c                                ! track with spectrometer ray
       m= m+1
       h_Ntuple_contents(m)= float(gen_event_type)
 c
+      do ihit=1,hscin_all_tot_hits
+          pln=hscin_all_plane_num(ihit)
+          cnt=hscin_all_counter_num(ihit)
+          if ( pln .eq. 3) then
+                if (cnt .eq. 1) then
+                   s0x1nadc = hscin_all_adc_neg(ihit)
+     > -hscin_all_ped_neg(pln,cnt)
+                   s0x1padc = hscin_all_adc_pos(ihit)
+     > -hscin_all_ped_neg(pln,cnt)
+                   s0x1ntdc = FLOAT(hscin_all_tdc_neg(ihit)) 
+                   s0x1ptdc = FLOAT(hscin_all_tdc_pos(ihit)) 
+                endif
+                if (cnt .eq. 2) then
+                   s0x2nadc = hscin_all_adc_neg(ihit)
+     > -hscin_all_ped_neg(pln,cnt)
+                   s0x2padc = hscin_all_adc_pos(ihit)
+     > -hscin_all_ped_neg(pln,cnt)
+                   s0x2ntdc = FLOAT(hscin_all_tdc_neg(ihit)) 
+                   s0x2ptdc = FLOAT(hscin_all_tdc_pos(ihit)) 
+                endif
+             endif
+         enddo
+c
       m= m+1
-      h_Ntuple_contents(m)= gfrx_raw_adc
+      h_Ntuple_contents(m)= s0x1padc
       m= m+1
-      h_Ntuple_contents(m)= gfry_raw_adc
+      h_Ntuple_contents(m)= s0x1nadc
       m= m+1
-      h_Ntuple_contents(m)= gbeam_x
+      h_Ntuple_contents(m)= s0x2padc
       m= m+1
-      h_Ntuple_contents(m)= gbeam_y
+      h_Ntuple_contents(m)= s0x2nadc
       m= m+1
-      h_Ntuple_contents(m)= gbpm_x(1)
+      h_Ntuple_contents(m)= s0x1ptdc
       m= m+1
-      h_Ntuple_contents(m)= gbpm_y(1)
+      h_Ntuple_contents(m)= s0x1ntdc
       m= m+1
-      h_Ntuple_contents(m)= gbpm_x(2)
+      h_Ntuple_contents(m)= s0x2ptdc
       m= m+1
-      h_Ntuple_contents(m)= gbpm_y(2)
+      h_Ntuple_contents(m)= s0x2ntdc
       m= m+1
       h_Ntuple_contents(m)= gbpm_x(3)
       m= m+1
