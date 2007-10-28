@@ -236,10 +236,12 @@ c      character*256 b_tree_filename
       real*4 E_HMS
       real*4 X_HMS
       real*4 Y_HMS
+      real*4 dPel_HMS ! difference between Pel(htheta) and PHMS, normalized to hpcentral
       common/hmsblk/
      $     E_HMS,
      $     X_HMS,
-     $     Y_HMS
+     $     Y_HMS,
+     $     dPel_HMS
 
       integer*4 nahit
       integer*4 xa(maxahit)
