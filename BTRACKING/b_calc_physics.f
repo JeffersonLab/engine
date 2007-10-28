@@ -97,7 +97,7 @@ c            if(last_time) then
             if(bid_bcal_phi.gt.0) call hf1(bid_bcal_phi,phideg,1.0)
 c            endif
             gamma = E / m_e
-            beta = sqrt(1. - 1./gamma**2)
+            beta = sqrt(max(0.,1. - 1./gamma**2))
 
             log10betagamma = log(beta*gamma) / log(10.)
 
@@ -129,7 +129,7 @@ c     increment energy sum
             b_all_run_Esum(icell) = b_all_run_Esum(icell)+E
             b_all_run_Enum(icell) = b_all_run_Enum(icell)+1
 
-            mom = sqrt(E**2 - m_e**2) 
+            mom = sqrt(max(0.,E**2 - m_e**2)) 
             beta = mom/E
             tof = L/(beta*c)
 
