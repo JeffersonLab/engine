@@ -252,6 +252,10 @@ c     correct angles since we know vertex:
 c     correct tof:
       
       gamma_corr = bigcal_energy / Me
+
+c     could get a "NaN" error here: check:
+      if(gamma_corr.lt.1.) gamma_corr = 1.
+
       beta_corr = sqrt(1.-1./gamma_corr**2)
 
       bigcal_beta = beta_corr
