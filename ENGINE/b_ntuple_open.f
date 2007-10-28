@@ -164,7 +164,7 @@ c        write(*,*) 'before adding hmsblk, gen_bigcal_mc=',gen_bigcal_mc
         if(gen_run_enable(5).ne.0.and.(gen_bigcal_mc.eq.3.or.
      $       gen_bigcal_mc.eq.0)) then
 c           write(*,*) 'adding block hmsblk to bigcal ntuple'
-           call HBNAME(id,'hmsblk',E_HMS,'E_HMS,X_HMS,Y_HMS')
+           call HBNAME(id,'hmsblk',E_HMS,'E_HMS,X_HMS,Y_HMS,dPel_HMS')
         endif
       else if(bigcal_ntuple_type.eq.2) then ! col-wise ntuple for cosmics analysis
 
