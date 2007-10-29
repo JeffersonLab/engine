@@ -25,8 +25,12 @@ c     event selection cuts for BigCal calibration:
 *
 *     CTPTYPE=event
 *
+      integer*4 ntrigH1,ntrigH2,ntrigB
       real*4 GEP_ctime_hms ! HMS coincidence time
       real*4 GEP_ctime_cal ! BigCal coincidence time
+      real*4 GEP_H1time(8) ! HMS trigger1 hits (up to 8/event)
+      real*4 GEP_H2time(8) ! HMS trigger2 hits (up to 8/event)
+      real*4 GEP_Btime(8) ! HMS BigCal trigger hits (up to 8/event)
       real*4 GEP_Q2 ! 4 momentum transfer squared: BigCal angle, HMS momentum
       real*4 GEP_Q2_H ! Q2 from HMS only
       real*4 GEP_Q2_B ! Q2 from BigCal & HMS vertex, but no HMS momentum
@@ -53,8 +57,14 @@ c     can define the unit vector in the q-direction, which defines the coord.
 c     system for the polarization measurement. 
       
       common/GEPBLOCK/
+     $     ntrigH1,
+     $     ntrigH2,
+     $     ntrigB,
      $     GEP_ctime_hms,
      $     GEP_ctime_cal,
+     $     GEP_H1time,
+     $     GEP_H2time,
+     $     GEP_Btime,
      $     GEP_Q2,
      $     GEP_Q2_H,
      $     GEP_Q2_B,
