@@ -120,6 +120,19 @@ c     need to hardcode some:
          histname = 'TDC'//char(tens + ichar('0'))//
      $        char(ones + ichar('0'))//'D'
          bid_btdc(4 + 4*(i-1) ) = thgetid(histname)
+
+c$$$         histname = 'TWALK'//char(tens + ichar('0'))//
+c$$$     $        char(ones + ichar('0'))//'A'
+c$$$         bid_btimewalk(1 + 4*(i-1) ) = thgetid(histname)
+c$$$         histname = 'TWALK'//char(tens + ichar('0'))//
+c$$$     $        char(ones + ichar('0'))//'B'
+c$$$         bid_btimewalk(2 + 4*(i-1) ) = thgetid(histname)
+c$$$         histname = 'TWALK'//char(tens + ichar('0'))//
+c$$$     $        char(ones + ichar('0'))//'C'
+c$$$         bid_btimewalk(3 + 4*(i-1) ) = thgetid(histname)
+c$$$         histname = 'TWALK'//char(tens + ichar('0'))//
+c$$$     $        char(ones + ichar('0'))//'D'
+c$$$         bid_btimewalk(4 + 4*(i-1) ) = thgetid(histname)
       enddo
       
       do i=1,21
