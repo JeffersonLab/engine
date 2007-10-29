@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.11.18.4  2007/10/29 21:59:41  cdaq
+* Modifications to HMS ntuple for beam raster/bpm information (MKJ)
+*
 * Revision 1.11.18.3  2007/10/28 01:59:30  cdaq
 * *** empty log message ***
 *
@@ -198,9 +201,9 @@ c
       m= m+1
       h_Ntuple_tag(m)= 'S0X2ntdc'
       m= m+1
-      h_Ntuple_tag(m)= 'bpmc_x'
+      h_Ntuple_tag(m)= 'rast_y'
       m= m+1
-      h_Ntuple_tag(m)= 'bpmc_y'
+      h_Ntuple_tag(m)= 'rast_x'
       m= m+1
       h_Ntuple_tag(m)= 'hdchits1'
       m= m+1

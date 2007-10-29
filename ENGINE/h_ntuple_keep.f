@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.18.4  2007/10/29 21:59:41  cdaq
+* Modifications to HMS ntuple for beam raster/bpm information (MKJ)
+*
 * Revision 1.10.18.3  2007/10/28 01:59:24  cdaq
 * *** empty log message ***
 *
@@ -188,9 +191,9 @@ c
       m= m+1
       h_Ntuple_contents(m)= s0x2ntdc
       m= m+1
-      h_Ntuple_contents(m)= gbpm_x(3)
+      h_Ntuple_contents(m)= gfry_raw_adc
       m= m+1
-      h_Ntuple_contents(m)= gbpm_y(3)
+      h_Ntuple_contents(m)= gfrx_raw_adc
       m= m+1
       h_Ntuple_contents(m)= hncham_hits(1)
       m= m+1
