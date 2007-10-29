@@ -365,6 +365,9 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
           print *,' The selected drift map file uses a polynomial to calculate'
           print *,' the drift in the focal plane polarimeter chambers.\n'
 
+          read(LUN,*,err=903,end=900) hfpp_drift_Tmin, hfpp_drift_Tmax
+          read(LUN,*,err=903,end=900) hfpp_drift_Xmax
+
           read(LUN,*,err=903,end=900)
      >      (hfpp_drift_Nterms(Plane),Plane=1,H_FPP_N_PLANES)
 
