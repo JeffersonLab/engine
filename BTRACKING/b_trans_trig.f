@@ -37,15 +37,15 @@
           bigcal_atrig_esum(ihit) = bigcal_trig_cfac(icell64) *
      $         bigcal_atrig_adc_good(ihit)*bigcal_trig_gain_cor(icell64)
           
-          if(bid_btadc(icell64).gt.0.and.b_use_peds_in_hist.eq.0) then
-             call hf1(bid_btadc(icell64),
-     $            bigcal_atrig_adc_good(ihit),1.0)
-          endif
+c$$$          if(bid_btadc(icell64).gt.0.and.b_use_peds_in_hist.eq.0) then
+c$$$             call hf1(bid_btadc(icell64),
+c$$$     $            bigcal_atrig_adc_good(ihit),1.0)
+c$$$          endif
           bigcal_atrig_good_det(icell64) = bigcal_atrig_esum(ihit)
-          if(bid_bcal_tadcvsum64.gt.0) then
-             call hf2(bid_bcal_tadcvsum64,bigcal_atrig_sum64(icell64),
-     $            bigcal_atrig_adc_good(ihit),1.0)
-          endif
+c$$$          if(bid_bcal_tadcvsum64.gt.0) then
+c$$$             call hf2(bid_bcal_tadcvsum64,bigcal_atrig_sum64(icell64),
+c$$$     $            bigcal_atrig_adc_good(ihit),1.0)
+c$$$          endif
           if(bigcal_iymax_adc.ne.0.and.bigcal_ixmax_adc.ne.0.and.
      $         bid_bcal_trchvmax64.gt.0) then
              jrow64 = (bigcal_iymax_adc-1)/3 + 1
@@ -132,6 +132,20 @@ c     check if the two hits match:
          enddo
       endif
       
+      do icell64=1,bigcal_atrig_maxhits
+         if(bigcal_ttrig_det_ngood(icell64).gt.0) then
+            if(bid_btadc(icell64).gt.0.and.b_use_peds_in_hist.eq.0) then
+               call hf1(bid_btadc(icell64),
+     $              bigcal_atrig_good_det(icell64),1.0)
+            endif
+            
+            if(bid_bcal_tadcvsum64.gt.0) then
+               call hf2(bid_bcal_tadcvsum64,bigcal_atrig_sum64(icell64),
+     $              bigcal_atrig_good_det(icell64),1.0)
+            endif
+         endif
+      enddo
+
       bigcal_ttrig_ngood = ngood
       
       return 
