@@ -6,6 +6,9 @@
 * g_trans_misc fills the gen_decoded_misc common block
 *
 * $Log$
+* Revision 1.2.24.3  2007/10/29 19:44:07  cdaq
+* Added handling of multi-hits for HMS and BigCal trigger TDCs
+*
 * Revision 1.2.24.2  2007/10/23 13:23:32  cdaq
 * Added filling of raw trigger TDC histograms, signals are in the gmisc hit array
 *
@@ -23,6 +26,7 @@
       implicit none
 
       include 'gen_data_structures.cmn'
+      include 'gep_data_structures.cmn'
       include 'gep_hist_id.cmn'
 
       logical abort
@@ -31,6 +35,7 @@
       parameter (here = 'g_trans_misc')
 
       integer*4 ihit
+      integer*4 nH1,nH2,nB
 
       save
 
@@ -42,6 +47,10 @@
         gmisc_dec_data(ihit,2) = -1     ! Clear ADC's
       enddo
       
+      nH1 = 0
+      nH2 = 0
+      nB  = 0
+
 c      write(*,*) 'gmisc_tot_hits=',gmisc_tot_hits
 
       do ihit = 1 , gmisc_tot_hits
@@ -59,18 +68,30 @@ c$$$         endif
 c$$$            write(*,*) 'gmisc TDC hit ctr,TDCraw=',gmisc_raw_addr2(ihit),
 c$$$     $           gmisc_raw_data(ihit)
             if(gmisc_raw_addr2(ihit).eq.1) then !HMS1 trigger: fill hist
+               nH1 = nH1 + 1
+               if(nH1.le.8) then
+                  GEP_H1time(nH1) = .5*gmisc_raw_data(ihit)
+               endif
                if(gepid_gep_HMS1_rawtdc.gt.0) then
                   call hf1(gepid_gep_HMS1_rawtdc,float(gmisc_raw_data(ihit)),
      $                 1.)
                endif
             endif
             if(gmisc_raw_addr2(ihit).eq.2) then !HMS2 trigger: fill hist
+               nH2 = nH2 + 1
+               if(nH2.le.8) then
+                  GEP_H2time(nH2) = .5*gmisc_raw_data(ihit)
+               endif
                if(gepid_gep_HMS2_rawtdc.gt.0) then
                   call hf1(gepid_gep_HMS2_rawtdc,float(gmisc_raw_data(ihit)),
      $                 1.)
                endif
             endif
             if(gmisc_raw_addr2(ihit).eq.3) then !BigCal trigger: fill hist
+               nB = nB + 1
+               if(nB.le.8) then
+                  GEP_Btime(nB) = .5*gmisc_raw_data(ihit)
+               endif
                if(gepid_gep_bigcal_rawtdc.gt.0) then
                   call hf1(gepid_gep_bigcal_rawtdc,float(gmisc_raw_data(ihit)),
      $                 1.)
@@ -81,6 +102,11 @@ c$$$     $           gmisc_raw_data(ihit)
          gmisc_dec_data(gmisc_raw_addr2(ihit),gmisc_raw_addr1(ihit)) =
      $       gmisc_raw_data(ihit)
       enddo
+
+      ntrigH1 = nH1
+      ntrigH2 = nH2
+      ntrigB =  nB
+
 
       return
       end
