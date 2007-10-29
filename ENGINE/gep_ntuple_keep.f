@@ -50,6 +50,30 @@
       m=m+1
       gep_ntuple_contents(m) = GEP_ctime_cal
       m=m+1
+      gep_ntuple_contents(m) = float(ntrigH1)
+      m=m+1 
+      gep_ntuple_contents(m) = float(ntrigH2)
+      m=m+1
+      gep_ntuple_contents(m) = float(ntrigB)
+      m=m+1
+      if(ntrigH1.gt.0.and.gep_ntuple_contents(2).ne.2.) then
+         gep_ntuple_contents(m) = GEP_H1time(1) !H1 trig time in ns (first hit only)
+      else
+         gep_ntuple_contents(m) = 0.
+      endif
+      m=m+1
+      if(ntrigH2.gt.0.and.gep_ntuple_contents(2).ne.1.) then
+         gep_ntuple_contents(m) = GEP_H2time(1) !H2 trig time in ns (first hit only)
+      else 
+         gep_ntuple_contents(m) = 0.
+      endif
+      m=m+1 
+      if(ntrigB.gt.0) then
+         gep_ntuple_contents(m) = GEP_Btime(1) !Bigcal trig time in ns (first hit )
+      else
+         gep_ntuple_contents(m) = 0.
+      endif
+      m=m+1
       gep_ntuple_contents(m) = GEP_Q2
       m=m+1
       gep_ntuple_contents(m) = GEP_Q2_H
