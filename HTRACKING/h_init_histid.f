@@ -7,6 +7,9 @@
 *     Date:      9 April 1994
 *
 * $Log$
+* Revision 1.8.24.3  2007/10/30 00:28:27  cdaq
+* added FPP geometric alignment checks
+*
 * Revision 1.8.24.2  2007/10/22 18:39:10  cdaq
 * adjusted HMS FPP histos
 *
@@ -368,6 +371,8 @@ c
 	  hidFPP_should(set,chamber,layer) = thgetid(histname)
 	  write(histname,'(''hfpp_didhit_'',3i1)') set, chamber, layer
 	  hidFPP_did(set,chamber,layer) = thgetid(histname)
+	  write(histname,'(''hfpp_hmswire_'',3i1)') set, chamber, layer
+	  hid_HMSwire(set,chamber,layer) = thgetid(histname)
 	enddo
        enddo
       enddo

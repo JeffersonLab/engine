@@ -11,6 +11,9 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
+* Revision 1.13.24.3  2007/10/30 00:28:32  cdaq
+* added FPP geometric alignment checks
+*
 * Revision 1.13.24.2  2007/10/22 18:39:10  cdaq
 * adjusted HMS FPP histos
 *
@@ -182,6 +185,8 @@ c
       integer*4 hidFPP_resol_lin(H_FPP_N_DCSETS)
       integer*4 hidFPP_resol_ang(H_FPP_N_DCSETS)
 
+      integer*4 hid_HMSwire(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
+
       integer*4 hid_rawROC(0:15)
       
 c
@@ -207,7 +212,7 @@ c
      &     hidFPP_NickEff,
      &     hidFPP_sclose, hidFPP_zclose,
      &     hidFPP_thetapol, hidFPP_phipol,
-     &     hid_rawROC
+     &     hid_rawROC,hid_HMSwire
 *
 *     CTPTYPE=parm
 *
