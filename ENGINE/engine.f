@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.19  2007/10/31 22:49:56  cdaq
+* added end-of-run call to b_fill_eff_hists
+*
 * Revision 1.42.8.18  2007/10/23 13:25:35  cdaq
 * commented out diagnostic message
 *
@@ -1060,6 +1063,10 @@ c...  call to calibration routine for BigCal.
          write(*,*) '*****CALLING BIGCAL CALIBRATION*****'
          call bigcal_calib(abort,err)
       endif
+
+c     also call bigcal end-of-run hist filling here, so that it is close 
+c     to other BigCal stuff and easy to find
+      call b_fill_eff_hists(abort,err)
 c...
 
       print *,'    -------------------------------------'
