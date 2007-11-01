@@ -604,7 +604,7 @@ c              write(*,*)'iRaw,mydriftX =',iRaw,iHit,mydriftX
 	  FPPtrack(3) = HFPP_track_dy(DCset,iTrack)
 	  FPPtrack(4) = HFPP_track_y(DCset,iTrack)
 
-	  call h_fpp_closest(HMStrack,FPPtrack,HFPP_Zoff(DCset),sclose,zclose)
+	  call h_fpp_closest(HMStrack,FPPtrack,sclose,zclose)
           
           HFPP_track_sclose(DCset,iTrack) = sclose
           HFPP_track_zclose(DCset,iTrack) = zclose
