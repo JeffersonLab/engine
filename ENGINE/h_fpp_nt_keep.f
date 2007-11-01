@@ -104,6 +104,7 @@ c     >              HFPP_HitTime(iRaw)
               cwnFPP_Hit1_pol(n)    = iSet
               cwnFPP_Hit1_layer(n)  = HFPP_raw_plane(iRaw)
               cwnFPP_Hit1_wire(n)   = iWire
+              cwnFPP_Hit1_d_HMS(n)  = HFPP_dHMS(iSet,iCham,iLay,cluster,iHit)
 cBAD!              cwnFPP_Hit1_time(n)   = HFPP_HitTime(iRaw)
 	      if (iTrk.le.0) then
                 cwnFPP_Hit1_itrack(n) = 0
@@ -173,6 +174,8 @@ c     >          HFPP_track_phi(iSet,iTrk)
 
          cwnFPP_theta(n)       = HFPP_track_theta(iSet,iTrk)
          cwnFPP_phi(n)         = HFPP_track_phi(iSet,iTrk)
+         
+cfrw     print *,gen_event_ID_number,n,iSet,cwnFPP_full_mx(n),cwnFPP_full_bx(n),cwnFPP_full_my(n),cwnFPP_full_by(n)
          
        enddo !iTrk
       enddo !iSet

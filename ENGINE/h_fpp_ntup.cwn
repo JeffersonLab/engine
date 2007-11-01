@@ -36,6 +36,7 @@ c common block of variables for column-wise Ntuple for HMS FPP
       real*4    cwnFPP_Hit1_time      ! corrected TDC time of each hit
       real*4    cwnFPP_Hit1_drift     ! signed(!) drift distance
       real*4    cwnFPP_Hit1_resid     ! signed(!) residual between drift & track
+      real*4    cwnFPP_Hit1_d_HMS     ! signed(!) distance between wire & HMS track
 
       integer*4 cwnFPP_Ntracks	      ! # of tracks in upstream polarimeter
       integer*4 cwnFPP_trk_pol	      ! upstream (1) or downstream (2) polarimeter
@@ -83,6 +84,7 @@ c common block of variables for column-wise Ntuple for HMS FPP
      & cwnFPP_Hit1_time(MAX_cwn_goodhits),
      & cwnFPP_Hit1_drift(MAX_cwn_goodhits),
      & cwnFPP_Hit1_resid(MAX_cwn_goodhits),
+     & cwnFPP_Hit1_d_HMS(MAX_cwn_goodhits),
      &
      & cwnFPP_Ntracks,
      & cwnFPP_trk_pol(MAX_cwn_tracks),

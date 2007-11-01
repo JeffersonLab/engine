@@ -153,6 +153,7 @@ c      call HLIMIT(nh)
      1// ',h1_time(Nhits1):R'
      1// ',h1_drift(Nhits1):R'
      1// ',h1_resid(Nhits1):R'
+     1// ',h1_d_HMS(Nhits1):R'
      1
      1// ',Ntrack[0,18]:U*4'
      1// ',Pol(Ntrack)[0,2]:U*4'

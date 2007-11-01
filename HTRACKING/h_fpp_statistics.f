@@ -87,11 +87,7 @@
                     wirepos = HFPP_layeroffset(iSet,iCham,iLay)
      >                      + HFPP_spacing(iSet,iCham,iLay)*iWire
 
-                    residual = u - wirepos
-
-                    call hf2(hid_HMSwire(iSet,iCham,iLay),residual,float(iWire),1.)
-
-*                 print *,' R ',residual, '  u ',u,' p ',wirepos,' w ',iWire
+                    HFPP_dHMS(iSet,iCham,iLay,iClust,iHit) = u - wirepos
 
                   enddo !iHit
                  enddo !iClust

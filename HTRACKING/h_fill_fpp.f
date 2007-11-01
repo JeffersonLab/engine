@@ -121,6 +121,27 @@
        enddo !iChamber
       enddo !DCset
 
+
+*     * for each DCset,iChamber,iLayer, histogram in-layer distance betw hit wires and HMS track
+      do DCset=1,H_FPP_N_DCSETS
+       do iChamber=1,H_FPP_N_DCINSET
+        do iLayer=1,H_FPP_N_DCLAYERS
+	  hid = hid_HMSwire(DCset,iChamber,iLayer)
+          if (HFPP_nClusters(DCset,iChamber,iLayer).gt.0) then
+            do iCluster=1,HFPP_nClusters(DCset,iChamber,iLayer)
+             do iHit=1,HFPP_nHitsinCluster(DCset,iChamber,iLayer,iCluster)
+               iRaw = HFPP_Clusters(DCset,iChamber,iLayer,iCluster,iHit)
+               iWire = HFPP_raw_wire(iRaw)
+               dist = HFPP_dHMS(DCset,iChamber,iLayer,iCluster,iHit)
+               call hf2(hid,dist,float(iWire),1.)
+	     enddo !iHit
+	    enddo !iCluster
+	  endif
+	enddo !iLayer
+       enddo !iChamber
+      enddo !DCset
+
+
 *     * for each DCset,iChamber,iLayer, histogram drift distances -- used hits only
       do DCset=1,H_FPP_N_DCSETS
        do iChamber=1,H_FPP_N_DCINSET

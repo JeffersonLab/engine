@@ -11,6 +11,9 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 * $Log$
+* Revision 1.13.24.5  2007/11/01 19:14:51  cdaq
+* added wire--HMS track distance to FPP Ntuple
+*
 * Revision 1.13.24.4  2007/10/22 18:14:53  cdaq
 * commented out print statement
 *
@@ -294,11 +297,13 @@ c         print *,' HMS track found!'
 
 
 *     * fill FPP histogramms even if no HMS track
-      call h_fill_fpp(ABORT,err)
-      if (ABORT) then
-        call g_add_path(here,err)
-        return
-      endif
+      if(hbypass_fpp.eq.0) then
+         call h_fill_fpp(ABORT,err)
+         if (ABORT) then
+           call g_add_path(here,err)
+           return
+         endif
+      endif ! end test on hbypass_fpp
     
 *
 *     Successful return

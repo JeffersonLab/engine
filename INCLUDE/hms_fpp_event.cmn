@@ -47,6 +47,7 @@
       real*4 HFPP_drift_time             ! fully corrected drift time of hits on each wire
       real*4 HFPP_drift_dist             ! drift distance of hits on each wire
                                          !!! both only valid if hit is used in track
+      real*4 HFPP_dHMS                   ! distance between wire and HMS track
 
       common/HMS_FPP_event/
      &    HFPP_N_planehitsraw(H_FPP_N_PLANES)
@@ -71,6 +72,8 @@
      &  , HFPP_drift_dist(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS,
      >                    H_FPP_MAX_WIRES)
      &  , HFPP_trigger_TDC(0:G_DECODE_MAXROCS)
+     &  , HFPP_dHMS(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS,
+     >                  H_FPP_MAX_CLUSTERS,H_FPP_MAX_HITSperCLUSTER)
 
 
 * readability constants to use when setting HFPP_eventclass
