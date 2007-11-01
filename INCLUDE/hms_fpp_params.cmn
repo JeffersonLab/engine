@@ -100,7 +100,6 @@
       integer*4 hfpp_drift_Nbins	! actual # of entries in drift map
       integer*4 hfpp_drift_Nterms	! actual # of terms in drift map polynomial
 
-      integer*4 hfpp_drift_orders	! order of terms in drift map polynomial
       real*4 hfpp_drift_coeffs		! coefficient of terms in drift map polynomial
 
       real*4 hfpp_drift_Tmin		! lowest acceptable drift time for this map
@@ -116,8 +115,7 @@
      &  , hfpp_drift_Tmin, hfpp_drift_Tmax, hfpp_drift_dT
      &  , hfpp_drift_Xmax
      &  , hfpp_driftmap(H_FPP_N_PLANES,H_FPP_DRIFT_MAX_BINS)
-     &  , hfpp_drift_Nterms(H_FPP_N_PLANES)
-     &  , hfpp_drift_orders(H_FPP_N_PLANES,H_FPP_DRIFT_MAX_TERMS)
+     &  , hfpp_drift_Nterms
      &  , hfpp_drift_coeffs(H_FPP_N_PLANES,H_FPP_DRIFT_MAX_TERMS)
      &  , hfpp_driftmap_filename
 
