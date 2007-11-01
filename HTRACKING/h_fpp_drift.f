@@ -178,15 +178,17 @@ c      write(*,*)'Drift type = ',hfpp_drift_type
 
       elseif (hfpp_drift_type.eq.2) then	! polynomial ******************
 
-          if (drift_time.lt.hfpp_drift_Tmin .or.
-     >        drift_time.gt.hfpp_drift_Tmax     ) then
+          if (drift_time.gt.hfpp_drift_Tmax) then
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          elseif (drift_time.lt.hfpp_drift_Tmin) then
             drift_distance = H_FPP_BAD_DRIFT
             RETURN
           endif
 
           drift_distance = 0.0
-          do ii=1,hfpp_drift_Nterms(Layer)
-            p = hfpp_drift_orders(Layer,ii)
+          do ii=1,hfpp_drift_Nterms
+            p = ii-1
             a = hfpp_drift_coeffs(Layer,ii)
             drift_distance = drift_distance + a * drift_time**p
           enddo !ii
@@ -214,8 +216,33 @@ c      write(*,*)'Drift type = ',hfpp_drift_type
             RETURN
           endif
 
+      elseif (hfpp_drift_type.eq.4) then	! constant speed **************
+
+          if (drift_time.gt.hfpp_drift_Tmax) then
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          elseif (drift_time.lt.hfpp_drift_Tmin) then
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          endif
+
+          drift_distance = hfpp_drift_dT * drift_time
+                    
+          if (drift_distance.gt.hfpp_drift_Xmax) then
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          endif
+
+          if (drift_distance.lt.0.0) then
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          endif
+
       else					! bad selector ****************
           drift_distance = H_FPP_BAD_DRIFT
+          write(err,*) 'unknown drift map type: ',hfpp_drift_type
+          ABORT = .true.
+          call g_rep_err(ABORT,err)
           RETURN
       endif
 
@@ -305,10 +332,7 @@ c==============================================================================
       hfpp_drift_Tmin = 0.0
       hfpp_drift_Tmax = 0.0
       hfpp_drift_Xmax = 0.0
-
-      do Plane=1,H_FPP_N_PLANES
-        hfpp_drift_Nterms(Plane) = 0
-      enddo
+      hfpp_drift_Nterms = 0
 
       if (hfpp_driftmap_filename.eq.' ') then
         print *,' No drift map specified for the HMS FPP chambers.'
@@ -362,28 +386,26 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
 
       elseif (hfpp_drift_type.eq.2) then	! polynomial ******************
 
-          print *,' The selected drift map file uses a polynomial to calculate'
-          print *,' the drift in the focal plane polarimeter chambers.\n'
-
           read(LUN,*,err=903,end=900) hfpp_drift_Tmin, hfpp_drift_Tmax
-          read(LUN,*,err=903,end=900) hfpp_drift_Xmax
 
-          read(LUN,*,err=903,end=900)
-     >      (hfpp_drift_Nterms(Plane),Plane=1,H_FPP_N_PLANES)
+          read(LUN,*,err=903,end=900) hfpp_drift_Nterms
+          if (hfpp_drift_Nterms.gt.H_FPP_DRIFT_MAX_TERMS) then
+            hfpp_drift_Nterms = H_FPP_DRIFT_MAX_TERMS
+          endif
 
-          do Plane=1,H_FPP_N_PLANES
-            if (hfpp_drift_Nterms(Plane).gt.H_FPP_DRIFT_MAX_TERMS) then
-              hfpp_drift_Nterms(Plane) = H_FPP_DRIFT_MAX_TERMS
-            endif
-          enddo
-
-          do Plane=1,H_FPP_N_PLANES
+          do i=1,hfpp_drift_Nterms
             read(LUN,*,err=903,end=900) 
-     >    	    (hfpp_drift_orders(Plane,i),
-     >    	     hfpp_drift_coeffs(Plane,i),i=1,hfpp_drift_Nterms(Plane))
+     >    	    (hfpp_drift_coeffs(Plane,i),Plane=1,H_FPP_N_PLANES)
           enddo
 
-      elseif (hfpp_drift_type.eq.3) then
+          print *,' The selected drift map file uses a polynomial to calculate'
+          print *,' the drift in the focal plane polarimeter chambers.'
+          print *,' The order of this polynomial is :',hfpp_drift_Nterms
+          print *,' The applicability range of this drift map is:'
+          print *,' ',hfpp_drift_Tmin,' < t_drift < ',hfpp_drift_Tmax,'\n'
+
+      elseif (hfpp_drift_type.eq.3) then	! EJB map *********************
+
           print *,' The selected drift map file uses a REALLY simple look-up table to determine'
           print *,' the drift in the focal plane polarimeter chambers. (ejb)\n'
 	  do i=1,120
@@ -398,6 +420,19 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
 	  do i=1,120
 	          read(LUN,*,err=901,end=900)ejbtime(i,4),ejbdrift(i,4)
 	  enddo
+
+      elseif (hfpp_drift_type.eq.4) then	! constant speed **************
+
+          read(LUN,*,err=905,end=900) hfpp_drift_dT
+          read(LUN,*,err=905,end=900) hfpp_drift_Tmin, hfpp_drift_Tmax
+
+          print *,' The selected drift map file uses constant drift'
+          print *,' velocity in the focal plane polarimeter chambers.'
+          print *,' The speed is :',hfpp_drift_dT,' cm/ns'
+          print *,' The applicability range of this drift map is:'
+          print *,'  ',hfpp_drift_Tmin,' ns < t_drift < ',hfpp_drift_Tmax,' ns'
+          print *,' with a maximum drift distance of ',hfpp_drift_Xmax,' cm.\n'
+
       else					! bad selector ****************
           goto 904
       endif
@@ -431,6 +466,12 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
 
  904  continue
       err = 'error reading drift map - unknown drift map type: '//hfpp_driftmap_filename
+      ABORT = .true.
+      call g_rep_err(ABORT,err)
+      goto 990
+
+ 905  continue
+      err = 'error reading drift map - bad constant speed: '//hfpp_driftmap_filename
       ABORT = .true.
       call g_rep_err(ABORT,err)
       goto 990
