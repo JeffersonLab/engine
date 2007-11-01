@@ -565,13 +565,6 @@ c              write(*,*)'iRaw,mydriftX =',iRaw,iHit,mydriftX
 
 
 *         * store drift based track in HMS focal plane coords
-          DCcoords(1) = DriftTrack(2)	 ! transform offsets
-          DCcoords(2) = DriftTrack(4)
-          DCcoords(3) = 0.0
-          call h_fpp_DC2FP(DCset,.false.,DCcoords,FPcoords)
-          HFPP_track_x(DCset,iTrack) = FPcoords(1)
-          HFPP_track_y(DCset,iTrack) = FPcoords(2)
-
           DCcoords(1) = DriftTrack(1)	 ! transform slope
           DCcoords(2) = DriftTrack(3)
           DCcoords(3) = 1.0
@@ -579,10 +572,22 @@ c              write(*,*)'iRaw,mydriftX =',iRaw,iHit,mydriftX
           HFPP_track_dx(DCset,iTrack) = FPcoords(1)
           HFPP_track_dy(DCset,iTrack) = FPcoords(2)
 
+          DCcoords(1) = DriftTrack(2)	 ! transform offsets
+          DCcoords(2) = DriftTrack(4)
+          DCcoords(3) = 0.0
+          call h_fpp_DC2FP(DCset,.false.,DCcoords,FPcoords)
 
-*         * find angle between incident track and re-scattered track
+*         * still need to project reference point back to z=0!!
+          HFPP_track_x(DCset,iTrack) = FPcoords(1)
+     >                               - FPcoords(3)*HFPP_track_dx(DCset,iTrack)
+          HFPP_track_y(DCset,iTrack) = FPcoords(2)
+     >                               - FPcoords(3)*HFPP_track_dy(DCset,iTrack)
+
+
+*         * find angle between incident track and re-scattered track, in FP!!
           call h_fpp_relative_angles(hsxp_fp,hsyp_fp,
-     >                               DriftTrack(1),DriftTrack(3),
+     >                               HFPP_track_dx(DCset,iTrack),
+     >                               HFPP_track_dy(DCset,iTrack),
      >                               theta,phi)
           HFPP_track_theta(DCset,iTrack) = theta
           HFPP_track_phi(DCset,iTrack)   = phi
