@@ -2,6 +2,9 @@
 *- 
 *-   Created   22-Apr-1994   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.7.24.5  2007/11/02 22:36:53  cdaq
+* Added additional prescale factors
+*
 * Revision 1.7.24.4  2007/10/23 13:27:44  cdaq
 * Added "gtrig7" and "gtrig8" equivalences for gen_run_enable
 *
@@ -95,9 +98,9 @@
 *
 *     CTPTYPE=parm
 *
-      real*4 gps1,gps2,gps3,gps5,gps6  !prescale factors (1-hms,2-sos,3-coin,5-bigcal,6-gep)
+      real*4 gps1,gps2,gps3,gps4,gps5,gps6,gps7  !prescale factors (1-S1S0x1,2-s1s0x2,3-bigcal,4-coin1,5-coin2,6-BC cosmics,7-LED)
 *
-      common/gen_prescales/ gps1,gps2,gps3,gps5,gps6
+      common/gen_prescales/ gps1,gps2,gps3,gps4,gps5,gps6,gps7
 
 *
 *     CTPTYPE=parm
