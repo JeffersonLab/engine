@@ -120,9 +120,22 @@ cfrw  the HMS reference time is calculated at z=0 is this system
         drift_time = drift_time - prop_delay
       endif
 
-
-
-
+* implement drift time "kluge" (ejb)
+      if(hbypass_trans_fpp.eq.4) then
+              if(drift_time.gt.4000.0) then
+                   drift_distance=H_FPP_BAD_DRIFT
+                   return
+              endif
+              if(Set.eq.1) then
+                drift_distance=(drift_time+30.0)/210.0*1.38
+              else
+                drift_distance=(drift_time+10.0)/210.0*1.38
+              endif
+              if(drift_distance.lt.0)drift_distance=0.0
+              if(drift_distance.gt.1.28)drift_distance=1.28
+c              write(*,*)'Kluge: ',drift_time,drift_distance
+              return
+      endif
 
 
 ********************  convert drift time to drift distance ********************
@@ -200,7 +213,7 @@ c      write(*,*)'Drift type = ',hfpp_drift_type
 
       elseif (hfpp_drift_type.eq.3) then !simple ejb time to dist calculation
           j=(Set-1)*2+Chamber
-          do i=2,120
+          do i=2,100
                if (ejbtime(i,j).gt.drift_time) then
                     drift_distance = ejbdrift(i,j)-
      >			(ejbdrift(i,j)-ejbdrift(i-1,j))*
@@ -408,16 +421,16 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
 
           print *,' The selected drift map file uses a REALLY simple look-up table to determine'
           print *,' the drift in the focal plane polarimeter chambers. (ejb)\n'
-	  do i=1,120
+	  do i=1,100
 	          read(LUN,*,err=901,end=900)ejbtime(i,1),ejbdrift(i,1)
 	  enddo
-	  do i=1,120
+	  do i=1,100
 	          read(LUN,*,err=901,end=900)ejbtime(i,2),ejbdrift(i,2)
 	  enddo
-	  do i=1,120
+	  do i=1,100
 	          read(LUN,*,err=901,end=900)ejbtime(i,3),ejbdrift(i,3)
 	  enddo
-	  do i=1,120
+	  do i=1,100
 	          read(LUN,*,err=901,end=900)ejbtime(i,4),ejbdrift(i,4)
 	  enddo
 

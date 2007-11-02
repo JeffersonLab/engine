@@ -11,6 +11,9 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 * $Log$
+* Revision 1.13.24.6  2007/11/02 19:52:52  cdaq
+* Implementation of simple "constant drift velocity" type model. (ejb)
+*
 * Revision 1.13.24.5  2007/11/01 19:14:51  cdaq
 * added wire--HMS track distance to FPP Ntuple
 *
@@ -148,7 +151,7 @@ c      h_recon_num= h_recon_num + 1
 *     TRANSLATE FPP
 *     HMS_RAW_FPP ====> HMS_FPP_event
 *
-      If(hbypass_trans_fpp.eq.0) then
+      If(hbypass_trans_fpp.eq.0.or.hbypass_trans_fpp.eq.4) then
          call h_trans_fpp(ABORT,err)
          if(ABORT)  then
             call G_add_path(here,err)
