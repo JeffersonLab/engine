@@ -56,7 +56,7 @@ c      write(*,*)'Segments: ',h_fpp_nt_segmentevents,HFPP_nt_max_segmentevents
       cwnFPP_eventID = gen_event_ID_number
       if(HFPP_eventclass.gt.63)HFPP_eventclass=63
       cwnFPP_evtcode = HFPP_eventclass
-      cwnFPP_helicity  = gbeam_helicity
+      cwnFPP_helicite  = gbeam_helicity
 
 
 *******  standard HMS info

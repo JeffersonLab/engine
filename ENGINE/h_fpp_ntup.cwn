@@ -11,7 +11,7 @@ c common block of variables for column-wise Ntuple for HMS FPP
 
       integer*4 cwnFPP_evtcode	      ! overall FPP event descriptor
 
-      integer*4 cwnFPP_helicity	      ! event by event beam helicity
+      integer*4 cwnFPP_helicite	      ! event by event beam helicity
 
       real*4    cwnFPP_hsdelta	      ! momentum delta of HMS track
       real*4    cwnFPP_hstheta	      ! angle of HMS track in hall
@@ -60,7 +60,7 @@ c common block of variables for column-wise Ntuple for HMS FPP
 
       COMMON /CWNtupleFPP/ cwnFPP_eventID,
      & cwnFPP_evtcode,
-     & cwnFPP_helicity,
+     & cwnFPP_helicite,
      & cwnFPP_hsdelta,
      & cwnFPP_hstheta,
      & cwnFPP_hsphi,
