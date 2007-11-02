@@ -11,6 +11,9 @@
 *-   Created  30-Nov-1995   John Arrington, Caltech.
 *-
 * $Log$
+* Revision 1.4.20.3  2007/11/02 22:36:16  cdaq
+* Added code to extract additional prescale factors
+*
 * Revision 1.4.20.2  2007/09/11 19:14:17  frw
 * fixed FPP related arrays and limits
 *
@@ -56,7 +59,7 @@
       logical*4 found_thresholds,found_prescale
       character*80 prescale_string
       character*4 tmpstring
-      integer*4 ilo,prescale_len
+      integer*4 ilo,prescale_len,ilo2
       integer*4 nped
 *     functions
       integer g_important_length
@@ -134,15 +137,38 @@ c        write(6,*) '  NOT THRESHOLDS,NOT PS FACTORS.  WHO CARES.'
 *
       if (found_prescale .and. prescale_len.ne.0) then
         prescale_len = g_important_length(prescale_string(1:prescale_len))
-        ilo=index(prescale_string(1:prescale_len),'=')+1
-        read(prescale_string(ilo:prescale_len),*,err=998) nped
-        ilo=index(prescale_string(ilo+1:prescale_len),'=')+ilo+1
-        read(prescale_string(ilo:prescale_len),*,err=998) gps1
-        ilo=index(prescale_string(ilo+1:prescale_len),'=')+ilo+1
-        read(prescale_string(ilo:prescale_len),*,err=998) gps2
-        ilo=index(prescale_string(ilo+1:prescale_len),'=')+ilo+1
-        read(prescale_string(ilo:prescale_len),*,err=998) gps3
-c      write(6,*) 'gps1=',gps1,' gps2=',gps2,' gps3=',gps3
+        ilo=index(prescale_string(1:prescale_len),'nped=')+5
+        ilo2=ilo+index(prescale_string(ilo:prescale_len),',')-1
+        if (ilo2 .lt. ilo) ilo2 = prescale_len
+        read(prescale_string(ilo:ilo2),*,err=998) nped
+        ilo=index(prescale_string(1:prescale_len),'ps1=')+4
+        ilo2=ilo+index(prescale_string(ilo:prescale_len),',')-1
+        if (ilo2 .lt. ilo) ilo2 = prescale_len
+        read(prescale_string(ilo:ilo2),*,err=998) gps1
+        ilo=index(prescale_string(1:prescale_len),'ps2=')+4
+        ilo2=ilo+index(prescale_string(ilo:prescale_len),',')-1
+        if (ilo2 .lt. ilo) ilo2 = prescale_len
+        read(prescale_string(ilo:ilo2),*,err=998) gps2
+        ilo=index(prescale_string(1:prescale_len),'ps3=')+4
+        ilo2=ilo+index(prescale_string(ilo:prescale_len),',')-1
+        if (ilo2 .lt. ilo) ilo2 = prescale_len
+        read(prescale_string(ilo:ilo2),*,err=998) gps3
+        ilo=index(prescale_string(1:prescale_len),'ps4=')+4
+        ilo2=ilo+index(prescale_string(ilo:prescale_len),',')-1
+        if (ilo2 .lt. ilo) ilo2 = prescale_len
+        read(prescale_string(ilo:ilo2),*,err=998) gps4
+        ilo=index(prescale_string(1:prescale_len),'ps5=')+4
+        ilo2=ilo+index(prescale_string(ilo:prescale_len),',')-1
+        if (ilo2 .lt. ilo) ilo2 = prescale_len
+        read(prescale_string(ilo:ilo2),*,err=998) gps5
+        ilo=index(prescale_string(1:prescale_len),'ps6=')+4
+        ilo2=ilo+index(prescale_string(ilo:prescale_len),',')-1
+        if (ilo2 .lt. ilo) ilo2 = prescale_len
+        read(prescale_string(ilo:ilo2),*,err=998) gps6
+        ilo=index(prescale_string(1:prescale_len),'ps7=')+4
+        ilo2=ilo+index(prescale_string(ilo:prescale_len),',')-1
+        if (ilo2 .lt. ilo) ilo2 = prescale_len
+        read(prescale_string(ilo:ilo2),*,err=998) gps7
       endif
 *
       goto 999
