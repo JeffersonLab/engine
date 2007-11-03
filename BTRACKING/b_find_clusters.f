@@ -25,7 +25,7 @@
       integer ixmax,iymax,ihitmax,nmaximum
       integer ncluster,ncellclst,icellclst,nbadlist
       integer ixlo(0:2),ixhi(0:2),iylo,iyhi,lengthx,lengthy
-      real emax,ecell,esum,xmom_clst,ymom_clst
+      real emax,ecell,esum,asum,xmom_clst,ymom_clst
       integer ix2max,iy2max,celldiffx,celldiffy
 
       logical found_cluster
@@ -33,6 +33,7 @@
       integer cluster_temp_irow(bigcal_clstr_ncell_max)
       integer cluster_temp_icol(bigcal_clstr_ncell_max)
       real cluster_temp_ecell(bigcal_clstr_ncell_max)
+      real cluster_temp_acell(bigcal_clstr_ncell_max)
       real cluster_temp_xcell(bigcal_clstr_ncell_max)
       real cluster_temp_ycell(bigcal_clstr_ncell_max)
       logical cluster_temp_bad_chan(bigcal_clstr_ncell_max)
@@ -67,6 +68,7 @@ c      ncluster = 0
          cluster_temp_irow(icell) = 0
          cluster_temp_icol(icell) = 0
          cluster_temp_ecell(icell) = 0.
+         cluster_temp_acell(icell) = 0.
          cluster_temp_xcell(icell) = 0.
          cluster_temp_ycell(icell) = 0.
          cluster_temp_bad_chan(icell) = .false.
@@ -107,7 +109,9 @@ c     initialize all "bad cluster" flags to false
          cluster_temp_xcell(icellclst) = bigcal_all_xgood(ihitmax)
          cluster_temp_ycell(icellclst) = bigcal_all_ygood(ihitmax)
          cluster_temp_ecell(icellclst) = bigcal_all_ecell(ihitmax)
+         cluster_temp_acell(icellclst) = bigcal_all_adc_good(ihitmax)
          bigcal_all_ecell(ihitmax) = 0.
+         bigcal_all_adc_good(ihitmax) = 0.
          bigcal_all_iygood(ihitmax) = 0
          bigcal_all_ixgood(ihitmax) = 0
          bigcal_all_ygood(ihitmax) = 0.
@@ -132,7 +136,7 @@ c     initialize all "bad cluster" flags to false
 c     this is the nearest-neighbors adding loop!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  103     call b_add_neighbors(icellclst,ncellclst,nbadlist,bigcal_clstr_ncell_max,
      $        cluster_temp_icol,cluster_temp_irow,cluster_temp_xcell,
-     $        cluster_temp_ycell,cluster_temp_ecell,
+     $        cluster_temp_ycell,cluster_temp_ecell,cluster_temp_acell,
      $        cluster_temp_bad_chan,abort,err)
          if(abort) then
             call g_add_path(here,err)
@@ -167,6 +171,10 @@ c     if at least two cells, sort cluster array in order of decreasing energy:
                   copyreal = cluster_temp_ecell(icell)
                   cluster_temp_ecell(icell) = cluster_temp_ecell(jcell)
                   cluster_temp_ecell(jcell) = copyreal
+
+                  copyreal = cluster_temp_acell(icell)
+                  cluster_temp_acell(icell) = cluster_temp_acell(jcell)
+                  cluster_temp_acell(jcell) = copyreal
 
                   copyreal = cluster_temp_xcell(icell)
                   cluster_temp_xcell(icell) = cluster_temp_xcell(jcell)
@@ -207,6 +215,8 @@ c     cluster has section overlap. Also accumulate esum
 
          esum = 0.
 
+         asum = 0.
+
          do icell=1,ncellclst
             irow = cluster_temp_irow(icell)
             icol = cluster_temp_icol(icell)
@@ -225,6 +235,7 @@ c     cluster has section overlap. Also accumulate esum
             endif
 
             esum = esum + cluster_temp_ecell(icell)
+            asum = asum + cluster_temp_acell(icell)
          enddo
 
          if(nbadlist.gt.0) then
@@ -349,6 +360,7 @@ c     ONLY A SMALL CHANCE OF FINDING A MAXIMUM NEXT TO IT, DEPENDING ON B_MIN_EM
             xcell = cluster_temp_xcell(icell)
             ycell = cluster_temp_ycell(icell)
             ecell = cluster_temp_ecell(icell)
+c            acell = cluster_temp_acell(icell)
 
             xmom_clst = xmom_clst + ecell*(xcell-xcenter)/esum
             ymom_clst = ymom_clst + ecell*(ycell-ycenter)/esum
@@ -358,6 +370,7 @@ c     ONLY A SMALL CHANCE OF FINDING A MAXIMUM NEXT TO IT, DEPENDING ON B_MIN_EM
      $              .and.bigcal_all_ixgood(ihit).eq.cluster_temp_icol(icell)) 
      $              then        ! zero this hit so it won't be used again
                   bigcal_all_ecell(ihit) = 0.
+                  bigcal_all_adc_good(ihit) = 0.
                   bigcal_all_iygood(ihit) = 0
                   bigcal_all_ixgood(ihit) = 0
                   bigcal_all_ygood(ihit) = 0.
@@ -369,6 +382,7 @@ c     ONLY A SMALL CHANCE OF FINDING A MAXIMUM NEXT TO IT, DEPENDING ON B_MIN_EM
          bigcal_all_clstr_xmom(ncluster) = xmom_clst
          bigcal_all_clstr_ymom(ncluster) = ymom_clst
          bigcal_all_clstr_etot(ncluster) = esum
+         bigcal_all_clstr_atot(ncluster) = asum
 
          if(bbypass_calc_shower_coord.ne.0) then ! use xcenter + xmom
             bigcal_all_clstr_x(ncluster) = xcenter + xmom_clst
