@@ -9,6 +9,31 @@
       integer*4 gepid_gep_HMS1_rawtdc
       integer*4 gepid_gep_HMS2_rawtdc
       integer*4 gepid_gep_bigcal_rawtdc
+      integer*4 gepid_gep_coin1_times
+      integer*4 gepid_gep_coin2_times
+      integer*4 gepid_gep_ntrig_h1
+      integer*4 gepid_gep_ntrig_h2
+      integer*4 gepid_gep_ntrig_bigcal
+      integer*4 gepid_hgep_delta
+      integer*4 gepid_hgep_q2_hms
+      integer*4 gepid_hgep_q2_cal
+      integer*4 gepid_hgep_q2
+      integer*4 gepid_hgep_ecal
+      integer*4 gepid_hgep_pp
+      integer*4 gepid_hgep_epsilon
+      integer*4 gepid_hgep_etheta
+      integer*4 gepid_hgep_ephi
+      integer*4 gepid_hgep_ptheta
+      integer*4 gepid_hgep_pphi
+      integer*4 gepid_hgep_emiss
+      integer*4 gepid_hgep_pmissx
+      integer*4 gepid_hgep_pmissy
+      integer*4 gepid_hgep_pmissz
+      integer*4 gepid_hgep_xdiff
+      integer*4 gepid_hgep_ydiff
+      integer*4 gepid_hgep_xydiff
+      integer*4 gepid_hgep_ediff
+      integer*4 gepid_hgep_dpel
 
       common/gep_hist_id/
      $     gepid_gep_trigtype,
@@ -17,4 +42,29 @@
      $     gepid_gep_ntrigs,
      $     gepid_gep_HMS1_rawtdc,
      $     gepid_gep_HMS2_rawtdc,
-     $     gepid_gep_bigcal_rawtdc
+     $     gepid_gep_bigcal_rawtdc,
+     $     gepid_gep_coin1_times,
+     $     gepid_gep_coin2_times,
+     $     gepid_gep_ntrig_h1,
+     $     gepid_gep_ntrig_h2,
+     $     gepid_gep_ntrig_bigcal,
+     $     gepid_hgep_delta,
+     $     gepid_hgep_q2_hms,
+     $     gepid_hgep_q2_cal,
+     $     gepid_hgep_q2,
+     $     gepid_hgep_ecal,
+     $     gepid_hgep_pp,
+     $     gepid_hgep_epsilon,
+     $     gepid_hgep_etheta,
+     $     gepid_hgep_ephi,
+     $     gepid_hgep_ptheta,
+     $     gepid_hgep_pphi,
+     $     gepid_hgep_emiss,
+     $     gepid_hgep_pmissx,
+     $     gepid_hgep_pmissy,
+     $     gepid_hgep_pmissz,
+     $     gepid_hgep_xdiff,
+     $     gepid_hgep_ydiff,
+     $     gepid_hgep_xydiff,
+     $     gepid_hgep_ediff,
+     $     gepid_hgep_dpel
