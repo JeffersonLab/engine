@@ -20,6 +20,7 @@ c      include 'gen_event_info.cmn'
       if(HSNUM_FPTRACK.gt.0 .and. BIGCAL_PHYS_NTRACK .gt. 0) then
 c         gep_evid = gen_event_id_number
          call gep_ntuple_keep(abort,err)
+         call gep_fill_hist(abort,err)
       endif
       if(abort) then
          call G_add_path(here,err)
