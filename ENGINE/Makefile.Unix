@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.28.16.10  2007/11/03 08:40:02  cdaq
+# added gep_hist_fill.f
+#
 # Revision 1.28.16.9  2007/10/16 19:44:00  cdaq
 # fixed F1TDC_WINDOW_SIZE declaration
 #
@@ -169,7 +172,7 @@ bigcal_source = b_clear_event.f b_initialize.f b_keep_results.f b_ntuple_change.
 gep_source = gep_clear_event.f gep_initialize.f gep_keep_results.f gep_ntuple_change.f \
 	gep_ntuple_close.f gep_ntuple_open.f gep_physics.f gep_proper_shutdown.f \
 	gep_reconstruction.f gep_register_variables.f gep_reset_event.f \
-	gep_tree_init.f gep_init_histid.f gep_check_bigcal.f
+	gep_tree_init.f gep_init_histid.f gep_check_bigcal.f gep_fill_hist.f
 ntuple_source = g_ntuple_init.f g_ntuple_shutdown.f \
 	c_ntuple_clear.f c_ntuple_init.f c_ntuple_keep.f \
 	c_ntuple_register.f c_ntuple_shutdown.f \
