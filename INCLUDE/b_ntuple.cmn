@@ -70,9 +70,11 @@ c      character*256 b_tree_filename
       real*4 xcell(maxncellclust,maxnclust)
       real*4 ycell(maxncellclust,maxnclust)
       real*4 eblock(maxncellclust,maxnclust)
+      real*4 ablock(maxncellclust,maxnclust)
       real*4 xmoment(maxnclust)
       real*4 ymoment(maxnclust)
       real*4 eclust(maxnclust)
+      real*4 aclust(maxnclust)
       real*4 xclust(maxnclust)
       real*4 yclust(maxnclust)
       common/clustblock/
@@ -87,9 +89,11 @@ c      character*256 b_tree_filename
      $     xcell,
      $     ycell,
      $     eblock,
+     $     ablock,
      $     xmoment,
      $     ymoment,
      $     eclust,
+     $     aclust, 
      $     xclust,
      $     yclust
 

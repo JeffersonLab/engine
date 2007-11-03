@@ -96,6 +96,7 @@ c$$$     $           ncell64clust(iclust)
                xcell(icell,iclust) = bigcal_all_clstr_xcell(iclust,icell)
                ycell(icell,iclust) = bigcal_all_clstr_ycell(iclust,icell)
                eblock(icell,iclust) = bigcal_all_clstr_ecell(iclust,icell)
+               ablock(icell,iclust) = bigcal_all_clstr_acell(iclust,icell)
                cellbad(icell,iclust) = bigcal_clstr_bad_chan(iclust,icell)
 c$$$               write(*,*) 'cell,row,col,x,y,e,bad?=',icell,iycell(icell,iclust),
 c$$$     $              ixcell(icell,iclust),xcell(icell,iclust),ycell(icell,iclust),
@@ -108,6 +109,7 @@ c     zero all cells above ncellclust
                xcell(icell,iclust) = 0.
                ycell(icell,iclust) = 0.
                eblock(icell,iclust) = 0.
+               ablock(icell,iclust) = 0.
                cellbad(icell,iclust) = .false.
             enddo
             
@@ -180,6 +182,7 @@ c$$$     $           trms64(iclust)
             xclust(iclust) = bigcal_all_clstr_x(iclust)
             yclust(iclust) = bigcal_all_clstr_y(iclust)
             eclust(iclust) = bigcal_all_clstr_etot(iclust)
+            aclust(iclust) = bigcal_all_clstr_atot(iclust)
 
             !write(*,*) 'xclust,yclust,eclust=',xclust(iclust),yclust(iclust),
 c     $           eclust(iclust)
