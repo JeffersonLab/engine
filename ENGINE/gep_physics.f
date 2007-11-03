@@ -51,6 +51,7 @@ c      logical fixed_bigcal
       real edx,edy,edz,ethetacorr,ephicorr,epathlength,mom_corr
       real gamma_corr,beta_corr,tof
       real Q2_cal,Q2_hms,Q2_htheta,nu_htheta,pp_htheta
+      real Ee_btheta 
 
       real Mp
       parameter(Mp=.938272)
@@ -279,10 +280,12 @@ c     could get a "NaN" error here: check:
          gep_ctime_cal = 0.
       endif
 
+      Ee_btheta = gebeam / (1. + gebeam/Mp * (1. - cos(bigcal_thetarad)))
+
 c     compute Q2 three different ways:
 c     Q2_Cal uses only BigCal information except for hms vertex info
 c     Q2_hms uses only HMS information, period.
-      Q2_cal = 2.*gebeam*bigcal_energy*(1.-cos(bigcal_thetarad))
+      Q2_cal = 2.*gebeam*Ee_btheta*(1.-cos(bigcal_thetarad))
       Q2_hms = 2.*Mp*nu
 c     what is the average Q2? Both measurements are very good, except for bigcal_energy
 c     best is probably to use Eprime calculated from hsp, but use BigCal angle measurement
@@ -299,11 +302,11 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       GEP_etheta_deg = bigcal_thetarad * 180./PI
       GEP_ptheta_deg = hstheta * 180./PI
       GEP_ephi_deg = bigcal_phirad * 180./PI + 90.
-      GEP_pphi_deg = hsphi * 180./PI
+      GEP_pphi_deg = pphirad * 180./PI
 
       GEP_Emiss = gebeam + Mp - hsenergy - bigcal_energy
-      GEP_Pmissx = -bigcal_py + hsp*sin(hstheta)*cos(hsphi)
-      GEP_Pmissy = bigcal_px + hsp*sin(hstheta)*sin(hsphi)
+      GEP_Pmissx = -bigcal_py + hsp*sin(hstheta)*cos(pphirad)
+      GEP_Pmissy = bigcal_px + hsp*sin(hstheta)*sin(pphirad)
       GEP_Pmissz = gpbeam - bigcal_pz - hsp*cos(hstheta)
       GEP_Pmiss = sqrt(GEP_Pmissx**2 + GEP_Pmissy**2 + GEP_Pmissz**2)
       GEP_W2 = Mp**2 + Q2_hms - Q2_cal ! 2Mnu - Q2_cal
