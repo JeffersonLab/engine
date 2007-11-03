@@ -1,4 +1,4 @@
-      subroutine b_add_neighbors(cell_index,ncell,nbad,ncellmax,ix,iy,x,y,E,bad,abort,err)
+      subroutine b_add_neighbors(cell_index,ncell,nbad,ncellmax,ix,iy,x,y,E,A,bad,abort,err)
 
       implicit none
       save
@@ -15,6 +15,7 @@
       real x(ncellmax)
       real y(ncellmax)
       real E(ncellmax)
+      real A(ncellmax)
       logical bad(ncellmax)
 
       integer ix0,iy0
@@ -56,6 +57,8 @@ c     Check cell to the immediate left, if it exists
                   y(ncell) = bigcal_all_ycenter(icell)
                   E(ncell) = bigcal_all_good_det(icell)
                   bigcal_all_good_det(icell) = 0.
+                  A(ncell) = bigcal_all_adc_det(icell)
+                  bigcal_all_adc_det(icell) = 0.
 *     the following condition should only be true if we are calling b_find_clusters a second time from 
 *     gep_check_bigcal:
                   if(bigcal_bad_chan_list(icell)) then 
@@ -99,6 +102,8 @@ c     Check cell to the immediate right, if it exists
                   y(ncell) = bigcal_all_ycenter(icell)
                   E(ncell) = bigcal_all_good_det(icell)
                   bigcal_all_good_det(icell) = 0.
+                  A(ncell) = bigcal_all_adc_det(icell)
+                  bigcal_all_adc_det(icell) = 0.
 *     the following condition should only be true if we are calling b_find_clusters a second time from 
 *     gep_check_bigcal:
                   if(bigcal_bad_chan_list(icell)) then 
@@ -140,6 +145,8 @@ c     Check one cell down, if it exists
                   y(ncell) = bigcal_all_ycenter(icell)
                   E(ncell) = bigcal_all_good_det(icell)
                   bigcal_all_good_det(icell) = 0.
+                  A(ncell) = bigcal_all_adc_det(icell)
+                  bigcal_all_adc_det(icell) = 0.
 *     the following condition should only be true if we are calling b_find_clusters a second time from 
 *     gep_check_bigcal:
                   if(bigcal_bad_chan_list(icell)) then 
@@ -181,6 +188,8 @@ c     then check closest column according to ixclose_prot!!!!
                   y(ncell) = bigcal_all_ycenter(icell)
                   E(ncell) = bigcal_all_good_det(icell)
                   bigcal_all_good_det(icell) = 0.
+                  A(ncell) = bigcal_all_adc_det(icell)
+                  bigcal_all_adc_det(icell) = 0.
 *     the following condition should only be true if we are calling b_find_clusters a second time from 
 *     gep_check_bigcal:
                   if(bigcal_bad_chan_list(icell)) then 
@@ -215,6 +224,8 @@ c     continue to build up the cluster around it
                   y(ncell) = bigcal_all_ycenter(icell)
                   E(ncell) = bigcal_all_good_det(icell)
                   bigcal_all_good_det(icell) = 0.
+                  A(ncell) = bigcal_all_adc_det(icell)
+                  bigcal_all_adc_det(icell) = 0.
 *     the following condition should only be true if we are calling b_find_clusters a second time from 
 *     gep_check_bigcal:
                   if(bigcal_bad_chan_list(icell)) then 
@@ -256,6 +267,8 @@ c     check one cell to the left, if it exists:
                   y(ncell) = bigcal_all_ycenter(icell)
                   E(ncell) = bigcal_all_good_det(icell)
                   bigcal_all_good_det(icell) = 0.
+                  A(ncell) = bigcal_all_adc_det(icell)
+                  bigcal_all_adc_det(icell) = 0.
 *     the following condition should only be true if we are calling b_find_clusters a second time from 
 *     gep_check_bigcal:
                   if(bigcal_bad_chan_list(icell)) then 
@@ -296,6 +309,8 @@ c     check one cell to the right, if it exists:
                   y(ncell) = bigcal_all_ycenter(icell)
                   E(ncell) = bigcal_all_good_det(icell)
                   bigcal_all_good_det(icell) = 0.
+                  A(ncell) = bigcal_all_adc_det(icell)
+                  bigcal_all_adc_det(icell) = 0.
 *     the following condition should only be true if we are calling b_find_clusters a second time from 
 *     gep_check_bigcal:
                   if(bigcal_bad_chan_list(icell)) then 
@@ -336,6 +351,8 @@ c     check one cell up, if it exists:
                   y(ncell) = bigcal_all_ycenter(icell)
                   E(ncell) = bigcal_all_good_det(icell)
                   bigcal_all_good_det(icell) = 0.
+                  A(ncell) = bigcal_all_adc_det(icell)
+                  bigcal_all_adc_det(icell) = 0.
 *     the following condition should only be true if we are calling b_find_clusters a second time from 
 *     gep_check_bigcal:
                   if(bigcal_bad_chan_list(icell)) then 
@@ -377,6 +394,8 @@ c     section, then check closest column according to ixclose_rcs!!!!
                   y(ncell) = bigcal_all_ycenter(icell)
                   E(ncell) = bigcal_all_good_det(icell)
                   bigcal_all_good_det(icell) = 0.
+                  A(ncell) = bigcal_all_adc_det(icell)
+                  bigcal_all_adc_det(icell) = 0.
 *     the following condition should only be true if we are calling b_find_clusters a second time from 
 *     gep_check_bigcal:
                   if(bigcal_bad_chan_list(icell)) then 
@@ -411,6 +430,8 @@ c     continue to build up the cluster around it
                   y(ncell) = bigcal_all_ycenter(icell)
                   E(ncell) = bigcal_all_good_det(icell)
                   bigcal_all_good_det(icell) = 0.
+                  A(ncell) = bigcal_all_adc_det(icell)
+                  bigcal_all_adc_det(icell) = 0.
 *     the following condition should only be true if we are calling b_find_clusters a second time from 
 *     gep_check_bigcal:
                   if(bigcal_bad_chan_list(icell)) then 
