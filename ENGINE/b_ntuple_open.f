@@ -107,8 +107,10 @@ c$$$      endif
      $          'ncellx(nclust),ncelly(nclust),iycell(25,nclust),'//
      $          'ixcell(25,nclust),cellbad(25,nclust):L,'//
      $          'xcell(25,nclust),ycell(25,nclust),'//
-     $          'eblock(25,nclust),xmoment(nclust),ymoment(nclust),'//
-     $          'eclust(nclust),xclust(nclust),yclust(nclust)')
+     $          'eblock(25,nclust),ablock(25,nclust),'//
+     $          'xmoment(nclust),ymoment(nclust),'//
+     $          'eclust(nclust),aclust(nclust),'//
+     $          'xclust(nclust),yclust(nclust)')
            if(bbypass_calc_cluster_time.eq.0) then
               if(bbypass_sum8.eq.0) then
                  call HBNAME(id,'clusttdc',nclust8,
