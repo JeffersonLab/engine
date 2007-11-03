@@ -7,9 +7,9 @@
       integer clust,icell,jcell,i,j
       integer rowi,rowj,coli,colj,row,col
       real ecell,xcell,ycell,xmom,ymom
-      real ei,ej,xi,xj,yi,yj
+      real ei,ej,ai,aj,xi,xj,yi,yj
       real xcenter,ycenter,xdiff,ydiff
-      real esum
+      real esum,asum
       real xpar(6),ypar(6)
 
       include 'bigcal_data_structures.cmn'
@@ -39,9 +39,11 @@ c     based on the energy that was "guessed" for the channels in question.
       if(bigcal_all_nclstr.lt.clust) return
 
       esum = 0.
+      asum = 0.
 
       do icell = 1,bigcal_all_clstr_ncell(clust)
          ei = bigcal_all_clstr_ecell(clust,icell)
+         ai = bigcal_all_clstr_acell(clust,icell)
          rowi = bigcal_all_clstr_iycell(clust,icell)
          coli = bigcal_all_clstr_ixcell(clust,icell)
          xi = bigcal_all_clstr_xcell(clust,icell)
@@ -51,6 +53,7 @@ c     based on the energy that was "guessed" for the channels in question.
 
          do jcell = icell+1,bigcal_all_clstr_ncell(clust)
             ej = bigcal_all_clstr_ecell(clust,jcell)
+            aj = bigcal_all_clstr_acell(clust,jcell)
             xj = bigcal_all_clstr_xcell(clust,jcell)
             yj = bigcal_all_clstr_ycell(clust,jcell)
             rowj = bigcal_all_clstr_iycell(clust,jcell)
@@ -58,6 +61,7 @@ c     based on the energy that was "guessed" for the channels in question.
             badj = bigcal_clstr_bad_chan(clust,jcell)
             if(ej.gt.ei) then ! switch everything:
                bigcal_all_clstr_ecell(clust,icell) = ej
+               bigcal_all_clstr_acell(clust,icell) = aj
                bigcal_all_clstr_xcell(clust,icell) = xj
                bigcal_all_clstr_ycell(clust,icell) = yj
                bigcal_all_clstr_ixcell(clust,icell) = colj
@@ -66,6 +70,7 @@ c     based on the energy that was "guessed" for the channels in question.
                bigcal_clstr_bad_chan(clust,icell) = badj
 
                bigcal_all_clstr_ecell(clust,jcell) = ei
+               bigcal_all_clstr_acell(clust,jcell) = ai
                bigcal_all_clstr_xcell(clust,jcell) = xi
                bigcal_all_clstr_ycell(clust,jcell) = yi
                bigcal_all_clstr_ixcell(clust,jcell) = coli
@@ -78,11 +83,13 @@ c     based on the energy that was "guessed" for the channels in question.
 
       do icell=1,bigcal_all_clstr_ncell(clust)
          esum = esum + bigcal_all_clstr_ecell(clust,icell)
+         asum = asum + bigcal_all_clstr_acell(clust,icell)
       enddo
 
       bigcal_all_clstr_iymax(clust) = bigcal_all_clstr_iycell(clust,1)
       bigcal_all_clstr_ixmax(clust) = bigcal_all_clstr_ixcell(clust,1)
       bigcal_all_clstr_etot(clust) = esum
+      bigcal_all_clstr_atot(clust) = asum
       
       xcenter = bigcal_all_clstr_xcell(clust,1)
       ycenter = bigcal_all_clstr_ycell(clust,1)
