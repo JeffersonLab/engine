@@ -31,31 +31,39 @@ c     first check whether we have enough events to do a decent calibration:
       if(bigcal_nmatr_event.lt.bigcal_min_calib_events) then ! save matrix to a file to start next run.
          write(*,*) 'not enough events to calibrate, saving matrix'//
      $        ' for next run'
-         filename = b_calib_matrix_filename
-         call g_IO_control(iochan,'ANY',abort,err)
-         if(abort) then
-            call g_add_path(here,err)
+         if(b_calib_matrix_filename.ne.' ') then
+            filename = b_calib_matrix_filename
+            call g_IO_control(iochan,'ANY',abort,err)
+            if(abort) then
+               call g_add_path(here,err)
+               return
+            endif
+            
+            open(unit=iochan,file=filename,status='unknown',
+     $           form='unformatted',err=34)
+            
+            write(iochan) bigcal_nmatr_event
+            write(iochan) bigcal_vector
+            write(iochan) bigcal_matrix
+            
+            call g_IO_control(iochan,'FREE',abort,err)
+            if(abort) then
+               call g_add_path(here,err)
+               return
+            endif
+            close(iochan)
             return
-         endif
-         
-         open(unit=iochan,file=filename,status='unknown',
-     $        form='unformatted',err=34)
-         
-         write(iochan) bigcal_nmatr_event
-         write(iochan) bigcal_vector
-         write(iochan) bigcal_matrix
 
-         call g_IO_control(iochan,'FREE',abort,err)
-         if(abort) then
-            call g_add_path(here,err)
-            return
+ 34         write(*,*) 'problem opening '//filename
+            return 
+         else
+            write(*,*) 'WARNING: insufficient events '//
+     $           'to calibrate BigCal, but '
+            write(*,*) 'b_calib_matrix_filename undefined'
+            write(*,*) 'next run calibration analysis will '//
+     $           'start over at zero events!'
          endif
-         close(iochan)
-         return
-
- 34      write(*,*) 'problem opening '//filename
-         return 
-      else ! have enough events, do calibration
+      else                      ! have enough events, do calibration
 c     before solving matrix, determine nempty, nsmall, and nsmalldiag per Kravtsov:
 
          write(*,*) 'Ready to do calibration: nevent=',bigcal_nmatr_event
