@@ -350,6 +350,8 @@ c     ONLY A SMALL CHANCE OF FINDING A MAXIMUM NEXT TO IT, DEPENDING ON B_MIN_EM
      $           cluster_temp_icol(icell)
             bigcal_all_clstr_ecell(ncluster,icell) = 
      $           cluster_temp_ecell(icell)
+            bigcal_all_clstr_acell(ncluster,icell) = 
+     $           cluster_temp_acell(icell)
             bigcal_all_clstr_xcell(ncluster,icell) = 
      $           cluster_temp_xcell(icell)
             bigcal_all_clstr_ycell(ncluster,icell) = 

@@ -26,6 +26,7 @@
       real*4 RoughTrack(6)      ! rough track parameter for corrections
       real*4 prop_delay         ! wire propagation delay
       real*4 drift_time         ! fully corrected drift time
+      real*4 drift_time_orig    ! un-corrected drift time
       real*4 drift_distance     ! drift distance determ. from drift time
 
       logical ABORT
@@ -53,6 +54,7 @@
       Plane = HFPP_raw_plane(hit)
       Wire  = HFPP_raw_wire(hit)
       drift_time = HFPP_HitTime(hit)
+      drift_time_orig = HFPP_HitTime(hit)
 
       Set     = HFPP_plane2set(Plane)
       Chamber = HFPP_plane2chamber(Plane)
@@ -119,6 +121,8 @@ cfrw  the HMS reference time is calculated at z=0 is this system
 *       * apply wire propagation delay correction, supplied externally
         drift_time = drift_time - prop_delay
       endif
+
+*      write(*,*)'Drift time: ',drift_time_orig,prop_delay,correction,hstart_time,drift_time
 
 * implement drift time "kluge" (ejb)
       if(hbypass_trans_fpp.eq.4) then
@@ -214,15 +218,24 @@ c      write(*,*)'Drift type = ',hfpp_drift_type
       elseif (hfpp_drift_type.eq.3) then !simple ejb time to dist calculation
           j=(Set-1)*2+Chamber
           do i=2,100
-               if (ejbtime(i,j).gt.drift_time) then
+               if (ejbtime(i,j).gt.drift_time_orig) then
                     drift_distance = ejbdrift(i,j)-
      >			(ejbdrift(i,j)-ejbdrift(i-1,j))*
-     >			    ((ejbtime(i,j)-drift_time)/
+     >			    ((ejbtime(i,j)-drift_time_orig)/
      >                         (ejbtime(i,j)-ejbtime(i-1,j)))
                     goto 9191
                endif
           enddo
 9191      continue
+
+          if(drift_time_orig.gt.4000.0) drift_distance = H_FPP_BAD_DRIFT
+          if(Set.eq.1) then
+		if(drift_time_orig.lt.10.0.or.drift_time_orig.gt.350.0)
+     >				drift_distance=H_FPP_BAD_DRIFT
+	  else
+		if(drift_time_orig.lt.30.0.or.drift_time_orig.gt.370.0)
+     >				drift_distance=H_FPP_BAD_DRIFT
+	  endif
           
           if (drift_distance.gt.hfpp_drift_Xmax) then
             drift_distance = H_FPP_BAD_DRIFT
