@@ -118,6 +118,8 @@ c     zero all cells above ncellclust
                icol8hit(icell,iclust) = bigcal_all_clstr_icol8(iclust,icell)
                nhit8clust(icell,iclust) = bigcal_all_clstr_nhit8(iclust,icell)
 
+               s8(icell,iclust) = bigcal_all_clstr_s8(iclust,icell)
+
 c$$$               write(*,*) 'cell8,row8,col8,nh=',icell,irow8hit(icell,iclust),
 c$$$     $              icol8hit(icell,iclust),nhit8clust(icell,iclust)
 
@@ -135,6 +137,7 @@ c     zero all cells and all hits of all cells above ncell8clust
                irow8hit(icell,iclust) = 0
                icol8hit(icell,iclust) = 0
                nhit8clust(icell,iclust) = 0
+               s8(icell,iclust) = 0.
                do ihit=1,8
                   tcell8(icell,ihit,iclust) = 0.
                enddo
