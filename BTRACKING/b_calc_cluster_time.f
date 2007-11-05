@@ -74,6 +74,7 @@ c     choose the value closest to bigcal_window_center as the best value!!!!!!!!
      $                 bigcal_tdc_det_ngood(icell8)
                   bigcal_all_clstr_irow8(iclust,n8) = irow8
                   bigcal_all_clstr_icol8(iclust,n8) = icol8
+                  bigcal_all_clstr_s8(iclust,n8) = bigcal_tdc_sum8(icell8)
 
                   ihitmin = 0
 
@@ -125,7 +126,8 @@ c     the tdc channel is unique!!!!
      $                 bigcal_tdc_det_ngood(icell8)
                   bigcal_all_clstr_irow8(iclust,n8) = irow8
                   bigcal_all_clstr_icol8(iclust,n8) = icol8
-                  
+                  bigcal_all_clstr_s8(iclust,n8) = bigcal_tdc_sum8(icell8)
+
                   do ihit8 = 1,bigcal_tdc_det_ngood(icell8)
                      thit = bigcal_tdc_good_det(icell8,ihit8)
                      bigcal_all_clstr_tcell8(iclust,n8,ihit8) = thit
