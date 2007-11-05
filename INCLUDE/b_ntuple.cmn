@@ -102,6 +102,7 @@ c      character*256 b_tree_filename
       integer*4 irow8hit(10,maxnclust)
       integer*4 icol8hit(10,maxnclust)
       integer*4 nhit8clust(10,maxnclust)
+      real*4 s8(10,maxnclust)
       real*4 tcell8(10,8,maxnclust)
       real*4 tclust8(maxnclust)
       real*4 trms8(maxnclust)
@@ -111,6 +112,7 @@ c      character*256 b_tree_filename
      $     irow8hit,
      $     icol8hit,
      $     nhit8clust,
+     $     s8,
      $     tcell8,
      $     tclust8,
      $     trms8
