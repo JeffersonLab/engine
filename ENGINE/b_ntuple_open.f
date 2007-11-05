@@ -119,6 +119,7 @@ c$$$      endif
      $                'irow8hit(10,nclust8)[0,56]:I*4,'//
      $                'icol8hit(10,nclust8)[0,4]:I*4,'//
      $                'nhit8clust(10,nclust8)[0,8]:I*4,'//
+     $                's8(10,nclust8),'//
      $                'tcell8(10,8,nclust8),tclust8(nclust8),'//
      $                'trms8(nclust8)')
               endif
