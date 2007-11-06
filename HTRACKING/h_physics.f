@@ -20,6 +20,9 @@
 *-                           Dummy Shell routine
 *
 * $Log$
+* Revision 1.23.20.2  2007/11/06 19:14:42  cdaq
+*  fix zbeam calculation
+*
 * Revision 1.23.20.1  2007/10/25 00:06:54  cdaq
 * *** empty log message ***
 *
@@ -376,12 +379,8 @@ c      if (hsphi .gt. 0.) hsphi = hsphi - tt
 *     hszbeam is the intersection of the beam ray with the
 *     spectrometer as measured along the z axis.
 
-      if( sinhstheta .eq. 0.) then
-        hszbeam = 0.
-      else
-        hszbeam = sin(hsphi) * ( -hsy_tar + gbeam_y * coshstheta) /
-     $         sinhstheta 
-      endif                           ! end test on sinhstheta=0
+        hszbeam = coshthetas*hsy_tar
+     >       /tan(htheta_lab*degree-hsyp_tar)+hsy_tar*sinhthetas
 
 *     Target particle 4-momentum
 
