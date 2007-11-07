@@ -14,26 +14,26 @@
       integer*4 gepid_gep_ntrig_h1
       integer*4 gepid_gep_ntrig_h2
       integer*4 gepid_gep_ntrig_bigcal
-      integer*4 gepid_hgep_delta
-      integer*4 gepid_hgep_q2_hms
-      integer*4 gepid_hgep_q2_cal
-      integer*4 gepid_hgep_q2
-      integer*4 gepid_hgep_ecal
-      integer*4 gepid_hgep_pp
-      integer*4 gepid_hgep_epsilon
-      integer*4 gepid_hgep_etheta
-      integer*4 gepid_hgep_ephi
-      integer*4 gepid_hgep_ptheta
-      integer*4 gepid_hgep_pphi
-      integer*4 gepid_hgep_emiss
-      integer*4 gepid_hgep_pmissx
-      integer*4 gepid_hgep_pmissy
-      integer*4 gepid_hgep_pmissz
-      integer*4 gepid_hgep_xdiff
-      integer*4 gepid_hgep_ydiff
-      integer*4 gepid_hgep_xydiff
-      integer*4 gepid_hgep_ediff
-      integer*4 gepid_hgep_dpel
+      integer*4 gepid_hgep_delta(2)
+      integer*4 gepid_hgep_q2_hms(2)
+      integer*4 gepid_hgep_q2_cal(2)
+      integer*4 gepid_hgep_q2(2)
+      integer*4 gepid_hgep_ecal(2)
+      integer*4 gepid_hgep_pp(2)
+      integer*4 gepid_hgep_epsilon(2)
+      integer*4 gepid_hgep_etheta(2)
+      integer*4 gepid_hgep_ephi(2)
+      integer*4 gepid_hgep_ptheta(2)
+      integer*4 gepid_hgep_pphi(2)
+      integer*4 gepid_hgep_emiss(2)
+      integer*4 gepid_hgep_pmissx(2)
+      integer*4 gepid_hgep_pmissy(2)
+      integer*4 gepid_hgep_pmissz(2)
+      integer*4 gepid_hgep_xdiff(2)
+      integer*4 gepid_hgep_ydiff(2)
+      integer*4 gepid_hgep_xydiff(2)
+      integer*4 gepid_hgep_ediff(2)
+      integer*4 gepid_hgep_dpel(2)
 
       common/gep_hist_id/
      $     gepid_gep_trigtype,
