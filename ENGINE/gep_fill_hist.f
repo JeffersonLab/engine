@@ -16,7 +16,8 @@
       include 'bigcal_data_structures.cmn'
 
       real xdiff,ydiff,ediff
-      
+      integer i
+
       abort = .false.
       err= ' '
 
@@ -36,30 +37,40 @@
       
       if(abs(hsdelta).lt.10..and.abs(hsp-gep_pel_htheta)/hpcentral .lt..1.and.
      $     bigcal_itrack_best.gt.0) then
-         if(gepid_hgep_delta.gt.0) call hf1(gepid_hgep_delta,hsdelta,1.)
-         if(gepid_hgep_q2_hms.gt.0) call hf1(gepid_hgep_q2_hms,gep_q2_h,1.)
-         if(gepid_hgep_q2_cal.gt.0) call hf1(gepid_hgep_q2_cal,gep_q2_b,1.)
-         if(gepid_hgep_q2.gt.0) call hf1(gepid_hgep_q2,gep_q2,1.)
-         if(gepid_hgep_ecal.gt.0) call hf1(gepid_hgep_ecal,bigcal_energy,1.)
-         if(gepid_hgep_pp.gt.0) call hf1(gepid_hgep_pp,hsp,1.)
-         if(gepid_hgep_epsilon.gt.0) call hf1(gepid_hgep_epsilon,gep_epsilon,1.)
-         if(gepid_hgep_etheta.gt.0) call hf1(gepid_hgep_etheta,gep_etheta_deg,1.)
-         if(gepid_hgep_ephi.gt.0) call hf1(gepid_hgep_ephi,gep_ephi_deg,1.)
-         if(gepid_hgep_ptheta.gt.0) call hf1(gepid_hgep_ptheta,gep_ptheta_deg,1.)
-         if(gepid_hgep_pphi.gt.0) call hf1(gepid_hgep_pphi,gep_pphi_deg,1.)
-         if(gepid_hgep_emiss.gt.0) call hf1(gepid_hgep_emiss,gep_emiss,1.)
-         if(gepid_hgep_pmissx.gt.0) call hf1(gepid_hgep_pmissx,gep_pmissx,1.)
-         if(gepid_hgep_pmissy.gt.0) call hf1(gepid_hgep_pmissy,gep_pmissy,1.)
-         if(gepid_hgep_pmissz.gt.0) call hf1(gepid_hgep_pmissz,gep_pmissz,1.)
+
          xdiff = bigcal_all_clstr_x(bigcal_itrack_best) - gep_bx_expect_h
          ydiff = bigcal_all_clstr_y(bigcal_itrack_best) - gep_by_expect_h
          ediff = gep_e_electron - bigcal_energy
-         if(gepid_hgep_xdiff.gt.0) call hf1(gepid_hgep_xdiff,xdiff,1.)
-         if(gepid_hgep_ydiff.gt.0) call hf1(gepid_hgep_ydiff,ydiff,1.)
-         if(gepid_hgep_xydiff.gt.0) call hf2(gepid_hgep_xydiff,xdiff,ydiff,1.)
-         if(gepid_hgep_ediff.gt.0) call hf1(gepid_hgep_ediff,ediff,1.)
-         if(gepid_hgep_dpel.gt.0) call hf1(gepid_hgep_dpel,
-     $        (hsp-gep_pel_htheta)/hpcentral*100.,1.)
+         
+         do i=1,2
+
+            if(gen_event_trigtype(i+3).eq.1.and.gen_event_trigtype(6-i).eq.0) then
+               
+               if(gepid_hgep_delta(i).gt.0) call hf1(gepid_hgep_delta(i),hsdelta,1.)
+               if(gepid_hgep_q2_hms(i).gt.0) call hf1(gepid_hgep_q2_hms(i),gep_q2_h,1.)
+               if(gepid_hgep_q2_cal(i).gt.0) call hf1(gepid_hgep_q2_cal(i),gep_q2_b,1.)
+               if(gepid_hgep_q2(i).gt.0) call hf1(gepid_hgep_q2(i),gep_q2,1.)
+               if(gepid_hgep_ecal(i).gt.0) call hf1(gepid_hgep_ecal(i),bigcal_energy,1.)
+               if(gepid_hgep_pp(i).gt.0) call hf1(gepid_hgep_pp(i),hsp,1.)
+               if(gepid_hgep_epsilon(i).gt.0) call hf1(gepid_hgep_epsilon(i),gep_epsilon,1.)
+               if(gepid_hgep_etheta(i).gt.0) call hf1(gepid_hgep_etheta(i),gep_etheta_deg,1.)
+               if(gepid_hgep_ephi(i).gt.0) call hf1(gepid_hgep_ephi(i),gep_ephi_deg,1.)
+               if(gepid_hgep_ptheta(i).gt.0) call hf1(gepid_hgep_ptheta(i),gep_ptheta_deg,1.)
+               if(gepid_hgep_pphi(i).gt.0) call hf1(gepid_hgep_pphi(i),gep_pphi_deg,1.)
+               if(gepid_hgep_emiss(i).gt.0) call hf1(gepid_hgep_emiss(i),gep_emiss,1.)
+               if(gepid_hgep_pmissx(i).gt.0) call hf1(gepid_hgep_pmissx(i),gep_pmissx,1.)
+               if(gepid_hgep_pmissy(i).gt.0) call hf1(gepid_hgep_pmissy(i),gep_pmissy,1.)
+               if(gepid_hgep_pmissz(i).gt.0) call hf1(gepid_hgep_pmissz(i),gep_pmissz,1.)
+               
+               if(gepid_hgep_xdiff(i).gt.0) call hf1(gepid_hgep_xdiff(i),xdiff,1.)
+               if(gepid_hgep_ydiff(i).gt.0) call hf1(gepid_hgep_ydiff(i),ydiff,1.)
+               if(gepid_hgep_xydiff(i).gt.0) call hf2(gepid_hgep_xydiff(i),xdiff,ydiff,1.)
+               if(gepid_hgep_ediff(i).gt.0) call hf1(gepid_hgep_ediff(i),ediff,1.)
+               if(gepid_hgep_dpel(i).gt.0) call hf1(gepid_hgep_dpel(i),
+     $              (hsp-gep_pel_htheta)/hpcentral*100.,1.)
+
+            endif
+         enddo
       endif
       
       

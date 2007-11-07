@@ -11,6 +11,8 @@
       external thgetid
       integer*4 thgetid
      
+      integer i
+
       include 'gep_data_structures.cmn'
       include 'gep_hist_id.cmn'
 
@@ -32,26 +34,32 @@ c     miscellaneous hard-coded histograms for checkout
       gepid_gep_ntrig_h1 = thgetid('gep_ntrig_h1')
       gepid_gep_ntrig_h2 = thgetid('gep_ntrig_h2')
       gepid_gep_ntrig_bigcal = thgetid('gep_ntrig_bigcal')
-      gepid_hgep_delta = thgetid('hgep_delta')
-      gepid_hgep_q2_hms = thgetid('hgep_q2_hms')
-      gepid_hgep_q2_cal = thgetid('hgep_q2_cal')
-      gepid_hgep_q2     = thgetid('hgep_q2')
-      gepid_hgep_ecal   = thgetid('hgep_ecal')
-      gepid_hgep_pp     = thgetid('hgep_pp')
-      gepid_hgep_epsilon = thgetid('hgep_epsilon')
-      gepid_hgep_etheta = thgetid('hgep_etheta')
-      gepid_hgep_ephi   = thgetid('hgep_ephi')
-      gepid_hgep_ptheta = thgetid('hgep_ptheta')
-      gepid_hgep_pphi   = thgetid('hgep_pphi')
-      gepid_hgep_emiss  = thgetid('hgep_emiss')
-      gepid_hgep_pmissx = thgetid('hgep_pmissx')
-      gepid_hgep_pmissy = thgetid('hgep_pmissy')
-      gepid_hgep_pmissz = thgetid('hgep_pmissz')
-      gepid_hgep_xdiff  = thgetid('hgep_xdiff')
-      gepid_hgep_ydiff  = thgetid('hgep_ydiff')
-      gepid_hgep_xydiff = thgetid('hgep_xydiff')
-      gepid_hgep_ediff  = thgetid('hgep_ediff')
-      gepid_hgep_dpel   = thgetid('hgep_dpel')
+
+      do i=1,2
+
+         gepid_hgep_delta(i) = thgetid('hgep_delta'//char(i+ichar('0')))
+         gepid_hgep_q2_hms(i) = thgetid('hgep_q2_hms'//char(i+ichar('0')))
+         gepid_hgep_q2_cal(i) = thgetid('hgep_q2_cal'//char(i+ichar('0')))
+         gepid_hgep_q2(i)     = thgetid('hgep_q2'//char(i+ichar('0')))
+         gepid_hgep_ecal(i)   = thgetid('hgep_ecal'//char(i+ichar('0')))
+         gepid_hgep_pp(i)     = thgetid('hgep_pp'//char(i+ichar('0')))
+         gepid_hgep_epsilon(i) = 
+     $        thgetid('hgep_epsilon'//char(i+ichar('0')))
+         gepid_hgep_etheta(i) = thgetid('hgep_etheta'//char(i+ichar('0')))
+         gepid_hgep_ephi(i)   = thgetid('hgep_ephi'//char(i+ichar('0')))
+         gepid_hgep_ptheta(i) = thgetid('hgep_ptheta'//char(i+ichar('0')))
+         gepid_hgep_pphi(i)   = thgetid('hgep_pphi'//char(i+ichar('0')))
+         gepid_hgep_emiss(i)  = thgetid('hgep_emiss'//char(i+ichar('0')))
+         gepid_hgep_pmissx(i) = thgetid('hgep_pmissx'//char(i+ichar('0')))
+         gepid_hgep_pmissy(i) = thgetid('hgep_pmissy'//char(i+ichar('0')))
+         gepid_hgep_pmissz(i) = thgetid('hgep_pmissz'//char(i+ichar('0')))
+         gepid_hgep_xdiff(i)  = thgetid('hgep_xdiff'//char(i+ichar('0')))
+         gepid_hgep_ydiff(i)  = thgetid('hgep_ydiff'//char(i+ichar('0')))
+         gepid_hgep_xydiff(i) = thgetid('hgep_xydiff'//char(i+ichar('0')))
+         gepid_hgep_ediff(i)  = thgetid('hgep_ediff'//char(i+ichar('0')))
+         gepid_hgep_dpel(i)   = thgetid('hgep_dpel'//char(i+ichar('0')))
       
+      enddo
+
       return 
       end
