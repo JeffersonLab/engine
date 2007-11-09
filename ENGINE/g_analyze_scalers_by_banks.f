@@ -15,6 +15,9 @@
 *-
 *-     Created   20-Jun-1998   Stephen Wood
 *-    $Log$
+*-    Revision 1.2.24.2  2007/11/09 17:17:15  cdaq
+*-     added ability to read roc21 scalers
+*-
 *-    Revision 1.2.24.1  2007/09/10 20:33:37  pcarter
 *-    Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *-
@@ -80,8 +83,8 @@
 
       do while(bankpointer.lt.evlength)
          roc = jiand(jishft(event(bankpointer+1),-16),'1F'X)
-         if(roc.eq.5.or.roc.eq.8.or.roc.eq.20) then
-            call g_analyze_scaler_bank(event(bankpointer), ABORT, err)
+         if(roc.eq.5.or.roc.eq.8.or.roc.eq.20.or.roc.eq.21) then
+            call g_analyze_scaler_bank(event(bankpointer),roc, ABORT, err)
          endif
          bankpointer = bankpointer + event(bankpointer) + 1
 

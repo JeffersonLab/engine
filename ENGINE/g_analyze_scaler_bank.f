@@ -1,6 +1,9 @@
-      subroutine g_analyze_scaler_bank(event,ABORT,err)
+      subroutine g_analyze_scaler_bank(event,roc,ABORT,err)
 *     
 *     $Log$
+*     Revision 1.4.14.2  2007/11/09 17:17:09  cdaq
+*      added ability to read roc21 scalers
+*
 *     Revision 1.4.14.1  2007/09/10 20:33:37  pcarter
 *     Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *
@@ -32,6 +35,7 @@
       save
       external jishft, jiand, jieor
       integer*4 event(*)
+      integer*4 roc
 *     
       character*17 here
       parameter (here='g_analyze_scaler_bank')
@@ -130,6 +134,7 @@ c     (If ? is non zero, it means we are starting in the middle of a scaler)
 c     Allows for non multiple of 16 address starts
 c     
                address = jishft(event(pointer),-16)
+               if (roc .eq. 21) address = address + 230
 *     
 *     Might want to check that count is not to big.
 *     
