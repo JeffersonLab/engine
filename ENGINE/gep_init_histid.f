@@ -40,7 +40,7 @@ c     miscellaneous hard-coded histograms for checkout
          gepid_hgep_delta(i) = thgetid('hgep_delta'//char(i+ichar('0')))
          gepid_hgep_q2_hms(i) = thgetid('hgep_q2_hms'//char(i+ichar('0')))
          gepid_hgep_q2_cal(i) = thgetid('hgep_q2_cal'//char(i+ichar('0')))
-         gepid_hgep_q2(i)     = thgetid('hgep_q2'//char(i+ichar('0')))
+         gepid_hgep_q2(i)     = thgetid('hgep_q2_'//char(i+ichar('0')))
          gepid_hgep_ecal(i)   = thgetid('hgep_ecal'//char(i+ichar('0')))
          gepid_hgep_pp(i)     = thgetid('hgep_pp'//char(i+ichar('0')))
          gepid_hgep_epsilon(i) = 
