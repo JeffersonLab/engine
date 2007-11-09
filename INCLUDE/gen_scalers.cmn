@@ -4,6 +4,9 @@
 *     quantities calculated from the scaler events (time, current, etc...)
 *
 * $Log$
+* Revision 1.13.14.1  2007/11/09 17:16:33  cdaq
+*  increased gscaler array to 1000
+*
 * Revision 1.13  2004/05/11 18:23:26  jones
 * Add logical variable skip_events to BEAMCURRENT common block
 *
@@ -52,7 +55,7 @@
 *     CTPTYPE=parm
 *
       integer*4 MAX_NUM_SCALERS
-      parameter (MAX_NUM_SCALERS=500)
+      parameter (MAX_NUM_SCALERS=1000)
       integer*4 MAX_NUM_EVSCALERS
       parameter (MAX_NUM_EVSCALERS=16)
       integer*4 MAX_WRITEOUT_SCALERS
