@@ -133,6 +133,32 @@
       gep_ntuple_tag(m) = 'W2' ! invariant mass of detected particles W^2 = (p+q)^2 = M_p^2 + 2M*nu - Q^2 = M_p^2 for ep elastic
       m=m+1
       gep_ntuple_tag(m) = 'Mmiss' ! missing mass of detected particles, should be zero for ep elastic
+      m=m+1
+      gep_ntuple_tag(m) = 'helicite' ! electron beam helicity
+      m=m+1
+      gep_ntuple_tag(m) = 'ntrack1' ! number of tracks in FPP1
+      m=m+1
+      gep_ntuple_tag(m) = 'ntrack2' ! number of tracks in FPP2
+      m=m+1
+      gep_ntuple_tag(m) = 'zclos1' ! reconstructed zclose in FPP1
+      m=m+1
+      gep_ntuple_tag(m) = 'sclos1' ! reconstructed sclose in FPP1
+      m=m+1
+      gep_ntuple_tag(m) = 'conet1' ! conetest FPP1
+      m=m+1
+      gep_ntuple_tag(m) = 'theta1' ! polar theta FPP1
+      m=m+1
+      gep_ntuple_tag(m) = 'phi1' ! azimuthal phi FPP1
+      m=m+1
+      gep_ntuple_tag(m) = 'zclos2' ! reconstructed zclose in FPP2
+      m=m+1
+      gep_ntuple_tag(m) = 'sclos2' ! reconstructed sclose in FPP2
+      m=m+1
+      gep_ntuple_tag(m) = 'conet2' ! conetest FPP2
+      m=m+1
+      gep_ntuple_tag(m) = 'theta2' ! polar theta FPP2
+      m=m+1
+      gep_ntuple_tag(m) = 'phi2' ! azimuthal phi FPP2
 
 c     now all tags are set, initialize the ntuple:
 

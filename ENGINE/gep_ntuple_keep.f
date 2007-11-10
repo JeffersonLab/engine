@@ -13,6 +13,10 @@
       include 'gep_data_structures.cmn'
       include 'gen_data_structures.cmn'
       include 'gen_event_info.cmn'
+      include 'gen_detectorids.par'
+      include 'gen_decode_common.cmn'
+      include 'hms_data_structures.cmn'
+      include 'hms_fpp_event.cmn'
 
       integer m
 
@@ -111,7 +115,59 @@
       gep_ntuple_contents(m) = GEP_W2
       m=m+1
       gep_ntuple_contents(m) = GEP_Mmiss
-      
+      m=m+1
+      gep_ntuple_contents(m) = gbeam_helicity
+      m=m+1
+      gep_ntuple_contents(m) = HFPP_N_tracks(1)
+      m=m+1
+      gep_ntuple_contents(m) = HFPP_N_tracks(2)
+      if(HFPP_N_tracks(1).eq.1) then
+        m=m+1     
+        gep_ntuple_contents(m) = HFPP_track_zclose(1,1) 
+        m=m+1     
+        gep_ntuple_contents(m) = HFPP_track_sclose(1,1) 
+        m=m+1     
+        gep_ntuple_contents(m) = HFPP_track_conetest(1,1) 
+        m=m+1     
+        gep_ntuple_contents(m) = HFPP_track_theta(1,1) 
+        m=m+1     
+        gep_ntuple_contents(m) = HFPP_track_phi(1,1)
+      else
+        m=m+1     
+        gep_ntuple_contents(m) = 1.0e15 
+        m=m+1     
+        gep_ntuple_contents(m) = 1.0e15 
+        m=m+1     
+        gep_ntuple_contents(m) = 1.0e15 
+        m=m+1     
+        gep_ntuple_contents(m) = 1.0e15 
+        m=m+1     
+        gep_ntuple_contents(m) = 1.0e15
+      endif
+      if(HFPP_N_tracks(2).eq.1) then
+        m=m+1     
+        gep_ntuple_contents(m) = HFPP_track_zclose(2,1) 
+        m=m+1     
+        gep_ntuple_contents(m) = HFPP_track_sclose(2,1) 
+        m=m+1     
+        gep_ntuple_contents(m) = HFPP_track_conetest(2,1) 
+        m=m+1     
+        gep_ntuple_contents(m) = HFPP_track_theta(2,1) 
+        m=m+1     
+        gep_ntuple_contents(m) = HFPP_track_phi(2,1)
+      else
+        m=m+1     
+        gep_ntuple_contents(m) = 1.0e15 
+        m=m+1     
+        gep_ntuple_contents(m) = 1.0e15 
+        m=m+1     
+        gep_ntuple_contents(m) = 1.0e15 
+        m=m+1     
+        gep_ntuple_contents(m) = 1.0e15 
+        m=m+1     
+        gep_ntuple_contents(m) = 1.0e15
+      endif
+
       abort = .not. HEXIST(gep_ntuple_ID)
       if(abort) then
          call G_build_note(':Ntuple ID#$ does not exist',

@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.20  2007/11/10 20:17:56  brash
+* Added FPP information to the gep coincidence ntuple
+*
 * Revision 1.42.8.19  2007/10/31 22:49:56  cdaq
 * added end-of-run call to b_fill_eff_hists
 *
@@ -1015,11 +1018,11 @@ c
 	  if (total_event_count.gt.99999.or.physics_events.gt.99999.or.
      >        g_replay_time.gt.9999) then
 	    write(6,'(''[47;34;1m Event = '',i9,3x,''trigger#'',i9,4x,''(time = '',
-     >		    i6,''s, rate int= '',i5,''/s, diff= '',i5,''/s) [49;0m'')')
+     >i6,''s, rate int= '',i5,''/s, diff= '',i5,''/s) [49;0m'')')
      >	      total_event_count,physics_events,g_replay_time,int(avrate),int(instrate)
 	  else
 	    write(6,'(''[47;34;1m Event = '',i5,3x,''trigger#'',i5,4x,''(time = '',
-     >		    i4,''s, rate int= '',i5,''/s, diff= '',i5,''/s) [49;0m'')')
+     >i4,''s, rate int= '',i5,''/s, diff= '',i5,''/s) [49;0m'')')
      >	      total_event_count,physics_events,g_replay_time,int(avrate),int(instrate)
 	  endif
 	  lasttime2 = g_replay_time
@@ -1151,8 +1154,8 @@ c...
       avrate = float(since_cnt)/max(float(g_replay_time),0.001)
       tdiff=g_replay_time-lasttime2
       write(6,'(''[47;34;1m Event #'',i9,'',  trigger #'',i9,'',  time = '',i6,
-     >	    	''s,  rate '',i5,''/s [49;0m'')')
-     >    total_event_count,physics_events,g_replay_time,int(avrate)
+     >''s,  rate '',i5,''/s [49;0m'')')
+     >total_event_count,physics_events,g_replay_time,int(avrate)
 
       ierr=thtreecloseg('all')
 
