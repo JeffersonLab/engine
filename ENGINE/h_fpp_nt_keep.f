@@ -72,7 +72,9 @@ c      write(*,*)'Beam helicity = ',gbeam_helicity_TS,gbeam_helicity
       cwnFPP_hsyfp   = HSY_FP
       cwnFPP_hsxpfp  = HSXP_FP
       cwnFPP_hsypfp  = HSYP_FP
-
+      cwnFPP_hsytar   = HSY_TAR
+      cwnFPP_hsxptar  = HSXP_TAR
+      cwnFPP_hsyptar  = HSYP_TAR
 
 *******  global FPP info
 c      WRITE(*,*)HFPP_TRIGGER_TDC(1)
