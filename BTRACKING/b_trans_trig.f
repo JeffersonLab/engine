@@ -14,6 +14,7 @@
       include 'bigcal_gain_parms.cmn'
       include 'bigcal_bypass_switches.cmn'
       include 'bigcal_hist_id.cmn'
+      include 'gep_data_structures.cmn'
 
       integer*4 ihit,jhit
       real*4 hit_time,ph,esum      
@@ -91,6 +92,9 @@ c     the maximum belongs
             endif
             hit_time = bigcal_ttrig_tdc_dec(ihit) * bigcal_tdc_to_time
             hit_time = hit_time - bigcal_g64_time_offset(icell64)
+            if(ntrigb.gt.0) then ! also subtract trigger time if there was a trigger
+               hit_time = hit_time - gep_btime(1)
+            endif
             hit_time = hit_time - bigcal_g64_phc_coeff(icell64) * 
      $           sqrt(max(0.,(ph/bigcal_g64_minph(icell64)-1.)))
             if(abs(hit_time - bigcal_window_center).le.bigcal_window_slop) 
