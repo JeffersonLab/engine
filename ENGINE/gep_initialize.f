@@ -11,6 +11,7 @@
 
       include 'gen_data_structures.cmn'
       include 'gen_constants.par'
+      include 'gep_data_structures.cmn'
       
       abort=.false.
 
@@ -23,6 +24,18 @@
       gebeam = gebeam - geloss
       gpbeam = sqrt(gebeam**2 - mass_electron**2)
       g_beam_target_s = (gtarg_mass(gtarg_num) + gebeam)**2 - gpbeam**2
+
+c     initialize coincidence timing window parameters if the user hasn't defined something reasonable:
+      if(gep_h1time_slop.lt.10.or.gep_h1time_slop.gt.1000.) then
+         gep_h1time_slop=30.
+      endif
+      if(gep_h2time_slop.lt.10..or.gep_h2time_slop.gt.1000.) then
+         gep_h2time_slop=30.
+      endif
+
+      if(gep_btime_slop.lt.10.or.gep_btime_slop.gt.1000.) then
+         gep_btime_slop=30.
+      endif
 
       IF(ABORT) THEN
          call G_add_path(here,err)

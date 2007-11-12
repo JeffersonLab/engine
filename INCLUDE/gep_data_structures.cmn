@@ -21,6 +21,22 @@ c     event selection cuts for BigCal calibration:
      $     gep_bcalib_cut_dx,
      $     gep_bcalib_cut_dy,
      $     gep_bcalib_cut_elastic
+c     coincidence timing window parameters (weed out background hits)
+      real*4 gep_h1time_center
+      real*4 gep_h2time_center
+      real*4 gep_h1time_slop
+      real*4 gep_h2time_slop
+      real*4 gep_btime_center
+      real*4 gep_btime_slop
+
+      common/gep_coin_time_window/
+     $     gep_h1time_center,
+     $     gep_h2time_center,
+     $     gep_h1time_slop,
+     $     gep_h2time_slop,
+     $     gep_btime_center,
+     $     gep_btime_slop
+      
 
 *
 *     CTPTYPE=event
