@@ -6,6 +6,9 @@
 * g_trans_misc fills the gen_decoded_misc common block
 *
 * $Log$
+* Revision 1.2.24.4  2007/11/12 03:16:22  cdaq
+* added timing window for triggers
+*
 * Revision 1.2.24.3  2007/10/29 19:44:07  cdaq
 * Added handling of multi-hits for HMS and BigCal trigger TDCs
 *
@@ -36,6 +39,7 @@
 
       integer*4 ihit
       integer*4 nH1,nH2,nB
+      real hittime
 
       save
 
@@ -68,33 +72,45 @@ c$$$         endif
 c$$$            write(*,*) 'gmisc TDC hit ctr,TDCraw=',gmisc_raw_addr2(ihit),
 c$$$     $           gmisc_raw_data(ihit)
             if(gmisc_raw_addr2(ihit).eq.1) then !HMS1 trigger: fill hist
-               nH1 = nH1 + 1
-               if(nH1.le.8) then
-                  GEP_H1time(nH1) = .5*gmisc_raw_data(ihit)
-               endif
-               if(gepid_gep_HMS1_rawtdc.gt.0) then
-                  call hf1(gepid_gep_HMS1_rawtdc,float(gmisc_raw_data(ihit)),
-     $                 1.)
+
+               hittime = .5*gmisc_raw_data(ihit)
+               
+               if(abs(hittime-gep_h1time_center).le.gep_h1time_slop)then
+                  nH1 = nH1 + 1
+                  if(nH1.le.8) then
+                     GEP_H1time(nH1) = hittime
+                  endif
+                  if(gepid_gep_HMS1_rawtdc.gt.0) then
+                     call hf1(gepid_gep_HMS1_rawtdc,float(gmisc_raw_data(ihit)),
+     $                    1.)
+                  endif
                endif
             endif
             if(gmisc_raw_addr2(ihit).eq.2) then !HMS2 trigger: fill hist
-               nH2 = nH2 + 1
-               if(nH2.le.8) then
-                  GEP_H2time(nH2) = .5*gmisc_raw_data(ihit)
-               endif
-               if(gepid_gep_HMS2_rawtdc.gt.0) then
-                  call hf1(gepid_gep_HMS2_rawtdc,float(gmisc_raw_data(ihit)),
-     $                 1.)
+               hittime = .5*gmisc_raw_data(ihit)
+               
+               if(abs(hittime-gep_h2time_center).le.gep_h2time_slop)then
+                  nH2 = nH2 + 1
+                  if(nH2.le.8) then
+                     GEP_H2time(nH2) = hittime
+                  endif
+                  if(gepid_gep_HMS2_rawtdc.gt.0) then
+                     call hf1(gepid_gep_HMS2_rawtdc,float(gmisc_raw_data(ihit)),
+     $                    1.)
+                  endif
                endif
             endif
             if(gmisc_raw_addr2(ihit).eq.3) then !BigCal trigger: fill hist
-               nB = nB + 1
-               if(nB.le.8) then
-                  GEP_Btime(nB) = .5*gmisc_raw_data(ihit)
-               endif
-               if(gepid_gep_bigcal_rawtdc.gt.0) then
-                  call hf1(gepid_gep_bigcal_rawtdc,float(gmisc_raw_data(ihit)),
-     $                 1.)
+               hittime = .5*gmisc_raw_data(ihit)
+               if(abs(hittime-gep_btime_center).le.gep_btime_slop) then
+                  nB = nB + 1             
+                  if(nB.le.8) then
+                     GEP_Btime(nB) = hittime
+                  endif
+                  if(gepid_gep_bigcal_rawtdc.gt.0) then
+                     call hf1(gepid_gep_bigcal_rawtdc,float(gmisc_raw_data(ihit)),
+     $                    1.)
+                  endif
                endif
             endif
          endif
@@ -106,7 +122,6 @@ c$$$     $           gmisc_raw_data(ihit)
       ntrigH1 = nH1
       ntrigH2 = nH2
       ntrigB =  nB
-
 
       return
       end
