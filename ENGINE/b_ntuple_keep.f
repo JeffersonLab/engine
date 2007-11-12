@@ -62,6 +62,7 @@ c      integer itype
          bgid = gen_event_ID_number
          bgtype = gen_event_type
          btrigtype = 0
+
          do itrig=3,7
             btrigtype = btrigtype + itrig*gen_event_trigtype(itrig)
          enddo
@@ -74,6 +75,12 @@ c$$$         write(*,*) 'event,type,trigtype=',bgid,bgtype,btrigtype
          nclust64 = nclust
          ntrack = nclust
          ibest = bigcal_itrack_best
+
+         if(ntrigB.gt.0) then
+            btrigtime = gep_btime(1)
+         else
+            btrigtime = 0.
+         endif
 
 c$$$         write(*,*) 'nclust,ncl8,ncl64,ntrk,best=',nclust,nclust8,
 c$$$     $        nclust64,ntrack,ibest

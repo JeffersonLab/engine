@@ -52,10 +52,12 @@ c      character*256 b_tree_filename
       integer*4 bgid ! copy of gen_event_id_number
       integer*4 bgtype ! copy of gen_event_type
       integer*4 btrigtype
+      real*4 btrigtime ! coincidence time, set a reference for all other tdcs
       common/bevinfo/
      $     bgid,
      $     bgtype,
-     $     btrigtype
+     $     btrigtype,
+     $     btrigtime
 
 *     ADC related quantities
 
