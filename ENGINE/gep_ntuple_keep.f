@@ -17,9 +17,14 @@
       include 'gen_decode_common.cmn'
       include 'hms_data_structures.cmn'
       include 'hms_fpp_event.cmn'
+      include 'hms_geometry.cmn'
 
-      integer m
-
+      integer m,iTrk,iSet
+      real zclose_store,sclose_store
+      real theta_store,phi_store
+      real conetest_store,track_store
+      real zanalyzer(2)
+      
       logical HEXIST ! cernlib function
 
       err=' '
@@ -127,52 +132,48 @@
       gep_ntuple_contents(m) = HFPP_N_tracks(1)
       m=m+1
       gep_ntuple_contents(m) = HFPP_N_tracks(2)
-      if(HFPP_N_tracks(1).eq.1) then
-        m=m+1     
-        gep_ntuple_contents(m) = HFPP_track_zclose(1,1) 
-        m=m+1     
-        gep_ntuple_contents(m) = HFPP_track_sclose(1,1) 
-        m=m+1     
-        gep_ntuple_contents(m) = HFPP_track_conetest(1,1) 
-        m=m+1     
-        gep_ntuple_contents(m) = HFPP_track_theta(1,1) 
-        m=m+1     
-        gep_ntuple_contents(m) = HFPP_track_phi(1,1)
-      else
-        m=m+1     
-        gep_ntuple_contents(m) = 1.0e15 
-        m=m+1     
-        gep_ntuple_contents(m) = 1.0e15 
-        m=m+1     
-        gep_ntuple_contents(m) = 1.0e15 
-        m=m+1     
-        gep_ntuple_contents(m) = 1.0e15 
-        m=m+1     
-        gep_ntuple_contents(m) = 1.0e15
-      endif
-      if(HFPP_N_tracks(2).eq.1) then
-        m=m+1     
-        gep_ntuple_contents(m) = HFPP_track_zclose(2,1) 
-        m=m+1     
-        gep_ntuple_contents(m) = HFPP_track_sclose(2,1) 
-        m=m+1     
-        gep_ntuple_contents(m) = HFPP_track_conetest(2,1) 
-        m=m+1     
-        gep_ntuple_contents(m) = HFPP_track_theta(2,1) 
-        m=m+1     
-        gep_ntuple_contents(m) = HFPP_track_phi(2,1)
-      else
-        m=m+1     
-        gep_ntuple_contents(m) = 1.0e15 
-        m=m+1     
-        gep_ntuple_contents(m) = 1.0e15 
-        m=m+1     
-        gep_ntuple_contents(m) = 1.0e15 
-        m=m+1     
-        gep_ntuple_contents(m) = 1.0e15 
-        m=m+1     
-        gep_ntuple_contents(m) = 1.0e15
-      endif
+c      
+c Algorithm to select "best" track for final analysis
+c
+      do iSet=1,2
+       theta_store=1.0e15
+       phi_store=1.0e15
+       conetest_store=1.0e15
+       zclose_store=1.0e15
+       sclose_store=1.0e15
+       zanalyzer(1)=140.3
+       zanalyzer(2)=237.8
+c      
+       do iTrk=1,HFPP_N_tracks(iSet)
+        if(abs(HFPP_track_zclose(iSet,iTrk)-zanalyzer(iSet)).le.27.0) then
+          if(HFPP_track_sclose(iSet,iTrk).lt.8.0) then
+            if(HFPP_track_conetest(iSet,iTrk).eq.1) then
+              if(HFPP_track_theta(iSet,iTrk).gt.2.5/180.0*3.14159265.and.
+     >                 HFPP_track_theta(iSet,iTrk).lt.theta_store) then
+                track_store=iTrk
+                theta_store=HFPP_track_theta(iSet,iTrk)
+                phi_store=HFPP_track_phi(iSet,iTrk)
+                conetest_store=HFPP_track_conetest(iSet,iTrk)
+                zclose_store=HFPP_track_zclose(iSet,iTrk)
+                sclose_store=HFPP_track_sclose(iSet,iTrk)
+              endif
+            endif
+          endif  
+        endif 
+       enddo       
+       m=m+1
+       gep_ntuple_contents(m) = track_store
+       m=m+1     
+       gep_ntuple_contents(m) = zclose_store 
+       m=m+1     
+       gep_ntuple_contents(m) = sclose_store 
+       m=m+1     
+       gep_ntuple_contents(m) = conetest_store 
+       m=m+1     
+       gep_ntuple_contents(m) = theta_store 
+       m=m+1     
+       gep_ntuple_contents(m) = phi_store
+      enddo
 
       abort = .not. HEXIST(gep_ntuple_ID)
       if(abort) then

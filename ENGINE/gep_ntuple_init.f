@@ -146,6 +146,8 @@
       m=m+1
       gep_ntuple_tag(m) = 'ntrack2' ! number of tracks in FPP2
       m=m+1
+      gep_ntuple_tag(m) = 'trk1' ! track number of the chosen track in FPP1
+      m=m+1
       gep_ntuple_tag(m) = 'zclos1' ! reconstructed zclose in FPP1
       m=m+1
       gep_ntuple_tag(m) = 'sclos1' ! reconstructed sclose in FPP1
@@ -155,6 +157,8 @@
       gep_ntuple_tag(m) = 'theta1' ! polar theta FPP1
       m=m+1
       gep_ntuple_tag(m) = 'phi1' ! azimuthal phi FPP1
+      m=m+1
+      gep_ntuple_tag(m) = 'trk2' ! track number of the chosen track in FPP2
       m=m+1
       gep_ntuple_tag(m) = 'zclos2' ! reconstructed zclose in FPP2
       m=m+1
