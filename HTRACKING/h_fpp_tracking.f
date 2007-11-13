@@ -81,6 +81,7 @@ c      write(*,*)'In fpp tracking routine ...'
              call g_add_path(here,err)
              return
           endif
+          write(*,*)'Simple track: Nraw = ',SimpleTrack(6),' Chi2 = ',Simpletrack(5)
 
 *         * we really *should* have made the simple track results into shared
 *         * variables and then fill the histogram from  h_fill_fpp  but this
@@ -119,6 +120,8 @@ c      write(*,*)'In fpp tracking routine ...'
              call g_add_path(here,err)
              return
           endif
+          write(*,*)'FullTrack: Chi2 = ',FullTrack(5),' track_good = ',track_good
+         
 
 *         * update event quality flags
           if (track_good) then
@@ -151,8 +154,8 @@ c      write(*,*)'In fpp tracking routine ...'
         myclass = H_FPP_ET_BAD
       endif
 
-c      write(*,*)'Ntracks in set ',DCset,' = ',HFPP_N_tracks(DCset),
-c     &    ' myclass = ',myclass
+      write(*,*)'Ntracks in set ',DCset,' = ',HFPP_N_tracks(DCset),
+     &    ' myclass = ',myclass
       if (HFPP_eventclass.lt.myclass) then
         HFPP_eventclass = HFPP_eventclass
      >                  + myclass * 2**(DCset-1)
@@ -371,8 +374,8 @@ c==============================================================================
 	   x = SimpleTrack(1)*z + SimpleTrack(2)
            y = SimpleTrack(3)*z + SimpleTrack(4)
 
-c           write(*,*)'----- fpp-tracking ----'
-c           write(*,*)'xyz = ',x,y,z
+           write(*,*)'----- fpp-tracking ----'
+           write(*,*)'xyz = ',x,y,z
 
 *          * calculate time delay due to signal propagating along sense wire
 *          * depends on position of event along wire, which side the read-out card
@@ -393,7 +396,7 @@ c              write(*,*)'Calling h_fpp_drift ... ',WirePropagation
               call h_fpp_drift(iHit,SimpleTrack,WirePropagation,
      >                         mydriftT,mydriftX,ABORT,err)
 
-c              write(*,*)'iRaw,mydriftX =',iRaw,iHit,mydriftX
+              write(*,*)'iRaw,mydriftX =',iRaw,iHit,mydriftX
               if (mydriftX.ne.H_FPP_BAD_DRIFT) then
 	     	nPoints = nPoints + 1
 
@@ -431,6 +434,7 @@ c              write(*,*)'iRaw,mydriftX =',iRaw,iHit,mydriftX
       enddo
 
 *     * INPUT=absolute drifts  OUTPUT=signed drifts
+      write(*,*)'Calling best_permutation ... nPoints = ',nPoints
       call h_fpp_fit_best_permutation(nPoints, All_Points, All_Sigma2s, All_Projects, Drifts, newTrack)
       DriftTrack(1) = newTrack(1)  ! mx
       DriftTrack(2) = newTrack(2)  ! bx
@@ -438,7 +442,7 @@ c              write(*,*)'iRaw,mydriftX =',iRaw,iHit,mydriftX
       DriftTrack(4) = newTrack(4)  ! by
       DriftTrack(5) = newTrack(5)  ! chi2/df
       DriftTrack(6) = float(nPoints)
-
+      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min_chi2 = ',HFPP_min_chi2
       if (     (newTrack(5).le.HFPP_min_chi2)
      >    .and.(newTrack(5).ge.0.0)
      >    .and.(newTrack(5).ne.H_FPP_BAD_CHI2) ) then   ! store fit results

@@ -135,7 +135,7 @@ cfrw  the HMS reference time is calculated at z=0 is this system
               else
                 drift_distance=(drift_time+10.0)/210.0*1.38
               endif
-              if(drift_distance.lt.0)drift_distance=0.0
+              if(drift_distance.lt.0)drift_distance=0.0001
               if(drift_distance.gt.1.28)drift_distance=1.28
 c              write(*,*)'Kluge: ',drift_time,drift_distance
               return
@@ -230,15 +230,15 @@ c      write(*,*)'Drift type = ',hfpp_drift_type
 
           if(drift_time_orig.gt.4000.0) drift_distance = H_FPP_BAD_DRIFT
           if(Set.eq.1) then
-		if(drift_time_orig.lt.10.0.or.drift_time_orig.gt.350.0)
-     >				drift_distance=H_FPP_BAD_DRIFT
+		if(drift_time_orig.lt.10.0) drift_distance=0.0001
+		if(drift_time_orig.gt.350.0) drift_distance=1.05
 	  else
-		if(drift_time_orig.lt.30.0.or.drift_time_orig.gt.370.0)
-     >				drift_distance=H_FPP_BAD_DRIFT
+		if(drift_time_orig.lt.30.0) drift_distance=0.0001
+		if(drift_time_orig.gt.370.0) drift_distance=1.05
 	  endif
           
           if (drift_distance.gt.hfpp_drift_Xmax) then
-            drift_distance = H_FPP_BAD_DRIFT
+            drift_distance = hfpp_drift_Xmax
             RETURN
           endif
 

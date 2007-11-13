@@ -54,6 +54,9 @@ c     coincidence timing window parameters (weed out background hits)
       real*4 GEP_P_proton ! scattered proton momentum in GeV
       real*4 GEP_Pel_htheta ! proton momentum from spect. theta. assume elastic
       real*4 GEP_delta_p ! proton p - p0 in %, where p0 is HMS central mom.
+      real*4 GEP_xptar_p ! proton dx/dz
+      real*4 GEP_yptar_p ! proton dy/dz
+      real*4 GEP_ytar_p ! proton ytar
       real*4 GEP_epsilon ! virtual photon long. polarization, usual definition
       real*4 GEP_etheta_deg ! electron scattering angle in degrees
       real*4 GEP_ptheta_deg ! proton scattering angle in degrees
@@ -88,6 +91,9 @@ c     system for the polarization measurement.
      $     GEP_P_proton,
      $     GEP_Pel_htheta,
      $     GEP_delta_p,
+     $     GEP_xptar_p,
+     $     GEP_yptar_p,
+     $     GEP_ytar_p,
      $     GEP_epsilon,
      $     GEP_etheta_deg,
      $     GEP_ptheta_deg,

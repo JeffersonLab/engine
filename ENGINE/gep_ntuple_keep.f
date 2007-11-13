@@ -92,6 +92,12 @@
       m=m+1
       gep_ntuple_contents(m) = GEP_delta_p
       m=m+1
+      gep_ntuple_contents(m) = GEP_xptar_p
+      m=m+1
+      gep_ntuple_contents(m) = GEP_yptar_p
+      m=m+1
+      gep_ntuple_contents(m) = GEP_ytar_p
+      m=m+1
       gep_ntuple_contents(m) = GEP_epsilon
       m=m+1
       gep_ntuple_contents(m) = GEP_etheta_deg
