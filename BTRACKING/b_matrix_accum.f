@@ -10,6 +10,7 @@
       character*(*) err
       
       include 'bigcal_data_structures.cmn'
+      include 'bigcal_tof_parms.cmn'
       include 'gen_run_info.cmn'
       include 'gen_event_info.cmn'
       include 'bigcal_bypass_switches.cmn'
@@ -85,9 +86,11 @@ c
          if(abs(bigcal_all_clstr_x(best)-gep_bx_expect_H).lt.
      $        gep_bcalib_cut_dx.and.abs(bigcal_all_clstr_y(best) - 
      $        gep_by_expect_H).lt.gep_bcalib_cut_dy.and.abs(
-     $        gep_ctime_cal-gep_ctime_hms).lt.gep_bcalib_cut_ctime.and.
+     $        bigcal_track_time(best)-bigcal_window_center).lt.gep_bcalib_cut_ctime.and.
      $        abs(gep_pel_htheta-gep_p_proton)/hpcentral.lt.gep_bcalib_cut_elastic
-     $        ) then
+     $        .and.abs(bigcal_track_thetarad(best)-gep_etheta_expect_H).lt.
+     $        gep_bcalib_cut_theta.and.abs(bigcal_track_phirad(best)-
+     $        gep_ephi_expect_H).lt.gep_bcalib_cut_phi) then
 
             bigcal_nmatr_event = bigcal_nmatr_event + 1
 
