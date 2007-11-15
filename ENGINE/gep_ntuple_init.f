@@ -110,6 +110,14 @@
       m=m+1
       gep_ntuple_tag(m) = 'delta' ! (p-p0)/p0 in %
       m=m+1
+      gep_ntuple_tag(m) = 'xfp'! x at the focal plane for proton.
+      m=m+1
+      gep_ntuple_tag(m) = 'yfp' ! y at the focal plane for the proton.
+      m=m+1
+      gep_ntuple_tag(m) = 'xpfp'! dx/dz at the focal plane for proton.
+      m=m+1
+      gep_ntuple_tag(m) = 'ypfp' ! dy/dz at the focal plane for the proton.
+      m=m+1
       gep_ntuple_tag(m) = 'xptar'! dx/dz at the target for proton.
       m=m+1
       gep_ntuple_tag(m) = 'yptar' ! dy/dz at the target for the proton.
