@@ -13,6 +13,9 @@
 c      include 'gen_units.par'
       include 'gen_constants.par'
       include 'gen_data_structures.cmn'
+      include 'gen_event_info.cmn'
+      include 'gep_data_structures.cmn'
+      include 'hms_data_structures.cmn'
       include 'bigcal_hist_id.cmn'
 
       integer i,j,k,ntrack,itrackmax,nprot,nrcs,nmid
@@ -24,6 +27,7 @@ c      include 'gen_units.par'
       real m_e
       real mom,beta,c,eloss,gamma,log10betagamma
       real maxetot
+      real edx,edy,edz,vx,vy,vz
 
 c      integer ilow,ihigh
 
@@ -80,18 +84,36 @@ c     correct every track for energy loss. BigCal is always electron arm
 c     need to set up eloss params for BigCal absorber!
             xrot = x * Costh + R * Sinth
             zrot = -x * Sinth + R * Costh
-            
-            L = sqrt(xrot**2 + zrot**2 + y**2)
-            ! all length units are cm
 
-            thetarad = acos(zrot/L)
-            thetadeg = 180./tt * thetarad
+            if(gen_event_type.eq.6.and.hsnum_fptrack.gt.0) then ! correct angles for HMS vertex:
+               vx = gbeam_x
+               vy = gbeam_y
+               vz = hszbeam
+
+               edx = xrot - vx
+               edy = y - vy
+               edz = zrot - vz
+
+               L = sqrt(edx**2 + edy**2 + edz**2)
+
+               thetarad = acos(edz/L)
+               thetadeg = 180./tt * thetarad
+               
+               phirad = atan2(edy,edx)
+               phideg = 180./tt * phirad
+            else
+               L = sqrt(xrot**2 + zrot**2 + y**2)
+c     all length units are cm
+               thetarad = acos(zrot/L)
+               thetadeg = 180./tt * thetarad
             
+               phirad = atan2(y,xrot)
+               phideg = 180./tt * phirad
+            endif
+
 c            if(last_time) then
             if(bid_bcal_theta.gt.0) call hf1(bid_bcal_theta,thetadeg,1.0)
 c            endif
-            phirad = atan2(y,xrot)
-            phideg = 180./tt * phirad
             
 c            if(last_time) then
             if(bid_bcal_phi.gt.0) call hf1(bid_bcal_phi,phideg,1.0)

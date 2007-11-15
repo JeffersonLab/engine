@@ -293,8 +293,11 @@ c$$$         write(*,254) 'esum = ',esum
          celldiffy = int(abs(float(iy2max - cluster_temp_irow(1))))
 
          if(celldiffy.gt.1) then
-            bigcal_second_max(nmaximum) = .true.
-            goto 104
+            if(cluster_temp_ecell(2)/cluster_temp_ecell(1).gt.b_min_2max(1).and.
+     $           cluster_temp_ecell(2).gt.b_min_2max(2)) then
+               bigcal_second_max(nmaximum) = .true.
+               goto 104
+            endif
          else
             if(cluster_temp_irow(1).eq.32.and.iy2max.eq.33) then
                celldiffx = int(abs(float(ix2max - 
@@ -307,8 +310,11 @@ c$$$         write(*,254) 'esum = ',esum
             endif
 
             if(celldiffx.gt.1) then
-               bigcal_second_max(nmaximum) = .true.
-               goto 104
+               if(cluster_temp_ecell(2)/cluster_temp_ecell(1).gt.b_min_2max(1).and.
+     $              cluster_temp_ecell(2).gt.b_min_2max(2)) then
+                  bigcal_second_max(nmaximum) = .true.
+                  goto 104
+               endif
             endif
          endif
 
@@ -418,6 +424,14 @@ c$$$         endif
             bigcal_below_cut(nmaximum) = .false.
             bigcal_above_max(nmaximum) = .false.
             bigcal_second_max(nmaximum) = .false.
+
+c     zero ecell and adc good for hit array, but leave detector array untouched
+
+            bigcal_all_ecell(ihitmax) = 0.
+            bigcal_all_adc_good(ihitmax) = 0.
+
+            goto 102
+
          endif
       endif
       

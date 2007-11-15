@@ -22,7 +22,6 @@
       integer*4 jrow64,jcol64,jcell64
       integer*4 irow8,icol8,icell8
       
-
 *     find trigger logic groups with good ADC/TDC values
       call b_strip_trig(ABORT,err)
       if(ABORT) then
@@ -58,6 +57,8 @@ c$$$          endif
 
              jcell64 = jcol64 + 2*(jrow64-1)
              
+             
+
              if(mod(bigcal_iymax_adc-1,3).eq.0) then ! overlap row
 c     pick closest group between jcell64 and jcell64-2, the other group to which
 c     the maximum belongs
@@ -92,8 +93,11 @@ c     the maximum belongs
             endif
             hit_time = bigcal_ttrig_tdc_dec(ihit) * bigcal_tdc_to_time
             hit_time = hit_time - bigcal_g64_time_offset(icell64)
-            if(ntrigb.gt.0) then ! also subtract trigger time if there was a trigger
+            if(ntrigb.gt.0) then ! also subtract trigger time if there was a trigger: otherwise, 
+c     subtract center of elastic timing window.
                hit_time = hit_time - gep_btime(1)
+            else 
+               hit_time = hit_time - gep_btime_elastic
             endif
             hit_time = hit_time - bigcal_g64_phc_coeff(icell64) * 
      $           sqrt(max(0.,(ph/bigcal_g64_minph(icell64)-1.)))

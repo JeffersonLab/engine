@@ -48,6 +48,8 @@
         
         if(ntrigb.gt.0) then ! also subtract trigger time if there was a trigger
            thit = thit - gep_btime(1)
+        else 
+           thit = thit - gep_btime_elastic
         endif
 
         thit = thit - bigcal_g8_phc_coeff(itdc) * 

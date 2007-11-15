@@ -31,12 +31,21 @@ c     all clusters are already sorted in order of decreasing amplitude, so cell 
          irow = bigcal_all_clstr_iycell(i,1)
          icol = bigcal_all_clstr_ixcell(i,1)
 
+         if(irow.eq.1) irow = 2
+         if(irow.eq.56) irow = 55
+
          if(irow.le.32) then
+            if(icol.eq.1) icol = 2
+            if(icol.eq.32) icol = 31
+
             do j=1,6
                xpar(j) = bigcal_prot_xpar(icol,j)
                ypar(j) = bigcal_prot_ypar(irow,j)
             enddo
          else 
+            if(icol.eq.1) icol = 2
+            if(icol.eq.30) icol = 29
+
             do j=1,6
                xpar(j) = bigcal_rcs_xpar(icol,j)
                ypar(j) = bigcal_rcs_ypar(irow-32,j)

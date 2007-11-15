@@ -14,6 +14,7 @@ c      logical last_time
       integer isum64
       integer ngood64
       integer revert(5)
+      integer imax64,rowmax64,colmax64
       character*(*) err
 
       include 'bigcal_data_structures.cmn'
@@ -78,6 +79,25 @@ c         last_time = .true.
          endif
       endif
 
+      if(bigcal_iymax_adc.gt.0.and.bigcal_ixmax_adc.gt.0) then
+         rowmax64 = (bigcal_iymax_adc-1)/3 + 1
+         if(bigcal_iymax_adc.le.32) then
+            colmax64 = (bigcal_ixmax_adc-1)/16 + 1
+         else
+            colmax64 = bigcal_ixmax_adc/16 + 1
+         endif
+
+         imax64 = colmax64 + 2*(rowmax64-1)
+
+         if(mod(bigcal_iymax_adc-1,3).eq.0.and.bigcal_iymax_adc.gt.1) 
+     $        then              ! overlap row,
+c     take group with bigger sum:
+            if(bigcal_atrig_sum64(imax64-2).gt.bigcal_atrig_sum64(imax64)) then
+               imax64 = imax64 - 2
+            endif
+         endif
+         bigcal_itrigmax_adc = imax64
+      endif
       bigcal_all_ngood = bigcal_prot_ngood + bigcal_rcs_ngood
 
 ***********  convert BigCal group-of-8 raw TDC to go8 decoded TDC *********
