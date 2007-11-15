@@ -97,6 +97,14 @@
       m=m+1
       gep_ntuple_contents(m) = GEP_delta_p
       m=m+1
+      gep_ntuple_contents(m) = GEP_xfp_p
+      m=m+1
+      gep_ntuple_contents(m) = GEP_yfp_p
+      m=m+1
+      gep_ntuple_contents(m) = GEP_xpfp_p
+      m=m+1
+      gep_ntuple_contents(m) = GEP_ypfp_p
+      m=m+1
       gep_ntuple_contents(m) = GEP_xptar_p
       m=m+1
       gep_ntuple_contents(m) = GEP_yptar_p

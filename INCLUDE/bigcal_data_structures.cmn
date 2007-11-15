@@ -326,10 +326,12 @@ c$$$      parameter(BIGCAL_CLSTR_NCELL_MIN=2)
 
       integer*4 BIGCAL_IYMAX_ADC
       integer*4 BIGCAL_IXMAX_ADC
+      integer*4 BIGCAL_ITRIGMAX_ADC
       real*4 BIGCAL_MAX_ADC
       common/BIGCAL_SIGNAL_MAX/
      $     bigcal_iymax_adc,
      $     bigcal_ixmax_adc,
+     $     bigcal_itrigmax_adc,
      $     bigcal_max_adc
 
 *     "detector" arrays: organize the data for histogramming and 
@@ -418,7 +420,9 @@ c$$$     $     BIGCAL_MID_YHIT
       real*4 B_CELL_CUT_RCS ! min cell energy, RCS
       real*4 B_CELL_CUT_PROT ! min cell energy, Prot
       real*4 B_MIN_EMAX ! minimum energy of maximum cell
-      real*4 b_trig_cut ! for monte carlo analysis only: trig threshold
+      real*4 b_min_2max(2) !1 = min. fraction to reject cluster for 2nd max.
+                           !2 = min. energy to reject cluster for 2nd max.
+      real*4 b_trig_cut         ! for monte carlo analysis only: trig threshold
       common/BIGCAL_CLSTR_CUTS/
      $     BIGCAL_CLSTR_NCELL_MIN,
      $     BIGCAL_CLSTR_NCELLX_MAX,
@@ -428,6 +432,7 @@ c$$$     $     BIGCAL_MID_YHIT
      $     B_CELL_CUT_PROT,
      $     B_CELL_CUT_RCS,
      $     B_MIN_EMAX,
+     $     b_min_2max,
      $     b_trig_cut
 *     arrays of closest column number in row 33 to column number in row 32 
 *     and vice versa

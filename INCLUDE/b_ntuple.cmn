@@ -241,11 +241,15 @@ c      character*256 b_tree_filename
      $     gphirad
 
 *     in case of Coincidence analysis, HMS info for comparison to reconstructed: 
+      real*4 TH_HMS
+      real*4 PH_HMS
       real*4 E_HMS
       real*4 X_HMS
       real*4 Y_HMS
       real*4 dPel_HMS ! difference between Pel(htheta) and PHMS, normalized to hpcentral
       common/hmsblk/
+     $     TH_HMS,
+     $     PH_HMS,
      $     E_HMS,
      $     X_HMS,
      $     Y_HMS,

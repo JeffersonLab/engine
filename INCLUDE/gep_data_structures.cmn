@@ -4,11 +4,15 @@
 c     resolution parameters for picking best bigcal track using hms info!
       real*4 GEP_sigma_xdiff
       real*4 GEP_sigma_ydiff
-      real*4 GEP_sigma_Ediff
+      real*4 GEP_sigma_thdiff ! difference in polar scat. angle for e- (radian)
+      real*4 GEP_sigma_phdiff ! difference in azimuthal scar. angle for e- (radian)
+      real*4 GEP_sigma_Ediff 
       real*4 GEP_sigma_tdiff
       common/GEP_res/
      $     GEP_sigma_xdiff,
      $     GEP_sigma_ydiff,
+     $     GEP_sigma_thdiff,
+     $     GEP_sigma_phdiff,
      $     GEP_sigma_Ediff,
      $     GEP_sigma_tdiff
 c     event selection cuts for BigCal calibration:
@@ -27,6 +31,7 @@ c     coincidence timing window parameters (weed out background hits)
       real*4 gep_h1time_slop
       real*4 gep_h2time_slop
       real*4 gep_btime_center
+      real*4 gep_btime_elastic
       real*4 gep_btime_slop
 
       common/gep_coin_time_window/
@@ -35,6 +40,7 @@ c     coincidence timing window parameters (weed out background hits)
      $     gep_h1time_slop,
      $     gep_h2time_slop,
      $     gep_btime_center,
+     $     gep_btime_elastic,
      $     gep_btime_slop
       
 
@@ -54,8 +60,12 @@ c     coincidence timing window parameters (weed out background hits)
       real*4 GEP_P_proton ! scattered proton momentum in GeV
       real*4 GEP_Pel_htheta ! proton momentum from spect. theta. assume elastic
       real*4 GEP_delta_p ! proton p - p0 in %, where p0 is HMS central mom.
-      real*4 GEP_xptar_p ! proton dx/dz
-      real*4 GEP_yptar_p ! proton dy/dz
+      real*4 GEP_xfp_p ! proton x at focal plane
+      real*4 GEP_yfp_p ! proton y at focal plane
+      real*4 GEP_xpfp_p ! proton dx/dz at focal plane
+      real*4 GEP_ypfp_p ! proton dy/dz at focal plane
+      real*4 GEP_xptar_p ! proton dx/dz at target
+      real*4 GEP_yptar_p ! proton dy/dz at target
       real*4 GEP_ytar_p ! proton ytar
       real*4 GEP_epsilon ! virtual photon long. polarization, usual definition
       real*4 GEP_etheta_deg ! electron scattering angle in degrees
@@ -109,8 +119,12 @@ c     system for the polarization measurement.
 
 c     expected hit positions in the calorimeter from the HMS:
       
+      real*4 GEP_etheta_expect_H ! in radians
+      real*4 GEP_ephi_expect_H ! in radians
       real*4 GEP_bx_expect_H 
       real*4 GEP_by_expect_H
       common/gep_bcoord_expect/
+     $     GEP_etheta_expect_H,
+     $     GEP_ephi_expect_H,
      $     GEP_bx_expect_H,
      $     GEP_by_expect_H

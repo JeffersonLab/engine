@@ -152,6 +152,9 @@ c     we won't always get a sensible value. Just want to prevent annoying divide
       ephi_expect = pphirad + PI
 
       ethetarad = etheta_expect 
+
+      gep_etheta_expect_H = ethetarad
+      gep_ephi_expect_H = ephi_expect
      
 c     first calculate exhat,eyhat,ezhat in target coordinates so there is no ambiguity: 
       
@@ -168,10 +171,11 @@ c     now rotate to BigCal coordinates:
       !write(*,*) 'exhat,eyhat,ezhat=',exhat,eyhat,ezhat
 
 c     vertex coordinates expressed in BigCal coordinate system
+c     turns out that beam x and y coordinates are the same as BigCal coordinates
 
       vz = hszbeam ! along beamline
-      vx = gbeam_y ! horizontal toward BigCal
-      vy = -gbeam_x ! vertical up (target x is vertical down.)
+      vx = gbeam_x ! horizontal toward BigCal
+      vy = gbeam_y ! vertical up (target x is vertical down.)
 
       !write(*,*) 'vertex xyz=',vx,vy,vz
 
@@ -194,7 +198,11 @@ c     now rotate into calo-centered coordinate system:
 
       xcal_hexpect=xint_hexpect*bigcal_costheta-zint_hexpect*bigcal_sintheta
       ycal_hexpect=yint_hexpect
-      tcal_hexpect= hstime_at_fp - hstart_time_center + hspath_cor
+c      tcal_hexpect= hstime_at_fp - hstart_time_center + hspath_cor
+
+c     for now, just take time difference relative to bigcal_window center
+      tcal_hexpect = bigcal_window_center
+      
       if(gen_bigcal_mc.eq.3) then
          tcal_hexpect = 0.0
       endif
@@ -225,7 +233,8 @@ c     this routine should only get called once per event!!!!!!!!!!!!!!!!
 
 *     now pick up where we left off:
 
-      ibest_cal = pick_best_cal_track(tcal_hexpect,xcal_hexpect,ycal_hexpect,Ecal_hexpect)
+      ibest_cal = pick_best_cal_track(tcal_hexpect,gep_etheta_expect_h,
+     $     gep_ephi_expect_h,Ecal_hexpect)
 
 c     now compute "missing" quantities using the track we have selected.
 c     first correct best calo track for vertex information which we now know from HMS reconstruction:
@@ -298,6 +307,10 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       GEP_P_proton = hsp
       GEP_Pel_htheta = pp_htheta
       GEP_delta_p = hsdelta
+      GEP_xfp_p = HSX_FP
+      GEP_yfp_p = HSY_FP
+      GEP_xpfp_p = HSXP_FP
+      GEP_ypfp_p = HSYP_FP
       GEP_xptar_p = HSXP_TAR
       GEP_yptar_p = HSYP_TAR
       GEP_ytar_p = HSY_TAR
@@ -318,7 +331,7 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       return 
       end
 
-      integer function pick_best_cal_track(T_H,X_H,Y_H,E_H)
+      integer function pick_best_cal_track(T_H,TH_H,PH_H,E_H)
       
       include 'gep_data_structures.cmn'
       include 'bigcal_data_structures.cmn'
@@ -326,8 +339,11 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       logical restore_E
       integer itrack,ibest
       real diffsum,mindiffsum
-      real E_cal,X_cal,Y_cal,T_cal
-      real T_H,X_H,Y_H,E_H
+      real E_cal,TH_cal,PH_cal,T_cal
+      real T_H,TH_H,PH_H,E_H
+
+      real PI
+      parameter(PI=3.14159265359)
 
       restore_E = .false.
 
@@ -339,14 +355,17 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
                E_cal = E_cal / 1000.
                restore_E = .true.
             endif
+            
+            TH_cal = bigcal_track_thetarad(itrack)
+            PH_cal = bigcal_track_phirad(itrack) + PI/2.
 
-            X_cal = bigcal_all_clstr_x(itrack)
-            Y_cal = bigcal_all_clstr_y(itrack)
+c            X_cal = bigcal_all_clstr_x(itrack)
+c            Y_cal = bigcal_all_clstr_y(itrack)
             T_cal = bigcal_track_time(itrack)
             diffsum = 0.
             diffsum = diffsum + ( (E_cal - E_H)/GEP_sigma_Ediff )**2
-            diffsum = diffsum + ( (X_cal - X_H)/GEP_sigma_Xdiff )**2
-            diffsum = diffsum + ( (Y_cal - Y_H)/GEP_sigma_Ydiff )**2
+            diffsum = diffsum + ( (TH_cal - TH_H)/GEP_sigma_thdiff )**2
+            diffsum = diffsum + ( (PH_cal - PH_H)/GEP_sigma_phdiff )**2
             diffsum = diffsum + ( (T_cal - T_H)/GEP_sigma_Tdiff )**2
             if(itrack.eq.1) then
                mindiffsum = diffsum

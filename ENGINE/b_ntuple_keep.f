@@ -17,7 +17,8 @@
       include 'gen_data_structures.cmn'
       include 'gep_data_structures.cmn'
 c      include 'gen_scalers.cmn'
-      
+      real PI
+      parameter(PI=3.14159265359)
 
       logical HEXIST ! CERNLIB function
 
@@ -242,6 +243,8 @@ c$$$     $        ngoodtt,irowmax,icolmax,max_adc
 
          if(bgtype.eq.6) then ! this always assumes elastic kinematics--won't always make sense!
 c            E_HMS = gebeam - gep_Q2_H/(2.*Mp)
+            TH_HMS = gep_etheta_expect_h
+            PH_HMS = gep_ephi_expect_h - PI/2. 
             E_HMS = gep_E_electron
             X_HMS = gep_bx_expect_H
             Y_HMS = gep_by_expect_H
