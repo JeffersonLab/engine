@@ -156,6 +156,8 @@ c      character*256 b_tree_filename
       real*4 py(maxnclust)
       real*4 pz(maxnclust)
       real*4 ctime_clust(maxnclust)
+      real*4 chi2clust(maxnclust)
+      real*4 chi2contr(6,maxnclust)
       common/clustphys/
      $     ntrack,
      $     ibest,
@@ -168,7 +170,9 @@ c      character*256 b_tree_filename
      $     px,
      $     py,
      $     pz,
-     $     ctime_clust
+     $     ctime_clust,
+     $     chi2clust,
+     $     chi2contr
 
 *     bad cluster flags:
       

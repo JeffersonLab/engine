@@ -486,6 +486,8 @@ c$$$     $     BIGCAL_MID_YHIT
       real*4 BIGCAL_ALL_CLSTR_T8RMS(BIGCAL_ALL_NCLSTR_MAX)
       real*4 BIGCAL_ALL_CLSTR_T64MEAN(BIGCAL_ALL_NCLSTR_MAX)
       real*4 BIGCAL_ALL_CLSTR_T64RMS(BIGCAL_ALL_NCLSTR_MAX)
+      real*4 BIGCAL_ALL_CLSTR_CHI2(BIGCAL_ALL_NCLSTR_MAX)
+      real*4 BIGCAL_ALL_CLSTR_CHI2CONTR(BIGCAL_ALL_NCLSTR_MAX,6)
       logical bigcal_clstr_bad_chan(bigcal_all_nclstr_max,bigcal_clstr_ncell_max) ! is channel in the bad list?
 
       common/BIGCAL_CLUSTERS/
@@ -529,6 +531,8 @@ c$$$     $     BIGCAL_MID_YHIT
      $     BIGCAL_ALL_CLSTR_T8RMS,
      $     BIGCAL_ALL_CLSTR_T64MEAN,
      $     BIGCAL_ALL_CLSTR_T64RMS,
+     $     BIGCAL_ALL_CLSTR_CHI2,
+     $     BIGCAL_ALL_CLSTR_CHI2CONTR,
      $     bigcal_clstr_bad_chan
 
       integer BIGCAL_NMAXIMA ! number of maxima found
