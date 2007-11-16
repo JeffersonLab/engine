@@ -31,7 +31,7 @@ c      integer iybest,ixbest,xclst,yclst,Eclst,xmom,ymom,t8avg,t64avg
 c      real ecell(BIGCAL_CLSTR_NCELL_MAX)
 
 c      integer itype
-      integer jclust,iclust,imax
+      integer jclust,iclust,imax,idiff
       integer nhit_tdc(224)
       integer nhit_ttdc(42)
       integer nhit_tadc(38)
@@ -209,6 +209,17 @@ c     $           eclust(iclust)
             pz(iclust) = bigcal_track_pz(iclust)
             ctime_clust(iclust) = bigcal_track_coin_time(iclust)
 
+            if(bgtype.eq.6) then
+               chi2clust(iclust) = bigcal_all_clstr_chi2(iclust)
+               do idiff=1,6
+                  chi2contr(idiff,iclust) = bigcal_all_clstr_chi2contr(iclust,idiff)
+               enddo
+            else
+               chi2clust(iclust) = -9999.
+               do idiff=1,6
+                  chi2contr(idiff,iclust) = -9999.
+               enddo
+            endif
 c$$$            write(*,*) 'theta,phi,E,xf,yf,zf,px,py,pz,t=',thetarad(iclust),phirad(iclust),
 c$$$     $           energy(iclust),xface(iclust),yface(iclust),zface(iclust),px(iclust),py(iclust),
 c$$$     $           pz(iclust),ctime_clust(iclust)
@@ -250,6 +261,13 @@ c            E_HMS = gebeam - gep_Q2_H/(2.*Mp)
             Y_HMS = gep_by_expect_H
             dPel_HMS = (gep_p_proton - gep_pel_htheta) / hpcentral ! useful to isolate elastics
 c            write(*,*) 'e_hms,x_hms,y_hms,dpel=',e_hms,x_hms,y_hms,dpel_hms
+         else
+            TH_HMS = -9999.
+            PH_HMS = -9999.
+            E_HMS = -9999.
+            X_HMS = -9999.
+            Y_HMS = -9999.
+            dpel_hms = -9999.
          endif
       else if(bigcal_ntuple_type.eq.2) then
          nahit = 0

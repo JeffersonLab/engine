@@ -143,7 +143,8 @@ c$$$      endif
      $             'phirad(ntrack),energy(ntrack),'//
      $             'xface(ntrack),yface(ntrack),'//
      $             'zface(ntrack),px(ntrack),py(ntrack),pz(ntrack),'//
-     $             'ctime_clust(ntrack)')
+     $             'ctime_clust(ntrack),chi2clust(ntrack),'//
+     $             'chi2contr(6,ntrack)')
            endif
            
            call HBNAME(id,'bad_clust',nmax,'nmax[0,25]:I*4,'//

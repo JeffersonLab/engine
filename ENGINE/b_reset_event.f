@@ -178,7 +178,7 @@ c         BIGCAL_RCS_GOOD_HIT(i) = .false.
         bigcal_tdc_sum8(i) = 0.
         do j=1,8
          BIGCAL_TDC_RAW_DET(i,j) = 0
-         bigcal_tdc_good_det(i,j) = 0.
+         bigcal_tdc_good_det(i,j) = -9999.
        enddo
       enddo
 
@@ -193,7 +193,7 @@ c         BIGCAL_RCS_GOOD_HIT(i) = .false.
         bigcal_ttrig_det_ngood(i) = 0
         do j=1,8
           bigcal_ttrig_raw_det(i,j) = 0
-          bigcal_ttrig_good_det(i,j) = 0.
+          bigcal_ttrig_good_det(i,j) = -9999.
         enddo
       enddo
 
@@ -213,6 +213,7 @@ c      bigcal_prot_bad_clstr_flag(0) = 0
          bigcal_all_clstr_ncell(i) = 0
          bigcal_all_clstr_ncellx(i) = 0
          bigcal_all_clstr_ncelly(i)= 0
+         bigcal_all_clstr_nbadlist(i) = 0
          bigcal_all_clstr_iymax(i) = 0
          bigcal_all_clstr_ixmax(i) = 0
          bigcal_all_clstr_iylo(i)=0
@@ -228,6 +229,7 @@ c      bigcal_prot_bad_clstr_flag(0) = 0
          bigcal_all_clstr_x(i) = 0.
          bigcal_all_clstr_y(i) = 0.
          bigcal_all_clstr_etot(i) = 0.
+         bigcal_all_clstr_atot(i) = 0.
          bigcal_all_clstr_t8mean(i) = 0.
          bigcal_all_clstr_t8rms(i) = 0.
          bigcal_all_clstr_t64mean(i) = 0.
@@ -238,6 +240,7 @@ c      bigcal_prot_bad_clstr_flag(0) = 0
             bigcal_all_clstr_ycell(i,j) = 0.
             bigcal_all_clstr_xcell(i,j) = 0.
             bigcal_all_clstr_ecell(i,j) = 0.
+            bigcal_clstr_bad_chan(i,j) = .false.
          enddo
          
          do j=1,10
@@ -253,6 +256,7 @@ c      bigcal_prot_bad_clstr_flag(0) = 0
             bigcal_all_clstr_nhit64(i,j) = 0
             bigcal_all_clstr_irow64(i,j) = 0
             bigcal_all_clstr_icol64(i,j) = 0
+            bigcal_all_clstr_s8(i,j) = 0.
             do k=1,8
                bigcal_all_clstr_tcell64(i,j,k) = 0.
             enddo
@@ -404,6 +408,8 @@ c     clear out monte carlo event info variables:
       E_HMS = 0.
       X_HMS = 0.
       Y_HMS = 0.
+      TH_HMS = 0.
+      PH_HMS = 0.
 
       return
       end

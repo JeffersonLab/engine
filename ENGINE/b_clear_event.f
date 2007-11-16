@@ -71,7 +71,7 @@ c         BIGCAL_RCS_GOOD_HIT(i) = .false.
         bigcal_tdc_sum8(i) = 0.
         do j=1,8
          BIGCAL_TDC_RAW_DET(i,j) = 0
-         bigcal_tdc_good_det(i,j) = 0.
+         bigcal_tdc_good_det(i,j) = -9999.
        enddo
       enddo
 
@@ -88,7 +88,7 @@ c         BIGCAL_RCS_GOOD_HIT(i) = .false.
         bigcal_ttrig_det_ngood(i) = 0
         do j=1,8
           bigcal_ttrig_raw_det(i,j) = 0
-          bigcal_ttrig_good_det(i,j) = 0.
+          bigcal_ttrig_good_det(i,j) = -9999.
         enddo
       enddo
 
