@@ -118,7 +118,11 @@ c     system for the polarization measurement.
      $     GEP_Pmissz,
      $     GEP_Pmiss,
      $     GEP_W2,
-     $     GEP_Mmiss
+     $     GEP_Mmiss,
+     $     GEP_xfp_p,
+     $     GEP_yfp_p,
+     $     GEP_xpfp_p,
+     $     GEP_ypfp_p
 
 c     expected hit positions in the calorimeter from the HMS:
       
