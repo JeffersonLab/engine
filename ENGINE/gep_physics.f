@@ -23,7 +23,6 @@
       include 'bigcal_shower_parms.cmn'
       include 'bigcal_geometry.cmn'
       include 'bigcal_bypass_switches.cmn'
-
 c
 c     local variables:
 c
@@ -85,8 +84,8 @@ c     if the user has not defined something reasonable, then set by hand here:
          hstheta = ptheta_mc*PI/180.
          hsphi = (- pphi_mc - 90.)*PI/180.
          hszbeam = zv_p_mc
-         gbeam_x = -yv_p_mc
-         gbeam_y = xv_p_mc
+         gbeam_x = xv_p_mc
+         gbeam_y = yv_p_mc
       endif
 
       if(hsnum_fptrack.le.0) then
@@ -233,8 +232,10 @@ c     this routine should only get called once per event!!!!!!!!!!!!!!!!
 
 *     now pick up where we left off:
 
+
       ibest_cal = pick_best_cal_track(tcal_hexpect,gep_etheta_expect_h,
-     $     gep_ephi_expect_h,Ecal_hexpect)
+     $     gep_ephi_expect_h,gep_bx_expect_h,gep_by_expect_h,Ecal_hexpect)
+
 
 c     now compute "missing" quantities using the track we have selected.
 c     first correct best calo track for vertex information which we now know from HMS reconstruction:
@@ -331,7 +332,8 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       return 
       end
 
-      integer function pick_best_cal_track(T_H,TH_H,PH_H,E_H)
+
+      integer function pick_best_cal_track(T_H,TH_H,PH_H,X_H,Y_H,E_H)
       
       include 'gep_data_structures.cmn'
       include 'bigcal_data_structures.cmn'
@@ -339,11 +341,13 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       logical restore_E
       integer itrack,ibest
       real diffsum,mindiffsum
-      real E_cal,TH_cal,PH_cal,T_cal
-      real T_H,TH_H,PH_H,E_H
+
+      real E_cal,TH_cal,PH_cal,T_cal,X_cal,Y_cal
+      real T_H,TH_H,PH_H,E_H,X_H,Y_H
 
       real PI
       parameter(PI=3.14159265359)
+
 
       restore_E = .false.
 
@@ -359,14 +363,19 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
             TH_cal = bigcal_track_thetarad(itrack)
             PH_cal = bigcal_track_phirad(itrack) + PI/2.
 
-c            X_cal = bigcal_all_clstr_x(itrack)
-c            Y_cal = bigcal_all_clstr_y(itrack)
+
             T_cal = bigcal_track_time(itrack)
+            X_cal = bigcal_all_clstr_x(itrack)
+            Y_cal = bigcal_all_clstr_y(itrack)
+
             diffsum = 0.
             diffsum = diffsum + ( (E_cal - E_H)/GEP_sigma_Ediff )**2
             diffsum = diffsum + ( (TH_cal - TH_H)/GEP_sigma_thdiff )**2
             diffsum = diffsum + ( (PH_cal - PH_H)/GEP_sigma_phdiff )**2
             diffsum = diffsum + ( (T_cal - T_H)/GEP_sigma_Tdiff )**2
+            diffsum = diffsum + ( (X_cal - X_H)/GEP_sigma_Xdiff )**2
+            diffsum = diffsum + ( (Y_cal - Y_H)/GEP_sigma_Ydiff )**2
+
             if(itrack.eq.1) then
                mindiffsum = diffsum
                ibest = itrack
@@ -377,6 +386,14 @@ c            Y_cal = bigcal_all_clstr_y(itrack)
                endif
             endif
 
+            bigcal_all_clstr_chi2(itrack) = diffsum
+            bigcal_all_clstr_chi2contr(itrack,1) = ( (E_cal - E_H)/GEP_sigma_Ediff )**2
+            bigcal_all_clstr_chi2contr(itrack,2) = ( (TH_cal - TH_H)/GEP_sigma_thdiff )**2
+            bigcal_all_clstr_chi2contr(itrack,3) = ( (PH_cal - PH_H)/GEP_sigma_phdiff )**2
+            bigcal_all_clstr_chi2contr(itrack,4) = ( (X_cal - X_H)/GEP_sigma_xdiff )**2
+            bigcal_all_clstr_chi2contr(itrack,5) = ( (Y_cal - Y_H)/GEP_sigma_ydiff )**2
+            bigcal_all_clstr_chi2contr(itrack,6) = ( (T_cal - T_H)/GEP_sigma_Tdiff )**2
+            
             if(restore_E) E_cal = E_cal * 1000.
 
          enddo
