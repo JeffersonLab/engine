@@ -18,6 +18,7 @@
       integer iochan,iflag_matr
       
       real*4 c_old,g_old
+      real*4 newavg
 
       character*80 filename
 
@@ -78,7 +79,11 @@ c     before solving matrix, determine nempty, nsmall, and nsmalldiag per Kravts
 
          N = bigcal_all_maxhits
 
+c         newavg = 0.
+
          do i=1,N
+c            newavg = newavg + bigcal_vector(i)
+
             if(bigcal_vector(i).eq.0.) then
                nempty = nempty + 1
                bigcal_matr_iempty(nempty) = i 
@@ -97,6 +102,9 @@ c     before solving matrix, determine nempty, nsmall, and nsmalldiag per Kravts
                bigcal_matrix(i,i) = 1.
             endif
          enddo
+
+c         newavg = newavg / N
+
          bigcal_matr_nempty = nempty
          bigcal_matr_nsmalldiag = nsmalldiag
 
@@ -149,6 +157,8 @@ c     Eactual = Ccalculated * Eguess = cfac_new * (ADC - PED)
 c     --> cfac_new = cfac_old*gain_cor_old * Ccalculated
 c     --> gain_cor_new = 1
             
+            newavg = 0.
+
             do i=1,bigcal_prot_maxhits
                c_old = bigcal_prot_cfac(i)
                g_old = bigcal_prot_gain_cor(i)
@@ -163,6 +173,9 @@ c     --> gain_cor_new = 1
      $              float(i),bigcal_prot_cfac(i))
                if(bid_bcal_cfac_dist.gt.0) call hf1(bid_bcal_cfac_dist,
      $              bigcal_vector(i),1.)
+
+               newavg = newavg + bigcal_prot_cfac(i)
+
             enddo
             
             do i=1,bigcal_rcs_maxhits
@@ -180,8 +193,34 @@ c     --> gain_cor_new = 1
      $              float(i+bigcal_prot_maxhits),bigcal_rcs_cfac(i))
                if(bid_bcal_cfac_dist.gt.0) call hf1(bid_bcal_cfac_dist,
      $              bigcal_vector(i+bigcal_prot_maxhits),1.)
+
+               newavg = newavg + bigcal_rcs_cfac(i)
+
             enddo
             
+            newavg = newavg / bigcal_all_maxhits
+
+c     replace "empty" and "small diag." channels with the average new calibration constant:
+
+            do i=1,nsmalldiag
+               icell = bigcal_matr_ismalld(i)
+
+               if(icell.le.bigcal_prot_maxhits) then
+                  bigcal_prot_cfac(icell) = newavg
+               else 
+                  bigcal_rcs_cfac(icell-bigcal_prot_maxhits) = newavg
+               endif
+            enddo
+               
+            do i=1,nempty
+               icell = bigcal_matr_iempty(i)
+               if(icell.le.bigcal_prot_maxhits) then
+                  bigcal_prot_cfac(icell) = newavg
+               else
+                  bigcal_rcs_cfac(icell-bigcal_prot_maxhits) = newavg
+               endif
+            enddo
+
             write(iochan,*) 'bigcal_prot_cfac = '
             
             do i=1,(bigcal_prot_maxhits/8)
