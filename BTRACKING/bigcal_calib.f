@@ -32,6 +32,7 @@ c     first check whether we have enough events to do a decent calibration:
       if(bigcal_nmatr_event.lt.bigcal_min_calib_events) then ! save matrix to a file to start next run.
          write(*,*) 'not enough events to calibrate, saving matrix'//
      $        ' for next run'
+         write(*,*) 'number of events in calib. matrix = ',bigcal_nmatr_event
          if(b_calib_matrix_filename.ne.' ') then
             filename = b_calib_matrix_filename
             call g_IO_control(iochan,'ANY',abort,err)
