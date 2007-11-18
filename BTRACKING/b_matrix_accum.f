@@ -23,6 +23,11 @@
       integer best,ihit,jhit
       real Ee,ei,ej
 
+      real PI
+      parameter(PI=3.14159265359)
+
+      real Mp
+      parameter(Mp=.938272)
       abort=.false.
       err=' '
 
@@ -75,13 +80,19 @@ c     check rough position agreement (cell positions only! reconstructed positio
          ! this was called from GEp reconstruction after selection of best track!!!
       else if(bigcal_all_nclstr.ge.1.and.hsnum_fptrack.gt.0.and.
      $        gen_event_trigtype(5).eq.1) then
-         Ee = gebeam - gep_Q2_H / (2.*.938272) ! E' = E - Q^2/2Mp, Q^2 as measured by HMS
-
+c         Ee = gebeam - gep_Q2_H / (2.*.938272) ! E' = E - Q^2/2Mp, Q^2 as measured by HMS
+         Ee = gep_E_electron
          best = bigcal_itrack_best
          
 c     check event selection cuts for calibration: dx, dy, and ctime:
 c     also check elastic cut: This is crucial!!!
 c 
+
+c     write(*,*) 'track time =',bigcal_track_time(best)
+c$$$         write(*,*) 'dx,dy,dt,dpel,dth,dph=',bigcal_all_clstr_x(best)-gep_bx_expect_H,
+c$$$     $        bigcal_all_clstr_y(best)-gep_by_expect_H,bigcal_track_time(best)-bigcal_window_center,
+c$$$     $        (gep_p_proton-gep_pel_htheta)/hpcentral,bigcal_track_thetarad(best)-gep_etheta_expect_h,
+c$$$     $        bigcal_track_phirad(best)-gep_ephi_expect_h
 
          if(abs(bigcal_all_clstr_x(best)-gep_bx_expect_H).lt.
      $        gep_bcalib_cut_dx.and.abs(bigcal_all_clstr_y(best) - 
@@ -90,7 +101,11 @@ c
      $        abs(gep_pel_htheta-gep_p_proton)/hpcentral.lt.gep_bcalib_cut_elastic
      $        .and.abs(bigcal_track_thetarad(best)-gep_etheta_expect_H).lt.
      $        gep_bcalib_cut_theta.and.abs(bigcal_track_phirad(best)-
-     $        gep_ephi_expect_H).lt.gep_bcalib_cut_phi) then
+     $        gep_ephi_expect_H+PI/2.).lt.gep_bcalib_cut_phi.and.
+     $        Ee.ge.gep_bcalib_cut_ehms(1).and.Ee.le.
+     $        gep_bcalib_cut_ehms(2)) then
+
+c            write(*,*) 'writing event to calib. matrix'
 
             bigcal_nmatr_event = bigcal_nmatr_event + 1
 
