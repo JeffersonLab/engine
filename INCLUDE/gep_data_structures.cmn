@@ -22,13 +22,15 @@ c     event selection cuts for BigCal calibration:
       real*4 gep_bcalib_cut_theta
       real*4 gep_bcalib_cut_phi
       real*4 gep_bcalib_cut_elastic ! cut on (hpel(hstheta)-hsp)/hpel(hstheta))
+      real*4 gep_bcalib_cut_ehms(2) ! 1 = min, 2 = max
       common/gep_bcalib/
      $     gep_bcalib_cut_ctime,
      $     gep_bcalib_cut_dx,
      $     gep_bcalib_cut_dy,
      $     gep_bcalib_cut_theta,
      $     gep_bcalib_cut_phi,
-     $     gep_bcalib_cut_elastic
+     $     gep_bcalib_cut_elastic,
+     $     gep_bcalib_cut_ehms
 c     coincidence timing window parameters (weed out background hits)
       real*4 gep_h1time_center
       real*4 gep_h2time_center
