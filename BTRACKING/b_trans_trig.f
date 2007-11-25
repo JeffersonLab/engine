@@ -46,6 +46,12 @@ c$$$          if(bid_bcal_tadcvsum64.gt.0) then
 c$$$             call hf2(bid_bcal_tadcvsum64,bigcal_atrig_sum64(icell64),
 c$$$     $            bigcal_atrig_adc_good(ihit),1.0)
 c$$$          endif
+
+          if(bid_bcal_arow64.gt.0) call hf1(bid_bcal_arow64,float(irow64),1.)
+          if(bid_bcal_acol64.gt.0) call hf1(bid_bcal_acol64,float(icol64),1.)
+          if(bid_bcal_arow64vsacol64.gt.0) call hf2(bid_bcal_arow64vsacol64,
+     $         float(icol64),float(irow64),1.)
+
           if(bigcal_iymax_adc.ne.0.and.bigcal_ixmax_adc.ne.0.and.
      $         bid_bcal_trchvmax64.gt.0) then
              jrow64 = (bigcal_iymax_adc-1)/3 + 1
@@ -110,6 +116,19 @@ c     subtract center of elastic timing window.
                bigcal_ttrig_tdc_good(ngood) = bigcal_ttrig_tdc_dec(ihit)
 c     fill trig tdc histogram
                
+               do jhit=1,bigcal_atrig_ngood
+                  jrow64 = bigcal_atrig_good_igroup(jhit)
+                  jcol64 = bigcal_atrig_good_ihalf(jhit)
+                  jcell64 = jcol64 + 2*(jrow64-1)
+                  if(bid_bcal_ttchanvstachan.gt.0) call hf2(bid_bcal_ttchanvstachan,
+     $                 float(jcell64),float(icell64),1.)
+               enddo
+
+               if(bid_bcal_trow64.gt.0) call hf1(bid_bcal_trow64,float(irow64),1.)
+               if(bid_bcal_tcol64.gt.0) call hf1(bid_bcal_tcol64,float(icol64),1.)
+               if(bid_bcal_trow64vstcol64.gt.0) call hf2(bid_bcal_trow64vstcol64,
+     $              float(icol64),float(irow64),1.)
+
                if(bid_bttdc(icell64).gt.0) call hf1(bid_bttdc(icell64),
      $              float(bigcal_ttrig_tdc_good(ngood)),1.0)
                
@@ -126,6 +145,24 @@ c     fill trig tdc histogram
                      irow8 = bigcal_time_irow(jhit)
                      icol8 = bigcal_time_igroup(jhit)
                      icell8 = icol8 + 4*(irow8-1)
+
+                     jcell64 = (icol8-1)/2 + 1 + 2*((irow8-1)/3)
+
+                     if(bid_bcal_ttchanvstgroup.gt.0) then
+                        if(mod(irow8-1,3).eq.0) then ! overlap row
+                           if(abs(jcell64-icell64).lt.abs(jcell64-2-icell64)) then
+                              call hf2(bid_bcal_ttchanvstgroup,float(jcell64),
+     $                             float(icell64),1.)
+                           else
+                              call hf2(bid_bcal_ttchanvstgroup,float(jcell64-2),
+     $                             float(icell64),1.)
+                           endif
+                        else ! not overlap row
+                           call hf2(bid_bcal_ttchanvstgroup,float(jcell64),
+     $                          float(icell64),1.)
+                        endif
+                     endif
+
 c     check if the two hits match: 
                      if( (icol8-1)/2 + 1 .eq. icol64 ) then
                         if( (irow8-1)/3 + 1 .eq. irow64 .or.(irow8-1)/3-1
