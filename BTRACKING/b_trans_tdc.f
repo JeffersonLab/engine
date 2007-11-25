@@ -63,6 +63,11 @@
 c     fill tdc histogram:
           if(bid_btdc(itdc).gt.0) call hf1(bid_btdc(itdc),float(bigcal_tdc(ihit)),1.0)
           
+          if(bid_bcal_row8.gt.0) call hf1(bid_bcal_row8,float(irow),1.)
+          if(bid_bcal_col8.gt.0) call hf1(bid_bcal_col8,float(igroup),1.)
+          if(bid_bcal_row8vscol8.gt.0) call hf2(bid_bcal_row8vscol8,float(igroup),
+     $         float(irow),1.)
+
 c          if(bid_btimewalk(itdc).gt.0) call hf2(bid_btimewalk(itdc),ph,thit,1.0)
 c     ! also fill "detector" array (arrays over tdc# as opposed to hits)
           if(bigcal_tdc_det_ngood(itdc).lt.8)then

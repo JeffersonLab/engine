@@ -168,6 +168,18 @@ c         write(*,*) 'histname=',histname
       bid_bcal_cfac_dist = thgetid('bcal_cfac_dist')
       bid_bcal_oldxnew = thgetid('bcal_oldxnew')
 
+      bid_bcal_row8 = thgetid('bcal_row8')
+      bid_bcal_col8 = thgetid('bcal_col8')
+      bid_bcal_row8vscol8 = thgetid('bcal_row8vscol8')
+      bid_bcal_trow64 = thgetid('bcal_trow64')
+      bid_bcal_tcol64 = thgetid('bcal_tcol64')
+      bid_bcal_trow64vstcol64 = thgetid('bcal_trow64vstcol64')
+      bid_bcal_arow64 = thgetid('bcal_arow64')
+      bid_bcal_acol64 = thgetid('bcal_acol64')
+      bid_bcal_arow64vsacol64 = thgetid('bcal_arow64vsacol64')
+      bid_bcal_ttchanvstachan = thgetid('bcal_ttchanvstachan')
+      bid_bcal_ttchanvstgroup = thgetid('bcal_ttchanvstgroup')
+
       abort=.false.
       err=' '
       
