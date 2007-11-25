@@ -49,6 +49,17 @@ c      integer*4 bid_btimewalk(bigcal_max_tdc)
       integer*4 bid_bcal_pedw_rcs
       integer*4 bid_bcal_pedw_trig
       integer*4 bid_bcal_raw_photodiode
+      integer*4 bid_bcal_row8
+      integer*4 bid_bcal_col8
+      integer*4 bid_bcal_row8vscol8
+      integer*4 bid_bcal_trow64
+      integer*4 bid_bcal_tcol64
+      integer*4 bid_bcal_trow64vstcol64
+      integer*4 bid_bcal_arow64
+      integer*4 bid_bcal_acol64
+      integer*4 bid_bcal_arow64vsacol64
+      integer*4 bid_bcal_ttchanvstachan
+      integer*4 bid_bcal_ttchanvstgroup
       common/bigcal_hist_id/
      $     bid_bcal_row,
      $     bid_bcal_col,
@@ -96,4 +107,15 @@ c     $     bid_btimewalk,
      $     bid_bcal_pedw_prot,
      $     bid_bcal_pedw_rcs,
      $     bid_bcal_pedw_trig,
-     $     bid_bcal_raw_photodiode
+     $     bid_bcal_raw_photodiode,
+     $     bid_bcal_row8,
+     $     bid_bcal_col8,
+     $     bid_bcal_row8vscol8,
+     $     bid_bcal_trow64,
+     $     bid_bcal_tcol64,
+     $     bid_bcal_trow64vstcol64,
+     $     bid_bcal_arow64,
+     $     bid_bcal_acol64,
+     $     bid_bcal_arow64vsacol64,
+     $     bid_bcal_ttchanvstachan,
+     $     bid_bcal_ttchanvstgroup
