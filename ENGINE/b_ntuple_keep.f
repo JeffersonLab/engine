@@ -11,6 +11,7 @@
 
       include 'b_ntuple.cmn'
       include 'bigcal_data_structures.cmn'
+      include 'bigcal_tof_parms.cmn'
       include 'hms_data_structures.cmn'
       include 'bigcal_gain_parms.cmn'
       include 'gen_event_info.cmn'
@@ -78,7 +79,7 @@ c$$$         write(*,*) 'event,type,trigtype=',bgid,bgtype,btrigtype
          ibest = bigcal_itrack_best
 
          if(ntrigB.gt.0) then
-            btrigtime = gep_btime(1)
+            btrigtime = bigcal_window_center - gep_btime(1)
          else
             btrigtime = 0.
          endif

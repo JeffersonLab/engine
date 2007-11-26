@@ -163,7 +163,7 @@ c     the tdc channel is unique!!!!
             endif
 
             icell64 = icol64 + 2*(irow64-1)
-            if(mod(irow-1,3).eq.0 .and.irow.gt.0) then
+            if(mod(irow-1,3).eq.0 .and.irow-1.gt.0) then
                overlap_row = .true.
             else 
                overlap_row = .false.
@@ -269,6 +269,7 @@ c     the trig. tdc channel is unique!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             if(overlap_row) then ! also check previous overlapping sum64 channel
                icell64 = icell64 - 2
+               irow64 = irow64 - 1
                goto 103
             endif
          enddo

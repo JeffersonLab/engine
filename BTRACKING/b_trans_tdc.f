@@ -43,14 +43,15 @@
         else
           ph = BIGCAL_TDC_SUM8(itdc)
         endif
-        thit = BIGCAL_TDC(ihit) * bigcal_tdc_to_time
+        thit = BIGCAL_TDC(ihit) * bigcal_tdc_to_time ! convert to ns 
+        thit = bigcal_window_center - thit ! invert since we are in common-stop mode:
         thit = thit - bigcal_g8_time_offset(itdc) 
         
-        if(ntrigb.gt.0) then ! also subtract trigger time if there was a trigger
-           thit = thit - gep_btime(1)
-        else 
-           thit = thit - gep_btime_elastic
-        endif
+c$$$        if(ntrigb.gt.0) then ! also subtract trigger time if there was a trigger
+c$$$           thit = thit - gep_btime(1)
+c$$$        else 
+c$$$           thit = thit - gep_btime_elastic
+c$$$        endif
 
         thit = thit - bigcal_g8_phc_coeff(itdc) * 
      $       sqrt(max(0.,(ph/bigcal_g8_minph(itdc)-1.)))

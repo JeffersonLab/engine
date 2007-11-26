@@ -97,14 +97,15 @@ c     the maximum belongs
             else
                ph = 0.
             endif
-            hit_time = bigcal_ttrig_tdc_dec(ihit) * bigcal_tdc_to_time
-            hit_time = hit_time - bigcal_g64_time_offset(icell64)
-            if(ntrigb.gt.0) then ! also subtract trigger time if there was a trigger: otherwise, 
-c     subtract center of elastic timing window.
-               hit_time = hit_time - gep_btime(1)
-            else 
-               hit_time = hit_time - gep_btime_elastic
-            endif
+            hit_time = bigcal_ttrig_tdc_dec(ihit) * bigcal_tdc_to_time ! convert to ns
+            hit_time = bigcal_window_center - hit_time ! invert since we're in common stop mode.
+            hit_time = hit_time - bigcal_g64_time_offset(icell64) 
+c$$$            if(ntrigb.gt.0) then ! also subtract trigger time if there was a trigger: otherwise, 
+c$$$c     subtract center of elastic timing window.
+c$$$               hit_time = hit_time - gep_btime(1)
+c$$$            else 
+c$$$               hit_time = hit_time - gep_btime_elastic
+c$$$            endif
             hit_time = hit_time - bigcal_g64_phc_coeff(icell64) * 
      $           sqrt(max(0.,(ph/bigcal_g64_minph(icell64)-1.)))
             if(abs(hit_time - bigcal_window_center).le.bigcal_window_slop) 
