@@ -264,6 +264,30 @@ c      write(*,*)'Drift type = ',hfpp_drift_type
             RETURN
           endif
 
+
+      elseif (hfpp_drift_type.eq.5) then	! experimental hardcoded
+
+          if (drift_time.gt.hfpp_drift_Tmax) then
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          elseif (drift_time.lt.hfpp_drift_Tmin) then
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          endif
+
+          drift_distance = sqrt( (drift_time-hfpp_drift_Tmin) / 
+     >                           (hfpp_drift_Tmax-hfpp_drift_Tmin) )
+                    
+          if (drift_distance.gt.hfpp_drift_Xmax) then
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          endif
+
+          if (drift_distance.lt.0.0) then
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          endif
+
       else					! bad selector ****************
           drift_distance = H_FPP_BAD_DRIFT
           write(err,*) 'unknown drift map type: ',hfpp_drift_type
@@ -455,6 +479,16 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
           print *,' The selected drift map file uses constant drift'
           print *,' velocity in the focal plane polarimeter chambers.'
           print *,' The speed is :',hfpp_drift_dT,' cm/ns'
+          print *,' The applicability range of this drift map is:'
+          print *,'  ',hfpp_drift_Tmin,' ns < t_drift < ',hfpp_drift_Tmax,' ns'
+          print *,' with a maximum drift distance of ',hfpp_drift_Xmax,' cm.\n'
+
+      elseif (hfpp_drift_type.eq.5) then	! experimental
+
+          read(LUN,*,err=905,end=900) hfpp_drift_Tmin, hfpp_drift_Tmax
+
+          print *,' The selected drift map file uses a special function'
+          print *,' for the focal plane polarimeter chambers.'
           print *,' The applicability range of this drift map is:'
           print *,'  ',hfpp_drift_Tmin,' ns < t_drift < ',hfpp_drift_Tmax,' ns'
           print *,' with a maximum drift distance of ',hfpp_drift_Xmax,' cm.\n'
