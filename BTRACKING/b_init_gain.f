@@ -24,15 +24,20 @@ c     check whether user has defined bigcal_prot_min_peds:
 
 c     initialize threshold limits: define sensible values if the user hasn't
 
+c      write(*,*) 'bigcal_prot_cfac=',bigcal_prot_cfac
+c      write(*,*) 'bigcal_rcs_cfac=',bigcal_rcs_cfac
+
 c     initialize ped_limit:
       do i=1,bigcal_all_maxhits
          if(i.le.1024) then
             bigcal_prot_ped_limit(i) = 1000
+            
            
          else
 c     write(*,*) 'rcs ped limit(',i-1024,')=',bigcal_rcs_ped_limit(i-1024)
             
             bigcal_rcs_ped_limit(i-1024) = 1000
+
 c     write(*,*) 'rcs ped limit(',i-1024,')=',bigcal_rcs_ped_limit(i-1024)
          endif
       enddo

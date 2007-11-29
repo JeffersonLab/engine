@@ -23,6 +23,9 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
+* Revision 1.19.6.9  2007/11/29 19:06:13  puckett
+* *** empty log message ***
+*
 * Revision 1.19.6.8  2007/10/24 16:37:07  cdaq
 * *** empty log message ***
 *
@@ -137,6 +140,8 @@
       g_test_rebook = .true.
       g_parm_rebook = .true.
       g_report_rebook = .true.
+      b_calib_rebook = .true.
+      h_driftmap_rebook = .true.
       g_ctp_parm_filename = ' '
       g_ctp_test_filename = ' '
       g_ctp_hist_filename = ' '
@@ -148,6 +153,8 @@
       g_ctp_kinematics_filename = ' '
       g_charge_scaler_filename = ' '
       g_writeout_scaler_filename = ' '
+      b_calib_input_filename = ' '
+      h_driftmap_input_filename = ' '
 *
       s_recon_coeff_filename = ' '
       h_recon_coeff_filename = ' '
