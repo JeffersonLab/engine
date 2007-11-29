@@ -1,6 +1,9 @@
       subroutine g_output_thresholds(lunout,roc,slot,signalcount,
      &               elements_per_plane,signal0,signal1,sigma0,sigma1)
 * $Log$
+* Revision 1.7.20.4  2007/11/29 18:37:17  cdaq
+* added special handling of ROC11, slot 19 (bigcal trig. ADCs)
+*
 * Revision 1.7.20.3  2007/10/19 14:50:45  cdaq
 * *** empty log message ***
 *
@@ -82,17 +85,24 @@
             delta_ped=signal0(element)-float(g_threshold_readback(ich,roc,slot))
             if ( (abs(delta_ped) .gt. min(20.,2.*sigma0(element)))  .and.
      &             g_threshold_readback(ich,roc,slot).ne.0) then
-              if (annoying_message) then
+              if (annoying_message.and..not.(roc.eq.11.and.slot.eq.19)) then
                 write(6,*) 'Warning! Danger Will Robinson!  Inconsistant Thresholds approaching!'
                 write(6,'(a)') 'May require updating hms(sos)_thresholds.dat in ~cdaq/coda to avoid losing data'
                 write(6,*) '  roc slot channel threshold  calc.thresh. delta  #sigma(pos. is OK).'
                 annoying_message=.false.
               endif
-              write(6,'(2x,i3,i5,i6,i11,2f11.1,f9.1)') roc,slot,ich,
-     &             g_threshold_readback(ich,roc,slot),signal0(element),delta_ped,delta_ped/(sigma0(element)+.001)
-            endif
-          endif
-        enddo
+              if(.not.(roc.eq.11.and.slot.eq.19)) then
+                 write(6,'(2x,i3,i5,i6,i11,2f11.1,f9.1)') roc,slot,ich,
+     &                g_threshold_readback(ich,roc,slot),signal0(element),delta_ped,delta_ped/(sigma0(element)+.001)
+              else
+                 if(abs(delta_ped).gt.2.*sigma0(element)) then
+                    write(6,'(2x,i3,i5,i6,i11,2f11.1,f9.1)') roc,slot,ich,
+     &                   g_threshold_readback(ich,roc,slot),signal0(element),delta_ped,delta_ped/(sigma0(element)+.001)
+                 endif
+              endif
+           endif
+        endif
+      enddo
 !!!!!!!!!!!!!!!!!!!!!!!!!!
       else if (signalcount.eq.2) then      !hodoscopes, calorimeter (w/2nd PMT).
         do ich=1,g_decode_subaddcnt(roc,slot)
