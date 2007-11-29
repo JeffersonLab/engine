@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.24.6.12  2007/11/29 19:05:29  puckett
+* added special parm filenames b_calib_input_filename and h_driftmap_input_filename which can be used in MAIN.db
+*
 * Revision 1.24.6.11  2007/11/29 18:37:53  cdaq
 * commented out call to c_initialize, duplicated in gep_initialize
 *
@@ -220,6 +223,30 @@
             err = file
           endif
         endif
+      endif
+
+      if((first_time.or.h_driftmap_rebook).and.h_driftmap_input_filename.ne.' ') then
+         file = h_driftmap_input_filename
+         if(thload(file).ne.0) then
+            abort = .true.
+            if(err.ne.' ') then
+               call g_append(err,' & '//file)
+            else
+               err = file
+            endif
+         endif
+      endif
+
+      if((first_time.or.b_calib_rebook).and.b_calib_input_filename.ne.' ') then
+         file = b_calib_input_filename
+         if(thload(file).ne.0) then
+            abort = .true.
+            if(err.ne.' ') then
+               call g_append(err,' & '//file)
+            else
+               err = file
+            endif
+         endif
       endif
 
       write(6,'(a)') 'COMMAND LINE FLAGS'
