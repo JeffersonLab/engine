@@ -10,6 +10,9 @@
 *-   Created   9-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   Kevin B. Beard
 * $Log$
+* Revision 1.24.6.11  2007/11/29 18:37:53  cdaq
+* commented out call to c_initialize, duplicated in gep_initialize
+*
 * Revision 1.24.6.10  2007/10/24 16:58:28  cdaq
 * Always call h_initialize
 *
@@ -440,7 +443,7 @@ c     write(*,*) 'about to call C_initialize'
 *-COIN initialize
 *
         
-         call C_initialize(ABORT,err)
+*         call C_initialize(ABORT,err)
         
 *     
       ENDIF
