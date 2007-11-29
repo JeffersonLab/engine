@@ -323,11 +323,8 @@ c==============================================================================
       parameter (here= 'h_fpp_tracking_drifttrack')
 
       integer*4 DCset		! IN set of FPP DCs we are working on
-      integer*4 HitClusters(H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
-				! IN hit clusters to fit to
-      integer*4 icone
-
       real*4 SimpleTrack(6)	! IN track based on wire positions only
+      integer*4 HitClusters(H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
       logical*4 track_good	! OUT flag
       real*4 DriftTrack(6)	! OUT drift based track in chamber coords
       logical ABORT
@@ -346,13 +343,15 @@ c==============================================================================
       real*4 Sigma2s(H_FPP_MAX_FITPOINTS),    All_Sigma2s(H_FPP_MAX_FITPOINTS)
       real*4 Projects(H_FPP_MAX_FITPOINTS,2), All_Projects(H_FPP_MAX_FITPOINTS,2)
       real*4 Drifts(H_FPP_MAX_FITPOINTS),     DriftAbs(H_FPP_MAX_FITPOINTS)
+				! IN hit clusters to fit to
+      integer*4 icone
 
       integer*4 Chambers(H_FPP_MAX_FITPOINTS),All_Chambers(H_FPP_MAX_FITPOINTS)
       integer*4 Layers(H_FPP_MAX_FITPOINTS),  All_Layers(H_FPP_MAX_FITPOINTS)
       integer*4 Wires(H_FPP_MAX_FITPOINTS),   All_Wires(H_FPP_MAX_FITPOINTS)
 
-      integer*4 Nlayershit, nPoints, mPoints
-      integer*4 CSkip, LSkip, Cskipped, Lskipped
+      integer*4 Nlayershit, nPoints, mPoints, nClusters, mClusters
+      integer*4 CSkip, LSkip, Cskipped, Lskipped, Llast
       integer*4 iChamber, iLayer, iCluster, iRaw, iHit, iWire, iTrack, ii, jj
 
 
@@ -365,10 +364,12 @@ c==============================================================================
 *     * first decode Clusters into a single linear array of hits ***********
 
       nPoints = 0
+      nClusters = 0
       do iChamber=1,H_FPP_N_DCINSET
        do iLayer=1,H_FPP_N_DCLAYERS
          iCluster = HitClusters(iChamber,iLayer)
          if (iCluster.gt.0) then
+           nClusters = nClusters + 1 
 
 	   z = HFPP_layerZ(DCset,iChamber,iLayer)
 	   x = SimpleTrack(1)*z + SimpleTrack(2)
@@ -396,6 +397,9 @@ c              write(*,*)'Calling h_fpp_drift ... ',WirePropagation
               call h_fpp_drift(iHit,SimpleTrack,WirePropagation,
      >                         mydriftT,mydriftX,ABORT,err)
 
+              HFPP_drift_time(DCset,iChamber,iLayer,iWire) = mydriftT  !record for posterity
+              HFPP_drift_dist(DCset,iChamber,iLayer,iWire) = H_FPP_BAD_DRIFT  !init to none
+
 c              write(*,*)'iRaw,mydriftX =',iRaw,iHit,mydriftX
               if (mydriftX.ne.H_FPP_BAD_DRIFT) then
 	     	nPoints = nPoints + 1
@@ -416,9 +420,6 @@ c              write(*,*)'iRaw,mydriftX =',iRaw,iHit,mydriftX
                 All_Projects(nPoints,1) = HFPP_direction(DCset,iChamber,iLayer,1)
                 All_Projects(nPoints,2) = HFPP_direction(DCset,iChamber,iLayer,2)
 	     	DriftAbs(nPoints)       = mydriftX  ! and its drift distance (L/R ambiguous!!)
-
-        	HFPP_drift_time(DCset,iChamber,iLayer,iWire) = mydriftT	 !record for posterity
-        	HFPP_drift_dist(DCset,iChamber,iLayer,iWire) = H_FPP_BAD_DRIFT  !init to none
 	      endif
 
            enddo !iRaw
@@ -456,7 +457,7 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
 	  enddo !iHit
           track_good = .true.
 
-      elseif (nPoints.gt.HFPP_minsethits) then
+      elseif (nClusters.gt.HFPP_minsethits) then   ! greater, not equal!
 
 *         * apparently we were not able to find a good track
 *         * we now try dropping each cluster, one at a time, to see if a good track
@@ -468,6 +469,8 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
            do LSkip=1,H_FPP_N_DCLAYERS
 
 	    mPoints = 0
+            mClusters = 0
+            Llast = 0
 	    do iHit=1,nPoints
               if ((All_Chambers(iHit).eq.CSkip).and.
      >    	  (All_Layers(iHit).eq.LSkip)) cycle   ! selectively skip this hit altogether
@@ -481,9 +484,13 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
               Chambers(mPoints)   = All_Chambers(iHit)
               Layers(mPoints)	  = All_Layers(iHit)
               Wires(mPoints)	  = All_Wires(iHit)
+              if (Llast.ne.All_Layers(iHit)) then  !this works as long as hits are in order
+                Llast = All_Layers(iHit)
+                mClusters = mClusters + 1
+              endif
 	    enddo !iHit
 
-            if (mPoints.ge.HFPP_minsethits) then
+            if (mClusters.ge.HFPP_minsethits) then
 
       	      call h_fpp_fit_best_permutation(mPoints, Points, Sigma2s, Projects, Drifts, newTrack)
 
@@ -501,7 +508,7 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
 	        Lskipped = LSkip ! remember skipped layer
 	      endif
 
-	    endif !mPoints.ge.HFPP_minsethits
+	    endif !mClusters.ge.HFPP_minsethits
 
 	   enddo !LSkip
 	  enddo !CSkip
@@ -523,6 +530,8 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
 	      HFPP_drift_dist(DCset,iChamber,iLayer,iWire) = Drifts(iHit)
 	    enddo !iHit
             track_good = .true.
+            nPoints = mPoints      !use stats of new, "smaller" track
+            nClusters = mClusters
 
 	  endif !dropped_one
 
@@ -620,7 +629,17 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
 	  HFPP_track_conetest(DCset,iTrack) = icone
 
 *         * determine resolution measure -- if requested
-          if ((HFPP_calc_resolution.ne.0).and.(nPoints.gt.HFPP_minsethits)) then
+          if (HFPP_calc_resolution.ne.0) then
+
+*           * init to bad
+            do CSkip=1,H_FPP_N_DCINSET
+             do LSkip=1,H_FPP_N_DCLAYERS
+               HFPP_track_resolution(DCset,CSkip,LSkip,iTrack) = H_FPP_BAD_COORD
+               HFPP_track_angresol(DCset,CSkip,LSkip,iTrack) = H_FPP_BAD_COORD
+             enddo !LSkip
+            enddo !CSkip
+
+            if (nClusters.gt.HFPP_minsethits) then
 
 *             * tracking resolution:
 *             **  - require good quality track with 6 hits
@@ -675,7 +694,7 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
 	  	   trackpos = HFPP_direction(DCset,CSkip,LSkip,1) * x
      >    		    + HFPP_direction(DCset,CSkip,LSkip,2) * y
 
-	  	   HFPP_track_resolution(DCset,iChamber,iLayer,iTrack) = trackpos - wirepos
+	  	   HFPP_track_resolution(DCset,CSkip,LSkip,iTrack) = trackpos - wirepos
 
 *         	   * now figure angular resolution as difference in slope between
 *         	   * standard track and resolution track
@@ -684,14 +703,16 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
           	   m5 = newTrack(1) * HFPP_direction(DCset,CSkip,LSkip,1)
      >    	      + newTrack(3) * HFPP_direction(DCset,CSkip,LSkip,2)
 
-          	   HFPP_track_angresol(DCset,iChamber,iLayer,iTrack) = m5 - m6
+          	   HFPP_track_angresol(DCset,CSkip,LSkip,iTrack) = m5 - m6
 
 	  	 endif !jj
 
                enddo !LSkip
               enddo !CSkip
 
+            endif !HFPP_minsethits
           endif !HFPP_calc_resolution
+
 	endif !iTrack.le.H_FPP_MAX_TRACKS
       endif !track_good
 
