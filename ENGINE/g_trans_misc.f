@@ -6,6 +6,9 @@
 * g_trans_misc fills the gen_decoded_misc common block
 *
 * $Log$
+* Revision 1.2.24.5  2007/11/29 18:33:05  cdaq
+* commented out diagnostic message
+*
 * Revision 1.2.24.4  2007/11/12 03:16:22  cdaq
 * added timing window for triggers
 *
@@ -69,8 +72,8 @@ c$$$            endif
 c$$$         endif
 
          if(gmisc_raw_addr1(ihit).eq.1) then
-c$$$            write(*,*) 'gmisc TDC hit ctr,TDCraw=',gmisc_raw_addr2(ihit),
-c$$$     $           gmisc_raw_data(ihit)
+c            write(*,*) 'gmisc TDC hit ctr,TDCraw=',gmisc_raw_addr2(ihit),
+c     $           gmisc_raw_data(ihit)
             if(gmisc_raw_addr2(ihit).eq.1) then !HMS1 trigger: fill hist
 
                hittime = .5*gmisc_raw_data(ihit)
