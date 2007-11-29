@@ -16,6 +16,9 @@
 *-    Created   1-Dec-1995  Rolf Ent
 *
 * $Log$
+* Revision 1.8.20.5  2007/11/29 18:32:13  cdaq
+* commented out "eloss > 1e-2" error message
+*
 * Revision 1.8.20.4  2007/10/24 17:00:42  cdaq
 * some modifications for BigCal
 *
@@ -416,9 +419,10 @@
      >              ,cell_wall_loss)                        
                total_loss = total_loss + cell_wall_loss
             endif
-            if(total_loss.GE.1e-2)
-     &           write(*,*) arm, velocity, 
-     &           "total_loss ", total_loss, " back_loss ",back_loss
+c$$$            if(total_loss.GE.1e-2)
+c$$$     &           write(*,*) arm, velocity, 
+c$$$     &           " total_loss ", total_loss, " back_loss ",back_loss," angle ",
+c$$$     $           angle
             
          endif
 *Solid target************
