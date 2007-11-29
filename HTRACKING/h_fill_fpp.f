@@ -142,7 +142,7 @@
       enddo !DCset
 
 
-*     * for each DCset,iChamber,iLayer, histogram drift distances -- used hits only
+*     * for each DCset,iChamber,iLayer, histogram drift distances
       do DCset=1,H_FPP_N_DCSETS
        do iChamber=1,H_FPP_N_DCINSET
         do iLayer=1,H_FPP_N_DCLAYERS
@@ -151,20 +151,18 @@
      >    	 + iLayer
 	  hid1 = hidFPP_driftT(DCset,iChamber,iLayer)
 	  hid2 = hidFPP_driftX(DCset,iChamber,iLayer)
-          do iTrack=1,HFPP_N_tracks(DCset)
-	    iCluster = HFPP_TrackCluster(DCset,iChamber,iLayer,iTrack)
-	    if (iCluster.gt.0) then
-	      Nraw = HFPP_nHitsinCluster(DCset,iChamber,iLayer,iCluster)
-              do iRaw=1,Nraw
-        	iHit = HFPP_Clusters(DCset,iChamber,iLayer,iCluster,iRaw)
-		iWire = HFPP_raw_wire(iHit)
-		time = HFPP_drift_time(DCset,iChamber,iLayer,iWire)
-		dist = HFPP_drift_dist(DCset,iChamber,iLayer,iWire)
-        	call hf2(hid1,time,float(iWire),1.)
-        	call hf2(hid2,dist,float(iWire),1.)
-	      enddo !iRaw
-	    endif
-	  enddo !iTrack
+          if (HFPP_nClusters(DCset,iChamber,iLayer).gt.0) then
+            do iCluster=1,HFPP_nClusters(DCset,iChamber,iLayer)
+             do iHit=1,HFPP_nHitsinCluster(DCset,iChamber,iLayer,iCluster)
+               iRaw = HFPP_Clusters(DCset,iChamber,iLayer,iCluster,iHit)
+               iWire = HFPP_raw_wire(iRaw)
+               time = HFPP_drift_time(DCset,iChamber,iLayer,iWire)
+               dist = HFPP_drift_dist(DCset,iChamber,iLayer,iWire)
+               call hf2(hid1,time,float(iWire),1.)
+               call hf2(hid2,dist,float(iWire),1.)
+	     enddo !iHit
+	    enddo !iCluster
+	  endif
 	enddo !iLayer
        enddo !iChamber
       enddo !DCset
@@ -229,19 +227,21 @@
       enddo !DCset
 
 *     * for each DCset,iChamber,iLayer, histogram linear and angular resolutions
-      do DCset=1,H_FPP_N_DCSETS
-	hid1 = hidFPP_resol_lin(DCset)
-        hid2 = hidFPP_resol_ang(DCset)
-        do iChamber=1,H_FPP_N_DCINSET
-         do iLayer=1,H_FPP_N_DCLAYERS
-           ii = H_FPP_N_DCLAYERS * (iChamber-1) + iLayer
-           do iTrack=1,HFPP_N_tracks(DCset)
-             call hf2(hid1,float(ii),HFPP_track_resolution(DCset,iChamber,iLayer,iTrack),1.)
-             call hf2(hid2,float(ii),HFPP_track_angresol(DCset,iChamber,iLayer,iTrack),1.)
-           enddo !iTrack
-         enddo !iLayer
-        enddo !iChamber
-      enddo !DCset
+      if (HFPP_calc_resolution.ne.0) then
+       do DCset=1,H_FPP_N_DCSETS
+	 hid1 = hidFPP_resol_lin(DCset)
+         hid2 = hidFPP_resol_ang(DCset)
+         do iChamber=1,H_FPP_N_DCINSET
+          do iLayer=1,H_FPP_N_DCLAYERS
+            ii = H_FPP_N_DCLAYERS * (iChamber-1) + iLayer
+            do iTrack=1,HFPP_N_tracks(DCset)
+              call hf2(hid1,float(ii),HFPP_track_resolution(DCset,iChamber,iLayer,iTrack),1.)
+              call hf2(hid2,float(ii),HFPP_track_angresol(DCset,iChamber,iLayer,iTrack),1.)
+            enddo !iTrack
+          enddo !iLayer
+         enddo !iChamber
+       enddo !DCset
+      endif
 
 *     * for each track in each set, track chi**2, mx,bx,my,by, # hits, HFPP_track_fine,
 *     *  sclose,zclose,theta,phi

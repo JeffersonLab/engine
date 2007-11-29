@@ -235,6 +235,9 @@ c      write(*,*)'In h_trans_fpp ... ',HFPP_raw_tot_hits
                 endif
 	     endif !HFPP_hit1idx.eq.0
 
+             HFPP_drift_time(iSet,iChamber,iLayer,iWire) = H_FPP_BAD_TIME
+             HFPP_drift_dist(iSet,iChamber,iLayer,iWire) = H_FPP_BAD_DRIFT  !init to none
+
 	   enddo !iWire
 
            HFPP_nClusters(iSet,iChamber,iLayer) = iCluster
