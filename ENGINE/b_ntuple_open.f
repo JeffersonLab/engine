@@ -121,6 +121,7 @@ c$$$      endif
      $                'nhit8clust(10,nclust8)[0,8]:I*4,'//
      $                's8(10,nclust8),'//
      $                'tcell8(10,8,nclust8),tclust8(nclust8),'//
+     $                'tcut8(nclust8),tcut8cor(nclust8),'//
      $                'trms8(nclust8)')
               endif
               
@@ -133,6 +134,7 @@ c$$$      endif
      $                'nhit64clust(6,nclust64)[0,8]:I*4,'//
      $                'tcell64(6,8,nclust64),a64(6,nclust64),'//
      $                's64(6,nclust64),tclust64(nclust64),'//
+     $                'tcut64(nclust64),tcut64cor(nclust64),'//
      $                'trms64(nclust64)')
               endif
            endif
