@@ -10,20 +10,37 @@
       real*4 bigcal_tdc_to_time
       real*4 bigcal_window_center 
       real*4 bigcal_window_slop 
+      real*4 bigcal_tof_central ! central value of bigcal time of flight
+      real*4 bigcal_end_time ! value used to invert hit times in cmn stop
       real*4 b_timing_cut 
+      real*4 b_trig_offset ! offset to account for changes in trig. cable length
       real*4 bigcal_g8_time_offset(bigcal_n8)
-      real*4 bigcal_g8_minph(bigcal_n8)
-      real*4 bigcal_g8_phc_coeff(bigcal_n8) 
+      real*4 bigcal_g8_phc_p0(bigcal_n8)
+      real*4 bigcal_g8_phc_p1(bigcal_n8)
+      real*4 bigcal_g8_phc_p2(bigcal_n8)
+      real*4 bigcal_g8_phc_p3(bigcal_n8)
+      real*4 bigcal_g8_phc_minph(bigcal_n8)
+      real*4 bigcal_g8_phc_maxph(bigcal_n8)
       real*4 bigcal_g64_time_offset(bigcal_n64) 
-      real*4 bigcal_g64_minph(bigcal_n64) 
-      real*4 bigcal_g64_phc_coeff(bigcal_n64) 
+      real*4 bigcal_g64_phc_p0(bigcal_n64)
+      real*4 bigcal_g64_phc_p1(bigcal_n64)
+      real*4 bigcal_g64_phc_p2(bigcal_n64)
+      real*4 bigcal_g64_phc_p3(bigcal_n64)
+      real*4 bigcal_g64_phc_minph(bigcal_n64)
+      real*4 bigcal_g64_phc_maxph(bigcal_n64)
       
       common/bigcal_tof_parms/
      $     bigcal_tdc_min,bigcal_tdc_max,bigcal_tdc_to_time,
-     $     bigcal_window_center,bigcal_window_slop,b_timing_cut,
+     $     bigcal_window_center,bigcal_window_slop,
+     $     bigcal_tof_central,
+     $     bigcal_end_time,b_timing_cut,b_trig_offset,
      $     bigcal_g8_time_offset,
-     $     bigcal_g8_minph,
-     $     bigcal_g8_phc_coeff,
+     $     bigcal_g8_phc_p0,bigcal_g8_phc_p1,
+     $     bigcal_g8_phc_p2,bigcal_g8_phc_p3,
+     $     bigcal_g8_phc_minph,bigcal_g8_phc_maxph,
      $     bigcal_g64_time_offset,
-     $     bigcal_g64_minph,
-     $     bigcal_g64_phc_coeff
+     $     bigcal_g64_phc_p0,bigcal_g64_phc_p1,
+     $     bigcal_g64_phc_p2,bigcal_g64_phc_p3,
+     $     bigcal_g64_phc_minph,bigcal_g64_phc_maxph
+      
+     
