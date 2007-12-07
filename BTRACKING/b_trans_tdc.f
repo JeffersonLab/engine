@@ -16,8 +16,9 @@
       include 'gep_data_structures.cmn'
 
       integer*4 ihit,igroup,irow,itdc,ngood,thitnum
-      real*4 thit ! hit time
+      real*4 thit,tphc,ttrig ! hit time
       real*4 ph
+      real*4 p0,p1,p2,p3
       logical firsthit(BIGCAL_MAX_TDC)
 
       call b_strip_tdc(ABORT,err)
@@ -44,7 +45,7 @@
           ph = BIGCAL_TDC_SUM8(itdc)
         endif
         thit = BIGCAL_TDC(ihit) * bigcal_tdc_to_time ! convert to ns 
-        thit = bigcal_window_center - thit ! invert since we are in common-stop mode:
+        thit = bigcal_end_time - thit ! invert since we are in common-stop mode:
         thit = thit - bigcal_g8_time_offset(itdc) 
         
 c$$$        if(ntrigb.gt.0) then ! also subtract trigger time if there was a trigger
@@ -53,9 +54,26 @@ c$$$        else
 c$$$           thit = thit - gep_btime_elastic
 c$$$        endif
 
-        thit = thit - bigcal_g8_phc_coeff(itdc) * 
-     $       sqrt(max(0.,(ph/bigcal_g8_minph(itdc)-1.)))
-        if(abs(thit - bigcal_window_center).le.bigcal_window_slop)then
+        if(ph.ge.bigcal_g8_phc_minph(itdc).and.ph.le.bigcal_g8_phc_maxph(itdc)) then
+           p0 = bigcal_g8_phc_p0(itdc)
+           p1 = bigcal_g8_phc_p1(itdc)
+           p2 = bigcal_g8_phc_p2(itdc)
+           p3 = bigcal_g8_phc_p3(itdc)
+
+           tphc = p2 + (p0 + p1*ph)*exp(-p3*ph)
+        else
+           tphc = 0.
+        endif
+        
+        thit = thit - tphc
+        
+        if(ntrigb.gt.0) then
+           ttrig = bigcal_end_time - gep_btime(1)
+        else
+           ttrig = bigcal_end_time - gep_btime_elastic
+        endif
+
+        if(abs(thit - ttrig).le.bigcal_window_slop)then
           ngood = ngood + 1
           BIGCAL_TIME_IROW(ngood) = irow
           BIGCAL_TIME_IGROUP(ngood) = igroup
