@@ -8,6 +8,7 @@
       integer*4 bbypass_find_clusters
       integer*4 bbypass_calc_cluster_time
       integer*4 bbypass_calc_shower_coord
+      integer*4 bbypass_trim_clust
       integer*4 bbypass_calc_physics
       integer*4 bdebug_print_bad
       integer*4 bdebug_print_adc
@@ -29,6 +30,7 @@ c      integer*4 bmake_ttdc_hist
      $     bbypass_find_clusters,
      $     bbypass_calc_cluster_time,
      $     bbypass_calc_shower_coord,
+     $     bbypass_trim_clust,
      $     bbypass_calc_physics,
      $     bdebug_print_bad,
      $     bdebug_print_adc,
