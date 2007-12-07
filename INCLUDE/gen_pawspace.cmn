@@ -1,5 +1,8 @@
 **************** begin: gen_pawspace.cmn **********************
 *     $Log$
+*     Revision 1.2.24.3  2007/12/07 21:40:33  puckett
+*     doubled size of paw memory from 5000000 to 10000000. Hope this doesn't cause trouble
+*
 *     Revision 1.2.24.2  2007/10/29 19:46:13  cdaq
 *     Increased size of HBOOK memory from 3000000 to 5000000
 *
@@ -16,7 +19,7 @@
 *-sizes of CERNLIB working space
 *
       INTEGER G_sizeHBOOK,G_sizeHIGZ,G_sizeKUIP,G_sizePAW
-      PARAMETER (G_sizeHBOOK= 5000000)
+      PARAMETER (G_sizeHBOOK= 10000000)
       PARAMETER (G_sizeHIGZ=   50000)
       PARAMETER (G_sizeKUIP=   75000)
       PARAMETER (G_sizePAW=G_sizeHIGZ+G_sizeKUIP+
