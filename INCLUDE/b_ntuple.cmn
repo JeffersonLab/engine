@@ -107,6 +107,8 @@ c      character*256 b_tree_filename
       real*4 s8(10,maxnclust)
       real*4 tcell8(10,8,maxnclust)
       real*4 tclust8(maxnclust)
+      real*4 tcut8(maxnclust)
+      real*4 tcut8cor(maxnclust)
       real*4 trms8(maxnclust)
       common/clusttdc/
      $     nclust8,
@@ -117,6 +119,8 @@ c      character*256 b_tree_filename
      $     s8,
      $     tcell8,
      $     tclust8,
+     $     tcut8,
+     $     tcut8cor,
      $     trms8
 
 *     trigger related quantities
@@ -130,6 +134,8 @@ c      character*256 b_tree_filename
       real*4 a64(6,maxnclust)
       real*4 s64(6,maxnclust)
       real*4 tclust64(maxnclust)
+      real*4 tcut64(maxnclust)
+      real*4 tcut64cor(maxnclust)
       real*4 trms64(maxnclust)
       common/clusttrig/
      $     nclust64,
@@ -141,6 +147,8 @@ c      character*256 b_tree_filename
      $     a64,
      $     s64,
      $     tclust64,
+     $     tcut64,
+     $     tcut64cor,
      $     trms64
       
 *     reconstructed physics quantities
