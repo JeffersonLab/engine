@@ -79,7 +79,7 @@ c$$$         write(*,*) 'event,type,trigtype=',bgid,bgtype,btrigtype
          ibest = bigcal_itrack_best
 
          if(ntrigB.gt.0) then
-            btrigtime = bigcal_window_center - gep_btime(1)
+            btrigtime = bigcal_end_time - gep_btime(1)
          else
             btrigtime = 0.
          endif
@@ -184,8 +184,15 @@ c     zero all cells and all hits of all cells above ncell64clust
             ymoment(iclust) = bigcal_all_clstr_ymom(iclust)
             tclust8(iclust) = bigcal_all_clstr_t8mean(iclust)
             tclust64(iclust) = bigcal_all_clstr_t64mean(iclust)
+            tcut8(iclust) = bigcal_all_clstr_t8cut(iclust)
+            tcut8cor(iclust) = bigcal_all_clstr_t8cut_cor(iclust)
+            tcut64(iclust) = bigcal_all_clstr_t64cut(iclust)
+            tcut64cor(iclust) = bigcal_all_clstr_t64cut_cor(iclust)
             trms8(iclust) = bigcal_all_clstr_t8rms(iclust)
             trms64(iclust) = bigcal_all_clstr_t64rms(iclust)
+
+c            write(*,*) 'tcut8 = ',tcut8(iclust)
+c            write(*,*) 'tcut64=',tcut64(iclust)
 
 c$$$            write(*,*) 'xmom,ymom,t8,t64,trms8,trms64=',xmoment(iclust),
 c$$$     $           ymoment(iclust),tclust8(iclust),tclust64(iclust),trms8(iclust),
@@ -208,11 +215,14 @@ c     $           eclust(iclust)
             px(iclust) = bigcal_track_px(iclust)
             py(iclust) = bigcal_track_py(iclust)
             pz(iclust) = bigcal_track_pz(iclust)
-            ctime_clust(iclust) = bigcal_track_coin_time(iclust)
+            ctime_clust(iclust) = bigcal_track_coin_time(iclust) - 
+     $           (bigcal_end_time - gep_btime_elastic)
 
-            if(bgtype.eq.6) then
+            if(bgtype.eq.6.and.ibest>0) then
+c               write(*,*) 'chi2=',bigcal_all_clstr_chi2(iclust)
                chi2clust(iclust) = bigcal_all_clstr_chi2(iclust)
                do idiff=1,6
+c                  write(*,*) 'chi2_',idiff,'=',bigcal_all_clstr_chi2contr(iclust,idiff)
                   chi2contr(idiff,iclust) = bigcal_all_clstr_chi2contr(iclust,idiff)
                enddo
             else
@@ -253,10 +263,12 @@ c$$$     $          bigcal_ixmax_adc,bigcal_max_adc
 c$$$         write(*,*) 'na,nt,nta,ntt,rowmax,colmax,maxadc=',ngooda,ngoodt,ngoodta,
 c$$$     $        ngoodtt,irowmax,icolmax,max_adc
 
-         if(bgtype.eq.6) then ! this always assumes elastic kinematics--won't always make sense!
+         if(bgtype.eq.6.and.ibest>0) then ! this always assumes elastic kinematics--won't always make sense!
 c            E_HMS = gebeam - gep_Q2_H/(2.*Mp)
             TH_HMS = gep_etheta_expect_h
             PH_HMS = gep_ephi_expect_h - PI/2. 
+
+c            write(*,*) 'thetaH,phiH,dpel=',th_hms,ph_hms
             E_HMS = gep_E_electron
             X_HMS = gep_bx_expect_H
             Y_HMS = gep_by_expect_H
