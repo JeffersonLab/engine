@@ -484,7 +484,11 @@ c$$$     $     BIGCAL_MID_YHIT
       real*4 BIGCAL_ALL_CLSTR_ATOT(BIGCAL_ALL_NCLSTR_MAX)
       real*4 BIGCAL_ALL_CLSTR_T8MEAN(BIGCAL_ALL_NCLSTR_MAX)
       real*4 BIGCAL_ALL_CLSTR_T8RMS(BIGCAL_ALL_NCLSTR_MAX)
+      real*4 BIGCAL_ALL_CLSTR_T8CUT(bigcal_all_nclstr_max)
+      real*4 BIGCAL_ALL_CLSTR_T8CUT_COR(bigcal_all_nclstr_max) ! 
       real*4 BIGCAL_ALL_CLSTR_T64MEAN(BIGCAL_ALL_NCLSTR_MAX)
+      real*4 bigcal_all_clstr_t64cut(bigcal_all_nclstr_max)
+      real*4 bigcal_all_clstr_t64cut_cor(bigcal_all_nclstr_max)
       real*4 BIGCAL_ALL_CLSTR_T64RMS(BIGCAL_ALL_NCLSTR_MAX)
       real*4 BIGCAL_ALL_CLSTR_CHI2(BIGCAL_ALL_NCLSTR_MAX)
       real*4 BIGCAL_ALL_CLSTR_CHI2CONTR(BIGCAL_ALL_NCLSTR_MAX,6)
@@ -529,8 +533,12 @@ c$$$     $     BIGCAL_MID_YHIT
      $     BIGCAL_ALL_CLSTR_ATOT,
      $     BIGCAL_ALL_CLSTR_T8MEAN,
      $     BIGCAL_ALL_CLSTR_T8RMS,
+     $     bigcal_all_clstr_t8cut,
+     $     bigcal_all_clstr_t8cut_cor,
      $     BIGCAL_ALL_CLSTR_T64MEAN,
      $     BIGCAL_ALL_CLSTR_T64RMS,
+     $     bigcal_all_clstr_t64cut,
+     $     bigcal_all_clstr_t64cut_cor,
      $     BIGCAL_ALL_CLSTR_CHI2,
      $     BIGCAL_ALL_CLSTR_CHI2CONTR,
      $     bigcal_clstr_bad_chan
@@ -571,6 +579,7 @@ c     bigcal_physics: reconstructed physics quantities
       real*4 BIGCAL_TRACK_PZ(BIGCAL_MAX_NTRACK)
       real*4 BIGCAL_TRACK_BETA(BIGCAL_MAX_NTRACK)
       real*4 BIGCAL_TRACK_TOF(BIGCAL_MAX_NTRACK)
+      real*4 bigcal_track_tof_cor(bigcal_max_ntrack)
       real*4 BIGCAL_TRACK_COIN_TIME(BIGCAL_MAX_NTRACK)
       
       common/BIGCAL_PHYSICS/
@@ -590,9 +599,10 @@ c     bigcal_physics: reconstructed physics quantities
      $     BIGCAL_TRACK_PZ,
      $     BIGCAL_TRACK_BETA,
      $     BIGCAL_TRACK_TOF,
+     $     bigcal_track_tof_cor,
      $     BIGCAL_TRACK_COIN_TIME
 
-c     bigcal_singles_physics: choose the best track!
+c     bigcal_coin_physics: choose the best track!
 
       integer*4 bigcal_itrack_best
       real*4 bigcal_thetarad
@@ -608,6 +618,7 @@ c     bigcal_singles_physics: choose the best track!
       real*4 bigcal_beta
       real*4 bigcal_eloss
       real*4 bigcal_tof
+      real*4 bigcal_tof_cor
       real*4 bigcal_ctime
 
       common/bigcal_singles/
@@ -625,6 +636,7 @@ c     bigcal_singles_physics: choose the best track!
      $     bigcal_beta,
      $     bigcal_eloss,
      $     bigcal_tof,
+     $     bigcal_tof_cor,
      $     bigcal_ctime
 c     variables for BigCal ep (or MC) calibration:
       real*4 bigcal_matrix(bigcal_all_maxhits,bigcal_all_maxhits)
