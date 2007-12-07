@@ -16,8 +16,9 @@
       include 'bigcal_hist_id.cmn'
       include 'gep_data_structures.cmn'
 
-      integer*4 ihit,jhit
-      real*4 hit_time,ph,esum      
+      integer*4 ihit,jhit,ihitbest,icell64best
+      real*4 hit_time,ph,esum,tphc,ttrig,mintdiff 
+      real*4 p0,p1,p2,p3
       integer*4 irow64,icol64,icell64,ngood,thitnum
       integer*4 jrow64,jcol64,jcell64
       integer*4 irow8,icol8,icell8
@@ -86,19 +87,42 @@ c     the maximum belongs
 
       ngood = 0
 
+      ihitbest = 0
+      icell64best = 0
+
+      mintdiff = 0.
+
+      if(ntrigb.gt.0) then
+         do ihit=1,ntrigb
+            if(ihit.eq.1.or.abs(gep_btime(ihit)-gep_btime_elastic).lt.mintdiff) then
+               ttrig = bigcal_end_time - gep_btime(ihit)
+               mintdiff = abs(gep_btime(ihit)-gep_btime_elastic)
+            endif
+         enddo
+      else
+         ttrig = bigcal_end_time - gep_btime_elastic
+      endif
+      
+      gep_btime_raw = ttrig
+
+      mintdiff = 0.
+
       if(bigcal_ttrig_ndecoded.gt.0) then
          do ihit=1,bigcal_ttrig_ndecoded
             irow64 = bigcal_ttrig_dec_igroup(ihit)
             icol64 = bigcal_ttrig_dec_ihalf(ihit)
             icell64 = icol64 + 2*(irow64-1)
-            if(bbypass_prot.ne.0.and.bbypass_rcs.ne.0.and.icell64
-     $           .le.bigcal_atrig_maxhits) then
-               ph = bigcal_atrig_sum64(icell64)
-            else
-               ph = 0.
-            endif
+c$$$            if(bbypass_prot.ne.0.and.bbypass_rcs.ne.0.and.icell64
+c$$$     $           .le.bigcal_atrig_maxhits) then
+c$$$               ph = bigcal_atrig_sum64(icell64)
+c$$$            else
+c$$$               ph = 0.
+c$$$            endif
+
+            ph = bigcal_atrig_good_det(icell64)
+
             hit_time = bigcal_ttrig_tdc_dec(ihit) * bigcal_tdc_to_time ! convert to ns
-            hit_time = bigcal_window_center - hit_time ! invert since we're in common stop mode.
+            hit_time = bigcal_end_time - hit_time ! invert since we're in common stop mode.
             hit_time = hit_time - bigcal_g64_time_offset(icell64) 
 c$$$            if(ntrigb.gt.0) then ! also subtract trigger time if there was a trigger: otherwise, 
 c$$$c     subtract center of elastic timing window.
@@ -106,11 +130,33 @@ c$$$               hit_time = hit_time - gep_btime(1)
 c$$$            else 
 c$$$               hit_time = hit_time - gep_btime_elastic
 c$$$            endif
-            hit_time = hit_time - bigcal_g64_phc_coeff(icell64) * 
-     $           sqrt(max(0.,(ph/bigcal_g64_minph(icell64)-1.)))
-            if(abs(hit_time - bigcal_window_center).le.bigcal_window_slop) 
+c$$$            hit_time = hit_time - bigcal_g64_phc_coeff(icell64) * 
+c$$$     $           sqrt(max(0.,(ph/bigcal_g64_minph(icell64)-1.)))
+
+            if(ph.ge.bigcal_g64_phc_minph(icell64).and.ph.le.bigcal_g64_phc_maxph(icell64)
+     $           ) then
+               p0 = bigcal_g64_phc_p0(icell64)
+               p1 = bigcal_g64_phc_p1(icell64)
+               p2 = bigcal_g64_phc_p2(icell64)
+               p3 = bigcal_g64_phc_p3(icell64)
+
+               tphc = p2 + (p0 + ph*p1)*exp(-p3*ph)
+            else
+               tphc = 0.
+            endif
+
+            hit_time = hit_time - tphc
+
+            if(abs(hit_time - ttrig).le.bigcal_window_slop) 
      $           then
                ngood = ngood + 1
+               
+               if(ngood.eq.1.or.abs(hit_time - ttrig)<mintdiff) then
+                  mintdiff = abs(hit_time - ttrig)
+                  ihitbest = ngood
+                  icell64best = icell64
+               endif
+
                bigcal_ttrig_good_igroup(ngood) = irow64
                bigcal_ttrig_good_ihalf(ngood) = icol64
                bigcal_ttrig_time_good(ngood) = hit_time
@@ -178,6 +224,35 @@ c     check if the two hits match:
          enddo
       endif
       
+c     walk-correct the trigger time now: 
+
+c      write(*,*) 'icell64best=',icell64best
+
+      if(icell64best.gt.0) then
+c         write(*,*) 'adc64=',bigcal_atrig_good_det(icell64best)
+c         write(*,*) 'minph,maxph=',btrig_phc_minph,btrig_phc_maxph
+         if(bigcal_atrig_good_det(icell64best).ge.btrig_phc_minph.and.
+     $        bigcal_atrig_good_det(icell64best).le.btrig_phc_maxph) then
+            p0 = btrig_phc_p0
+            p1 = btrig_phc_p1
+            p2 = btrig_phc_p2
+            p3 = btrig_phc_p3
+            
+            ph = bigcal_atrig_good_det(icell64best)
+            
+            tphc = p2 + (p0 + p1*ph)*exp(-p3*ph)
+c            write(*,*) 'adc,phc=',bigcal_atrig_good_det(icell64best),tphc
+            
+            gep_btime_corr = ttrig - tphc
+c            write(*,*) 'walk-corrected BigCal trigger time=',gep_btime_corr
+         else 
+            gep_btime_corr = ttrig
+         endif
+      else 
+         gep_btime_corr = ttrig
+      endif
+            
+
       do icell64=1,bigcal_atrig_maxhits
          if(bigcal_ttrig_det_ngood(icell64).gt.0) then
             if(bid_btadc(icell64).gt.0.and.b_use_peds_in_hist.eq.0) then
