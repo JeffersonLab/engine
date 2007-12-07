@@ -39,6 +39,7 @@ c     coincidence timing window parameters (weed out background hits)
       real*4 gep_btime_center
       real*4 gep_btime_elastic
       real*4 gep_btime_slop
+      real*4 gep_htrig_delay ! typically 16 ns
 
       common/gep_coin_time_window/
      $     gep_h1time_center,
@@ -47,7 +48,23 @@ c     coincidence timing window parameters (weed out background hits)
      $     gep_h2time_slop,
      $     gep_btime_center,
      $     gep_btime_elastic,
-     $     gep_btime_slop      
+     $     gep_btime_slop,
+     $     gep_htrig_delay
+
+      real*4 btrig_phc_p0
+      real*4 btrig_phc_p1
+      real*4 btrig_phc_p2
+      real*4 btrig_phc_p3
+      real*4 btrig_phc_minph
+      real*4 btrig_phc_maxph
+
+      common/btrig_walk_corr/
+     $     btrig_phc_p0,
+     $     btrig_phc_p1,
+     $     btrig_phc_p2,
+     $     btrig_phc_p3,
+     $     btrig_phc_minph,
+     $     btrig_phc_maxph
 
 *
 *     CTPTYPE=event
@@ -58,6 +75,8 @@ c     coincidence timing window parameters (weed out background hits)
       real*4 GEP_H1time(8) ! HMS trigger1 hits (up to 8/event)
       real*4 GEP_H2time(8) ! HMS trigger2 hits (up to 8/event)
       real*4 GEP_Btime(8) ! HMS BigCal trigger hits (up to 8/event)
+      real*4 gep_btime_raw ! BigCal trigger chosen time
+      real*4 gep_btime_corr
       real*4 GEP_Q2 ! 4 momentum transfer squared: BigCal angle, HMS momentum
       real*4 GEP_Q2_H ! Q2 from HMS only
       real*4 GEP_Q2_B ! Q2 from BigCal & HMS vertex, but no HMS momentum
@@ -99,6 +118,8 @@ c     system for the polarization measurement.
      $     GEP_H1time,
      $     GEP_H2time,
      $     GEP_Btime,
+     $     gep_btime_raw,
+     $     GEP_btime_corr,
      $     GEP_Q2,
      $     GEP_Q2_H,
      $     GEP_Q2_B,
