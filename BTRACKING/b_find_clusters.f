@@ -292,13 +292,13 @@ c$$$         write(*,254) 'esum = ',esum
 
          celldiffy = int(abs(float(iy2max - cluster_temp_irow(1))))
 
-         if(celldiffy.gt.1) then
+         if(celldiffy.gt.1.and.ncellclst.gt.1) then
             if(cluster_temp_ecell(2)/cluster_temp_ecell(1).gt.b_min_2max(1).and.
      $           cluster_temp_ecell(2).gt.b_min_2max(2)) then
                bigcal_second_max(nmaximum) = .true.
                goto 104
             endif
-         else
+         else if(ncellclst.gt.1) then
             if(cluster_temp_irow(1).eq.32.and.iy2max.eq.33) then
                celldiffx = int(abs(float(ix2max - 
      $              bigcal_ixclose_prot(cluster_temp_icol(1)))))
