@@ -10,6 +10,7 @@
       character*(*) err
       
       include 'bigcal_data_structures.cmn'
+      include 'bigcal_tof_parms.cmn'
 c      include 'gen_units.par'
       include 'gen_constants.par'
       include 'gen_data_structures.cmn'
@@ -74,7 +75,7 @@ c            nprot = nprot + 1
      $           float(bigcal_all_clstr_ncelly(i)),1.0)
             if(bid_bcal_xy.gt.0) call hf2(bid_bcal_xy,x,y,1.0)
             
-            t = BIGCAL_ALL_CLSTR_T8MEAN(i)
+            t = BIGCAL_ALL_CLSTR_T8CUT_COR(i)
             
             if(bigcal_all_clstr_ncell8(i).gt.0) then
                if(bid_bcal_tmean.gt.0) call hf1(bid_bcal_tmean,t,1.0)
@@ -119,7 +120,10 @@ c            if(last_time) then
             if(bid_bcal_phi.gt.0) call hf1(bid_bcal_phi,phideg,1.0)
 c            endif
             gamma = E / m_e
+       
             beta = sqrt(max(0.,1. - 1./gamma**2))
+
+            if(gamma.lt.1.) beta = 1.
 
             log10betagamma = log(beta*gamma) / log(10.)
 
@@ -153,6 +157,7 @@ c     increment energy sum
 
             mom = sqrt(max(0.,E**2 - m_e**2)) 
             beta = mom/E
+            if(mom.eq.0.) beta = 1.
             tof = L/(beta*c)
 
 c            Rperp = L*sin(thetarad)
@@ -171,7 +176,11 @@ c            Rperp = L*sin(thetarad)
             BIGCAL_TRACK_PZ(ntrack) = mom * cos(thetarad)
             BIGCAL_TRACK_BETA(ntrack) = beta
             BIGCAL_TRACK_TOF(ntrack) = tof
-            BIGCAL_TRACK_COIN_TIME(ntrack) = t - tof ! "vertex" time
+            bigcal_track_tof_cor(ntrack) = tof - bigcal_tof_central
+
+c            write(*,*) 'tof correction = ',tof - bigcal_tof_central
+
+            BIGCAL_TRACK_COIN_TIME(ntrack) = t - bigcal_track_tof_cor(ntrack)
 
 c     increment some efficiency sums:
             do irow=bigcal_all_clstr_iylo(i),
