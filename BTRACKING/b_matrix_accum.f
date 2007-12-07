@@ -32,6 +32,21 @@
       err=' '
 
 c     
+c$$$      mintdiff = 0.
+c$$$
+c$$$      if(ntrigb.gt.0) then
+c$$$         do i=1,ntrigb
+c$$$            if(i.eq.1.or.abs(gep_btime(i)-gep_btime_elastic).lt.mintdiff) then
+c$$$               btrigt = gep_btime(i)
+c$$$               mintdiff = abs(gep_btime(i)-gep_btime_elastic)
+c$$$            endif
+c$$$         enddo
+c$$$      else
+c$$$         btrigt = gep_btime_elastic
+c$$$      endif
+c$$$
+c$$$      breftime = bigcal_end_time - btrigt
+
       
       if(gen_bigcal_mc.ne.0.and.gen_bigcal_mc.ne.3) then
 c     for monte carlo-based calibration we are happy with using only events where there is one cluster
@@ -97,7 +112,7 @@ c$$$     $        bigcal_track_phirad(best)-gep_ephi_expect_h
          if(abs(bigcal_all_clstr_x(best)-gep_bx_expect_H).lt.
      $        gep_bcalib_cut_dx.and.abs(bigcal_all_clstr_y(best) - 
      $        gep_by_expect_H).lt.gep_bcalib_cut_dy.and.abs(
-     $        bigcal_track_time(best)-bigcal_window_center).lt.gep_bcalib_cut_ctime.and.
+     $        gep_ctime_hms-gep_ctime_cal).lt.gep_bcalib_cut_ctime.and.
      $        abs(gep_pel_htheta-gep_p_proton)/hpcentral.lt.gep_bcalib_cut_elastic
      $        .and.abs(bigcal_track_thetarad(best)-gep_etheta_expect_H).lt.
      $        gep_bcalib_cut_theta.and.abs(bigcal_track_phirad(best)-
