@@ -232,14 +232,23 @@ c      bigcal_prot_bad_clstr_flag(0) = 0
          bigcal_all_clstr_atot(i) = 0.
          bigcal_all_clstr_t8mean(i) = 0.
          bigcal_all_clstr_t8rms(i) = 0.
+         bigcal_all_clstr_t8cut(i) = 0.
+         bigcal_all_clstr_t8cut_cor(i) = 0.
          bigcal_all_clstr_t64mean(i) = 0.
          bigcal_all_clstr_t64rms(i) = 0.
+         bigcal_all_clstr_t64cut(i) = 0.
+         bigcal_all_clstr_t64cut_cor(i) = 0.
+         bigcal_all_clstr_chi2(i) = 0.
+         do j=1,6
+            bigcal_all_clstr_chi2contr(i,j) = 0.
+         enddo
          do j=1,bigcal_clstr_ncell_max
             bigcal_all_clstr_iycell(i,j) = 0
             bigcal_all_clstr_ixcell(i,j) = 0
             bigcal_all_clstr_ycell(i,j) = 0.
             bigcal_all_clstr_xcell(i,j) = 0.
             bigcal_all_clstr_ecell(i,j) = 0.
+            bigcal_all_clstr_acell(i,j) = 0.
             bigcal_clstr_bad_chan(i,j) = .false.
          enddo
          
@@ -247,6 +256,7 @@ c      bigcal_prot_bad_clstr_flag(0) = 0
             bigcal_all_clstr_nhit8(i,j) = 0
             bigcal_all_clstr_irow8(i,j) = 0
             bigcal_all_clstr_icol8(i,j) = 0
+            bigcal_all_clstr_s8(i,j) = 0.
             do k=1,8
                bigcal_all_clstr_tcell8(i,j,k) = 0.
             enddo
@@ -256,7 +266,7 @@ c      bigcal_prot_bad_clstr_flag(0) = 0
             bigcal_all_clstr_nhit64(i,j) = 0
             bigcal_all_clstr_irow64(i,j) = 0
             bigcal_all_clstr_icol64(i,j) = 0
-            bigcal_all_clstr_s8(i,j) = 0.
+            bigcal_all_clstr_sum64(i,j) = 0.
             do k=1,8
                bigcal_all_clstr_tcell64(i,j,k) = 0.
             enddo
@@ -289,6 +299,7 @@ c      bigcal_phideg = 0.
       bigcal_pz = 0.
       bigcal_beta = 0.
       bigcal_eloss = 0.
+      bigcal_tof_cor = 0.
       bigcal_tof = 0.
       bigcal_ctime = 0.
 
@@ -308,6 +319,7 @@ c      bigcal_phideg = 0.
         bigcal_track_pz(i) = 0.
         bigcal_track_beta(i) = 0.
         bigcal_track_tof(i) = 0.
+        bigcal_track_tof_cor(i) = 0.
         bigcal_track_coin_time(i) = 0.
       enddo
 
@@ -338,25 +350,38 @@ c     clear out cluster ntuple variables:
       nmax = 0
       do i=1,maxnclust
          ncellclust(i) = 0
+         ncellbad(i) = 0
+         ncellx(i) = 0
+         ncelly(i) = 0
          ncell8clust(i) = 0
          ncell64clust(i) = 0
          xmoment(i) = 0.
          ymoment(i) = 0.
          tclust8(i) = 0.
+         tcut8(i) = 0.
+         tcut8cor(i) = 0.
+         trms8(i) = 0.
          tclust64(i) = 0.
+         tcut64(i) = 0.
+         tcut64cor(i) = 0.
+         trms64(i) = 0.
          xclust(i) = 0.
          yclust(i) = 0.
          eclust(i) = 0.
+         aclust(i) = 0.
          do j=1,maxncellclust
             iycell(j,i) = 0
             ixcell(j,i) = 0
             xcell(j,i) = 0.
             ycell(j,i) = 0.
             eblock(j,i) = 0.
+            cellbad(j,i) = .false.
          enddo
          do j=1,10
             irow8hit(j,i) = 0
             icol8hit(j,i) = 0
+            nhit8clust(j,i) = 0
+            s8(j,i) = 0.
             do k=1,8
                tcell8(j,k,i) = 0.
             enddo
@@ -364,6 +389,9 @@ c     clear out cluster ntuple variables:
          do j=1,6
             irow64hit(j,i) = 0
             icol64hit(j,i) = 0
+            nhit64clust(j,i) = 0.
+            a64(j,i) = 0.
+            s64(j,i) = 0.
             do k=1,8
                tcell64(j,k,i) = 0.
             enddo
@@ -377,6 +405,10 @@ c     clear out cluster ntuple variables:
          py(i) = 0.
          pz(i) = 0.
          ctime_clust(i) = 0.
+         chi2clust(i) = 0.
+         do j=1,6
+            chi2contr(j,i) = 0.
+         enddo
          edge_max(i) = .false.
          not_enough(i) = .false.
          too_long_x(i) = .false.
@@ -385,6 +417,14 @@ c     clear out cluster ntuple variables:
          above_max(i) = .false.
          second_max(i) = .false.
       enddo
+
+      ngooda = 0
+      ngoodt = 0
+      ngoodta = 0
+      ngoodtt = 0
+      irowmax = 0
+      icolmax = 0
+      max_adc = 0.
 
 c     clear out monte carlo event info variables:
       
@@ -410,6 +450,7 @@ c     clear out monte carlo event info variables:
       Y_HMS = 0.
       TH_HMS = 0.
       PH_HMS = 0.
+      dPel_HMS = 0.
 
       return
       end
