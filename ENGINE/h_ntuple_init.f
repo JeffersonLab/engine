@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.11.18.5  2007/12/12 15:54:17  cdaq
+* added focal plane time to HMS ntuple
+*
 * Revision 1.11.18.4  2007/10/29 21:59:41  cdaq
 * Modifications to HMS ntuple for beam raster/bpm information (MKJ)
 *
@@ -177,6 +180,8 @@ c
       h_Ntuple_tag(m)= 'hsyptar'
       m= m+1
       h_Ntuple_tag(m)= 'hstart'
+      m= m+1
+      h_Ntuple_tag(m)= 'hsfptime'
       m= m+1
       h_Ntuple_tag(m)= 'eventID'
       m= m+1
