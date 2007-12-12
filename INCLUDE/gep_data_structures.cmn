@@ -83,6 +83,7 @@ c     coincidence timing window parameters (weed out background hits)
       real*4 GEP_E_electron ! scattered electron energy in GeV
       real*4 GEP_P_proton ! scattered proton momentum in GeV
       real*4 GEP_Pel_htheta ! proton momentum from spect. theta. assume elastic
+      real*4 GEP_Pel_btheta ! proton momentum from BigCal angle assume elastic (and correct angle for HMS vertex)
       real*4 GEP_delta_p ! proton p - p0 in %, where p0 is HMS central mom.
       real*4 GEP_xfp_p ! proton x at focal plane
       real*4 GEP_yfp_p ! proton y at focal plane
@@ -126,6 +127,7 @@ c     system for the polarization measurement.
      $     GEP_E_electron,
      $     GEP_P_proton,
      $     GEP_Pel_htheta,
+     $     GEP_Pel_btheta,
      $     GEP_delta_p,
      $     GEP_xptar_p,
      $     GEP_yptar_p,
