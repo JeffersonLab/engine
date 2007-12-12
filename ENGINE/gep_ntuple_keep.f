@@ -95,6 +95,8 @@
       m=m+1
       gep_ntuple_contents(m) = GEP_Pel_htheta
       m=m+1
+      gep_ntuple_contents(m) = GEP_Pel_btheta
+      m=m+1
       gep_ntuple_contents(m) = GEP_delta_p
       m=m+1
       gep_ntuple_contents(m) = GEP_xfp_p
