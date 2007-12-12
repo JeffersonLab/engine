@@ -23,6 +23,7 @@ c      logical last_time
       include 'bigcal_geometry.cmn'
       include 'bigcal_filenames.cmn'
       include 'bigcal_tof_parms.cmn'
+      include 'hms_data_structures.cmn'
       include 'gen_constants.par'
       include 'gen_units.par'
       include 'gen_scalers.cmn'
@@ -198,7 +199,8 @@ c         write(*,*) 'entering b_find_clusters'
 *     
       if(bbypass_calc_physics.eq.0.and.bbypass_find_clusters.eq.0) then
          
-         if(gen_event_type.ne.6) call b_calc_physics(ABORT,err)
+         if(gen_event_type.ne.6.or.(gen_event_type.eq.6.and.
+     $        hsnum_fptrack.eq.0)) call b_calc_physics(ABORT,err)
          if(ABORT) then
             call g_add_path(here,err)
             return
