@@ -75,7 +75,7 @@ c            nprot = nprot + 1
      $           float(bigcal_all_clstr_ncelly(i)),1.0)
             if(bid_bcal_xy.gt.0) call hf2(bid_bcal_xy,x,y,1.0)
             
-            t = BIGCAL_ALL_CLSTR_T8CUT_COR(i)
+            t = BIGCAL_ALL_CLSTR_T8CUT(i)
             
             if(bigcal_all_clstr_ncell8(i).gt.0) then
                if(bid_bcal_tmean.gt.0) call hf1(bid_bcal_tmean,t,1.0)
