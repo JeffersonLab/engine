@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.18.5  2007/12/12 15:53:53  cdaq
+* added focal plane time to ntuple
+*
 * Revision 1.10.18.4  2007/10/29 21:59:41  cdaq
 * Modifications to HMS ntuple for beam raster/bpm information (MKJ)
 *
@@ -146,6 +149,8 @@ c                                ! track with spectrometer ray
       h_Ntuple_contents(m)= HSYP_TAR
       m= m+1
       h_Ntuple_contents(m)= hstart_time
+      m= m+1
+      h_Ntuple_contents(m)= hstime_at_fp
       m= m+1
       h_Ntuple_contents(m)= float(gen_event_ID_number)
       m= m+1
