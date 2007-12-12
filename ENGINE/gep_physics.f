@@ -50,7 +50,8 @@ c      logical fixed_bigcal
       real etint
       real edx,edy,edz,ethetacorr,ephicorr,epathlength,mom_corr
       real gamma_corr,beta_corr,tof
-      real Q2_cal,Q2_hms,Q2_htheta,nu_htheta,pp_htheta
+      real Q2_cal,Q2_hms,Q2_htheta,nu_htheta,pp_htheta,pp_btheta
+      real nu_btheta
       real Ee_btheta 
       real hoffset_ctime,boffset_ctime,htrigt,btrigt,mindiff
 
@@ -143,7 +144,8 @@ c     in the self-timing peak for BigCal, and an earlier HMS time. But essential
 c     look for the BigCal cluster 16 ns before the HMS focal-plane time, because that is where our 
 c     elastics are:
 
-      tcal_hexpect = htrigt + hoffset_ctime - gep_htrig_delay
+c      tcal_hexpect = htrigt + hoffset_ctime - gep_htrig_delay
+      tcal_hexpect = hoffset_ctime
 
 c$$$      write(*,*) 'tcal_hexpect=',tcal_hexpect
 c$$$      write(*,*) 'hoffset_ctime=',hoffset_ctime
@@ -353,6 +355,8 @@ c     could get a "NaN" error here: check:
 
       Ee_btheta = gebeam / (1. + gebeam/Mp * (1. - cos(bigcal_thetarad)))
 
+      nu_btheta = gebeam - Ee_btheta
+      pp_btheta = sqrt(nu_btheta**2 + 2.*Mp*nu_btheta)
 c     compute Q2 three different ways:
 c     Q2_Cal uses only BigCal information except for hms vertex info
 c     Q2_hms uses only HMS information, period.
@@ -368,6 +372,7 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       GEP_E_electron = Eprime ! electron energy from HMS
       GEP_P_proton = hsp
       GEP_Pel_htheta = pp_htheta
+      GEP_Pel_btheta = pp_btheta
       GEP_delta_p = hsdelta
       GEP_xfp_p = HSX_FP
       GEP_yfp_p = HSY_FP
@@ -425,7 +430,8 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
             PH_cal = bigcal_track_phirad(itrack) + PI/2.
 
 
-            T_cal = bigcal_track_time(itrack) - bigcal_track_tof_cor(itrack)
+            T_cal = bigcal_track_time(itrack) - bigcal_track_tof_cor(itrack) -
+     $(bigcal_end_time - gep_btime_elastic)
             X_cal = bigcal_all_clstr_x(itrack)
             Y_cal = bigcal_all_clstr_y(itrack)
 
