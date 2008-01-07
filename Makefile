@@ -23,7 +23,7 @@ info:
 	@echo ROOTSYS = $(ROOTSYS)
 	@echo CERN_ROOT = $(CERN_ROOT)
 	@echo NFSDIRECTORY = $(NFSDIRECTORY)
-	@echo Using GCC $(gccversion) with CC = $(CC), CXX = $(CXX) and FC = $(FC)
+#	@echo Using GCC $(gccversion) with CC = $(CC), CXX = $(CXX) and FC = $(FC)
 	@echo
 btracking:
 	$(MAKE) -C BTRACKING
