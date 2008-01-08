@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.9  2008/01/08 22:43:13  cdaq
+* *** empty log message ***
+*
 * Revision 1.13.24.8  2007/10/19 14:54:58  cdaq
 * *** empty log message ***
 *
@@ -94,6 +97,8 @@
       INCLUDE 'gen_event_info.cmn'
       include 'gen_run_info.cmn'
       INCLUDE 'hack_.cmn'
+      include 'bigcal_data_structures.cmn'
+      include 'bigcal_bypass_switches.cmn'
 *     
       logical FAIL
       character*1024 why
@@ -147,6 +152,11 @@ c      IF(gen_event_type.ge.1 .and. gen_event_type.le.3) then  !HMS/SOS/COIN tri
 c$$$      if((gen_event_type.eq.1 .or. gen_event_type.eq.5 .or. 
 c$$$     $     gen_event_type.eq.6).and.gen_analyze_beamline.ne.0) then ! 1 = HMS singles, 5 = BigCal singles, 6 = HMS-BigCal coin.
         
+      if(b_suppress_annoying_pulser.ne.0.and.bigcal_annoying_pulser_event) then
+c         write(*,*) 'found annoying pulser event, skipping'
+         return
+      endif
+
       if(gen_event_type.ge.1.and.gen_event_type.le.8.and.gen_analyze_beamline
      $     .ne.0) then
          !write(*,*) 'calling g_trans_misc'

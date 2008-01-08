@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.15  2008/01/08 22:44:08  cdaq
+* *** empty log message ***
+*
 * Revision 1.32.20.14  2007/10/22 15:47:44  cdaq
 * *** empty log message ***
 *
@@ -192,6 +195,7 @@ cajp
 cajp
       include 'gep_hist_id.cmn'
 
+      integer*4 iannoyingpulser
       integer*4 pointer                 ! Pointer FB data word
       integer*4 banklength,maxwords
       integer*4 roc,subadd,slot,lastslot
@@ -518,6 +522,13 @@ c            write(*,*) 'did = fpp, decoding fpp data'
      $           maxwords, did, BIGCAL_TTRIG_MAXHITS, BIGCAL_TTRIG_NHIT,
      $           BIGCAL_TTRIG_IGROUP, BIGCAL_TTRIG_IHALF, 1,
      $           BIGCAL_TTRIG_TDC_RAW, 0,0,0)
+*     figure out if this is an annoying pulser event:
+            do iannoyingpulser=1,bigcal_ttrig_nhit
+              if(bigcal_ttrig_igroup(iannoyingpulser).eq.20.and.
+     $             bigcal_ttrig_ihalf(iannoyingpulser).eq.1) then
+                bigcal_annoying_pulser_event = .true.
+              endif
+            enddo
 
 *======================= HMISC ================================================
 
