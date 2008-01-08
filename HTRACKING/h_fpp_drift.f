@@ -228,14 +228,14 @@ c      write(*,*)'Drift type = ',hfpp_drift_type
           enddo
 9191      continue
 
-          if(drift_time_orig.gt.4000.0) drift_distance = H_FPP_BAD_DRIFT
           if(Set.eq.1) then
-		if(drift_time_orig.lt.10.0) drift_distance=0.0001
-		if(drift_time_orig.gt.350.0) drift_distance=1.05
+		if(drift_time_orig.lt.60.0) drift_distance=0.0001
+		if(drift_time_orig.gt.495.0) drift_distance=1.25
 	  else
-		if(drift_time_orig.lt.30.0) drift_distance=0.0001
-		if(drift_time_orig.gt.370.0) drift_distance=1.05
+		if(drift_time_orig.lt.75.0) drift_distance=0.0001
+		if(drift_time_orig.gt.495.0) drift_distance=1.25
 	  endif
+          if(drift_time_orig.gt.4000.0) drift_distance = H_FPP_BAD_DRIFT
           
           if (drift_distance.gt.hfpp_drift_Xmax) then
             drift_distance = hfpp_drift_Xmax
