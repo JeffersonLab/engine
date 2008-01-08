@@ -15,7 +15,8 @@
       character*1000 why
       character*80 filename
       integer*4 iochan
-      integer*4 i,j
+      integer*4 i,j,Nred
+      integer*4 irow,icol
       
       include 'gen_run_info.cmn'
       include 'bigcal_data_structures.cmn'
@@ -65,6 +66,50 @@ c     b_calib_matrix_filename is given, use that file. Otherwise, use a
 c     default filename of 'outfiles/bigcal_calib'
       
       if(bigcal_do_calibration.ne.0.and. .not. abort) then 
+c     count up the number of channels to calibrate for the reduced matrix:
+c$$$         Nred=0
+c$$$         if(bigcal_calib_iylo.ge.1.and.bigcal_calib_iylo.le.56.and.
+c$$$     $        bigcal_calib_iyhi.ge.1.and.bigcal_calib_iyhi.le.56.and.
+c$$$     $        bigcal_calib_iyhi.gt.bigcal_calib_iylo) then
+c$$$            if(bigcal_calib_ixlo(1).ge.1.and.bigcal_calib_ixlo(1).le.32
+c$$$     $           .and.bigcal_calib_ixhi(1).ge.1.and.bigcal_calib_ixhi(1)
+c$$$     $           .le.32.and.bigcal_calib_ixhi(1).gt.bigcal_calib_ixlo(1)) then
+c$$$               if(bigcal_calib_ixlo(2).ge.1.and.bigcal_calib_ixlo(2).le.30
+c$$$     $              .and.bigcal_calib_ixhi(2).ge.1.and.bigcal_calib_ixhi(2)
+c$$$     $              .le.30.and.bigcal_calib_ixhi(2).gt.bigcal_calib_ixlo(2)) then
+c$$$                  Nred=0
+c$$$                  
+c$$$                  do i=1,bigcal_all_maxhits
+c$$$                     if(i.le.1024) then
+c$$$                        irow = i/32 + 1
+c$$$                        icol = mod(i,32) + 1
+c$$$                     else
+c$$$                        j=i-1024
+c$$$                        irow = j/30 + 33
+c$$$                        icol = mod(j,30) + 1
+c$$$                     endif
+c$$$                     
+c$$$                     if(irow.ge.bigcal_calib_iylo.and.irow.le.bigcal_calib_iyhi) then
+c$$$                        if(irow.le.32) then
+c$$$                           if(icol.ge.bigcal_calib_ixlo(1).and.icol.le.bigcal_calib_ixhi(1)) then
+c$$$                              Nred = Nred + 1
+c$$$                           endif
+c$$$                        else
+c$$$                           if(icol.ge.bigcal_calib_ixlo(2).and.icol.le.bigcal_calib_ixhi(2)) then
+c$$$                              Nred = Nred + 1
+c$$$                           endif
+c$$$                        endif
+c$$$                        
+c$$$                     endif
+c$$$                  enddo
+c$$$               endif
+c$$$            endif
+c$$$         endif
+c$$$         
+c$$$         bigcal_Ncalib = Nred
+c$$$
+c$$$         write(*,*) 'Number of channels in reduced calibration matrix=',Nred
+         
          if(b_calib_matrix_filename.ne.' ') then
             filename = b_calib_matrix_filename
          

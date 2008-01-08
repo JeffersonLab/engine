@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.21  2008/01/08 22:50:36  cdaq
+* *** empty log message ***
+*
 * Revision 1.42.8.20  2007/11/10 20:17:56  brash
 * Added FPP information to the gep coincidence ntuple
 *
@@ -877,17 +880,20 @@ c
                        !write(*,*) 'about to call g_reconstruction, trying to locate segfault'
 c                       write(*,*) 'calling g_reconstruction, gen_event_type=',
 c     $                      gen_event_type
-                      call G_reconstruction(CRAW,ABORT,err) !COMMONs
-                      !write(*,*) 'g_reconstruction finished successfully, no segfault'
-                      physics_events = physics_events + 1
-                      if (gen_event_type .le. gen_max_trigger_types) then
+
+                       
+                       call G_reconstruction(CRAW,ABORT,err) !COMMONs
+                                !write(*,*) 'g_reconstruction finished successfully, no segfault'
+                       physics_events = physics_events + 1
+                       if (gen_event_type .le. gen_max_trigger_types) then
                           analyzed_events(gen_event_type)=analyzed_events(gen_event_type)+1
-                      endif
-                      if (gen_event_type.ne.0) sum_analyzed=sum_analyzed+1
-                      problems= problems .OR. ABORT
-                    else		!gen_event_type=0, scaler event
+                       endif
+                       if (gen_event_type.ne.0) sum_analyzed=sum_analyzed+1
+                       problems= problems .OR. ABORT
+                       
+                    else        !gen_event_type=0, scaler event
                     endif
-                  endif
+                 endif
 
                   if(mss.NE.' ' .and. err.NE.' ') then
                     call G_append(mss,' & '//err)
@@ -1064,6 +1070,8 @@ c...  Calibrate HMS and SOS calorimeters.
 c...  call to calibration routine for BigCal. 
       if(bigcal_do_calibration.ne.0) then
          write(*,*) '*****CALLING BIGCAL CALIBRATION*****'
+c         write(*,*) 'Nred=',bigcal_Ncalib
+c         call bigcal_calib(bigcal_Ncalib,abort,err)
          call bigcal_calib(abort,err)
       endif
 

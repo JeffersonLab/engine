@@ -105,11 +105,16 @@ c$$$      parameter(BIGCAL_CLSTR_NCELL_MIN=2)
 * 4 * 32 = 128 Prot. groups + 4 * 24 = 96 RCS groups = 224 + 38 trigger logic groups = 262 + master trigger signal = 263 TDC signals. All TDCs are in slots in the FB crate shared with the RCS ADCs
 * for now, we will only accommodate running with one trigger type for the 
 * calorimeter. 
-      
+ 
 *
 *     CTPTYPE=event
 *      
-*     the BigCal raw TDC signals: 
+*     the BigCal raw TDC signals:
+
+      logical bigcal_annoying_pulser_event
+      common/b_annoying_pulser/
+     $     bigcal_annoying_pulser_event
+ 
       integer*4 BIGCAL_TDC_RAW_IROW(BIGCAL_TDC_MAXHITS)
       integer*4 BIGCAL_TDC_RAW_IGROUP(BIGCAL_TDC_MAXHITS)
       integer*4 BIGCAL_TDC_RAW(BIGCAL_TDC_MAXHITS)
@@ -658,6 +663,24 @@ c     variables for BigCal ep (or MC) calibration:
      $     bigcal_matr_nsmalldiag,
      $     bigcal_matr_iempty,
      $     bigcal_matr_ismalld
+*
+*     CTPTYPE=parm
+*
+      integer*4 bigcal_Ncalib
+      integer*4 bigcal_calib_iylo
+      integer*4 bigcal_calib_iyhi
+      integer*4 bigcal_calib_ixlo(2)
+      integer*4 bigcal_calib_ixhi(2)
+      common/bigcal_calib_range/
+     $     bigcal_Ncalib,
+     $     bigcal_calib_iylo,
+     $     bigcal_calib_iyhi,
+     $     bigcal_calib_ixlo,
+     $     bigcal_calib_ixhi
+
+*
+*     CTPTYPE=event
+*
 
 c     variables for reading Protvino Monte Carlo events ('.dat' style output!!!)
       

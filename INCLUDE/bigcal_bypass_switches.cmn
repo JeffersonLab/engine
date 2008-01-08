@@ -19,6 +19,7 @@
       integer*4 bigcal_do_calibration
       integer*4 bigcal_min_calib_events
       integer*4 b_use_peds_in_hist
+      integer*4 b_suppress_annoying_pulser
 c      integer*4 bmake_tdc_hist
 c      integer*4 bmake_ttdc_hist
       integer*4 bluno ! logical unit number for debugging output
@@ -41,5 +42,6 @@ c      integer*4 bmake_ttdc_hist
      $     bigcal_do_calibration,
      $     bigcal_min_calib_events,
      $     b_use_peds_in_hist,
+     $     b_suppress_annoying_pulser,
      $     bluno
       
