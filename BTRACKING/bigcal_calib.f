@@ -13,17 +13,151 @@
       include 'bigcal_gain_parms.cmn'
       include 'bigcal_hist_id.cmn'
 
-      integer nempty,nsmalldiag,N,irow,icol,jrow,jcol,icell,jcell
-      integer ihit,jhit,i,j
+      integer nempty,nsmalldiag,N,irow,icol,jrow,jcol,icell,jcell,ismall,iempty
+      integer ihit,jhit,i,j,k
       integer iochan,iflag_matr
       
-      real*4 c_old,g_old
-      real*4 newavg
+      real*4 c_old,g_old,c_new,g_new
+      real*4 newavg,redavg
+      integer*4 Nred,ired,jred
+      real*4 bigcal_reduced_matrix(bigcal_all_maxhits,bigcal_all_maxhits)
+      real*4 bigcal_reduced_vector(bigcal_all_maxhits)
+      integer*4 bigcal_ivect(bigcal_all_maxhits)
+      integer*4 bigcal_imatr(bigcal_all_maxhits,bigcal_all_maxhits)
+      integer*4 bigcal_jmatr(bigcal_all_maxhits,bigcal_all_maxhits)
+      
+      logical fillhist
 
       character*80 filename
 
       logical abort
       character*(*) err
+
+c     build reduced matrix if parameters are set:
+
+c      write(*,*) 'building reduced matrix Nred=',Nred
+
+c      if(Nred.gt.0.and.Nred.le.bigcal_all_maxhits) then
+      Nred = 0
+      ired = 0
+      jred = 0
+      if(bigcal_calib_iylo.ge.1.and.bigcal_calib_iylo.le.56.and.
+     $     bigcal_calib_iyhi.ge.1.and.bigcal_calib_iyhi.le.56.and.
+     $     bigcal_calib_iyhi.gt.bigcal_calib_iylo) then
+         if(bigcal_calib_ixlo(1).ge.1.and.bigcal_calib_ixlo(1).le.32
+     $        .and.bigcal_calib_ixhi(1).ge.1.and.bigcal_calib_ixhi(1)
+     $        .le.32.and.bigcal_calib_ixhi(1).gt.bigcal_calib_ixlo(1)) then
+            if(bigcal_calib_ixlo(2).ge.1.and.bigcal_calib_ixlo(2).le.30
+     $           .and.bigcal_calib_ixhi(2).ge.1.and.bigcal_calib_ixhi(2)
+     $           .le.30.and.bigcal_calib_ixhi(2).gt.bigcal_calib_ixlo(2)) then
+c               ired=0
+               do i=1,bigcal_all_maxhits
+                  if(i.le.1024) then
+                     irow = i/32 + 1
+                     icol = mod(i,32) + 1
+                  else
+                     j=i-1024
+                     irow = j/30 + 33
+                     icol = mod(j,30) + 1
+                  endif
+                  
+                  if(irow.ge.bigcal_calib_iylo.and.irow.le.bigcal_calib_iyhi) then
+                     if(irow.le.32) then
+                        if(icol.ge.bigcal_calib_ixlo(1).and.icol.le.bigcal_calib_ixhi(1)) then
+                           ired = ired + 1
+c                           write(*,*) 'i,irow,icol,ired=',i,irow,icol,ired
+                           bigcal_reduced_vector(ired) = bigcal_vector(i)
+                           bigcal_ivect(ired) = i
+
+                           jred = 0
+                           do j=1,bigcal_all_maxhits
+                              if(j.le.1024) then
+                                 jrow = j/32 + 1
+                                 jcol = mod(j,32) + 1
+                              else
+                                 k = j - 1024
+                                 jrow = k/30 + 33
+                                 jcol = mod(k,30) + 1
+                              endif
+                              
+                              if(jrow.ge.bigcal_calib_iylo.and.jrow.le.bigcal_calib_iyhi) then
+                                 if(jrow.le.32) then
+                                    if(jcol.ge.bigcal_calib_ixlo(1).and.jcol.le.
+     $                                   bigcal_calib_ixhi(1)) then
+                                       jred = jred + 1
+c                                       write(*,*) 'j,jrow,jcol,jred=',j,jrow,jcol,jred
+                                       bigcal_reduced_matrix(ired,jred) = bigcal_matrix(i,j)
+                                       bigcal_imatr(ired,jred) = i
+                                       bigcal_jmatr(ired,jred) = j
+                                    endif
+                                 else
+                                    if(jcol.ge.bigcal_calib_ixlo(2).and.jcol.le.
+     $                                   bigcal_calib_ixhi(2)) then
+                                       jred = jred + 1
+c                                       write(*,*) 'j,jrow,jcol,jred=',j,jrow,jcol,jred
+                                       bigcal_reduced_matrix(ired,jred) = bigcal_matrix(i,j)
+                                       bigcal_imatr(ired,jred) = i
+                                       bigcal_jmatr(ired,jred) = j
+                                    endif
+                                 endif
+                              endif
+
+                           enddo
+c                           write(*,*) 'ired,jredFINAL=',ired,jred
+                        endif
+                     else
+                        if(icol.ge.bigcal_calib_ixlo(2).and.icol.le.bigcal_calib_ixhi(2)) then
+                           ired = ired + 1
+c                           write(*,*) 'i,irow,icol,ired=',i,irow,icol,ired
+                           bigcal_reduced_vector(ired) = bigcal_vector(i)
+                           bigcal_ivect(ired) = i
+
+                           jred = 0
+                           do j=1,bigcal_all_maxhits
+                              if(j.le.1024) then
+                                 jrow = j/32 + 1
+                                 jcol = mod(j,32) + 1
+                              else
+                                 k = j - 1024
+                                 jrow = k/30 + 33
+                                 jcol = mod(k,30) + 1
+                              endif
+                              
+                              if(jrow.ge.bigcal_calib_iylo.and.jrow.le.bigcal_calib_iyhi) then
+                                 if(jrow.le.32) then
+                                    if(jcol.ge.bigcal_calib_ixlo(1).and.jcol.le.
+     $                                   bigcal_calib_ixhi(1)) then
+                                       jred = jred + 1
+c                                       write(*,*) 'j,jrow,jcol,jred=',j,jrow,jcol,jred
+                                       bigcal_reduced_matrix(ired,jred) = bigcal_matrix(i,j)
+                                       bigcal_imatr(ired,jred) = i
+                                       bigcal_jmatr(ired,jred) = j
+                                    endif
+                                 else
+                                    if(jcol.ge.bigcal_calib_ixlo(2).and.jcol.le.
+     $                                   bigcal_calib_ixhi(2)) then
+                                       jred = jred + 1
+c                                       write(*,*) 'j,jrow,jcol,jred=',j,jrow,jcol,jred
+                                       bigcal_reduced_matrix(ired,jred) = bigcal_matrix(i,j)
+                                       bigcal_imatr(ired,jred) = i
+                                       bigcal_jmatr(ired,jred) = j
+                                    endif
+                                 endif
+                              endif
+                           enddo
+c                           write(*,*) 'ired,jredFINAL=',ired,jred
+                           
+                        endif
+                     endif
+                  endif
+               enddo
+c               write(*,*) 'iredFINAL=',ired
+               Nred = ired
+            endif
+         endif
+      endif
+
+      write(*,*) 'built reduced matrix Nred=',Nred
 
       abort = .false.
       err = ' '
@@ -70,6 +204,15 @@ c     before solving matrix, determine nempty, nsmall, and nsmalldiag per Kravts
 
          write(*,*) 'Ready to do calibration: nevent=',bigcal_nmatr_event
 
+         if(Nred.gt.0..and.Nred.le.bigcal_all_maxhits) then
+            write(*,*) 'using reduced calibration matrix:'
+            write(*,366) '(xlop,xhip,xlor,xhir,ylo,yhi)=(',bigcal_calib_ixlo(1),
+     $           ',',bigcal_calib_ixhi(1),',',bigcal_calib_ixlo(2),',',bigcal_calib_ixhi(2),
+     $           ',',bigcal_calib_iylo,',',bigcal_calib_iyhi
+
+ 366        format(A33,5(I3,A2),I3)
+            
+         endif
          do i=1,N
             bigcal_matr_iempty(i) = 0
             bigcal_matr_ismalld(i) = 0
@@ -82,26 +225,42 @@ c     before solving matrix, determine nempty, nsmall, and nsmalldiag per Kravts
 
 c         newavg = 0.
 
-         do i=1,N
-c            newavg = newavg + bigcal_vector(i)
+         ired = 1
 
+         do i=1,N
+c     newavg = newavg + bigcal_vector(i)
             if(bigcal_vector(i).eq.0.) then
                nempty = nempty + 1
                bigcal_matr_iempty(nempty) = i 
                bigcal_vector(i) = 1.
                bigcal_matrix(i,i) = 1.
+               
+               if(bigcal_ivect(ired).eq.i) then
+                  bigcal_reduced_vector(ired) = 1.
+                  bigcal_reduced_matrix(ired,ired) = 1.
+               endif
             endif
             
             if(bigcal_matrix(i,i).lt.0.1*bigcal_vector(i)) then
                nsmalldiag = nsmalldiag + 1
                bigcal_matr_ismalld(nsmalldiag) = i
                bigcal_vector(i) = 1.
+               if(bigcal_ivect(ired).eq.i) then
+                  bigcal_reduced_vector(ired) = 1.
+                  do jred=1,Nred
+                     bigcal_reduced_matrix(ired,jred) = 0.
+                     bigcal_reduced_matrix(jred,ired) = 0.
+                  enddo
+                  bigcal_reduced_matrix(ired,ired) = 1.
+               endif
                do j=1,N
                   bigcal_matrix(i,j) = 0.
                   bigcal_matrix(j,i) = 0.
                enddo
                bigcal_matrix(i,i) = 1.
             endif
+            
+            if(bigcal_ivect(ired).eq.i) ired = ired + 1
          enddo
 
 c         newavg = newavg / N
@@ -119,8 +278,24 @@ c         newavg = newavg / N
          enddo
 c     call cernlib routine to solve the system of equations:
 c     replaces "bigcal_vector" with the solution vector of coefficients
-         
+
          call rseqn(N,bigcal_matrix,N,iflag_matr,1,bigcal_vector)
+
+         if(Nred.gt.0.and.Nred.le.bigcal_all_maxhits) then
+            call rseqn(Nred,bigcal_reduced_matrix,N,iflag_matr,1,bigcal_reduced_vector)
+            
+            if(iflag_matr.ne.-1) then
+               ired = 1
+               do i=1,N
+                  if(i.eq.bigcal_ivect(ired)) then
+                     bigcal_vector(i) = bigcal_reduced_vector(ired)
+                     ired = ired + 1
+                  else
+                     bigcal_vector(i) = 1.
+                  endif
+               enddo   
+            endif
+         endif
 
          bigcal_matr_iflag = iflag_matr
          if(iflag_matr.eq.-1) then
@@ -159,57 +334,126 @@ c     --> cfac_new = cfac_old*gain_cor_old * Ccalculated
 c     --> gain_cor_new = 1
             
             newavg = 0.
+            redavg = 0.
+
+            ired = 1
+            ismall = 1
+            iempty = 1
 
             do i=1,bigcal_prot_maxhits
+               
+               fillhist = .true.
+               
+               if(bigcal_matr_ismalld(ismall).eq.i) then
+                  fillhist = .false.
+                  ismall = ismall + 1
+               endif
+
+               if(bigcal_matr_iempty(iempty).eq.i) then
+                  fillhist = .false.
+                  iempty = iempty + 1
+               endif
+
                c_old = bigcal_prot_cfac(i)
                g_old = bigcal_prot_gain_cor(i)
                
+               g_new = 1.
+               c_new = bigcal_vector(i) * c_old * g_old
+
                bigcal_prot_gain_cor(i) = 1.
                bigcal_prot_cfac(i) = bigcal_vector(i) * c_old * g_old
+
                if(bid_bcal_cfac_old.gt.0) call hf1(bid_bcal_cfac_old,
      $              float(i),c_old*g_old)
-               if(bid_bcal_cfac_new.gt.0) call hf1(bid_bcal_cfac_new,
-     $              float(i),bigcal_vector(i))
-               if(bid_bcal_oldxnew.gt.0) call hf1(bid_bcal_oldxnew,
-     $              float(i),bigcal_prot_cfac(i))
-               if(bid_bcal_cfac_dist.gt.0) call hf1(bid_bcal_cfac_dist,
-     $              bigcal_vector(i),1.)
+               
+c$$$               if(bid_bcal_oldxnew.gt.0) call hf1(bid_bcal_oldxnew,
+c$$$     $              float(i),bigcal_prot_cfac(i))
 
-               newavg = newavg + bigcal_prot_cfac(i)
+c$$$               if(.not.(Nred.gt.0.and.Nred.le.bigcal_all_maxhits)) then ! using full matrix
+c$$$                  if(bid_bcal_cfac_new.gt.0) call hf1(bid_bcal_cfac_new,
+c$$$     $                 float(i),bigcal_vector(i))
+c$$$                  if(bid_bcal_cfac_dist.gt.0) call hf1(bid_bcal_cfac_dist,
+c$$$     $                 bigcal_vector(i),1.)
+c$$$               endif
 
+               newavg = newavg + c_new
+               if(i.eq.bigcal_ivect(ired)) then
+                  redavg = redavg + c_new
+                  ired = ired + 1
+                  if(bid_bcal_cfac_new.gt.0.and.fillhist) call hf1(bid_bcal_cfac_new,
+     $                 float(i),bigcal_vector(i))
+                  if(bid_bcal_cfac_dist.gt.0.and.fillhist) call hf1(bid_bcal_cfac_dist,
+     $                 bigcal_vector(i),1.)
+               endif
             enddo
             
             do i=1,bigcal_rcs_maxhits
+               fillhist = .true.
+               if(bigcal_matr_ismalld(ismall).eq.i+1024) then
+                  fillhist = .false.
+                  ismall = ismall + 1
+               endif
+               
+               if(bigcal_matr_iempty(iempty).eq.i+1024) then
+                  fillhist = .false.
+                  iempty = iempty + 1
+               endif
+
                c_old = bigcal_rcs_cfac(i)
                g_old = bigcal_rcs_gain_cor(i)
                
                bigcal_rcs_gain_cor(i) = 1.
                bigcal_rcs_cfac(i) = bigcal_vector(i+bigcal_prot_maxhits) * 
      $              c_old * g_old
+
+               g_new = 1.
+               c_new = bigcal_vector(i+bigcal_prot_maxhits) * c_old * g_old
+
                if(bid_bcal_cfac_old.gt.0) call hf1(bid_bcal_cfac_old,
      $              float(i+bigcal_prot_maxhits),c_old*g_old)
-               if(bid_bcal_cfac_new.gt.0) call hf1(bid_bcal_cfac_new,
-     $              float(i+bigcal_prot_maxhits),bigcal_vector(i+bigcal_prot_maxhits))
-               if(bid_bcal_oldxnew.gt.0) call hf1(bid_bcal_oldxnew,
-     $              float(i+bigcal_prot_maxhits),bigcal_rcs_cfac(i))
-               if(bid_bcal_cfac_dist.gt.0) call hf1(bid_bcal_cfac_dist,
-     $              bigcal_vector(i+bigcal_prot_maxhits),1.)
+               
+c$$$               if(bid_bcal_oldxnew.gt.0) call hf1(bid_bcal_oldxnew,
+c$$$     $              float(i+bigcal_prot_maxhits),bigcal_rcs_cfac(i))
 
-               newavg = newavg + bigcal_rcs_cfac(i)
+c$$$               if(bid_bcal_cfac_new.gt.0) call hf1(bid_bcal_cfac_new,
+c$$$     $              float(i+bigcal_prot_maxhits),bigcal_vector(i+bigcal_prot_maxhits))
+c$$$
+c$$$               if(bid_bcal_cfac_dist.gt.0) call hf1(bid_bcal_cfac_dist,
+c$$$     $              bigcal_vector(i+bigcal_prot_maxhits),1.)
 
+               newavg = newavg + c_new
+               if(i + bigcal_prot_maxhits.eq.bigcal_ivect(ired)) then
+                  redavg = redavg + c_new
+                  ired = ired + 1
+
+                  if(bid_bcal_cfac_new.gt.0.and.fillhist) call hf1(bid_bcal_cfac_new,
+     $                 float(i+bigcal_prot_maxhits),bigcal_vector(i+bigcal_prot_maxhits))
+                  
+                  if(bid_bcal_cfac_dist.gt.0.and.fillhist) call hf1(bid_bcal_cfac_dist,
+     $                 bigcal_vector(i+bigcal_prot_maxhits),1.)
+                  
+               endif
             enddo
             
             newavg = newavg / bigcal_all_maxhits
+            redavg = redavg / Nred
 
 c     replace "empty" and "small diag." channels with the average new calibration constant:
+c     also replace any channels that aren't in the reduced calib. matrix with the reduced avg.
 
             do i=1,nsmalldiag
                icell = bigcal_matr_ismalld(i)
 
                if(icell.le.bigcal_prot_maxhits) then
                   bigcal_prot_cfac(icell) = newavg
+                  if(Nred.gt.0.and.Nred.le.bigcal_all_maxhits) then
+                     bigcal_prot_cfac(icell) = redavg
+                  endif
                else 
                   bigcal_rcs_cfac(icell-bigcal_prot_maxhits) = newavg
+                  if(Nred.gt.0.and.Nred.le.bigcal_all_maxhits) then
+                     bigcal_rcs_cfac(icell-bigcal_prot_maxhits) = redavg
+                  endif
                endif
             enddo
                
@@ -217,10 +461,45 @@ c     replace "empty" and "small diag." channels with the average new calibratio
                icell = bigcal_matr_iempty(i)
                if(icell.le.bigcal_prot_maxhits) then
                   bigcal_prot_cfac(icell) = newavg
+                  if(Nred.gt.0.and.Nred.le.bigcal_all_maxhits) then
+                     bigcal_prot_cfac(icell) = redavg
+                  endif
                else
                   bigcal_rcs_cfac(icell-bigcal_prot_maxhits) = newavg
+                  if(Nred.gt.0.and.Nred.le.bigcal_all_maxhits) then
+                     bigcal_rcs_cfac(icell-bigcal_prot_maxhits) = redavg
+                  endif
                endif
             enddo
+
+c     also replace any channels outside of the specified range with the average of channels calibrated 
+c     using the reduced matrix. 
+
+            ired=1
+
+            do i=1,N
+               if(i.eq.bigcal_ivect(ired)) then
+                  ired = ired + 1
+               else
+                  if(i.le.1024) then
+                     bigcal_prot_cfac(i) = redavg
+                  else
+                     bigcal_rcs_cfac(i-1024) = redavg
+                  endif
+               endif
+            enddo
+
+c     now that all the "empty" and "small diagonal" channels have been replaced with the appropriate averages,
+c     fill the histograms with the new calibration constants:
+            if(bid_bcal_oldxnew.gt.0) then
+               do i=1,bigcal_all_maxhits
+                  if(i.le.1024) then
+                     call hf1(bid_bcal_oldxnew,float(i),bigcal_prot_cfac(i))
+                  else
+                     call hf1(bid_bcal_oldxnew,float(i),bigcal_rcs_cfac(i-1024))
+                  endif
+               enddo
+            endif
 
             write(iochan,*) 'bigcal_prot_cfac = '
             
