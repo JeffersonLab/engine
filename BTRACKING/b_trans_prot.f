@@ -54,8 +54,13 @@
           if(bid_bcal_row.gt.0) call hf1(bid_bcal_row,float(irow),1.0)
           if(bid_bcal_col.gt.0) call hf1(bid_bcal_col,float(icol),1.0)
           if(bid_bcal_rowcol.gt.0) call hf2(bid_bcal_rowcol,float(icol),float(irow),1.0)
-          if(bid_badc(icell).gt.0.and.b_use_peds_in_hist.eq.0) then
-             call hf1(bid_badc(icell),bigcal_prot_adc_good(ihit),1.0)
+          if(bid_badc(icell).gt.0.and.b_use_peds_in_hist.le.0) then
+             if(b_use_peds_in_hist.eq.0) then
+                call hf1(bid_badc(icell),bigcal_prot_adc_good(ihit),1.0)
+             else
+                call hf1(bid_badc(icell),bigcal_prot_adc_good(ihit)+
+     $               bigcal_prot_ped_mean(icell),1.)
+             endif
           endif
 *     question of whether to group by hits or cells. 
 *     seems most logical and efficient to go by hits only and not 
