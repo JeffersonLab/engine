@@ -18,6 +18,9 @@
 * for each signal.
 *
 * $Log$
+* Revision 1.7.24.1  2008/01/08 22:59:42  cdaq
+* removed cut on Cerenkov
+*
 * Revision 1.7  1999/11/04 20:36:01  saw
 * Linux/G77 compatibility fixes
 *
@@ -63,7 +66,10 @@
 
 *     In some circumstances you might also cut on
 *     hcer_npe_sum and/or hsshtrk:
-      if (hsnum_pmt_hit.ge.4 .and. hsnum_pmt_hit.le.12 .and. hcer_npe_sum.gt.2) then
+      if (hsnum_pmt_hit.ge.4 .and. hsnum_pmt_hit.le.12) then
+      
+*     .and. hcer_npe_sum.gt.2) then
+
         betap=1.
         write(37,111) hsnum_pmt_hit,hsx_fp,hsxp_fp,
      $       hsy_fp,hsyp_fp,betap
