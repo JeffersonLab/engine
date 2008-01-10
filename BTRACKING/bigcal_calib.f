@@ -19,6 +19,7 @@
       
       real*4 c_old,g_old,c_new,g_new
       real*4 newavg,redavg
+      integer*4 nnewavg,nredavg
       integer*4 Nred,ired,jred
       real*4 bigcal_reduced_matrix(bigcal_all_maxhits,bigcal_all_maxhits)
       real*4 bigcal_reduced_vector(bigcal_all_maxhits)
@@ -53,12 +54,12 @@ c      if(Nred.gt.0.and.Nred.le.bigcal_all_maxhits) then
 c               ired=0
                do i=1,bigcal_all_maxhits
                   if(i.le.1024) then
-                     irow = i/32 + 1
-                     icol = mod(i,32) + 1
+                     irow = (i-1)/32 + 1
+                     icol = mod(i-1,32) + 1
                   else
                      j=i-1024
-                     irow = j/30 + 33
-                     icol = mod(j,30) + 1
+                     irow = (j-1)/30 + 33
+                     icol = mod(j-1,30) + 1
                   endif
                   
                   if(irow.ge.bigcal_calib_iylo.and.irow.le.bigcal_calib_iyhi) then
@@ -72,12 +73,12 @@ c                           write(*,*) 'i,irow,icol,ired=',i,irow,icol,ired
                            jred = 0
                            do j=1,bigcal_all_maxhits
                               if(j.le.1024) then
-                                 jrow = j/32 + 1
-                                 jcol = mod(j,32) + 1
+                                 jrow = (j-1)/32 + 1
+                                 jcol = mod(j-1,32) + 1
                               else
                                  k = j - 1024
-                                 jrow = k/30 + 33
-                                 jcol = mod(k,30) + 1
+                                 jrow = (k-1)/30 + 33
+                                 jcol = mod(k-1,30) + 1
                               endif
                               
                               if(jrow.ge.bigcal_calib_iylo.and.jrow.le.bigcal_calib_iyhi) then
@@ -115,12 +116,12 @@ c                           write(*,*) 'i,irow,icol,ired=',i,irow,icol,ired
                            jred = 0
                            do j=1,bigcal_all_maxhits
                               if(j.le.1024) then
-                                 jrow = j/32 + 1
-                                 jcol = mod(j,32) + 1
+                                 jrow = (j-1)/32 + 1
+                                 jcol = mod(j-1,32) + 1
                               else
                                  k = j - 1024
-                                 jrow = k/30 + 33
-                                 jcol = mod(k,30) + 1
+                                 jrow = (k-1)/30 + 33
+                                 jcol = mod(k-1,30) + 1
                               endif
                               
                               if(jrow.ge.bigcal_calib_iylo.and.jrow.le.bigcal_calib_iyhi) then
@@ -336,6 +337,9 @@ c     --> gain_cor_new = 1
             newavg = 0.
             redavg = 0.
 
+            nnewavg = 0
+            nredavg = 0
+            
             ired = 1
             ismall = 1
             iempty = 1
@@ -353,6 +357,9 @@ c     --> gain_cor_new = 1
                   fillhist = .false.
                   iempty = iempty + 1
                endif
+
+               irow = (i-1)/32 + 1
+               icol = mod(i-1,32) + 1
 
                c_old = bigcal_prot_cfac(i)
                g_old = bigcal_prot_gain_cor(i)
@@ -377,17 +384,27 @@ c$$$     $                 bigcal_vector(i),1.)
 c$$$               endif
 
                newavg = newavg + c_new
+               nnewavg = nnewavg + 1
                if(i.eq.bigcal_ivect(ired)) then
-                  redavg = redavg + c_new
                   ired = ired + 1
-                  if(bid_bcal_cfac_new.gt.0.and.fillhist) call hf1(bid_bcal_cfac_new,
-     $                 float(i),bigcal_vector(i))
-                  if(bid_bcal_cfac_dist.gt.0.and.fillhist) call hf1(bid_bcal_cfac_dist,
-     $                 bigcal_vector(i),1.)
+                  if(irow.ne.bigcal_calib_iylo.and.irow.ne.bigcal_calib_iyhi.and.
+     $                 icol.ne.bigcal_calib_ixlo(1).and.icol.ne.bigcal_calib_ixhi(1)) then
+                     if(bid_bcal_cfac_new.gt.0.and.fillhist) call hf1(bid_bcal_cfac_new,
+     $                    float(i),bigcal_vector(i))
+                     if(bid_bcal_cfac_dist.gt.0.and.fillhist) call hf1(bid_bcal_cfac_dist,
+     $                    bigcal_vector(i),1.)
+                  
+                     redavg = redavg + c_new
+                     nredavg = nredavg + 1
+                  endif
                endif
             enddo
             
             do i=1,bigcal_rcs_maxhits
+
+               irow = (i-1)/30 + 33
+               icol = mod(i-1,30) + 1
+
                fillhist = .true.
                if(bigcal_matr_ismalld(ismall).eq.i+1024) then
                   fillhist = .false.
@@ -422,21 +439,25 @@ c$$$               if(bid_bcal_cfac_dist.gt.0) call hf1(bid_bcal_cfac_dist,
 c$$$     $              bigcal_vector(i+bigcal_prot_maxhits),1.)
 
                newavg = newavg + c_new
+               nnewavg = nnewavg + 1
                if(i + bigcal_prot_maxhits.eq.bigcal_ivect(ired)) then
-                  redavg = redavg + c_new
+                  
                   ired = ired + 1
-
-                  if(bid_bcal_cfac_new.gt.0.and.fillhist) call hf1(bid_bcal_cfac_new,
-     $                 float(i+bigcal_prot_maxhits),bigcal_vector(i+bigcal_prot_maxhits))
-                  
-                  if(bid_bcal_cfac_dist.gt.0.and.fillhist) call hf1(bid_bcal_cfac_dist,
-     $                 bigcal_vector(i+bigcal_prot_maxhits),1.)
-                  
+                  if(irow.ne.bigcal_calib_iylo.and.irow.ne.bigcal_calib_iyhi.and.
+     $                 icol.ne.bigcal_calib_ixlo(2).and.icol.ne.bigcal_calib_ixhi(2)) then
+                     if(bid_bcal_cfac_new.gt.0.and.fillhist) call hf1(bid_bcal_cfac_new,
+     $                    float(i+bigcal_prot_maxhits),bigcal_vector(i+bigcal_prot_maxhits))
+                     
+                     if(bid_bcal_cfac_dist.gt.0.and.fillhist) call hf1(bid_bcal_cfac_dist,
+     $                    bigcal_vector(i+bigcal_prot_maxhits),1.)
+                     redavg = redavg + c_new
+                     nredavg = nredavg + 1
+                  endif
                endif
             enddo
             
-            newavg = newavg / bigcal_all_maxhits
-            redavg = redavg / Nred
+            newavg = newavg / nnewavg 
+            redavg = redavg / nredavg
 
 c     replace "empty" and "small diag." channels with the average new calibration constant:
 c     also replace any channels that aren't in the reduced calib. matrix with the reduced avg.
@@ -480,6 +501,30 @@ c     using the reduced matrix.
             do i=1,N
                if(i.eq.bigcal_ivect(ired)) then
                   ired = ired + 1
+                  if(i.le.1024) then
+                     irow= (i-1)/32 + 1
+                     icol= mod(i-1,32) + 1
+                     if(irow.eq.bigcal_calib_iylo.or.irow.eq.bigcal_calib_iyhi.or.
+     $                    icol.eq.bigcal_calib_ixlo(1).or.icol.eq.bigcal_calib_ixhi(1)) then
+                        bigcal_prot_cfac(i) = redavg
+                     endif
+                     
+                     if(bigcal_prot_cfac(i).lt..05*redavg.or.bigcal_prot_cfac(i).gt.20.*redavg) then
+                        bigcal_prot_cfac(i) = redavg
+                     endif
+                  else
+                     irow=(i-1025)/30 + 33
+                     icol=mod(i-1025,30) + 1
+                     if(irow.eq.bigcal_calib_iylo.or.irow.eq.bigcal_calib_iyhi.or.
+     $                    icol.eq.bigcal_calib_ixlo(2).or.icol.eq.bigcal_calib_ixhi(2)) then
+                        bigcal_rcs_cfac(i-1024) = redavg
+                     endif
+                     
+                     if(bigcal_rcs_cfac(i-1024).lt..05*redavg.or.bigcal_rcs_cfac(i-1024).gt.20.*redavg) then
+                        bigcal_rcs_cfac(i-1024) = redavg
+                     endif
+
+                  endif
                else
                   if(i.le.1024) then
                      bigcal_prot_cfac(i) = redavg
