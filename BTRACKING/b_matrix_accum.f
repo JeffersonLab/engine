@@ -93,9 +93,10 @@ c     check rough position agreement (cell positions only! reconstructed positio
             endif              
          endif
          ! this was called from GEp reconstruction after selection of best track!!!
-      else if(bigcal_all_nclstr.ge.1.and.hsnum_fptrack.gt.0.and.
-     $        gen_event_trigtype(5).eq.1) then
+c$$$      else if(bigcal_all_nclstr.ge.1.and.hsnum_fptrack.gt.0.and.
+c$$$     $        gen_event_trigtype(5).eq.1) then
 c         Ee = gebeam - gep_Q2_H / (2.*.938272) ! E' = E - Q^2/2Mp, Q^2 as measured by HMS
+      else if(bigcal_all_nclstr.ge.1.and.hsnum_fptrack.gt.0) then
          Ee = gep_E_electron
          best = bigcal_itrack_best
          
