@@ -12,7 +12,7 @@
       real mindiff
 
       xshift = BIGCAL_PROT_SHIFT_X
-      yshift = BIGCAL_PROT_SHIFT_Y
+      yshift = BIGCAL_PROT_SHIFT_Y + bigcal_height
 
       xsize = BIGCAL_PROT_SIZE_X
       ysize = BIGCAL_PROT_SIZE_Y
@@ -32,7 +32,7 @@
       enddo
 
       xshift = BIGCAL_RCS_SHIFT_X
-      yshift = BIGCAL_RCS_SHIFT_Y
+      yshift = BIGCAL_RCS_SHIFT_Y + bigcal_height
 
       xsize = BIGCAL_RCS_SIZE_X
       ysize = BIGCAL_RCS_SIZE_Y

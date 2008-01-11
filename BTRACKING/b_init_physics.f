@@ -17,7 +17,7 @@
       abort=.false.
       err=' '
 
-      BIGCAL_HEIGHT = 0.
+c     BIGCAL_HEIGHT = 0.
       BIGCAL_THETA_RAD = BIGCAL_THETA_DEG * tt / 180.
       
       BIGCAL_SINTHETA = sin(BIGCAL_THETA_RAD)
