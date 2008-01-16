@@ -6,6 +6,9 @@
 * g_trans_misc fills the gen_decoded_misc common block
 *
 * $Log$
+* Revision 1.2.24.6  2008/01/16 18:57:54  cdaq
+* miscellaneous minor fixes
+*
 * Revision 1.2.24.5  2007/11/29 18:33:05  cdaq
 * commented out diagnostic message
 *
@@ -34,6 +37,7 @@
       include 'gen_data_structures.cmn'
       include 'gep_data_structures.cmn'
       include 'gep_hist_id.cmn'
+      include 'gen_event_info.cmn'
 
       logical abort
       character*(*) errmsg
@@ -126,5 +130,19 @@ c     $           gmisc_raw_data(ihit)
       ntrigH2 = nH2
       ntrigB =  nB
 
+      if(gepid_gep_ntrig_h1.gt.0) call hf1(gepid_gep_ntrig_h1,float(ntrigH1),1.)
+      if(gepid_gep_ntrig_h2.gt.0) call hf1(gepid_gep_ntrig_h2,float(ntrigH2),1.)
+      if(gepid_gep_ntrig_bigcal.gt.0) call hf1(gepid_gep_ntrig_bigcal,float(ntrigB),1.)
+
+      if(gepid_gep_coin1_times.gt.0.and.ntrigH1.gt.0.and.gen_event_trigtype(4)
+     $     .eq.1.and.ntrigB.gt.0) then
+         call hf2(gepid_gep_coin1_times,GEP_Btime(1),GEP_H1time(1),1.)
+      endif
+      
+      if(gepid_gep_coin2_times.gt.0.and.ntrigH2.gt.0.and.gen_event_trigtype(5)
+     $     .eq.1.and.ntrigB.gt.0) then
+         call hf2(gepid_gep_coin2_times,GEP_Btime(1),GEP_H2time(1),1.)
+      endif
+      
       return
       end

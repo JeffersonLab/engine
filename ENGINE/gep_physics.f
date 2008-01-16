@@ -144,8 +144,8 @@ c     in the self-timing peak for BigCal, and an earlier HMS time. But essential
 c     look for the BigCal cluster 16 ns before the HMS focal-plane time, because that is where our 
 c     elastics are:
 
-      tcal_hexpect = htrigt + hoffset_ctime - gep_htrig_delay
-c      tcal_hexpect = hoffset_ctime
+c      tcal_hexpect = htrigt + hoffset_ctime - gep_htrig_delay
+      tcal_hexpect = hoffset_ctime
 
 c$$$      write(*,*) 'tcal_hexpect=',tcal_hexpect
 c$$$      write(*,*) 'hoffset_ctime=',hoffset_ctime

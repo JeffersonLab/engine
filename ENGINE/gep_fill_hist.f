@@ -21,19 +21,19 @@
       abort = .false.
       err= ' '
 
-      if(gepid_gep_coin1_times.gt.0.and.ntrigH1.gt.0.and.gen_event_trigtype(4)
-     $     .eq.1.and.ntrigB.gt.0) then
-         call hf2(gepid_gep_coin1_times,GEP_Btime(1),GEP_H1time(1),1.)
-      endif
-      
-      if(gepid_gep_coin2_times.gt.0.and.ntrigH2.gt.0.and.gen_event_trigtype(5)
-     $     .eq.1.and.ntrigB.gt.0) then
-         call hf2(gepid_gep_coin2_times,GEP_Btime(1),GEP_H2time(1),1.)
-      endif
+c$$$      if(gepid_gep_coin1_times.gt.0.and.ntrigH1.gt.0.and.gen_event_trigtype(4)
+c$$$     $     .eq.1.and.ntrigB.gt.0) then
+c$$$         call hf2(gepid_gep_coin1_times,GEP_Btime(1),GEP_H1time(1),1.)
+c$$$      endif
+c$$$      
+c$$$      if(gepid_gep_coin2_times.gt.0.and.ntrigH2.gt.0.and.gen_event_trigtype(5)
+c$$$     $     .eq.1.and.ntrigB.gt.0) then
+c$$$         call hf2(gepid_gep_coin2_times,GEP_Btime(1),GEP_H2time(1),1.)
+c$$$      endif
 
-      if(gepid_gep_ntrig_h1.gt.0) call hf1(gepid_gep_ntrig_h1,float(ntrigH1),1.)
-      if(gepid_gep_ntrig_h2.gt.0) call hf1(gepid_gep_ntrig_h2,float(ntrigH2),1.)
-      if(gepid_gep_ntrig_bigcal.gt.0) call hf1(gepid_gep_ntrig_bigcal,float(ntrigB),1.)
+c$$$      if(gepid_gep_ntrig_h1.gt.0) call hf1(gepid_gep_ntrig_h1,float(ntrigH1),1.)
+c$$$      if(gepid_gep_ntrig_h2.gt.0) call hf1(gepid_gep_ntrig_h2,float(ntrigH2),1.)
+c$$$      if(gepid_gep_ntrig_bigcal.gt.0) call hf1(gepid_gep_ntrig_bigcal,float(ntrigB),1.)
       
       if(abs(hsdelta).lt.10..and.abs(hsp-gep_pel_htheta)/hpcentral .lt..1.and.
      $     bigcal_itrack_best.gt.0) then
