@@ -30,20 +30,20 @@ c      write(*,*) 'bigcal_rcs_cfac=',bigcal_rcs_cfac
 c     initialize ped_limit:
       do i=1,bigcal_all_maxhits
          if(i.le.1024) then
-            bigcal_prot_ped_limit(i) = 1000
+            bigcal_prot_ped_limit(i) = 1500
             
            
          else
 c     write(*,*) 'rcs ped limit(',i-1024,')=',bigcal_rcs_ped_limit(i-1024)
             
-            bigcal_rcs_ped_limit(i-1024) = 1000
+            bigcal_rcs_ped_limit(i-1024) = 1500
 
 c     write(*,*) 'rcs ped limit(',i-1024,')=',bigcal_rcs_ped_limit(i-1024)
          endif
       enddo
 c     trigger ADCs have WIDE pedestals (summing effect of all the noise)
       do i=1,bigcal_atrig_maxhits
-         bigcal_trig_ped_limit(i) = 1200
+         bigcal_trig_ped_limit(i) = 1500
          bigcal_trig_cfac(i) = 1. ! don't use anything other than 1. for the trigger
          bigcal_trig_gain_cor(i) = 1.
       enddo
