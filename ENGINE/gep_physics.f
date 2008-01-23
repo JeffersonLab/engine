@@ -54,6 +54,8 @@ c      logical fixed_bigcal
       real nu_btheta
       real Ee_btheta 
       real hoffset_ctime,boffset_ctime,htrigt,btrigt,mindiff
+      real E0_2body
+      real a,b,c
 
       real Mp
       parameter(Mp=.938272)
@@ -294,7 +296,6 @@ c     this routine should only get called once per event!!!!!!!!!!!!!!!!
       ibest_cal = pick_best_cal_track(tcal_hexpect,gep_etheta_expect_h,
      $     gep_ephi_expect_h,gep_bx_expect_h,gep_by_expect_h,Ecal_hexpect)
 
-      
 
 
 c     now compute "missing" quantities using the track we have selected.
@@ -361,7 +362,12 @@ c     compute Q2 three different ways:
 c     Q2_Cal uses only BigCal information except for hms vertex info
 c     Q2_hms uses only HMS information, period.
       Q2_cal = 2.*gebeam*Ee_btheta*(1.-cos(bigcal_thetarad))
-      Q2_hms = 2.*Mp*nu
+      Q2_hms = 2.*Mp*nu ! HMS only
+
+      E0_2body = .5* (nu + sqrt(max(0.,nu**2 + 2.*Q2_hms / (1. - cos(bigcal_thetarad)))))
+
+      GEP_Ebeam_two_body = E0_2body
+      
 c     what is the average Q2? Both measurements are very good, except for bigcal_energy
 c     best is probably to use Eprime calculated from hsp, but use BigCal angle measurement
 c     corrected for HMS vertex info. Q2 from Ebeam, hsp alone (Q2_hms) may be even better than this. 
