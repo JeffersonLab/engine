@@ -110,6 +110,8 @@
       m=m+1
       gep_ntuple_tag(m) = 'Pel_btheta' ! elastic proton momentum for btheta
       m=m+1
+      gep_ntuple_tag(m) = 'E0_2body' ! beam energy from elastic kinematics
+      m=m+1
       gep_ntuple_tag(m) = 'delta' ! (p-p0)/p0 in %
       m=m+1
       gep_ntuple_tag(m) = 'xfp'! x at the focal plane for proton.
