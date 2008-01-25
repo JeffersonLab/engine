@@ -9,6 +9,9 @@
 *
 * modifications:
 * $Log$
+* Revision 1.21.6.1  2008/01/25 19:28:34  cdaq
+* fixed HSTART calculation
+*
 * Revision 1.21  2005/03/15 21:08:08  jones
 * Add code to filter the scintillator tdc hits and group them by time. ( P. Bosted)
 *
@@ -79,6 +82,9 @@
 * Revision 1.1  1994/02/19  06:21:37  cdaq
 * Initial revision
 *
+* 1/23/08 pyb added "invadc" option, and also
+*             don't use hits is sigma>2 nsec
+*             (this is a way to turn off S0 in Gep-III)
 *--------------------------------------------------------
 
       implicit none
@@ -108,7 +114,7 @@
       real*4 postime(hmax_scin_hits)
       real*4 negtime(hmax_scin_hits)
       logical goodtime(hnum_scin_planes)
-      integer timehist(200),i,j,jmax,maxhit,nfound
+      integer timehist(200),i,j,jmax,maxhit,nfound,ncall/0/
       real*4 time_pos(1000),time_neg(1000),tmin,time_tolerance
       logical keep_pos(1000),keep_neg(1000),first/.true./
       save
@@ -153,7 +159,8 @@
 !       reference particle, need to make sure this is big enough
 !       to accomodate difference in TOF for other particles
 ! Default value in case user hasnt definedd something reasonable
-      time_tolerance=3.0
+! 1/23/08 pyb increased default from 3.0 to 10.0
+      time_tolerance=10.0
       if(htof_tolerance.gt.0.5.and.htof_tolerance.lt.10000.) then
          time_tolerance=htof_tolerance
       endif
@@ -176,20 +183,44 @@
         if ((hscin_tdc_pos(ihit) .ge. hscin_tdc_min) .and.
      1      (hscin_tdc_pos(ihit) .le. hscin_tdc_max) .and.
      2      (hscin_tdc_neg(ihit) .ge. hscin_tdc_min) .and.
-     3      (hscin_tdc_neg(ihit) .le. hscin_tdc_max)) then
+     3      (hscin_tdc_neg(ihit) .le. hscin_tdc_max) .and.   
+c 1/23/08 pyb added these checks
+     >      hscin_pos_sigma(ihit) .lt. 2.0 .and.
+     >      hscin_neg_sigma(ihit) .lt. 2.0) then
+
 
           pos_ph(ihit) = hscin_adc_pos(ihit)
           postime(ihit) = hscin_tdc_pos(ihit) * hscin_tdc_to_time
-          postime(ihit) = postime(ihit) - hscin_pos_phc_coeff(ihit) * 
-     1         sqrt(max(0.,(pos_ph(ihit)/hscin_pos_minph(ihit)-1.)))
-          postime(ihit) = postime(ihit) - hscin_pos_time_offset(ihit)
-
+c corrections for ADC and offsets
+          if(htofusinginvadc.eq.1) then
+            postime(ihit) = postime(ihit) - 
+     >        hscin_pos_invadc_offset(ihit) -
+     >        hscin_pos_invadc_adc(ihit)/
+     >        sqrt(max(20.,pos_ph(ihit)))
+          else
+            postime(ihit) = postime(ihit) - 
+     >        hscin_pos_phc_coeff(ihit) * 
+     1        sqrt(max(0.,(pos_ph(ihit)/
+     >          hscin_pos_minph(ihit)-1.)))
+            postime(ihit) = postime(ihit) - 
+     >        hscin_pos_time_offset(ihit)
+          endif
           neg_ph(ihit) = hscin_adc_neg(ihit)
           negtime(ihit) = hscin_tdc_neg(ihit) * hscin_tdc_to_time
-          negtime(ihit) = negtime(ihit) - hscin_neg_phc_coeff(ihit) * 
-     1         sqrt(max(0.,(neg_ph(ihit)/hscin_neg_minph(ihit)-1.)))
-          negtime(ihit) = negtime(ihit) - hscin_neg_time_offset(ihit)
-          
+          if(htofusinginvadc.eq.1) then
+            negtime(ihit) = negtime(ihit) - 
+     >        hscin_neg_invadc_offset(ihit) -
+     >        hscin_neg_invadc_adc(ihit)/
+     >        sqrt(max(20.,neg_ph(ihit)))
+          else
+            negtime(ihit) = negtime(ihit) - 
+     >         hscin_neg_phc_coeff(ihit) * 
+     >         sqrt(max(0.,(neg_ph(ihit)/
+     >      hscin_neg_minph(ihit)-1.)))
+            negtime(ihit) = negtime(ihit) - 
+     >      hscin_neg_time_offset(ihit)
+          endif
+
 * Find hit position.  If postime larger, then hit was nearer negative side.
           dist_from_center = 0.5*(negtime(ihit) - postime(ihit))
      1         * hscin_vel_light(ihit)
@@ -202,8 +233,17 @@
 *     Get corrected time.
           pos_path = hscin_pos_coord(ihit) - hit_position
           neg_path = hit_position - hscin_neg_coord(ihit)
-          postime(ihit) = postime(ihit) - pos_path/hscin_vel_light(ihit)
-          negtime(ihit) = negtime(ihit) - neg_path/hscin_vel_light(ihit)
+          if(htofusinginvadc.eq.1) then
+            postime(ihit) = postime(ihit) - 
+     >        pos_path/hscin_pos_invadc_linear(ihit)
+            negtime(ihit) = negtime(ihit) - 
+     >        neg_path/hscin_neg_invadc_linear(ihit)
+          else
+            postime(ihit) = postime(ihit) - 
+     >        pos_path/hscin_vel_light(ihit)
+            negtime(ihit) = negtime(ihit) - 
+     >       neg_path/hscin_vel_light(ihit)
+          endif
           time_pos(i)  = postime(ihit) - 
      >        hscin_zpos(ihit) / (29.979*hbeta_pcent)
           time_neg(i)  = negtime(ihit) - 
@@ -255,6 +295,9 @@
      1       (hscin_tdc_pos(ihit) .le. hscin_tdc_max) .and.
      2       (hscin_tdc_neg(ihit) .ge. hscin_tdc_min) .and.
      3       (hscin_tdc_neg(ihit) .le. hscin_tdc_max).and.
+c 1/23/08 pyb added these checks
+     >      hscin_pos_sigma(ihit) .lt. 2.0 .and.
+     >      hscin_neg_sigma(ihit) .lt. 2.0 .and.
      4       keep_pos(ihit).and.keep_neg(ihit)) then
           htwo_good_times(ihit) = .true.
         else
@@ -270,16 +313,35 @@
 *     find hit location from difference in tdc.
           pos_ph(ihit) = hscin_adc_pos(ihit)
           postime(ihit) = hscin_tdc_pos(ihit) * hscin_tdc_to_time
-          postime(ihit) = postime(ihit) - hscin_pos_phc_coeff(ihit) * 
-     1         sqrt(max(0.,(pos_ph(ihit)/hscin_pos_minph(ihit)-1.)))
-          postime(ihit) = postime(ihit) - hscin_pos_time_offset(ihit)
-
+          if(htofusinginvadc.eq.1) then
+            postime(ihit) = postime(ihit) - 
+     >        hscin_pos_invadc_offset(ihit) -
+     >        hscin_pos_invadc_adc(ihit)/
+     >        sqrt(max(20.,pos_ph(ihit)))
+          else
+            postime(ihit) = postime(ihit) - 
+     >        hscin_pos_phc_coeff(ihit) * 
+     >        sqrt(max(0.,(pos_ph(ihit)/
+     >        hscin_pos_minph(ihit)-1.)))
+            postime(ihit) = postime(ihit) - 
+     >      hscin_pos_time_offset(ihit)
+          endif
           neg_ph(ihit) = hscin_adc_neg(ihit)
           negtime(ihit) = hscin_tdc_neg(ihit) * hscin_tdc_to_time
-          negtime(ihit) = negtime(ihit) - hscin_neg_phc_coeff(ihit) * 
-     1         sqrt(max(0.,(neg_ph(ihit)/hscin_neg_minph(ihit)-1.)))
-          negtime(ihit) = negtime(ihit) - hscin_neg_time_offset(ihit)
-          
+          if(htofusinginvadc.eq.1) then
+            negtime(ihit) = negtime(ihit) - 
+     >        hscin_neg_invadc_offset(ihit) -
+     >        hscin_neg_invadc_adc(ihit)/
+     >        sqrt(max(20.,neg_ph(ihit)))
+          else
+            negtime(ihit) = negtime(ihit) - 
+     >        hscin_neg_phc_coeff(ihit) * 
+     1        sqrt(max(0.,(neg_ph(ihit)/
+     >        hscin_neg_minph(ihit)-1.)))
+            negtime(ihit) = negtime(ihit) - 
+     >      hscin_neg_time_offset(ihit)
+          endif
+
 * Find hit position.  If postime larger, then hit was nearer negative side.
           dist_from_center = 0.5*(negtime(ihit) - postime(ihit))
      1         * hscin_vel_light(ihit)
@@ -292,9 +354,19 @@
 *     Get corrected time.
           pos_path = hscin_pos_coord(ihit) - hit_position
           neg_path = hit_position - hscin_neg_coord(ihit)
-          postime(ihit) = postime(ihit) - pos_path/hscin_vel_light(ihit)
-          negtime(ihit) = negtime(ihit) - neg_path/hscin_vel_light(ihit)
-          hscin_cor_time(ihit) = ( postime(ihit) + negtime(ihit) )/2.
+          if(htofusinginvadc.eq.1) then
+            postime(ihit) = postime(ihit) - 
+     >        pos_path/hscin_pos_invadc_linear(ihit)
+            negtime(ihit) = negtime(ihit) - 
+     >        neg_path/hscin_neg_invadc_linear(ihit)
+          else
+            postime(ihit) = postime(ihit) - 
+     >        pos_path/hscin_vel_light(ihit)
+            negtime(ihit) = negtime(ihit) - 
+     >       neg_path/hscin_vel_light(ihit)
+          endif
+          hscin_cor_time(ihit) = ( postime(ihit) + 
+     >      negtime(ihit) )/2.
 
         else                            !only 1 tube fired
           hscin_dec_hit_coord(ihit) = 0.
@@ -309,7 +381,8 @@
       time_sum = 0.
       do ihit = 1 , hscin_tot_hits
         if (htwo_good_times(ihit)) then
-          fptime  = hscin_cor_time(ihit) - hscin_zpos(ihit)/(29.979*hbeta_pcent)
+          fptime  = hscin_cor_time(ihit) - 
+     >      hscin_zpos(ihit)/(29.979*hbeta_pcent)
           if(hidscinalltimes.gt.0) call hf1(hidscinalltimes,fptime,1.)
           if (abs(fptime-hstart_time_center).le.hstart_time_slop) then
             time_sum = time_sum + fptime
@@ -323,6 +396,11 @@
       else
         hgood_start_time = .true.
         hstart_time = time_sum / float(time_num)
+        if(ncall.lt.30) then
+          write(*,'(''hstart'',i4,2f8.3)') time_num,
+     >      hstart_time,  hstart_time_center
+          ncall = ncall + 1
+        endif
       endif
 
 

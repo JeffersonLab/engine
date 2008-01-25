@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19.6.3  2008/01/25 19:28:34  cdaq
+* fixed HSTART calculation
+*
 * Revision 1.19.6.2  2007/10/26 16:44:55  pcarter
 * made the arguments to max() match data types -- GCC 4 is picky about that
 *
@@ -184,6 +187,7 @@
           time_tolerance=htof_tolerance
         endif
 ! Use wide window if dumping events for fitting
+cc        write(*,'(''hdumptof='',i10)') hdumptof
         if(hdumptof.eq.1) time_tolerance=50.0
         if(first) then
            first=.false.
@@ -244,12 +248,14 @@
               time = time - (hscin_zpos(hit)/(29.979*betap) *
      &               sqrt(1. + hxp_fp(trk)**2 + hyp_fp(trk)**2))
               if(htofusinginvadc.eq.1) then
-                time_pos(i) = time - hscin_pos_invadc_offset(hit) -
+                time_pos(i) = time - 
+     >            hscin_pos_invadc_offset(hit) -
      >            path / hscin_pos_invadc_linear(hit) -
-     >            hscin_pos_invadc_adc(hit)/sqrt(max(20.,adc_ph))
+     >            hscin_pos_invadc_adc(hit)/
+     >            sqrt(max(20.,adc_ph))
               else
                 time = time - hscin_pos_phc_coeff(hit) *
-     &               sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
+     &            sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
                 time = time - path/hscin_vel_light(hit)
                 time_pos(i) = time - hscin_pos_time_offset(hit)
               endif
@@ -269,7 +275,8 @@
               time = time - (hscin_zpos(hit)/(29.979*betap) *
      &               sqrt(1. + hxp_fp(trk)**2 + hyp_fp(trk)**2))
               if(htofusinginvadc.eq.1) then
-                time_neg(i) = time + hscin_neg_invadc_offset(hit) -
+c 1/23/08 pyb bug fixed (+ changed to -)
+                time_neg(i) = time - hscin_neg_invadc_offset(hit) -
      >            path / hscin_neg_invadc_linear(hit) -
      >            hscin_neg_invadc_adc(hit)/sqrt(max(20.,adc_ph))
               else
@@ -389,7 +396,8 @@
      >          hdumptof.eq.1.and.
 ! new next line
      >          oktodump.and.
-     >          timehist(max(1,jmax)).gt.6) then
+! changed 6 to 3 since only S1
+     >          timehist(max(1,jmax)).gt.3) then
                 write(37,'(1x,''1'',2i3,5f10.3)') 
      >             hscin_plane_num(hit),
      >             hscin_counter_num(hit),
@@ -434,7 +442,8 @@ c    >              1./sqrt(max(20,adc_ph))
      >          hdumptof.eq.1.and.
 ! new next line
      >          oktodump.and.
-     >          timehist(max(1,jmax)).gt.6) then
+! changed 6 to 3 since only S1
+     >          timehist(max(1,jmax)).gt.3) then
                 write(37,'(1x,''2'',2i3,5f10.3)') 
      >             hscin_plane_num(hit),
      >             hscin_counter_num(hit),
@@ -567,7 +576,8 @@ c     Get time at focal plane
         endif
         if(hntracks_fp.eq.1.and.
      >    hdumptof.eq.1.and.
-     >     timehist(max(1,jmax)).gt.6) then
+c changed 6 to 3
+     >     timehist(max(1,jmax)).gt.3) then
            write(37,'(1x,''0'')') 
         endif
       enddo                             !end of loop over tracks
