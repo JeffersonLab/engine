@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19.6.4  2008/02/07 16:14:50  cdaq
+* modified h_tof.f to exclude S0 from tof calibration
+*
 * Revision 1.19.6.3  2008/01/25 19:28:34  cdaq
 * fixed HSTART calculation
 *
@@ -396,8 +399,9 @@ c 1/23/08 pyb bug fixed (+ changed to -)
      >          hdumptof.eq.1.and.
 ! new next line
      >          oktodump.and.
-! changed 6 to 3 since only S1
-     >          timehist(max(1,jmax)).gt.3) then
+! changed 6 to 3 since only S1. Turned off S0
+     >          timehist(max(1,jmax)).gt.3.and.
+     >             hscin_plane_num(hit).le.2) then
                 write(37,'(1x,''1'',2i3,5f10.3)') 
      >             hscin_plane_num(hit),
      >             hscin_counter_num(hit),
@@ -442,8 +446,9 @@ c    >              1./sqrt(max(20,adc_ph))
      >          hdumptof.eq.1.and.
 ! new next line
      >          oktodump.and.
-! changed 6 to 3 since only S1
-     >          timehist(max(1,jmax)).gt.3) then
+! changed 6 to 3 since only S1. S0 turned off
+     >          timehist(max(1,jmax)).gt.3.and.
+     >             hscin_plane_num(hit).le.2) then
                 write(37,'(1x,''2'',2i3,5f10.3)') 
      >             hscin_plane_num(hit),
      >             hscin_counter_num(hit),
