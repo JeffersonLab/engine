@@ -12,6 +12,9 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log$
+*- Revision 1.1.8.2  2008/02/07 16:15:33  cdaq
+*- removed cuts that don't apply to gep
+*-
 *- Revision 1.1.8.1  2007/09/10 20:28:01  pcarter
 *- Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *-
@@ -168,7 +171,8 @@ c
           betap = p/sqrt(p*p+hpartmass*hpartmass)
           if( abs(hbeta(track)-betap) .lt. hprune_beta 
      >       .and. keep(track)) then
-            ngood = ngood + 1
+c 2/07/08 pyb turned off for gep
+c            ngood = ngood + 1
           endif
         enddo
         if(ngood.gt.0) then
@@ -202,7 +206,8 @@ c
         ngood=0
         do track = 1, HNTRACKS_FP
           if(hnum_pmt_hit(track) .ge. hprune_npmt.and. keep(track)) then
-            ngood = ngood + 1
+c 2/07/08 pyb turned off for gep
+c            ngood = ngood + 1
           endif
         enddo
         if(ngood.gt.0) then
@@ -219,7 +224,8 @@ c
         do track = 1, HNTRACKS_FP
           if(hbeta_chisq(track) .lt. hprune_chibeta .and.
      >       hbeta_chisq(track) .gt. 0.01 .and. keep(track)) then
-            ngood = ngood + 1
+c 2/07/08 pyb turned off for gep
+c            ngood = ngood + 1
           endif
         enddo
         if(ngood.gt.0) then
@@ -250,33 +256,6 @@ c
           enddo
         endif
 
-! Prune on Y2 being hit
-        ngood=0
-        do track = 1, HNTRACKS_FP
-          if(hgood_plane_time(track,4).and. keep(track)) ngood = ngood + 1
-        enddo
-        if(ngood.gt.0) then
-          do track = 1, HNTRACKS_FP
-            if(.not.hgood_plane_time(track,4)) then
-              keep(track) = .false. 
-              reject(track) = reject(track) + 10000
-            endif
-          enddo
-        endif
-
-! Prune on X2 being hit
-        ngood=0
-        do track = 1, HNTRACKS_FP
-          if(hgood_plane_time(track,3).and. keep(track)) ngood = ngood + 1
-        enddo
-        if(ngood.gt.0) then
-          do track = 1, HNTRACKS_FP
-            if(.not.hgood_plane_time(track,3)) then
-              keep(track) = .false. 
-              reject(track) = reject(track) + 20000
-            endif
-          enddo
-        endif
 
 
 ! Pick track with best chisq if more than one track passed prune tests
