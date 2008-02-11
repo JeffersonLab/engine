@@ -101,7 +101,8 @@ c     if the user has not defined something reasonable, then set by hand here:
 c     here we compute the expected cluster time in BigCal (using the focal-plane time for the 
 c     good track):
 
-      hoffset_ctime = hstime_at_fp - hstart_time_center + hspath_cor ! should be around zero for most
+      hoffset_ctime = hstime_at_fp - hstart_time_center + 
+     $     hspathlength / hsbeta_p 
 
       mindiff = 0.
 
@@ -346,7 +347,7 @@ c     could get a "NaN" error here: check:
       bigcal_ctime = bigcal_track_time(ibest_cal) - bigcal_tof_cor - 
      $     (bigcal_end_time - gep_btime_elastic)
 
-      gep_ctime_hms = hstime_at_fp - hstart_time_center + hspath_cor
+      gep_ctime_hms = hoffset_ctime
       gep_ctime_cal = bigcal_ctime
 
       if(gen_bigcal_mc.eq.3) then 
@@ -406,7 +407,7 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
 
 
       integer function pick_best_cal_track(T_H,TH_H,PH_H,X_H,Y_H,E_H)
-      
+     
       include 'gep_data_structures.cmn'
       include 'bigcal_data_structures.cmn'
 
@@ -437,7 +438,7 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
 
 
             T_cal = bigcal_track_time(itrack) - bigcal_track_tof_cor(itrack) -
-     $(bigcal_end_time - gep_btime_elastic)
+     $           (bigcal_end_time - gep_btime_elastic)
             X_cal = bigcal_all_clstr_x(itrack)
             Y_cal = bigcal_all_clstr_y(itrack)
 
@@ -474,5 +475,5 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       else
          pick_best_cal_track = 0
       endif
-      
+     
       end
