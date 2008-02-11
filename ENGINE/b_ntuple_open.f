@@ -70,10 +70,15 @@ c$$$        iquest(10) = 65000
 c$$$        call HROPEN(io,name,file,'NQ',recL,status)
 c$$$      endif
       
-      recL = 8191
-      iquest(10) = 65000
-      call HROPEN(io,name,file,'NQ',recL,status)
-      
+      if(bigcal_ntuple_type.lt.3) then
+
+         recL = 8191
+         iquest(10) = 65000
+         call HROPEN(io,name,file,'NQ',recL,status)
+      else ! ntuple type = 3: row-wise ntuple
+         recL = default_recl
+         call HROPEN(io,name,file,'N',recL,status)
+      endif
 
       ABORT= status.ne.0
       if(ABORT) then
@@ -200,7 +205,8 @@ c           write(*,*) 'adding block hmsblk to bigcal ntuple'
         call hbname(id,'hits',nahit,chform)
 
         !write(*,*) 'booking of cosmic hits ntuple successful'
-
+      else if(bigcal_ntuple_type.eq.3) then
+         call HBOOKN(id,title,size,name,bank,b_ntuple_tag) ! create ntuple
       endif
         
       call HCDIR(b_ntuple_directory,'R')     ! record ntuple directory

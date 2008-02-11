@@ -367,7 +367,168 @@ c$$$  $             yt(nthit),hn(nthit),tt(nthit)
                   ttt(ntthit) = bigcal_ttrig_tdc_raw(ihit)
                endif
             enddo
-         endif 
+         endif
+      else if(bigcal_ntuple_type.eq.3) then
+         m=0
+         m=m+1
+         b_ntuple_contents(m) = float(gen_event_id_number)
+         m=m+1
+         b_ntuple_contents(m) = float(gen_event_type)
+         m=m+1
+         if(ntrigB.gt.0) then
+            b_ntuple_contents(m) = bigcal_end_time - gep_btime(1)
+         else
+            b_ntuple_contents(m) = bigcal_end_time - gep_btime_elastic
+         endif
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_all_ngood)
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_time_ngood)
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_atrig_ngood)
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_ttrig_ngood)
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_iymax_adc)
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_ixmax_adc)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_max_adc
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_all_nclstr)
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_nmaxima)
+         m=m+1
+         if(bigcal_itrack_best.gt.0) then
+            ibest = bigcal_itrack_best
+         else 
+            ibest = 1
+         endif
+         b_ntuple_contents(m) = float(bigcal_all_clstr_ncell(ibest))
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_all_clstr_ncellx(ibest))
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_all_clstr_ncelly(ibest))
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_all_clstr_ncell8(ibest))
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_all_clstr_ncell64(ibest))
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_all_clstr_iycell(ibest,1))
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_all_clstr_ixcell(ibest,1))
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_xcell(ibest,1)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_ycell(ibest,1)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_xmom(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_ymom(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_x(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_y(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_atot(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_etot(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_t8cut(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_t8rms(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_t64cut(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_t64rms(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_track_thetarad(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_track_phirad(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_track_energy(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_track_coin_time(ibest) - 
+     $        (bigcal_end_time - gep_btime_elastic)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_track_tof_cor(ibest)
+         m=m+1
+         b_ntuple_contents(m) = float(hsnum_fptrack)
+         m=m+1
+         if(bigcal_itrack_best.gt.0) then
+
+            b_ntuple_contents(m) = bigcal_all_clstr_chi2(ibest)
+            m=m+1
+            b_ntuple_contents(m) = bigcal_all_clstr_chi2contr(ibest,4)
+            m=m+1
+            b_ntuple_contents(m) = bigcal_all_clstr_chi2contr(ibest,5)
+            m=m+1
+            b_ntuple_contents(m) = bigcal_all_clstr_chi2contr(ibest,2)
+            m=m+1
+            b_ntuple_contents(m) = bigcal_all_clstr_chi2contr(ibest,3)
+            m=m+1
+            b_ntuple_contents(m) = bigcal_all_clstr_chi2contr(ibest,1)
+            m=m+1
+            b_ntuple_contents(m) = bigcal_all_clstr_chi2contr(ibest,6)
+            m=m+1
+            b_ntuple_contents(m) = gep_E_electron
+            m=m+1
+            b_ntuple_contents(m) = gep_etheta_expect_h
+            m=m+1
+            b_ntuple_contents(m) = gep_ephi_expect_h
+            m=m+1
+            b_ntuple_contents(m) = gep_bx_expect_h
+            m=m+1
+            b_ntuple_contents(m) = gep_by_expect_h
+            m=m+1
+            b_ntuple_contents(m) = gep_ctime_hms
+            m=m+1
+            b_ntuple_contents(m) = (gep_p_proton - gep_pel_htheta) / hpcentral
+            m=m+1
+            b_ntuple_contents(m) = (gep_p_proton - gep_pel_btheta) / hpcentral
+            m=m+1
+            b_ntuple_contents(m) = gbeam_x
+            m=m+1
+            b_ntuple_contents(m) = gbeam_y
+            m=m+1
+            b_ntuple_contents(m) = hszbeam
+         else
+            b_ntuple_contents(m) = -1.
+            m=m+1
+            b_ntuple_contents(m) = -1.
+            m=m+1
+            b_ntuple_contents(m) = -1.
+            m=m+1
+            b_ntuple_contents(m) = -1.
+            m=m+1
+            b_ntuple_contents(m) = -1.
+            m=m+1
+            b_ntuple_contents(m) = -1.
+            m=m+1
+            b_ntuple_contents(m) = -1.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = gbeam_x
+            m=m+1
+            b_ntuple_contents(m) = gbeam_y
+            m=m+1
+            b_ntuple_contents(m) = 0.
+         endif
       endif
       
       
@@ -376,9 +537,11 @@ c$$$  $             yt(nthit),hn(nthit),tt(nthit)
          call G_build_note(':Ntuple ID#$ does not exist',
      $        '$',b_ntuple_ID,' ',0.,' ',err)
          call G_add_path(here,err)
-      else 
+      else if(bigcal_ntuple_type.lt.3) then
          
          call HFNT(b_ntuple_ID)
+      else if(bigcal_ntuple_type.eq.3) then
+         call HFN(b_ntuple_ID,b_ntuple_contents)
          
       endif
 
