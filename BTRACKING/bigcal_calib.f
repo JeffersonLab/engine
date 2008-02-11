@@ -209,9 +209,9 @@ c     before solving matrix, determine nempty, nsmall, and nsmalldiag per Kravts
             write(*,*) 'using reduced calibration matrix:'
             write(*,366) '(xlop,xhip,xlor,xhir,ylo,yhi)=(',bigcal_calib_ixlo(1),
      $           ',',bigcal_calib_ixhi(1),',',bigcal_calib_ixlo(2),',',bigcal_calib_ixhi(2),
-     $           ',',bigcal_calib_iylo,',',bigcal_calib_iyhi
+     $           ',',bigcal_calib_iylo,',',bigcal_calib_iyhi,')'
 
- 366        format(A33,5(I3,A2),I3)
+ 366        format(A33,6(I3,A2))
             
          endif
          do i=1,N
@@ -389,9 +389,9 @@ c$$$               endif
                   ired = ired + 1
                   if(irow.ne.bigcal_calib_iylo.and.irow.ne.bigcal_calib_iyhi.and.
      $                 icol.ne.bigcal_calib_ixlo(1).and.icol.ne.bigcal_calib_ixhi(1)) then
-                     if(bid_bcal_cfac_new.gt.0.and.fillhist) call hf1(bid_bcal_cfac_new,
+                     if(bid_bcal_cfac_new.gt.0..and.fillhist) call hf1(bid_bcal_cfac_new,
      $                    float(i),bigcal_vector(i))
-                     if(bid_bcal_cfac_dist.gt.0.and.fillhist) call hf1(bid_bcal_cfac_dist,
+                     if(bid_bcal_cfac_dist.gt.0..and.fillhist) call hf1(bid_bcal_cfac_dist,
      $                    bigcal_vector(i),1.)
                   
                      redavg = redavg + c_new
@@ -445,10 +445,10 @@ c$$$     $              bigcal_vector(i+bigcal_prot_maxhits),1.)
                   ired = ired + 1
                   if(irow.ne.bigcal_calib_iylo.and.irow.ne.bigcal_calib_iyhi.and.
      $                 icol.ne.bigcal_calib_ixlo(2).and.icol.ne.bigcal_calib_ixhi(2)) then
-                     if(bid_bcal_cfac_new.gt.0.and.fillhist) call hf1(bid_bcal_cfac_new,
+                     if(bid_bcal_cfac_new.gt.0..and.fillhist) call hf1(bid_bcal_cfac_new,
      $                    float(i+bigcal_prot_maxhits),bigcal_vector(i+bigcal_prot_maxhits))
                      
-                     if(bid_bcal_cfac_dist.gt.0.and.fillhist) call hf1(bid_bcal_cfac_dist,
+                     if(bid_bcal_cfac_dist.gt.0..and.fillhist) call hf1(bid_bcal_cfac_dist,
      $                    bigcal_vector(i+bigcal_prot_maxhits),1.)
                      redavg = redavg + c_new
                      nredavg = nredavg + 1
@@ -504,8 +504,8 @@ c     using the reduced matrix.
                   if(i.le.1024) then
                      irow= (i-1)/32 + 1
                      icol= mod(i-1,32) + 1
-                     if(irow.eq.bigcal_calib_iylo.or.irow.eq.bigcal_calib_iyhi.or.
-     $                    icol.eq.bigcal_calib_ixlo(1).or.icol.eq.bigcal_calib_ixhi(1)) then
+                     if(irow.le.bigcal_calib_iylo.or.irow.ge.bigcal_calib_iyhi.or.
+     $                    icol.le.bigcal_calib_ixlo(1).or.icol.ge.bigcal_calib_ixhi(1)) then
                         bigcal_prot_cfac(i) = redavg
                      endif
                      
@@ -515,8 +515,8 @@ c     using the reduced matrix.
                   else
                      irow=(i-1025)/30 + 33
                      icol=mod(i-1025,30) + 1
-                     if(irow.eq.bigcal_calib_iylo.or.irow.eq.bigcal_calib_iyhi.or.
-     $                    icol.eq.bigcal_calib_ixlo(2).or.icol.eq.bigcal_calib_ixhi(2)) then
+                     if(irow.le.bigcal_calib_iylo.or.irow.ge.bigcal_calib_iyhi.or.
+     $                    icol.le.bigcal_calib_ixlo(2).or.icol.ge.bigcal_calib_ixhi(2)) then
                         bigcal_rcs_cfac(i-1024) = redavg
                      endif
                      
@@ -594,8 +594,8 @@ c     fill the histograms with the new calibration constants:
                endif
             enddo
             
- 101        format(8(F12.5,A2))
- 102        format(7(F12.5,A2),F12.5)
+ 101        format(8(F12.6,A2))
+ 102        format(7(F12.6,A2),F12.6)
 c     shut down the file:
             call g_IO_control(iochan,'FREE',abort,err)
             if(abort) then
