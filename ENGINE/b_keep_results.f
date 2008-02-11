@@ -32,6 +32,8 @@ c$$$      endif
         endif
       else if(bigcal_ntuple_type.eq.2)then 
          call b_ntuple_keep(ABORT,err)
+      else if(bigcal_ntuple_type.eq.3) then
+         if(bigcal_all_nclstr.gt.0) call b_ntuple_keep(ABORT,err)
       endif
       
       if(abort) then
