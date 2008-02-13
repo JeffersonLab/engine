@@ -15,10 +15,10 @@
       include 'bigcal_shower_parms.cmn'
       include 'bigcal_bypass_switches.cmn'
 
-      integer i,j,irow,icol,icell,ibin,xsector,ysector,foundbin
+      integer i,j,irow,icol,icell,ibin,xsector,ysector,foundbin,section
       real xmom,ymom,xcenter,ycenter,xdiff,ydiff
       real xpar(6),ypar(6)
-      real mlo,mhi,binwidth,frac,frachi,fraclo
+      real mlo,mhi,binwidth,frac,frachi,fraclo,sizex,sizey
 
 c     all clusters are already sorted in order of decreasing amplitude, so cell 1 is the maximum
 
@@ -39,141 +39,96 @@ c     all clusters are already sorted in order of decreasing amplitude, so cell 
                xmom = xmom / bigcal_prot_size_x
                ymom = ymom / bigcal_prot_size_y
 
-c	       write(*,*) 'xmom,ymom=',xmom,ymom  		
+               sizex = bigcal_prot_size_x
+               sizey = bigcal_prot_size_y
 
-               xsector = (icol-1)/8 + 1
-               ysector = (irow-1)/8 + 1
-
-c	       write(*,*) 'xsector,ysector=',xsector,ysector
-
-               !first do x
-               binwidth = (bigcal_pxmap_mmax(xsector) - bigcal_pxmap_mmin(xsector)) /
-     $              float(bigcal_pxmap_nbin(xsector))
-               mlo = bigcal_pxmap_mmin(xsector)
-
-c	       write(*,*) 'binwidth=',binwidth
-
-               if(xmom.lt.bigcal_pxmap_mmin(xsector).or.xmom.gt.
-     $              bigcal_pxmap_mmax(xsector)) then
-                  xdiff = xmom * bigcal_prot_size_x
-               endif
-
-               do ibin=1,bigcal_pxmap_nbin(xsector)
-                  mhi = mlo + binwidth
-
-                  if(mlo.le.xmom.and.xmom.le.mhi) then ! cluster is in this bin
-c                     write(*,*) 'mlo,mhi,xmom=',mlo,mhi,xmom
-		     if(ibin.gt.1) then
-                        fraclo = bigcal_pxmap_frac(xsector,ibin-1)
-                     else
-                        fraclo = 0.
-                     endif
-                     frachi = bigcal_pxmap_frac(xsector,ibin)
-c     linearly interpolate frac within this bin
-                     frac = fraclo + (frachi - fraclo)/(mhi - mlo) * (xmom - mlo)
-                     
-c		     write(*,*) 'fraclo,frachi,frac=',fraclo,frachi,frac
-                     xdiff = (-.5 + frac)*bigcal_prot_size_x
-c                     write(*,*) 'xdiff=',xdiff
-                  endif
-                  mlo = mhi
-               enddo
-               
-               !then do y
-               binwidth = (bigcal_pymap_mmax(ysector) - bigcal_pymap_mmin(ysector)) /
-     $              float(bigcal_pymap_nbin(ysector))
-               mlo = bigcal_pymap_mmin(ysector)
-
-               if(ymom.lt.bigcal_pymap_mmin(ysector).or.ymom.gt.
-     $              bigcal_pymap_mmax(ysector)) then
-                  ydiff = ymom * bigcal_prot_size_y
-               endif
-
-               do ibin=1,bigcal_pymap_nbin(ysector)
-                  mhi = mlo + binwidth
-                  
-                  if(mlo.le.ymom.and.ymom.le.mhi) then ! cluster is in this bin
-                     if(ibin.gt.1) then
-                        fraclo = bigcal_pymap_frac(ysector,ibin-1)
-                     else
-                        fraclo = 0.
-                     endif
-                     frachi = bigcal_pymap_frac(ysector,ibin)
-c     linearly interpolate frac within this bin
-                     frac = fraclo + (frachi - fraclo)/(mhi - mlo) * (ymom - mlo)
-                     
-                     ydiff = (-.5 + frac)*bigcal_prot_size_y
-                     
-                  endif
-                  mlo = mhi
-               enddo 
             else
-
                xmom = xmom / bigcal_rcs_size_x
                ymom = ymom / bigcal_rcs_size_y
 
-               xsector = (icol-1)/8 + 1
-               ysector = (irow-33)/8 + 1
-               
-               !first do x
-               binwidth = (bigcal_rxmap_mmax(xsector) - bigcal_rxmap_mmin(xsector)) /
-     $              float(bigcal_rxmap_nbin(xsector))
-               mlo = bigcal_rxmap_mmin(xsector)
-
-               if(xmom.lt.bigcal_rxmap_mmin(xsector).or.xmom.gt.
-     $              bigcal_rxmap_mmax(xsector)) then
-                  xdiff = xmom * bigcal_rcs_size_x
-               endif
-
-               do ibin=1,bigcal_rxmap_nbin(xsector)
-                  mhi = mlo + binwidth
-                  
-                  if(mlo.le.xmom.and.xmom.le.mhi) then ! cluster is in this bin
-                     if(ibin.gt.1) then
-                        fraclo = bigcal_rxmap_frac(xsector,ibin-1)
-                     else
-                        fraclo = 0.
-                     endif
-                     frachi = bigcal_rxmap_frac(xsector,ibin)
-c     linearly interpolate frac within this bin
-                     frac = fraclo + (frachi - fraclo)/(mhi - mlo) * (xmom - mlo)
-                     
-                     xdiff = (-.5 + frac)*bigcal_rcs_size_x
-                     
-                  endif
-                  mlo = mhi
-               enddo
-               
-               !then do y
-               binwidth = (bigcal_rymap_mmax(ysector) - bigcal_rymap_mmin(ysector)) /
-     $              float(bigcal_rymap_nbin(ysector))
-               mlo = bigcal_rymap_mmin(ysector)
-
-               if(ymom.lt.bigcal_rymap_mmin(ysector).or.ymom.gt.
-     $              bigcal_rymap_mmax(ysector)) then
-                  ydiff = ymom * bigcal_rcs_size_y
-               endif
-
-               do ibin=1,bigcal_rymap_nbin(ysector)
-                  mhi = mlo + binwidth
-                  
-                  if(mlo.le.ymom.and.ymom.le.mhi) then ! cluster is in this bin
-                     if(ibin.gt.1) then
-                        fraclo = bigcal_rymap_frac(ysector,ibin-1)
-                     else
-                        fraclo = 0.
-                     endif
-                     frachi = bigcal_rymap_frac(ysector,ibin)
-c     linearly interpolate frac within this bin
-                     frac = fraclo + (frachi - fraclo)/(mhi - mlo) * (ymom - mlo)
-                     
-                     ydiff = (-.5 + frac)*bigcal_rcs_size_y
-                     
-                  endif
-                  mlo = mhi
-               enddo 
+               sizex = bigcal_rcs_size_x
+               sizey = bigcal_rcs_size_y
 
             endif
+
+c	       write(*,*) 'xmom,ymom=',xmom,ymom  		
+
+            xsector = (icol-1)/8 + 1
+            ysector = (irow-1)/8 + 1
+
+            section = xsector + 4*(ysector-1)
+            
+c     write(*,*) 'xsector,ysector=',xsector,ysector
+            
+               !first do x
+            binwidth = (bigcal_xmap_mmax(section) - bigcal_xmap_mmin(section)) /
+     $           float(bigcal_xmap_nbin(section))
+            mlo = bigcal_xmap_mmin(section)
+            
+c     write(*,*) 'binwidth=',binwidth
+            
+            if(xmom.lt.bigcal_xmap_mmin(section).or.xmom.gt.
+     $           bigcal_xmap_mmax(section)) then
+               xdiff = xmom * sizex
+            endif
+            
+            do ibin=1,bigcal_xmap_nbin(section)
+               mhi = mlo + binwidth
+               
+               if(mlo.le.xmom.and.xmom.le.mhi) then ! cluster is in this bin
+c     write(*,*) 'mlo,mhi,xmom=',mlo,mhi,xmom
+                  if(ibin.gt.1) then
+                     fraclo = bigcal_xmap_xfrac(section,ibin-1)
+                  else
+                     fraclo = 0.
+                  endif
+                  frachi = bigcal_xmap_xfrac(section,ibin)
+c     linearly interpolate frac within this bin
+                  frac = fraclo + (frachi - fraclo)/(mhi - mlo) * (xmom - mlo)
+                  
+c     write(*,*) 'fraclo,frachi,frac=',fraclo,frachi,frac
+                  xdiff = (-.5 + frac)*sizex
+c     write(*,*) 'xdiff=',xdiff
+
+c     jump out of the loop once we find the right bin
+                  goto 101
+               endif
+               mlo = mhi
+            enddo
+            
+ 101        continue
+                                !then do y
+            binwidth = (bigcal_ymap_mmax(section) - bigcal_ymap_mmin(section)) /
+     $           float(bigcal_ymap_nbin(section))
+            mlo = bigcal_ymap_mmin(section)
+            
+            if(ymom.lt.bigcal_ymap_mmin(section).or.ymom.gt.
+     $           bigcal_ymap_mmax(section)) then
+               ydiff = ymom * sizey
+            endif
+            
+            do ibin=1,bigcal_ymap_nbin(section)
+               mhi = mlo + binwidth
+               
+               if(mlo.le.ymom.and.ymom.le.mhi) then ! cluster is in this bin
+                  if(ibin.gt.1) then
+                     fraclo = bigcal_ymap_yfrac(section,ibin-1)
+                  else
+                     fraclo = 0.
+                  endif
+                  frachi = bigcal_ymap_yfrac(section,ibin)
+c     linearly interpolate frac within this bin
+                  frac = fraclo + (frachi - fraclo)/(mhi - mlo) * (ymom - mlo)
+                  
+                  ydiff = (-.5 + frac)*sizey
+c     exit the do loop when we find the right bin.
+                  goto 102
+
+               endif
+               mlo = mhi
+            enddo 
+ 
+ 102        continue
 
             bigcal_all_clstr_x(i) = xcenter + xdiff
             bigcal_all_clstr_y(i) = ycenter + ydiff
