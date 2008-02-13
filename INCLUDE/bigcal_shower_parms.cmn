@@ -49,168 +49,31 @@ c      real*4 BIGCAL_ASHAPE_D
      $     BIGCAL_ASHAPE_BX,
      $     BIGCAL_ASHAPE_BY
       
-      integer*4 bigcal_px1map_nbin
-      integer*4 bigcal_px2map_nbin
-      integer*4 bigcal_px3map_nbin
-      integer*4 bigcal_px4map_nbin
-      integer*4 bigcal_rx1map_nbin
-      integer*4 bigcal_rx2map_nbin
-      integer*4 bigcal_rx3map_nbin
-      integer*4 bigcal_rx4map_nbin
-      integer*4 bigcal_py1map_nbin
-      integer*4 bigcal_py2map_nbin
-      integer*4 bigcal_py3map_nbin
-      integer*4 bigcal_py4map_nbin
-      integer*4 bigcal_ry1map_nbin
-      integer*4 bigcal_ry2map_nbin
-      integer*4 bigcal_ry3map_nbin
+
+      integer*4 bigcal_xmap_nbin(28)
+      integer*4 bigcal_ymap_nbin(28)
+
+      real*4 bigcal_xmap_mmin(28)
+      real*4 bigcal_ymap_mmin(28)
+      real*4 bigcal_xmap_mmax(28)
+      real*4 bigcal_ymap_mmax(28)
+
+      real*4 bigcal_xmap_frac(2800)
+      real*4 bigcal_ymap_frac(2800)
+
+      real*4 bigcal_xmap_xfrac(28,100)
+      real*4 bigcal_ymap_yfrac(28,100)
+
+      common/bigcal_map_parms/
+     $     bigcal_xmap_nbin,
+     $     bigcal_ymap_nbin,
+     $     bigcal_xmap_mmin,
+     $     bigcal_ymap_mmin,
+     $     bigcal_xmap_mmax,
+     $     bigcal_ymap_mmax,
+     $     bigcal_xmap_frac,
+     $     bigcal_ymap_frac,
+     $     bigcal_xmap_xfrac,
+     $     bigcal_ymap_yfrac
       
-      
-      real*4 bigcal_px1map_xmom_min
-      real*4 bigcal_px2map_xmom_min
-      real*4 bigcal_px3map_xmom_min
-      real*4 bigcal_px4map_xmom_min
-      real*4 bigcal_rx1map_xmom_min
-      real*4 bigcal_rx2map_xmom_min
-      real*4 bigcal_rx3map_xmom_min
-      real*4 bigcal_rx4map_xmom_min
-      real*4 bigcal_py1map_xmom_min
-      real*4 bigcal_py2map_xmom_min
-      real*4 bigcal_py3map_xmom_min
-      real*4 bigcal_py4map_xmom_min
-      real*4 bigcal_ry1map_xmom_min
-      real*4 bigcal_ry2map_xmom_min
-      real*4 bigcal_ry3map_xmom_min
-
-      real*4 bigcal_px1map_xmom_max
-      real*4 bigcal_px2map_xmom_max
-      real*4 bigcal_px3map_xmom_max
-      real*4 bigcal_px4map_xmom_max
-      real*4 bigcal_rx1map_xmom_max
-      real*4 bigcal_rx2map_xmom_max
-      real*4 bigcal_rx3map_xmom_max
-      real*4 bigcal_rx4map_xmom_max
-      real*4 bigcal_py1map_xmom_max
-      real*4 bigcal_py2map_xmom_max
-      real*4 bigcal_py3map_xmom_max
-      real*4 bigcal_py4map_xmom_max
-      real*4 bigcal_ry1map_xmom_max
-      real*4 bigcal_ry2map_xmom_max
-      real*4 bigcal_ry3map_xmom_max
-
-      real*4 bigcal_px1map_xmom_frac(bigcal_map_maxbins)
-      real*4 bigcal_px2map_xmom_frac(bigcal_map_maxbins)
-      real*4 bigcal_px3map_xmom_frac(bigcal_map_maxbins)
-      real*4 bigcal_px4map_xmom_frac(bigcal_map_maxbins)
-      real*4 bigcal_rx1map_xmom_frac(bigcal_map_maxbins)
-      real*4 bigcal_rx2map_xmom_frac(bigcal_map_maxbins)
-      real*4 bigcal_rx3map_xmom_frac(bigcal_map_maxbins)
-      real*4 bigcal_rx4map_xmom_frac(bigcal_map_maxbins)
-      real*4 bigcal_py1map_xmom_frac(bigcal_map_maxbins)
-      real*4 bigcal_py2map_xmom_frac(bigcal_map_maxbins)
-      real*4 bigcal_py3map_xmom_frac(bigcal_map_maxbins)
-      real*4 bigcal_py4map_xmom_frac(bigcal_map_maxbins)
-      real*4 bigcal_ry1map_xmom_frac(bigcal_map_maxbins)
-      real*4 bigcal_ry2map_xmom_frac(bigcal_map_maxbins)
-      real*4 bigcal_ry3map_xmom_frac(bigcal_map_maxbins)
-
-      integer*4 bigcal_pxmap_nbin(4)
-      integer*4 bigcal_pymap_nbin(4)
-      integer*4 bigcal_rxmap_nbin(4)
-      integer*4 bigcal_rymap_nbin(3)
-
-      real*4 bigcal_pxmap_mmin(4)
-      real*4 bigcal_pymap_mmin(4)
-      real*4 bigcal_rxmap_mmin(4)
-      real*4 bigcal_rymap_mmin(3)
-
-      real*4 bigcal_pxmap_mmax(4)
-      real*4 bigcal_pymap_mmax(4)
-      real*4 bigcal_rxmap_mmax(4)
-      real*4 bigcal_rymap_mmax(3)
-      
-      real*4 bigcal_pxmap_frac(4,bigcal_map_maxbins)
-      real*4 bigcal_pymap_frac(4,bigcal_map_maxbins)
-      real*4 bigcal_rxmap_frac(4,bigcal_map_maxbins)
-      real*4 bigcal_rymap_frac(3,bigcal_map_maxbins)
-      
-      common/bigcal_shower_map_parms/
-     $     bigcal_px1map_nbin,
-     $     bigcal_px2map_nbin,
-     $     bigcal_px3map_nbin,
-     $     bigcal_px4map_nbin,
-     $     bigcal_rx1map_nbin,
-     $     bigcal_rx2map_nbin,
-     $     bigcal_rx3map_nbin,
-     $     bigcal_rx4map_nbin,
-     $     bigcal_py1map_nbin,
-     $     bigcal_py2map_nbin,
-     $     bigcal_py3map_nbin,
-     $     bigcal_py4map_nbin,
-     $     bigcal_ry1map_nbin,
-     $     bigcal_ry2map_nbin,
-     $     bigcal_ry3map_nbin,
-     $     bigcal_px1map_xmom_min,
-     $     bigcal_px2map_xmom_min,
-     $     bigcal_px3map_xmom_min,
-     $     bigcal_px4map_xmom_min,
-     $     bigcal_rx1map_xmom_min,
-     $     bigcal_rx2map_xmom_min,
-     $     bigcal_rx3map_xmom_min,
-     $     bigcal_rx4map_xmom_min,
-     $     bigcal_py1map_xmom_min,
-     $     bigcal_py2map_xmom_min,
-     $     bigcal_py3map_xmom_min,
-     $     bigcal_py4map_xmom_min,
-     $     bigcal_ry1map_xmom_min,
-     $     bigcal_ry2map_xmom_min,
-     $     bigcal_ry3map_xmom_min,
-     $     bigcal_px1map_xmom_max,
-     $     bigcal_px2map_xmom_max,
-     $     bigcal_px3map_xmom_max,
-     $     bigcal_px4map_xmom_max,
-     $     bigcal_rx1map_xmom_max,
-     $     bigcal_rx2map_xmom_max,
-     $     bigcal_rx3map_xmom_max,
-     $     bigcal_rx4map_xmom_max,
-     $     bigcal_py1map_xmom_max,
-     $     bigcal_py2map_xmom_max,
-     $     bigcal_py3map_xmom_max,
-     $     bigcal_py4map_xmom_max,
-     $     bigcal_ry1map_xmom_max,
-     $     bigcal_ry2map_xmom_max,
-     $     bigcal_ry3map_xmom_max,
-     $     bigcal_px1map_xmom_frac,
-     $     bigcal_px2map_xmom_frac,
-     $     bigcal_px3map_xmom_frac,
-     $     bigcal_px4map_xmom_frac,
-     $     bigcal_rx1map_xmom_frac,
-     $     bigcal_rx2map_xmom_frac,
-     $     bigcal_rx3map_xmom_frac,
-     $     bigcal_rx4map_xmom_frac,
-     $     bigcal_py1map_xmom_frac,
-     $     bigcal_py2map_xmom_frac,
-     $     bigcal_py3map_xmom_frac,
-     $     bigcal_py4map_xmom_frac,
-     $     bigcal_ry1map_xmom_frac,
-     $     bigcal_ry2map_xmom_frac,
-     $     bigcal_ry3map_xmom_frac,
-     $     bigcal_pxmap_nbin,
-     $     bigcal_pymap_nbin,
-     $     bigcal_rxmap_nbin,
-     $     bigcal_rymap_nbin,
-     $     bigcal_pxmap_mmin,
-     $     bigcal_pymap_mmin,
-     $     bigcal_rxmap_mmin,
-     $     bigcal_rymap_mmin,
-     $     bigcal_pxmap_mmax,
-     $     bigcal_pymap_mmax,
-     $     bigcal_rxmap_mmax,
-     $     bigcal_rymap_mmax,
-     $     bigcal_pxmap_frac,
-     $     bigcal_pymap_frac,
-     $     bigcal_rxmap_frac,
-     $     bigcal_rymap_frac
-
-
       
