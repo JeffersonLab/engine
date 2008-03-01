@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.16  2008/03/01 17:03:07  cdaq
+*  updated for data using the fastbus crate
+*
 * Revision 1.32.20.15  2008/01/08 22:44:08  cdaq
 * *** empty log message ***
 *
@@ -209,6 +212,7 @@ cajp
       integer*4 hplus_ts,hmin_ts,quartet_ts,ntest,ts_input(9)
 
       integer*4 ntrig
+
 
       banklength = bank(1) + 1          ! Bank length including count
       last_first = banklength
@@ -402,7 +406,6 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddress
             did = UNINST_ID
           endif
 
-          !write(*,*) 'detector id this bank = ',did
 
           maxwords = last_first - pointer + 1
 *
@@ -473,7 +476,9 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddress
 *
 * planes are DC layers of all chambers in order of increasing z-coord
 *
-c            write(*,*) 'did = fpp, decoding fpp data'
+c
+        if (g_decode_modtyp(roc,slot).eq.1) FPP_CRATE_VME = .true. 
+c
             pointer = pointer +
      $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &           maxwords, did, 

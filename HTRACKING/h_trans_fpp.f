@@ -97,6 +97,7 @@ c      write(*,*)'In h_trans_fpp ... ',HFPP_raw_tot_hits
 
 
 *     * identify raw hits by planes -- assume unsorted raw data
+
       do rawhitidx=1, HFPP_raw_tot_hits
 
 	iPlane = HFPP_raw_plane(rawhitidx)
@@ -110,6 +111,9 @@ c      write(*,*)'In h_trans_fpp ... ',HFPP_raw_tot_hits
 	   if (iWire.lt.1) CYCLE
 	   if (iPlane.gt.H_FPP_N_PLANES) CYCLE
 	   if (iWire.gt.HFPP_Nwires(iPlane)) CYCLE
+
+
+           if ( FPP_CRATE_VME ) then
 *          * the above cuts also weed out the already processed trigger reference time!
 
 *          * TDC times from F1 TDC are meaningful only relative to each other
@@ -137,6 +141,12 @@ c      write(*,*)'In h_trans_fpp ... ',HFPP_raw_tot_hits
 	   else
 	     tdiff = HFPP_raw_TDC(rawhitidx) - HFPP_trigger_TDC(ROC)
 	   endif
+c use fastbus crate for data taken after Mar 2008
+           else
+              tdiff = HFPP_raw_TDC(rawhitidx)
+              HFPP_tdc_time_per_channel = 0.5
+           endif
+c
 	   HFPP_HitTime(rawhitidx) = HFPP_tDriftOffset(iPlane,iWire)
      >                          + float(tdiff) * HFPP_tdc_time_per_channel
 

@@ -36,7 +36,9 @@
 
       ABORT= .FALSE.
       err= ' '
-
+c
+      FPP_CRATE_VME = .false.
+c
 
 *     * re-map per-plane parameters into (set,chamber,layer) set
       do iset=1, H_FPP_N_DCSETS
