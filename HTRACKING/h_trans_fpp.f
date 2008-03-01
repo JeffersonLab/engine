@@ -145,6 +145,7 @@ c use fastbus crate for data taken after Mar 2008
            else
               tdiff = HFPP_raw_TDC(rawhitidx)
               HFPP_tdc_time_per_channel = 0.5
+              HFPP_tDriftOffset(iPlane,iWire) = -HFPP_tDriftOffset(iPlane,iWire)
            endif
 c
 	   HFPP_HitTime(rawhitidx) = HFPP_tDriftOffset(iPlane,iWire)
