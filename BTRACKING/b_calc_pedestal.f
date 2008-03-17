@@ -13,6 +13,7 @@
       include 'bigcal_hist_id.cmn'
       include 'bigcal_gain_parms.cmn'
       include 'bigcal_filenames.cmn'
+      include 'bigcal_bypass_switches.cmn'
       include 'gen_run_info.cmn'
 
       integer spareid
@@ -61,14 +62,15 @@ c            write(*,*) 'prot numped=',numped
      $              bigcal_prot_new_ped(icell) - 
      $              bigcal_prot_ped_mean(icell)
             endif
-
+c     if b_fix_double_ped parameter is nonzero, then use default pedestals and software thresholds
+c     for rows 29 and 30.
             if(numped.gt.bigcal_prot_min_peds.and.bigcal_prot_min_peds
      $           .ne.0) then
                bigcal_prot_ped_mean(icell)=bigcal_prot_new_ped(icell)
                bigcal_prot_ped_rms(icell)=bigcal_prot_new_rms(icell)
                bigcal_prot_adc_threshold(icell)=min(bigcal_prot_max_thresh,
      $              max(bigcal_prot_min_thresh,2.5*bigcal_prot_new_rms(icell)))
-
+               
                if(bid_bcal_ped_mean_prot.gt.0) then
                   call hf1(bid_bcal_ped_mean_prot,float(icell),
      $                 bigcal_prot_ped_mean(icell))
@@ -82,7 +84,7 @@ c            write(*,*) 'prot numped=',numped
                if(bid_bcal_pedw_prot.gt.0) then
                   call hf1(bid_bcal_pedw_prot,bigcal_prot_ped_rms(icell),1.)
                endif
-
+               
             endif
          enddo
       enddo

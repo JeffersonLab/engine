@@ -93,5 +93,18 @@ c$$$      enddo
 
 c     Decided gain_last, gain_now are redundant. Just use cfac and gain_cor!!!!
 
+c      b_ped_jump_first_time = .true.
+      b_ped_jump_njump_run = 0
+      b_ped_jump_in_progress = .false.
+
+      do icell=1,64
+         b_ped_jump_nped(icell) = 0
+         b_ped_jump_sum(icell) = 0
+         b_ped_jump_sum2(icell) = 0
+c         bigcal_prot_ped_mean(icell+28*32) = b_mean_ped_jump
+         b_ped_jump_new_mean(icell) = 0.
+         b_ped_jump_new_rms(icell) = 0.
+      enddo
+
       return 
       end
