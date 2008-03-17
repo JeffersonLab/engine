@@ -152,3 +152,33 @@
      $     bigcal_prot_gain_cor(bigcal_prot_npmt),
      $     bigcal_rcs_gain_cor(bigcal_rcs_npmt),
      $     bigcal_trig_gain_cor(bigcal_trig_ngroup)
+
+*     parameters for analysis of ped events:
+*     parameters for "pedestal jump" detection for the runs where this was a 
+*     problem in rows 29 and 30:
+      integer*4 b_ped_jump_min_peds ! number of events after jump to calc new ped
+      real*4 b_ped_jump_threshold ! minimum size of jump to calc new ped
+*
+*     CTPTYPE=event
+*     
+      integer*4 b_ped_jump_njump_run ! number of ped jumps detected in this run
+      integer*4 b_ped_jump_nped(64) ! number of peds recorded in channel
+      integer*4 b_ped_jump_sum(64) ! sum of raw adcs in "new" ped events
+      integer*4 b_ped_jump_sum2(64) ! sum of square of raw adcs in new ped events
+      real*4 b_ped_jump_new_mean(64) ! new pedestal for this channel, for now
+      real*4 b_ped_jump_new_rms(64) ! new pedestal width for this channel, for now
+      real*4 b_mean_ped_jump
+      real*4 b_rms_ped_jump
+      logical b_ped_jump_in_progress ! indicates new ped calculation is in progress
+      common/bigcal_ped_jump/
+     $     b_ped_jump_min_peds,
+     $     b_ped_jump_threshold,
+     $     b_ped_jump_njump_run,
+     $     b_ped_jump_nped,
+     $     b_ped_jump_sum,
+     $     b_ped_jump_sum2,
+     $     b_ped_jump_new_mean,
+     $     b_ped_jump_new_rms,
+     $     b_mean_ped_jump,
+     $     b_rms_ped_jump,
+     $     b_ped_jump_in_progress
