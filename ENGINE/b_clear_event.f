@@ -151,6 +151,9 @@ c$$$      enddo
 
       bigcal_itrack_best = 0
 
+      b_mean_ped_jump = 0.
+      b_rms_ped_jump = 0.
+
 *     don't need to do anything with hit arrays, since they are filled dynamically
 *     (other than zeroing the numbers of hits)
       call b_ntuple_clear
