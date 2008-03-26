@@ -48,13 +48,13 @@ c     first calculate a reference time:
 
       if(ntrigb.gt.0) then
          do i=1,ntrigb
-            if(i.eq.1.or.abs(gep_btime(i)-gep_btime_elastic).lt.mintdiff) then
+            if(i.eq.1.or.abs(gep_btime(i)-bigcal_window_center).lt.mintdiff) then
                btrigt = gep_btime(i)
-               mintdiff = abs(gep_btime(i)-gep_btime_elastic)
+               mintdiff = abs(gep_btime(i)-bigcal_window_center)
             endif
          enddo
       else
-         btrigt = gep_btime_elastic
+         btrigt = bigcal_window_center
       endif
 
       breftime = bigcal_end_time - btrigt

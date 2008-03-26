@@ -16,7 +16,7 @@
       include 'bigcal_bypass_switches.cmn'
 
       integer i,j,irow,icol,icell,ibin,xsector,ysector,foundbin,section
-      real xmom,ymom,xcenter,ycenter,xdiff,ydiff
+      real xmom,ymom,xcenter,ycenter,xdiff,ydiff,xshift,yshift
       real xpar(6),ypar(6)
       real mlo,mhi,binwidth,frac,frachi,fraclo,sizex,sizey
 
@@ -130,8 +130,13 @@ c     exit the do loop when we find the right bin.
  
  102        continue
 
-            bigcal_all_clstr_x(i) = xcenter + xdiff
-            bigcal_all_clstr_y(i) = ycenter + ydiff
+            xshift = bigcal_shower_map_shift(1) + (xcenter + xdiff)*
+     $           bigcal_shower_map_slope(1)
+            yshift = bigcal_shower_map_shift(2) + (ycenter + ydiff)*
+     $           bigcal_shower_map_slope(2)
+
+            bigcal_all_clstr_x(i) = xcenter + xdiff - xshift
+            bigcal_all_clstr_y(i) = ycenter + ydiff - yshift
 
          else
 

@@ -4,12 +4,42 @@
       save
       
       include 'bigcal_data_structures.cmn'
+      include 'bigcal_bypass_switches.cmn'
       include 'bigcal_geometry.cmn'
 
       integer ix,iy,icell,ixmin
 
       real xshift,yshift,xsize,ysize,xcenter,ycenter,xcell,diff
       real mindiff
+      real sumx,sumy,ylow
+
+      if(b_use_size_measurements.ne.0) then
+         sumx = 0.
+         sumy = 0.
+         do iy=1,bigcal_prot_ny
+            sumx = sumx + bigcal_psizex(iy)
+            sumy = sumy + bigcal_psizey(iy)
+         enddo
+         
+         bigcal_prot_size_x = sumx / float(bigcal_prot_ny)
+         bigcal_prot_size_y = sumy / float(bigcal_prot_ny)
+         
+         write(*,*) 'Average horizontal block size, protvino = ',bigcal_prot_size_x
+         write(*,*) 'Average vertical block size, protvino = ',bigcal_prot_size_y
+
+         sumx = 0.
+         sumy = 0.
+         do iy=1,bigcal_rcs_ny
+            sumx = sumx + bigcal_rsizex(iy)
+            sumy = sumy + bigcal_rsizey(iy)
+         enddo
+         
+         bigcal_rcs_size_x = sumx / float(bigcal_rcs_ny)
+         bigcal_rcs_size_y = sumy / float(bigcal_rcs_ny)
+
+         write(*,*) 'Average horizontal block size, rcs = ',bigcal_rcs_size_x
+         write(*,*) 'Average vertical block size, rcs = ',bigcal_rcs_size_y
+      endif
 
       xshift = BIGCAL_PROT_SHIFT_X
       yshift = BIGCAL_PROT_SHIFT_Y + bigcal_height
@@ -17,17 +47,34 @@
       xsize = BIGCAL_PROT_SIZE_X
       ysize = BIGCAL_PROT_SIZE_Y
       
-
       do ix=1,BIGCAL_PROT_NX
+
+         ylow = yshift
+
          do iy=1,BIGCAL_PROT_NY
+
+            if(b_use_size_measurements.ne.0) then
+               xsize = bigcal_psizex(iy)
+               ysize = bigcal_psizey(iy)
+            endif
+
             icell = ix + (iy-1)*BIGCAL_PROT_NX
-            xcenter = xshift + (ix - .5)*xsize
+
+            xcenter = xshift - ( bigcal_prot_nx - ix + .5 )*xsize
             ycenter = yshift + (iy - .5)*ysize
+
+            if(b_use_size_measurements.ne.0) then
+               ycenter = ylow + .5 * ysize
+               ylow = ylow + ysize
+            endif
 
             BIGCAL_PROT_XCENTER(icell) = xcenter
             BIGCAL_PROT_YCENTER(icell) = ycenter
             bigcal_all_xcenter(icell) = xcenter
             bigcal_all_ycenter(icell) = ycenter
+
+c            write(*,*) 'row,col,xblock,yblock=',iy,ix,xcenter,ycenter
+
          enddo
       enddo
 
@@ -38,16 +85,33 @@
       ysize = BIGCAL_RCS_SIZE_Y
 
       do ix=1,BIGCAL_RCS_NX
+
+         ylow = yshift
+
          do iy=1,BIGCAL_RCS_NY
+
+            if(b_use_size_measurements.ne.0) then
+               xsize = bigcal_rsizex(iy)
+               ysize = bigcal_rsizey(iy)
+            endif
+
             icell = ix + (iy-1)*BIGCAL_RCS_NX
-            xcenter = xshift + (ix - .5)*xsize
+            xcenter = xshift - ( bigcal_rcs_nx - ix + .5 )*xsize
             ycenter = yshift + (iy - .5)*ysize
+
+            if(b_use_size_measurements.ne.0) then
+               ycenter = ylow + .5 * ysize
+               ylow = ylow + ysize
+            endif
 
             BIGCAL_RCS_XCENTER(icell) = xcenter
             BIGCAL_RCS_YCENTER(icell) = ycenter
 
             bigcal_all_xcenter(icell + bigcal_prot_maxhits) = xcenter
             bigcal_all_ycenter(icell + bigcal_prot_maxhits) = ycenter
+
+c            write(*,*) 'row,col,xblock,yblock=',iy,ix,xcenter,ycenter
+            
          enddo
       enddo
 

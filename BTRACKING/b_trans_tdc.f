@@ -46,7 +46,7 @@
         endif
         thit = BIGCAL_TDC(ihit) * bigcal_tdc_to_time ! convert to ns 
         thit = bigcal_end_time - thit ! invert since we are in common-stop mode:
-        thit = thit - bigcal_g8_time_offset(itdc) 
+        thit = thit - bigcal_g8_time_offset(itdc) ! subtract offset
         
 c$$$        if(ntrigb.gt.0) then ! also subtract trigger time if there was a trigger
 c$$$           thit = thit - gep_btime(1)
@@ -54,23 +54,29 @@ c$$$        else
 c$$$           thit = thit - gep_btime_elastic
 c$$$        endif
 
-        if(ph.ge.bigcal_g8_phc_minph(itdc).and.ph.le.bigcal_g8_phc_maxph(itdc)) then
-           p0 = bigcal_g8_phc_p0(itdc)
-           p1 = bigcal_g8_phc_p1(itdc)
-           p2 = bigcal_g8_phc_p2(itdc)
-           p3 = bigcal_g8_phc_p3(itdc)
+* obsolete code: old way of walk-correcting the TDCS
 
-           tphc = p2 + (p0 + p1*ph)*exp(-p3*ph)
-        else
-           tphc = 0.
-        endif
+c$$$        if(ph.ge.bigcal_g8_phc_minph(itdc).and.ph.le.bigcal_g8_phc_maxph(itdc)) then
+c$$$           p0 = bigcal_g8_phc_p0(itdc)
+c$$$           p1 = bigcal_g8_phc_p1(itdc)
+c$$$           p2 = bigcal_g8_phc_p2(itdc)
+c$$$           p3 = bigcal_g8_phc_p3(itdc)
+c$$$
+c$$$           tphc = p2 + (p0 + p1*ph)*exp(-p3*ph)
+c$$$        else
+c$$$           tphc = 0.
+c$$$        endif
+
+*     new, better way of walk-correcting the TDCS based on analysis of HMS coincidence events
+
+        tphc = bigcal_g8_phc_coeff(itdc) / sqrt(max(ph,100.))
         
         thit = thit - tphc
         
         if(ntrigb.gt.0) then
            ttrig = bigcal_end_time - gep_btime(1)
         else
-           ttrig = bigcal_end_time - gep_btime_elastic
+           ttrig = bigcal_end_time - bigcal_window_center
         endif
 
         if(abs(thit - ttrig).le.bigcal_window_slop)then

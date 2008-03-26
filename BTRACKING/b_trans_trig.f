@@ -94,13 +94,13 @@ c     the maximum belongs
 
       if(ntrigb.gt.0) then
          do ihit=1,ntrigb
-            if(ihit.eq.1.or.abs(gep_btime(ihit)-gep_btime_elastic).lt.mintdiff) then
+            if(ihit.eq.1.or.abs(gep_btime(ihit)-bigcal_window_center).lt.mintdiff) then
                ttrig = bigcal_end_time - gep_btime(ihit)
-               mintdiff = abs(gep_btime(ihit)-gep_btime_elastic)
+               mintdiff = abs(gep_btime(ihit)-bigcal_window_center)
             endif
          enddo
       else
-         ttrig = bigcal_end_time - gep_btime_elastic
+         ttrig = bigcal_end_time - bigcal_window_center
       endif
       
       gep_btime_raw = ttrig
@@ -128,22 +128,26 @@ c$$$            if(ntrigb.gt.0) then ! also subtract trigger time if there was a
 c$$$c     subtract center of elastic timing window.
 c$$$               hit_time = hit_time - gep_btime(1)
 c$$$            else 
-c$$$               hit_time = hit_time - gep_btime_elastic
+c$$$               hit_time = hit_time - bigcal_window_center
 c$$$            endif
 c$$$            hit_time = hit_time - bigcal_g64_phc_coeff(icell64) * 
 c$$$     $           sqrt(max(0.,(ph/bigcal_g64_minph(icell64)-1.)))
 
-            if(ph.ge.bigcal_g64_phc_minph(icell64).and.ph.le.bigcal_g64_phc_maxph(icell64)
-     $           ) then
-               p0 = bigcal_g64_phc_p0(icell64)
-               p1 = bigcal_g64_phc_p1(icell64)
-               p2 = bigcal_g64_phc_p2(icell64)
-               p3 = bigcal_g64_phc_p3(icell64)
+* comment out obsolete code
 
-               tphc = p2 + (p0 + ph*p1)*exp(-p3*ph)
-            else
-               tphc = 0.
-            endif
+c$$$            if(ph.ge.bigcal_g64_phc_minph(icell64).and.ph.le.bigcal_g64_phc_maxph(icell64)
+c$$$     $           ) then
+c$$$               p0 = bigcal_g64_phc_p0(icell64)
+c$$$               p1 = bigcal_g64_phc_p1(icell64)
+c$$$               p2 = bigcal_g64_phc_p2(icell64)
+c$$$               p3 = bigcal_g64_phc_p3(icell64)
+c$$$
+c$$$               tphc = p2 + (p0 + ph*p1)*exp(-p3*ph)
+c$$$            else
+c$$$               tphc = 0.
+c$$$            endif
+
+            tphc = 0. ! no walk correction for trigger time, pulse height info not reliable
 
             hit_time = hit_time - tphc
 
@@ -227,6 +231,8 @@ c     check if the two hits match:
 c     walk-correct the trigger time now: 
 
 c      write(*,*) 'icell64best=',icell64best
+
+      icell64best = 0
 
       if(icell64best.gt.0) then
 c         write(*,*) 'adc64=',bigcal_atrig_good_det(icell64best)

@@ -21,6 +21,8 @@
       
       include 'bigcal_data_structures.cmn'
       include 'bigcal_tof_parms.cmn'
+      include 'bigcal_bypass_switches.cmn'
+      include 'gep_data_structures.cmn'
       include 'gen_data_structures.cmn'
 c      include 'bigcal_geometry.cmn'
       
@@ -49,14 +51,31 @@ c     just make sure that bigcal_end_time is bigger than bigcal_window_center!
 
       bigcal_tof_central = bigcal_r_tgt / (beta*c) ! in ns
 
+      if(bigcal_do_time_calib.ne.0) then ! open up timing cuts to avoid throwing away good hits
+         bigcal_window_slop = 500.
+         bigcal_end_time = 1000. ! always use same value for calibration
+         bigcal_window_center = 185. ! always use same value for calibration purposes.
+         b_timing_cut = 500. ! widen up cut
+      endif
+
       do i=1,bigcal_max_tdc
-         bigcal_g8_time_offset(i) = bigcal_g8_time_offset(i) + 
-     $        b_trig_offset 
+         if(bigcal_do_time_calib.ne.0) then ! zero hit time correction parameters when dumping for calibration
+            bigcal_g8_time_offset(i) = 0.
+            bigcal_g8_phc_p0(i) = 0.
+            bigcal_g8_phc_p1(i) = 0.
+            bigcal_g8_phc_p2(i) = 0.
+            bigcal_g8_phc_p3(i) = 0.
+         endif
       enddo
 
       do i=1,bigcal_ttrig_maxgroups
-         bigcal_g64_time_offset(i) = bigcal_g64_time_offset(i) + 
-     $        b_trig_offset 
+         if(bigcal_do_time_calib.ne.0) then ! zero hit time correction parameters
+            bigcal_g64_time_offset(i) = 0.
+            bigcal_g64_phc_p0(i) = 0.
+            bigcal_g64_phc_p1(i) = 0.
+            bigcal_g64_phc_p2(i) = 0.
+            bigcal_g64_phc_p3(i) = 0.
+         endif
       enddo
       
 
