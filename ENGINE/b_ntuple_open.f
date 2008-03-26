@@ -126,7 +126,7 @@ c$$$      endif
      $                'nhit8clust(10,nclust8)[0,8]:I*4,'//
      $                's8(10,nclust8),'//
      $                'tcell8(10,8,nclust8),tclust8(nclust8),'//
-     $                'tcut8(nclust8),tcut8cor(nclust8),'//
+     $                'tcut8(nclust8),tofcor8(nclust8),'//
      $                'trms8(nclust8)')
               endif
               
@@ -139,7 +139,7 @@ c$$$      endif
      $                'nhit64clust(6,nclust64)[0,8]:I*4,'//
      $                'tcell64(6,8,nclust64),a64(6,nclust64),'//
      $                's64(6,nclust64),tclust64(nclust64),'//
-     $                'tcut64(nclust64),tcut64cor(nclust64),'//
+     $                'tcut64(nclust64),tofcor64(nclust64),'//
      $                'trms64(nclust64)')
               endif
            endif
@@ -175,7 +175,7 @@ c        write(*,*) 'before adding hmsblk, gen_bigcal_mc=',gen_bigcal_mc
         if(gen_run_enable(5).ne.0.and.(gen_bigcal_mc.eq.3.or.
      $       gen_bigcal_mc.eq.0)) then
 c           write(*,*) 'adding block hmsblk to bigcal ntuple'
-           call HBNAME(id,'hmsblk',TH_HMS,'TH_HMS,PH_HMS,E_HMS,'//
+           call HBNAME(id,'hmsblk',T_HMS,'T_HMS,TH_HMS,PH_HMS,E_HMS,'//
      $          'X_HMS,Y_HMS,dPel_HMS')
         endif
       else if(bigcal_ntuple_type.eq.2) then ! col-wise ntuple for cosmics analysis

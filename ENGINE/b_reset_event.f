@@ -361,11 +361,11 @@ c     clear out cluster ntuple variables:
          ymoment(i) = 0.
          tclust8(i) = 0.
          tcut8(i) = 0.
-         tcut8cor(i) = 0.
+         tofcor8(i) = 0.
          trms8(i) = 0.
          tclust64(i) = 0.
          tcut64(i) = 0.
-         tcut64cor(i) = 0.
+         tofcor64(i) = 0.
          trms64(i) = 0.
          xclust(i) = 0.
          yclust(i) = 0.

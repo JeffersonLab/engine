@@ -24,7 +24,7 @@ c      integer itype
       character*80 name
       character*1000 pat,msg
       integer ilo,fn_len,m,i,j,k
-      character*1 ifile
+      character*2 ifile
 
       character*5 Ecelltag
       character*2 ixtag,iytag
@@ -72,7 +72,7 @@ c      write(*,*) 'b_ntuple_max_segmentevents=',b_ntuple_max_segmentevents
 
       if(b_ntuple_max_segmentevents.gt.0) then
          b_ntuple_filesegments = 1
-         ifile = char(ichar('0')+b_ntuple_filesegments)
+         ifile = '0'//char(ichar('0')+b_ntuple_filesegments)
          fn_len = g_important_length(file)
          ilo=index(file,'.hbook')
          if((ilo.le.1).or.(ilo.gt.fn_len-5))then
@@ -211,6 +211,10 @@ c     choose ntuple type based on input argument
          b_ntuple_tag(m) = 'vyh'
          m = m + 1
          b_ntuple_tag(m) = 'vzh'
+         m = m + 1 
+         b_ntuple_tag(m) = 'xptar'
+         m = m + 1
+         b_ntuple_tag(m) = 'yptar'
 
          b_ntuple_size = m
       endif

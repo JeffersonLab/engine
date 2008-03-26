@@ -12,7 +12,7 @@
       include 'b_ntuple.cmn'
       include 'gen_run_info.cmn'
 
-      character*1 ifile
+      character*2 ifile
       character*80 file
       character*1000 pat
 
@@ -36,9 +36,10 @@
       b_ntuple_filesegments = b_ntuple_filesegments + 1
       !write(*,*) 'computing ifile'
       if(b_ntuple_filesegments.lt.10) then
-         ifile = char(ichar('0')+b_ntuple_filesegments)
+         ifile = '0'//char(ichar('0')+b_ntuple_filesegments)
       else 
-         ifile = char(ichar('a')+b_ntuple_filesegments-10)
+         ifile = char(ichar('0')+b_ntuple_filesegments/10)//
+     $        char(ichar('0')+mod(b_ntuple_filesegments,10))
       endif
       !write(*,*), 'ifile = ',ifile
 

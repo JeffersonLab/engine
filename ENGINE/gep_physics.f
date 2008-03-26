@@ -108,13 +108,13 @@ c     good track):
 
       if(ntrigb.gt.0) then
          do i=1,ntrigb
-            if(i.eq.1.or.abs(gep_btime(i)-gep_btime_elastic).lt.mindiff) then
+            if(i.eq.1.or.abs(gep_btime(i)-bigcal_window_center).lt.mindiff) then
                btrigt = gep_btime(i)
-               mindiff = abs(gep_btime(i)-gep_btime_elastic)
+               mindiff = abs(gep_btime(i)-bigcal_window_center)
             endif
          enddo
       else
-         btrigt = gep_btime_elastic
+         btrigt = bigcal_window_center
       endif
 
 c     invert (common-stop) hms trigger times using the same user parameter as for BigCal:
@@ -127,7 +127,7 @@ c     invert (common-stop) hms trigger times using the same user parameter as fo
          htrigt = bigcal_end_time - gep_h2time(1)
       else ! shouldn't hardcode coin. trigger delay, but most data is taken with 
 c     16 ns delay of HMS trigger relative to BigCal trigger. Eventually set up a user param.
-         htrigt = bigcal_end_time - gep_btime_elastic + gep_htrig_delay
+         htrigt = bigcal_end_time - bigcal_window_center + gep_htrig_delay
       endif
       
 c     here are the possible scenarios for the coincidence trigger: 
@@ -166,7 +166,7 @@ c     expected electron energy:
       Ecal_hexpect = Eprime
 
       pthetarad = hstheta
-      pphirad = hsphi - 3.*PI/2.
+      pphirad = hsphi - 3.*PI/2. ! ~-PI/2.
 
 c     calculate proton momentum (assuming elastic) from hstheta:
 
@@ -205,16 +205,16 @@ c     we won't always get a sensible value. Just want to prevent annoying divide
       ! centered at +PI/2, while HMS is centered at -PI/2. However, since BigCal y means -target x
       ! we have to be careful. 
 
-      if(pphirad.gt.0) then 
-         pphirad = pphirad - PI
-      endif
+c$$$      if(pphirad.gt.0) then 
+c$$$         pphirad = pphirad - PI
+c$$$      endif
       
-      ephi_expect = pphirad + PI
+      ephi_expect = pphirad + PI ! ~+PI/2.
 
       ethetarad = etheta_expect 
 
       gep_etheta_expect_H = ethetarad
-      gep_ephi_expect_H = ephi_expect
+      gep_ephi_expect_H = ephi_expect ! ~+PI/2.
      
 c     first calculate exhat,eyhat,ezhat in target coordinates so there is no ambiguity: 
       
@@ -345,7 +345,7 @@ c     could get a "NaN" error here: check:
       bigcal_time = bigcal_track_time(ibest_cal)
       bigcal_tof_cor = bigcal_tof - bigcal_tof_central
       bigcal_ctime = bigcal_track_time(ibest_cal) - bigcal_tof_cor - 
-     $     (bigcal_end_time - gep_btime_elastic)
+     $     (bigcal_end_time - bigcal_window_center)
 
       gep_ctime_hms = hoffset_ctime
       gep_ctime_cal = bigcal_ctime
@@ -391,8 +391,8 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       GEP_epsilon = 1./(1.+2.*(1.+GEP_Q2/(4.*Mp**2))*(tan(bigcal_thetarad/2.))**2)
       GEP_etheta_deg = bigcal_thetarad * 180./PI
       GEP_ptheta_deg = hstheta * 180./PI
-      GEP_ephi_deg = bigcal_phirad * 180./PI + 90.
-      GEP_pphi_deg = pphirad * 180./PI
+      GEP_ephi_deg = bigcal_phirad * 180./PI + 90. !~+90 deg
+      GEP_pphi_deg = pphirad * 180./PI !~-90 deg
 
       GEP_Emiss = gebeam + Mp - hsenergy - bigcal_energy
       GEP_Pmissx = -bigcal_py + hsp*sin(hstheta)*cos(pphirad)
@@ -434,11 +434,11 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
             endif
             
             TH_cal = bigcal_track_thetarad(itrack)
-            PH_cal = bigcal_track_phirad(itrack) + PI/2.
+            PH_cal = bigcal_track_phirad(itrack) + PI/2. ! ~+PI/2.
 
 
             T_cal = bigcal_track_time(itrack) - bigcal_track_tof_cor(itrack) -
-     $           (bigcal_end_time - gep_btime_elastic)
+     $           (bigcal_end_time - bigcal_window_center)
             X_cal = bigcal_all_clstr_x(itrack)
             Y_cal = bigcal_all_clstr_y(itrack)
 

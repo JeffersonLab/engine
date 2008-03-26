@@ -185,9 +185,9 @@ c     zero all cells and all hits of all cells above ncell64clust
             tclust8(iclust) = bigcal_all_clstr_t8mean(iclust)
             tclust64(iclust) = bigcal_all_clstr_t64mean(iclust)
             tcut8(iclust) = bigcal_all_clstr_t8cut(iclust)
-            tcut8cor(iclust) = bigcal_all_clstr_t8cut_cor(iclust)
+            tofcor8(iclust) = bigcal_all_clstr_t8cut_cor(iclust)
             tcut64(iclust) = bigcal_all_clstr_t64cut(iclust)
-            tcut64cor(iclust) = bigcal_all_clstr_t64cut_cor(iclust)
+            tofcor64(iclust) = bigcal_all_clstr_t64cut_cor(iclust)
             trms8(iclust) = bigcal_all_clstr_t8rms(iclust)
             trms64(iclust) = bigcal_all_clstr_t64rms(iclust)
 
@@ -216,7 +216,7 @@ c     $           eclust(iclust)
             py(iclust) = bigcal_track_py(iclust)
             pz(iclust) = bigcal_track_pz(iclust)
             ctime_clust(iclust) = bigcal_track_coin_time(iclust) - 
-     $           (bigcal_end_time - gep_btime_elastic)
+     $           (bigcal_end_time - bigcal_window_center)
 
             if(bgtype.eq.6.and.ibest>0) then
 c               write(*,*) 'chi2=',bigcal_all_clstr_chi2(iclust)
@@ -265,6 +265,7 @@ c$$$     $        ngoodtt,irowmax,icolmax,max_adc
 
          if(bgtype.eq.6.and.ibest>0) then ! this always assumes elastic kinematics--won't always make sense!
 c            E_HMS = gebeam - gep_Q2_H/(2.*Mp)
+            T_HMS = gep_ctime_hms
             TH_HMS = gep_etheta_expect_h
             PH_HMS = gep_ephi_expect_h - PI/2. 
 
@@ -275,6 +276,7 @@ c            write(*,*) 'thetaH,phiH,dpel=',th_hms,ph_hms
             dPel_HMS = (gep_p_proton - gep_pel_htheta) / hpcentral ! useful to isolate elastics
 c            write(*,*) 'e_hms,x_hms,y_hms,dpel=',e_hms,x_hms,y_hms,dpel_hms
          else
+            T_HMS = -9999.
             TH_HMS = -9999.
             PH_HMS = -9999.
             E_HMS = -9999.
@@ -378,7 +380,7 @@ c$$$  $             yt(nthit),hn(nthit),tt(nthit)
          if(ntrigB.gt.0) then
             b_ntuple_contents(m) = bigcal_end_time - gep_btime(1)
          else
-            b_ntuple_contents(m) = bigcal_end_time - gep_btime_elastic
+            b_ntuple_contents(m) = bigcal_end_time - bigcal_window_center
          endif
          m=m+1
          b_ntuple_contents(m) = float(bigcal_all_ngood)
@@ -449,7 +451,7 @@ c$$$  $             yt(nthit),hn(nthit),tt(nthit)
          b_ntuple_contents(m) = bigcal_track_energy(ibest)
          m=m+1
          b_ntuple_contents(m) = bigcal_track_coin_time(ibest) - 
-     $        (bigcal_end_time - gep_btime_elastic)
+     $        (bigcal_end_time - bigcal_window_center)
          m=m+1
          b_ntuple_contents(m) = bigcal_track_tof_cor(ibest)
          m=m+1
@@ -475,7 +477,7 @@ c$$$  $             yt(nthit),hn(nthit),tt(nthit)
             m=m+1
             b_ntuple_contents(m) = gep_etheta_expect_h
             m=m+1
-            b_ntuple_contents(m) = gep_ephi_expect_h
+            b_ntuple_contents(m) = gep_ephi_expect_h - PI/2.
             m=m+1
             b_ntuple_contents(m) = gep_bx_expect_h
             m=m+1
@@ -492,6 +494,10 @@ c$$$  $             yt(nthit),hn(nthit),tt(nthit)
             b_ntuple_contents(m) = gbeam_y
             m=m+1
             b_ntuple_contents(m) = hszbeam
+            m=m+1
+            b_ntuple_contents(m) = hsxp_tar
+            m=m+1 
+            b_ntuple_contents(m) = hsyp_tar
          else
             b_ntuple_contents(m) = -1.
             m=m+1
@@ -528,6 +534,10 @@ c$$$  $             yt(nthit),hn(nthit),tt(nthit)
             b_ntuple_contents(m) = gbeam_y
             m=m+1
             b_ntuple_contents(m) = 0.
+            m=m+1 
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = -999.
          endif
       endif
       
