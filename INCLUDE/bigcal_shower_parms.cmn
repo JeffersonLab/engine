@@ -49,6 +49,8 @@ c      real*4 BIGCAL_ASHAPE_D
      $     BIGCAL_ASHAPE_BX,
      $     BIGCAL_ASHAPE_BY
       
+      real*4 bigcal_shower_map_shift(2) ! 1=X, 2=Y
+      real*4 bigcal_shower_map_slope(2) ! 1=X, 2=Y
 
       integer*4 bigcal_xmap_nbin(28)
       integer*4 bigcal_ymap_nbin(28)
@@ -65,6 +67,8 @@ c      real*4 BIGCAL_ASHAPE_D
       real*4 bigcal_ymap_yfrac(28,100)
 
       common/bigcal_map_parms/
+     $     bigcal_shower_map_shift,
+     $     bigcal_shower_map_slope,
      $     bigcal_xmap_nbin,
      $     bigcal_ymap_nbin,
      $     bigcal_xmap_mmin,

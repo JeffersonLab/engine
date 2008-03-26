@@ -17,8 +17,10 @@
       integer*4 bdebug_print_clusters
       integer*4 b_use_bad_chan_list
       integer*4 bigcal_do_calibration
+      integer*4 bigcal_do_time_calib
       integer*4 bigcal_min_calib_events
       integer*4 b_use_peds_in_hist
+      integer*4 b_use_size_measurements
       integer*4 b_suppress_annoying_pulser
       integer*4 b_recon_using_map
       integer*4 b_fix_double_ped
@@ -42,8 +44,10 @@ c      integer*4 bmake_ttdc_hist
      $     bdebug_print_clusters,
      $     b_use_bad_chan_list,
      $     bigcal_do_calibration,
+     $     bigcal_do_time_calib,
      $     bigcal_min_calib_events,
      $     b_use_peds_in_hist,
+     $     b_use_size_measurements,
      $     b_suppress_annoying_pulser,
      $     b_recon_using_map,
      $     b_fix_double_ped,

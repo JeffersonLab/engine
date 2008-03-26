@@ -15,7 +15,7 @@
 
       real*4 BIGCAL_ALL_XCENTER(BIGCAL_ALL_NCELL)
       real*4 BIGCAL_ALL_YCENTER(BIGCAL_ALL_NCELL)
-      
+*     average size values:
       real*4 BIGCAL_PROT_SIZE_X 
       real*4 BIGCAL_PROT_SIZE_Y 
       real*4 BIGCAL_PROT_SIZE_Z
@@ -26,6 +26,12 @@
       real*4 BIGCAL_PROT_SHIFT_Y 
       real*4 BIGCAL_RCS_SHIFT_X 
       real*4 BIGCAL_RCS_SHIFT_Y 
+
+*     measured values, row by row:
+      real*4 bigcal_psizex(32)
+      real*4 bigcal_psizey(32)
+      real*4 bigcal_rsizex(24)
+      real*4 bigcal_rsizey(24)
 
       common/bigcal_geometry/
      $     BIGCAL_PROT_XCENTER,
@@ -43,5 +49,9 @@
      $     BIGCAL_PROT_SHIFT_X,
      $     BIGCAL_PROT_SHIFT_Y,
      $     BIGCAL_RCS_SHIFT_X,
-     $     BIGCAL_RCS_SHIFT_Y
+     $     BIGCAL_RCS_SHIFT_Y,
+     $     bigcal_psizex,
+     $     bigcal_psizey,
+     $     bigcal_rsizex,
+     $     bigcal_rsizey
 
