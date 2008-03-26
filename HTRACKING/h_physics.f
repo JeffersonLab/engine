@@ -20,6 +20,9 @@
 *-                           Dummy Shell routine
 *
 * $Log$
+* Revision 1.23.20.3  2008/03/26 14:35:35  puckett
+* changed atan to atan2 for hsphi calculation
+*
 * Revision 1.23.20.2  2007/11/06 19:14:42  cdaq
 *  fix zbeam calculation
 *
@@ -248,8 +251,12 @@ C new 'modeled' value.
      &              -0.0154*hsx_fp       - 72.292*hsxp_fp**2
      &              -0.0000544*hsx_fp**2 - 116.52*hsyp_fp**2
 
+      
+
+c      write(*,*) 'path length =',hspathlength
+
       hspath_cor = hspathlength/hsbeta_p -
-     &      hpathlength_central/speed_of_light*(1/max(.01,hsbeta_p) - 1)
+     &      hpathlength_central/speed_of_light*(1./max(.01,hsbeta_p) - 1.)
 
       hsrftime = hmisc_dec_data(49,1)/9.46
      &         - (hstime_at_fp-hstart_time_center) - hspath_cor
@@ -366,7 +373,8 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
       else
         hstheta = -10.
       endif
-      hsphi = atan(hs_kpvec(3)/hs_kpvec(2))
+c      hsphi = atan(hs_kpvec(3)/hs_kpvec(2))
+      hsphi = atan2(hs_kpvec(3),hs_kpvec(2)) ! resolve correct quadrant
 
       sinhstheta = sin(hstheta)
       coshstheta = cos(hstheta)
