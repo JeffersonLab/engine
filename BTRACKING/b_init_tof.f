@@ -61,20 +61,21 @@ c     just make sure that bigcal_end_time is bigger than bigcal_window_center!
       do i=1,bigcal_max_tdc
          if(bigcal_do_time_calib.ne.0) then ! zero hit time correction parameters when dumping for calibration
             bigcal_g8_time_offset(i) = 0.
-            bigcal_g8_phc_p0(i) = 0.
-            bigcal_g8_phc_p1(i) = 0.
-            bigcal_g8_phc_p2(i) = 0.
-            bigcal_g8_phc_p3(i) = 0.
+            bigcal_g8_phc_coeff(i) = 0.
+c            bigcal_g8_phc_p0(i) = 0.
+c            bigcal_g8_phc_p1(i) = 0.
+c            bigcal_g8_phc_p2(i) = 0.
+c            bigcal_g8_phc_p3(i) = 0.
          endif
       enddo
 
       do i=1,bigcal_ttrig_maxgroups
          if(bigcal_do_time_calib.ne.0) then ! zero hit time correction parameters
             bigcal_g64_time_offset(i) = 0.
-            bigcal_g64_phc_p0(i) = 0.
-            bigcal_g64_phc_p1(i) = 0.
-            bigcal_g64_phc_p2(i) = 0.
-            bigcal_g64_phc_p3(i) = 0.
+c            bigcal_g64_phc_p0(i) = 0.
+c            bigcal_g64_phc_p1(i) = 0.
+c            bigcal_g64_phc_p2(i) = 0.
+c            bigcal_g64_phc_p3(i) = 0.
          endif
       enddo
       
