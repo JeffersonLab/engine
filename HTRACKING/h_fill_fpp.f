@@ -86,6 +86,17 @@
         enddo
       enddo
 
+*     * for each plane, wire, histogram hit counts (rate)
+      do iPlane=1,H_FPP_N_PLANES
+	hid  = hidFPP_rate1(iPlane)
+        do iWire=1,HFPP_Nwires(iPlane)
+	  iHit = HFPP_hit1idx(iPlane,iWire)
+	  if (iHit.gt.0) then
+	    call hf1(hid,float(iWire),1.)  !hit rate per wire
+          endif
+        enddo
+      enddo
+
 *     * for each plane, wire, histogram time difference between 1st and 2nd hit seen
       do iPlane=1,H_FPP_N_PLANES
         do iWire=1,HFPP_Nwires(iPlane)
@@ -107,15 +118,9 @@
      >    	 + H_FPP_N_DCLAYERS * (iChamber-1)
      >    	 + iLayer
           hid1 = hidFPP_rawinclust(iPlane)
-	  hid2 = hidFPP_rate1(iPlane)
 	  do iCluster=1,HFPP_nClusters(DCset,iChamber,iLayer)
 	    Nraw = HFPP_nHitsinCluster(DCset,iChamber,iLayer,iCluster)
 	    call hf1(hid1,float(Nraw),1.)  !number of raw in cluster
-            do iRaw=1,Nraw
-              iHit = HFPP_Clusters(DCset,iChamber,iLayer,iCluster,iRaw)
-	      iWire = HFPP_raw_wire(iHit)
-	      call hf1(hid2,float(iWire),1.)  !hit rate per wire
-	    enddo !iRaw
 	  enddo !iCluster
 	enddo !iLayer
        enddo !iChamber
