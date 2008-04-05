@@ -32,13 +32,16 @@
       logical ABORT
       character*(*) err
 
-      integer*4 Plane, Wire
+      integer*4 Plane, Wire, Card
       integer*4 Set,Chamber,Layer
       integer*4 ii,p,i,j
       integer*4 binno
 
       real*4 correction, fraction, a
       real*8 mx8,my8,mu8,Px8,Py8,alpha8
+
+      real*4 hfpp_driftmap7(H_FPP_N_PLANES,13,H_FPP_DRIFT_MAX_BINS)
+      common /HMS_FPP_drift7/ hfpp_driftmap7
 
       real*4 ejbtime			! really simple time to distance calc
       real*4 ejbdrift			! really simple time to distance calc
@@ -242,6 +245,7 @@ c      write(*,*)'Drift type = ',hfpp_drift_type
             RETURN
           endif
 
+
       elseif (hfpp_drift_type.eq.4) then	! constant speed **************
 
           if (drift_time.gt.hfpp_drift_Tmax) then
@@ -281,6 +285,61 @@ c      write(*,*)'Drift type = ',hfpp_drift_type
           if (drift_distance.gt.hfpp_drift_Xmax) then
             drift_distance = H_FPP_BAD_DRIFT
             RETURN
+          endif
+
+          if (drift_distance.lt.0.0) then
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          endif
+
+
+      elseif (hfpp_drift_type.eq.7) then		! per-card table ***************
+
+          if (drift_time.lt.hfpp_drift_Tmin .or.
+     >        drift_time.gt.hfpp_drift_Tmax	 ) then   ! skip rare random/early hit
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          endif
+
+*         * find closest time bin for drift map
+          binno = 1 + int((drift_time-hfpp_drift_Tmin)/hfpp_drift_dT)
+          if (binno.lt.1 .or. binno.ge.hfpp_drift_Nbins) then	! should never happen
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          endif
+
+*         * determine amplifier card No corresponding to wire No
+          Card = 1 + int((Wire-1)/8)
+          
+          if (Card.lt.1.or.Card.gt.13.or.(Layer.eq.2.and.Card.gt.11)) then
+            print *,'\n Bad Drift Calculation:  Set=',Set,' Chamber=',Chamber,' Layer=',Layer
+            print *,'                         Plane=',Plane,' Wire=',Wire,' Card=',Card
+            drift_distance = H_FPP_BAD_DRIFT
+            RETURN
+          endif
+
+*         * interpolate between two relevant time bins
+          fraction = (drift_time-hfpp_drift_Tmin) / hfpp_drift_dT
+          binno = 1 + int(fraction)
+          fraction = fraction - float(binno) - 1.5  ! range -0.5 to 0.5
+
+          if (fraction.lt.0.0) then !below midpoint
+            fraction = -1.0*fraction
+            if (binno.eq.1) then  !already at bottom bin
+              drift_distance = 2.0 * (1.0-fraction) * hfpp_driftmap7(Layer,Card,binno)  !assume bottom edge of bin is 0 drift
+            else
+              drift_distance =      fraction  * hfpp_driftmap7(Layer,Card,binno-1)
+     >    		     + (1.0-fraction) * hfpp_driftmap7(Layer,Card,binno)
+            endif
+
+          else  		    !above midpoint
+            if (binno.eq.hfpp_drift_Nbins) then  !already at top bin
+              drift_distance = H_FPP_BAD_DRIFT
+              RETURN
+            else
+              drift_distance =      fraction  * hfpp_driftmap7(Layer,Card,binno+1)
+     >    		     + (1.0-fraction) * hfpp_driftmap7(Layer,Card,binno)
+            endif
           endif
 
           if (drift_distance.lt.0.0) then
@@ -364,9 +423,12 @@ c==============================================================================
       character*(*) err
 
       integer LUN
-      integer*4 i,Plane
+      integer*4 i,Plane,Card
       real*4 rflag
       real*4 timebins(H_FPP_DRIFT_MAX_BINS)
+
+      real*4 hfpp_driftmap7(H_FPP_N_PLANES,13,H_FPP_DRIFT_MAX_BINS)
+      common /HMS_FPP_drift7/ hfpp_driftmap7
 
       real*4 ejbtime			! really simple time to distance calc
       real*4 ejbdrift			! really simple time to distance calc
@@ -492,6 +554,51 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
           print *,' The applicability range of this drift map is:'
           print *,'  ',hfpp_drift_Tmin,' ns < t_drift < ',hfpp_drift_Tmax,' ns'
           print *,' with a maximum drift distance of ',hfpp_drift_Xmax,' cm.\n'
+
+
+      elseif (hfpp_drift_type.eq.7) then		! per-card table ***************
+
+          read(LUN,*,err=902,end=900) hfpp_drift_Nbins
+
+	  if (hfpp_drift_Nbins.gt.H_FPP_DRIFT_MAX_BINS) then
+	    hfpp_drift_Nbins = H_FPP_DRIFT_MAX_BINS
+            write(err,*) 'Too many bins in FPP drift map ',hfpp_driftmap_filename
+            call g_rep_err(ABORT,err)
+	  endif
+
+ 700      continue
+          read(LUN,*,err=902,end=900) Plane
+
+          if (Plane.lt.1.or.Plane.gt.H_FPP_N_PLANES) goto 707
+
+            do i=1,hfpp_drift_Nbins
+	      read(LUN,*,err=902,end=900) 
+     >               timebins(i), (hfpp_driftmap7(Plane,Card,i),Card=1,13)
+	    enddo !i
+
+	  goto 700
+
+ 707      continue
+
+
+          if (hfpp_drift_Nbins.gt.2) then
+            hfpp_drift_dT = timebins(2) - timebins(1)      !midpoints of bin!!!
+            hfpp_drift_Tmin = timebins(1)
+     >      		    - 0.5*hfpp_drift_dT
+            hfpp_drift_Tmax = timebins(hfpp_drift_Nbins)
+     >                      + 0.5*hfpp_drift_dT
+          else
+            write(err,*) 'Only ',hfpp_drift_Nbins,' entries for FPP drift map ',hfpp_driftmap_filename
+            call g_rep_err(ABORT,err)
+          endif
+
+          if (hfpp_drift_Nbins.le.0) goto 902
+          if (hfpp_drift_dT.le.0.0) goto 902
+
+          print *,' The selected drift map file uses a look-up table to determine'
+          print *,' the drift in the focal plane polarimeter chambers, [47;34;1mone per card![49;0m'
+          print *,' The selected map has ',hfpp_drift_Nbins,' time bins and a maximum.'
+          print *,' drift distance of ',hfpp_drift_Xmax,' cm.\n'
 
       else					! bad selector ****************
           goto 904
