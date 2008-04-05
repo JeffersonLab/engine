@@ -86,14 +86,16 @@ c      write(*,*)'In h_trans_fpp ... ',HFPP_raw_tot_hits
 
 
 *     * find TDC trigger time!!  skip whatever we can!
-      do rawhitidx=1, HFPP_raw_tot_hits
-	if (HFPP_raw_plane(rawhitidx).lt.HFPP_trigger_plane) CYCLE
-	if (HFPP_raw_wire(rawhitidx) .ne.HFPP_trigger_wire)  CYCLE
+      if ( FPP_CRATE_VME ) then
+        do rawhitidx=1, HFPP_raw_tot_hits
+          if (HFPP_raw_plane(rawhitidx).lt.HFPP_trigger_plane) CYCLE
+          if (HFPP_raw_wire(rawhitidx) .ne.HFPP_trigger_wire)  CYCLE
 
-        ROC = g_decode_roc(HFPP_ID,HFPP_raw_plane(rawhitidx),
-     >                             HFPP_raw_wire(rawhitidx),0)
-	HFPP_trigger_TDC(ROC) = HFPP_raw_TDC(rawhitidx)
-      enddo !rawhitidx
+          ROC = g_decode_roc(HFPP_ID,HFPP_raw_plane(rawhitidx),
+     >                               HFPP_raw_wire(rawhitidx),0)
+          HFPP_trigger_TDC(ROC) = HFPP_raw_TDC(rawhitidx)
+        enddo !rawhitidx
+      endif
 
 
 *     * identify raw hits by planes -- assume unsorted raw data
@@ -114,38 +116,37 @@ c      write(*,*)'In h_trans_fpp ... ',HFPP_raw_tot_hits
 
 
            if ( FPP_CRATE_VME ) then
-*          * the above cuts also weed out the already processed trigger reference time!
+*             * the above cuts also weed out the already processed trigger reference time!
 
-*          * TDC times from F1 TDC are meaningful only relative to each other
-*          * thus we need to subtract the measured trigger time!
-*          * also account for the case that the wire hit times
-*          * may have rolled over but the trigger time did not!
-           ROC = g_decode_roc(HFPP_ID,iPlane,iWire,0)
+*             * TDC times from F1 TDC are meaningful only relative to each other
+*             * thus we need to subtract the measured trigger time!
+*             * also account for the case that the wire hit times
+*             * may have rolled over but the trigger time did not!
+              ROC = g_decode_roc(HFPP_ID,iPlane,iWire,0)
 
-	   if (HFPP_trigger_TDC(ROC).lt.0) then  ! missing trigger time?!!
-             call G_build_note(':(FPP) TDC data in ROC $ missing trigger reference!',
-     &                        '$',ROC, ' ',0.,' ', err)
-             call G_add_path(here,err)
-	     RETURN
-	   endif
+	      if (HFPP_trigger_TDC(ROC).lt.0) then  ! missing trigger time?!!
+                call G_build_note(':(FPP) TDC data in ROC $ missing trigger reference!',
+     &                           '$',ROC, ' ',0.,' ', err)
+                call G_add_path(here,err)
+	        RETURN
+	      endif
 
-*          * although we operate in COMMON STOP mode, the F1 TDCs are free-running
-*          * counters, so as time passes the count value increases
-*          * ignoring the overflow due to the limited counting range that means
-*          * earlier events should have a smaller TDC count than later events
-*          * the trigger should be the last signal and ought to have the largest
-*          * value; if it does not, we have a roll-over of the trigger time
-           if (HFPP_raw_TDC(rawhitidx) .gt. HFPP_trigger_TDC(ROC)) then
-	     tdiff = HFPP_raw_TDC(rawhitidx) - HFPP_trigger_TDC(ROC)
-     >                                    - F1TDC_WINDOW_SIZE(ROC)
-	   else
-	     tdiff = HFPP_raw_TDC(rawhitidx) - HFPP_trigger_TDC(ROC)
-	   endif
+*             * although we operate in COMMON STOP mode, the F1 TDCs are free-running
+*             * counters, so as time passes the count value increases
+*             * ignoring the overflow due to the limited counting range that means
+*             * earlier events should have a smaller TDC count than later events
+*             * the trigger should be the last signal and ought to have the largest
+*             * value; if it does not, we have a roll-over of the trigger time
+              if (HFPP_raw_TDC(rawhitidx) .gt. HFPP_trigger_TDC(ROC)) then
+	        tdiff = HFPP_raw_TDC(rawhitidx) - HFPP_trigger_TDC(ROC)
+     >                                       - F1TDC_WINDOW_SIZE(ROC)
+	      else
+	        tdiff = HFPP_raw_TDC(rawhitidx) - HFPP_trigger_TDC(ROC)
+	      endif
 c use fastbus crate for data taken after Mar 2008
            else
-              tdiff = HFPP_raw_TDC(rawhitidx)
+              tdiff = -1 * HFPP_raw_TDC(rawhitidx)
               HFPP_tdc_time_per_channel = 0.5
-              HFPP_tDriftOffset(iPlane,iWire) = -HFPP_tDriftOffset(iPlane,iWire)
            endif
 c
 	   HFPP_HitTime(rawhitidx) = HFPP_tDriftOffset(iPlane,iWire)
@@ -157,9 +158,9 @@ c
              hit_pointer(iPlane,hitno) = rawhitidx   ! local -- all raw hits
            endif
 
-        else
-	  print *,' NOTE: FPP hit outside accepted time window: plane,wire,TDC= ',
-     >               iPlane,iWire,HFPP_raw_TDC(rawhitidx)
+c        else
+c	  print *,' NOTE: FPP hit outside accepted time window: plane,wire,TDC= ',
+c     >               iPlane,iWire,HFPP_raw_TDC(rawhitidx)
 	endif
       enddo !rawhitidx
 
