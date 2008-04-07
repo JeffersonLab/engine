@@ -5,6 +5,9 @@
 *     Author:   D. F. Geesaman          1 September 1993
 *
 * $Log$
+* Revision 1.12.20.3  2008/04/07 20:22:28  cdaq
+* re-enabled BAD_DRIFT to be non-zero
+*
 * Revision 1.12.20.2  2008/03/01 17:04:35  cdaq
 *  updated for data using the fastbus crate
 *
@@ -729,7 +732,7 @@
       parameter (H_FPP_BAD_CHI2=9876.54321)
 
       real*4  H_FPP_BAD_DRIFT        ! identifies bad drift distance
-      parameter (H_FPP_BAD_DRIFT=0.0)
+      parameter (H_FPP_BAD_DRIFT=-99.0)
 c
       logical FPP_CRATE_VME
       common /FPP_CRATE/ FPP_CRATE_VME
