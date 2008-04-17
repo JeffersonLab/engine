@@ -24,6 +24,8 @@
       integer*4 b_suppress_annoying_pulser
       integer*4 b_recon_using_map
       integer*4 b_fix_double_ped
+      integer*4 b_use_cointime_cut
+      logical   b_passed_cointime_cut
 c      integer*4 bmake_tdc_hist
 c      integer*4 bmake_ttdc_hist
       integer*4 bluno ! logical unit number for debugging output
@@ -51,5 +53,7 @@ c      integer*4 bmake_ttdc_hist
      $     b_suppress_annoying_pulser,
      $     b_recon_using_map,
      $     b_fix_double_ped,
+     $     b_use_cointime_cut,
+     $     b_passed_cointime_cut,
      $     bluno
       

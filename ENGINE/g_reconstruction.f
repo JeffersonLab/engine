@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.10  2008/04/17 16:37:07  cdaq
+*  added b_use_cointime_cut
+*
 * Revision 1.13.24.9  2008/01/08 22:43:13  cdaq
 * *** empty log message ***
 *
@@ -99,11 +102,13 @@
       INCLUDE 'hack_.cmn'
       include 'bigcal_data_structures.cmn'
       include 'bigcal_bypass_switches.cmn'
+      include 'gep_data_structures.cmn'
 *     
       logical FAIL
       character*1024 why
 *
       logical update_peds               ! TRUE = There is new pedestal data
+      integer i
 *--------------------------------------------------------
 *
       ABORT= .FALSE.
@@ -157,6 +162,16 @@ c         write(*,*) 'found annoying pulser event, skipping'
          return
       endif
 
+      if((gen_event_trigtype(4).eq.1.or.gen_event_trigtype(1).eq.1).and.
+     $     gep_bypass_coin1.ne.0) then
+         return
+      endif
+      
+      if((gen_event_trigtype(5).eq.1.or.gen_event_trigtype(2).eq.1).and.
+     $     gep_bypass_coin2.ne.0) then
+         return
+      endif
+
       if(gen_event_type.ge.1.and.gen_event_type.le.8.and.gen_analyze_beamline
      $     .ne.0) then
          !write(*,*) 'calling g_trans_misc'
@@ -179,6 +194,17 @@ c         write(*,*) 'found annoying pulser event, skipping'
         ENDIF
         ABORT= ABORT .or. FAIL
       ENDIF
+c mkj add cut on coincidence time to remove accidentals
+      b_passed_cointime_cut = .true.
+      if ( b_use_cointime_cut .eq. 1) then
+         b_passed_cointime_cut = .false.
+         do i=1,8
+            if ( gep_btime(i) .gt. 162. .and. gep_btime(i) .lt. 300. )
+     >               b_passed_cointime_cut = .true.
+         enddo
+         if (.not. b_passed_cointime_cut)   return
+      endif
+c
 *
 *-HMS reconstruction
 c      IF(gen_event_type.eq.1 .or. gen_event_type.eq.3) then  !HMS/COIN trig

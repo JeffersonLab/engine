@@ -11,6 +11,9 @@
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *
 * $Log$
+* Revision 1.6.24.4  2008/04/17 16:37:15  cdaq
+*  added b_use_cointime_cut
+*
 * Revision 1.6.24.3  2007/09/12 14:40:03  brash
 * *** empty log message ***
 *
@@ -55,6 +58,7 @@
       include 'hms_data_structures.cmn'
       INCLUDE 'hms_fpp_params.cmn'
       INCLUDE 'hms_fpp_event.cmn'
+      INCLUDE 'bigcal_bypass_switches.cmn'
 *
       character*50 here
       parameter (here= 'H_keep_results')
@@ -69,7 +73,7 @@
       ABORT= .FALSE.
       err= ' '
 *
-      if(HSNUM_FPTRACK.gt.0) call h_ntuple_keep(ABORT,err)! check for good tracks
+      if(HSNUM_FPTRACK.gt.0 .and. b_passed_cointime_cut) call h_ntuple_keep(ABORT,err)! check for good tracks
 *
       IF(ABORT) THEN
          call G_add_path(here,err)
