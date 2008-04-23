@@ -5,8 +5,8 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
-* Revision 1.23.20.14  2008/04/10 02:37:57  cdaq
-* suppress excessive error messages
+* Revision 1.23.20.15  2008/04/23 18:02:31  cdaq
+* *** empty log message ***
 *
 * Revision 1.23.20.13  2007/10/22 18:39:00  cdaq
 * adjusted HMS FPP histos
@@ -155,11 +155,6 @@
 *
       integer*4 jishft, jiand, jieor
 *     
-      integer*4 shitskip
-      common /HMSgDfbD/ shitskip
-      data shitskip /100/
-*
-*
       printerr = .true.
       pointer = 1
       newdid = did
@@ -175,11 +170,10 @@
           goto 987
 ! Check for extra events in FB modules on sync events
         else if(jieor(jiand(evfrag(pointer),'FFFF0000'x),'DCFE0000'x).eq.0) then
-c temporarily comment out
-c          write(6,'(a,i2,a,i3,a,i3,a,i10)') 'ROC',roc,': Slot'
-c     $         ,jiand(jishft(evfrag(pointer),-11),'1F'x),': '
-c     $         ,jiand(evfrag(pointer),'7FF'x),' extra events, event=',
-c     &         gen_event_id_number
+          write(6,'(a,i2,a,i3,a,i3,a,i10)') 'ROC',roc,': Slot'
+     $         ,jiand(jishft(evfrag(pointer),-11),'1F'x),': '
+     $         ,jiand(evfrag(pointer),'7FF'x),' extra events, event=',
+     &         gen_event_id_number
           pointer = pointer + 1
           goto 987
         else if(jieor(jiand(evfrag(pointer),'FF000000'x),'DC000000'x).eq.0) then ! Catch arrington's headers
@@ -232,19 +226,18 @@ c     be discarded.  If it is an 1881 or 1876, then the the first word of a
 c     new slot will have a subaddress of '7F' and later be discarded.
 c
           if(subaddbit.eq.17.and.g_decode_modtyp(roc,slot).eq.0) then      ! Is not an 1872A (which has not headers)
-            if(jiand(evfrag(pointer),'00FE0000'X).eq.0) then ! probably a header
-
-              if(jiand(evfrag(pointer),'07FF0000'X).ne.0) then
-                if (shitskip.gt.0) then
-                  print *,"SHIT:misidentified real data word as a header"
-                  print *,"DID=",did,", SLOT=",slot,", POINTER=",pointer
-                  shitskip=shitskip-1
-                endif
+            if ((jiand(evfrag(pointer),'00FE0000'X).eq.0.or.
+     >           jiand(evfrag(pointer),'00EE0000'X).eq.0)
+     >                   .and..not.(roc.eq.13.and.slot.eq.10)) then ! probably a header
+              if ((jiand(evfrag(pointer),'07FF0000'X).ne.0.or.
+     >           jiand(evfrag(pointer),'06FF0000'X).ne.0)
+     >                   .and..not.(roc.eq.13.and.slot.eq.10)) then
+                print *,"SHIT:misidentified real data word as a header"
+                print *,"DID=",did,", SLOT=",slot,", POINTER=",pointer
               else
                 pointer = pointer + 1
                 goto 987
               endif
-
             endif
           endif
 

@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.18.6  2008/04/23 18:02:31  cdaq
+* *** empty log message ***
+*
 * Revision 1.10.18.5  2007/12/12 15:53:53  cdaq
 * added focal plane time to ntuple
 *
@@ -155,6 +158,20 @@ c                                ! track with spectrometer ray
       h_Ntuple_contents(m)= float(gen_event_ID_number)
       m= m+1
       h_Ntuple_contents(m)= float(gen_event_type)
+      m=m+1
+      if(gen_event_type.eq.6) then
+         if(gen_event_trigtype(5).eq.1) then
+            h_ntuple_contents(m) = 5.
+         else if(gen_event_trigtype(4).eq.1) then
+            h_ntuple_contents(m) = 4.
+         endif
+      else
+         if(gen_event_trigtype(2).eq.1) then
+            h_ntuple_contents(m) = 2.
+         else if(gen_event_trigtype(1).eq.1) then
+            h_ntuple_contents(m) = 1.
+         endif
+      endif
 c
       do ihit=1,hscin_all_tot_hits
           pln=hscin_all_plane_num(ihit)

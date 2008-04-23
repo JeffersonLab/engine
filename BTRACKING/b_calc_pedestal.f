@@ -45,6 +45,11 @@ c            write(*,*) 'prot numped=',numped
 
             bigcal_prot_new_threshold(icell)=bigcal_prot_new_ped(icell)
      $           + bigcal_prot_nsparse
+
+c$$$	    if(irow.eq.29.or.irow.eq.30) then
+c$$$		 bigcal_prot_new_threshold(icell) = 10
+c$$$	    endif		
+
             if(bigcal_prot_new_threshold(icell).lt.0) then
                bigcal_prot_new_threshold(icell) = 0
             endif
@@ -84,7 +89,7 @@ c     for rows 29 and 30.
                if(bid_bcal_pedw_prot.gt.0) then
                   call hf1(bid_bcal_pedw_prot,bigcal_prot_ped_rms(icell),1.)
                endif
-               
+
             endif
          enddo
       enddo
@@ -206,6 +211,9 @@ c            write(*,*) 'trig numped=',numped
                endif
 
             endif
+            
+c$$$            bigcal_trig_new_threshold(igr64) = 10
+            
          enddo
       enddo
 

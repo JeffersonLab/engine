@@ -5,6 +5,9 @@
 *     Author:   D. F. Geesaman          1 September 1993
 *
 * $Log$
+* Revision 1.12.20.4  2008/04/23 18:02:41  cdaq
+* *** empty log message ***
+*
 * Revision 1.12.20.3  2008/04/07 20:22:28  cdaq
 * re-enabled BAD_DRIFT to be non-zero
 *
@@ -243,6 +246,13 @@
       INTEGER*4 HSCIN_HITS_PER_PLANE(HNUM_SCIN_PLANES)
       LOGICAL*4 HTWO_GOOD_TIMES(HMAX_SCIN_HITS)
       LOGICAL*4 HGOOD_START_TIME
+      integer*4 hgood_start_time_hitnum(hmax_scin_hits)
+      real*4 hS1x_crude_track_coord(3)
+      real*4 hS1y_crude_track_coord(3)
+      real*4 hS1XY_crude_fptime
+      logical htwo_good_starttime_hits
+      real*4 hS1_crude_xtrack
+      real*4 hS1_crude_ytrack
 
       COMMON/HMS_DECODED_SCIN/
      &     HSCIN_ZPOS,
@@ -257,7 +267,14 @@
      &     HSTART_HITNUM,
      &     HSTART_HITSIDE,
      &     HTWO_GOOD_TIMES,  
-     &     HGOOD_START_TIME
+     &     HGOOD_START_TIME,
+     &     hgood_start_time_hitnum,
+     &     hS1x_crude_track_coord,
+     &     hS1y_crude_track_coord,
+     &     hS1XY_crude_fptime,
+     &     hS1_crude_xtrack,
+     &     hS1_crude_ytrack,
+     &     htwo_good_starttime_hits
 *
 *
 *     HMS CALORIMETER HITS
@@ -748,6 +765,18 @@ c
      &                   , HFPP_raw_plane(H_FPP_MAX_RAWHITS)
      &                   , HFPP_raw_wire(H_FPP_MAX_RAWHITS)
      &                   , HFPP_raw_TDC(H_FPP_MAX_RAWHITS)
+*
+*      CTPTYPE=parm
+*
+      integer*4  H_FPP_noise_threshold   ! MAX # of raw FPP hits b4 noisy
+
+      common/HMS_FPPnoiseS/ H_FPP_noise_threshold
+*
+*     CTPTYPE=event
+*
+      logical*4 HFPP_noisy     ! flag for FPP events bogged down by noise
+
+      common/HMS_FPPnoiseE/ HFPP_noisy
 *
 *                                          
 *******************end: hms_data_structures.cmn*************************

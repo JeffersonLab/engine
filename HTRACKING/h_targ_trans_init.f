@@ -7,6 +7,9 @@
 *
 * Version:  0.1 (In development)
 * $Log$
+* Revision 1.6.16.2  2008/04/23 18:02:36  cdaq
+* *** empty log message ***
+*
 * Revision 1.6.16.1  2007/09/10 20:28:01  pcarter
 * Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *
@@ -110,7 +113,10 @@ c      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
       line = '!'
       do while (line(1:1).eq.'!')
         read (chan,1001,err=94) line
+c        write(*,*) line
       enddo
+
+c      write(*,*) 'ABOUT TO READ FP ROTATION COEFFS'
 
 * Read in focal plane rotation coefficients.
       do while (line(1:4).ne.' ---')
@@ -123,9 +129,15 @@ c      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
         if(line(1:14).eq.'h_z_true_focus')read(line,1201,err=94)h_z_true_focus
         read (chan,1001,err=94) line
       enddo
-* Read in reconstruction coefficients and exponents.
+* Read in reconstruction coefficients and exponents
+
+c      write(*,*) 'ABOUT TO READ HMS RECON COEFFS'
+*
       line=' '
       read (chan,1001,err=94) line
+
+c      WRITE(*,*) 'READ FIRST LINE OF HMS RECON COEFFS, line=',line
+
       h_num_recon_terms = 0
       do while (line(1:4).ne.' ---')
          h_num_recon_terms = h_num_recon_terms + 1
@@ -133,6 +145,7 @@ c      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
          read (line,1200,err=94) (h_recon_coeff(i,h_num_recon_terms),i=1,4)
      $        ,(h_recon_expon(j,h_num_recon_terms),j=1,5)
          read (chan,1001,err=94) line
+c         write(*,*) 'current line=',line
       enddo
 
 * Data read in OK.

@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.22  2008/04/23 18:02:31  cdaq
+* *** empty log message ***
+*
 * Revision 1.42.8.21  2008/01/08 22:50:36  cdaq
 * *** empty log message ***
 *
@@ -308,6 +311,8 @@ c
 c
       integer*4 skipped_events_scal,tindex
       real*8 delta_time
+
+      integer*4 NeventsFPPnoisy
 *
 *
 *--------------------------------------------------------
@@ -333,6 +338,8 @@ c      ncalls_calc_ped = 0
       sum_analyzed_skipped=0
       sum_recorded=0
       num_events_skipped=0
+
+      NeventsFPPnoisy=0
 
       rpc_on=0                          ! RPC servicing off by default
       rpc_control=-1                    ! If RPC on, don't block by default
@@ -881,10 +888,16 @@ c
 c                       write(*,*) 'calling g_reconstruction, gen_event_type=',
 c     $                      gen_event_type
 
-                       
+                       HFPP_noisy = .false.
+
                        call G_reconstruction(CRAW,ABORT,err) !COMMONs
                                 !write(*,*) 'g_reconstruction finished successfully, no segfault'
                        physics_events = physics_events + 1
+
+                       if (HFPP_noisy) then
+                         NeventsFPPnoisy = NeventsFPPnoisy+1
+                       endif
+
                        if (gen_event_type .le. gen_max_trigger_types) then
                           analyzed_events(gen_event_type)=analyzed_events(gen_event_type)+1
                        endif
@@ -1140,6 +1153,10 @@ c...
       write(mss,'(i12," / ",i8," total (neglecting scalers)")') sum_analyzed,sum_recorded
       call G_log_message(mss)
       print *,'  for run#',gen_run_number
+
+      write(mss,'("Skipped FPP analysis for ",i8," events due to noise.")') NeventsFPPnoisy
+      call G_log_message(mss)
+
       if ( syncfilter_on) then
       write(mss,'(i12," number of analyzed skipped ")') sum_analyzed_skipped
       call G_log_message(mss)

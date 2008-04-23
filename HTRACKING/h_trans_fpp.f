@@ -35,15 +35,63 @@
 
       real*4 hit1time(H_FPP_MAX_WIRES), hit2time(H_FPP_MAX_WIRES)
 
+      integer*4 lastcount,badnow,badall
+      integer*4 countlimit
+      logical*4 havenoise, echonoise
+      common /fppnoise/ lastcount,badnow,badall,havenoise,echonoise
+      data badnow /0/
+      data badall /0/
+      data lastcount /0/
+      data havenoise /.false./
+      data echonoise /.true./
+      parameter (countlimit=10)
+
+
 
       ABORT= .FALSE.
       err= ' '
 
 
+      if (HFPP_raw_tot_hits.gt.H_FPP_noise_threshold) then
+        HFPP_noisy = .true.
+        if (echonoise) then
+          lastcount = lastcount+1
+          if (lastcount.ge.countlimit) echonoise = .false.
+          print *,'  FPP noisy: ',HFPP_raw_tot_hits,' hits!  Threshold=',H_FPP_noise_threshold
+        endif
+        RETURN
+      endif
+
+c      print *,' >>>> FPP :',HFPP_raw_tot_hits
+
+c      if (HFPP_raw_tot_hits.gt.H_FPP_noise_threshold) then
+c        if (havenoise) then
+c          ! still in already established region of noise
+c          badnow = badnow+1
+c          lastcount = HFPP_raw_tot_hits
+c        else
+c          ! just entered a new region of noise
+c          badnow = 1
+c          havenoise = .true.
+c          print *,' FPP Noise Storm starting!  now=',HFPP_raw_tot_hits,' last=',lastcount
+c        endif
+c        lastcount = HFPP_raw_tot_hits
+c        RETURN
+c      elseif (havenoise) then
+c          ! noise storm is over
+c          badall = badall+badnow
+c          print *,' FPP Noise Storm had ',badnow,' events (',badall,' so far in run)'
+c          badnow = 0
+c          havenoise = .false.
+c      endif
+c      lastcount = HFPP_raw_tot_hits
+
+
+
+
 *     * check if we have any work to do
 c      write(*,*)'In h_trans_fpp ... ',HFPP_raw_tot_hits
       if (HFPP_raw_tot_hits .le. 0) RETURN
-
 
 *     * init storage
       do iPlane=1,H_FPP_N_PLANES

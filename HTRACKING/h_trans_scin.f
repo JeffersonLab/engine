@@ -9,6 +9,9 @@
 *
 * modifications:
 * $Log$
+* Revision 1.21.6.2  2008/04/23 18:02:36  cdaq
+* *** empty log message ***
+*
 * Revision 1.21.6.1  2008/01/25 19:28:34  cdaq
 * fixed HSTART calculation
 *
@@ -103,6 +106,13 @@
       parameter (dumtrk=1)
       integer*4 ihit, plane
       integer*4 time_num
+*     ajp 4/11/08
+      integer jhit,alli,allj,ajpxcntr,ajpycntr
+      logical firstajp
+      real*4 minfpdiff,fpdiff,ajpxcoord,ajpycoord,ajpmeanfptime,sigmahitpos1
+      real*4 sigmahitpos2,sigmatdiff,sigmahitpos,sigmat1,sigmat2
+      integer*4 nstart_plane(2) ! number of start time hits on S1X and S1Y, respectively
+*     ajp 4/11/08
       real*4 time_sum
       real*4 fptime
       real*4 scint_center
@@ -379,6 +389,10 @@ c 1/23/08 pyb added these checks
 * time values to focal plane.  use average for start time.
       time_num = 0
       time_sum = 0.
+* ajp 04/11/08
+      nstart_plane(1) = 0
+      nstart_plane(2) = 0
+* ajp 04/11/08
       do ihit = 1 , hscin_tot_hits
         if (htwo_good_times(ihit)) then
           fptime  = hscin_cor_time(ihit) - 
@@ -387,9 +401,20 @@ c 1/23/08 pyb added these checks
           if (abs(fptime-hstart_time_center).le.hstart_time_slop) then
             time_sum = time_sum + fptime
             time_num = time_num + 1
+
+*     ajp 4/11/08
+            if(hscin_plane_num(ihit).eq.1.or.hscin_plane_num(ihit).eq.2) 
+     $           then
+               nstart_plane(hscin_plane_num(ihit)) = 
+     $              nstart_plane(hscin_plane_num(ihit)) + 1
+            endif
+            
+            hgood_start_time_hitnum(time_num) = ihit
+*     ajp 04/11/08
           endif
         endif
       enddo
+      ajpnstarttimehits = time_num
       if (time_num.eq.0) then
         hgood_start_time = .false.
         hstart_time = hstart_time_center
@@ -403,6 +428,115 @@ c 1/23/08 pyb added these checks
         endif
       endif
 
+*     this code added by ajp 04/11/08 to calculate xy position of track from scintillators
+*     BEFORE drift chamber tracking--to help with high rate for GEp-III
+      
+      if(time_num.ge.2.and.nstart_plane(1).ge.1.and.nstart_plane(2).ge.1
+     $     ) then ! choose the one hit from S1X and one hit from S1Y that have the best 
+*     agreement on focal plane time:
+         firstajp = .true.
+         do ihit=1,time_num
+            alli = hgood_start_time_hitnum(ihit)
+            if(hscin_plane_num(alli).eq.1.or.hscin_plane_num(alli).eq.2) 
+     $           then
+               do jhit=ihit+1,time_num
+                  allj = hgood_start_time_hitnum(jhit)
+                  if(hscin_plane_num(allj).eq.1.or.hscin_plane_num(allj)
+     $                 .eq.2) then
+                     if(hscin_plane_num(alli).ne.hscin_plane_num(allj))
+     $                    then
+                        fpdiff = abs( (hscin_cor_time(alli) - 
+     $                       hscin_zpos(alli)/(29.979*hbeta_pcent) ) -
+     $                       (hscin_cor_time(allj) - 
+     $                       hscin_zpos(allj)/(29.979*hbeta_pcent) ) )
+                        if(firstajp.or.fpdiff.lt.minfpdiff) then
+                           minfpdiff = fpdiff
+                           firstajp = .false.
+                           if(hscin_plane_num(alli).eq.1) then ! i is S1X
+                              ajpxcoord = hscin_dec_hit_coord(alli)
+                              ajpycoord = hscin_dec_hit_coord(allj)
+                              ajpxcntr = hscin_counter_num(alli)
+                              ajpycntr = hscin_counter_num(allj)
+                           else
+                              ajpxcoord = hscin_dec_hit_coord(allj)
+                              ajpycoord = hscin_dec_hit_coord(alli)
+                              ajpxcntr = hscin_counter_num(allj)
+                              ajpycntr = hscin_counter_num(alli)
+                           endif
+                           ajpmeanfptime = 0.5*((hscin_cor_time(alli) - 
+     $                          hscin_zpos(alli)/(29.979*hbeta_pcent) )+
+     $                          (hscin_cor_time(allj) - 
+     $                          hscin_zpos(allj)/(29.979*hbeta_pcent) ))
+                        endif
+                     endif
+                  endif
+               enddo
+            endif
+         enddo
+*     now calculate crude xy coordinates from S1X, S1Y, and crude fp time
+*     set htwo_good_starttime_hits to true if the decoded hit positions of the chosen
+*     hits agree with each other, i.e., the x position of S1Y hit agrees with the x position of
+*     S1X counter and the y position of the S1X hit agrees with the y position of the S1Y counter
+         hS1X_crude_track_coord(1) = ajpxcoord ! horizontal hit position (Y) along X paddle from hit times
+         hS1Y_crude_track_coord(1) = ajpycoord ! vertical hit position (X) along Y paddle from hit times
+         hS1X_crude_track_coord(2) = hhodo_center(2,ajpycntr) ! horizontal center of intersecting Y paddle
+         hS1Y_crude_track_coord(2) = hhodo_center(1,ajpxcntr) ! vertical center of intersecting X paddle
+*     what is the coordinate resolution of the corrected hit times? if sigma ~.5 ns, then .5 ns * speed of light cm / ns
+         sigmahitpos = sqrt((hhodo_pos_sigma(2,ajpycntr)*
+     $        hhodo_pos_invadc_linear(2,ajpycntr))**2 + 
+     $        (hhodo_neg_sigma(2,ajpycntr)*
+     $        hhodo_neg_invadc_linear(2,ajpycntr))**2)
+         
+         sigmahitpos1 = sigmahitpos
+c     weighted average of hit position measured by S1X and coordinate of intersecting S1Y paddle
+         hS1X_crude_track_coord(3) = (hS1X_crude_track_coord(1)/sigmahitpos 
+     $        + hS1X_crude_track_coord(2)/(hscin_1y_size/sqrt(12.)) ) / 
+     $        ( 1. / sigmahitpos + 1. / (hscin_1y_size/sqrt(12.)) )
+
+         sigmahitpos = sqrt((hhodo_pos_sigma(1,ajpxcntr)*
+     $        hhodo_pos_invadc_linear(1,ajpxcntr))**2 + 
+     $        (hhodo_neg_sigma(1,ajpxcntr)*
+     $        hhodo_neg_invadc_linear(1,ajpxcntr))**2)
+
+         sigmahitpos2 = sigmahitpos
+c     weighted average of hit position measured by S1Y and coordinate of intersecting S1X paddle         
+         hS1Y_crude_track_coord(3) = (hS1Y_crude_track_coord(1)/sigmahitpos
+     $        + hS1Y_crude_track_coord(2)/(hscin_1x_size/sqrt(12.)) ) /
+     $        ( 1. / sigmahitpos + 1. / (hscin_1x_size/sqrt(12.)) )
+         hS1XY_crude_fptime = ajpmeanfptime
+         
+         sigmatdiff = 0.3 
+
+         sigmat1 = sqrt(hhodo_pos_sigma(1,ajpxcntr)**2 + 
+     $        hhodo_neg_sigma(1,ajpxcntr)**2)
+         sigmat2 = sqrt(hhodo_pos_sigma(2,ajpycntr)**2 + 
+     $        hhodo_neg_sigma(2,ajpycntr)**2)
+         sigmatdiff = sqrt(sigmat1**2 + sigmat2**2)
+         
+c$$$         sigmatdiff = sqrt( (sigmahitpos1/hhodo_vel_light(2,ajpycntr) )**2 + 
+c$$$     $        (sigmahitpos2/hhodo_vel_light(1,ajpxcntr) )**2 )
+
+         if( abs(hS1X_crude_track_coord(1)-hS1X_crude_track_coord(2))
+     $        .le. max(hscin_1y_size/2.,2.5*sigmahitpos1) .and.
+     $        abs(hS1Y_crude_track_coord(1)-hS1Y_crude_track_coord(2))
+     $        .le. max(hscin_1x_size/2.,2.5*sigmahitpos2) .and.
+     $        minfpdiff.le.2.5*sigmatdiff) then
+            htwo_good_starttime_hits = .true.
+            hS1XY_crude_fptime = ajpmeanfptime
+            
+            hS1_crude_xtrack = min( hS1y_crude_track_coord(2) - hscin_1x_size/2.,
+     $           max(hS1y_crude_track_coord(3),hS1y_crude_track_coord(2) + 
+     $           hscin_1x_size/2.) )
+            hS1_crude_ytrack = min( hS1x_crude_track_coord(2) - hscin_1y_size/2.,
+     $           max(hS1x_crude_track_coord(3),hS1x_crude_track_coord(2) + 
+     $           hscin_1y_size/2.) )
+         else
+            htwo_good_starttime_hits = .false.
+         endif
+      endif
+      
+
+*     end special ajp code
 
 *     Dump decoded bank if hdebugprintscindec is set
       if( hdebugprintscindec .ne. 0) call h_prt_dec_scin(ABORT,errmsg)

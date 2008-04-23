@@ -1,6 +1,9 @@
 * hms_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the hms time of flight.
 * $Log$
+* Revision 1.12.6.2  2008/04/23 18:02:41  cdaq
+* *** empty log message ***
+*
 * Revision 1.12.6.1  2007/10/24 16:37:21  cdaq
 * *** empty log message ***
 *
@@ -58,7 +61,8 @@
 *     CTPTYPE=event
 *
       integer*4 hntof
-
+      integer*4 ajpnstarttimehits
+      
       real*4 hscin_long_coord(hmax_scin_hits)
       real*4 hscin_trans_coord(hmax_scin_hits)
       real*4 hscin_pos_coord(hmax_scin_hits)
@@ -105,6 +109,7 @@
 
       common/hms_scin_tof/
      &     hntof,
+     &     ajpnstarttimehits,
      &     hscin_long_coord,
      &     hscin_trans_coord,
      &     hscin_pos_coord,hscin_neg_coord, !position of tubes

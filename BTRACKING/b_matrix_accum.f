@@ -114,7 +114,8 @@ c$$$     $        bigcal_track_phirad(best)-gep_ephi_expect_h
      $        gep_bcalib_cut_dx.and.abs(bigcal_all_clstr_y(best) - 
      $        gep_by_expect_H).lt.gep_bcalib_cut_dy.and.abs(
      $        gep_ctime_hms-gep_ctime_cal).lt.gep_bcalib_cut_ctime.and.
-     $        abs(gep_pel_htheta-gep_p_proton)/hpcentral.lt.gep_bcalib_cut_elastic
+     $        abs(gep_pel_htheta-gep_p_proton)/hpcentral.lt.gep_bcalib_cut_elastic(1)
+     $        .and.abs(gep_pel_btheta-gep_p_proton)/hpcentral.lt.gep_bcalib_cut_elastic(2)
      $        .and.abs(bigcal_track_thetarad(best)-gep_etheta_expect_H).lt.
      $        gep_bcalib_cut_theta.and.abs(bigcal_track_phirad(best)-
      $        gep_ephi_expect_H+PI/2.).lt.gep_bcalib_cut_phi.and.

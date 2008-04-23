@@ -21,7 +21,7 @@ c     event selection cuts for BigCal calibration:
       real*4 gep_bcalib_cut_dy
       real*4 gep_bcalib_cut_theta
       real*4 gep_bcalib_cut_phi
-      real*4 gep_bcalib_cut_elastic ! cut on (hpel(hstheta)-hsp)/hpel(hstheta))
+      real*4 gep_bcalib_cut_elastic(2) ! cut on (hpel(hstheta)-hsp)/hpel(hstheta))
       real*4 gep_bcalib_cut_ehms(2) ! 1 = min, 2 = max
       common/gep_bcalib/
      $     gep_bcalib_cut_ctime,
@@ -37,7 +37,7 @@ c     coincidence timing window parameters (weed out background hits)
       real*4 gep_h1time_slop
       real*4 gep_h2time_slop
       real*4 gep_btime_center
-      real*4 gep_btime_elastic
+      real*4 gep_btime_elastic(2)
       real*4 gep_btime_slop
       real*4 gep_htrig_delay ! typically 16 ns
 

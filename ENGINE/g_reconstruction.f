@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.11  2008/04/23 18:02:31  cdaq
+* *** empty log message ***
+*
 * Revision 1.13.24.10  2008/04/17 16:37:07  cdaq
 *  added b_use_cointime_cut
 *
@@ -199,8 +202,9 @@ c mkj add cut on coincidence time to remove accidentals
       if ( b_use_cointime_cut .eq. 1) then
          b_passed_cointime_cut = .false.
          do i=1,8
-            if ( gep_btime(i) .gt. 162. .and. gep_btime(i) .lt. 300. )
-     >               b_passed_cointime_cut = .true.
+            if ( gep_btime(i) .gt. gep_btime_elastic(1) 
+     $           .and. gep_btime(i) .lt. gep_btime_elastic(2) )
+     >           b_passed_cointime_cut = .true.
          enddo
          if (.not. b_passed_cointime_cut)   return
       endif

@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.11.18.6  2008/04/23 18:02:31  cdaq
+* *** empty log message ***
+*
 * Revision 1.11.18.5  2007/12/12 15:54:17  cdaq
 * added focal plane time to HMS ntuple
 *
@@ -187,6 +190,8 @@ c
       m= m+1
       h_Ntuple_tag(m)= 'ev_type'
 
+      m=m+1
+      h_ntuple_tag(m)= 'trigtype'
 * Experiment dependent entries start here.
 c
       m= m+1
