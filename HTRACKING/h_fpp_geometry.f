@@ -66,7 +66,7 @@ c==============================================================================
 c==============================================================================
 
 
-      SUBROUTINE h_fpp_FP2DC(iSet,Slope,FPcoords,DCcoords)
+      SUBROUTINE h_fpp_FP2DC(iSet,iCham,iLay,Slope,FPcoords,DCcoords)
 *--------------------------------------------------------
 *    Hall C  HMS Focal Plane Polarimeter Code
 *
@@ -86,12 +86,16 @@ c==============================================================================
 c      INCLUDE 'hms_fpp_event.cmn'
 
       integer*4 iSet
+      integer*4 iCham
+      integer*4 iLay
+      integer*4 iLocalPlane
       logical*4 Slope
       real*4 FPcoords(3), DCcoords(3)
 
       integer*4 i,j
       real*4 MYcoords(3)
 
+      iLocalPlane=(iSet-1)*6+(iCham-1)*3+iLay
 
       if (Slope) then
 *       * for slopes, we can ignore any position offset
@@ -100,8 +104,10 @@ c      INCLUDE 'hms_fpp_event.cmn'
         MYcoords(3) = FPcoords(3)
       else
 *       * for coordinates, we need to subtract the offset
-        MYcoords(1) = FPcoords(1) - HFPP_Xoff(iSet)
-        MYcoords(2) = FPcoords(2) - HFPP_Yoff(iSet)
+        MYcoords(1) = FPcoords(1) - HFPP_Xoff(iSet) -
+     &                          HFPP_Xoff_fine(iLocalPlane)
+        MYcoords(2) = FPcoords(2) - HFPP_Yoff(iSet) -
+     &                          HFPP_Yoff_fine(iLocalPlane)
         MYcoords(3) = FPcoords(3) - HFPP_Zoff(iSet)
       endif
 

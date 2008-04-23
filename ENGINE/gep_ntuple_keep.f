@@ -160,7 +160,7 @@ c
         if(abs(HFPP_track_zclose(iSet,iTrk)-zanalyzer(iSet)).le.27.0) then
           if(HFPP_track_sclose(iSet,iTrk).lt.8.0) then
             if(HFPP_track_conetest(iSet,iTrk).eq.1) then
-              if(HFPP_track_theta(iSet,iTrk).gt.2.5/180.0*3.14159265.and.
+              if(HFPP_track_theta(iSet,iTrk).gt.0.1/180.0*3.14159265.and.
      >                 HFPP_track_theta(iSet,iTrk).lt.theta_store) then
                 track_store=iTrk
                 theta_store=HFPP_track_theta(iSet,iTrk)

@@ -51,6 +51,13 @@ c     coincidence timing window parameters (weed out background hits)
      $     gep_btime_slop,
      $     gep_htrig_delay
 
+c     bypass switches
+      integer*4 gep_bypass_coin1 ! suppress COIN1 triggers
+      integer*4 gep_bypass_coin2 ! suppress COIN2 triggers
+      common/gep_bypass_switches/
+     $     gep_bypass_coin1,
+     $     gep_bypass_coin2
+
       real*4 btrig_phc_p0
       real*4 btrig_phc_p1
       real*4 btrig_phc_p2

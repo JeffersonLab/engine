@@ -53,7 +53,7 @@
                  FP_coords(1) = hsx_fp	 ! transform offsets
                  FP_coords(2) = hsy_fp
                  FP_coords(3) = 0.0
-                 call h_fpp_FP2DC(iSet,.false.,FP_coords,DC_coords)
+                 call h_fpp_FP2DC(iSet,iCham,iLay,.false.,FP_coords,DC_coords)
                  bx = DC_coords(1)
                  by = DC_coords(2)
                  z0 = DC_coords(3)
@@ -61,7 +61,7 @@
                  FP_coords(1) = hsxp_fp	 ! transform slope
                  FP_coords(2) = hsyp_fp
                  FP_coords(3) = 1.0
-                 call h_fpp_FP2DC(iSet,.true.,FP_coords,DC_coords)
+                 call h_fpp_FP2DC(iSet,iCham,iLay,.true.,FP_coords,DC_coords)
                  mx = DC_coords(1)
                  my = DC_coords(2)
 

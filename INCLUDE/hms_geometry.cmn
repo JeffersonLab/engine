@@ -17,6 +17,9 @@
 *                add     hdc_xcenter
 *                        hdc_ycenter
 * $Log$
+* Revision 1.11.24.3  2008/04/23 17:58:25  brash
+* *** empty log message ***
+*
 * Revision 1.11.24.2  2007/09/26 21:04:16  brash
 * Updates to FPP tracking codes - mostly for conetest calculation.
 *
@@ -198,6 +201,9 @@
       real*4 HFPP_Yoff	        ! y offset in lab of each chamber set (cm)
       real*4 HFPP_Zoff	        ! z offset in lab of each chamber set (cm)
       
+      real*4 HFPP_Xoff_fine     ! fine x offset in lab of each plane (cm)
+      real*4 HFPP_Yoff_fine     ! fine y offset in lab of each plane (cm)
+      
       real*4 HFPP_Xsize	        ! useful size (x) of each chamber set (cm)
       real*4 HFPP_Ysize	        ! useful size (y) of each chamber set (cm)
 
@@ -227,6 +233,8 @@
      &   , HFPP_gamma(H_FPP_N_DCSETS)
      &   , HFPP_Xoff(H_FPP_N_DCSETS)
      &   , HFPP_Yoff(H_FPP_N_DCSETS)
+     &   , HFPP_Xoff_fine(H_FPP_N_PLANES)
+     &   , HFPP_Yoff_fine(H_FPP_N_PLANES)
      &   , HFPP_Zoff(H_FPP_N_DCSETS)
      &   , HFPP_Xsize(H_FPP_N_DCSETS)
      &   , HFPP_Ysize(H_FPP_N_DCSETS)

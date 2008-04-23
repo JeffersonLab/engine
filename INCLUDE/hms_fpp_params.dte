@@ -42,7 +42,7 @@
 
 * offset of layer along its measurement direction by plane
 * this is the difference between (wire no)*(spacing) and (coordinate)
-      data planeoffset/  -104.0, -84.0, -104.0,   -104.0, -84.0, -104.0/
+      data planeoffset/  -103.9980, -83.9933, -103.9732,   -104.0015, -84.0225, -104.0177/
 
 ** Chamber Wire Numbers against card position mapping
 *

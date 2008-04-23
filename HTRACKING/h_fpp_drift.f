@@ -232,11 +232,25 @@ c      write(*,*)'Drift type = ',hfpp_drift_type
 9191      continue
 
           if(Set.eq.1) then
-		if(drift_time_orig.lt.60.0) drift_distance=0.0001
-		if(drift_time_orig.gt.495.0) drift_distance=1.25
+                if(Chamber.eq.1) then
+		 if(drift_time_orig.lt.hfpp_ch1_tcut_low) drift_distance=0.0001
+		 if(drift_time_orig.gt.hfpp_ch1_tcut_high) 
+     &                          drift_distance=hfpp_drift_Xmax
+                else
+		 if(drift_time_orig.lt.hfpp_ch2_tcut_low) drift_distance=0.0001
+		 if(drift_time_orig.gt.hfpp_ch2_tcut_high) 
+     &                          drift_distance=hfpp_drift_Xmax
+                endif
 	  else
-		if(drift_time_orig.lt.75.0) drift_distance=0.0001
-		if(drift_time_orig.gt.495.0) drift_distance=1.25
+                if(Chamber.eq.1) then
+		 if(drift_time_orig.lt.hfpp_ch3_tcut_low) drift_distance=0.0001
+		 if(drift_time_orig.gt.hfpp_ch3_tcut_high) 
+     &                          drift_distance=hfpp_drift_Xmax
+                else
+		 if(drift_time_orig.lt.hfpp_ch4_tcut_low) drift_distance=0.0001
+		 if(drift_time_orig.gt.hfpp_ch4_tcut_high) 
+     &                          drift_distance=hfpp_drift_Xmax
+                endif
 	  endif
           if(drift_time_orig.gt.4000.0) drift_distance = H_FPP_BAD_DRIFT
           
@@ -446,6 +460,16 @@ c==============================================================================
       hfpp_drift_Xmax = 0.0
       hfpp_drift_Nterms = 0
 
+      hfpp_ch1_tcut_low = -1000.0
+      hfpp_ch2_tcut_low = -1000.0
+      hfpp_ch3_tcut_low = -1000.0
+      hfpp_ch4_tcut_low = -1000.0
+
+      hfpp_ch1_tcut_high = 1000.0
+      hfpp_ch2_tcut_high = 1000.0
+      hfpp_ch3_tcut_high = 1000.0
+      hfpp_ch4_tcut_high = 1000.0
+      
       if (hfpp_driftmap_filename.eq.' ') then
         print *,' No drift map specified for the HMS FPP chambers.'
         print *,' Using fixed drift distance of +/-0.5 cm, best fit.\n'
@@ -520,7 +544,16 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
 
           print *,' The selected drift map file uses a REALLY simple look-up table to determine'
           print *,' the drift in the focal plane polarimeter chambers. (ejb)\n'
-	  do i=1,100
+
+          read(LUN,*,err=901,end=900)hfpp_ch1_tcut_low,hfpp_ch1_tcut_high
+          read(LUN,*,err=901,end=900)hfpp_ch2_tcut_low,hfpp_ch2_tcut_high
+          read(LUN,*,err=901,end=900)hfpp_ch3_tcut_low,hfpp_ch3_tcut_high
+          read(LUN,*,err=901,end=900)hfpp_ch4_tcut_low,hfpp_ch4_tcut_high
+	  
+          write(*,*)'FPP1 Low time cut -> ',hfpp_ch1_tcut_low
+          write(*,*)'FPP2 Low time cut -> ',hfpp_ch3_tcut_low
+          
+          do i=1,100
 	          read(LUN,*,err=901,end=900)ejbtime(i,1),ejbdrift(i,1)
 	  enddo
 	  do i=1,100
