@@ -5,16 +5,35 @@ c     resolution parameters for picking best bigcal track using hms info!
       real*4 GEP_sigma_xdiff
       real*4 GEP_sigma_ydiff
       real*4 GEP_sigma_thdiff ! difference in polar scat. angle for e- (radian)
-      real*4 GEP_sigma_phdiff ! difference in azimuthal scar. angle for e- (radian)
+      real*4 GEP_sigma_phdiff ! difference in azimuthal scat. angle for e- (radian)
       real*4 GEP_sigma_Ediff 
       real*4 GEP_sigma_tdiff
+      real*4 GEP_sigma_pmiss ! missing momentum from electron angle
       common/GEP_res/
      $     GEP_sigma_xdiff,
      $     GEP_sigma_ydiff,
      $     GEP_sigma_thdiff,
      $     GEP_sigma_phdiff,
      $     GEP_sigma_Ediff,
-     $     GEP_sigma_tdiff
+     $     GEP_sigma_tdiff,
+     $     GEP_sigma_pmiss
+c     offsets for best cluster selection and calibration event selection:
+      logical gep_select_apply_offsets
+      real*4 gep_select_dp0 ! offset to central momentum in percent
+      real*4 gep_select_dxptar ! offset to xptar in rad
+      real*4 gep_select_dE0 ! offset to beam energy in MeV
+      real*4 gep_select_dbtheta ! offset to bigcal central angle in degrees
+      real*4 gep_select_dbdist ! offset to bigcal distance in cm
+      real*4 gep_select_dby ! offset to bigcal height in cm
+      common/gep_select/ 
+     $     gep_select_apply_offsets,
+     $     gep_select_dp0,
+     $     gep_select_dxptar,
+     $     gep_select_dE0,
+     $     gep_select_dbtheta,
+     $     gep_select_dbdist,
+     $     gep_select_dby
+
 c     event selection cuts for BigCal calibration:
       real*4 gep_bcalib_cut_ctime
       real*4 gep_bcalib_cut_dx
@@ -100,7 +119,12 @@ c     bypass switches
       real*4 GEP_xptar_p ! proton dx/dz at target
       real*4 GEP_yptar_p ! proton dy/dz at target
       real*4 GEP_ytar_p ! proton ytar
-      real*4 GEP_epsilon ! virtual photon long. polarization, usual definition
+      real*4 GEP_xbeam ! raster x + avg beam position--copy of gbeam_x
+      real*4 GEP_ybeam ! raster y + avg beam position--copy of gbeam_y
+      real*4 GEP_xclust ! best cluster horizontal position in BigCal
+      real*4 GEP_yclust ! best cluster vertical position in BigCal
+      real*4 GEP_eclust ! best cluster energy
+      real*4 GEP_epsilon        ! virtual photon long. polarization, usual definition
       real*4 GEP_etheta_deg ! electron scattering angle in degrees
       real*4 GEP_ptheta_deg ! proton scattering angle in degrees
       real*4 GEP_ephi_deg ! electron azimuthal scattering angle in degrees
