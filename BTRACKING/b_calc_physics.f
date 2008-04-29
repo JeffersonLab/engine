@@ -30,6 +30,8 @@ c      include 'gen_units.par'
       real maxetot
       real edx,edy,edz,vx,vy,vz
 
+      real PI
+      parameter(PI=3.14159265359)
 c      integer ilow,ihigh
 
 c      logical last_time
@@ -45,6 +47,12 @@ c      logical last_time
       m_e = mass_electron
       c = speed_of_light
    
+      if(gep_select_apply_offsets) then
+         Sinth = sin( (bigcal_theta_deg + gep_select_dbtheta)*PI/180. )
+         Costh = cos( (bigcal_theta_deg + gep_select_dbtheta)*PI/180. )
+         R = R + gep_select_dbdist
+      endif
+
 c$$$      nprot = 0
 c$$$      nrcs = 0
 c$$$      nmid = 0
@@ -56,6 +64,9 @@ c     this routine also fills many standard histograms
 c            nprot = nprot + 1
             x = BIGCAL_ALL_CLSTR_X(i)
             y = BIGCAL_ALL_CLSTR_Y(i)
+
+            if(gep_select_apply_offsets) y = y + gep_select_dby
+
             E = BIGCAL_ALL_CLSTR_ETOT(i)
             
             if(bid_bcal_ixclust.gt.0) call hf1(bid_bcal_ixclust,
@@ -90,6 +101,9 @@ c     need to set up eloss params for BigCal absorber!
                vx = gbeam_x
                vy = gbeam_y
                vz = hszbeam
+
+               if(gep_select_apply_offsets) 
+     $              vz = vz - vx / tan(htheta_lab*PI/180. - hsyp_tar)
 
                edx = xrot - vx
                edy = y - vy

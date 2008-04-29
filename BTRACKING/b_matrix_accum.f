@@ -22,6 +22,7 @@
       integer irow,icol,jrow,jcol,icell,jcell
       integer best,ihit,jhit
       real Ee,ei,ej
+      real ptemp,p0temp
 
       real PI
       parameter(PI=3.14159265359)
@@ -104,6 +105,14 @@ c     check event selection cuts for calibration: dx, dy, and ctime:
 c     also check elastic cut: This is crucial!!!
 c 
 
+         ptemp = gep_p_proton
+         p0temp = hpcentral
+         
+         if(gep_select_apply_offsets) then
+            p0temp = hpcentral * (1. + gep_select_dp0 / 100.)
+            ptemp = p0temp * ( 1. + gep_delta_p / 100. )
+         endif
+
 c     write(*,*) 'track time =',bigcal_track_time(best)
 c$$$         write(*,*) 'dx,dy,dt,dpel,dth,dph=',bigcal_all_clstr_x(best)-gep_bx_expect_H,
 c$$$     $        bigcal_all_clstr_y(best)-gep_by_expect_H,bigcal_track_time(best)-bigcal_window_center,
@@ -114,8 +123,8 @@ c$$$     $        bigcal_track_phirad(best)-gep_ephi_expect_h
      $        gep_bcalib_cut_dx.and.abs(bigcal_all_clstr_y(best) - 
      $        gep_by_expect_H).lt.gep_bcalib_cut_dy.and.abs(
      $        gep_ctime_hms-gep_ctime_cal).lt.gep_bcalib_cut_ctime.and.
-     $        abs(gep_pel_htheta-gep_p_proton)/hpcentral.lt.gep_bcalib_cut_elastic(1)
-     $        .and.abs(gep_pel_btheta-gep_p_proton)/hpcentral.lt.gep_bcalib_cut_elastic(2)
+     $        abs(gep_pel_htheta-ptemp)/p0temp.lt.gep_bcalib_cut_elastic(1)
+     $        .and.abs(gep_pel_btheta-ptemp)/p0temp.lt.gep_bcalib_cut_elastic(2)
      $        .and.abs(bigcal_track_thetarad(best)-gep_etheta_expect_H).lt.
      $        gep_bcalib_cut_theta.and.abs(bigcal_track_phirad(best)-
      $        gep_ephi_expect_H+PI/2.).lt.gep_bcalib_cut_phi.and.
