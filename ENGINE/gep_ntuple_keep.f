@@ -115,6 +115,16 @@
       m=m+1
       gep_ntuple_contents(m) = GEP_ytar_p
       m=m+1
+      gep_ntuple_contents(m) = GEP_xbeam
+      m=m+1
+      gep_ntuple_contents(m) = GEP_ybeam
+      m=m+1
+      gep_ntuple_contents(m) = GEP_xclust
+      m=m+1
+      gep_ntuple_contents(m) = GEP_yclust
+      m=m+1
+      gep_ntuple_contents(m) = GEP_eclust
+      m=m+1
       gep_ntuple_contents(m) = GEP_epsilon
       m=m+1
       gep_ntuple_contents(m) = GEP_etheta_deg
