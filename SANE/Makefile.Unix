@@ -1,0 +1,58 @@
+NEWSTYLE=1
+include ../../etc/Makefile
+include ../../etc/Makefile.flags
+
+
+osources = sane_analyze_pedestal.f  sane_ntup_close.f    sane_ntup_register.f \
+           sane_calc_pedestal.f     sane_ntup_init.f     sane_ntup_shutdown.f \
+           sane_clear_event.f       sane_ntuple_keep.f   sane_register_variables.f \
+           sane_keep_results.f      sane_ntup_open.f     sane_reset_event.f \
+	   sane_decode.f            sane_ntup_register.f sane_dump_ntup_var.f \
+	   sane_ntup_change.f
+	
+makeregstuff = r_sane_data_structures.f r_sane_filenames.f r_sane_ntuple.f 
+               
+
+sources = $(osources) $(makeregstuff)
+
+libsources = $(sources)
+
+lib_targets := $(patsubst %.f, libsanetracking.a(%.o), $(libsources))
+install-dirs := lib
+bin_targets =
+
+#default:
+#	@echo "nothing to make"
+
+ifdef NFSDIRECTORY
+../%.f : $(NFSDIRECTORY)/SANE/%.f
+	ln -s $< $@
+
+.PRECIOUS: ../%.f
+else
+#
+# Rule for making the register subroutines
+#
+../r_%.f : ../%.cmn $(MAKEREG)
+	(cd .. ; $(MAKEREG) $(<F) -o $(@F) -e /dev/null)
+
+.PRECIOUS: ../r_%.f
+endif
+
+#
+# Get include files from INCLUDE directory
+#
+
+%.cmn ../%.cmn:: ../../INCLUDE/%.cmn
+	$(CP) $< $@
+
+%.dec ../%.dec:: ../../INCLUDE/%.dec
+	$(CP) $< $@
+
+%.par ../%.par:: ../../INCLUDE/%.par
+	$(CP) $< $@
+
+%.dte ../%.dte:: ../../INCLUDE/%.dte
+	$(CP) $< $@
+
+include $(sources:.f=.d)
