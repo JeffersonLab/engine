@@ -282,6 +282,9 @@ c     replaces "bigcal_vector" with the solution vector of coefficients
 
          call rseqn(N,bigcal_matrix,N,iflag_matr,1,bigcal_vector)
 
+c     after change in matrix filling routines, bigcal_vector should equal 
+c     the new absolute calibration constant
+
          if(Nred.gt.0.and.Nred.le.bigcal_all_maxhits) then
             call rseqn(Nred,bigcal_reduced_matrix,N,iflag_matr,1,bigcal_reduced_vector)
             
@@ -365,10 +368,10 @@ c     --> gain_cor_new = 1
                g_old = bigcal_prot_gain_cor(i)
                
                g_new = 1.
-               c_new = bigcal_vector(i) * c_old * g_old
+               c_new = bigcal_vector(i) !~1
 
                bigcal_prot_gain_cor(i) = 1.
-               bigcal_prot_cfac(i) = bigcal_vector(i) * c_old * g_old
+               bigcal_prot_cfac(i) = bigcal_vector(i) / 1000. !~1e-3
 
                if(bid_bcal_cfac_old.gt.0) call hf1(bid_bcal_cfac_old,
      $              float(i),c_old*g_old)
@@ -420,11 +423,10 @@ c$$$               endif
                g_old = bigcal_rcs_gain_cor(i)
                
                bigcal_rcs_gain_cor(i) = 1.
-               bigcal_rcs_cfac(i) = bigcal_vector(i+bigcal_prot_maxhits) * 
-     $              c_old * g_old
+               bigcal_rcs_cfac(i) = bigcal_vector(i+bigcal_prot_maxhits) / 1000.
 
                g_new = 1.
-               c_new = bigcal_vector(i+bigcal_prot_maxhits) * c_old * g_old
+               c_new = bigcal_vector(i+bigcal_prot_maxhits)
 
                if(bid_bcal_cfac_old.gt.0) call hf1(bid_bcal_cfac_old,
      $              float(i+bigcal_prot_maxhits),c_old*g_old)
@@ -466,14 +468,14 @@ c     also replace any channels that aren't in the reduced calib. matrix with th
                icell = bigcal_matr_ismalld(i)
 
                if(icell.le.bigcal_prot_maxhits) then
-                  bigcal_prot_cfac(icell) = newavg
+                  bigcal_prot_cfac(icell) = newavg / 1000.
                   if(Nred.gt.0.and.Nred.le.bigcal_all_maxhits) then
-                     bigcal_prot_cfac(icell) = redavg
+                     bigcal_prot_cfac(icell) = redavg / 1000. 
                   endif
                else 
-                  bigcal_rcs_cfac(icell-bigcal_prot_maxhits) = newavg
+                  bigcal_rcs_cfac(icell-bigcal_prot_maxhits) = newavg / 1000.
                   if(Nred.gt.0.and.Nred.le.bigcal_all_maxhits) then
-                     bigcal_rcs_cfac(icell-bigcal_prot_maxhits) = redavg
+                     bigcal_rcs_cfac(icell-bigcal_prot_maxhits) = redavg / 1000.
                   endif
                endif
             enddo
@@ -481,14 +483,14 @@ c     also replace any channels that aren't in the reduced calib. matrix with th
             do i=1,nempty
                icell = bigcal_matr_iempty(i)
                if(icell.le.bigcal_prot_maxhits) then
-                  bigcal_prot_cfac(icell) = newavg
+                  bigcal_prot_cfac(icell) = newavg / 1000.
                   if(Nred.gt.0.and.Nred.le.bigcal_all_maxhits) then
-                     bigcal_prot_cfac(icell) = redavg
+                     bigcal_prot_cfac(icell) = redavg / 1000.
                   endif
                else
-                  bigcal_rcs_cfac(icell-bigcal_prot_maxhits) = newavg
+                  bigcal_rcs_cfac(icell-bigcal_prot_maxhits) = newavg / 1000.
                   if(Nred.gt.0.and.Nred.le.bigcal_all_maxhits) then
-                     bigcal_rcs_cfac(icell-bigcal_prot_maxhits) = redavg
+                     bigcal_rcs_cfac(icell-bigcal_prot_maxhits) = redavg / 1000.
                   endif
                endif
             enddo
@@ -506,30 +508,30 @@ c     using the reduced matrix.
                      icol= mod(i-1,32) + 1
                      if(irow.le.bigcal_calib_iylo.or.irow.ge.bigcal_calib_iyhi.or.
      $                    icol.le.bigcal_calib_ixlo(1).or.icol.ge.bigcal_calib_ixhi(1)) then
-                        bigcal_prot_cfac(i) = redavg
+                        bigcal_prot_cfac(i) = redavg / 1000.
                      endif
                      
-                     if(bigcal_prot_cfac(i).lt..05*redavg.or.bigcal_prot_cfac(i).gt.20.*redavg) then
-                        bigcal_prot_cfac(i) = redavg
+                     if(1000.*bigcal_prot_cfac(i).lt..05*redavg.or.bigcal_prot_cfac(i).gt.20.*redavg) then
+                        bigcal_prot_cfac(i) = redavg / 1000.
                      endif
                   else
                      irow=(i-1025)/30 + 33
                      icol=mod(i-1025,30) + 1
                      if(irow.le.bigcal_calib_iylo.or.irow.ge.bigcal_calib_iyhi.or.
      $                    icol.le.bigcal_calib_ixlo(2).or.icol.ge.bigcal_calib_ixhi(2)) then
-                        bigcal_rcs_cfac(i-1024) = redavg
+                        bigcal_rcs_cfac(i-1024) = redavg / 1000. 
                      endif
                      
-                     if(bigcal_rcs_cfac(i-1024).lt..05*redavg.or.bigcal_rcs_cfac(i-1024).gt.20.*redavg) then
-                        bigcal_rcs_cfac(i-1024) = redavg
+                     if(1000.*bigcal_rcs_cfac(i-1024).lt..05*redavg.or.bigcal_rcs_cfac(i-1024).gt.20.*redavg) then
+                        bigcal_rcs_cfac(i-1024) = redavg / 1000.
                      endif
 
                   endif
                else
                   if(i.le.1024) then
-                     bigcal_prot_cfac(i) = redavg
+                     bigcal_prot_cfac(i) = redavg / 1000. 
                   else
-                     bigcal_rcs_cfac(i-1024) = redavg
+                     bigcal_rcs_cfac(i-1024) = redavg / 1000. 
                   endif
                endif
             enddo

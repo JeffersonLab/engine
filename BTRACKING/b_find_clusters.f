@@ -89,8 +89,8 @@ c     so regardless of the adc value, the "ecell" value should be zero!
       enddo
 
 c     check that max is at least one block away from the edge
-      if(ixmax.ge.2.and.iymax.ge.2.and.ixmax.le.31.and.iymax.le.55.and.
-     $     .not. (iymax.gt.32.and.ixmax.gt.29) ) then
+      if(ixmax.ge.1.and.iymax.ge.1.and.ixmax.le.32.and.iymax.le.56.and.
+     $     .not. (iymax.gt.32.and.ixmax.gt.30) ) then
 
          nmaximum = nmaximum + 1
          icellclst = icellclst + 1
@@ -104,6 +104,13 @@ c     initialize all "bad cluster" flags to false
          bigcal_above_max(nmaximum) = .false.
          bigcal_second_max(nmaximum) = .false.
      
+c     check for maximum at edge condition:
+         
+         if(iymax.eq.1.or.ixmax.eq.1.or.iymax.eq.56.or.(iymax.gt.32.and.
+     $        ixmax.eq.30).or.ixmax.eq.32) then
+            bigcal_edge_max(nmaximum) = .true.
+         endif
+
          cluster_temp_irow(icellclst) = iymax
          cluster_temp_icol(icellclst) = ixmax
          cluster_temp_xcell(icellclst) = bigcal_all_xgood(ihitmax)
@@ -273,7 +280,7 @@ c$$$         write(*,253) 'length x = ',lengthx
 
          if(bigcal_too_long_x(nmaximum).or.bigcal_too_long_y(nmaximum))
      $        then
-            goto 104
+c            goto 104
          endif
 c$$$         write(*,254) 'esum = ',esum
  254     format(A7,F8.5)
@@ -296,7 +303,7 @@ c$$$         write(*,254) 'esum = ',esum
             if(cluster_temp_ecell(2)/cluster_temp_ecell(1).gt.b_min_2max(1).and.
      $           cluster_temp_ecell(2).gt.b_min_2max(2)) then
                bigcal_second_max(nmaximum) = .true.
-               goto 104
+c               goto 104
             endif
          else if(ncellclst.gt.1) then
             if(cluster_temp_irow(1).eq.32.and.iy2max.eq.33) then
@@ -313,7 +320,7 @@ c$$$         write(*,254) 'esum = ',esum
                if(cluster_temp_ecell(2)/cluster_temp_ecell(1).gt.b_min_2max(1).and.
      $              cluster_temp_ecell(2).gt.b_min_2max(2)) then
                   bigcal_second_max(nmaximum) = .true.
-                  goto 104
+c                  goto 104
                endif
             endif
          endif
@@ -327,6 +334,8 @@ c     ONLY A SMALL CHANCE OF FINDING A MAXIMUM NEXT TO IT, DEPENDING ON B_MIN_EM
          
  106     found_cluster = .true.
          ncluster = ncluster + 1
+
+         bigcal_clstr_keep(ncluster) = .true.
 
          bigcal_all_clstr_ncell(ncluster) = ncellclst
          bigcal_all_clstr_ncellx(ncluster) = lengthx
@@ -413,34 +422,34 @@ c$$$         endif
             endif
          endif
 
-      else 
-         if(ixmax.eq.1.or.iymax.eq.1.or.iymax.eq.56.or.ixmax.eq.32.or.
-     $        (iymax.gt.32.and.ixmax.eq.30)) then
-            nmaximum = nmaximum + 1
-            bigcal_edge_max(nmaximum) = .true.
-            bigcal_not_enough(nmaximum) = .false.
-            bigcal_too_long_x(nmaximum) = .false.
-            bigcal_too_long_y(nmaximum) = .false.
-            bigcal_below_cut(nmaximum) = .false.
-            bigcal_above_max(nmaximum) = .false.
-            bigcal_second_max(nmaximum) = .false.
-
-c     zero ecell and adc good for hit array, but leave detector array untouched
-
-            bigcal_all_ecell(ihitmax) = 0.
-            bigcal_all_adc_good(ihitmax) = 0.
-
-            goto 102
-
-         endif
+c$$$      else 
+c$$$         if(ixmax.eq.1.or.iymax.eq.1.or.iymax.eq.56.or.ixmax.eq.32.or.
+c$$$     $        (iymax.gt.32.and.ixmax.eq.30)) then
+c$$$            nmaximum = nmaximum + 1
+c$$$            bigcal_edge_max(nmaximum) = .true.
+c$$$            bigcal_not_enough(nmaximum) = .false.
+c$$$            bigcal_too_long_x(nmaximum) = .false.
+c$$$            bigcal_too_long_y(nmaximum) = .false.
+c$$$            bigcal_below_cut(nmaximum) = .false.
+c$$$            bigcal_above_max(nmaximum) = .false.
+c$$$            bigcal_second_max(nmaximum) = .false.
+c$$$
+c$$$c     zero ecell and adc good for hit array, but leave detector array untouched
+c$$$
+c$$$            bigcal_all_ecell(ihitmax) = 0.
+c$$$            bigcal_all_adc_good(ihitmax) = 0.
+c$$$
+c$$$            goto 102
+c$$$
+c$$$         endif
       endif
       
  104  continue
 
       if(found_cluster.and.ncluster.lt.bigcal_all_nclstr_max) goto 102
-
+      
       bigcal_all_nclstr = ncluster
       bigcal_nmaxima = nmaximum
-
+      
       return
       end

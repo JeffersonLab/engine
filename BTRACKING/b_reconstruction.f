@@ -196,6 +196,16 @@ c         write(*,*) 'entering b_find_clusters'
             return
          endif
       endif
+*
+      bigcal_all_nclust_good = bigcal_all_nclstr
+
+      if(bbypass_prune_clusters.eq.0.and.bbypass_find_clusters.eq.0)then
+         call b_prune_clusters(ABORT,err)
+         if(abort) then
+            call g_add_path(here,err)
+            return
+         endif
+      endif
 *     
       if(bbypass_calc_physics.eq.0.and.bbypass_find_clusters.eq.0) then
          
@@ -206,6 +216,7 @@ c         write(*,*) 'entering b_find_clusters'
             return
          endif
       endif
+
 c     if dealing with real data and not monte carlo, then the appropriate
 c     place to do the calibration matrix is in gep_reconstruction, because
 c     we need to know the incident electron energy, hence we need the hms
