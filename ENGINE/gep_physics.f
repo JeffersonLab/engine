@@ -75,7 +75,7 @@ c      logical fixed_bigcal
 c     if the user has not defined something reasonable, then set by hand here:
       
       if(GEP_sigma_Ediff.lt..01) then
-         GEP_sigma_Ediff = .06
+         GEP_sigma_Ediff = .1
       endif
       if(GEP_sigma_Xdiff.lt..001.or.GEP_sigma_Xdiff.gt.100.0) then
          GEP_sigma_Xdiff = 3.0
@@ -113,7 +113,7 @@ c     if the user has not defined something reasonable, then set by hand here:
          gbeam_y = yv_p_mc
       endif
 
-      if(hsnum_fptrack.le.0) then
+      if(hsnum_fptrack.le.0.or.bigcal_all_nclstr.le.0) then
          return
       endif
 
@@ -175,58 +175,20 @@ c$$$      write(*,*) 'htrigt=',htrigt
 
       Me = mass_electron ! convenient shorthand
 
-c     initialize variables used in best cluster selection:
-      hptemp = hsp
-      hthetatemp = hstheta
-      hphitemp = hsphi - 3.*PI/2.
-      E0temp = gebeam
-      zbeamtemp = hszbeam
-      bthetatemp = bigcal_theta_deg
-      brtemp = bigcal_r_tgt
-      bytemp = bigcal_height
-
-      if(gep_select_apply_offsets) then ! recalculate momentum and lab angles for the proton
-         E0temp = gebeam + gep_select_dE0 / 1000.
-         hptemp = hpcentral * (1. + gep_select_dp0 / 100.) * 
-     $        (1. + hsdelta/100.)
-         xptartmp = hsxp_tar + gep_select_dxptar
-
-         pztmp = hptemp / sqrt( 1. + hsyp_tar**2 + xptartmp**2 )
-
-         pxlabtmp = pztmp * xptartmp
-         pylabtmp = pztmp * (hsyp_tar*coshthetas - sinhthetas)
-         pzlabtmp = pztmp * (hsyp_tar*sinhthetas + coshthetas)
-
-         hthetatemp = acos(max(-1.,min(pzlabtmp/hptemp,1.)))
-         
-         hphitemp = atan2(pylabtmp,pxlabtmp)
-         
-         zbeamtemp = coshthetas*hsy_tar / tan(htheta_lab*PI/180.-hsyp_tar)
-     $        + sinhthetas*hsy_tar
-
-         bthetatemp = bthetatemp + gep_select_dbtheta
-         brtemp = brtemp + gep_select_dbdist
-      endif
-
-      sinbtmp = sin(bthetatemp * PI/180.)
-      cosbtmp = cos(bthetatemp * PI/180.)
-
 c     calculate nu for elastic-ep:
 
-      nu = sqrt(Mp**2 + hptemp**2) - Mp
+      nu = sqrt(Mp**2 + hsp**2) - Mp
 
 c     expected electron energy:
-      Eprime = E0temp - nu
+      Eprime = gebeam - nu
 
-      Ecal_hexpect = Eprime
-
-      pthetarad = hthetatemp
-      pphirad = hphitemp ! ~-PI/2.
+      pthetarad = hstheta
+      pphirad = hsphi - 3.*PI/2. ! ~-PI/2.
 
 c     calculate proton momentum (assuming elastic) from hstheta:
 
-      Q2_htheta = 4.*Mp**2*E0temp**2*(cos(hthetatemp))**2 / 
-     $     (Mp**2 + 2.*Mp*E0temp + E0temp**2*(sin(hthetatemp))**2)
+      Q2_htheta = 4.*Mp**2*gebeam**2*(cos(hstheta))**2 / 
+     $     (Mp**2 + 2.*Mp*gebeam + gebeam**2*(sin(hstheta))**2)
       nu_htheta = Q2_htheta / (2.*Mp)
 
       pp_htheta = sqrt(nu_htheta**2 + 2.*Mp*nu_htheta)
@@ -236,25 +198,8 @@ c     you can get using hstheta, the reason being the large Jacobian of the reac
 c     magnified roughly by a factor hsp/Eprime compared to the error on hstheta, and this in turn gives a 
 c     large error on xcal,ycal
 
-      if(nu.ge.E0temp) then ! this is certainly not an elastic proton!!!!   
-         Eprime = 0.
-         etheta_expect = 0.
-         xcal_hexpect = -999.
-         ycal_hexpect = -999.
-         goto 173
-c     set Eprime and theta to zero and skip calculation of expected electron position:
-      else if(nu/Eprime.gt.2.*E0temp/Mp) then ! ep elastic is still kinematically forbidden!
-         Eprime = 0.
-         etheta_expect = 0.
-         xcal_hexpect = -999.
-         ycal_hexpect = -999.
-         goto 173
-      else ! if ep-elastic is not explicitly kinematically forbidden, then
-c     use elastic kinematics to predict the electron position and energy:
-c     since we have yet to put a cut on the correlation between hsp and pel(hstheta), 
-c     we won't always get a sensible value. Just want to prevent annoying divide-by-zero messages for now.
-         etheta_expect = acos(1. - Mp/E0temp * nu / Eprime)
-      endif
+      
+      etheta_expect = acos(max(-1.,min(1.,1. - Mp/gebeam * nu / Eprime)))
          
       ! in BigCal coordinates, phi is centered at 0 for BigCal. In target coordinates, BigCal is 
       ! centered at +PI/2, while HMS is centered at -PI/2. However, since BigCal y means -target x
@@ -287,16 +232,12 @@ c     now rotate to BigCal coordinates:
 
 c     vertex coordinates expressed in BigCal coordinate system
 c     turns out that beam x and y coordinates are the same as BigCal coordinates
+c     also correct the z vertex position for raster x:
 
-      vz = zbeamtemp ! along beamline
       vx = gbeam_x ! horizontal toward BigCal
       vy = gbeam_y ! vertical up (target x is vertical down.)
+      vz = hszbeam - vx / tan(htheta_lab*PI/180. - hsyp_tar)
 
-c     correct vertex z for beam x position: 
-      
-      if(gep_select_apply_offsets) 
-     $     vz = vz - vx / tan(htheta_lab*PI/180. - hsyp_tar)
-      
       !write(*,*) 'vertex xyz=',vx,vy,vz
 
 c     etint is the trajectory parameter, calculated at the intersection point with the face of BigCal,
@@ -305,8 +246,8 @@ c     the parameter determining where we are on the line, then etint is the valu
 c     electron hits the calorimeter. 
 c     so we are calculating the intersection point of the e- trajectory expected from the HMS with BigCal:
 
-      etint = (brtemp-vx*sinbtmp-vz*cosbtmp) / 
-     $     (exhat * sinbtmp + ezhat*cosbtmp)
+      etint = (bigcal_r_tgt-vx*bigcal_sintheta-vz*bigcal_costheta) / 
+     $     (exhat * bigcal_sintheta + ezhat*bigcal_costheta)
 
       xint_hexpect = vx + etint * exhat
       yint_hexpect = vy + etint * eyhat
@@ -316,7 +257,7 @@ c     so we are calculating the intersection point of the e- trajectory expected
 
 c     now rotate into calo-centered coordinate system:
 
-      xcal_hexpect=xint_hexpect*cosbtmp-zint_hexpect*sinbtmp
+      xcal_hexpect=xint_hexpect*bigcal_costheta-zint_hexpect*bigcal_sintheta
       ycal_hexpect=yint_hexpect
 c      tcal_hexpect= hstime_at_fp - hstart_time_center + hspath_cor
 
@@ -351,20 +292,11 @@ c         fixed_bigcal = .false.
       call b_calc_physics(abort,err) ! reconstruct physics quantities for BigCal. 
 c     this routine should only get called once per event!!!!!!!!!!!!!!!!
 
+      call gep_select_best_cluster
+
 *     now pick up where we left off:
 
-
-      ibest_cal = pick_best_cal_track(tcal_hexpect,gep_etheta_expect_h,
-     $     gep_ephi_expect_h,gep_bx_expect_h,gep_by_expect_h,Ecal_hexpect,hptemp)
-
-
-
-c     now compute "missing" quantities using the track we have selected.
-c     first correct best calo track for vertex information which we now know from HMS reconstruction:
-
-      if(ibest_cal.eq.0) return
-
-      bigcal_itrack_best = ibest_cal
+      ibest_cal = bigcal_itrack_best
 
 c     correct angles since we know vertex:
       
@@ -415,14 +347,14 @@ c     could get a "NaN" error here: check:
          gep_ctime_cal = 0.
       endif
 
-      Ee_btheta = E0temp / (1. + E0temp/Mp * (1. - cos(bigcal_thetarad)))
+      Ee_btheta = gebeam / (1. + gebeam/Mp * (1. - cos(bigcal_thetarad)))
 
-      nu_btheta = E0temp - Ee_btheta
+      nu_btheta = gebeam - Ee_btheta
       pp_btheta = sqrt(nu_btheta**2 + 2.*Mp*nu_btheta)
 c     compute Q2 three different ways:
 c     Q2_Cal uses only BigCal information except for hms vertex info
 c     Q2_hms uses only HMS information, period.
-      Q2_cal = 2.*E0temp*Ee_btheta*(1.-cos(bigcal_thetarad))
+      Q2_cal = 2.*gebeam*Ee_btheta*(1.-cos(bigcal_thetarad))
       Q2_hms = 2.*Mp*nu ! HMS only
 
       E0_2body = .5* (nu + sqrt(max(0.,nu**2 + 2.*Q2_hms / (1. - cos(bigcal_thetarad)))))
@@ -432,7 +364,7 @@ c     Q2_hms uses only HMS information, period.
 c     what is the average Q2? Both measurements are very good, except for bigcal_energy
 c     best is probably to use Eprime calculated from hsp, but use BigCal angle measurement
 c     corrected for HMS vertex info. Q2 from Ebeam, hsp alone (Q2_hms) may be even better than this. 
-      GEP_Q2 = 2.*E0temp*Eprime*(1.-cos(bigcal_thetarad))
+      GEP_Q2 = 2.*gebeam*Eprime*(1.-cos(bigcal_thetarad))
 c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       GEP_Q2_H = Q2_hms
       GEP_Q2_B = Q2_cal
@@ -452,14 +384,14 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       GEP_ybeam = gbeam_y
       GEP_xclust = bigcal_all_clstr_x(ibest_cal)
       GEP_yclust = bigcal_all_clstr_y(ibest_cal)
-      GEP_eclust = bigcal_all_clstr_etot(ibest_cal)
+      GEP_eclust = bigcal_energy
       GEP_epsilon = 1./(1.+2.*(1.+GEP_Q2/(4.*Mp**2))*(tan(bigcal_thetarad/2.))**2)
       GEP_etheta_deg = bigcal_thetarad * 180./PI
       GEP_ptheta_deg = hstheta * 180./PI
       GEP_ephi_deg = bigcal_phirad * 180./PI + 90. !~+90 deg
       GEP_pphi_deg = pphirad * 180./PI !~-90 deg
 
-      GEP_Emiss = E0temp + Mp - hsenergy - bigcal_energy
+      GEP_Emiss = gebeam + Mp - hsenergy - bigcal_energy
       GEP_Pmissx = -bigcal_py + hsp*sin(hstheta)*cos(pphirad)
       GEP_Pmissy = bigcal_px + hsp*sin(hstheta)*sin(pphirad)
       GEP_Pmissz = gpbeam - bigcal_pz - hsp*cos(hstheta)
@@ -470,95 +402,4 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       return 
       end
 
-
-      integer function pick_best_cal_track(T_H,TH_H,PH_H,X_H,Y_H,E_H,P_H)
-     
-      include 'gen_data_structures.cmn'
-      include 'gep_data_structures.cmn'
-      include 'bigcal_data_structures.cmn'
-
-      logical restore_E
-      integer itrack,ibest
-      real diffsum,mindiffsum
-
-      real E_cal,TH_cal,PH_cal,T_cal,X_cal,Y_cal,PP_cal
-      real T_H,TH_H,PH_H,E_H,X_H,Y_H,P_H
-      
-      real E0temp,Eel,nuel
-
-      real PI
-      parameter(PI=3.14159265359)
-
-      real Mp
-      parameter(Mp=0.938272)
-
-      restore_E = .false.
-
-      E0temp = gebeam
-
-      p0temp = hpcentral
-      if(gep_select_apply_offsets) 
-     $     p0temp = p0temp * (1. + gep_select_dp0/100.)
-
-      if(gep_select_apply_offsets) E0temp = E0temp + gep_select_dE0
-
-      if(bigcal_phys_ntrack.gt.0) then
-         do itrack = 1,bigcal_phys_ntrack
-            E_cal = bigcal_track_energy(itrack)
-
-            if(E_cal .gt. 10.0) then ! divide by 1000
-               E_cal = E_cal / 1000.
-               restore_E = .true.
-            endif
-            
-            TH_cal = bigcal_track_thetarad(itrack)
-            PH_cal = bigcal_track_phirad(itrack) + PI/2. ! ~+PI/2.
-
-            Eel = E0temp / ( 1. + E0temp / Mp * (1. - cos(TH_cal)) )
-
-            nuel = E0temp - Eel
-            
-            pp_cal = sqrt(max(0.,nuel**2 + 2.*Mp*nuel))
-
-            T_cal = bigcal_track_time(itrack) - bigcal_track_tof_cor(itrack) -
-     $           (bigcal_end_time - bigcal_window_center)
-            X_cal = bigcal_all_clstr_x(itrack)
-            Y_cal = bigcal_all_clstr_y(itrack)
-
-            diffsum = 0.
-            diffsum = diffsum + ( (E_cal - E_H)/GEP_sigma_Ediff )**2
-            diffsum = diffsum + ( (TH_cal - TH_H)/GEP_sigma_thdiff )**2
-            diffsum = diffsum + ( (PH_cal - PH_H)/GEP_sigma_phdiff )**2
-            diffsum = diffsum + ( (T_cal - T_H)/GEP_sigma_Tdiff )**2
-            diffsum = diffsum + ( (X_cal - X_H)/GEP_sigma_Xdiff )**2
-            diffsum = diffsum + ( (Y_cal - Y_H)/GEP_sigma_Ydiff )**2
-            diffsum = diffsum + ( (p_h - pp_cal)/p0temp / gep_sigma_pmiss )**2
-
-            if(itrack.eq.1) then
-               mindiffsum = diffsum
-               ibest = itrack
-            else
-               if(diffsum.lt.mindiffsum) then
-                  mindiffsum = diffsum
-                  ibest = itrack
-               endif
-            endif
-
-            bigcal_all_clstr_chi2(itrack) = diffsum/7.
-            bigcal_all_clstr_chi2contr(itrack,1) = ( (E_cal - E_H)/GEP_sigma_Ediff )**2
-            bigcal_all_clstr_chi2contr(itrack,2) = ( (TH_cal - TH_H)/GEP_sigma_thdiff )**2
-            bigcal_all_clstr_chi2contr(itrack,3) = ( (PH_cal - PH_H)/GEP_sigma_phdiff )**2
-            bigcal_all_clstr_chi2contr(itrack,4) = ( (X_cal - X_H)/GEP_sigma_xdiff )**2
-            bigcal_all_clstr_chi2contr(itrack,5) = ( (Y_cal - Y_H)/GEP_sigma_ydiff )**2
-            bigcal_all_clstr_chi2contr(itrack,6) = ( (T_cal - T_H)/GEP_sigma_Tdiff )**2
-            
-            if(restore_E) E_cal = E_cal * 1000.
-
-         enddo
-         pick_best_cal_track = ibest
-      else
-         pick_best_cal_track = 0
-      endif
-     
-      end
 

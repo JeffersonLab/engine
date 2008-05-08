@@ -19,6 +19,8 @@ c      include 'bigcal_statistics.cmn'
       
       integer i,j,k
 
+      bigcal_all_nclust_good = 0
+
       bigcal_annoying_pulser_event = .false.
       BIGCAL_TDC_NHIT = 0
       BIGCAL_TDC_NDECODED = 0

@@ -23,6 +23,8 @@
          gep_btime(i) = 0.
       enddo
 
+      gep_good_calib_event=.false.
+
       gep_btime_raw = 0.
       gep_btime_corr = 0.
 

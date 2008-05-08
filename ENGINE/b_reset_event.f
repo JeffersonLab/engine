@@ -24,7 +24,7 @@ c      include 'gen_constants.par'
       integer irow8,icol8,igroup8
       integer igroup64,ihalf64,ilogic
 
-
+      bigcal_all_nclust_good = 0
       bigcal_annoying_pulser_event = .false.
       bigcal_tdc_nhit = 0
       bigcal_tdc_ndecoded = 0
