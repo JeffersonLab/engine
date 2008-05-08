@@ -25,14 +25,6 @@ c      if(gepbypass_physics.eq.0) then
          call G_add_path(here,err)
          return
       endif
-      
-      if(bigcal_do_calibration.ne.0) then
-         call b_matrix_accum(abort,err)
-         if(abort) then
-            call g_add_path(here,err)
-            return
-         endif
-      endif
 
 c     successful return
 
