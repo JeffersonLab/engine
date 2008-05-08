@@ -35,6 +35,8 @@ c     offsets for best cluster selection and calibration event selection:
      $     gep_select_dby
 
 c     event selection cuts for BigCal calibration:
+      logical gep_bcalib_use_etheta
+      
       real*4 gep_bcalib_cut_ctime
       real*4 gep_bcalib_cut_dx
       real*4 gep_bcalib_cut_dy
@@ -43,6 +45,7 @@ c     event selection cuts for BigCal calibration:
       real*4 gep_bcalib_cut_elastic(2) ! cut on (hpel(hstheta)-hsp)/hpel(hstheta))
       real*4 gep_bcalib_cut_ehms(2) ! 1 = min, 2 = max
       common/gep_bcalib/
+     $     gep_bcalib_use_etheta,
      $     gep_bcalib_cut_ctime,
      $     gep_bcalib_cut_dx,
      $     gep_bcalib_cut_dy,
@@ -95,6 +98,7 @@ c     bypass switches
 *
 *     CTPTYPE=event
 *
+      logical gep_good_calib_event
       integer*4 ntrigH1,ntrigH2,ntrigB
       real*4 GEP_ctime_hms ! HMS coincidence time
       real*4 GEP_ctime_cal ! BigCal coincidence time
@@ -143,6 +147,7 @@ c     can define the unit vector in the q-direction, which defines the coord.
 c     system for the polarization measurement. 
       
       common/GEPBLOCK/
+     $     gep_good_calib_event,
      $     ntrigH1,
      $     ntrigH2,
      $     ntrigB,
