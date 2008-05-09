@@ -113,7 +113,7 @@ c     if the user has not defined something reasonable, then set by hand here:
          gbeam_y = yv_p_mc
       endif
 
-      if(hsnum_fptrack.le.0.or.bigcal_all_nclstr.le.0) then
+      if(hsnum_fptrack.le.0.or.bigcal_all_nclust_good.le.0) then
          return
       endif
 
@@ -297,6 +297,8 @@ c     this routine should only get called once per event!!!!!!!!!!!!!!!!
 *     now pick up where we left off:
 
       ibest_cal = bigcal_itrack_best
+
+      if(ibest_cal.eq.0) return
 
 c     correct angles since we know vertex:
       

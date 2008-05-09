@@ -14,6 +14,7 @@
       include 'gep_hist_id.cmn'
       include 'hms_data_structures.cmn'
       include 'bigcal_data_structures.cmn'
+      include 'bigcal_bypass_switches.cmn'
 
       real xdiff,ydiff,ediff
       integer i
@@ -36,7 +37,8 @@ c$$$      if(gepid_gep_ntrig_h2.gt.0) call hf1(gepid_gep_ntrig_h2,float(ntrigH2)
 c$$$      if(gepid_gep_ntrig_bigcal.gt.0) call hf1(gepid_gep_ntrig_bigcal,float(ntrigB),1.)
       
       if(abs(hsdelta).lt.10..and.abs(hsp-gep_pel_htheta)/hpcentral .lt..1.and.
-     $     bigcal_itrack_best.gt.0) then
+     $     bigcal_itrack_best.gt.0.and.(bigcal_do_calibration.eq.0.or.
+     $     gep_good_calib_event)) then
 
          xdiff = bigcal_all_clstr_x(bigcal_itrack_best) - gep_bx_expect_h
          ydiff = bigcal_all_clstr_y(bigcal_itrack_best) - gep_by_expect_h

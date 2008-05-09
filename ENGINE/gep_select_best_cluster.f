@@ -123,6 +123,8 @@
 
       firstgood = .true.
 
+      best = 0
+
       do iclust = 1,bigcal_all_nclstr
          xrot = bigcal_all_clstr_x(iclust) * cosBth + bR * sinBth
          zrot = -bigcal_all_clstr_x(iclust) * sinBth + bR * cosBth
