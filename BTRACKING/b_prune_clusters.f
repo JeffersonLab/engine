@@ -86,7 +86,7 @@ c     prune on cluster energy before pruning on edge max or cluster size:
          enddo
       endif
 
-c     prune on cluster size (want >1 in x and y)
+c     prune on cluster size (want >1 in x and y for real showers)
 
       ngood = 0
       
@@ -175,7 +175,7 @@ c     prune on trms:
 c     now set the "keep" flag for each cluster
 c     at this point, no longer keep clusters that don't satisfy, at a minimum, the following:
 c     1. no second max
-c     2. 
+c     2. cluster size < maximum
 
       bigcal_all_nclust_good = 0
 
