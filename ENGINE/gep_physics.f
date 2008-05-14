@@ -183,7 +183,9 @@ c     expected electron energy:
       Eprime = gebeam - nu
 
       pthetarad = hstheta
-      pphirad = hsphi - 3.*PI/2. ! ~-PI/2.
+cajp051408      pphirad = hsphi - 3.*PI/2. ! ~-PI/2.
+
+      pphirad = hsphi
 
 c     calculate proton momentum (assuming elastic) from hstheta:
 

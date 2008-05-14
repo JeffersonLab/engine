@@ -20,6 +20,9 @@
 *-                           Dummy Shell routine
 *
 * $Log$
+* Revision 1.23.20.4  2008/05/14 20:34:09  cdaq
+* removed 3pi/2 shift in hsphi
+*
 * Revision 1.23.20.3  2008/03/26 14:35:35  puckett
 * changed atan to atan2 for hsphi calculation
 *
@@ -380,7 +383,7 @@ c      hsphi = atan(hs_kpvec(3)/hs_kpvec(2))
       coshstheta = cos(hstheta)
 c      write(*,*) ' hsphi = ',hsphi,hphi_lab,hs_kpvec(3),hs_kpvec(2)
 
-      hsphi = hphi_lab + hsphi
+cajp051408      hsphi = hphi_lab + hsphi
 
 c      if (hsphi .gt. 0.) hsphi = hsphi - tt
 
