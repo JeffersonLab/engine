@@ -12,6 +12,9 @@
 *- 
 *-   Created  30-June-1995 SAW
 *  $Log$
+*  Revision 1.2.24.2.2.1  2008/05/15 18:59:22  bhovik
+*  1'st version
+*
 *  Revision 1.2.24.2  2007/08/22 19:09:16  frw
 *  added FPP
 *
@@ -50,6 +53,8 @@
       call c_ntuple_shutdown(ABORT,err)
 *
       call b_ntuple_shutdown(ABORT,err)
+*  
+      call sane_ntup_shutdown(ABORT,err)
 *  
       call gep_ntuple_shutdown(ABORT,err)
 *

@@ -11,6 +11,9 @@
 *-   Created  20-Nov-1993   Kevin B. Beard, HU
 *
 * $Log$
+* Revision 1.10.8.1.2.1  2008/05/15 18:59:21  bhovik
+* 1'st version
+*
 * Revision 1.10.8.1  2007/05/15 02:55:01  jones
 * Start to Bigcal code
 *
@@ -124,6 +127,14 @@
       ABORT= ABORT .or. FAIL
 *-BIGCAL
       call B_keep_results(FAIL,why)
+      if(err.ne.' '.and. why.ne.' ') then
+         call G_append(err,' & '//why)
+      else if(why.ne.' ') then
+         err = why
+      endif
+      abort = abort .or. fail
+*-SANE
+      call SANE_keep_results(FAIL,why)
       if(err.ne.' '.and. why.ne.' ') then
          call G_append(err,' & '//why)
       else if(why.ne.' ') then

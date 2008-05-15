@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.28.16.10.2.1  2008/05/15 18:59:21  bhovik
+# 1'st version
+#
 # Revision 1.28.16.10  2007/11/03 08:40:02  cdaq
 # added gep_hist_fill.f
 #
@@ -237,7 +240,7 @@ DEPLIBS = $(LIBROOT)/libengine.a \
 	$(LIBROOT)/libhtracking.a $(LIBROOT)/libstracking.a \
 	$(LIBROOT)/libengine.a \
 	$(LIBROOT)/libtracking.a $(LIBROOT)/libhack.a \
-	$(LIBROOT)/libbtracking.a \
+	$(LIBROOT)/libbtracking.a $(LIBROOT)/libsanetracking.a \
 	$(LIBROOT)/libutils.a #$(LIBROOT)/libctp.a
 #$(LIBROOT)/libgmc.a 
 
@@ -310,8 +313,12 @@ $(LIBROOT)/libhtracking.a:
 
 $(LIBROOT)/libstracking.a:
 	$(MAKE) -C ../../STRACKING
+
 $(LIBROOT)/libbtracking.a:
 	$(MAKE) -C ../../BTRACKING
+
+$(LIBROOT)/libsanetracking.a:
+	$(MAKE) -C ../../SANE
 
 $(LIBROOT)/libctp.a:
 	$(MAKE) -C ../../CTP

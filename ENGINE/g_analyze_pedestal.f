@@ -1,6 +1,9 @@
       subroutine g_analyze_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.2.24.1.2.1  2008/05/15 18:59:21  bhovik
+* 1'st version
+*
 * Revision 1.2.24.1  2007/05/15 02:55:01  jones
 * Start to Bigcal code
 *
@@ -32,6 +35,12 @@
       endif
 *
       call b_analyze_pedestal(ABORT,err) ! bigcal
+      if(ABORT) then
+         call G_add_path(here,err)
+         return
+      endif
+*
+      call sane_analyze_pedestal(ABORT,err) ! bigcal
       if(ABORT) then
          call G_add_path(here,err)
          return

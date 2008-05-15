@@ -87,7 +87,7 @@ c$$$         write(*,*) 'event,type,trigtype=',bgid,bgtype,btrigtype
 c$$$         write(*,*) 'nclust,ncl8,ncl64,ntrk,best=',nclust,nclust8,
 c$$$     $        nclust64,ntrack,ibest
 
-         do iclust = 1,nclust
+        do iclust = 1,nclust
             ncellclust(iclust) = bigcal_all_clstr_ncell(iclust)
             ncellbad(iclust) = bigcal_all_clstr_nbadlist(iclust)
             ncellx(iclust) = bigcal_all_clstr_ncellx(iclust)
@@ -219,7 +219,7 @@ c     $           eclust(iclust)
      $           (bigcal_end_time - gep_btime_elastic)
 
             if(bgtype.eq.6.and.ibest>0) then
-c               write(*,*) 'chi2=',bigcal_all_clstr_chi2(iclust)
+c               write(*,*) 'chi2=',bigcal_all_clstr_chi2(iclust) 
                chi2clust(iclust) = bigcal_all_clstr_chi2(iclust)
                do idiff=1,6
 c                  write(*,*) 'chi2_',idiff,'=',bigcal_all_clstr_chi2contr(iclust,idiff)
@@ -236,6 +236,7 @@ c$$$     $           energy(iclust),xface(iclust),yface(iclust),zface(iclust),px
 c$$$     $           pz(iclust),ctime_clust(iclust)
 
          enddo
+
          nmax = bigcal_nmaxima
          !write(*,*) 'nmax=',nmax
          do imax=1,nmax

@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
 * $Log$
+* Revision 1.11.24.3.2.1  2008/05/15 18:59:22  bhovik
+* 1'st version
+*
 * Revision 1.11.24.3  2007/09/11 19:14:17  frw
 * fixed FPP related arrays and limits
 *
@@ -71,9 +74,9 @@
       character*(*) err
 *
       logical HMS_ABORT,SOS_ABORT,COIN_ABORT,SCAL_ABORT
-      logical BIGCAL_ABORT,GEP_ABORT
+      logical BIGCAL_ABORT,GEP_ABORT,SANE_ABORT
       character*132 HMS_err,SOS_err,COIN_err,SCAL_err,BIGCAL_err
-      character*132 GEP_err
+      character*132 GEP_err,SANE_err
 *
       integer hit,chan,roc,slot
 *
@@ -131,6 +134,7 @@
 *     
       
       call B_reset_event(BIGCAL_ABORT,BIGCAL_err)
+      call SANE_reset_event(SANE_ABORT,SANE_err)
       
 
       

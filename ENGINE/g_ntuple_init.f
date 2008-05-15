@@ -13,6 +13,9 @@
 *- 
 *-Created  6-September-1995 SAW
 * $Log$
+* Revision 1.1.24.4.2.1  2008/05/15 18:59:21  bhovik
+* 1'st version
+*
 * Revision 1.1.24.4  2007/09/12 19:26:31  puckett
 * *** empty log message ***
 *
@@ -103,6 +106,16 @@ c     !write(*,*) 'about to call s_sv_nt_init'
       !write(*,*) 'about to call b_ntuple_init'
       call b_ntuple_init(FAIL,why)
       !write(*,*) 'b_ntuple_init successful'
+      if(err.ne.' '.and.why.ne.' ')then
+        call G_append(err,' & '//why)
+      elseif(why.ne.' ') then
+        err = why
+      endif
+      ABORT = ABORT .or. FAIL
+cc
+      
+      call sane_ntup_init(FAIL,why)
+c      write(*,*) 'sane_ntup_init successful'
       if(err.ne.' '.and.why.ne.' ')then
         call G_append(err,' & '//why)
       elseif(why.ne.' ') then

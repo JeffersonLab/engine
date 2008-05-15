@@ -8,6 +8,9 @@
 *     Added new detector ids for BigCal
 *
 *     $Log$
+*     Revision 1.8.24.3.2.1  2008/05/15 19:04:32  bhovik
+*     1'st version
+*
 *     Revision 1.8.24.3  2007/08/27 17:05:58  frw
 *     clean replay for GEp-III
 *
@@ -49,9 +52,11 @@
       integer MAXID, UNINST_ID, HDC_ID, HSCIN_ID, HCER_ID, HCAL_ID, HMISC_ID, 
      $     GMISC_ID, SDC_ID, SSCIN_ID, SCER_ID, SCAL_ID, SMISC_ID, SAER_ID,
      $     SLUC_ID, HAERO_ID, BIGCAL_PROT_ID, BIGCAL_RCS_ID,
-     $     BIGCAL_TDC_ID, BIGCAL_ATRIG_ID, BIGCAL_TTRIG_ID, HFPP_ID
+     $     BIGCAL_TDC_ID, BIGCAL_ATRIG_ID, BIGCAL_TTRIG_ID, HFPP_ID,
+     $     LUCITE_SANE_ID,CERENKOV_SANE_ID,TRACKER_SANE_X_ID,
+     $     TRACKER_SANE_Y_ID
 
-      parameter (MAXID=20)
+      parameter (MAXID=30)
       parameter (UNINST_ID=0)           ! Uninstrumented channels
       parameter (HDC_ID=1)
       parameter (HSCIN_ID=2)
@@ -61,6 +66,11 @@
       parameter (GMISC_ID=6)             ! BPM/Raster data
       parameter (HAERO_ID=7) 
       parameter (HFPP_ID=20)		! Focal Plane Polarimeter
+
+      parameter (TRACKER_SANE_X_ID=21)		! SANE X Tracker DETECTOR
+      parameter (TRACKER_SANE_Y_ID=22)		! SANE Y Tracker DETECTOR
+      parameter (CERENKOV_SANE_ID=23)		! SANE CERENKOV DETECTOR
+      parameter (LUCITE_SANE_ID=24)		! SANE LUCITE DETECTOR
 cajp 
       parameter (BIGCAL_PROT_ID=8) ! protvino glass ADCs
       parameter (BIGCAL_RCS_ID=9) ! RCS glass ADCs

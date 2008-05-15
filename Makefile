@@ -8,7 +8,8 @@
 include etc/Makefile.variables
 
 .PHONY: all info coda ctp engine exe hack htracking include oneev online port \
-	stracking syncfilter t20 tracking utilsubs clean distclean btracking
+	stracking syncfilter t20 tracking utilsubs clean distclean btracking \
+	sanetracking
 
 #Missing from all: oneev online t20
 #There is no way to compile t20
@@ -16,15 +17,17 @@ include etc/Makefile.variables
 #oneev seems to work
 
 all: info include utilsubs ctp coda tracking htracking stracking hack port \
-	engine btracking syncfilter exe
+	engine btracking sanetracking syncfilter exe 
 
 info:
 	@echo HOSTNAME = $(HOSTNAME)
 	@echo ROOTSYS = $(ROOTSYS)
 	@echo CERN_ROOT = $(CERN_ROOT)
 	@echo NFSDIRECTORY = $(NFSDIRECTORY)
-#	@echo Using GCC $(gccversion) with CC = $(CC), CXX = $(CXX) and FC = $(FC)
+	@echo Using GCC $(gccversion) with CC = $(CC), CXX = $(CXX) and FC = $(FC)
 	@echo
+sanetracking:
+	$(MAKE) -C SANE
 btracking:
 	$(MAKE) -C BTRACKING
 coda:
@@ -62,7 +65,8 @@ clean:
 	-rm ../$(MYOS)/lib/*.a
 #	-(cd ../$(MYOS)/lib; $(RM) libcoda.a libctpclient_root.a libctp_root.a \
 	    libengine.a libhack.a libhtracking.a libport.a libstracking.a \
-	    libtracking.a libutils.a libbtracking.a libctp.a libctpclient.a )
+	    libtracking.a libutils.a libbtracking.a libctp.a libctpclient.a \
+            libsanetracking.a )
 	-(cd ../$(MYOS)/bin; $(RM) engine_replay makereg syncfilter)
 	-$(RM) CTP/daVarRpc_svc.c CTP/daVarRpc_xdr.c CTP/daVarRpc_clnt.c CTP/daVarRpc.h
 

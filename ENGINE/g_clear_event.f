@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard, Hampton U.
 *-   Modified 19-Nov-1993   Kevin B. Beard for new error standards
 *-      $Log$
+*-      Revision 1.10.24.2.2.1  2008/05/15 18:59:21  bhovik
+*-      1'st version
+*-
 *-      Revision 1.10.24.2  2007/06/04 14:56:05  puckett
 *-      changed hit array structure for trigger related signals
 *-
@@ -67,9 +70,10 @@
       include 'gen_run_info.cmn'
 *
       logical HMS_ABORT,SOS_ABORT,COIN_ABORT,gmc_abort,BIGCAL_ABORT
-      logical GEP_ABORT
+      logical GEP_ABORT,SANE_ABORT
       character*132 HMS_err,SOS_err,COIN_err,gmc_err,BIGCAL_err
-      character*132 GEP_err
+      character*132 GEP_err,SANE_err
+      
 *
 *--------------------------------------------------------
 *
@@ -79,6 +83,7 @@
       BIGCAL_err=' '
       GEP_err=' '
       gmc_err= ' '
+      sane_err= ' '
 *
       GUNINST_TOT_HITS = 0              ! Unistrumented hit counter
       GMISC_TOT_HITS = 0
@@ -96,6 +101,9 @@
       
 *
       call B_clear_event(BIGCAL_ABORT,BIGCAL_err) ! BigCal
+     
+*     
+      call sane_clear_event(SANE_ABORT,SANE_err) ! SANE
      
 *     
       

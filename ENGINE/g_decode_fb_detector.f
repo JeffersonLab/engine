@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.13.2.1  2008/05/15 18:59:21  bhovik
+* 1'st version
+*
 * Revision 1.23.20.13  2007/10/22 18:39:00  cdaq
 * adjusted HMS FPP histos
 *
@@ -160,21 +163,23 @@
       do while(pointer.le.length .and. did.eq.newdid)
 *
         if(jieor(jiand(evfrag(pointer),'FFFFFFFF'x),'DCAA0000'x).eq.0) then ! VME/FB event length mismatch
-          write(6,'(a,i10)') 'ERROR: VME/Fastbus event length mismatch for event #',gen_event_id_number
+          write(6,'(a,i10)') 'ERROR: VME/Fastbus event 
+     &         length mismatch for event #',gen_event_id_number
           write(6,'(a,z9,a,z9,a)') '   Fastbus event length:',evfrag(pointer+1),
      &        ' VME event length:',evfrag(pointer+2),' (or vice-versa).'
           pointer = pointer + 3
           goto 987
 ! Check for extra events in FB modules on sync events
         else if(jieor(jiand(evfrag(pointer),'FFFF0000'x),'DCFE0000'x).eq.0) then
-          write(6,'(a,i2,a,i3,a,i3,a,i10)') 'ROC',roc,': Slot'
-     $         ,jiand(jishft(evfrag(pointer),-11),'1F'x),': '
-     $         ,jiand(evfrag(pointer),'7FF'x),' extra events, event=',
-     &         gen_event_id_number
+c          write(6,'(a,i2,a,i3,a,i3,a,i10)') 'ROC',roc,': Slot'
+c     $         ,jiand(jishft(evfrag(pointer),-11),'1F'x),': '
+c     $         ,jiand(evfrag(pointer),'7FF'x),' extra events, event=',
+c     &         gen_event_id_number
           pointer = pointer + 1
           goto 987
         else if(jieor(jiand(evfrag(pointer),'FF000000'x),'DC000000'x).eq.0) then ! Catch arrington's headers
-          write(6,'(a,i2,a,i10,a,z10)') 'ROC',roc,': no gate or too much data, event=',
+          write(6,'(a,i2,a,i10,a,z10)') 'ROC',roc,': no gate 
+     &         or too much data, event=',
      &         gen_event_id_number,' error dataword=',evfrag(pointer)
           pointer = pointer + 1
           goto 987
@@ -187,7 +192,8 @@
           if (gen_event_id_number .eq. 1000*int(gen_event_id_number/1000)) then
             if (evfrag(pointer).ne.0) then
 
-              write(6,'(" ERROR: BAD FB value evfrag(",i4,")=",z10," ROC=",i2,"event=",i7)')
+              write(6,'(" ERROR: BAD FB value evfrag(",i4,")=",z10,
+     &             " ROC=",i2,"event=",i7)')
      $         pointer,evfrag(pointer),roc,gen_event_id_number
             endif
           endif
@@ -208,9 +214,11 @@ c$$$            write (6,'(a,i3)') '  Probably after slot',jiand(JISHFT(evfrag(p
             subaddbit = g_decode_subaddbit(roc,slot) ! Usually 16 or 17
           endif
         endif
+
         if(slot.ne.oslot) then
           oslot = slot
          trigger_time = -1     !flag absence of header data via default of error
+
 
 c
 c     On 1881M's and 1877, a subaddress of zero could be a header word, so
@@ -228,6 +236,8 @@ c
                 print *,"SHIT:misidentified real data word as a header"
                 print *,"DID=",did,", SLOT=",slot,", POINTER=",pointer
               else
+c                if(roc.eq.12.and.slot.eq.4.and.subadd.lt.32)
+c     ,               write(*,*)"Jump 1 ROC12 SLOT4 CHAN=",subadd
                 pointer = pointer + 1
                 goto 987
               endif
@@ -275,6 +285,7 @@ c
            signal =jiand(evfrag(pointer),g_decode_slotmask(roc,slot))
 	   if (signal.eq.65535) then   ! skip overflow entries
 	     pointer = pointer + 1
+             
 	     goto 987
 	   endif
 	   
@@ -302,6 +313,14 @@ c
 *
 c        if (subadd .lt. '7F'X) then     ! Only valid subaddresses
         if (subadd .lt. 255) then       ! Only valid subaddresses
+c          if(roc.eq.12.and.slot.eq.21.and.subadd.lt.17)
+c     ,         write(*,*)"ROC12 SLOT 21 CHAN=",subadd,signal
+c         if(roc.eq.12.and.slot.eq.4.and.subadd.eq.40)
+c     ,         write(*,*)"ROC12 SLOT4 CHAN=",subadd
+c        if(roc.eq.12.and.slot.eq.4.and.subadd.eq.43)
+c     ,         write(*,*)"ROC12 SLOT4 CHAN=",subadd
+c        if(roc.eq.12.and.slot.eq.4.and.subadd.eq.44)
+c     ,         write(*,*)"ROC12 SLOT4 CHAN=",subadd
                                         ! Skips headers for 1881 and 1876
           if(mappointer.gt.0) then
             newdid = g_decode_didmap(mappointer+subadd)

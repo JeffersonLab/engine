@@ -9,10 +9,11 @@
       logical ABORT
       character*(*) err
 
-      integer irow,icol,ipar,icell
+      integer irow,icol,ipar,icell,j,i
 
       include 'bigcal_data_structures.cmn'
       include 'bigcal_shower_parms.cmn'
+      include 'bigcal_bypass_switches.cmn'
 
       ABORT=.false.
       err=' '
@@ -61,6 +62,22 @@ c$$$      write(*,*) 'prot_xpar = ',bigcal_prot_xpar
 c$$$      write(*,*) 'prot_ypar = ',bigcal_prot_ypar
 c$$$      write(*,*) 'rcs_xpar = ',bigcal_rcs_xpar
 c$$$      write(*,*) 'rcs_ypar = ',bigcal_rcs_ypar
+
+      if(b_recon_using_map.ne.0) then
+         do i=1,28
+            do j=1,bigcal_xmap_nbin(i)
+               bigcal_xmap_xfrac(i,j) = bigcal_xmap_frac(j+
+     $              bigcal_xmap_nbin(i)*(i-1))
+            enddo
+         enddo
+         
+         do i=1,28
+            do j=1,bigcal_ymap_nbin(i)
+               bigcal_ymap_yfrac(i,j) = bigcal_ymap_frac(j+
+     $              bigcal_ymap_nbin(i)*(i-1))
+            enddo
+         enddo
+      endif
 
       return 
       end

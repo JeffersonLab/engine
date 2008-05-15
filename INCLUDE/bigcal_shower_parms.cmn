@@ -9,6 +9,9 @@
       integer*4 BIGCAL_SHOWER_NPAR
       parameter(BIGCAL_SHOWER_NPAR=6)
 
+      integer*4 bigcal_map_maxbins
+      parameter(bigcal_map_maxbins=100)
+
       real*4 bigcal_pxdet_par(BIGCAL_PROT_NX*BIGCAL_SHOWER_NPAR)
       real*4 bigcal_pydet_par(BIGCAL_PROT_NY*BIGCAL_SHOWER_NPAR)
       real*4 bigcal_rxdet_par(BIGCAL_RCS_NX*BIGCAL_SHOWER_NPAR)
@@ -46,5 +49,35 @@ c      real*4 BIGCAL_ASHAPE_D
      $     BIGCAL_ASHAPE_BX,
      $     BIGCAL_ASHAPE_BY
       
+      real*4 bigcal_shower_map_shift(2) ! 1=X, 2=Y
+      real*4 bigcal_shower_map_slope(2) ! 1=X, 2=Y
+
+      integer*4 bigcal_xmap_nbin(28)
+      integer*4 bigcal_ymap_nbin(28)
+
+      real*4 bigcal_xmap_mmin(28)
+      real*4 bigcal_ymap_mmin(28)
+      real*4 bigcal_xmap_mmax(28)
+      real*4 bigcal_ymap_mmax(28)
+
+      real*4 bigcal_xmap_frac(2800)
+      real*4 bigcal_ymap_frac(2800)
+
+      real*4 bigcal_xmap_xfrac(28,100)
+      real*4 bigcal_ymap_yfrac(28,100)
+
+      common/bigcal_map_parms/
+     $     bigcal_shower_map_shift,
+     $     bigcal_shower_map_slope,
+     $     bigcal_xmap_nbin,
+     $     bigcal_ymap_nbin,
+     $     bigcal_xmap_mmin,
+     $     bigcal_ymap_mmin,
+     $     bigcal_xmap_mmax,
+     $     bigcal_ymap_mmax,
+     $     bigcal_xmap_frac,
+     $     bigcal_ymap_frac,
+     $     bigcal_xmap_xfrac,
+     $     bigcal_ymap_yfrac
 
       

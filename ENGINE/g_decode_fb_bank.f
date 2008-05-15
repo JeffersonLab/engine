@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.15.2.1  2008/05/15 18:59:21  bhovik
+* 1'st version
+*
 * Revision 1.32.20.15  2008/01/08 22:44:08  cdaq
 * *** empty log message ***
 *
@@ -174,6 +177,7 @@
       logical ABORT
       character*(*) error
       integer*4 bank(*)
+      logical SANE_TRUE
 
 *     This routine unpacks a ROC bank.  It looks a fastbus word to
 *     determine which detector it belongs to.  It then passes the
@@ -209,6 +213,7 @@ cajp
       integer*4 hplus_ts,hmin_ts,quartet_ts,ntest,ts_input(9)
 
       integer*4 ntrig
+      
 
       banklength = bank(1) + 1          ! Bank length including count
       last_first = banklength
@@ -405,10 +410,17 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddress
           !write(*,*) 'detector id this bank = ',did
 
           maxwords = last_first - pointer + 1
+
+          SANE_TRUE = did.eq.LUCITE_SANE_ID.or.
+     &         did.eq.CERENKOV_SANE_ID.or.
+     &         did.eq.TRACKER_SANE_X_ID.or.
+     &         did.eq.TRACKER_SANE_Y_ID
+
 *
 *        1         2         3         4         5         6         7
 *23456789012345678901234567890123456789012345678901234567890123456789012
 *
+
           if(did.eq.HDC_ID) then
             pointer = pointer +
      $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
@@ -483,6 +495,14 @@ c            write(*,*) 'did = fpp, decoding fpp data'
 *
 *
 ************************************************************************
+c
+c     SANE DECODER
+c
+
+          else if(SANE_TRUE)then
+            call sane_decode(pointer,lastslot, roc, bank, 
+     &           maxwords, did)
+
 *===================== BIGCAL ==========================================
           else if (did.eq.BIGCAL_PROT_ID) then 
             !write(*,*) 'did = protvino, decoding protvino data'

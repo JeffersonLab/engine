@@ -19,6 +19,9 @@
 *     Modified: 24-May-1994 K.B.Beard
 *
 * $Log$
+* Revision 1.11.24.2.2.1  2008/05/15 18:59:22  bhovik
+* 1'st version
+*
 * Revision 1.11.24.2  2007/10/16 19:51:19  cdaq
 * fixed F1TDC_WINDOW_SIZE declaration
 *
@@ -183,6 +186,14 @@
       ABORT= ABORT .or. FAIL 
 *
       call b_register_variables(FAIL,why) ! BIGCAL
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+         call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+         err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL 
+*
+      call sane_register_variables(FAIL,why) ! BIGCAL
       IF(err.NE.' ' .and. why.NE.' ') THEN
          call G_append(err,' & '//why)
       ELSEIF(why.NE.' ') THEN
