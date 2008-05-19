@@ -122,8 +122,9 @@ c
 
         call HBNAME(id,'HMSINFO',hms_p,
      $       'hms_p:R*4,hms_e:R*4,hms_theta:R*4,hms_phi:R*4,'//
-     $       'hms_ytar:R*4,,hms_yptar:R*4,'//
-     &       'hms_xptar:R*4,,hms_delta:R*4,hms_start:R*4')
+     $       'hms_ytar:R*4,hms_yptar:R*4,'//
+     $       'hms_xptar:R*4,hms_delta:R*4,hms_start:R*4,'//
+     $       'rast_x:R*4,rast_y:R*4')
         
 
         if(bbypass_find_clusters.eq.0) then
