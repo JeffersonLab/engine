@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.18.7  2008/07/29 16:06:35  puckett
+* added option to store all track hit info in HMS ntuple (huge files)
+*
 * Revision 1.10.18.6  2008/04/23 18:02:31  cdaq
 * *** empty log message ***
 *
@@ -70,6 +73,9 @@
       logical ABORT
       character*(*) err
 *
+      integer plane,wire(12) ! choose only one wire per plane 
+      real wirecent(12),wirepos(12),trackpos(12) ! choose only one wire per plane 
+
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_scin_parms.cmn'
       INCLUDE 'h_ntuple.cmn'
@@ -84,13 +90,19 @@
       logical HEXIST	!CERNLIB function
 *
       integer m
+      logical oneperplane
 c
-      integer pln,cnt,ihit
+      integer pln,cnt,ihit,hitnum
       real s0x1padc,s0x1nadc,s0x2nadc,s0x2padc
       real s0x1ptdc,s0x1ntdc,s0x2ntdc,s0x2ptdc
 c
       real proton_mass
       parameter ( proton_mass = 0.93827247 ) ! [GeV/c^2]
+
+      real*4 tdrift,ddrift
+
+      real*4 h_drift_dist_calc
+      external h_drift_dist_calc
 *
 *--------------------------------------------------------
       err= ' '
@@ -98,19 +110,31 @@ c
 *
       IF(.NOT.h_Ntuple_exists) RETURN       !nothing to do
 c
+c     if we set this flag then we only keep events where there was exactly one hit per plane. 
+c     don't know how good of statistics we can get per run this way.
+
+      if(h_keep_only_good.ne.0) then
+         oneperplane = .true.
+         do plane=1,hdc_num_planes
+            if(hdc_hits_per_plane(plane).gt.1) oneperplane = .false.
+         enddo
+         
+         if(.not.oneperplane) return
+      endif
+      
       if (h_Ntuple_max_segmentevents .gt. 0) then
-       if (h_Ntuple_segmentevents .gt. h_Ntuple_max_segmentevents) then
-        call h_ntuple_change(ABORT,err)
-       else
-        h_Ntuple_segmentevents = h_Ntuple_segmentevents +1
-       endif
+         if (h_Ntuple_segmentevents .gt. h_Ntuple_max_segmentevents) then
+            call h_ntuple_change(ABORT,err)
+         else
+            h_Ntuple_segmentevents = h_Ntuple_segmentevents +1
+         endif
       endif
 *
 ************************************************
       m= 0
 *  
-      m= m+1
-      h_Ntuple_contents(m)= HCER_NPE_SUM ! cerenkov photoelectron spectrum
+c      m= m+1
+c      h_Ntuple_contents(m)= HCER_NPE_SUM ! cerenkov photoelectron spectrum
       m= m+1
       h_Ntuple_contents(m)= HSP	        ! Lab momentum of chosen track in GeV/c
       m= m+1
@@ -130,12 +154,12 @@ c
 c                                ! track with spectrometer ray
       m= m+1
       h_Ntuple_contents(m)= HSDEDX(1)	! DEDX of chosen track in 1st scin plane
-      m= m+1
-      h_Ntuple_contents(m)= HSBETA	! BETA of chosen track
-      m= m+1
-      h_Ntuple_contents(m)= HSTRACK_ET	! Total shower energy of chosen track
-      m= m+1
-      h_Ntuple_contents(m)= HSTRACK_PRESHOWER_E	! preshower of chosen track
+c      m= m+1
+c      h_Ntuple_contents(m)= HSBETA	! BETA of chosen track
+c      m= m+1
+c      h_Ntuple_contents(m)= HSTRACK_ET	! Total shower energy of chosen track
+c      m= m+1
+c      h_Ntuple_contents(m)= HSTRACK_PRESHOWER_E	! preshower of chosen track
       m= m+1
       h_Ntuple_contents(m)= HSX_FP		! X focal plane position 
       m= m+1
@@ -174,27 +198,27 @@ c                                ! track with spectrometer ray
       endif
 c
       do ihit=1,hscin_all_tot_hits
-          pln=hscin_all_plane_num(ihit)
-          cnt=hscin_all_counter_num(ihit)
-          if ( pln .eq. 3) then
-                if (cnt .eq. 1) then
-                   s0x1nadc = hscin_all_adc_neg(ihit)
+         pln=hscin_all_plane_num(ihit)
+         cnt=hscin_all_counter_num(ihit)
+         if ( pln .eq. 3) then
+            if (cnt .eq. 1) then
+               s0x1nadc = hscin_all_adc_neg(ihit)
+     >              -hscin_all_ped_neg(pln,cnt)
+               s0x1padc = hscin_all_adc_pos(ihit)
      > -hscin_all_ped_neg(pln,cnt)
-                   s0x1padc = hscin_all_adc_pos(ihit)
-     > -hscin_all_ped_neg(pln,cnt)
-                   s0x1ntdc = FLOAT(hscin_all_tdc_neg(ihit)) 
-                   s0x1ptdc = FLOAT(hscin_all_tdc_pos(ihit)) 
-                endif
-                if (cnt .eq. 2) then
-                   s0x2nadc = hscin_all_adc_neg(ihit)
-     > -hscin_all_ped_neg(pln,cnt)
-                   s0x2padc = hscin_all_adc_pos(ihit)
-     > -hscin_all_ped_neg(pln,cnt)
-                   s0x2ntdc = FLOAT(hscin_all_tdc_neg(ihit)) 
-                   s0x2ptdc = FLOAT(hscin_all_tdc_pos(ihit)) 
-                endif
-             endif
-         enddo
+               s0x1ntdc = FLOAT(hscin_all_tdc_neg(ihit)) 
+               s0x1ptdc = FLOAT(hscin_all_tdc_pos(ihit)) 
+            endif
+            if (cnt .eq. 2) then
+               s0x2nadc = hscin_all_adc_neg(ihit)
+     >              -hscin_all_ped_neg(pln,cnt)
+               s0x2padc = hscin_all_adc_pos(ihit)
+     >              -hscin_all_ped_neg(pln,cnt)
+               s0x2ntdc = FLOAT(hscin_all_tdc_neg(ihit)) 
+               s0x2ptdc = FLOAT(hscin_all_tdc_pos(ihit)) 
+            endif
+         endif
+      enddo
 c
       m= m+1
       h_Ntuple_contents(m)= s0x1padc
@@ -220,9 +244,85 @@ c
       h_Ntuple_contents(m)= hncham_hits(1)
       m= m+1
       h_Ntuple_contents(m)= hncham_hits(2)
+      m=m+1
+      h_ntuple_contents(m) = hntracks_fp
+      m=m+1
+      h_ntuple_contents(m) = hntrack_hits(hsnum_fptrack,1)
+      m=m+1
+      h_ntuple_contents(m) = hschi2perdeg
+
+c     get wire number of hit on track at each plane choose only one per plane
+c     if more than one per plane, last will be chosen!!!
+c     also get wire center, measured position, and track position at each plane
+
+      if(h_ntup_include_trackhits.ne.0) then
+
+         m=m+1
+         h_ntuple_contents(m) = htrack_t0best(hsnum_fptrack)
+
+         do ihit=1,12
+            wire(ihit) = 0
+            wirecent(ihit) = 0.
+            wirepos(ihit) = 0.
+            trackpos(ihit) = 0.
+         enddo
+
+         do ihit=1,hntrack_hits(hsnum_fptrack,1)
+            hitnum = hntrack_hits(hsnum_fptrack,ihit+1)
+            plane = hdc_plane_num(hitnum)
+            wire(plane) = hdc_wire_num(hitnum)
+            wirecent(plane) = hdc_wire_center(hitnum)
+c     wirepos(plane) = hdc_wire_coord(hitnum) ! don't use hdc_wire_coord, use the following:
+
+            ddrift = hdc_drift_dis(hitnum)
+
+            if(htrack_t0best(hsnum_fptrack).ne.0.) then
+               tdrift = hdc_drift_time(hitnum) + htrack_t0best(hsnum_fptrack)
+               ddrift = h_drift_dist_calc(plane,wire(plane),tdrift)
+            endif
+
+            wirepos(plane) = wirecent(plane) + htrack_leftright(hsnum_fptrack,ihit) * 
+     $           ddrift
+
+            trackpos(plane) = hsdc_track_coord(plane)
+         
+         enddo
+         
+         do plane = 1,12
+            m=m+1
+            h_ntuple_contents(m) = float(wire(plane))
+         enddo
+      
+         do plane = 1,12
+            m=m+1
+            h_ntuple_contents(m) = wirecent(plane)
+         enddo
+      
+         do plane = 1,12
+            m=m+1
+            h_ntuple_contents(m) = wirepos(plane)
+         enddo
+
+         do plane = 1,12
+            m=m+1
+            h_ntuple_contents(m) = trackpos(plane)
+         enddo
+
+         m=m+1
+         h_ntuple_contents(m) = hsx_sp1
+         m=m+1
+         h_ntuple_contents(m) = hsy_sp1
+         m=m+1
+         h_ntuple_contents(m) = hsxp_sp1
+         m=m+1
+         h_ntuple_contents(m) = hsx_sp2
+         m=m+1
+         h_ntuple_contents(m) = hsy_sp2
+         m=m+1
+         h_ntuple_contents(m) = hsxp_sp2
+      endif
 
 * Experiment dependent entries start here.
-
 
 * Fill ntuple for this event
       ABORT= .NOT.HEXIST(h_Ntuple_ID)
