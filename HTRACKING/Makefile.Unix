@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.29.6.5  2008/07/29 16:50:12  puckett
+# added new routines to help with tracking
+#
 # Revision 1.29.6.4  2007/09/18 02:46:35  brash
 # Updates to FPP code to a) include simulated analyzers and b) fix bugs in FPP angle, zclose, and sclose calculations.
 #
@@ -141,7 +144,9 @@ newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f \
 	h_satcorr.f \
         h_cal_calib.f h_aero.f h_fill_aero_raw_hist.f \
         h_sp_multiwire.f h_sp_destroy.f \
-	h_select_best_track_prune.f
+	h_select_best_track_prune.f h_stub_t0_calc.f h_prune_stubs.f \
+	h_print_space_points_ajp.f h_join_stubs_ajp.f \
+        h_redo_track_left_right.f h_find_track_t0.f
 fppstuff = h_fill_fpp.f  h_fpp_drift.f  h_fpp.f \
         h_fpp_fit.f  h_fpp_statistics.f  \
         h_fpp_tracking.f  h_init_fpp.f  \
