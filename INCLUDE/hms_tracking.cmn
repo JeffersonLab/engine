@@ -8,6 +8,9 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
+* Revision 1.27.20.4  2008/07/29 16:51:36  puckett
+* added new parameters and variables to help with tracking
+*
 * Revision 1.27.20.3  2007/10/24 20:48:03  cdaq
 * *** empty log message ***
 *
@@ -164,6 +167,7 @@
       parameter (hmax_hits_per_point=1000)
       integer*4 hnum_fpray_param    ! number of ray parameters in focal plane
       parameter (hnum_fpray_param=4)
+cajp051708      parameter(hnum_fpray_param=5) ! added t0 for each stub
       integer*4 hdc_num_cards       ! #/discriminator cards
       parameter (hdc_num_cards=72)
       integer*4 hdc_max_wires_per_plane
@@ -211,6 +215,7 @@
                                    ! (n,1) = number of hits
                                    ! (n,2) = number of valid combinations
                                    ! (n,3...) hit numbers for space point
+      real*4 hspace_point_leftright
       real*4 hspace_points         ! array of x, y of space points
       real*4 hbeststub             ! array of stubs fit to each space point
       real*4 hdc_sing_drifttime    ! array of fully corrected drift times for each plane
@@ -225,9 +230,10 @@
      &     gplanehdc2(hmax_space_points),
      &     hspace_points(hmax_space_points,2),
      &     hspace_point_hits(hmax_space_points,hmax_hits_per_point+2),
+     &     hspace_point_leftright(hmax_space_points,hmax_hits_per_point),
      &     hnspace_points(hmax_num_chambers),
      &     hnspace_points_tot,
-     &     hbeststub(hmax_space_points,hnum_fpray_param),
+     &     hbeststub(hmax_space_points,hnum_fpray_param+2), ! add t0 (5) and pattern index (6)
      &     hncham_hits(hmax_num_chambers),
      &     htrack_fit_num,
      &     hspace_point_criterion(hmax_num_chambers),
@@ -250,7 +256,90 @@
      &     hdc_sing_cardid(hmax_num_dc_planes),
      &     HNTRACKS_MAX_FP,h_remove_sppt_if_one_y_plane
 
-
+c     ajp 05/16/08
+      logical h_find_stub_t0
+      logical h_fail_too_many_tracks
+      logical h_keep_stub(hmax_space_points)
+      logical h_do_prune_stubs
+      real*4 h_stub_chi2perdf(hmax_space_points)
+      integer*4 nhitstubminx(2),nhitstubminy(2),nhitstubminxp(2)
+      real*4 xstubminx(2),ystubminy(2),xpstubminxp(2)
+      real*4 hdc_sing_leftright(12) ! final left-right combination of hits on tracks
+      real*4 htrack_t0best(hntracks_max)
+*
+*     CTPTYPE=parm
+*
+c     add some new variables to debug pattern recognition:
+      integer*4 hdebugprintstubs
+      integer*4 h_keep_only_good
+      integer hbypass_prune_stubs
+      integer hbypass_ajp_stublink
+      integer hbypass_redo_leftright
+      integer hbypass_track_t0
+      integer h_stub_prune_flags(7)
+      real*4 h_stub_prune_x(2) ! 1=DC1,2=DC2
+      real*4 h_stub_prune_y(2) ! 1=DC1,2=DC2
+      real*4 h_stub_prune_xp(2) ! 1=DC1,2=DC2
+      real*4 h_stub_prune_dxscin(2) ! 1=DC1,2=DC2
+      real*4 h_stub_prune_dyscin(2) ! 1=DC1,2=DC2
+      real*4 h_stub_prune_chi2
+      real*4 h_stub_sigmax
+      real*4 h_stub_sigmay
+      real*4 h_stub_sigmaxp
+      real*4 h_redo_leftright_minchi2 ! minimum chi2 to try different left-right combinations of hits on the best track
+      real*4 h_track_t0_minchi2 ! minimum chi2 to try and find a time offset which minimizes chi2
+      real*4 h_track_t0_slop ! half-width of window in t0 
+      real*4 h_track_t0_step ! step size in t0
+      integer*4 h_track_t0_min_ndiff ! minimum large(small) - small(large) ddist hits to attemp t0 fit.
+      integer hbypass_stub_t0
+      real*4 h_stub_t0_slop
+      real*4 h_stub_t0_step
+      real*4 h_stub_t0_track_criterion
+      
+c     end ajp 05/16/08
+      
+      common/ajp_hms_tracking/
+     $     h_find_stub_t0,
+     $     h_fail_too_many_tracks,
+     $     h_keep_stub,
+     $     h_do_prune_stubs,
+     $     h_stub_chi2perdf,
+     $     nhitstubminx,
+     $     nhitstubminy,
+     $     nhitstubminxp,
+     $     xstubminx,
+     $     ystubminy,
+     $     xpstubminxp,
+     $     hdc_sing_leftright,
+     $     htrack_t0best,
+     $     hdebugprintstubs,
+     $     h_keep_only_good,
+     $     hbypass_prune_stubs,
+     $     hbypass_ajp_stublink,
+     $     hbypass_redo_leftright,
+     $     hbypass_track_t0,
+     $     h_stub_prune_flags,
+     $     h_stub_prune_x,
+     $     h_stub_prune_y,
+     $     h_stub_prune_xp,
+     $     h_stub_prune_dxscin,
+     $     h_stub_prune_dyscin,
+     $     h_stub_prune_chi2,
+     $     h_stub_sigmax,
+     $     h_stub_sigmay,
+     $     h_stub_sigmaxp,
+     $     h_redo_leftright_minchi2,
+     $     h_track_t0_minchi2,
+     $     h_track_t0_slop,
+     $     h_track_t0_step,
+     $     h_track_t0_min_ndiff,
+     $     hbypass_stub_t0,
+     $     h_stub_t0_slop,
+     $     h_stub_t0_step,
+     $     h_stub_t0_track_criterion
+*     
+*     CTPTYPE=event
+*     
 
 *----------------------------------------------------------------------
 * MATRICES FOR 3 PARAMETER FITS.
@@ -406,7 +495,16 @@
       integer hnumhits1,hnumhits2,hnumplanes1,hnumplanes2
       integer hnumscins1,hnumscins2,hnumscins3,hnumscins4
       integer hstubtest
+*
+*     CTPTYPE=event
+*
       real*4 hstubminx,hstubminy,hstubminxp,hstubminyp
+cajp051608
+      real*4 hstubmint0
+cajp051608 end
+*
+*     CTPTYPE=parm
+*
       integer hscinhit(4,16)
       integer hnclust(4)
       integer hthreescin(4)
