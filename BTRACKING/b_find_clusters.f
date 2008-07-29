@@ -52,6 +52,30 @@ c     Strategy: Find Maximum, then build cluster around it using "add_neighbors"
 c      nmaximum = 0
 c      ncluster = 0
 
+c     initialize cluster trimming parameters if user hasn't defined something reasonable:
+
+      if(bigcal_clstr_nxmom_max.lt.1.or.bigcal_clstr_nxmom_max.gt.
+     $     max(bigcal_clstr_ncellx_max,7)) then
+         bigcal_clstr_nxmom_max = 2
+      endif
+      
+      if(bigcal_clstr_nymom_max.lt.1.or.bigcal_clstr_nymom_max.gt.
+     $     max(bigcal_clstr_ncelly_max,7)) then
+         bigcal_clstr_nymom_max = 2
+      endif
+
+      if(bigcal_clstr_nxecl_max.lt.bigcal_clstr_nxmom_max
+     $     .or.bigcal_clstr_nxecl_max.gt.max(bigcal_clstr_ncellx_max,7)) 
+     $     then
+         bigcal_clstr_nxecl_max = max(2,bigcal_clstr_nxmom_max)
+      endif
+      
+      if(bigcal_clstr_nyecl_max.lt.bigcal_clstr_nymom_max
+     $     .or.bigcal_clstr_nyecl_max.gt.max(bigcal_clstr_ncelly_max,7)) 
+     $     then
+         bigcal_clstr_nyecl_max = max(2,bigcal_clstr_nymom_max)
+      endif
+
  102  continue
       found_cluster = .false.
 
@@ -241,8 +265,34 @@ c     cluster has section overlap. Also accumulate esum
                if(icol.lt.ixlo(2)) ixlo(2) = icol
             endif
 
-            esum = esum + cluster_temp_ecell(icell)
-            asum = asum + cluster_temp_acell(icell)
+c     intelligently calculate the cluster energy sum: 
+c     restrict how far away from the maximum we can be to include
+c     a block in the sum:
+            if(abs(irow-cluster_temp_irow(1)).le.bigcal_clstr_nyecl_max) 
+     $           then
+c     1. max in Prot and current block in RCS
+               if(cluster_temp_irow(1).le.32.and.irow.gt.32) then
+                  if(abs(icol-bigcal_ixclose_prot(cluster_temp_icol(1)))
+     $                 .le.bigcal_clstr_nxecl_max) then
+                     esum = esum + cluster_temp_ecell(icell)
+                     asum = asum + cluster_temp_acell(icell)
+                  endif
+c     2. max in RCS and current block in Prot
+               else if(cluster_temp_irow(1).gt.32.and.irow.le.32) then
+                  if(abs(icol-bigcal_ixclose_rcs(cluster_temp_icol(1)))
+     $                 .le.bigcal_clstr_nxecl_max) then
+                     esum = esum + cluster_temp_ecell(icell)
+                     asum = asum + cluster_temp_acell(icell)
+                  endif
+c     3. both blocks in same section
+               else
+                  if(abs(icol-cluster_temp_icol(1)).le.bigcal_clstr_nxecl_max)
+     $                 then
+                     esum = esum + cluster_temp_ecell(icell)
+                     asum = asum + cluster_temp_acell(icell)
+                  endif
+               endif
+            endif
          enddo
 
          if(nbadlist.gt.0) then
@@ -379,9 +429,38 @@ c     ONLY A SMALL CHANCE OF FINDING A MAXIMUM NEXT TO IT, DEPENDING ON B_MIN_EM
             ecell = cluster_temp_ecell(icell)
 c            acell = cluster_temp_acell(icell)
 
-            xmom_clst = xmom_clst + ecell*(xcell-xcenter)/esum
-            ymom_clst = ymom_clst + ecell*(ycell-ycenter)/esum
-           
+c     intelligent cluster moment calculation: restrict how far away from the maximum
+c     we allow blocks to be in order to include them in the calculation
+c     i.e., "trim" the clusters down to size
+
+            if(abs(cluster_temp_irow(icell)-cluster_temp_irow(1)).le.
+     $           bigcal_clstr_nymom_max) then
+
+               if(cluster_temp_irow(1).le.32.and.cluster_temp_irow(icell)
+     $              .gt.32) then
+                  if(abs(cluster_temp_icol(icell)-
+     $                 bigcal_ixclose_prot(cluster_temp_icol(1))).le.
+     $                 bigcal_clstr_nxmom_max) then
+                     xmom_clst = xmom_clst + ecell*(xcell-xcenter)/esum
+                     ymom_clst = ymom_clst + ecell*(ycell-ycenter)/esum
+                  endif
+               else if(cluster_temp_irow(1).gt.32.and.cluster_temp_irow(icell)
+     $                 .le.32) then
+                  if(abs(cluster_temp_icol(icell)-
+     $                 bigcal_ixclose_rcs(cluster_temp_icol(1))).le.
+     $                 bigcal_clstr_nxmom_max) then
+                     xmom_clst = xmom_clst + ecell*(xcell-xcenter)/esum
+                     ymom_clst = ymom_clst + ecell*(ycell-ycenter)/esum
+                  endif
+               else 
+                  if(abs(cluster_temp_icol(icell)-cluster_temp_icol(1)).le.
+     $                 bigcal_clstr_nxmom_max) then
+                     xmom_clst = xmom_clst + ecell*(xcell-xcenter)/esum
+                     ymom_clst = ymom_clst + ecell*(ycell-ycenter)/esum
+                  endif
+               endif
+            endif
+
             do ihit=1,bigcal_all_ngood
                if(bigcal_all_iygood(ihit).eq.cluster_temp_irow(icell)
      $              .and.bigcal_all_ixgood(ihit).eq.cluster_temp_icol(icell)) 
