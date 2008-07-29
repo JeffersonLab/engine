@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.11.18.7  2008/07/29 16:07:09  puckett
+* added option to keep all track hit info (for best track) in HMS ntuple
+*
 * Revision 1.11.18.6  2008/04/23 18:02:31  cdaq
 * *** empty log message ***
 *
@@ -140,8 +143,8 @@ c
       endif
 *
       m= 0
-      m= m+1
-      h_Ntuple_tag(m)= 'hcer_npe' ! cerenkov photoelectron spectrum
+c      m= m+1
+c      h_Ntuple_tag(m)= 'hcer_npe' ! cerenkov photoelectron spectrum
       m= m+1
       h_Ntuple_tag(m)= 'hsp'     ! Lab momentum of chosen track in GeV/c
       m= m+1
@@ -161,12 +164,12 @@ c
                                 ! track with spectrometer ray
       m= m+1
       h_Ntuple_tag(m)= 'hsdedx1'       ! DEDX of chosen track in 1st scin plane
-      m= m+1
-      h_Ntuple_tag(m)= 'hsbeta'        ! BETA of chosen track
-      m= m+1
-      h_Ntuple_tag(m)= 'hsshtrk'  ! 'HSTRACK_ET'       ! Total shower energy of chosen track
-      m= m+1
-      h_Ntuple_tag(m)= 'hsprtrk'   !'HSTRACK_PRESHOWER_E' ! preshower of chosen track
+c      m= m+1
+c      h_Ntuple_tag(m)= 'hsbeta'        ! BETA of chosen track
+c      m= m+1
+c      h_Ntuple_tag(m)= 'hsshtrk'  ! 'HSTRACK_ET'       ! Total shower energy of chosen track
+c      m= m+1
+c      h_Ntuple_tag(m)= 'hsprtrk'   !'HSTRACK_PRESHOWER_E' ! preshower of chosen track
       m= m+1
       h_Ntuple_tag(m)= 'hsxfp'		! X focal plane position 
       m= m+1
@@ -218,6 +221,124 @@ c
       h_Ntuple_tag(m)= 'hdchits1'
       m= m+1
       h_Ntuple_tag(m)= 'hdchits2'
+      m=m+1
+      h_ntuple_tag(m) = 'hntrkfp'
+      m= m+1
+      h_ntuple_tag(m) = 'ntrkhits'
+      m= m+1
+      h_ntuple_tag(m) = 'chi2ndf'
+      if(h_ntup_include_trackhits.ne.0) then
+         m= m+1
+         h_ntuple_tag(m) = 't0'
+         m= m+1
+         h_ntuple_tag(m) = 'wire1x1'
+         m= m+1
+         h_ntuple_tag(m) = 'wire1y1'
+         m=m+1
+         h_ntuple_tag(m) = 'wire1u1'
+         m=m+1
+         h_ntuple_tag(m) = 'wire1v1'
+         m=m+1
+         h_ntuple_tag(m) = 'wire1y2'
+         m=m+1
+         h_ntuple_tag(m) = 'wire1x2'
+         m= m+1
+         h_ntuple_tag(m) = 'wire2x1'
+         m= m+1
+         h_ntuple_tag(m) = 'wire2y1'
+         m=m+1
+         h_ntuple_tag(m) = 'wire2u1'
+         m=m+1
+         h_ntuple_tag(m) = 'wire2v1'
+         m=m+1
+         h_ntuple_tag(m) = 'wire2y2'
+         m=m+1
+         h_ntuple_tag(m) = 'wire2x2'
+         m= m+1
+         h_ntuple_tag(m) = 'wcntr1x1'
+         m= m+1
+         h_ntuple_tag(m) = 'wcntr1y1'
+         m=m+1
+         h_ntuple_tag(m) = 'wcntr1u1'
+         m=m+1
+         h_ntuple_tag(m) = 'wcntr1v1'
+         m=m+1
+         h_ntuple_tag(m) = 'wcntr1y2'
+         m=m+1
+         h_ntuple_tag(m) = 'wcntr1x2'
+         m= m+1
+         h_ntuple_tag(m) = 'wcntr2x1'
+         m= m+1
+         h_ntuple_tag(m) = 'wcntr2y1'
+         m=m+1
+         h_ntuple_tag(m) = 'wcntr2u1'
+         m=m+1
+         h_ntuple_tag(m) = 'wcntr2v1'
+         m=m+1
+         h_ntuple_tag(m) = 'wcntr2y2'
+         m=m+1
+         h_ntuple_tag(m) = 'wcntr2x2'
+         m= m+1
+         h_ntuple_tag(m) = 'wpos1x1'
+         m= m+1
+         h_ntuple_tag(m) = 'wpos1y1'
+         m=m+1
+         h_ntuple_tag(m) = 'wpos1u1'
+         m=m+1
+         h_ntuple_tag(m) = 'wpos1v1'
+         m=m+1
+         h_ntuple_tag(m) = 'wpos1y2'
+         m=m+1
+         h_ntuple_tag(m) = 'wpos1x2'
+         m= m+1
+         h_ntuple_tag(m) = 'wpos2x1'
+         m= m+1
+         h_ntuple_tag(m) = 'wpos2y1'
+         m=m+1
+         h_ntuple_tag(m) = 'wpos2u1'
+         m=m+1
+         h_ntuple_tag(m) = 'wpos2v1'
+         m=m+1
+         h_ntuple_tag(m) = 'wpos2y2'
+         m=m+1
+         h_ntuple_tag(m) = 'wpos2x2'
+         m= m+1
+         h_ntuple_tag(m) = 'strk1x1'
+         m= m+1
+         h_ntuple_tag(m) = 'strk1y1'
+         m=m+1
+         h_ntuple_tag(m) = 'strk1u1'
+         m=m+1
+         h_ntuple_tag(m) = 'strk1v1'
+         m=m+1
+         h_ntuple_tag(m) = 'strk1y2'
+         m=m+1
+         h_ntuple_tag(m) = 'strk1x2'
+         m= m+1
+         h_ntuple_tag(m) = 'strk2x1'
+         m= m+1
+         h_ntuple_tag(m) = 'strk2y1'
+         m=m+1
+         h_ntuple_tag(m) = 'strk2u1'
+         m=m+1
+         h_ntuple_tag(m) = 'strk2v1'
+         m=m+1
+         h_ntuple_tag(m) = 'strk2y2'
+         m=m+1
+         h_ntuple_tag(m) = 'strk2x2'
+         m=m+1
+         h_ntuple_tag(m) = 'xstub1'
+         m=m+1
+         h_ntuple_tag(m) = 'ystub1'
+         m=m+1
+         h_ntuple_tag(m) = 'xpstub1'
+         m=m+1
+         h_ntuple_tag(m) = 'xstub2'
+         m=m+1
+         h_ntuple_tag(m) = 'ystub2'
+         m=m+1
+         h_ntuple_tag(m) = 'xpstub2'      
+      endif
 
       h_Ntuple_size= m     !total size
 * Open ntuple
