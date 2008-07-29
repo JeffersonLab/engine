@@ -9,6 +9,9 @@
 *                              remove minuit. Make fit linear
 *                              still does not do errors properly
 * $Log$
+* Revision 1.11.24.1  2008/07/29 16:26:56  puckett
+* added calls to new routines to find better left-right combinations, t0 offset, and remembering the proper left-right combination of the hits from h_left_right.f
+*
 * Revision 1.11  1996/01/16 21:42:18  cdaq
 * (JRA) Remove slices code, misc fixes, reindent.
 *
@@ -61,6 +64,7 @@
       integer*4 ihit,ierr
       integer*4 hit,pln
       integer*4 i,j                             ! loop index
+
 *      real*4 z_slice
 
       real*8   h_dpsifun
@@ -81,6 +85,9 @@
       ierr=0
 *  initailize residuals
 
+      h_redo_leftright_minchi2 = max(h_redo_leftright_minchi2,2.)
+      h_track_t0_minchi2 = max(h_track_t0_minchi2,2.)
+
       do pln=1,hdc_num_planes
         do itrk=1,hntracks_fp
           hdc_double_residual(itrk,pln)=1000
@@ -100,6 +107,15 @@ c        hdc_sing_res(pln)=1000
 *     are there enough degrees of freedom
           hnfree_fp(itrk)=hntrack_hits(itrk,1)-hnum_fpray_param
           if(hnfree_fp(itrk).gt.0) then
+*     initialize wire coordinate of track based on remembered left-right combination of
+*     hits on the track (AJP 07/18/2008)
+             do ihit=2,hntrack_hits(itrk,1)+1
+                hit = hntrack_hits(itrk,ihit)
+                hdc_wire_coord(hit) = hdc_wire_center(hit) + 
+     $               htrack_leftright(itrk,ihit-1) * 
+     $               hdc_drift_dis(hit)
+             enddo
+*     end wire coordinate initialization
 
 *     initialize parameters
             do i=1,hnum_fpray_param
@@ -160,16 +176,46 @@ c        hdc_sing_res(pln)=1000
                 chi2=chi2+
      &              (hdc_single_residual(itrk,pln)/hdc_sigma(pln))**2
               enddo
-            endif
+           endif
 
             hx_fp(itrk)=dray(1)
             hy_fp(itrk)=dray(2)
             hz_fp(itrk)=0.            ! z=0 of tracking.
             hxp_fp(itrk)=dray(3)
             hyp_fp(itrk)=dray(4)
-          endif                         ! end test on degrees of freedom
-          hchi2_fp(itrk)=chi2
-        enddo                           ! end loop over tracks
+         endif                  ! end test on degrees of freedom
+         hchi2_fp(itrk)=chi2
+c     AJP 072108
+         if(hbypass_redo_leftright.eq.0.and.hchi2_fp(itrk)/float(hnfree_fp(itrk))
+     $        .gt.h_redo_leftright_minchi2) then
+c     we should also have a criterion for doing full left-right fitting-->all combinations of all hits on a track.
+c     however, it's not quite clear what this criterion should be, and it seems likely that the x and y plane method should be 
+c     sufficient
+            call h_redo_track_left_right(itrk,abort,err)
+            if(abort) then
+               call g_add_path(here,err)
+               return
+            endif
+         endif
+c     we can be even smarter about this: check the average drift distance
+c     calculate a probability that by increasing or decreasing all drift distances
+c     we can improve the chi2--if all or most residuals point back toward the wire, 
+c     then drift distances are too large--means drift times are too long, fit a negative t0
+c     which shortens drift times.
+c     similarly, if all or most residuals point away from the wire, then drift distances are too small:
+c     search for a positive t0 which increases drift time and drift distance
+c     set t0 here so we don't end up confusing ourselves:
+         htrack_t0best(itrk) = 0.
+         if(hbypass_track_t0.eq.0.and.hchi2_fp(itrk)/float(hnfree_fp(itrk))
+     $        .gt.h_track_t0_minchi2) then
+            call h_find_track_t0(itrk,abort,err)
+            if(abort) then
+               call g_add_path(here,err)
+               return
+            endif
+         endif
+c     END AJP 072108
+      enddo                     ! end loop over tracks
       endif
 
 * calculate residuals for each chamber if in single stub mode
