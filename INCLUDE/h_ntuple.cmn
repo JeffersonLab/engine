@@ -4,6 +4,9 @@
 *........................................................................
 *- Misc. info. required for HMS Ntuple
 * $Log$
+* Revision 1.4.18.1  2008/07/29 16:54:18  puckett
+* added variable to turn on/off keeping best track hit info in hms ntuple
+*
 * Revision 1.4  2004/02/17 16:41:45  jones
 * Add parameters and variables needed for segmenting rzdat files
 *
@@ -34,6 +37,7 @@
       character*256 h_Ntuple_file
       character*8 h_Ntuple_tag(HMAX_Ntuple_size)
       integer h_Ntuple_max_segmentevents
+      integer h_ntup_include_trackhits ! if nonzero, make (huge) ntuple with all the track hit info
 *
 *     CTPTYPE=event
 *
@@ -46,8 +50,9 @@
      &                      h_Ntuple_name,h_Ntuple_title,
      &                       h_Ntuple_directory,h_Ntuple_file,
      &                        h_Ntuple_tag,h_Ntuple_contents,
-     >                    h_Ntuple_max_segmentevents,h_Ntuple_segmentevents,
-     >                    h_Ntuple_filesegments
+     >                         h_Ntuple_max_segmentevents,h_ntup_include_trackhits,
+     $                          h_Ntuple_segmentevents,
+     >                           h_Ntuple_filesegments
 *
 ****************************end: h_ntuple.cmn ***********************
 
