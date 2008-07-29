@@ -12,6 +12,9 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log$
+*- Revision 1.1.8.3  2008/07/29 16:35:13  puckett
+*- added "pmiss" (p - pel(htheta)) to available prune tests
+*-
 *- Revision 1.1.8.2  2008/02/07 16:15:33  cdaq
 *- removed cuts that don't apply to gep
 *-
@@ -35,6 +38,7 @@
       logical ABORT
       character*(*) err
 *
+      include 'gen_data_structures.cmn'
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'gen_routines.dec'
       INCLUDE 'gen_constants.par'
@@ -50,6 +54,8 @@ c
       integer*4 goodtrack,track,ngood,reject(1000),trk
       logical first,keep(1000)
       real*4 chi2perdeg,chi2min,betap,p
+c     new local variables to calculate missing momentum as a prune test:
+      real*4 pmiss,theta,phi,pel,pz,px,py,pz_spec
 c
 c      integer*4 i,j
       data first /.true./
@@ -67,13 +73,14 @@ c      integer*4 i,j
 ! Make sure limits are reasonable
         hprune_xp    = max(0.08, hprune_xp)
         hprune_yp    = max(0.04, hprune_yp)
-        hprune_ytar  = max(4.0,  hprune_ytar)
-        hprune_delta = max(13.0, hprune_delta)
+        hprune_ytar  = max(3.5,  hprune_ytar)
+        hprune_delta = max(10.0, hprune_delta)
         hprune_beta  = max(0.1,  hprune_beta)
         hprune_df    = max(1,  hprune_df)
         hprune_chibeta= max(2.,  hprune_chibeta)
         hprune_fptime= max(5.,  hprune_fptime)
-        hprune_npmt  = max(6,  hprune_npmt)  
+        hprune_npmt  = max(2,  hprune_npmt)  
+        hprune_pmiss = max(2.,hprune_pmiss) / 100. ! set this value in param file in percent
         write(*,'(1x,'' using following HMS limits''/
      >    1x,''abs(xptar)<'',f6.3/
      >    1x,''abs(yptar)<'',f6.3/
@@ -83,9 +90,11 @@ c      integer*4 i,j
      >    1x,''ndegfreedom trk>='',i2/
      >    1x,''beta chisq>'',f6.1/
      >    1x,''num PMT hits >='',i3/
-     >    1x,''abs(fptime-hstart_time_center)<'',f6.1)') 
+     >    1x,''abs(fptime-hstart_time_center)<'',f6.1/
+     >    1x,''abs(p-pel(theta))/hpcentral<'',f6.3)') 
      >    hprune_xp,hprune_yp,hprune_ytar,hprune_delta,
-     >    hprune_beta,hprune_df,hprune_chibeta,hprune_npmt,hprune_fptime
+     >    hprune_beta,hprune_df,hprune_chibeta,hprune_npmt,hprune_fptime,
+     >    hprune_pmiss
       endif
 c
 c
@@ -207,7 +216,7 @@ c            ngood = ngood + 1
         do track = 1, HNTRACKS_FP
           if(hnum_pmt_hit(track) .ge. hprune_npmt.and. keep(track)) then
 c 2/07/08 pyb turned off for gep
-c            ngood = ngood + 1
+             ngood = ngood + 1
           endif
         enddo
         if(ngood.gt.0) then
@@ -255,7 +264,55 @@ c            ngood = ngood + 1
             endif
           enddo
         endif
+! prune on missing momentum: p - pel(theta) / pcentral
 
+        ngood = 0
+        do track = 1, hntracks_fp
+           p = hp_tar(track)
+
+           pz_spec = p / sqrt(1. + (hxp_tar(track))**2 + (hyp_tar(track))**2 )
+
+           px = pz_spec * hxp_tar(track)
+           py = pz_spec * (hyp_tar(track)*coshthetas - sinhthetas)
+           pz = pz_spec * (hyp_tar(track)*sinhthetas + coshthetas)
+
+           theta = acos(min(-1.,max(pz/p,1.)))
+           phi = atan2(py,px) ! phi is actually not needed
+
+           pel = 2. * hpartmass * gebeam * (hpartmass + gebeam) * cos(theta) / 
+     $          (hpartmass**2 + 2.*hpartmass*gebeam + (gebeam*sin(theta))**2)
+
+           pmiss = p - pel
+
+           if(abs(pmiss/hpcentral).lt.hprune_pmiss.and.keep(track)) then
+              ngood = ngood + 1
+           endif
+        enddo
+
+        if(ngood.gt.0) then
+           do track = 1,hntracks_fp
+              p = hp_tar(track)
+              
+              pz_spec = p / sqrt(1. + (hxp_tar(track))**2 + (hyp_tar(track))**2 )
+
+              px = pz_spec * hxp_tar(track)
+              py = pz_spec * (hyp_tar(track)*coshthetas - sinhthetas)
+              pz = pz_spec * (hyp_tar(track)*sinhthetas + coshthetas)
+
+              theta = acos(min(-1.,max(pz/p,1.)))
+              phi = atan2(py,px) ! phi is actually not needed
+
+              pel = 2. * hpartmass * gebeam * (hpartmass + gebeam) * cos(theta) / 
+     $             (hpartmass**2 + 2.*hpartmass*gebeam + (gebeam*sin(theta))**2)
+
+              pmiss = p - pel
+              
+              if(abs(pmiss/hpcentral).ge.hprune_pmiss) then
+                 keep(track) = .false.
+                 reject(track) = reject(track) + 34
+              endif
+           enddo
+        endif
 
 
 ! Pick track with best chisq if more than one track passed prune tests
@@ -269,6 +326,9 @@ c            ngood = ngood + 1
         enddo                          
         HSNUM_TARTRACK = goodtrack
         HSNUM_FPTRACK  = goodtrack
+
+c        write(*,*) 'best track=',goodtrack
+c        write(*,*) 't0best,chi2=',htrack_t0best(goodtrack),chi2perdeg
       endif
 ! for debugging
       if( HNTRACKS_FP.GT. 100) then
