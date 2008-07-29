@@ -42,7 +42,7 @@
       endif
 
       xshift = BIGCAL_PROT_SHIFT_X
-      yshift = BIGCAL_PROT_SHIFT_Y + bigcal_height
+      yshift = BIGCAL_PROT_SHIFT_Y
 
       xsize = BIGCAL_PROT_SIZE_X
       ysize = BIGCAL_PROT_SIZE_Y
@@ -79,7 +79,7 @@ c            write(*,*) 'row,col,xblock,yblock=',iy,ix,xcenter,ycenter
       enddo
 
       xshift = BIGCAL_RCS_SHIFT_X
-      yshift = BIGCAL_RCS_SHIFT_Y + bigcal_height
+      yshift = BIGCAL_RCS_SHIFT_Y
 
       xsize = BIGCAL_RCS_SIZE_X
       ysize = BIGCAL_RCS_SIZE_Y
