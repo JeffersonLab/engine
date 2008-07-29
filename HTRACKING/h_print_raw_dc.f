@@ -10,6 +10,9 @@
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
 * $Log$
+* Revision 1.2.24.1  2008/07/29 16:38:19  puckett
+* made output of h_print_raw_dc more informative
+*
 * Revision 1.2  1995/05/22 19:39:17  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -25,6 +28,8 @@
 *
        logical ABORT
        character*(*) err
+
+       real*4 wcenter ! calculate wire center from wire number
 *
        integer*4 j
        include 'hms_data_structures.cmn'
@@ -39,10 +44,26 @@
        write(hluno,'(''        HMS_RAW_DC BANKS'')')
        write(hluno,'(''     HDC_RAW_TOT_HITS='',I4)') HDC_RAW_TOT_HITS
        if(HDC_RAW_TOT_HITS.GT.0) then
-         write(hluno,'('' Num  Plane     Wire          TDC Value'')')
-         write(hluno,'(1x,i2,2x,i3,7x,i4,5x,i10)')
-     &     (j,HDC_RAW_PLANE_NUM(j),HDC_RAW_WIRE_NUM(j),
-     &        HDC_RAW_TDC(j),j=1,HDC_RAW_TOT_HITS)    
+         write(hluno,
+     $         '('' Num  Plane     Wire     Center     TDC Value'')')
+         do j=1,hdc_raw_tot_hits
+            if(hdc_wire_counting(hdc_raw_plane_num(j)).eq.0) then
+               wcenter = ( float(hdc_raw_wire_num(j) ) - 
+     $              hdc_central_wire(hdc_raw_plane_num(j)) ) * 
+     $              hdc_pitch(hdc_raw_plane_num(j)) -
+     $              hdc_center(hdc_raw_plane_num(j))
+            else
+               wcenter = ( float(hdc_nrwire(hdc_raw_plane_num(j)) + 1 - 
+     $              hdc_raw_wire_num(j) ) - 
+     $              hdc_central_wire(hdc_raw_plane_num(j)) ) * 
+     $              hdc_pitch(hdc_raw_plane_num(j)) - 
+     $              hdc_center(hdc_raw_plane_num(j))
+            endif
+            write(hluno,
+     $           '(1x,i2,2x,i3,7x,i4,5x,f10.5,5x,i10)')
+     $           j,hdc_raw_plane_num(j),hdc_raw_wire_num(j),wcenter,
+     $           hdc_raw_tdc(j)
+         enddo
        endif
        RETURN
        END
