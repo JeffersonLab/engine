@@ -138,16 +138,16 @@ c     good track):
 
 c     invert (common-stop) hms trigger times using the same user parameter as for BigCal:
 
-      if(ntrigh2.gt.0.and.ntrigh1.eq.0) then 
-         htrigt = bigcal_end_time - gep_h2time(1)
-      else if(ntrigh1.gt.0.and.ntrigh2.eq.0) then
-         htrigt = bigcal_end_time - gep_h1time(1)
-      else if(ntrigh1.gt.0.and.ntrigh2.gt.0) then ! use trig. time 2
-         htrigt = bigcal_end_time - gep_h2time(1)
-      else ! shouldn't hardcode coin. trigger delay, but most data is taken with 
-c     16 ns delay of HMS trigger relative to BigCal trigger. Eventually set up a user param.
-         htrigt = bigcal_end_time - bigcal_window_center + gep_htrig_delay
-      endif
+c$$$      if(ntrigh2.gt.0.and.ntrigh1.eq.0) then 
+c$$$         htrigt = bigcal_end_time - gep_h2time(1)
+c$$$      else if(ntrigh1.gt.0.and.ntrigh2.eq.0) then
+c$$$         htrigt = bigcal_end_time - gep_h1time(1)
+c$$$      else if(ntrigh1.gt.0.and.ntrigh2.gt.0) then ! use trig. time 2
+c$$$         htrigt = bigcal_end_time - gep_h2time(1)
+c$$$      else ! shouldn't hardcode coin. trigger delay, but most data is taken with 
+c$$$c     16 ns delay of HMS trigger relative to BigCal trigger. Eventually set up a user param.
+c$$$         htrigt = bigcal_end_time - bigcal_window_center + gep_htrig_delay
+c$$$      endif
       
 c     here are the possible scenarios for the coincidence trigger: 
 c     1. BigCal comes in first by about 16 ns (or gep_htrig_delay). This is most likely for good 
@@ -184,16 +184,19 @@ c     expected electron energy:
 
       pthetarad = hstheta
 cajp051408      pphirad = hsphi - 3.*PI/2. ! ~-PI/2.
-
+      
       pphirad = hsphi
 
 c     calculate proton momentum (assuming elastic) from hstheta:
 
-      Q2_htheta = 4.*Mp**2*gebeam**2*(cos(hstheta))**2 / 
-     $     (Mp**2 + 2.*Mp*gebeam + gebeam**2*(sin(hstheta))**2)
-      nu_htheta = Q2_htheta / (2.*Mp)
+c$$$      Q2_htheta = 4.*Mp**2*gebeam**2*(cos(hstheta))**2 / 
+c$$$     $     (Mp**2 + 2.*Mp*gebeam + gebeam**2*(sin(hstheta))**2)
+c$$$      nu_htheta = Q2_htheta / (2.*Mp)
+c$$$
+c$$$      pp_htheta = sqrt(nu_htheta**2 + 2.*Mp*nu_htheta)
 
-      pp_htheta = sqrt(nu_htheta**2 + 2.*Mp*nu_htheta)
+      pp_htheta = 2.*Mp*gebeam*(Mp+gebeam)*cos(hstheta) / 
+     $     (Mp**2 + 2.*Mp*gebeam + (gebeam*sin(hstheta))**2)
 
 c     calculate electron angle from gebeam and hsp only, since the resolution of these quantities is better than 
 c     you can get using hstheta, the reason being the large Jacobian of the reaction. The error on etheta is
@@ -386,8 +389,8 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       GEP_ytar_p = HSY_TAR
       GEP_xbeam = gbeam_x
       GEP_ybeam = gbeam_y
-      GEP_xclust = bigcal_all_clstr_x(ibest_cal)
-      GEP_yclust = bigcal_all_clstr_y(ibest_cal)
+      GEP_xclust = bigcal_all_clstr_x(ibest_cal) ! raw xclust in BigCal coordinates
+      GEP_yclust = bigcal_all_clstr_y(ibest_cal) ! raw yclust in BigCal coordinates
       GEP_eclust = bigcal_energy
       GEP_epsilon = 1./(1.+2.*(1.+GEP_Q2/(4.*Mp**2))*(tan(bigcal_thetarad/2.))**2)
       GEP_etheta_deg = bigcal_thetarad * 180./PI
