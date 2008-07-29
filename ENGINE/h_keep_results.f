@@ -11,6 +11,9 @@
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *
 * $Log$
+* Revision 1.6.24.5  2008/07/29 16:07:48  puckett
+* added HMS cointime cut to criteria for keeping HMS event
+*
 * Revision 1.6.24.4  2008/04/17 16:37:15  cdaq
 *  added b_use_cointime_cut
 *
@@ -58,6 +61,7 @@
       include 'hms_data_structures.cmn'
       INCLUDE 'hms_fpp_params.cmn'
       INCLUDE 'hms_fpp_event.cmn'
+      include 'gep_data_structures.cmn'
       INCLUDE 'bigcal_bypass_switches.cmn'
 *
       character*50 here
@@ -73,7 +77,10 @@
       ABORT= .FALSE.
       err= ' '
 *
-      if(HSNUM_FPTRACK.gt.0 .and. b_passed_cointime_cut) call h_ntuple_keep(ABORT,err)! check for good tracks
+      if(HSNUM_FPTRACK.gt.0 .and. b_passed_cointime_cut .and. 
+     $     h_passed_cointime_cut)
+     $     call h_ntuple_keep(ABORT,err) ! check for good tracks
+      
 *
       IF(ABORT) THEN
          call G_add_path(here,err)
