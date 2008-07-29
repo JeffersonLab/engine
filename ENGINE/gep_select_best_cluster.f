@@ -24,12 +24,13 @@
 
       real c
 
-      real vx,vy,vz
+      real vx,vy,vz,x,y,z
       
       real exhat,eyhat,ezhat,edx,edy,edz,L,tint
       real etheta,ephi,ptheta,pphi
       real pp,nu_pp,eth_pp,Ee_pp,pp_eth,nu_eth,Ee_eth
       real eph_pp
+      real realcoord(3),idealcoord(3)
 
       real pmissb,gamma,eloss,pmissh
       real Q2_pth,nu_pth,pp_pth
@@ -49,9 +50,10 @@
 
       real Ecalib,adci,adcj
 
-      logical firstgood
+      logical firstgood,usei,usej,firsttime,passed_5sig
 
       integer iclust,best,ndf,irow,icol,icell,ihit,jrow,jcol,jcell,jhit
+      integer rowmax,colmax,m,n,ngood
 
       c = speed_of_light
 
@@ -60,7 +62,7 @@
       bR = bigcal_r_tgt
       btheta = bigcal_theta_deg
       dxptar0 = h_oopcentral_offset
-      dycal = 0.
+      dycal = bigcal_height
 
       if(gep_select_apply_offsets) then
          p0 = hpcentral * (1. + gep_select_dp0/100.)
@@ -68,7 +70,7 @@
          dxptar0 = h_oopcentral_offset + gep_select_dxptar
          btheta = bigcal_theta_deg + gep_select_dbtheta
          bR = bigcal_r_tgt + gep_select_dbdist
-         dycal = gep_select_dby
+         dycal = dycal + gep_select_dby
       endif
 
       xptar_temp = hsxp_tar + dxptar0
@@ -87,10 +89,11 @@
       ptheta = acos(max(-1.,min(pzlab/pp,1.)))
       pphi = atan2(pylab,pxlab)
 
-      Q2_pth = (2.*Mp*E0*cos(ptheta))**2 / 
+c$$$      Q2_pth = (2.*Mp*E0*cos(ptheta))**2 / 
+c$$$     $     (Mp**2 + 2.*Mp*E0 + (E0*sin(ptheta))**2)
+c$$$      nu_pth = Q2_pth / (2.*Mp)
+      pp_pth = 2.*Mp*E0*(Mp+E0)*cos(ptheta) / 
      $     (Mp**2 + 2.*Mp*E0 + (E0*sin(ptheta))**2)
-      nu_pth = Q2_pth / (2.*Mp)
-      pp_pth = sqrt(nu_pth**2 + 2.*Mp*nu_pth)
 
       pmissh = (pp - pp_pth)/p0
 
@@ -109,7 +112,10 @@
       vy = gbeam_y
       vz = hsy_tar * ( coshthetas / tan(htheta_lab * PI / 180.-hsyp_tar)
      $     + sinhthetas ) - vx / tan(htheta_lab*PI/180. - hsyp_tar)
-      
+
+c     calculate intersection point with the ideal (un-rotated) plane of BigCal at 
+c     an angle of btheta and a distance of bR
+
       tint = (bR - vx*sinBth - vz*cosBth) / (exhat * sinBth + ezhat * cosBth)
 
       hxface = vx + tint * exhat
@@ -124,13 +130,38 @@
       firstgood = .true.
 
       best = 0
+      
+      ngood = 0
+
+c     at this point, b_calc_physics has already been called, but just in case
+c     offsets have been applied, still want to start with the 
+c     raw cluster coordinates and re-apply the rotation matrix for yaw, pitch and roll
 
       do iclust = 1,bigcal_all_nclstr
-         xrot = bigcal_all_clstr_x(iclust) * cosBth + bR * sinBth
-         zrot = -bigcal_all_clstr_x(iclust) * sinBth + bR * cosBth
+
+         passed_5sig = .false.
+
+         realcoord(1) = bigcal_all_clstr_x(iclust)
+         realcoord(2) = bigcal_all_clstr_y(iclust)
+         realcoord(3) = 0.
+
+         do m=1,3
+            idealcoord(m) = 0.
+            do n=1,3
+               idealcoord(m) = idealcoord(m) + 
+     $              bigcal_rot_matrix(m,n) * realcoord(n)
+            enddo
+         enddo
+
+         x = idealcoord(1)
+         y = idealcoord(2) + dycal
+         z = idealcoord(3) + bR
+
+         xrot = x * cosBth + z * sinBth
+         zrot = -x * sinBth + z * cosBth
          
          bxface = xrot
-         byface = bigcal_all_clstr_y(iclust) + dycal
+         byface = y
          bzface = zrot
          
          edx = bxface - vx
@@ -176,9 +207,9 @@
          ndf = 0
          chi2 = 0.
 
-         chi2 = chi2 + (bigcal_all_clstr_x(iclust) - hxrot)**2/gep_sigma_xdiff**2
+         chi2 = chi2 + (x - hxrot)**2/gep_sigma_xdiff**2
          ndf = ndf + 1
-         chi2 = chi2 + (byface - hyface)**2/gep_sigma_ydiff**2
+         chi2 = chi2 + (y - hyface)**2/gep_sigma_ydiff**2
          ndf = ndf + 1
          chi2 = chi2 + (etheta - eth_pp)**2/gep_sigma_thdiff**2
          ndf = ndf + 1
@@ -193,8 +224,25 @@
 
          chi2 = chi2 / float(ndf)
 
-         if((firstgood.or.chi2.lt.minchi2).and.
+c     check if any cluster passed 5-sigma cuts on 
+c     elastic kinematics and coincidence time
+c     if any cluster passes, throw out all that don't
+
+         if(sqrt( (x-hxrot)**2/gep_sigma_xdiff**2 + 
+     $        (y-hyface)**2/gep_sigma_ydiff**2 ).le.5.0 .and.
+     $        abs(etheta - eth_pp).le.5.*gep_sigma_thdiff.and.
+     $        abs(ephi - eph_pp).le.5.*gep_sigma_phdiff.and.
+     $        abs(pmissb).le.5.*gep_sigma_pmiss.and.
+     $        abs(cointimeh-cointimeb).le.5.*gep_sigma_tdiff.and.
+     $        abs(Ee - Ee_pp).le.5.*gep_sigma_ediff.and.
      $        bigcal_clstr_keep(iclust)) then
+            ngood = ngood + 1
+            passed_5sig = .true.
+         endif
+
+         if((firstgood.or.chi2.lt.minchi2).and.
+     $        bigcal_clstr_keep(iclust).and.
+     $        (passed_5sig.or.ngood.eq.0)) then
             firstgood=.false.
             best = iclust
             minchi2 = chi2
@@ -211,8 +259,8 @@
          bigcal_all_clstr_chi2contr(iclust,1) = (Ee - Ee_pp)**2/gep_sigma_ediff**2
          bigcal_all_clstr_chi2contr(iclust,2) = (etheta - eth_pp)**2/gep_sigma_thdiff**2
          bigcal_all_clstr_chi2contr(iclust,3) = (ephi - eph_pp)**2/gep_sigma_phdiff**2
-         bigcal_all_clstr_chi2contr(iclust,4) = (bigcal_all_clstr_x(iclust) - hxrot)**2/gep_sigma_xdiff**2
-         bigcal_all_clstr_chi2contr(iclust,5) = (byface - hyface)**2/gep_sigma_ydiff**2
+         bigcal_all_clstr_chi2contr(iclust,4) = (x - hxrot)**2/gep_sigma_xdiff**2
+         bigcal_all_clstr_chi2contr(iclust,5) = (y - hyface)**2/gep_sigma_ydiff**2
          bigcal_all_clstr_chi2contr(iclust,6) = (cointimeh-cointimeb)**2/gep_sigma_tdiff**2
       enddo
          
@@ -220,8 +268,9 @@ c      best = 1
 
       bigcal_itrack_best = best
 
-      if(abs(xbest-hxrot).le.gep_bcalib_cut_dx.and.abs(ybest-hyface)
-     $     .le.gep_bcalib_cut_dy.and.abs(tbest-cointimeh).le.
+      if(best.gt.0.and.sqrt( (xbest-hxrot)**2/gep_bcalib_cut_dx**2 + 
+     $     (ybest-hyface)**2/gep_bcalib_cut_dy**2).le.1.
+     $     .and.abs(tbest-cointimeh).le.
      $     gep_bcalib_cut_ctime.and.abs(pmissh).le.
      $     gep_bcalib_cut_elastic(1).and.abs(bdpbest).le.
      $     gep_bcalib_cut_elastic(2).and.abs(thetabest-eth_pp).le.
@@ -243,6 +292,9 @@ c      best = 1
             
             bigcal_nmatr_event = bigcal_nmatr_event + 1
             
+            rowmax = bigcal_all_clstr_iycell(best,1)
+            colmax = bigcal_all_clstr_ixcell(best,1)
+
             do ihit=1,bigcal_all_clstr_ncell(best)
                irow = bigcal_all_clstr_iycell(best,ihit)
                icol = bigcal_all_clstr_ixcell(best,ihit)
@@ -253,28 +305,75 @@ c      best = 1
      $                 + bigcal_prot_maxhits
                endif
                
-               adci = bigcal_all_clstr_acell(best,ihit)
-               
-               bigcal_vector(icell) = bigcal_vector(icell) + adci / Ecalib
-               
-               do jhit=1,bigcal_all_clstr_ncell(best)
-                  jrow = bigcal_all_clstr_iycell(best,jhit)
-                  jcol = bigcal_all_clstr_ixcell(best,jhit)
-                  if(jrow.le.bigcal_prot_ny) then
-                     jcell = jcol + bigcal_prot_nx*(jrow-1)
-                  else 
-                     jcell = jcol + bigcal_rcs_nx*(jrow-1-bigcal_prot_ny)
-     $                    + bigcal_prot_maxhits
+               usei=.false.
+
+               if(abs(irow-rowmax).le.bigcal_clstr_nyecl_max) then
+                  if(rowmax.le.32.and.irow.gt.32) then
+                     if(abs(icol-bigcal_ixclose_prot(colmax)).le.
+     $                    bigcal_clstr_nxecl_max) then
+                        usei = .true.
+                     endif
+                  else if(rowmax.gt.32.and.irow.le.32) then
+                     if(abs(icol-bigcal_ixclose_rcs(colmax)).le.
+     $                    bigcal_clstr_nxecl_max) then
+                        usei = .true.
+                     endif
+                  else
+                     if(abs(icol-colmax).le.bigcal_clstr_nxecl_max) then
+                        usei = .true.
+                     endif
                   endif
-                  
-                  adcj = bigcal_all_clstr_acell(best,jhit)
-                  
-                  bigcal_matrix(icell,jcell) = bigcal_matrix(icell,jcell) + 
-     $                 adci*adcj / (Ecalib**2)
-               enddo
+               endif
+
+               if(usei) then
+
+                  adci = bigcal_all_clstr_acell(best,ihit)
+               
+                  bigcal_vector(icell) = bigcal_vector(icell) + adci / Ecalib
+               
+                  do jhit=1,bigcal_all_clstr_ncell(best)
+                     jrow = bigcal_all_clstr_iycell(best,jhit)
+                     jcol = bigcal_all_clstr_ixcell(best,jhit)
+                     if(jrow.le.bigcal_prot_ny) then
+                        jcell = jcol + bigcal_prot_nx*(jrow-1)
+                     else 
+                        jcell = jcol + bigcal_rcs_nx*(jrow-1-bigcal_prot_ny)
+     $                       + bigcal_prot_maxhits
+                     endif
+                     
+                     usej=.false.
+
+                     if(abs(jrow-rowmax).le.bigcal_clstr_nyecl_max) then
+                        if(rowmax.le.32.and.jrow.gt.32) then
+                           if(abs(jcol-bigcal_ixclose_prot(colmax)).le.
+     $                          bigcal_clstr_nxecl_max) then
+                              usej = .true.
+                           endif
+                        else if(rowmax.gt.32.and.jrow.le.32) then
+                           if(abs(jcol-bigcal_ixclose_rcs(colmax)).le.
+     $                          bigcal_clstr_nxecl_max) then
+                              usej = .true.
+                           endif
+                        else
+                           if(abs(jcol-colmax).le.bigcal_clstr_nxecl_max) then
+                              usej = .true.
+                           endif
+                        endif
+                     endif
+
+                     if(usej) then
+
+                        adcj = bigcal_all_clstr_acell(best,jhit)
+                        
+                        bigcal_matrix(icell,jcell) = bigcal_matrix(icell,jcell) + 
+     $                       adci*adcj / (Ecalib**2)
+                     endif
+                  enddo
+               endif
             enddo
          endif
       endif
       
       return
       end
+      
