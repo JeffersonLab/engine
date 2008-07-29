@@ -9,6 +9,9 @@
 *
 * modifications:
 * $Log$
+* Revision 1.21.6.3  2008/07/29 16:24:52  puckett
+* added correction of start time for trig. time upon failure to get start time from scint hits
+*
 * Revision 1.21.6.2  2008/04/23 18:02:36  cdaq
 * *** empty log message ***
 *
@@ -96,6 +99,8 @@
       include 'hms_scin_parms.cmn'
       include 'hms_scin_tof.cmn'
       include 'hms_id_histid.cmn'
+      include 'gep_data_structures.cmn'
+      include 'gen_event_info.cmn'
 
       logical abort
       character*1024 errmsg
@@ -112,6 +117,7 @@
       real*4 minfpdiff,fpdiff,ajpxcoord,ajpycoord,ajpmeanfptime,sigmahitpos1
       real*4 sigmahitpos2,sigmatdiff,sigmahitpos,sigmat1,sigmat2
       integer*4 nstart_plane(2) ! number of start time hits on S1X and S1Y, respectively
+      real*4 ajpxcntrzpos,ajpycntrzpos
 *     ajp 4/11/08
       real*4 time_sum
       real*4 fptime
@@ -418,15 +424,49 @@ c 1/23/08 pyb added these checks
       if (time_num.eq.0) then
         hgood_start_time = .false.
         hstart_time = hstart_time_center
-      else
-        hgood_start_time = .true.
-        hstart_time = time_sum / float(time_num)
-        if(ncall.lt.30) then
-          write(*,'(''hstart'',i4,2f8.3)') time_num,
-     >      hstart_time,  hstart_time_center
-          ncall = ncall + 1
+
+        if(h_correct_start_time.ne.0.and.gen_event_type.eq.6) then !correct start time for trigger time:
+           if(gen_event_trigtype(4).eq.1.and.gen_event_trigtype(5).eq.0) 
+     $          then
+              if(ntrigh1.gt.0) then
+                 hstart_time=hstart_time+gep_htrig_t0(1)-gep_h1time(1)
+              endif
+           endif
+           
+           if(gen_event_trigtype(5).eq.1)  then
+              if(ntrigh2.gt.0) then
+                 hstart_time=hstart_time+gep_htrig_t0(2)-gep_h2time(1)
+              endif
+           endif
         endif
+      else
+         hgood_start_time = .true.
+         hstart_time = time_sum / float(time_num)
+         if(ncall.lt.30) then
+            write(*,'(''hstart'',i4,2f8.3)') time_num,
+     >           hstart_time,  hstart_time_center
+            ncall = ncall + 1
+         endif
       endif
+
+cajp071008 -- experiment with calculating hstart_time just from trigger time
+
+c$$$      hstart_time = hstart_time_center
+c$$$
+c$$$      if(gen_event_trigtype(4).eq.1.and.gen_event_trigtype(5).eq.0) 
+c$$$     $     then
+c$$$         if(ntrigh1.gt.0) then
+c$$$            hstart_time=hstart_time+gep_htrig_t0(1)-gep_h1time(1)
+c$$$         endif
+c$$$      endif
+c$$$      
+c$$$      if(gen_event_trigtype(5).eq.1)  then
+c$$$         if(ntrigh2.gt.0) then
+c$$$            hstart_time=hstart_time+gep_htrig_t0(2)-gep_h2time(1)
+c$$$         endif
+c$$$      endif
+cajp071008
+
 
 *     this code added by ajp 04/11/08 to calculate xy position of track from scintillators
 *     BEFORE drift chamber tracking--to help with high rate for GEp-III
@@ -457,11 +497,15 @@ c 1/23/08 pyb added these checks
                               ajpycoord = hscin_dec_hit_coord(allj)
                               ajpxcntr = hscin_counter_num(alli)
                               ajpycntr = hscin_counter_num(allj)
+                              ajpxcntrzpos = hscin_zpos(alli)
+                              ajpycntrzpos = hscin_zpos(allj)
                            else
                               ajpxcoord = hscin_dec_hit_coord(allj)
                               ajpycoord = hscin_dec_hit_coord(alli)
                               ajpxcntr = hscin_counter_num(allj)
                               ajpycntr = hscin_counter_num(alli)
+                              ajpxcntrzpos = hscin_zpos(allj)
+                              ajpycntrzpos = hscin_zpos(alli)
                            endif
                            ajpmeanfptime = 0.5*((hscin_cor_time(alli) - 
      $                          hscin_zpos(alli)/(29.979*hbeta_pcent) )+
@@ -516,20 +560,26 @@ c     weighted average of hit position measured by S1Y and coordinate of interse
 c$$$         sigmatdiff = sqrt( (sigmahitpos1/hhodo_vel_light(2,ajpycntr) )**2 + 
 c$$$     $        (sigmahitpos2/hhodo_vel_light(1,ajpxcntr) )**2 )
 
-         if( abs(hS1X_crude_track_coord(1)-hS1X_crude_track_coord(2))
-     $        .le. max(hscin_1y_size/2.,2.5*sigmahitpos1) .and.
-     $        abs(hS1Y_crude_track_coord(1)-hS1Y_crude_track_coord(2))
-     $        .le. max(hscin_1x_size/2.,2.5*sigmahitpos2) .and.
-     $        minfpdiff.le.2.5*sigmatdiff) then
+c$$$         if( abs(hS1X_crude_track_coord(1)-hS1X_crude_track_coord(2))
+c$$$     $        .le. max(hscin_1y_size/2.,2.5*sigmahitpos1) .and.
+c$$$     $        abs(hS1Y_crude_track_coord(1)-hS1Y_crude_track_coord(2))
+c$$$     $        .le. max(hscin_1x_size/2.,2.5*sigmahitpos2) .and.
+c$$$     $        minfpdiff.le.2.5*sigmatdiff) then
+         if(minfpdiff.le.2.5*sigmatdiff) then
             htwo_good_starttime_hits = .true.
             hS1XY_crude_fptime = ajpmeanfptime
             
-            hS1_crude_xtrack = min( hS1y_crude_track_coord(2) - hscin_1x_size/2.,
-     $           max(hS1y_crude_track_coord(3),hS1y_crude_track_coord(2) + 
-     $           hscin_1x_size/2.) )
-            hS1_crude_ytrack = min( hS1x_crude_track_coord(2) - hscin_1y_size/2.,
-     $           max(hS1x_crude_track_coord(3),hS1x_crude_track_coord(2) + 
-     $           hscin_1y_size/2.) )
+            hS1_crude_xtrack = hS1y_crude_track_coord(2)
+            hS1_crude_ytrack = hS1x_crude_track_coord(2)
+
+c$$$            hS1_crude_xtrack = min( hS1y_crude_track_coord(2) - hscin_1x_size/2.,
+c$$$     $           max(hS1y_crude_track_coord(3),hS1y_crude_track_coord(2) + 
+c$$$     $           hscin_1x_size/2.) )
+c$$$            hS1_crude_ytrack = min( hS1x_crude_track_coord(2) - hscin_1y_size/2.,
+c$$$     $           max(hS1x_crude_track_coord(3),hS1x_crude_track_coord(2) + 
+c$$$     $           hscin_1y_size/2.) )
+            hS1_crude_ztrack(1) = ajpxcntrzpos !z position of S1X counter
+            hS1_crude_ztrack(2) = ajpycntrzpos !z position of S1Y counter
          else
             htwo_good_starttime_hits = .false.
          endif
