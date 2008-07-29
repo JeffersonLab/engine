@@ -79,6 +79,7 @@ c      character*256 b_tree_filename
       real*4 aclust(maxnclust)
       real*4 xclust(maxnclust)
       real*4 yclust(maxnclust)
+      logical keepclst(maxnclust)
       common/clustblock/
      $     nclust,
      $     ncellclust,
@@ -97,7 +98,8 @@ c      character*256 b_tree_filename
      $     eclust,
      $     aclust, 
      $     xclust,
-     $     yclust
+     $     yclust,
+     $     keepclst
 
       integer*4 nclust8
       integer*4 ncell8clust(maxnclust)
