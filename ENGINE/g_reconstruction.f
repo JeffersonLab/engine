@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.12  2008/07/29 16:16:28  puckett
+* added HMS cointime cut
+*
 * Revision 1.13.24.11  2008/04/23 18:02:31  cdaq
 * *** empty log message ***
 *
@@ -199,15 +202,41 @@ c         write(*,*) 'found annoying pulser event, skipping'
       ENDIF
 c mkj add cut on coincidence time to remove accidentals
       b_passed_cointime_cut = .true.
-      if ( b_use_cointime_cut .eq. 1) then
+      h_passed_cointime_cut = .true.
+
+      if ( b_use_cointime_cut .ne. 0) then
          b_passed_cointime_cut = .false.
          do i=1,8
             if ( gep_btime(i) .gt. gep_btime_elastic(1) 
      $           .and. gep_btime(i) .lt. gep_btime_elastic(2) )
      >           b_passed_cointime_cut = .true.
          enddo
-         if (.not. b_passed_cointime_cut)   return
+c         if (.not. b_passed_cointime_cut)   return
       endif
+      
+      
+      if ( h_use_cointime_cut .ne. 0) then
+         h_passed_cointime_cut = .false.
+         
+         do i=1,8
+            if ( gen_event_trigtype(4).eq.1 .and. gep_h1time(i) .gt. 
+     $           gep_htrig_cut(1) .and. gep_h1time(i) .lt. 
+     $           gep_htrig_cut(2) ) then
+               h_passed_cointime_cut = .true.
+            endif
+            
+            if( gen_event_trigtype(5).eq.1 .and. gep_h2time(i) .gt.
+     $           gep_htrig_cut(3) .and. gep_h2time(i) .lt.
+     $           gep_htrig_cut(4) ) then
+               h_passed_cointime_cut = .true.
+            endif
+            
+c            if(.not. h_passed_cointime_cut) return
+         enddo
+      endif
+
+      if(.not.(h_passed_cointime_cut.and.b_passed_cointime_cut)) return
+
 c
 *
 *-HMS reconstruction
