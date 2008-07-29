@@ -1,5 +1,8 @@
 *    This include file contains all the variables required for h_physics
 * $Log$
+* Revision 1.11.6.1  2008/07/29 16:52:43  puckett
+* added missing momentum prune test for track selection
+*
 * Revision 1.11  2005/03/23 16:35:04  jones
 * Add new code s_select_best_track_prune.f and h_select_best_track_prune.f (P Bosted)
 *
@@ -89,6 +92,8 @@
       real*4 hprune_chibeta             ! Maximum beta chisq
       real*4 hprune_fptime              ! Maximum fptime - nominal
       integer hprune_npmt               ! Minimum PMTs for track
+c     ajp added 072308
+      real*4 hprune_pmiss               ! maximum p - pel(theta)
                  
       INTEGER*4 hsel_ndegreesmin        ! Minimum number of degrees of freedom
       INTEGER*4 hsel_using_scin       ! =1 select best track using scin info
@@ -113,7 +118,8 @@
      &     hprune_df,
      &     hprune_chibeta,
      &     hprune_npmt,
-     &     hprune_fptime
+     &     hprune_fptime,
+     $     hprune_pmiss
 *
       COMMON/hms_chose_one_track_i4/
      &     hsel_ndegreesmin,
