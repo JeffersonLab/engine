@@ -20,7 +20,7 @@ c      include 'gen_units.par'
       include 'bigcal_hist_id.cmn'
 
       integer i,j,k,ntrack,itrackmax,nprot,nrcs,nmid
-      integer irow,icol,icell
+      integer irow,icol,icell,icoord,jcoord
       real E,x,y,z,t,R,L,tof,Rperp
       real xrot,zrot
       real thetadeg,thetarad,phideg,phirad
@@ -29,6 +29,8 @@ c      include 'gen_units.par'
       real mom,beta,c,eloss,gamma,log10betagamma
       real maxetot
       real edx,edy,edz,vx,vy,vz
+
+      real rreal(3),rideal(3)
 
       real PI
       parameter(PI=3.14159265359)
@@ -46,12 +48,14 @@ c      logical last_time
       R = BIGCAL_R_TGT
       m_e = mass_electron
       c = speed_of_light
+
+c     don't apply cluster selection offsets here: danger of double application
    
-      if(gep_select_apply_offsets) then
-         Sinth = sin( (bigcal_theta_deg + gep_select_dbtheta)*PI/180. )
-         Costh = cos( (bigcal_theta_deg + gep_select_dbtheta)*PI/180. )
-         R = R + gep_select_dbdist
-      endif
+c$$$      if(gep_select_apply_offsets) then
+c$$$         Sinth = sin( (bigcal_theta_deg + gep_select_dbtheta)*PI/180. )
+c$$$         Costh = cos( (bigcal_theta_deg + gep_select_dbtheta)*PI/180. )
+c$$$         R = R + gep_select_dbdist
+c$$$      endif
 
 c$$$      nprot = 0
 c$$$      nrcs = 0
@@ -64,8 +68,25 @@ c     this routine also fills many standard histograms
 c            nprot = nprot + 1
             x = BIGCAL_ALL_CLSTR_X(i)
             y = BIGCAL_ALL_CLSTR_Y(i)
+            z = 0.
 
-            if(gep_select_apply_offsets) y = y + gep_select_dby
+            rreal(1) = x
+            rreal(2) = y
+            rreal(3) = z
+
+            do icoord=1,3
+               rideal(icoord) = 0.
+               do jcoord=1,3
+                  rideal(icoord) = rideal(icoord) + 
+     $                 bigcal_rot_matrix(icoord,jcoord)*rreal(jcoord)
+               enddo
+            enddo
+
+            x = rideal(1)
+            y = rideal(2) + bigcal_height
+            z = rideal(3) + R
+
+c$$$            if(gep_select_apply_offsets) y = y + gep_select_dby
 
             E = BIGCAL_ALL_CLSTR_ETOT(i)
             
@@ -98,10 +119,10 @@ c            nprot = nprot + 1
             endif
 c     correct every track for energy loss. BigCal is always electron arm
 c     need to set up eloss params for BigCal absorber!
-            xrot = x * Costh + R * Sinth
-            zrot = -x * Sinth + R * Costh
+            xrot = x * Costh + z * Sinth
+            zrot = -x * Sinth + z * Costh
 
-            if(gen_event_type.eq.6.and.hsnum_fptrack.gt.0) then ! correct angles for HMS vertex:
+            if(gen_event_type.eq.6.and.hsnum_fptrack.gt.0) then ! correct angles for IP determined by HMS/bpm/raster:
                vx = gbeam_x
                vy = gbeam_y
                vz = hszbeam - vx / tan(htheta_lab*PI/180. - hsyp_tar)
