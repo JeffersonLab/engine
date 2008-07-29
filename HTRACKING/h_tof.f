@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19.6.5  2008/07/29 16:34:00  puckett
+* misc bug fixes in writing fort.37 for tof calibration
+*
 * Revision 1.19.6.4  2008/02/07 16:14:50  cdaq
 * modified h_tof.f to exclude S0 from tof calibration
 *
@@ -143,36 +146,39 @@
 *
       ABORT= .FALSE.
       errmsg = ' '
-
+      
       if(hntracks_fp.le.0 .or. hscin_tot_hits.le.0) then
-        do trk = 1 , hntracks_fp
-          hnum_scin_hit(trk) = 0
-          hnum_pmt_hit(trk) = 0
-          hbeta(trk) = 0
-          hbeta_chisq(trk) = -3
-          htime_at_fp(trk) = 0
-        enddo
-        goto 666
+         do trk = 1 , hntracks_fp
+            hnum_scin_hit(trk) = 0
+            hnum_pmt_hit(trk) = 0
+            hbeta(trk) = 0
+            hbeta_chisq(trk) = -3
+            htime_at_fp(trk) = 0
+         enddo
+         goto 666
       endif
- 
-**MAIN LOOP:  Loop over all tracks and get corrected time, tof, beta...
+      
+*     *MAIN LOOP:  Loop over all tracks and get corrected time, tof, beta...
       do trk = 1 , hntracks_fp
+         
+*     * Initialize counter,flags...
+         hntof = 0
+         hntof_pairs = 0
+         sum_fp_time = 0.
+         num_fp_time = 0.
+         hnum_scin_hit(trk) = 0
+         hnum_pmt_hit(trk) = 0
+         p = hp_tar(trk)
 
-** Initialize counter,flags...
-        hntof = 0
-        hntof_pairs = 0
-        sum_fp_time = 0.
-        num_fp_time = 0.
-        hnum_scin_hit(trk) = 0
-        hnum_pmt_hit(trk) = 0
-        p = hp_tar(trk)
-        betap = p/sqrt(p*p+hpartmass*hpartmass)
+         betap = p/sqrt(p*p+hpartmass*hpartmass)
+c     don't use nonsensical values of betap: revert to beta(pcentral):
+         if(abs(hdelta_tar(trk)).gt.18.) betap = hpcentral / sqrt(hpcentral**2 + hpartmass**2)
 
-        do plane = 1 , hnum_scin_planes
-          hgood_plane_time(trk,plane) = .false.
-          sum_plane_time(plane) = 0.
-          num_plane_time(plane) = 0
-        enddo
+         do plane = 1 , hnum_scin_planes
+            hgood_plane_time(trk,plane) = .false.
+            sum_plane_time(plane) = 0.
+            num_plane_time(plane) = 0
+         enddo
 
 ! Calculate all corrected hit times and histogram
 ! This uses a copy of code below. Results are save in time_pos,neg
@@ -185,407 +191,434 @@
 !       reference particle, need to make sure this is big enough
 !       to accomodate difference in TOF for other particles
 ! Default value in case user hasnt definedd something reasonable
-        time_tolerance=20.0
-        if(htof_tolerance.gt.0.5.and.htof_tolerance.lt.10000.) then
-          time_tolerance=htof_tolerance
-        endif
-! Use wide window if dumping events for fitting
-cc        write(*,'(''hdumptof='',i10)') hdumptof
-        if(hdumptof.eq.1) time_tolerance=50.0
-        if(first) then
-           first=.false.
-           write(*,'(1x,''Using '',f8.2,'' nsec window for'',
-     >     '' hms tof and fp calculations'')') time_tolerance
-           if(htofusinginvadc.eq.1) then
-!online             write(*,'(/1x,''TOF using 1/sqrt(ADC), separate '',
-!online     >         ''velocities for pos and neg tubes'')')
-           else
-!online             write(*,'(/1x,''TOF using ADC for slewing correction'',
-!online     >         ''  and same vecolicty for pos and neg tubes'')')
-           endif
-! new: next 10 lines
-           ndumpmax = 1000.
-           if(hdumptof.eq.1) 
-     >       write(*,'(/1x,''Dumping TDC, ADC to fort.37 for'',
-     >         ''  TOF calibration, ndumpmax='',i5)') ndumpmax
-!online           write(*,'(/)')
-           do i=1,4
-            do j=1,16
-             ndumped(i,j,1)= 0.
-             ndumped(i,j,2)= 0.
+         time_tolerance=20.0
+         if(htof_tolerance.gt.0.5.and.htof_tolerance.lt.10000.) then
+            time_tolerance=htof_tolerance
+         endif
+!     Use wide window if dumping events for fitting
+c     c        write(*,'(''hdumptof='',i10)') hdumptof
+         if(hdumptof.eq.1) time_tolerance=50.0
+         if(first) then
+            first=.false.
+            write(*,'(1x,''Using '',f8.2,'' nsec window for'',
+     >           '' hms tof and fp calculations'')') time_tolerance
+            if(htofusinginvadc.eq.1) then
+!     online             write(*,'(/1x,''TOF using 1/sqrt(ADC), separate '',
+!     online     >         ''velocities for pos and neg tubes'')')
+            else
+!     online             write(*,'(/1x,''TOF using ADC for slewing correction'',
+!     online     >         ''  and same vecolicty for pos and neg tubes'')')
+            endif
+!     new: next 10 lines
+            ndumpmax = 10000.
+            if(hdumptof.eq.1) 
+     >           write(*,'(/1x,''Dumping TDC, ADC to fort.37 for'',
+     >           ''  TOF calibration, ndumpmax='',i5)') ndumpmax
+!     online           write(*,'(/)')
+            do i=1,4
+               do j=1,16
+                  ndumped(i,j,1)= 0.
+                  ndumped(i,j,2)= 0.
+               enddo
             enddo
-           enddo
-        endif
-        nfound = 0
-        do j=1,200
-          timehist(j)=0
-        enddo
-        do hit = 1 , hscin_tot_hits
-          i=min(1000,hit)
-          time_pos(i)=-99.
-          time_neg(i)=-99.
-          keep_pos(i)=.false.
-          keep_neg(i)=.false.
-          plane = hscin_plane_num(hit)
-          xhit_coord = hx_fp(trk) + hxp_fp(trk)*hscin_zpos(hit)
-          yhit_coord = hy_fp(trk) + hyp_fp(trk)*hscin_zpos(hit)
-          if (plane.eq.1 .or. plane.eq.3) then !x plane
-            hscin_trans_coord(hit) = xhit_coord
-            hscin_long_coord(hit) = yhit_coord
-          else if (plane.eq.2 .or. plane.eq.4) then !y plane
-            hscin_trans_coord(hit) = yhit_coord
-            hscin_long_coord(hit) = xhit_coord
-          else                          !bad plane #.
-            abort = .true.
-            write(errmsg,*) 'hscin_plane_num(',hit,') = ',plane
-            call g_prepend(here,errmsg)
-            return
-          endif
-          if (abs(hscin_center_coord(hit)-hscin_trans_coord(hit))
-     &         .lt.(hscin_width(hit)/2.+hscin_slop(hit))) then
-            if(hscin_tdc_pos(hit) .ge. hscin_tdc_min .and.  
-     &          hscin_tdc_pos(hit) .le. hscin_tdc_max) then
-              adc_ph = hscin_adc_pos(hit)
-              path = hscin_pos_coord(hit) - hscin_long_coord(hit)
-              time = hscin_tdc_pos(hit) * hscin_tdc_to_time
-              time = time - (hscin_zpos(hit)/(29.979*betap) *
-     &               sqrt(1. + hxp_fp(trk)**2 + hyp_fp(trk)**2))
-              if(htofusinginvadc.eq.1) then
-                time_pos(i) = time - 
-     >            hscin_pos_invadc_offset(hit) -
-     >            path / hscin_pos_invadc_linear(hit) -
-     >            hscin_pos_invadc_adc(hit)/
-     >            sqrt(max(20.,adc_ph))
-              else
-                time = time - hscin_pos_phc_coeff(hit) *
-     &            sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
-                time = time - path/hscin_vel_light(hit)
-                time_pos(i) = time - hscin_pos_time_offset(hit)
-              endif
-              nfound = nfound + 1
-              do j=1,200
-                tmin = 0.5*float(j)                
-                if(time_pos(i) .gt. tmin .and.
-     >             time_pos(i) .lt. tmin + time_tolerance) 
-     >            timehist(j) = timehist(j) + 1
-              enddo
-            endif
-            if (hscin_tdc_neg(hit).ge.hscin_tdc_min .and. !good tdc
-     1           hscin_tdc_neg(hit).le.hscin_tdc_max) then
-              adc_ph = hscin_adc_neg(hit)
-              path = hscin_long_coord(hit) - hscin_neg_coord(hit)
-              time = hscin_tdc_neg(hit) * hscin_tdc_to_time
-              time = time - (hscin_zpos(hit)/(29.979*betap) *
-     &               sqrt(1. + hxp_fp(trk)**2 + hyp_fp(trk)**2))
-              if(htofusinginvadc.eq.1) then
-c 1/23/08 pyb bug fixed (+ changed to -)
-                time_neg(i) = time - hscin_neg_invadc_offset(hit) -
-     >            path / hscin_neg_invadc_linear(hit) -
-     >            hscin_neg_invadc_adc(hit)/sqrt(max(20.,adc_ph))
-              else
-                time = time - hscin_neg_phc_coeff(hit) *
-     &               sqrt(max(0.,(adc_ph/hscin_neg_minph(hit)-1.)))
-                time = time - path/hscin_vel_light(hit)
-                time_neg(i) = time - hscin_neg_time_offset(hit)
-              endif
-              nfound = nfound + 1
-              do j=1,200
-                tmin = 0.5*float(j)                
-                if(time_neg(i) .gt. tmin .and.
-     >             time_neg(i) .lt. tmin + time_tolerance) 
-     >            timehist(j) = timehist(j)+1
-             enddo
-            endif
-          endif
-        enddo
-! Find bin with most hits
-        jmax=0
-        maxhit=0
-! new next line
-        oktodump = .false.
-        do j=1,200
-          if(timehist(j) .gt. maxhit) then
-            jmax = j
-            maxhit = timehist(j)
-          endif
-        enddo
-        if(jmax.gt.0) then
-          tmin = 0.5*float(jmax) 
-          do hit = 1 , hscin_tot_hits
+         endif
+         nfound = 0
+         do j=1,200
+            timehist(j)=0
+         enddo
+         do hit = 1 , hscin_tot_hits
             i=min(1000,hit)
-            if(time_pos(i) .gt. tmin .and.
-     >         time_pos(i) .lt. tmin + time_tolerance) then
-              keep_pos(i) = .true.
-! new next 4 lines
-              ndumped(hscin_plane_num(hit),hscin_counter_num(hit),1) =  
-     >        ndumped(hscin_plane_num(hit),hscin_counter_num(hit),1) + 1
-              if(ndumped(hscin_plane_num(hit),
-     >          hscin_counter_num(hit),1).lt.ndumpmax) oktodump=.true.
-           endif
-            if(time_neg(i) .gt. tmin .and.
-     >         time_neg(i) .lt. tmin + time_tolerance) then
-              keep_neg(i) = .true.
-! new next 4 lines
-              ndumped(hscin_plane_num(hit),hscin_counter_num(hit),2) =  
-     >        ndumped(hscin_plane_num(hit),hscin_counter_num(hit),2) + 1
-              if(ndumped(hscin_plane_num(hit),
-     >          hscin_counter_num(hit),2).lt.ndumpmax) oktodump=.true.
+            time_pos(i)=-99.
+            time_neg(i)=-99.
+            keep_pos(i)=.false.
+            keep_neg(i)=.false.
+            plane = hscin_plane_num(hit)
+            xhit_coord = hx_fp(trk) + hxp_fp(trk)*hscin_zpos(hit)
+            yhit_coord = hy_fp(trk) + hyp_fp(trk)*hscin_zpos(hit)
+            if (plane.eq.1 .or. plane.eq.3) then !x plane
+               hscin_trans_coord(hit) = xhit_coord
+               hscin_long_coord(hit) = yhit_coord
+            else if (plane.eq.2 .or. plane.eq.4) then !y plane
+               hscin_trans_coord(hit) = yhit_coord
+               hscin_long_coord(hit) = xhit_coord
+            else                !bad plane #.
+               abort = .true.
+               write(errmsg,*) 'hscin_plane_num(',hit,') = ',plane
+               call g_prepend(here,errmsg)
+               return
             endif
-          enddo
-        endif
-
-! Resume regular tof code, now using time filer from above
-        do hit = 1 , hscin_tot_hits
-          hgood_scin_time(trk,hit) = .false.
-          hgood_tdc_pos(trk,hit) = .false.
-          hgood_tdc_neg(trk,hit) = .false.
-          hscin_time(hit) = 0
-          hscin_sigma(hit) = 100.
-        enddo
-
-        do hit = 1 , hscin_tot_hits
-          plane = hscin_plane_num(hit)
-
-**    Find hit position
-          xhit_coord = hx_fp(trk) + hxp_fp(trk)*hscin_zpos(hit)
-          yhit_coord = hy_fp(trk) + hyp_fp(trk)*hscin_zpos(hit)
-          if (plane.eq.1 .or. plane.eq.3) then !x plane
-            hscin_trans_coord(hit) = xhit_coord
-            hscin_long_coord(hit) = yhit_coord
-          else if (plane.eq.2 .or. plane.eq.4) then !y plane
-            hscin_trans_coord(hit) = yhit_coord
-            hscin_long_coord(hit) = xhit_coord
-          else                          !bad plane #.
-            abort = .true.
-            write(errmsg,*) 'hscin_plane_num(',hit,') = ',plane
-            call g_prepend(here,errmsg)
-            return
-          endif
-
-**    Check if scin is on track
-          if (abs(hscin_center_coord(hit)-hscin_trans_coord(hit))
-     &         .gt.(hscin_width(hit)/2.+hscin_slop(hit))) then
-
-            hscin_on_track(trk,hit) = .false.
-          else
-            hscin_on_track(trk,hit) = .true.
-**    Check for good TDC
-            if (hscin_tdc_pos(hit) .ge. hscin_tdc_min .and.  
-     &          hscin_tdc_pos(hit) .le. hscin_tdc_max .and.
-     >          keep_pos(hit)) then
-
-**    Calculate time for each tube with a good tdc. 'pos' side first.
-              hgood_tdc_pos(trk,hit) = .true.
-              hntof = hntof + 1
-              adc_ph = hscin_adc_pos(hit)
-              path = hscin_pos_coord(hit) - hscin_long_coord(hit)
-
-*     Convert TDC value to time, do pulse height correction, correction for
-*     propogation of light thru scintillator, and offset.
-              time = hscin_tdc_pos(hit) * hscin_tdc_to_time
-              if(htofusinginvadc.eq.1) then
-                hscin_pos_time(hit)=time - hscin_pos_invadc_offset(hit) -
-     >            path / hscin_pos_invadc_linear(hit) -
-     >            hscin_pos_invadc_adc(hit)/sqrt(max(20.,adc_ph))
-              else
-                time = time - hscin_pos_phc_coeff(hit) *
-     &               sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
-                time = time - path/hscin_vel_light(hit)
-                hscin_pos_time(hit) = time - hscin_pos_time_offset(hit)
-              endif
-              zcor =  (hscin_zpos(hit)/(29.979*betap) * sqrt(1.+
-     >               hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
-              if(hntracks_fp.eq.1.and.
-     >          hdumptof.eq.1.and.
-! new next line
-     >          oktodump.and.
-! changed 6 to 3 since only S1. Turned off S0
-     >          timehist(max(1,jmax)).gt.3.and.
-     >             hscin_plane_num(hit).le.2) then
-                write(37,'(1x,''1'',2i3,5f10.3)') 
-     >             hscin_plane_num(hit),
-     >             hscin_counter_num(hit),
-     >             hscin_tdc_pos(hit) * hscin_tdc_to_time,
-     >             path,zcor,
-     >             hscin_pos_time(hit)-zcor,adc_ph
-c               write(39,'(1x,''1'',2i3,8f8.2)') 
-c    >             hscin_plane_num(hit),
-c    >             hscin_counter_num(hit),
-c    >             hscin_tdc_pos(hit) * hscin_tdc_to_time - zcor,
-c    >             hscin_pos_time(hit) - zcor,
-c    >             -1.*hscin_pos_invadc_offset(hit),
-c    >             -1./hscin_pos_invadc_linear(hit),path,
-c    >             -1.*hscin_pos_invadc_adc(hit),
-c    >              1./sqrt(max(20,adc_ph))
-              endif
-            endif
-
-**    Repeat for pmts on 'negative' side
-            if (hscin_tdc_neg(hit).ge.hscin_tdc_min .and. !good tdc
-     1           hscin_tdc_neg(hit).le.hscin_tdc_max.and.
-     >           keep_neg(hit)) then
-
-              hgood_tdc_neg(trk,hit) = .true.
-              hntof = hntof + 1
-              adc_ph = hscin_adc_neg(hit)
-              path = hscin_long_coord(hit) - hscin_neg_coord(hit)
-              time = hscin_tdc_neg(hit) * hscin_tdc_to_time
-              if(htofusinginvadc.eq.1) then
-                hscin_neg_time(hit)=time - hscin_neg_invadc_offset(hit) -
-     >            path / hscin_neg_invadc_linear(hit) -
-     >            hscin_neg_invadc_adc(hit)/sqrt(max(20.,adc_ph))
-              else
-                time = time - hscin_neg_phc_coeff(hit) *
-     &               sqrt(max(0.,(adc_ph/hscin_neg_minph(hit)-1.)))
-                time = time - path/hscin_vel_light(hit)
-                hscin_neg_time(hit) = time - hscin_neg_time_offset(hit)
-              endif
-              zcor =  (hscin_zpos(hit)/(29.979*betap) * sqrt(1.+
-     >               hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
-              if(hntracks_fp.eq.1.and.
-     >          hdumptof.eq.1.and.
-! new next line
-     >          oktodump.and.
-! changed 6 to 3 since only S1. S0 turned off
-     >          timehist(max(1,jmax)).gt.3.and.
-     >             hscin_plane_num(hit).le.2) then
-                write(37,'(1x,''2'',2i3,5f10.3)') 
-     >             hscin_plane_num(hit),
-     >             hscin_counter_num(hit),
-     >             hscin_tdc_neg(hit) * hscin_tdc_to_time,
-     >             path,zcor,
-     >             hscin_neg_time(hit)-zcor,adc_ph
-c               write(39,'(1x,''1'',2i3,8f8.2)') 
-c    >             hscin_plane_num(hit),
-c    >             hscin_counter_num(hit),
-c    >             hscin_tdc_neg(hit) * hscin_tdc_to_time - zcor,
-c    >             hscin_neg_time(hit) - zcor,
-c    >             -1.*hscin_neg_invadc_offset(hit),
-c    >             -1./hscin_neg_invadc_linear(hit),path,
-c    >             -1.*hscin_neg_invadc_adc(hit),
-c    >              1./sqrt(max(20,adc_ph))
-              endif
-            endif
-
-**    Calculate ave time for scintillator and error.
-            if (hgood_tdc_pos(trk,hit)) then
-              if (hgood_tdc_neg(trk,hit)) then
-                hscin_time(hit) = (hscin_neg_time(hit) + hscin_pos_time(hit))/2.
-                hscin_sigma(hit) = max(0.1,sqrt(hscin_neg_sigma(hit)**2 + 
-     1               hscin_pos_sigma(hit)**2)/2.)
-                hgood_scin_time(trk,hit) = .true.
-                hntof_pairs = hntof_pairs + 1
-              else
-                hscin_time(hit) = hscin_pos_time(hit)
-                hscin_sigma(hit) = max(0.1,hscin_pos_sigma(hit))
-                hgood_scin_time(trk,hit) = .true.
-*                hgood_scin_time(trk,hit) = .false.
-              endif
-            else                        ! if hgood_tdc_neg = .false.
-              if (hgood_tdc_neg(trk,hit)) then
-                hscin_time(hit) = hscin_neg_time(hit)
-                hscin_sigma(hit) = max(0.1,hscin_neg_sigma(hit))
-                hgood_scin_time(trk,hit) = .true.
-*                hgood_scin_time(trk,hit) = .false.
-              endif
-            endif
-c     Get time at focal plane
-            if (hgood_scin_time(trk,hit)) then
-              hscin_time_fp(hit) = hscin_time(hit)
-     &             - (hscin_zpos(hit)/(29.979*betap) *
-     &             sqrt(1.+hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
-              sum_fp_time = sum_fp_time + hscin_time_fp(hit) /
-     >          hscin_sigma(hit)**2
-              num_fp_time = num_fp_time + 1./hscin_sigma(hit)**2
-              sum_plane_time(plane)=sum_plane_time(plane)
-     &             +hscin_time_fp(hit)
-              num_plane_time(plane)=num_plane_time(plane)+1
-              hnum_scin_hit(trk) = hnum_scin_hit(trk) + 1
-              hscin_hit(trk,hnum_scin_hit(trk)) = hit
-              hscin_fptime(trk,hnum_scin_hit(trk)) = hscin_time_fp(hit)
-
-              if (hgood_tdc_pos(trk,hit) .and. hgood_tdc_neg(trk,hit)) then
-                hnum_pmt_hit(trk) = hnum_pmt_hit(trk) + 2
-              else
-                hnum_pmt_hit(trk) = hnum_pmt_hit(trk) + 1
-              endif
-              if (hgood_tdc_pos(trk,hit)) then
-                if (hgood_tdc_neg(trk,hit)) then
-                  hdedx(trk,hnum_scin_hit(trk)) = sqrt(max(0.,
-     &                 hscin_adc_pos(hit)*hscin_adc_neg(hit)))
-                else
-                  hdedx(trk,hnum_scin_hit(trk))=max(0.,hscin_adc_pos(hit))
-                endif
-              else
-                if (hgood_tdc_neg(trk,hit)) then
-                  hdedx(trk,hnum_scin_hit(trk))=max(0.,hscin_adc_neg(hit))
-                else
-                  hdedx(trk,hnum_scin_hit(trk)) = 0.
-                endif
-              endif
+            if (abs(hscin_center_coord(hit)-hscin_trans_coord(hit))
+     &           .lt.(hscin_width(hit)/2.+hscin_slop(hit))) then
+               if(hscin_tdc_pos(hit) .ge. hscin_tdc_min .and.  
+     &              hscin_tdc_pos(hit) .le. hscin_tdc_max) then
+                  adc_ph = hscin_adc_pos(hit)
+                  path = hscin_pos_coord(hit) - hscin_long_coord(hit)
+                  time = hscin_tdc_pos(hit) * hscin_tdc_to_time
+                  time = time - (hscin_zpos(hit)/(29.979*betap) *
+     &                 sqrt(1. + hxp_fp(trk)**2 + hyp_fp(trk)**2))
+                  if(htofusinginvadc.eq.1) then
+                     time_pos(i) = time - 
+     >                    hscin_pos_invadc_offset(hit) -
+     >                    path / hscin_pos_invadc_linear(hit) -
+     >                    hscin_pos_invadc_adc(hit)/
+     >                    sqrt(max(20.,adc_ph))
+                  else
+                     time = time - hscin_pos_phc_coeff(hit) *
+     &                    sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
+                     time = time - path/hscin_vel_light(hit)
+                     time_pos(i) = time - hscin_pos_time_offset(hit)
+                  endif
+                  nfound = nfound + 1
+                  do j=1,200
+                     tmin = 0.5*float(j)                
+                     if(time_pos(i) .gt. tmin .and.
+     >                    time_pos(i) .lt. tmin + time_tolerance) 
+     >                    timehist(j) = timehist(j) + 1
+                  enddo
+               endif
+               if (hscin_tdc_neg(hit).ge.hscin_tdc_min .and. !good tdc
+     >              hscin_tdc_neg(hit).le.hscin_tdc_max) then
+                  adc_ph = hscin_adc_neg(hit)
+                  path = hscin_long_coord(hit) - hscin_neg_coord(hit)
+                  time = hscin_tdc_neg(hit) * hscin_tdc_to_time
+                  time = time - (hscin_zpos(hit)/(29.979*betap) *
+     &                 sqrt(1. + hxp_fp(trk)**2 + hyp_fp(trk)**2))
+                  if(htofusinginvadc.eq.1) then
+c     1/23/08 pyb bug fixed (+ changed to -)
+                     time_neg(i) = time - hscin_neg_invadc_offset(hit) -
+     >                    path / hscin_neg_invadc_linear(hit) -
+     >                    hscin_neg_invadc_adc(hit)/sqrt(max(20.,adc_ph))
+                  else
+                     time = time - hscin_neg_phc_coeff(hit) *
+     &                    sqrt(max(0.,(adc_ph/hscin_neg_minph(hit)-1.)))
+                     time = time - path/hscin_vel_light(hit)
+                     time_neg(i) = time - hscin_neg_time_offset(hit)
+                  endif
+                  nfound = nfound + 1
+                  do j=1,200
+                     tmin = 0.5*float(j)                
+                     if(time_neg(i) .gt. tmin .and.
+     >                    time_neg(i) .lt. tmin + time_tolerance) 
+     >                    timehist(j) = timehist(j)+1
+                  enddo
+               endif
             endif
             
-          endif                 !end of 'if scintillator was on the track'
-          
-**    See if there are any good time measurements in the plane.
-          if (hgood_scin_time(trk,hit)) then
-            hgood_plane_time(trk,plane) = .true. !still in loop over hits.
-          endif
-          
-        enddo                           !end of loop over hit scintillators
+         enddo
+!     Find bin with most hits
+         jmax=0
+         maxhit=0
+!     new next line
+c         oktodump = .false.
+         do j=1,200
+            if(timehist(j) .gt. maxhit) then
+               jmax = j
+               maxhit = timehist(j)
+            endif
+         enddo
+         if(jmax.gt.0) then
+            tmin = 0.5*float(jmax) 
+            do hit = 1 , hscin_tot_hits
+               
+               i=min(1000,hit)
+               if(time_pos(i) .gt. tmin .and.
+     >              time_pos(i) .lt. tmin + time_tolerance) then
+                  keep_pos(i) = .true.
+!     new next 4 lines
+c                  ndumped(hscin_plane_num(hit),hscin_counter_num(hit),1) =  
+c     >                 ndumped(hscin_plane_num(hit),hscin_counter_num(hit),1) + 1
+c                  if(ndumped(hscin_plane_num(hit),
+c     >                 hscin_counter_num(hit),1).lt.ndumpmax) oktodump=.true.
+               endif
+               if(time_neg(i) .gt. tmin .and.
+     >              time_neg(i) .lt. tmin + time_tolerance) then
+                  keep_neg(i) = .true.
+!     new next 4 lines
+c                  ndumped(hscin_plane_num(hit),hscin_counter_num(hit),2) =  
+c     >                 ndumped(hscin_plane_num(hit),hscin_counter_num(hit),2) + 1
+c                  if(ndumped(hscin_plane_num(hit),
+c     >                 hscin_counter_num(hit),2).lt.ndumpmax) oktodump=.true.
+               endif
+               
+               plane = hscin_plane_num(hit)
+               
+               if(plane.gt.2) then
+                  keep_pos(hit) = .false.
+                  keep_neg(hit) = .false.
+               endif
+            enddo
+         endif
 
+! Resume regular tof code, now using time filer from above
+
+c     check oktodump: if any "keep" hit has less than ndumpmax "dumped" events, 
+c     then it is okay to dump this event. However, we only want to increment the number of "dumped" events
+c     when we actually do dump the event.
+
+         oktodump = .false.
+
+         do hit = 1 , hscin_tot_hits
+            hgood_scin_time(trk,hit) = .false.
+            hgood_tdc_pos(trk,hit) = .false.
+            hgood_tdc_neg(trk,hit) = .false.
+            hscin_time(hit) = 0
+            hscin_sigma(hit) = 100.
+            
+            if(keep_pos(hit)) then
+               if(ndumped(hscin_plane_num(hit),hscin_counter_num(hit),1)
+     $              .lt. ndumpmax) oktodump = .true.
+            endif
+
+            if(keep_neg(hit)) then
+               if(ndumped(hscin_plane_num(hit),hscin_counter_num(hit),2)
+     $              .lt. ndumpmax) oktodump = .true.
+            endif
+         enddo
+
+         do hit = 1 , hscin_tot_hits
+
+            plane = hscin_plane_num(hit)
+            
+*     *    Find hit position
+            xhit_coord = hx_fp(trk) + hxp_fp(trk)*hscin_zpos(hit)
+            yhit_coord = hy_fp(trk) + hyp_fp(trk)*hscin_zpos(hit)
+            if (plane.eq.1 .or. plane.eq.3) then !x plane
+               hscin_trans_coord(hit) = xhit_coord
+               hscin_long_coord(hit) = yhit_coord
+            else if (plane.eq.2 .or. plane.eq.4) then !y plane
+               hscin_trans_coord(hit) = yhit_coord
+               hscin_long_coord(hit) = xhit_coord
+            else                !bad plane #.
+               abort = .true.
+               write(errmsg,*) 'hscin_plane_num(',hit,') = ',plane
+               call g_prepend(here,errmsg)
+               return
+            endif
+           
+*     *    Check if scin is on track
+            if (abs(hscin_center_coord(hit)-hscin_trans_coord(hit))
+     &           .gt.(hscin_width(hit)/2.+hscin_slop(hit))) then
+               
+               hscin_on_track(trk,hit) = .false.
+            else
+               hscin_on_track(trk,hit) = .true.
+*     *    Check for good TDC
+               if (hscin_tdc_pos(hit) .ge. hscin_tdc_min .and.  
+     &              hscin_tdc_pos(hit) .le. hscin_tdc_max .and.
+     >              keep_pos(hit)) then
+                  
+*     *    Calculate time for each tube with a good tdc. 'pos' side first.
+                  hgood_tdc_pos(trk,hit) = .true.
+                  hntof = hntof + 1
+                  adc_ph = hscin_adc_pos(hit)
+                  path = hscin_pos_coord(hit) - hscin_long_coord(hit)
+                 
+*     Convert TDC value to time, do pulse height correction, correction for
+*     propogation of light thru scintillator, and offset.
+                  time = hscin_tdc_pos(hit) * hscin_tdc_to_time
+                  if(htofusinginvadc.eq.1) then
+                     hscin_pos_time(hit)=time - hscin_pos_invadc_offset(hit) -
+     >                    path / hscin_pos_invadc_linear(hit) -
+     >                    hscin_pos_invadc_adc(hit)/sqrt(max(20.,adc_ph))
+                  else
+                     time = time - hscin_pos_phc_coeff(hit) *
+     &                    sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
+                     time = time - path/hscin_vel_light(hit)
+                     hscin_pos_time(hit) = time - hscin_pos_time_offset(hit)
+                  endif
+                  zcor =  (hscin_zpos(hit)/(29.979*betap) * sqrt(1.+
+     >                 hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
+                  if(hntracks_fp.eq.1.and.
+     >                 hdumptof.eq.1.and.
+     >                 oktodump.and.
+     >                 timehist(max(1,jmax)).gt.2) then
+                     write(37,'(1x,''1'',2i3,5f10.3)') 
+     >                    hscin_plane_num(hit),
+     >                    hscin_counter_num(hit),
+     >                    hscin_tdc_pos(hit) * hscin_tdc_to_time,
+     >                    path,zcor,
+     >                    hscin_pos_time(hit)-zcor,adc_ph
+c     here is where we should increment ndumped: when we actually dump a hit
+                     ndumped(hscin_plane_num(hit),hscin_counter_num(hit),1) = 
+     $                    ndumped(hscin_plane_num(hit),hscin_counter_num(hit),1) + 1
+
+c     write(39,'(1x,''1'',2i3,8f8.2)') 
+c     >             hscin_plane_num(hit),
+c     >             hscin_counter_num(hit),
+c     >             hscin_tdc_pos(hit) * hscin_tdc_to_time - zcor,
+c     >             hscin_pos_time(hit) - zcor,
+c     >             -1.*hscin_pos_invadc_offset(hit),
+c     >             -1./hscin_pos_invadc_linear(hit),path,
+c     >             -1.*hscin_pos_invadc_adc(hit),
+c     >              1./sqrt(max(20,adc_ph))
+                  endif
+               endif
+
+*     *    Repeat for pmts on 'negative' side
+               if (hscin_tdc_neg(hit).ge.hscin_tdc_min .and. !good tdc
+     1              hscin_tdc_neg(hit).le.hscin_tdc_max.and.
+     >              keep_neg(hit)) then
+                  
+                  hgood_tdc_neg(trk,hit) = .true.
+                  hntof = hntof + 1
+                  adc_ph = hscin_adc_neg(hit)
+                  path = hscin_long_coord(hit) - hscin_neg_coord(hit)
+                  time = hscin_tdc_neg(hit) * hscin_tdc_to_time
+                  if(htofusinginvadc.eq.1) then
+                     hscin_neg_time(hit)=time - hscin_neg_invadc_offset(hit) -
+     >                    path / hscin_neg_invadc_linear(hit) -
+     >                    hscin_neg_invadc_adc(hit)/sqrt(max(20.,adc_ph))
+                  else
+                     time = time - hscin_neg_phc_coeff(hit) *
+     &                    sqrt(max(0.,(adc_ph/hscin_neg_minph(hit)-1.)))
+                     time = time - path/hscin_vel_light(hit)
+                     hscin_neg_time(hit) = time - hscin_neg_time_offset(hit)
+                  endif
+                  zcor =  (hscin_zpos(hit)/(29.979*betap) * sqrt(1.+
+     >                 hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
+                  if(hntracks_fp.eq.1.and.
+     >                 hdumptof.eq.1.and.
+     >                 oktodump.and.
+     >                 timehist(max(1,jmax)).gt.2) then
+                     write(37,'(1x,''2'',2i3,5f10.3)') 
+     >                    hscin_plane_num(hit),
+     >                    hscin_counter_num(hit),
+     >                    hscin_tdc_neg(hit) * hscin_tdc_to_time,
+     >                    path,zcor,
+     >                    hscin_neg_time(hit)-zcor,adc_ph
+c     this is where we should increment ndumped: when we actually dump a hit
+                     ndumped(hscin_plane_num(hit),hscin_counter_num(hit),2) = 
+     $                    ndumped(hscin_plane_num(hit),hscin_counter_num(hit),2) + 1
+c     write(39,'(1x,''1'',2i3,8f8.2)') 
+c     >             hscin_plane_num(hit),
+c     >             hscin_counter_num(hit),
+c     >             hscin_tdc_neg(hit) * hscin_tdc_to_time - zcor,
+c     >             hscin_neg_time(hit) - zcor,
+c     >             -1.*hscin_neg_invadc_offset(hit),
+c     >             -1./hscin_neg_invadc_linear(hit),path,
+c     >             -1.*hscin_neg_invadc_adc(hit),
+c     >              1./sqrt(max(20,adc_ph))
+                  endif
+               endif
+               
+*     *    Calculate ave time for scintillator and error.
+               if (hgood_tdc_pos(trk,hit)) then
+                  if (hgood_tdc_neg(trk,hit)) then
+                     hscin_time(hit) = (hscin_neg_time(hit) + hscin_pos_time(hit))/2.
+                     hscin_sigma(hit) = max(0.1,sqrt(hscin_neg_sigma(hit)**2 + 
+     >                    hscin_pos_sigma(hit)**2)/2.)
+                     hgood_scin_time(trk,hit) = .true.
+                     hntof_pairs = hntof_pairs + 1
+                  else
+                     hscin_time(hit) = hscin_pos_time(hit)
+                     hscin_sigma(hit) = max(0.1,hscin_pos_sigma(hit))
+                     hgood_scin_time(trk,hit) = .true.
+*     hgood_scin_time(trk,hit) = .false.
+                  endif
+               else             ! if hgood_tdc_neg = .false.
+                  if (hgood_tdc_neg(trk,hit)) then
+                     hscin_time(hit) = hscin_neg_time(hit)
+                     hscin_sigma(hit) = max(0.1,hscin_neg_sigma(hit))
+                     hgood_scin_time(trk,hit) = .true.
+*     hgood_scin_time(trk,hit) = .false.
+                  endif
+               endif
+c     Get time at focal plane
+               if (hgood_scin_time(trk,hit)) then
+                  hscin_time_fp(hit) = hscin_time(hit)
+     &                 - (hscin_zpos(hit)/(29.979*betap) *
+     &                 sqrt(1.+hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
+                  sum_fp_time = sum_fp_time + hscin_time_fp(hit) /
+     >                 hscin_sigma(hit)**2
+                  num_fp_time = num_fp_time + 1./hscin_sigma(hit)**2
+                  sum_plane_time(plane)=sum_plane_time(plane)
+     &                 +hscin_time_fp(hit)
+                  num_plane_time(plane)=num_plane_time(plane)+1
+                  hnum_scin_hit(trk) = hnum_scin_hit(trk) + 1
+                  hscin_hit(trk,hnum_scin_hit(trk)) = hit
+                  hscin_fptime(trk,hnum_scin_hit(trk)) = hscin_time_fp(hit)
+                  
+                  if (hgood_tdc_pos(trk,hit) .and. hgood_tdc_neg(trk,hit)) then
+                     hnum_pmt_hit(trk) = hnum_pmt_hit(trk) + 2
+                  else
+                     hnum_pmt_hit(trk) = hnum_pmt_hit(trk) + 1
+                  endif
+                  if (hgood_tdc_pos(trk,hit)) then
+                     if (hgood_tdc_neg(trk,hit)) then
+                        hdedx(trk,hnum_scin_hit(trk)) = sqrt(max(0.,
+     &                       hscin_adc_pos(hit)*hscin_adc_neg(hit)))
+                     else
+                        hdedx(trk,hnum_scin_hit(trk))=max(0.,hscin_adc_pos(hit))
+                     endif
+                  else
+                     if (hgood_tdc_neg(trk,hit)) then
+                        hdedx(trk,hnum_scin_hit(trk))=max(0.,hscin_adc_neg(hit))
+                     else
+                        hdedx(trk,hnum_scin_hit(trk)) = 0.
+                     endif
+                  endif
+               endif
+               
+            endif               !end of 'if scintillator was on the track'
+            
+*     *    See if there are any good time measurements in the plane.
+            if (hgood_scin_time(trk,hit)) then
+               hgood_plane_time(trk,plane) = .true. !still in loop over hits.
+            endif
+            
+         enddo                  !end of loop over hit scintillators
+         
 **    Fit beta if there are enough time measurements (one upper, one lower)
-        if ((hgood_plane_time(trk,1) .or. hgood_plane_time(trk,2)) .and.
-     1       (hgood_plane_time(trk,3) .or. hgood_plane_time(trk,4))) then
-          call h_tof_fit(abort,errmsg,trk) !fit velocity of particle
-          if (abort) then
-            call g_prepend(here,errmsg)
-            return
-          endif
-        else             !cannot fit beta from given time measurements
-          hbeta(trk) = 0.
-          hbeta_chisq(trk) = -1.
-        endif
-        if (num_fp_time .ne. 0) then
-          htime_at_fp(trk) = sum_fp_time / num_fp_time
-        endif
-        
-        do ind=1,4
-          if (num_plane_time(ind) .ne. 0) then
-            h_fptime(ind)=sum_plane_time(ind)/float(num_plane_time(ind))
-          else
-            h_fptime(ind)=1000.*ind
-          endif
-        enddo
-
-        h_fptimedif(1)=h_fptime(1)-h_fptime(2)
-        h_fptimedif(2)=h_fptime(1)-h_fptime(3)
-        h_fptimedif(3)=h_fptime(1)-h_fptime(4)
-        h_fptimedif(4)=h_fptime(2)-h_fptime(3)
-        h_fptimedif(5)=h_fptime(2)-h_fptime(4)
-        h_fptimedif(6)=h_fptime(3)-h_fptime(4)   
+         if ((hgood_plane_time(trk,1) .or. hgood_plane_time(trk,2)) .and.
+     >        (hgood_plane_time(trk,3) .or. hgood_plane_time(trk,4))) then
+            call h_tof_fit(abort,errmsg,trk) !fit velocity of particle
+            if (abort) then
+               call g_prepend(here,errmsg)
+               return
+            endif
+         else                   !cannot fit beta from given time measurements
+            hbeta(trk) = 0.
+            hbeta_chisq(trk) = -1.
+         endif
+         if (num_fp_time .ne. 0) then
+            htime_at_fp(trk) = sum_fp_time / num_fp_time
+         endif
+         
+         do ind=1,4
+            if (num_plane_time(ind) .ne. 0) then
+               h_fptime(ind)=sum_plane_time(ind)/float(num_plane_time(ind))
+            else
+               h_fptime(ind)=1000.*ind
+            endif
+         enddo
+         
+         h_fptimedif(1)=h_fptime(1)-h_fptime(2)
+         h_fptimedif(2)=h_fptime(1)-h_fptime(3)
+         h_fptimedif(3)=h_fptime(1)-h_fptime(4)
+         h_fptimedif(4)=h_fptime(2)-h_fptime(3)
+         h_fptimedif(5)=h_fptime(2)-h_fptime(4)
+         h_fptimedif(6)=h_fptime(3)-h_fptime(4)   
 *     
 *     Dump tof common blocks if (hdebugprinttoftracks is set
-
-        if(hdebugprinttoftracks.ne.0 ) call h_prt_tof(trk)
-
-
-        if(hntracks_fp.gt.1000) then
-          if(trk.eq.1) write(*,'(/1x,''hms tol='',f8.2)') time_tolerance
-          write(*,'(5i3,4L2,7f7.2)') trk,nfound,jmax,timehist(max(1,jmax)),
-     >      hnum_pmt_hit(trk),
-     >      hgood_plane_time(trk,1),hgood_plane_time(trk,3),
-     >      hgood_plane_time(trk,2),hgood_plane_time(trk,4),
-     >      htime_at_fp(trk),hbeta(trk),hbeta_chisq(trk),
-     >      hdelta_tar(trk),hy_tar(trk),hxp_tar(trk),hyp_tar(trk)
-        endif
-        if(hntracks_fp.eq.1.and.
-     >    hdumptof.eq.1.and.
-c changed 6 to 3
-     >     timehist(max(1,jmax)).gt.3) then
-           write(37,'(1x,''0'')') 
-        endif
-      enddo                             !end of loop over tracks
+         
+         if(hdebugprinttoftracks.ne.0 ) call h_prt_tof(trk)
+         
+         
+         if(hntracks_fp.gt.1000) then
+            if(trk.eq.1) write(*,'(/1x,''hms tol='',f8.2)') time_tolerance
+            write(*,'(5i3,4L2,7f7.2)') trk,nfound,jmax,timehist(max(1,jmax)),
+     >           hnum_pmt_hit(trk),
+     >           hgood_plane_time(trk,1),hgood_plane_time(trk,3),
+     >           hgood_plane_time(trk,2),hgood_plane_time(trk,4),
+     >           htime_at_fp(trk),hbeta(trk),hbeta_chisq(trk),
+     >           hdelta_tar(trk),hy_tar(trk),hxp_tar(trk),hyp_tar(trk)
+         endif
+         if(hntracks_fp.eq.1.and.
+     >        hdumptof.eq.1.and.
+     >        timehist(max(1,jmax)).gt.2)
+     >        write(37,'(1x,''0'')') 
+         
+      enddo                     !end of loop over tracks
 
  666  continue
 
