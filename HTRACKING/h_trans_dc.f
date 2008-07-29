@@ -13,6 +13,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.15.24.1  2008/07/29 16:25:58  puckett
+* moved initialization of hdc_center to h_generate geometry, more natural choice
+*
 * Revision 1.15  2002/10/02 13:42:43  saw
 * Check that user hists are defined before filling
 *
@@ -88,14 +91,15 @@
       old_wire = -1
       old_pln = -1
       goodhit = 0
-      
-      if (hdc_center(1).eq.0.) then   !initialize hdc_center if not yet set.
-        do pln = 1, hdc_num_planes
-          chamber = hdc_chamber_planes(pln)
-          hdc_center(pln) = hdc_xcenter(chamber)*sin(hdc_alpha_angle(pln))+
-     &                      hdc_ycenter(chamber)*cos(hdc_alpha_angle(pln))
-        enddo
-      endif
+
+cajp moved this to h_generate_geometry      
+c$$$      if (hdc_center(1).eq.0.) then   !initialize hdc_center if not yet set.
+c$$$        do pln = 1, hdc_num_planes
+c$$$          chamber = hdc_chamber_planes(pln)
+c$$$          hdc_center(pln) = hdc_xcenter(chamber)*sin(hdc_alpha_angle(pln))+
+c$$$     &                      hdc_ycenter(chamber)*cos(hdc_alpha_angle(pln))
+c$$$        enddo
+c$$$      endif
       
 *     Are there any raw hits
       if(hdc_raw_tot_hits.gt.0) then
