@@ -10,6 +10,9 @@
 *
 *     d.f. geesaman           17 January 1994
 * $Log$
+* Revision 1.9.20.1  2008/07/29 16:40:41  puckett
+* added tests on "keep" flag for space point pruning (only called if "too many" tracks on first passs)
+*
 * Revision 1.9  2003/04/01 15:21:33  jones
 *  minor change
 *
@@ -78,6 +81,10 @@
       integer*4  tryflag             ! flag to loop over rest of points
       integer*4  newtrack            ! make a new track
       real*4 dposx,dposy,dposxp,dposyp
+cajp051708
+      real*4 dpost0
+      integer*4 i
+cend ajp051708
       if (hbypass_track_eff_files.eq.0) then
        open(unit=13,file='scalers/htrackstubs.txt',status='unknown',
      $      access='append')
@@ -91,11 +98,21 @@ c
       ABORT= .FALSE.
       err=' '
       hntracks_fp=0
+
+      do i=1,2
+       nhitstubminx(i) = 0
+       nhitstubminy(i) = 0
+       nhitstubminxp(i) = 0
+      enddo
+
       if(hsingle_stub.eq.0 ) then
 *     loop over all pairs of space points
        if(hnspace_points_tot.ge.2) then ! return if less than 2 space points
         do isp1=1,hnspace_points_tot-1  ! loop over all points
 *     is this point all ready associated with a track
+*     add test on "keep" flag from space point pruning routine:
+         if(.not.h_do_prune_stubs.or.h_keep_stub(isp1)) then ! space point passed prune tests or skip pruning
+
          tryflag=1
          if(hntracks_fp.gt.0) then
           do itrack=1,hntracks_fp           
@@ -112,22 +129,66 @@ c
          if( tryflag .eq.1) then
           newtrack=1
           do isp2=isp1+1,hnspace_points_tot
+           if(.not.h_do_prune_stubs.or.h_keep_stub(isp2)) then
 *     are these stubs in the same chamber. If so then skip
            if(h_chamnum(isp1).ne.h_chamnum(isp2)) then
 *     does this stub match
-
+            
             dposx = hbeststub(isp2,1)-hbeststub(isp1,1)
             dposy = hbeststub(isp2,2)-hbeststub(isp1,2)
             dposxp= hbeststub(isp2,3)-hbeststub(isp1,3)
             dposyp= hbeststub(isp2,4)-hbeststub(isp1,4)
-
+            if(h_find_stub_t0) then
+             dpost0= hbeststub(isp2,5)-hbeststub(isp1,5)
+            endif
 ******************************************************
-            if (abs(dposx).LT.abs(hstubminx)) hstubminx = dposx
-            if (abs(dposy).LT.abs(hstubminy)) hstubminy = dposy
-            if (abs(dposxp).LT.abs(hstubminxp)) hstubminxp = dposxp
+            if (abs(dposx).LT.abs(hstubminx)) then 
+             hstubminx = dposx
+             if(h_chamnum(isp1).eq.1) then
+              nhitstubminx(1) = hspace_point_hits(isp1,1)
+              nhitstubminx(2) = hspace_point_hits(isp2,1)
+              xstubminx(1) = hbeststub(isp1,1)
+              xstubminx(2) = hbeststub(isp2,1)
+             else 
+              nhitstubminx(1) = hspace_point_hits(isp2,1)
+              nhitstubminx(2) = hspace_point_hits(isp1,1)
+              xstubminx(1) = hbeststub(isp2,1)
+              xstubminx(2) = hbeststub(isp1,1)
+             endif
+            endif
+            if (abs(dposy).LT.abs(hstubminy)) then
+             hstubminy = dposy
+             if(h_chamnum(isp1).eq.1) then
+              nhitstubminy(1) = hspace_point_hits(isp1,1)
+              nhitstubminy(2) = hspace_point_hits(isp2,1)
+              ystubminy(1) = hbeststub(isp1,2)
+              ystubminy(2) = hbeststub(isp2,2)
+             else 
+              nhitstubminy(1) = hspace_point_hits(isp2,1)
+              nhitstubminy(2) = hspace_point_hits(isp1,1)
+              ystubminy(1) = hbeststub(isp2,2)
+              ystubminy(2) = hbeststub(isp1,2)
+             endif
+            endif
+            if (abs(dposxp).LT.abs(hstubminxp)) then
+             hstubminxp = dposxp
+             if(h_chamnum(isp1).eq.1) then
+              nhitstubminxp(1) = hspace_point_hits(isp1,1)
+              nhitstubminxp(2) = hspace_point_hits(isp2,1)
+              xpstubminxp(1) = hbeststub(isp1,3)
+              xpstubminxp(2) = hbeststub(isp2,3)
+             else
+              nhitstubminxp(1) = hspace_point_hits(isp2,1)
+              nhitstubminxp(2) = hspace_point_hits(isp1,1)
+              xpstubminxp(1) = hbeststub(isp2,3)
+              xpstubminxp(2) = hbeststub(isp1,3)
+             endif
+            endif
             if (abs(dposyp).LT.abs(hstubminyp)) hstubminyp = dposyp
-      if (hbypass_track_eff_files.eq.0) then
-       if (abs(hstubminx) .gt. hxt_track_criterion) then
+            if (h_find_stub_t0.and.abs(dpost0).lt.abs(hstubmint0)) 
+     $           hstubmint0 = dpost0
+       if (hbypass_track_eff_files.eq.0) then
+        if (abs(hstubminx) .gt. hxt_track_criterion) then
         write(13,*) 'event # ',gen_event_ID_number,
      $       ' hstubminx = ',hstubminx
        endif
@@ -149,13 +210,15 @@ c
             if      (abs(dposx) .lt. hxt_track_criterion
      &         .and. abs(dposy) .lt. hyt_track_criterion
      &         .and. abs(dposxp).lt. hxpt_track_criterion
-     &         .and. abs(dposyp).lt. hypt_track_criterion) then
+     &         .and. abs(dposyp).lt. hypt_track_criterion 
+     $     .and.(abs(dpost0).lt.h_stub_t0_track_criterion.or..not.
+     $     h_find_stub_t0)) then
              if(newtrack.eq.1) then         
-             hstubtest=1
+              hstubtest=1
 *     make a new track
               if(hntracks_fp.lt.hntracks_max_fp) then ! are there too many 
                hntracks_fp=hntracks_fp+1 ! increment the number of tracks
-               sptracks=1               ! one track with this seed
+               sptracks=1       ! one track with this seed
                stub_tracks(1)=hntracks_fp
                track_space_points(hntracks_fp,1)=2
                track_space_points(hntracks_fp,2)=isp1
@@ -166,11 +229,16 @@ c
                hy_sp2(hntracks_fp)=hbeststub(isp2,2)
                hxp_sp1(hntracks_fp)=hbeststub(isp1,3)
                hxp_sp2(hntracks_fp)=hbeststub(isp2,3)
-               newtrack=0               ! make no more tracks in this loop
-              else                      !!  MEC - added the next 3 lines to 
-               hntracks_fp = 0          !!  fail events with more than the 
-               return                   !!  Max # of allowed tracks.
-              endif                     ! end test on too many tracks
+               hchi2_sp1(hntracks_fp) = h_stub_chi2perdf(isp1)
+               hchi2_sp2(hntracks_fp) = h_stub_chi2perdf(isp2)
+
+               newtrack=0       ! make no more tracks in this loop
+              else              !!  MEC - added the next 3 lines to 
+               hntracks_fp = 0  !!  fail events with more than the 
+               h_fail_too_many_tracks = .true.
+c               write(*,*) 'Too many tracks found in FP, failing event'
+               return           !!  Max # of allowed tracks.
+              endif             ! end test on too many tracks
              else
 *     check if there is another space point in same chamber
               itrack=0
@@ -187,17 +255,21 @@ c
                 if(isp2.eq.track_space_points(track,isp+1)) then
                  duppoint=1
                 endif                   
-               enddo                    ! end loop over sp in tracks with isp1
+               enddo            ! end loop over sp in tracks with isp1
 *     if there is no other space point in this chamber
 *     add this space point to current track(2)
                if(duppoint.eq.0) then
-                if(spoint.eq.0) then
+                if(spoint.eq.0) then ! It should be logically impossible to get to this point!!!!
                  spindex=track_space_points(track,1)+1
                  track_space_points(track,1)= spindex
                  track_space_points(track,spindex+1)=isp2
+
+                 write(*,*) 'SHOULD NOT BE HERE'
+
 *     if there is another point in the same chamber in this track
 *     create a new track with all the same space points except spoint
                 else
+c                 write(*,*) 'found another track with point',isp1
                  if(hntracks_fp.lt.hntracks_max_fp) then ! are there too many 
                   hntracks_fp=hntracks_fp+1 ! increment the number of tracks
                   sptracks= sptracks+1  ! one track with this seed
@@ -212,21 +284,25 @@ c
                     track_space_points(hntracks_fp,isp+1)= isp2
                    endif                ! end check for dup on copy
                   enddo                 ! end copy of track
-                 else                      !!  MEC - added the next 3 lines to 
-                  hntracks_fp = 0          !!  fail events with more than the 
-                  return                   !!  Max # of allowed tracks.
-                 endif                  ! end if on too many tracks
-                endif                   ! end if on same chamber
-               endif                    ! end if on  duplicate point
+                 else           !!  MEC - added the next 3 lines to 
+                  h_fail_too_many_tracks = .true.
+c                  write(*,*) 'Too many tracks found in FP, failing event'
+                  hntracks_fp = 0 !!  fail events with more than the 
+                  return        !!  Max # of allowed tracks.
+                 endif          ! end if on too many tracks
+                endif           ! end if on same chamber
+               endif            ! end if on  duplicate point
               enddo                     ! end do while over tracks with isp1
              endif
             endif
            endif                        ! end test on same chamber
+          endif                         ! (AJP) end test on "keep" flag or skip sp pruning
           enddo                         ! end loop over new space points
-         endif                          ! end test on tryflag
-        enddo                           ! end outer loop over space points
-       endif                            ! end if on <2 space points
-      else                              ! if hsingle_stub .ne. 0
+         endif                  ! end test on tryflag
+        endif                           ! (AJP) end test on keep flag or skip sp pruning
+         enddo                    ! end outer loop over space points
+        endif                     ! end if on <2 space points
+      else                      ! if hsingle_stub .ne. 0
 *     when hsingle_stub is set, make each space point a track
 *     This will have poor resolution but may be appropriate for debugging
 *
@@ -236,11 +312,13 @@ c
          track_space_points(hntracks_fp,1)= 1
          track_space_points(hntracks_fp,2)= isp1
         else                      !!  MEC - added the next 3 lines to 
-         hntracks_fp = 0          !!  fail events with more than the 
+         h_fail_too_many_tracks = .true.
+c         write(*,*) 'Too many tracks found in FP, failing event'
+         hntracks_fp = 0        !!  fail events with more than the 
          return                   !!  Max # of allowed tracks.
         endif                           ! end if on too many tracks
        enddo                            ! end loop over all space points
-      endif                             ! end test on hsingle_stub 
+      endif                     ! end test on hsingle_stub 
 *     now list all hits on a track
       if(hntracks_fp.gt.0)   then
        do itrack=1,hntracks_fp          ! loop over all tracks
@@ -252,8 +330,12 @@ c
           if(hntrack_hits(itrack,1).lt.hntrackhits_max) then 
            hntrack_hits(itrack,1)=hntrack_hits(itrack,1)+1
            hntrack_hits(itrack,hntrack_hits(itrack,1)+1)=
-     &          hspace_point_hits(spindex,ihit+2)                
-          endif                         ! end test on too many hits
+     &          hspace_point_hits(spindex,ihit+2)
+c     ajp get left-right combination of hits on track from 
+c     space points
+           htrack_leftright(itrack,hntrack_hits(itrack,1))=
+     $          hspace_point_leftright(spindex,ihit)
+          endif                 ! end test on too many hits
          enddo                          ! end loop over space point hits
         enddo                           ! end loop over space points
        enddo                            ! end loop over all tracks
@@ -261,6 +343,15 @@ c
       if(hdebuglinkstubs.ne.0) then
        call h_print_links
       endif
+
+      if(hdebugprintstubs.ne.0) then
+       call h_print_space_points_ajp(abort,err)
+       if(ABORT) then
+        call G_add_path(here,err)
+        return
+       endif
+      endif
+
       return
       end
 *********
