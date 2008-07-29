@@ -115,7 +115,8 @@ c$$$      endif
      $          'eblock(25,nclust),ablock(25,nclust),'//
      $          'xmoment(nclust),ymoment(nclust),'//
      $          'eclust(nclust),aclust(nclust),'//
-     $          'xclust(nclust),yclust(nclust)')
+     $          'xclust(nclust),yclust(nclust),'//
+     $          'keepclst(nclust):L')
            if(bbypass_calc_cluster_time.eq.0) then
               if(bbypass_sum8.eq.0) then
                  call HBNAME(id,'clusttdc',nclust8,
