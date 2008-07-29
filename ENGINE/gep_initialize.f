@@ -27,14 +27,24 @@
 
 c     initialize coincidence timing window parameters if the user hasn't defined something reasonable:
       if(gep_h1time_slop.lt.10.or.gep_h1time_slop.gt.1000.) then
-         gep_h1time_slop=30.
+         gep_h1time_slop=100.
       endif
       if(gep_h2time_slop.lt.10..or.gep_h2time_slop.gt.1000.) then
-         gep_h2time_slop=30.
+         gep_h2time_slop=100.
       endif
 
       if(gep_btime_slop.lt.10.or.gep_btime_slop.gt.1000.) then
-         gep_btime_slop=30.
+         gep_btime_slop=100.
+      endif
+
+      if(gep_htrig_t0(1).le.gep_htrig_cut(1).or.gep_htrig_t0(1).ge.
+     $     gep_htrig_cut(2)) then
+         gep_htrig_t0(1) = .5 * (gep_htrig_cut(1) + gep_htrig_cut(2))
+      endif
+      
+      if(gep_htrig_t0(2).le.gep_htrig_cut(3).or.gep_htrig_t0(2).ge.
+     $     gep_htrig_cut(4)) then
+         gep_htrig_t0(2) = .5 * (gep_htrig_cut(3) + gep_htrig_cut(4))
       endif
 
       IF(ABORT) THEN
