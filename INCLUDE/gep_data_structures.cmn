@@ -54,6 +54,9 @@ c     event selection cuts for BigCal calibration:
      $     gep_bcalib_cut_elastic,
      $     gep_bcalib_cut_ehms
 c     coincidence timing window parameters (weed out background hits)
+      integer*4 h_use_cointime_cut
+      integer*4 b_use_cointime_cut
+      integer*4 h_correct_start_time
       real*4 gep_h1time_center
       real*4 gep_h2time_center
       real*4 gep_h1time_slop
@@ -61,9 +64,13 @@ c     coincidence timing window parameters (weed out background hits)
       real*4 gep_btime_center
       real*4 gep_btime_elastic(2)
       real*4 gep_btime_slop
-      real*4 gep_htrig_delay ! typically 16 ns
+      real*4 gep_htrig_cut(4)
+      real*4 gep_htrig_t0(2)
 
       common/gep_coin_time_window/
+     $     h_use_cointime_cut,
+     $     b_use_cointime_cut,
+     $     h_correct_start_time,
      $     gep_h1time_center,
      $     gep_h2time_center,
      $     gep_h1time_slop,
@@ -71,7 +78,8 @@ c     coincidence timing window parameters (weed out background hits)
      $     gep_btime_center,
      $     gep_btime_elastic,
      $     gep_btime_slop,
-     $     gep_htrig_delay
+     $     gep_htrig_cut,
+     $     gep_htrig_t0
 
 c     bypass switches
       integer*4 gep_bypass_coin1 ! suppress COIN1 triggers
@@ -99,6 +107,8 @@ c     bypass switches
 *     CTPTYPE=event
 *
       logical gep_good_calib_event
+      logical b_passed_cointime_cut
+      logical h_passed_cointime_cut
       integer*4 ntrigH1,ntrigH2,ntrigB
       real*4 GEP_ctime_hms ! HMS coincidence time
       real*4 GEP_ctime_cal ! BigCal coincidence time
@@ -148,6 +158,8 @@ c     system for the polarization measurement.
       
       common/GEPBLOCK/
      $     gep_good_calib_event,
+     $     b_passed_cointime_cut,
+     $     h_passed_cointime_cut,
      $     ntrigH1,
      $     ntrigH2,
      $     ntrigB,
