@@ -56,6 +56,8 @@ c     just make sure that bigcal_end_time is bigger than bigcal_window_center!
          bigcal_end_time = 1000. ! always use same value for calibration
          bigcal_window_center = 185. ! always use same value for calibration purposes.
          b_timing_cut = 500. ! widen up cut
+         gep_sigma_tdiff = 1000.
+         gep_bcalib_cut_ctime = 1000.
       endif
 
       do i=1,bigcal_max_tdc
