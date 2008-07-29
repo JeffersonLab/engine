@@ -8,6 +8,9 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change HPLANE_PARAM to individual arrays
 * $Log$
+* Revision 1.9.24.2  2008/07/29 16:43:28  puckett
+* moved initialization of hdc_center here and added extra debugging output
+*
 * Revision 1.9.24.1  2007/10/22 15:23:06  cdaq
 * *** empty log message ***
 *
@@ -43,7 +46,8 @@
 *
 *     local variables
       logical missing_card_no
-      integer*4 pln,i,j,k,pindex,ich,icounter
+      integer*4 pln,i,j,k,pindex,ich,icounter,chamber
+      real*4 wirecenter
       real*4 cosalpha,sinalpha,cosbeta,sinbeta,cosgamma,singamma,z0
       real*4 stubxchi,stubxpsi,stubychi,stubypsi
       real*4 sumsqupsi,sumsquchi,sumcross,denom
@@ -84,6 +88,11 @@
         sinbeta  = sin(hdc_beta_angle(pln))
         cosgamma = cos(hdc_gamma_angle(pln))
         singamma = sin(hdc_gamma_angle(pln))
+        
+        chamber = hdc_chamber_planes(pln)
+        hdc_center(pln) = hdc_xcenter(chamber)*sin(hdc_alpha_angle(pln))+
+     &       hdc_ycenter(chamber)*cos(hdc_alpha_angle(pln))
+        
 *
         hsinbeta(pln) = sinbeta
         hcosbeta(pln) = cosbeta
@@ -344,7 +353,7 @@
         HAAINV3(3,3,pindex)=(HAA3(1,1)*HAA3(2,2)-HAA3(1,2)**2)/HDET3(pindex
      $       )
 
-      enddo                             !end pindex loop
+      enddo                     !end pindex loop
 
 *     for debug write out all parameters
       if(hdebugflaggeometry.ne.0) then
@@ -362,6 +371,23 @@
      &                     hdc_nrwire(j),
      &                     hdc_central_wire(j),
      &                     hdc_sigma(j),j=1,hdc_num_planes)
+ 1005   format(A32)
+ 1006   format(2i12,f12.6)
+        write(hluno,1005) 'HDC WIRE POSITIONS:'
+        do j=1,hdc_num_planes
+           write(hluno,1005) 'plane, wire, center='
+           do k=1,hdc_nrwire(j)
+              if(hdc_wire_counting(j).eq.0) then
+                 wirecenter = hdc_pitch(j) * (float(k)-hdc_central_wire(j))
+     $                - hdc_center(j)
+              else
+                 wirecenter = hdc_pitch(j) * (float(hdc_nrwire(j)+1- k) 
+     $                - hdc_central_wire(j)) - hdc_center(j)
+              endif
+              write(hluno,1006) j,k,wirecenter 
+           enddo
+        enddo
+
 1000  format(1x,i4,f9.4,3f10.6,f8.4,i6,f10.4,f10.6)
         write(hluno,'(''  plane'',
      &        ''  hzchi     hzpsi     hxchi     hxpsi     hychi     hypsi'')')
