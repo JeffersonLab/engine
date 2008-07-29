@@ -9,6 +9,7 @@
       integer*4 bbypass_calc_cluster_time
       integer*4 bbypass_calc_shower_coord
       integer*4 bbypass_prune_clusters
+      integer*4 b_prune_flags(8)
       integer*4 bbypass_calc_physics
       integer*4 bdebug_print_bad
       integer*4 bdebug_print_adc
@@ -24,8 +25,6 @@
       integer*4 b_suppress_annoying_pulser
       integer*4 b_recon_using_map
       integer*4 b_fix_double_ped
-      integer*4 b_use_cointime_cut
-      logical   b_passed_cointime_cut
 c      integer*4 bmake_tdc_hist
 c      integer*4 bmake_ttdc_hist
       integer*4 bluno ! logical unit number for debugging output
@@ -38,6 +37,7 @@ c      integer*4 bmake_ttdc_hist
      $     bbypass_calc_cluster_time,
      $     bbypass_calc_shower_coord,
      $     bbypass_prune_clusters,
+     $     b_prune_flags,
      $     bbypass_calc_physics,
      $     bdebug_print_bad,
      $     bdebug_print_adc,
@@ -53,7 +53,5 @@ c      integer*4 bmake_ttdc_hist
      $     b_suppress_annoying_pulser,
      $     b_recon_using_map,
      $     b_fix_double_ped,
-     $     b_use_cointime_cut,
-     $     b_passed_cointime_cut,
      $     bluno
       
