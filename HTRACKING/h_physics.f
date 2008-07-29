@@ -20,6 +20,9 @@
 *-                           Dummy Shell routine
 *
 * $Log$
+* Revision 1.23.20.5  2008/07/29 16:39:31  puckett
+* added calculation of new variable hdc_sing_leftright and other misc stuff
+*
 * Revision 1.23.20.4  2008/05/14 20:34:09  cdaq
 * removed 3pi/2 shift in hsphi
 *
@@ -213,6 +216,20 @@
       hsy_sp2      = hy_sp2(itrkfp)
       hsxp_sp2     = hxp_sp2(itrkfp)
 
+c (AJP)
+      hs1stubchi2 = hchi2_sp1(itrkfp)
+      hs2stubchi2 = hchi2_sp2(itrkfp)
+
+c$$$      if(hstubtest.eq.0) then
+c$$$         write(*,*) 'found track passing two of three stub tests',
+c$$$     $        '(xfp,yfp,xpfp,ypfp)=(',hsx_fp,',',hsy_fp,',',hsxp_fp,',',
+c$$$     $        hsyp_fp,')'
+c$$$         write(*,*) '(xtar,ytar,xptar,yptar,delta)=(',hsx_tar,',',hsy_tar,',',
+c$$$     $        hsxp_tar,',',hsyp_tar,',',hsdelta,')'
+c$$$         write(*,*) 'chi2 per degree = ',hschi2perdeg
+c$$$      endif
+c (AJP)
+
       if(hidscintimes.gt.0) then
         do ihit=1,hnum_scin_hit(itrkfp)
           call hf1(hidscintimes,hscin_fptime(itrkfp,ihit),1.)
@@ -289,6 +306,23 @@ c      write(*,*) 'path length =',hspathlength
         hdc_sing_res(ip)     = hdc_single_residual(itrkfp,ip)
         hsdc_track_coord(ip) = hdc_track_coord(itrkfp,ip)
       enddo
+
+      do ip= 1, hdc_num_planes
+         hdc_sing_leftright(ip) = 0.
+      enddo
+      
+      do ip=1,hntrack_hits(itrkfp,1)
+         ihit = hntrack_hits(itrkfp,ip+1)
+c$$$  
+c$$$         if(hdc_wire_coord(ihit)-hdc_wire_center(ihit).ge.0.) then
+c$$$            hdc_sing_leftright(hdc_plane_num(ihit)) = 1.
+c$$$         else
+c$$$            hdc_sing_leftright(hdc_plane_num(ihit)) = -1.
+c$$$         endif
+         hdc_sing_leftright(hdc_plane_num(ihit)) = htrack_leftright(itrkfp,ip)
+
+      enddo
+      
 
       if (hntrack_hits(itrkfp,1).eq.12 .and. hschi2perdeg.le.4) then
         xdist = hsx_dc1
