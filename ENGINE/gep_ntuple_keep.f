@@ -125,6 +125,8 @@
       m=m+1
       gep_ntuple_contents(m) = GEP_eclust
       m=m+1
+      gep_ntuple_contents(m) = GEP_aclust
+      m=m+1
       gep_ntuple_contents(m) = GEP_epsilon
       m=m+1
       gep_ntuple_contents(m) = GEP_etheta_deg
