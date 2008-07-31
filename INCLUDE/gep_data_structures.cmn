@@ -102,6 +102,17 @@ c     bypass switches
      $     btrig_phc_p3,
      $     btrig_phc_minph,
      $     btrig_phc_maxph
+c     use raster info for vertex correction to BigCal angles? Let the user decide:
+      integer*4 gep_use_frx ! if nonzero, use fast raster x for IP x position
+      integer*4 gep_use_fry ! if nonzero, use fast raster y for IP y position
+      integer*4 gep_use_xbeam_zcorr ! if nonzero, correct z of IP for xbeam in addition to ytar,yptar
+      real*4 gep_zbeam_low,gep_zbeam_high ! if zbeam lies outside these limits, don't correct BigCal angle for zbeam
+      common/gep_beam_corr/
+     $     gep_use_frx,
+     $     gep_use_fry,
+     $     gep_use_xbeam_zcorr,
+     $     gep_zbeam_low,
+     $     gep_zbeam_high
 
 *
 *     CTPTYPE=event
@@ -138,6 +149,7 @@ c     bypass switches
       real*4 GEP_xclust ! best cluster horizontal position in BigCal
       real*4 GEP_yclust ! best cluster vertical position in BigCal
       real*4 GEP_eclust ! best cluster energy
+      real*4 GEP_aclust ! best cluster ADC sum
       real*4 GEP_epsilon        ! virtual photon long. polarization, usual definition
       real*4 GEP_etheta_deg ! electron scattering angle in degrees
       real*4 GEP_ptheta_deg ! proton scattering angle in degrees
@@ -187,6 +199,7 @@ c     system for the polarization measurement.
      $     GEP_xclust,
      $     GEP_yclust,
      $     GEP_eclust,
+     $     GEP_aclust,
      $     GEP_epsilon,
      $     GEP_etheta_deg,
      $     GEP_ptheta_deg,
