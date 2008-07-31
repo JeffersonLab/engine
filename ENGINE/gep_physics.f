@@ -101,6 +101,11 @@ c     if the user has not defined something reasonable, then set by hand here:
          gep_sigma_pmiss = 2.e-3
       endif
 
+c     if the user hasn't defined something reasonable, set defaults here:
+      
+      gep_zbeam_low = min(-10.,gep_zbeam_low)
+      gep_zbeam_high = max(15.,gep_zbeam_high)
+
       if(gen_bigcal_mc.eq.3) then ! fill HMS info from Monte Carlo:
          hsnum_fptrack = 1
          hsp = pp_mc
@@ -239,9 +244,30 @@ c     vertex coordinates expressed in BigCal coordinate system
 c     turns out that beam x and y coordinates are the same as BigCal coordinates
 c     also correct the z vertex position for raster x:
 
-      vx = gbeam_x ! horizontal toward BigCal
-      vy = gbeam_y ! vertical up (target x is vertical down.)
-      vz = hszbeam - vx / tan(htheta_lab*PI/180. - hsyp_tar)
+      vx = gbeam_xoff - gspec_xoff
+      vy = gbeam_yoff - gspec_yoff
+      vz = hszbeam
+
+c      vx = gbeam_x
+c      vy = gbeam_y
+c      vz = hszbeam
+      
+      if(gep_use_frx.ne.0) then
+         vx = vx + gfrx
+      endif
+      
+      if(gep_use_fry.ne.0) then
+         vy = vy + gfry
+      endif
+      
+      if(gep_use_xbeam_zcorr.ne.0) then
+         vz = vz - vx / tan(htheta_lab*PI/180. - hsyp_tar)
+      endif
+
+c     check for reasonable zbeam:
+      if(vz.lt.gep_zbeam_low.or.vz.gt.gep_zbeam_high) then 
+         vz = 0.
+      endif      
 
       !write(*,*) 'vertex xyz=',vx,vy,vz
 
@@ -387,11 +413,12 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       GEP_xptar_p = HSXP_TAR
       GEP_yptar_p = HSYP_TAR
       GEP_ytar_p = HSY_TAR
-      GEP_xbeam = gbeam_x
-      GEP_ybeam = gbeam_y
+      GEP_xbeam = gbeam_xoff - gspec_xoff + gfrx ! always use this formula for the ntuple, whether or not we use raster in reconstruction
+      GEP_ybeam = gbeam_yoff - gspec_yoff + gfry ! always use this formula for the ntuple, whether or not we use raster in reconstruction
       GEP_xclust = bigcal_all_clstr_x(ibest_cal) ! raw xclust in BigCal coordinates
       GEP_yclust = bigcal_all_clstr_y(ibest_cal) ! raw yclust in BigCal coordinates
       GEP_eclust = bigcal_energy
+      GEP_aclust = bigcal_all_clstr_atot(ibest_cal) ! ADC sum for best cluster
       GEP_epsilon = 1./(1.+2.*(1.+GEP_Q2/(4.*Mp**2))*(tan(bigcal_thetarad/2.))**2)
       GEP_etheta_deg = bigcal_thetarad * 180./PI
       GEP_ptheta_deg = hstheta * 180./PI
