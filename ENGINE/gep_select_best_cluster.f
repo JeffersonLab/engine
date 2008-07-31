@@ -108,10 +108,26 @@ c$$$      nu_pth = Q2_pth / (2.*Mp)
       eyhat = -sin(eth_pp) * cos(eph_pp)
       ezhat = cos(eth_pp)
 
-      vx = gbeam_x
-      vy = gbeam_y
-      vz = hsy_tar * ( coshthetas / tan(htheta_lab * PI / 180.-hsyp_tar)
-     $     + sinhthetas ) - vx / tan(htheta_lab*PI/180. - hsyp_tar)
+      vx = gbeam_xoff - gspec_xoff ! average beam position
+      vy = gbeam_yoff - gspec_yoff ! average beam position
+      vz = hszbeam ! HMS zbeam calculated from ytar and yptar
+
+      if(gep_use_frx.ne.0) then ! use raster x in vertex correction to BigCal angles
+         vx = vx + gfrx
+      endif
+      
+      if(gep_use_fry.ne.0) then ! use raster y in vertex correction to BigCal angles
+         vy = vy + gfry
+      endif
+      
+      if(gep_use_xbeam_zcorr.ne.0) then ! correct vertex z for beam x (can be as large as 1-2 cm for small htheta_lab, large xbeam)
+         vz = vz - vx / tan(htheta_lab*PI/180. - hsyp_tar)
+      endif
+
+c     check for reasonable zbeam:
+      if(vz.lt.gep_zbeam_low.or.vz.gt.gep_zbeam_high) then 
+         vz = 0.
+      endif
 
 c     calculate intersection point with the ideal (un-rotated) plane of BigCal at 
 c     an angle of btheta and a distance of bR
