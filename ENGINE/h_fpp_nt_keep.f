@@ -32,7 +32,7 @@
 *
       integer iSet,iTrk,iCham,iLay,iWire,cluster
       integer iHit,iRaw
-      integer n
+      integer n, trkoffset
 *
 *--------------------------------------------------------
       err= ' '
@@ -89,6 +89,7 @@ c      WRITE(*,*)HFPP_RAW_TOT_HITS
 *******  FPP hits
 
       n = 0
+      trkoffset = 0
       do iSet=1,2  ! Upstream & downstream polarimeter
        do iCham=1, H_FPP_N_DCINSET	! record all 1st hits on all wires (=all cluster hits)
 	do iLay=1, H_FPP_N_DCLAYERS
@@ -97,27 +98,19 @@ c      WRITE(*,*)HFPP_RAW_TOT_HITS
 	    iTrk  = HFPP_ClusterinTrack(iSet,iCham,iLay,cluster)
             do iHit=1,HFPP_nHitsinCluster(iSet,iCham,iLay,cluster)
               n = min(n+1,MAX_cwn_goodhits)
-c              write(*,*)iSet,iCham,iLay,cluster,iHit,n
               iRaw = HFPP_Clusters(iSet,iCham,iLay,cluster,iHit)
 	      iWire = HFPP_raw_wire(iRaw)
-c              write(*,*)iraw
-c                write(*,*)iSet,HFPP_raw_plane(iRaw),HFPP_raw_wire(iRaw),
-c     >              HFPP_HitTime(iRaw)  
               cwnFPP_Hit1_pol(n)    = iSet
               cwnFPP_Hit1_layer(n)  = HFPP_raw_plane(iRaw)
               cwnFPP_Hit1_wire(n)   = iWire
               cwnFPP_Hit1_d_HMS(n)  = HFPP_dHMS(iSet,iCham,iLay,cluster,iHit)
-cBAD!              cwnFPP_Hit1_time(n)   = HFPP_HitTime(iRaw)
 	      if (iTrk.le.0) then
                 cwnFPP_Hit1_itrack(n) = 0
                 cwnFPP_Hit1_time(n)   = H_FPP_BAD_TIME
 	        cwnFPP_Hit1_drift(n)  = H_FPP_BAD_DRIFT
 	        cwnFPP_Hit1_resid(n)  = H_FPP_BAD_DRIFT
 	      else
-c                write(*,*)iTrk,
-c     >                HFPP_drift_dist(iSet,iCham,iLay,iWire),
-c     >                HFPP_track_residual(iSet,iCham,iLay,iTrk)
-	        cwnFPP_Hit1_itrack(n) = iTrk
+	        cwnFPP_Hit1_itrack(n) = iTrk + trkoffset   !linear track ID space!
                 cwnFPP_Hit1_time(n)   = HFPP_drift_time(iSet,iCham,iLay,iWire)
 	        cwnFPP_Hit1_drift(n)  = HFPP_drift_dist(iSet,iCham,iLay,iWire)
 	        cwnFPP_Hit1_resid(n)  = HFPP_track_residual(iSet,iCham,iLay,iTrk)
@@ -127,6 +120,7 @@ c     >                HFPP_track_residual(iSet,iCham,iLay,iTrk)
 
 	enddo !iLay
        enddo !iCham
+       trkoffset = trkoffset + HFPP_N_tracks(iSet)
       enddo !iSet
       cwnFPP_Nhits1 = n
 
@@ -136,22 +130,6 @@ c     >                HFPP_track_residual(iSet,iCham,iLay,iTrk)
       n=0
       do iSet=1,2  ! Upstream & downstream polarimeter
        do iTrk=1,HFPP_N_tracks(iSet)
-c         write(*,*)iSet,iTrk,HFPP_N_tracks(iSet)
-c         write(*,*)iSet,iTrk
-c         write(*,*)HFPP_track_Nlayers(iSet,iTrk)
-c         write(*,*)HFPP_track_rough(iSet,iTrk,1),
-c     >          HFPP_track_rough(iSet,iTrk,2),
-c     >          HFPP_track_rough(iSet,iTrk,3),
-c     >          HFPP_track_rough(iSet,iTrk,4)
-c         write(*,*)HFPP_track_dx(iSet,iTrk),
-c     >          HFPP_track_x(iSet,iTrk),
-c     >          HFPP_track_dy(iSet,iTrk),
-c     >          HFPP_track_y(iSet,iTrk)
-c         write(*,*)HFPP_track_chi2(iSet,iTrk),
-c     >          HFPP_track_zclose(iSet,iTrk),
-c     >          HFPP_track_sclose(iSet,iTrk)
-c         write(*,*)HFPP_track_theta(iSet,iTrk),
-c     >          HFPP_track_phi(iSet,iTrk)
          n=n+1      
 	 cwnFPP_trk_pol(n) = iSet
 	 cwnFPP_trk_num(n) = iTrk
@@ -176,9 +154,6 @@ c     >          HFPP_track_phi(iSet,iTrk)
 
          cwnFPP_theta(n)       = HFPP_track_theta(iSet,iTrk)
          cwnFPP_phi(n)         = HFPP_track_phi(iSet,iTrk)
-         
-cfrw     print *,gen_event_ID_number,n,iSet,cwnFPP_full_mx(n),cwnFPP_full_bx(n),cwnFPP_full_my(n),cwnFPP_full_by(n)
-         
        enddo !iTrk
       enddo !iSet
       cwnFPP_Ntracks = n
