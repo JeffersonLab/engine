@@ -66,7 +66,7 @@ c==============================================================================
 c==============================================================================
 
 
-      SUBROUTINE h_fpp_FP2DC(iSet,iCham,iLay,Slope,FPcoords,DCcoords)
+      SUBROUTINE h_fpp_FP2DC(iSet,iChamber,iLayer,Slope,FPcoords,DCcoords)
 *--------------------------------------------------------
 *    Hall C  HMS Focal Plane Polarimeter Code
 *
@@ -83,19 +83,20 @@ c==============================================================================
 
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_geometry.cmn'
-c      INCLUDE 'hms_fpp_event.cmn'
 
       integer*4 iSet
-      integer*4 iCham
-      integer*4 iLay
-      integer*4 iLocalPlane
+      integer*4 iChamber
+      integer*4 iLayer
+      integer*4 iPlane
       logical*4 Slope
       real*4 FPcoords(3), DCcoords(3)
 
       integer*4 i,j
       real*4 MYcoords(3)
 
-      iLocalPlane=(iSet-1)*6+(iCham-1)*3+iLay
+      iPlane = H_FPP_N_DCLAYERS * H_FPP_N_DCINSET * (iSet-1)
+     >       + H_FPP_N_DCLAYERS * (iChamber-1)
+     >       + iLayer
 
       if (Slope) then
 *       * for slopes, we can ignore any position offset
@@ -104,10 +105,10 @@ c      INCLUDE 'hms_fpp_event.cmn'
         MYcoords(3) = FPcoords(3)
       else
 *       * for coordinates, we need to subtract the offset
-        MYcoords(1) = FPcoords(1) - HFPP_Xoff(iSet) -
-     &                          HFPP_Xoff_fine(iLocalPlane)
+        MYcoords(1) = FPcoords(1) - HFPP_Xoff(iSet)
+     &              - HFPP_Xoff_fine(iPlane)
         MYcoords(2) = FPcoords(2) - HFPP_Yoff(iSet) -
-     &                          HFPP_Yoff_fine(iLocalPlane)
+     &              - HFPP_Yoff_fine(iPlane)
         MYcoords(3) = FPcoords(3) - HFPP_Zoff(iSet)
       endif
 
@@ -499,7 +500,7 @@ c      write(*,*)r_f(1),r_f(2),r_f(3)
       elseif (r_f(2).gt.0.d0) then
         dphi = 1.57080d0			! phi = +90
       elseif (r_f(2).lt.0.d0) then
-        phi = 4.71239d0			! phi = +270
+        dphi = 4.71239d0			! phi = +270
       else
         dphi = 0.d0			! phi undefined if theta=0 or r=0
       endif
