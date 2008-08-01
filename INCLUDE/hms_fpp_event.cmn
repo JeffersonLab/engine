@@ -48,6 +48,7 @@
       real*4 HFPP_drift_dist             ! drift distance of hits on each wire
                                          !!! both only valid if hit is used in track
       real*4 HFPP_dHMS                   ! distance between wire and HMS track
+      integer*4 HFPP_ambiguity           ! best track has an identical twin (chi2)
 
       common/HMS_FPP_event/
      &    HFPP_N_planehitsraw(H_FPP_N_PLANES)
@@ -74,6 +75,7 @@
      &  , HFPP_trigger_TDC(0:G_DECODE_MAXROCS)
      &  , HFPP_dHMS(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS,
      >                  H_FPP_MAX_CLUSTERS,H_FPP_MAX_HITSperCLUSTER)
+     &  , HFPP_ambiguity(H_FPP_N_DCSETS)
 
 
 * readability constants to use when setting HFPP_eventclass
@@ -134,6 +136,8 @@
       real*4 HFPP_track_fine         ! full track params using in-set coordinates
                                      ! dx/dz, x, dy/dz, y
 
+      logical*4 HFPP_track_uniq      ! track fitting result was un-ambiguous
+
 
       common/HMS_FPP_track/
      &    HFPP_eventclass
@@ -162,3 +166,4 @@
      >                        H_FPP_N_DCLAYERS,H_FPP_MAX_TRACKS)
      &  , HFPP_track_angresol(H_FPP_N_DCSETS,H_FPP_N_DCINSET,
      >                        H_FPP_N_DCLAYERS,H_FPP_MAX_TRACKS)
+     &  , HFPP_track_uniq(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)

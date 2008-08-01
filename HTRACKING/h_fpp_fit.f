@@ -101,7 +101,7 @@ c==============================================================================
 
 
       SUBROUTINE h_fpp_fit_best_permutation(nPoints, Points, Sigma2s, 
-     >                                      Projects, Drifts, BestTrack)
+     >                                      Projects, Drifts, BestTrack, ambiguous)
 *--------------------------------------------------------
 *    Hall C  HMS Focal Plane Polarimeter Code
 *
@@ -132,6 +132,7 @@ c==============================================================================
       real*4 Projects(H_FPP_MAX_FITPOINTS,3)
       real*4 Drifts(H_FPP_MAX_FITPOINTS)
       real*4 BestTrack(6)  ! does NOT include hit count
+      logical*4 ambiguous  ! left/right give identical best results
 
 
 ** now we use the supplied hits and the absolute drift distance (in layer!)
@@ -149,6 +150,11 @@ c==============================================================================
       logical*4 drift2plus(H_FPP_MAX_FITPOINTS)
       logical*4 anyPerm2try, carry
 
+*     * this flag resolves the +/- ambiguity in a predictable but randomized way
+      logical*4 fppfitLRlast
+      common/HMS_FPP_fitLR/ fppfitLRlast
+      data fppfitLRlast/.FALSE./
+
 
 *     * init result to bad
       BestTrack(1) = H_FPP_BAD_COORD  ! mx
@@ -156,6 +162,8 @@ c==============================================================================
       BestTrack(3) = H_FPP_BAD_COORD  ! my
       BestTrack(4) = H_FPP_BAD_COORD  ! by
       BestTrack(5) = H_FPP_BAD_CHI2
+
+      ambiguous = .false.
 
 
       if (nPoints.lt.HFPP_minsethits) RETURN
@@ -193,15 +201,26 @@ c==============================================================================
 *     	* get track based on these drift values
 	call h_fpp_fit3d(nPoints, HitPos, Sigma2s, Projects, Track)
 
+
+
+* NEW, AMBIGUITY-RESOLVING LOGIC
 *     	* remember best track and set of drift flags
-      	if (Track(5).lt.BestTrack(5).and.Track(5).gt.0.0) then
-      	  do ii=1,6
-      	    BestTrack(ii) = Track(ii)
-      	  enddo !ii
-      	  do iHit=1, nPoints
-      	     BestDrifts(iHit) = driftreal(iHit)
-      	  enddo !iHit
-      	endif
+      	if (Track(5).le.BestTrack(5).and.Track(5).gt.0.0) then
+      	  ambiguous = (Track(5).eq.BestTrack(5))
+*         * remember all _not_ ambiguous and every other ambiguous alternative
+          if (fppfitLRlast.or.(.not.ambiguous)) then
+      	    do ii=1,6
+      	      BestTrack(ii) = Track(ii)
+      	    enddo !ii
+      	    do iHit=1, nPoints
+      	       BestDrifts(iHit) = driftreal(iHit)
+      	    enddo !iHit
+          endif
+          if (ambiguous) fppfitLRlast = (.not. fppfitLRlast)
+        endif
+* NEW, AMBIGUITY-RESOLVING LOGIC
+
+
 
 *	* get next combination of drift directions to try
 *	* binary adding:   0 --> 1

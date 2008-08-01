@@ -353,6 +353,7 @@ c==============================================================================
       integer*4 Nlayershit, nPoints, mPoints, nClusters, mClusters
       integer*4 CSkip, LSkip, Cskipped, Lskipped, Llast
       integer*4 iChamber, iLayer, iCluster, iRaw, iHit, iWire, iTrack, ii, jj
+      logical*4 notunique, notunique2
 
 
       ABORT= .FALSE.
@@ -436,7 +437,7 @@ c              write(*,*)'iRaw,mydriftX =',iRaw,iHit,mydriftX
 
 *     * INPUT=absolute drifts  OUTPUT=signed drifts
 c      write(*,*)'Calling best_permutation ... nPoints = ',nPoints
-      call h_fpp_fit_best_permutation(nPoints, All_Points, All_Sigma2s, All_Projects, Drifts, newTrack)
+      call h_fpp_fit_best_permutation(nPoints, All_Points, All_Sigma2s, All_Projects, Drifts, newTrack, notunique)
       DriftTrack(1) = newTrack(1)  ! mx
       DriftTrack(2) = newTrack(2)  ! bx
       DriftTrack(3) = newTrack(3)  ! my
@@ -444,6 +445,7 @@ c      write(*,*)'Calling best_permutation ... nPoints = ',nPoints
       DriftTrack(5) = newTrack(5)  ! chi2/df
       DriftTrack(6) = float(nPoints)
 c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min_chi2 = ',HFPP_min_chi2
+
       if (     (newTrack(5).le.HFPP_min_chi2)
      >    .and.(newTrack(5).ge.0.0)
      >    .and.(newTrack(5).ne.H_FPP_BAD_CHI2) ) then   ! store fit results
@@ -456,6 +458,7 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
 	    HFPP_drift_dist(DCset,iChamber,iLayer,iWire) = Drifts(iHit)
 	  enddo !iHit
           track_good = .true.
+          if (notunique) HFPP_ambiguity(DCset) = HFPP_ambiguity(DCset) + 1
 
       elseif (nClusters.gt.HFPP_minsethits) then   ! greater, not equal!
 
@@ -492,7 +495,7 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
 
             if (mClusters.ge.HFPP_minsethits) then
 
-      	      call h_fpp_fit_best_permutation(mPoints, Points, Sigma2s, Projects, Drifts, newTrack)
+      	      call h_fpp_fit_best_permutation(mPoints, Points, Sigma2s, Projects, Drifts, newTrack, notunique2)
 
 *	      * use the new track if it is better
               if (     (newTrack(5).lt.DriftTrack(5))
@@ -506,6 +509,7 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
 	        DriftTrack(6) = float(mPoints)
 	        Cskipped = CSkip ! remember skipped chamber
 	        Lskipped = LSkip ! remember skipped layer
+                notunique = notunique2
 	      endif
 
 	    endif !mClusters.ge.HFPP_minsethits
@@ -532,6 +536,7 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
             track_good = .true.
             nPoints = mPoints      !use stats of new, "smaller" track
             nClusters = mClusters
+            if (notunique) HFPP_ambiguity(DCset) = HFPP_ambiguity(DCset) + 1
 
 	  endif !dropped_one
 
@@ -575,6 +580,8 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
           do ii=1,6		  ! store simple track in chamber coords
             HFPP_track_rough(DCset,iTrack,ii) = SimpleTrack(ii)
           enddo !ii
+
+          HFPP_track_uniq(DCset,iTrack) = .not.notunique
 
 
 *         * store drift based track in HMS focal plane coords
@@ -628,6 +635,7 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
 
 	  HFPP_track_conetest(DCset,iTrack) = icone
 
+
 *         * determine resolution measure -- if requested
           if (HFPP_calc_resolution.ne.0) then
 
@@ -677,7 +685,7 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
 	  	   endif
           	 enddo !ihit
 
-          	 call h_fpp_fit_best_permutation(mPoints,Points,Sigma2s,Projects, Drifts,newTrack)
+          	 call h_fpp_fit_best_permutation(mPoints,Points,Sigma2s,Projects, Drifts,newTrack,notunique)
 
 *         	 * now figure residual in skipped layer and call that the resolution
 *         	 * use the hit with the smallest drift distance in this layer, determined above
