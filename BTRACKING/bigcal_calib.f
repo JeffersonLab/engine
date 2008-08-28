@@ -152,7 +152,7 @@ c                           write(*,*) 'ired,jredFINAL=',ired,jred
                      endif
                   endif
                enddo
-c               write(*,*) 'iredFINAL=',ired
+c     write(*,*) 'iredFINAL=',ired
                Nred = ired
             endif
          endif
@@ -285,9 +285,13 @@ c     replaces "bigcal_vector" with the solution vector of coefficients
 c     after change in matrix filling routines, bigcal_vector should equal 
 c     the new absolute calibration constant
 
+c         write(*,*) 'Nreduced = ',Nred
+
          if(Nred.gt.0.and.Nred.le.bigcal_all_maxhits) then
             call rseqn(Nred,bigcal_reduced_matrix,N,iflag_matr,1,bigcal_reduced_vector)
-            
+  
+c            write(*,*) 'rseqn status flag = ',iflag_matr
+          
             if(iflag_matr.ne.-1) then
                ired = 1
                do i=1,N
