@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19.6.6  2008/08/28 20:15:16  puckett
+* added check for sensible target reconstruction for t.o.f. dumping
+*
 * Revision 1.19.6.5  2008/07/29 16:34:00  puckett
 * misc bug fixes in writing fort.37 for tof calibration
 *
@@ -172,7 +175,7 @@
 
          betap = p/sqrt(p*p+hpartmass*hpartmass)
 c     don't use nonsensical values of betap: revert to beta(pcentral):
-         if(abs(hdelta_tar(trk)).gt.18.) betap = hpcentral / sqrt(hpcentral**2 + hpartmass**2)
+         if(abs(hdelta_tar(trk)).gt.9.) betap = hpcentral / sqrt(hpcentral**2 + hpartmass**2)
 
          do plane = 1 , hnum_scin_planes
             hgood_plane_time(trk,plane) = .false.
@@ -431,7 +434,11 @@ c     when we actually do dump the event.
                   if(hntracks_fp.eq.1.and.
      >                 hdumptof.eq.1.and.
      >                 oktodump.and.
-     >                 timehist(max(1,jmax)).gt.2) then
+     >                 timehist(max(1,jmax)).gt.2.and.
+     $                 abs(hxp_tar(trk)).le.0.1.and.
+     $                 abs(hyp_tar(trk)).le.0.05.and.
+     $                 abs(hy_tar(trk)).le.10.0.and.
+     $                 abs(hdelta_tar(trk)).le.9.0) then
                      write(37,'(1x,''1'',2i3,5f10.3)') 
      >                    hscin_plane_num(hit),
      >                    hscin_counter_num(hit),
@@ -479,7 +486,11 @@ c     >              1./sqrt(max(20,adc_ph))
                   if(hntracks_fp.eq.1.and.
      >                 hdumptof.eq.1.and.
      >                 oktodump.and.
-     >                 timehist(max(1,jmax)).gt.2) then
+     >                 timehist(max(1,jmax)).gt.2.and.
+     $                 abs(hxp_tar(trk)).le.0.1.and.
+     $                 abs(hyp_tar(trk)).le.0.05.and.
+     $                 abs(hy_tar(trk)).le.10.0.and.
+     $                 abs(hdelta_tar(trk)).le.9.0) then
                      write(37,'(1x,''2'',2i3,5f10.3)') 
      >                    hscin_plane_num(hit),
      >                    hscin_counter_num(hit),
@@ -615,7 +626,11 @@ c     Get time at focal plane
          endif
          if(hntracks_fp.eq.1.and.
      >        hdumptof.eq.1.and.
-     >        timehist(max(1,jmax)).gt.2)
+     >        timehist(max(1,jmax)).gt.2.and.
+     $        abs(hxp_tar(trk)).le.0.1.and.
+     $        abs(hyp_tar(trk)).le.0.05.and.
+     $        abs(hy_tar(trk)).le.10.0.and.
+     $        abs(hdelta_tar(trk)).le.9.0)
      >        write(37,'(1x,''0'')') 
          
       enddo                     !end of loop over tracks
