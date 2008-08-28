@@ -113,6 +113,9 @@
       real*4 bigcal_prot_ped_mean
       real*4 bigcal_prot_ped_rms
       real*4 bigcal_prot_adc_threshold
+      real*4 bigcal_prot_ped_mean_default 
+      real*4 bigcal_prot_ped_rms_default   
+      real*4 bigcal_prot_adc_thresh_default 
       real*4 bigcal_rcs_ped_mean
       real*4 bigcal_rcs_ped_rms
       real*4 bigcal_rcs_adc_threshold
@@ -129,6 +132,9 @@
      $     bigcal_prot_ped_mean(BIGCAL_PROT_NPMT),
      $     bigcal_prot_ped_rms(BIGCAL_PROT_NPMT),
      $     bigcal_prot_adc_threshold(BIGCAL_PROT_NPMT),
+     $     bigcal_prot_ped_mean_default(BIGCAL_PROT_NPMT),
+     $     bigcal_prot_ped_rms_default(BIGCAL_PROT_NPMT),
+     $     bigcal_prot_adc_thresh_default(BIGCAL_PROT_NPMT),
      $     bigcal_rcs_ped_mean(BIGCAL_RCS_NPMT),
      $     bigcal_rcs_ped_rms(BIGCAL_RCS_NPMT),
      $     bigcal_rcs_adc_threshold(BIGCAL_RCS_NPMT),

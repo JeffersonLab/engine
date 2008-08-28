@@ -113,6 +113,12 @@ c     use raster info for vertex correction to BigCal angles? Let the user decid
      $     gep_use_xbeam_zcorr,
      $     gep_zbeam_low,
      $     gep_zbeam_high
+*     calculate central values of kinematic quantities for histogramming purposes:
+      real*4 gep_Q2_central
+      real*4 gep_Ee_central
+      common/gep_central_kinematics/
+     $     gep_Q2_central,
+     $     gep_Ee_central
 
 *
 *     CTPTYPE=event
