@@ -166,7 +166,7 @@ c     all length units are cm
 
             if(bigcal_clstr_keep(i)) then
 c            if(last_time) then
-               if(bid_bcal_theta.gt.0) call hf1(bid_bcal_theta,thetadeg,1.0)
+               if(bid_bcal_theta.gt.0) call hf1(bid_bcal_theta,thetadeg-bigcal_theta_deg,1.0)
 c     endif
                
 c     if(last_time) then
