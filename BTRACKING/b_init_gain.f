@@ -11,8 +11,10 @@
 
       include 'bigcal_data_structures.cmn'
       include 'bigcal_gain_parms.cmn'
+      include 'bigcal_bypass_switches.cmn'
 
-      integer ix,iy,icell,ig64,ih64,ilogic,i,j
+      integer ix,iy,icell,ig64,ih64,ilogic,i,j,roc,slot,pln,cntr,thresh
+      integer istart
       real gainold,gainnew
 
       abort=.false.
@@ -32,12 +34,15 @@ c     initialize ped_limit:
          if(i.le.1024) then
             bigcal_prot_ped_limit(i) = 1500
             
-           
+c     set defaults to values read in from CTP parm file:
+c$$$            bigcal_prot_ped_mean_default(i) = bigcal_prot_ped_mean(i) 
+c$$$            bigcal_prot_ped_rms_default(i) = bigcal_prot_ped_rms(i)
+c$$$            bigcal_prot_adc_thresh_default(i) = bigcal_prot_adc_threshold(i)
          else
 c     write(*,*) 'rcs ped limit(',i-1024,')=',bigcal_rcs_ped_limit(i-1024)
             
             bigcal_rcs_ped_limit(i-1024) = 1500
-
+            
 c     write(*,*) 'rcs ped limit(',i-1024,')=',bigcal_rcs_ped_limit(i-1024)
          endif
       enddo

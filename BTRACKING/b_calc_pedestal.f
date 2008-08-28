@@ -15,11 +15,13 @@
       include 'bigcal_filenames.cmn'
       include 'bigcal_bypass_switches.cmn'
       include 'gen_run_info.cmn'
+      include 'gen_detectorids.par'
+      include 'gen_decode_common.cmn'
 
       integer spareid
       parameter(spareid=67)
 
-      integer irow,icol,icell
+      integer irow,icol,icell,istart,thresh,pln,cntr,i
       integer igroup,ihalf,igr64
 
       integer nchange
@@ -67,8 +69,7 @@ c$$$	    endif
      $              bigcal_prot_new_ped(icell) - 
      $              bigcal_prot_ped_mean(icell)
             endif
-c     if b_fix_double_ped parameter is nonzero, then use default pedestals and software thresholds
-c     for rows 29 and 30.
+
             if(numped.gt.bigcal_prot_min_peds.and.bigcal_prot_min_peds
      $           .ne.0) then
                bigcal_prot_ped_mean(icell)=bigcal_prot_new_ped(icell)
@@ -300,6 +301,34 @@ c$$$         write(SPAREID,*) '# ROC12 (BigCal RCS ADCs):'
          close(spareid)
 
       endif
+
+c     check CODA threshold in ROC 11, slot 3 against default pedestal. If CODA threshold is too high, then there is no way to detect a negative jump, so we must use 
+c     CODA threshold - nsparse as our default pedestal position (if CODA threshold is larger than default pedestal!)
+      
+      roc=11
+      slot=3
+
+      istart = g_decode_slotpointer(roc,slot)
+
+      write(*,*) 'checking default pedestals for roc 11, slot 3 '//
+     $     'against CODA thresholds:'
+
+      do i=1,gnum_adc_channels
+         thresh = g_threshold_readback(i,roc,slot)
+         pln = g_decode_planemap(istart + i - 1)
+         cntr = g_decode_countermap(istart + i - 1)
+
+         icell = cntr + 32*(pln-1)
+
+         if(b_fix_double_ped.ne.0) then
+            write(*,*) 'row, column = ',pln,cntr
+            write(*,*) 'default ped = CODA thresh. - nsparse = ',float(thresh - bigcal_prot_nsparse)
+         endif
+
+         bigcal_prot_ped_mean_default(icell) = float(thresh-bigcal_prot_nsparse)
+      enddo
+
+c     now the default pedestal reflects 
 
       return
       end
