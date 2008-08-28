@@ -36,9 +36,8 @@ c$$$      if(gepid_gep_ntrig_h1.gt.0) call hf1(gepid_gep_ntrig_h1,float(ntrigH1)
 c$$$      if(gepid_gep_ntrig_h2.gt.0) call hf1(gepid_gep_ntrig_h2,float(ntrigH2),1.)
 c$$$      if(gepid_gep_ntrig_bigcal.gt.0) call hf1(gepid_gep_ntrig_bigcal,float(ntrigB),1.)
       
-      if(abs(hsdelta).lt.10..and.abs(hsp-gep_pel_htheta)/hpcentral .lt..1.and.
-     $     bigcal_itrack_best.gt.0.and.(bigcal_do_calibration.eq.0.or.
-     $     gep_good_calib_event)) then
+      if(hsnum_fptrack.gt.0.and.bigcal_itrack_best.gt.0.and.
+     $     (bigcal_do_calibration.eq.0.or.gep_good_calib_event)) then
 
          xdiff = bigcal_all_clstr_x(bigcal_itrack_best) - gep_bx_expect_h
          ydiff = bigcal_all_clstr_y(bigcal_itrack_best) - gep_by_expect_h
@@ -49,15 +48,15 @@ c$$$      if(gepid_gep_ntrig_bigcal.gt.0) call hf1(gepid_gep_ntrig_bigcal,float(
             if(gen_event_trigtype(i+3).eq.1.and.gen_event_trigtype(6-i).eq.0) then
                
                if(gepid_hgep_delta(i).gt.0) call hf1(gepid_hgep_delta(i),hsdelta,1.)
-               if(gepid_hgep_q2_hms(i).gt.0) call hf1(gepid_hgep_q2_hms(i),gep_q2_h,1.)
-               if(gepid_hgep_q2_cal(i).gt.0) call hf1(gepid_hgep_q2_cal(i),gep_q2_b,1.)
-               if(gepid_hgep_q2(i).gt.0) call hf1(gepid_hgep_q2(i),gep_q2,1.)
-               if(gepid_hgep_ecal(i).gt.0) call hf1(gepid_hgep_ecal(i),bigcal_energy,1.)
-               if(gepid_hgep_pp(i).gt.0) call hf1(gepid_hgep_pp(i),hsp,1.)
+               if(gepid_hgep_q2_hms(i).gt.0) call hf1(gepid_hgep_q2_hms(i),gep_q2_h-gep_Q2_central,1.)
+               if(gepid_hgep_q2_cal(i).gt.0) call hf1(gepid_hgep_q2_cal(i),gep_q2_b-gep_Q2_central,1.)
+               if(gepid_hgep_q2(i).gt.0) call hf1(gepid_hgep_q2(i),gep_q2-gep_Q2_central,1.)
+               if(gepid_hgep_ecal(i).gt.0) call hf1(gepid_hgep_ecal(i),bigcal_energy-gep_Ee_central,1.)
+               if(gepid_hgep_pp(i).gt.0) call hf1(gepid_hgep_pp(i),hsp-hpcentral,1.)
                if(gepid_hgep_epsilon(i).gt.0) call hf1(gepid_hgep_epsilon(i),gep_epsilon,1.)
-               if(gepid_hgep_etheta(i).gt.0) call hf1(gepid_hgep_etheta(i),gep_etheta_deg,1.)
+               if(gepid_hgep_etheta(i).gt.0) call hf1(gepid_hgep_etheta(i),gep_etheta_deg-bigcal_theta_deg,1.)
                if(gepid_hgep_ephi(i).gt.0) call hf1(gepid_hgep_ephi(i),gep_ephi_deg,1.)
-               if(gepid_hgep_ptheta(i).gt.0) call hf1(gepid_hgep_ptheta(i),gep_ptheta_deg,1.)
+               if(gepid_hgep_ptheta(i).gt.0) call hf1(gepid_hgep_ptheta(i),gep_ptheta_deg-htheta_lab,1.)
                if(gepid_hgep_pphi(i).gt.0) call hf1(gepid_hgep_pphi(i),gep_pphi_deg,1.)
                if(gepid_hgep_emiss(i).gt.0) call hf1(gepid_hgep_emiss(i),gep_emiss,1.)
                if(gepid_hgep_pmissx(i).gt.0) call hf1(gepid_hgep_pmissx(i),gep_pmissx,1.)

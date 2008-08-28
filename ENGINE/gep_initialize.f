@@ -9,10 +9,15 @@
       logical ABORT
       character*(*) err
 
+      include 'hms_data_structures.cmn'
+      include 'bigcal_data_structures.cmn'
       include 'gen_data_structures.cmn'
       include 'gen_constants.par'
       include 'gep_data_structures.cmn'
       
+      real*4 M
+      parameter(M=.938272)
+
       abort=.false.
 
       gebeam = sqrt(gpbeam**2 + mass_electron**2)
@@ -24,6 +29,9 @@
       gebeam = gebeam - geloss
       gpbeam = sqrt(gebeam**2 - mass_electron**2)
       g_beam_target_s = (gtarg_mass(gtarg_num) + gebeam)**2 - gpbeam**2
+
+      gep_Q2_central = 2. * M * (sqrt(hpcentral**2 + M**2) - M)
+      gep_Ee_central = gebeam / (1. + gebeam / M * (1. - bigcal_costheta) )
 
 c     initialize coincidence timing window parameters if the user hasn't defined something reasonable:
       if(gep_h1time_slop.lt.10.or.gep_h1time_slop.gt.1000.) then
