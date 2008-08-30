@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19.6.7  2008/08/30 20:22:08  puckett
+* minor low-hanging fruit improvements for speed. Major bug fix in h_redo_track_left_right: index of hdc2 u and v planes off by one, missed hdc2 u plane altogether
+*
 * Revision 1.19.6.6  2008/08/28 20:15:16  puckett
 * added check for sensible target reconstruction for t.o.f. dumping
 *
@@ -213,7 +216,7 @@ c     c        write(*,'(''hdumptof='',i10)') hdumptof
 !     online     >         ''  and same vecolicty for pos and neg tubes'')')
             endif
 !     new: next 10 lines
-            ndumpmax = 10000.
+            ndumpmax = 100000.
             if(hdumptof.eq.1) 
      >           write(*,'(/1x,''Dumping TDC, ADC to fort.37 for'',
      >           ''  TOF calibration, ndumpmax='',i5)') ndumpmax
@@ -434,7 +437,7 @@ c     when we actually do dump the event.
                   if(hntracks_fp.eq.1.and.
      >                 hdumptof.eq.1.and.
      >                 oktodump.and.
-     >                 timehist(max(1,jmax)).gt.2.and.
+     >                 timehist(max(1,jmax)).gt.3.and.
      $                 abs(hxp_tar(trk)).le.0.1.and.
      $                 abs(hyp_tar(trk)).le.0.05.and.
      $                 abs(hy_tar(trk)).le.10.0.and.
@@ -486,7 +489,7 @@ c     >              1./sqrt(max(20,adc_ph))
                   if(hntracks_fp.eq.1.and.
      >                 hdumptof.eq.1.and.
      >                 oktodump.and.
-     >                 timehist(max(1,jmax)).gt.2.and.
+     >                 timehist(max(1,jmax)).gt.3.and.
      $                 abs(hxp_tar(trk)).le.0.1.and.
      $                 abs(hyp_tar(trk)).le.0.05.and.
      $                 abs(hy_tar(trk)).le.10.0.and.
@@ -626,7 +629,7 @@ c     Get time at focal plane
          endif
          if(hntracks_fp.eq.1.and.
      >        hdumptof.eq.1.and.
-     >        timehist(max(1,jmax)).gt.2.and.
+     >        timehist(max(1,jmax)).gt.3.and.
      $        abs(hxp_tar(trk)).le.0.1.and.
      $        abs(hyp_tar(trk)).le.0.05.and.
      $        abs(hy_tar(trk)).le.10.0.and.

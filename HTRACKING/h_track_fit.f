@@ -9,6 +9,9 @@
 *                              remove minuit. Make fit linear
 *                              still does not do errors properly
 * $Log$
+* Revision 1.11.24.2  2008/08/30 20:22:08  puckett
+* minor low-hanging fruit improvements for speed. Major bug fix in h_redo_track_left_right: index of hdc2 u and v planes off by one, missed hdc2 u plane altogether
+*
 * Revision 1.11.24.1  2008/07/29 16:26:56  puckett
 * added calls to new routines to find better left-right combinations, t0 offset, and remembering the proper left-right combination of the hits from h_left_right.f
 *
@@ -127,23 +130,22 @@ c        hdc_sing_res(pln)=1000
      &               hplane_coeff(remap(i),pln))
      &               /(hdc_sigma(pln)*hdc_sigma(pln)))
               enddo 
-            enddo
-            do i=1,hnum_fpray_param
+
               do j=1,hnum_fpray_param
-                AA(i,j)=0.
-                if(j.lt.i)then
-                  AA(i,j)=AA(j,i)
-                else 
-                  do ihit=2,hntrack_hits(itrk,1)+1
-                    hit=hntrack_hits(itrk,ihit)
-                    pln=hdc_plane_num(hit)
-                    AA(i,j)=AA(i,j) + (
-     &                   hplane_coeff(remap(i),pln)*hplane_coeff(remap(j)
-     $                   ,pln)/(hdc_sigma(pln)*hdc_sigma(pln)))
-                  enddo                 ! end loop on ihit
-                endif                   ! end test on j .lt. i
-              enddo                     ! end loop on j
-            enddo                       ! end loop on i
+                 AA(i,j)=0.
+                 if(j.lt.i)then
+                    AA(i,j)=AA(j,i)
+                 else 
+                    do ihit=2,hntrack_hits(itrk,1)+1
+                       hit=hntrack_hits(itrk,ihit)
+                       pln=hdc_plane_num(hit)
+                       AA(i,j)=AA(i,j) + (
+     &                      hplane_coeff(remap(i),pln)*hplane_coeff(remap(j)
+     $                      ,pln)/(hdc_sigma(pln)*hdc_sigma(pln)))
+                    enddo       ! end loop on ihit
+                 endif          ! end test on j .lt. i
+              enddo ! end loop over j
+           enddo ! end loop over i
 *
 *     solve four by four equations
             call solve_four_by_four(TT,AA,dray,ierr)
