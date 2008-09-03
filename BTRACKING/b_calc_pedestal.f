@@ -309,23 +309,30 @@ c     CODA threshold - nsparse as our default pedestal position (if CODA thresho
       slot=3
 
       istart = g_decode_slotpointer(roc,slot)
-
-      write(*,*) 'checking default pedestals for roc 11, slot 3 '//
-     $     'against CODA thresholds:'
+      
+      if(b_fix_double_ped.ne.0) then
+         write(*,*) 'checking default pedestals for roc 11, slot 3 '//
+     $        'against CODA thresholds:'
+      endif
 
       do i=1,gnum_adc_channels
          thresh = g_threshold_readback(i,roc,slot)
+c         write(*,*) 'ROC11, slot 3 CODA threshold=',thresh
          pln = g_decode_planemap(istart + i - 1)
          cntr = g_decode_countermap(istart + i - 1)
 
          icell = cntr + 32*(pln-1)
 
+c$$$         if(b_fix_double_ped.ne.0) then
+c$$$            write(*,*) 'row, column = ',pln,cntr
+c$$$            write(*,*) 'default ped = CODA thresh. - nsparse = ',float(thresh - bigcal_prot_nsparse)
+c$$$         endif
+c     apparently sometimes we fail to properly read the CODA threshold. Need to protect against this: 
+         bigcal_prot_ped_mean_default(icell) = max(float(thresh-bigcal_prot_nsparse),
+     $        min(bigcal_prot_ped_mean_default(icell),bigcal_prot_ped_mean(icell)))
          if(b_fix_double_ped.ne.0) then
-            write(*,*) 'row, column = ',pln,cntr
-            write(*,*) 'default ped = CODA thresh. - nsparse = ',float(thresh - bigcal_prot_nsparse)
+            write(*,*) 'row,col,default pedestal=',pln,cntr,bigcal_prot_ped_mean_default(icell)
          endif
-
-         bigcal_prot_ped_mean_default(icell) = float(thresh-bigcal_prot_nsparse)
       enddo
 
 c     now the default pedestal reflects 
