@@ -9,6 +9,9 @@
 *                              remove minuit. Make fit linear
 *                              still does not do errors properly
 * $Log$
+* Revision 1.11.24.3  2008/09/03 16:42:04  puckett
+* don't look for a t0 for a track if we have a good start time
+*
 * Revision 1.11.24.2  2008/08/30 20:22:08  puckett
 * minor low-hanging fruit improvements for speed. Major bug fix in h_redo_track_left_right: index of hdc2 u and v planes off by one, missed hdc2 u plane altogether
 *
@@ -209,7 +212,7 @@ c     search for a positive t0 which increases drift time and drift distance
 c     set t0 here so we don't end up confusing ourselves:
          htrack_t0best(itrk) = 0.
          if(hbypass_track_t0.eq.0.and.hchi2_fp(itrk)/float(hnfree_fp(itrk))
-     $        .gt.h_track_t0_minchi2) then
+     $        .gt.h_track_t0_minchi2.and..not.hgood_start_time) then
             call h_find_track_t0(itrk,abort,err)
             if(abort) then
                call g_add_path(here,err)
