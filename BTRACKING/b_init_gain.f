@@ -35,9 +35,9 @@ c     initialize ped_limit:
             bigcal_prot_ped_limit(i) = 1500
             
 c     set defaults to values read in from CTP parm file:
-c$$$            bigcal_prot_ped_mean_default(i) = bigcal_prot_ped_mean(i) 
-c$$$            bigcal_prot_ped_rms_default(i) = bigcal_prot_ped_rms(i)
-c$$$            bigcal_prot_adc_thresh_default(i) = bigcal_prot_adc_threshold(i)
+            bigcal_prot_ped_mean_default(i) = bigcal_prot_ped_mean(i) 
+            bigcal_prot_ped_rms_default(i) = bigcal_prot_ped_rms(i)
+            bigcal_prot_adc_thresh_default(i) = bigcal_prot_adc_threshold(i)
          else
 c     write(*,*) 'rcs ped limit(',i-1024,')=',bigcal_rcs_ped_limit(i-1024)
             
