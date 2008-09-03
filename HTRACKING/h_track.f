@@ -13,6 +13,9 @@
 *- 
 *-   Created 19-JAN-1994   D. F. Geesaman
 * $Log$
+* Revision 1.5.24.2  2008/09/03 15:30:12  puckett
+* bug fixes and improvements
+*
 * Revision 1.5.24.1  2008/07/29 16:28:11  puckett
 * added calls to space point prune routines only when we fail to find a track the usual way
 *
@@ -170,8 +173,9 @@ c     build tracks from those stubs:
      $             npassed = npassed + 1
               if(abs(hstubminxp).lt.hxpt_track_criterion)
      $             npassed = npassed + 1
-              if(npassed.ge.2) then ! call my special "ajp" stub linking routine:
-c                 write(*,*) 'calling AJP stub link routine event=',gen_event_id_number
+              if(npassed.ge.2) then ! call my special "ajp" stub linking routine
+c     which builds tracks out of all space point combinations that pass 
+c     2 out of 3 stub tests:
                  call h_join_stubs_ajp(abort,err)
               endif
            endif
