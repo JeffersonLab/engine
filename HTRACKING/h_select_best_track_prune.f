@@ -12,6 +12,9 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log$
+*- Revision 1.1.8.4  2008/09/10 15:07:57  puckett
+*- make sanity check on ytar prune cut angle-dependent
+*-
 *- Revision 1.1.8.3  2008/07/29 16:35:13  puckett
 *- added "pmiss" (p - pel(htheta)) to available prune tests
 *-
@@ -73,7 +76,7 @@ c      integer*4 i,j
 ! Make sure limits are reasonable
         hprune_xp    = max(0.08, hprune_xp)
         hprune_yp    = max(0.04, hprune_yp)
-        hprune_ytar  = max(3.5,  hprune_ytar)
+        hprune_ytar  = max(15.*sin(htheta_lab*degree),  hprune_ytar)
         hprune_delta = max(10.0, hprune_delta)
         hprune_beta  = max(0.1,  hprune_beta)
         hprune_df    = max(1,  hprune_df)
