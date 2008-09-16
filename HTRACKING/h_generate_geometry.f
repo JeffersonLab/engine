@@ -8,6 +8,9 @@
 *     modified                14 feb 1994 for CTP input.
 *                             Change HPLANE_PARAM to individual arrays
 * $Log$
+* Revision 1.9.24.3  2008/09/16 17:06:44  puckett
+* added per-wire time offsets to be used optionally for the HMS chambers
+*
 * Revision 1.9.24.2  2008/07/29 16:43:28  puckett
 * moved initialization of hdc_center here and added extra debugging output
 *
@@ -46,7 +49,7 @@
 *
 *     local variables
       logical missing_card_no
-      integer*4 pln,i,j,k,pindex,ich,icounter,chamber
+      integer*4 pln,i,j,k,pindex,ich,icounter,chamber,idx,wire
       real*4 wirecenter
       real*4 cosalpha,sinalpha,cosbeta,sinbeta,cosgamma,singamma,z0
       real*4 stubxchi,stubxpsi,stubychi,stubypsi
@@ -78,6 +81,10 @@
       if (missing_card_no) write(6,*) 'missing hdc_card_no, blame JRA'
 *
 *     loop over all planes
+
+* ajp 09/11/2008:
+      idx = 0
+* END ajp 09/11/2008.
 
       do pln=1,hdc_num_planes
         hdc_plane_num(pln)=pln
@@ -169,6 +176,13 @@
         hplane_coeff(8,pln)=-hzchi(pln)*hxpsi(pln) + hxchi(pln)*hzpsi(pln) !0.
         hplane_coeff(9,pln)= hychi(pln)*hxpsi(pln) - hxchi(pln)*hypsi(pln) !1.
 *
+* ajp 09/11/2008: initialize hdc_wire_t0_offset array from hdc_wire_time_zero in param file:
+        do wire=1,hdc_nrwire(pln)
+           idx = idx + 1
+           hdc_wire_t0_offset(pln,wire) = hdc_wire_time_zero(idx)
+c           write(*,*) 'plane,wire,t0=',pln,wire,hdc_wire_t0_offset(pln,wire)
+        enddo
+* END NEW AJP CODE
       enddo                  !  end hdc_num_planes
 
 * djm 10/2/94 generate/store the inverse matrices HAAINV3(i,j,pindex) used in solve_3by3_hdc

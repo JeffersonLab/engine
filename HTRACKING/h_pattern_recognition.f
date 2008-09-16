@@ -14,6 +14,9 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
+* Revision 1.14.20.1  2008/09/16 17:06:44  puckett
+* added per-wire time offsets to be used optionally for the HMS chambers
+*
 * Revision 1.14  2003/04/01 13:49:27  jones
 * Modifications to tracking codes.
 * Mainly fix problems at high rates. (M. E. Christy)
@@ -103,6 +106,7 @@
 *   
       do pln=1,12
         hdc_sing_drifttime(pln)=-100
+        hdc_sing_wirenum(pln) = -1
       enddo
 
       ihit = 0
@@ -225,6 +229,7 @@ c
 * In the case of two separated hits per plane, the last one will be histogrammed.
             hdc_sing_drifttime(pln) = hdc_drift_time(hit)
             hdc_sing_driftdis(pln) = hdc_drift_dis(hit)
+            hdc_sing_wirenum(pln) = hdc_wire_num(hit)
             hdc_sing_cardid(pln) =
      &           hdc_card_no(hdc_wire_num(hit),hdc_plane_num(hit))
           enddo

@@ -8,6 +8,9 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
+* Revision 1.27.20.5  2008/09/16 17:07:25  puckett
+* added per-wire time offsets to be used optionally for the HMS chambers
+*
 * Revision 1.27.20.4  2008/07/29 16:51:36  puckett
 * added new parameters and variables to help with tracking
 *
@@ -182,12 +185,15 @@ cajp051708      parameter(hnum_fpray_param=5) ! added t0 for each stub
       integer*4 hmin_combos      ! minimum combos for space point
       integer*4 hmax_pr_hits     ! max number of hits in each plane for
                                  ! pattern recognition to be done in that pla
+      integer*4 huse_wire_time_offsets ! if 1 use per-wire t0 offset for drift time
 * wire velocity corrections.
       logical hdc_readout_x      !true = read out from side (like x plane)
       real*4  hdc_readout_corr   !wire path length/dist. to readout side
       real*4  hdc_wire_velocity  ! propogation velocity of signal on wire(cm/ns)
       real*4  hdc_drifttime_sign !sign of correction term.
       real*4  hdc_central_time   !ave. time (ns) for signal to reach disc. card.
+      real*4 hdc_wire_time_zero
+      real*4 hdc_wire_t0_offset
                                  ! (both times are from center of the chamber)
 * timing offsets per card.
       integer*4 hdc_sing_cardid  ! array of card id''s so one can put cuts/test on a per/card basys
@@ -219,6 +225,7 @@ cajp051708      parameter(hnum_fpray_param=5) ! added t0 for each stub
       real*4 hspace_points         ! array of x, y of space points
       real*4 hbeststub             ! array of stubs fit to each space point
       real*4 hdc_sing_drifttime    ! array of fully corrected drift times for each plane
+      real*4 hdc_sing_wirenum      ! array of wire numbers so we can look at drift time spectrum per wire
       real*4 hdc_sing_driftdis     ! array of final drift distances for each plane
 
 *
@@ -241,13 +248,17 @@ cajp051708      parameter(hnum_fpray_param=5) ! added t0 for each stub
      &     hdc_tdc_max_win(hmax_num_dc_planes),
      &     hmin_hit(hmax_num_chambers),hmin_combos(hmax_num_chambers),
      &     hmax_pr_hits(hmax_num_chambers),
+     $     huse_wire_time_offsets,
      &     hxt_track_criterion,hyt_track_criterion,
      &     hxpt_track_criterion,hypt_track_criterion,
      &     hstub_max_xpdiff,
      &     hdc_sing_drifttime(hmax_num_dc_planes),
      &     hdc_sing_driftdis(hmax_num_dc_planes),
+     &     hdc_sing_wirenum(hmax_num_dc_planes),
      &     hdc_wire_velocity,
      &     hdc_central_time(hmax_num_dc_planes),
+     $     hdc_wire_time_zero(hmax_num_dc_planes*hdc_max_wires_per_plane),
+     $     hdc_wire_t0_offset(hmax_num_dc_planes,hdc_max_wires_per_plane),
      &     hdc_drifttime_sign(hmax_num_dc_planes),
      &     hdc_readout_corr(hmax_num_dc_planes),
      &     hdc_readout_x(hmax_num_dc_planes),

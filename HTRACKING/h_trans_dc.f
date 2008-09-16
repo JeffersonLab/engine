@@ -13,6 +13,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.15.24.2  2008/09/16 17:06:44  puckett
+* added per-wire time offsets to be used optionally for the HMS chambers
+*
 * Revision 1.15.24.1  2008/07/29 16:25:58  puckett
 * moved initialization of hdc_center to h_generate geometry, more natural choice
 *
@@ -144,6 +147,11 @@ c$$$      endif
                     hdc_drift_time(goodhit) = - hstart_time
      &                   - float(hdc_tdc(goodhit))*hdc_tdc_time_per_channel
      &                   + hdc_plane_time_zero(pln)
+                    if(huse_wire_time_offsets.ne.0) then
+                      hdc_drift_time(goodhit) = hdc_drift_time(goodhit) 
+     $                     - hdc_wire_t0_offset(pln,hdc_wire_num(goodhit))
+                    endif
+
 *  find dist in pattern_recognition, after apply propogation correction.
 *                    hdc_drift_dis(goodhit) = h_drift_dist_calc
 *     $                   (pln,wire,hdc_drift_time(goodhit))
