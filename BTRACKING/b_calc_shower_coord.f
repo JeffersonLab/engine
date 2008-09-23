@@ -14,11 +14,18 @@
       include 'bigcal_geometry.cmn'
       include 'bigcal_shower_parms.cmn'
       include 'bigcal_bypass_switches.cmn'
+      include 'gen_data_structures.cmn'
 
       integer i,j,irow,icol,icell,ibin,xsector,ysector,foundbin,section
+      real x,y
       real xmom,ymom,xcenter,ycenter,xdiff,ydiff,xshift,yshift
       real xpar(6),ypar(6)
       real mlo,mhi,binwidth,frac,frachi,fraclo,sizex,sizey
+      real tmax
+      real Ecrit
+      parameter(Ecrit=.015) ! critical energy for TF1 lead glass in GeV
+      real X0
+      parameter(X0=2.74) ! rad length in cm for TF1 lead glass
 
 c     all clusters are already sorted in order of decreasing amplitude, so cell 1 is the maximum
 
@@ -130,10 +137,28 @@ c     exit the do loop when we find the right bin.
  
  102        continue
 
-            xshift = bigcal_shower_map_shift(1) + (xcenter + xdiff)*
-     $           bigcal_shower_map_slope(1)
-            yshift = bigcal_shower_map_shift(2) + (ycenter + ydiff)*
-     $           bigcal_shower_map_slope(2)
+c$$$            xshift = bigcal_shower_map_shift(1) + (xcenter + xdiff)*
+c$$$     $           bigcal_shower_map_slope(1)
+c$$$            yshift = bigcal_shower_map_shift(2) + (ycenter + ydiff)*
+c$$$     $           bigcal_shower_map_slope(2)
+
+c     for shower map-based reconstruction, use a very CRUDE model for the incident-angle distortion,
+c     so we don't have to do lots of simulations and come up with parameters...
+c     according to Particle Data Group's "Passage of Particles Through Matter", an approximate formula for tmax,
+c     the depth in radiation lengths at which the energy deposition peaks in electromagnetic cascades, is given by:
+c     tmax = 1.0 * (ln y + C) where y = E/Ec, E is electron energy, Ec is critical energy, and C = +.5 for photon
+c     showers, and -.5 for electron showers. Assuming electrons, then, tmax for lead-glass can be found as follows:
+c     X0 of TF1-0 lead glass (from Charles' note) X0 = 2.74 cm, Ecrit = 15 MeV, therefore, tmax for electrons = 
+c     tmax = ln(E'/15 MeV) - 0.5
+c     BigCal measures the energy of the cluster. Large error, but smaller error on the logarithm:
+
+            tmax = X0 * max(0.,log(bigcal_all_clstr_etot(i) / Ecrit) - 0.5 ) ! tmax in cm.
+
+            x = xcenter + xdiff
+            y = ycenter + ydiff
+
+            xshift = tmax * x / sqrt(x**2 + bigcal_r_tgt**2) ! sin(thetax) of incident electron
+            yshift = tmax * y / sqrt(y**2 + bigcal_r_tgt**2) ! sin(thetay) of incident electron
 
             bigcal_all_clstr_x(i) = xcenter + xdiff - xshift
             bigcal_all_clstr_y(i) = ycenter + ydiff - yshift
