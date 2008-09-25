@@ -15,6 +15,12 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.7  2008/09/25 00:01:29  jones
+ *   Updated to run with gfortran compiler
+ *
+ *   Revision 1.6.6.1  2007/09/10 21:32:47  pcarter
+ *   Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+ *
  *   Revision 1.6  2005/02/22 16:54:46  saw
  *   Clean up some diagnostic printfs
  *
@@ -477,18 +483,18 @@ thStatus thFillTreeV(daVarStruct *var){
     thisleaf = thisbranch->leaflistp;
     while(thisleaf) {
       if(thisleaf->varp->type == DAVARINT) {
-	*((DAINT *)(structp))++ = *((DAINT *)thisleaf->varp->varptr
-				    + thisleaf->index);
+	*(DAINT *)(structp) = *((DAINT *)thisleaf->varp->varptr + thisleaf->index);/*phil*/
+        structp = (void *) (DAINT *) ((DAINT *)structp + 1);
 	/*	printf("   %s=%d\n",thisleaf->name,*((DAINT *)thisleaf->varp->varptr
 		+ thisleaf->index));*/
       } else if(thisleaf->varp->type == DAVARFLOAT) {
-	*((DAFLOAT *)(structp))++ = *((DAFLOAT *)thisleaf->varp->varptr
-				    + thisleaf->index);
+	*(DAFLOAT *)(structp) = *((DAFLOAT *)thisleaf->varp->varptr + thisleaf->index);/*phil*/
+        structp = (void *) (DAFLOAT *) ((DAFLOAT *)structp + 1);
 	/*	printf("   %s=%f\n",thisleaf->name,*((DAFLOAT *)thisleaf->varp->varptr
 		+ thisleaf->index));*/
       } else if(thisleaf->varp->type == DAVARDOUBLE) {
-	*((DADOUBLE *)(structp))++ = *((DADOUBLE *)thisleaf->varp->varptr
-				    + thisleaf->index);
+	*(DADOUBLE *)(structp) = *((DADOUBLE *)thisleaf->varp->varptr + thisleaf->index);/*phil*/
+        structp = (void *) (DADOUBLE *) ((DADOUBLE *)structp + 1);
 	/*	printf("   %s=%lf\n",thisleaf->name,*((DADOUBLE *)thisleaf->varp->varptr
 		+ thisleaf->index));*/
       }

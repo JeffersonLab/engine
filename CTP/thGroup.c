@@ -16,6 +16,12 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.6  2008/09/25 00:01:29  jones
+ *   Updated to run with gfortran compiler
+ *
+ *   Revision 1.5.8.1  2007/09/10 21:32:47  pcarter
+ *   Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+ *
  *   Revision 1.5  2004/07/08 20:05:37  saw
  *   Use dummy fortran ctp tree routines when ROOTSYS not defined.
  *
@@ -136,8 +142,9 @@ thStatus thSetGroupClasses()
     var.whook = 0;		/* Need handlers? */
     var.rhook = 0;
     var.flag = DAVAR_READWRITE | DAVAR_REPOINTOK;
-    var.opaque = (void *)opqptr
-      = (thGroupOpaque *) malloc(sizeof(thGroupOpaque));
+//    var.opaque = (void *)opqptr = (thGroupOpaque *) malloc(sizeof(thGroupOpaque));/*phil*/
+    var.opaque = (void *) (opqptr = (thGroupOpaque *) (void *)
+            ((thGroupOpaque *) malloc(sizeof(thGroupOpaque))));
     opqptr->blocklist = 0;
     opqptr->type = (char *) malloc(strlen(thHooks[i].type) + 1);
     strcpy(opqptr->type,thHooks[i].type);

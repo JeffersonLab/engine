@@ -16,6 +16,12 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.4  2008/09/25 00:01:29  jones
+ *   Updated to run with gfortran compiler
+ *
+ *   Revision 1.3.24.1  2007/09/10 21:32:47  pcarter
+ *   Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+ *
  *   Revision 1.3  2003/02/21 20:55:25  saw
  *   Clean up some types and casts to reduce compiler warnings.
  *
@@ -760,7 +766,7 @@ typedef const unsigned char	cuc;	/* char variety used in algorithm */
 
 char *					/* returns -> leftmost occurrence,
 					   or null pointer if not present */
-strcasestr(char *s1, char *s2 )
+strcasestr(const char *s1, const char *s2 )
      /*	const char	*s1;	*/	/* -> string to be searched */
      /*	const char	*s2;	*/	/* -> search-pattern string */
 {

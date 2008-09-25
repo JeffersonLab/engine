@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.22  2008/09/25 00:01:29  jones
+# Updated to run with gfortran compiler
+#
 # Revision 1.21  2004/07/08 20:04:33  saw
 # CTP ROOT trees will be compiled in if ROOTSYS is defined.
 # Build dummy CTP ROOT tree commands when ROOTSYS not defined.
@@ -78,6 +81,33 @@
 
 NEWSTYLE = 1
 
+#Only append to CFLAGS and CXXFLAGS the first time through
+ifeq ($(MAKELEVEL),2)
+  ifeq ($(MYOS),Linux)
+    ifeq ($(F77COMPILER),Absoft)
+      CFLAGS = -DNOF77extname -DAbsoftUNIXFortran # -DAbsoftUNIXFortran for cfortran.h
+    else
+      ifeq ($(OSEXT),TEST)
+        override CFLAGS += -Df2cFortran -b i486-linux -pg # -Df2cFortran for cfortran.h
+      else
+      #  CFLAGS = -g -Df2cFortran -b i486-linux -O # -Df2cFortran for cfortran.h
+        override CFLAGS += -Df2cFortran # -Df2cFortran for cfortran.h
+      endif
+    endif
+    override CXXFLAGS += -fno-exceptions -fPIC
+  endif
+  
+  ifdef ROOTSYS
+    override CFLAGS += -DROOTTREE
+    override CXXFLAGS += -I$(ROOTSYS)/include
+  endif
+endif
+ifeq ($(MYOS),Linux)
+# -k generates K&R C
+#  RPCCOM=rpcgen -b -k
+  RPCCOM=rpcgen -b
+endif
+
 include ../../etc/Makefile
 
 ctp_sources = thTest.c thTestParse.c thTestExecute.c thHandlers.c thParm.c \
@@ -102,21 +132,19 @@ bin_targets = makereg
 
 install-dirs := lib bin
 
-ifeq ($(ARCH),IRIX)
+ifeq ($(MYOS),IRIX)
   CC = gcc
   CFLAGS = -DNOFNMATCH
   RPCCOM=rpcgen
-  OSTYPE=IRIX
 endif
 
-ifeq ($(ARCH),OSF1)
+ifeq ($(MYOS),OSF1)
   CC = cc -verbose
   CFLAGS = -DNOFNMATCH
   RPCCOM=rpcgen
-  OSTYPE=OSF1
 endif
 
-ifeq ($(ARCH),HPUX)
+ifeq ($(MYOS),HPUX)
   CC = gcc
 ifeq ($(OSEXT),TEST)
   CFLAGS = -Dhpux -D_HPUX_SOURCE -Dextname -g -pg # for gprof
@@ -125,35 +153,15 @@ else
 endif
   ARFLAGS = frv
   RPCCOM=rpcgen
-  OSTYPE=HPUX
 endif
 
-ifeq ($(ARCH),ULTRIX)
+ifeq ($(MYOS),ULTRIX)
   CC = gcc
   CFLAGS = -DNOFNMATCH
   RPCCOM=/usr/site1/rpc/rpcgen
-  OSTYPE=ULTRIX
 endif
 
-ifeq ($(ARCH),Linux)
-  CC = cc
-ifeq ($(F77COMPILER),Absoft)
-  CFLAGS = -g -DNOF77extname -DAbsoftUNIXFortran -O # -DAbsoftUNIXFortran for cfortran.h
-else
-ifeq ($(OSEXT),TEST)
-  CFLAGS = -g -Df2cFortran -b i486-linux -pg -O # -Df2cFortran for cfortran.h
-else
-#  CFLAGS = -g -Df2cFortran -b i486-linux -O # -Df2cFortran for cfortran.h
-  CFLAGS = -g -Df2cFortran -O # -Df2cFortran for cfortran.h
-endif
-endif
-  RPCCOM=rpcgen -b -k
-  OSTYPE=Linux
-  CXX=g++
-  CXXFLAGS =  -g -O -Wall -fno-exceptions -fPIC
-endif
-
-ifeq ($(ARCH),SunOS)
+ifeq ($(MYOS),SunOS)
   CC = gcc
   ifeq ($(OSVERSION),4)
     CFLAGS = -O -DNOFNMATCH
@@ -161,14 +169,12 @@ ifeq ($(ARCH),SunOS)
     CFLAGS = -O
   endif
   RPCCOM = /usr/bin/rpcgen
-  OSTYPE=SunOS
 endif
 
-ifeq ($(ARCH),AIX)
+ifeq ($(MYOS),AIX)
   CC = gcc
   CFLAGS = -O -Dextname
   RPCCOM = rpcgen
-  OSTYPE=AIX
 endif
 
 ifdef ROOTSYS
@@ -224,19 +230,21 @@ daVarRpc.d: ../daVarRpc.h
 	touch $@
 
 ../daVarRpc_xdr.c: ../daVarRpc.x ../daVar.h daVarRpc_xdr.d
-	rm -f $@
+	$(RM) $@
 	(cd .. ; $(RPCCOM) -o $(@F) -c daVarRpc.x)
 
 ../daVarRpc_svc.c: ../daVarRpc.x ../daVar.h daVarRpc_svc.d
-	rm -f $@
-	(cd .. ; $(RPCCOM) -o $(@F) -m daVarRpc.x)
+	$(RM) $@
+#	(cd .. ; $(RPCCOM) -o $(@F) -m daVarRpc.x)
+# work around a bug in rpcgen present in Mac OS X 10.4:
+	(cd .. ; $(RPCCOM) -o temp_svc.c -m daVarRpc.x; sed -e 's/extern/static/g' temp_svc.c > $(@F); $(RM) temp_svc.c)
 
 ../daVarRpc_clnt.c: ../daVarRpc.x ../daVar.h daVarRpc_clnt.d
-	rm -f $@
+	$(RM) $@
 	(cd .. ; $(RPCCOM) -o $(@F) -l daVarRpc.x)
 
 ../daVarRpc.h: ../daVarRpc.x ../daVar.h
-	rm -f $
+	$(RM) $@
 	(cd .. ; $(RPCCOM) -o $(@F) -h daVarRpc.x)
 
 include $(sources:.c=.d)

@@ -16,6 +16,12 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.3  2008/09/25 00:01:30  jones
+ *   Updated to run with gfortran compiler
+ *
+ *   Revision 1.2.24.1  2007/09/10 21:32:47  pcarter
+ *   Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+ *
  *   Revision 1.2  2003/02/21 20:55:25  saw
  *   Clean up some types and casts to reduce compiler warnings.
  *
@@ -99,12 +105,15 @@ static DAINT stack[1000];			/* The stack */
 #ifdef USEMEMCPY
 #define PUSHPOINTER(x) memcpy(((void **)sp)++, (void *)&x, sizeof(void *))
 #else
-#define PUSHPOINTER(x) *(((DAINT **)sp)++) = x
+//#define PUSHPOINTER(x) *((DAINT **)sp)++ = x
+//#define PUSHPOINTER(x) *(DAINT **)sp = x; (DAINT **)(sp = (DAINT *)(DAINT **)((DAINT **)sp + 1))
+#define PUSHPOINTER(x) *(DAINT **)sp = x; sp = (DAINT *) (DAINT **) ((DAINT **)sp + 1)
+//#define PUSHPOINTER(x) *(DAINT **)sp = x; sp = (DAINT *) ((DAINT **)sp + 1)
 #endif
 
 #ifdef NOTPOSIX
 
-/* Can't use --() construct's, must decrement stack pointer manually */ 
+/* Can't use --() constructs, must decrement stack pointer manually */ 
 
 # ifdef POINTER64
 
@@ -135,12 +144,18 @@ static DAINT stack[1000];			/* The stack */
 
 #else
 
-# define SAVEINT(x) **(--(DAINT **)sp) = x
-# define SAVEFLOAT(x) **(--(DAFLOAT **)sp) = x
-# define SAVEDOUBLE(x) **(--(DADOUBLE **)sp) = x
-# define FETCHIARRAY(x) x = (*(*(--(DAINT**)sp) + index));
-# define FETCHFARRAY(x) x = (*(*(--(DAFLOAT**)sp) + index));
-# define FETCHDARRAY(x) x = (*(*(--(DADOUBLE**)sp) + index));
+//# define SAVEINT(x) **(--(DAINT **)sp) = x
+//# define SAVEFLOAT(x) **(--(DAFLOAT **)sp) = x
+//# define SAVEDOUBLE(x) **(--(DADOUBLE **)sp) = x
+# define SAVEINT(x) sp = (DAINT *) (DAINT **) ((DAINT **)sp - 1); **(DAINT **)sp = x
+# define SAVEFLOAT(x) sp = (DAINT *) (DAFLOAT **) ((DAFLOAT **)sp - 1); **(DAFLOAT **)sp = x
+# define SAVEDOUBLE(x) sp = (DAINT *) (DADOUBLE **) ((DADOUBLE **)sp - 1); **(DADOUBLE **)sp = x
+//# define FETCHIARRAY(x) x = (*(*(--(DAINT**)sp) + index));
+//# define FETCHFARRAY(x) x = (*(*(--(DAFLOAT**)sp) + index));
+//# define FETCHDARRAY(x) x = (*(*(--(DADOUBLE**)sp) + index));
+# define FETCHIARRAY(x) sp = (DAINT *) (DAINT **) ((DAINT **)sp - 1); x = *(*(DAINT**)sp + index);
+# define FETCHFARRAY(x) sp = (DAINT *) (DAFLOAT **) ((DAFLOAT **)sp - 1); x = *(*(DAFLOAT**)sp + index);
+# define FETCHDARRAY(x) sp = (DAINT *) (DADOUBLE **) ((DADOUBLE **)sp - 1); x = *(*(DADOUBLE**)sp + index);
 
 #ifdef USEMEMCPY
 
@@ -153,12 +168,16 @@ static DAINT stack[1000];			/* The stack */
 
 #else
 
-#define POPDOUBLE(x) x = *(--(DADOUBLE *)sp)
-#define POPFLOAT(x) x = *(--(DAFLOAT *)sp)
+//#define POPDOUBLE(x) x = *(--(DADOUBLE *)sp)
+#define POPDOUBLE(x) sp = (DAINT *) (DADOUBLE *) ((DADOUBLE *)sp - 1); x = *(DADOUBLE *)sp
+//#define POPFLOAT(x) x = *(--(DAFLOAT *)sp)
+#define POPFLOAT(x) sp = (DAINT *) (DAFLOAT *) ((DAFLOAT *)sp - 1); x = *(DAFLOAT *)sp
 #define POPINT(x) x = *(--(DAINT *)sp)
-#define PUSHDOUBLE(x) *((DADOUBLE *)sp)++ = x;
-#define PUSHFLOAT(x) *((DAFLOAT *)sp)++ = x;
-#define PUSHINT(x) *((DAINT *)sp)++ = x;
+//#define PUSHDOUBLE(x) *((DADOUBLE *)sp)++ = x;
+#define PUSHDOUBLE(x) *(DADOUBLE *)sp = x; sp = (DAINT *) (DADOUBLE *) ((DADOUBLE *)sp + 1)
+//#define PUSHFLOAT(x) *((DAFLOAT *)sp)++ = x
+#define PUSHFLOAT(x) *(DAFLOAT *)sp = x; sp = (DAINT *) (DAFLOAT *) ((DAFLOAT *)sp + 1)
+#define PUSHINT(x) *((DAINT *)sp)++ = x
 #endif
 #endif
 
@@ -169,6 +188,23 @@ static DAINT stack[1000];			/* The stack */
 
 thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 {
+#ifdef PHILDEBUG
+#ifdef NOTPOSIX
+#warning Phil says NOTPOSIX!
+#else
+#warning Phil says not NOTPOSIX! i.e. POSIX!!
+#endif
+#ifdef POINTER64
+#warning Phil says POINTER64!
+#else
+#warning Phil says not POINTER64!
+#endif
+#ifdef USEMEMCPY
+#warning Phil says USEMEMCPY!
+#else
+#warning Phil says not USEMEMCPY!
+#endif
+#endif
   register CODEPTR pc;
   CODE rawopcode,opcode,ltype,rtype,lrtypes;
   DAINT nargs,result;
@@ -194,7 +230,9 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 	case OPPUSHGROUP:		/* Pushes */
 	  switch(opcode)
 	    {
+#ifdef USEMEMCPY
 	      void *tmpptr;
+#endif
 	    case OPPUSHINT:	/* Float included in pushes */
 	      if((rawopcode & OPRESTYPEMASK) == OPRDOUBLE){
 /*		printf("sp=%x, pc=%x\n",sp,pc);*/
@@ -205,7 +243,8 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 #ifdef __sgi
 		PUSHDOUBLE(*((DADOUBLE *)pc)); pc++; pc++;
 #else
-		PUSHDOUBLE(*((DADOUBLE *)pc)++);
+		PUSHDOUBLE(*(DADOUBLE *)pc);/*phil*/
+                pc = (CODEPTR) (DADOUBLE *) ((DADOUBLE *)pc + 1);
 #endif
 #endif
 /*		printf("sp=%x, pc=%x\n",sp,pc);*/
@@ -218,7 +257,8 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 	      PUSHPOINTER((memcpy(&tmpptr,(((DAINT **)pc)++),sizeof(void *))
 			  ,tmpptr));
 #else
-	      PUSHPOINTER(*(((DAINT **)pc)++));
+              PUSHPOINTER(*(DAINT **)pc); /*phil*/
+              pc = (CODEPTR)(DAINT **) ((DAINT **)pc + 1);
 #endif
 	      break;
 	    case OPPUSHINTP:    /*Push what a pointer points to */
@@ -227,15 +267,17 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 		memcpy(&tmpptr,(((DAINT **)pc)++),sizeof(void *));
 		d = *(DADOUBLE *) tmpptr;
 #else
-		d = **(((DADOUBLE **)pc)++);
+		d = **(DADOUBLE **)pc;/*phil*/
+                pc = (CODEPTR) (DADOUBLE **) ((DADOUBLE **)pc + 1);
 #endif	      
-		PUSHDOUBLE(d);
+		PUSHDOUBLE(d);/*phil*/
 	      } else {
 #ifdef USEMEMCPY
 		memcpy(&tmpptr,(((DAINT **)pc)++),sizeof(void *));
 		PUSHINT(*(DAINT *) tmpptr);
 #else		
-		PUSHINT(**(((DAINT **)pc)++));
+		PUSHINT(**(DAINT **)pc);/*phil*/
+                pc = (CODEPTR) (DAINT **) ((DAINT **)pc + 1);
 #endif
 	      }
 	      break;
@@ -251,8 +293,8 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 	case OPLINDEXGROUP:
 	  if(opcode==OPLFARG) {
 	    if(rtype==OPRINT) {POPINT(i);}
-	    else if(rtype==OPRFLOAT) {POPFLOAT(f);}
-	    else {POPDOUBLE(d);}
+	    else if(rtype==OPRFLOAT) {POPFLOAT(f);}/*phil*/
+	    else {POPDOUBLE(d);}/*phil*/
 	    POPINT(index);	/* Pop the function code */
 	    switch(index)
 	      {
@@ -262,10 +304,10 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 		  PUSHINT(i);
 		} else if(rtype==OPRFLOAT) {
 		  if(f<0.0) f = -f;
-		  PUSHFLOAT(f);
+		  PUSHFLOAT(f);/*phil*/
 		} else {
 		  if(d<0.0) d = -d;
-		  PUSHDOUBLE(d);
+		  PUSHDOUBLE(d);/*phil*/
 		}
 		break;
 	      case 1:		/* sqrt */
@@ -276,40 +318,40 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 		  fprintf(STDERR,"Test block %s: sqrt(%f)\n",blockname,d);
 		  d = 0;
 		}
-		PUSHDOUBLE(d);
+		PUSHDOUBLE(d);/*phil*/
 		break;
 	      case 2:		/* exp */
 		if(rtype==OPRINT) d = i;
 		else if(rtype==OPRFLOAT) d = f;
 		d = exp(d);
-		PUSHDOUBLE(d);
+		PUSHDOUBLE(d);/*phil*/
 		break;
 	      case 3:		/* sin */
 		if(rtype==OPRINT) d = i;
 		else if(rtype==OPRFLOAT) d = f;
 		d = sin(d);
-		PUSHDOUBLE(d);
+		PUSHDOUBLE(d);/*phil*/
 		break;
 	      case 4:		/* cos */
 		if(rtype==OPRINT) d = i;
 		else if(rtype==OPRFLOAT) d = f;
 		d = cos(d);
-		PUSHDOUBLE(d);
+		PUSHDOUBLE(d);/*phil*/
 		break;
 	      case 5:		/* tan */
 		if(rtype==OPRINT) d = i;
 		else if(rtype==OPRFLOAT) d = f;
 		d = tan(d);
-		PUSHDOUBLE(d);
+		PUSHDOUBLE(d);/*phil*/
 		break;
 	      }
 	    break;
 	  }
 	  if(rtype==OPRFLOAT) {	/* Floating point index */
-	    POPFLOAT(f);
+	    POPFLOAT(f);/*phil*/
 	    index = floatToLong(f);
 	  } else if(rtype==OPRDOUBLE) {	/* Double */
-	    POPDOUBLE(d);
+	    POPDOUBLE(d);/*phil*/
 	    index = floatToLong(d);
 	  } else {
 	    POPINT(index);
@@ -318,13 +360,13 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 	  /* ltype should always be == restype */
 	  if(opcode == OPLINDEX || opcode == OPLINDEXB){
 	    if(ltype == OPRDOUBLE) {
-	      FETCHDARRAY(d);
-	      PUSHDOUBLE(d);
+	      FETCHDARRAY(d);/*phil*/
+	      PUSHDOUBLE(d);/*phil*/
 	    } else if (ltype == OPRFLOAT) {
-              FETCHFARRAY(f);
-              PUSHFLOAT(f);
+              FETCHFARRAY(f);/*phil*/
+              PUSHFLOAT(f);/*phil*/
 	    } else {
-              FETCHIARRAY(i);
+              FETCHIARRAY(i);/*phil*/
 	      PUSHINT(i);
 	    }
 	  } else { /*pointer on stack*/
@@ -337,13 +379,13 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 	      /* The following works better on the alpha */
 	      pd = *((DADOUBLE **)sp);
 	      pd += index;
-	      PUSHPOINTER(pd);
+	      PUSHPOINTER(pd);/*phil*/
 	    } else {		/* Assume INT and FLOAT the same size */
 	      /**((DAINT **)sp)++ =  (*((DAINT **)sp)+index);*/
 	      /* The following works better on the alpha */
 	      pi = *((DAINT **)sp);
 	      pi += index;
-	      PUSHPOINTER(pi);
+	      PUSHPOINTER(pi);/*phil*/
 	    }
 	  }
 	  break;
@@ -351,44 +393,44 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 	  if(rtype==OPRINT) {
 	    POPINT(i);
 	    if(ltype==OPRINT) {
-	      SAVEINT(i); /* Save result in result variable */
+	      SAVEINT(i); /* Save result in result variable *//*phil*/
 	      PUSHINT(i);	/* Put result back on stack */
 	    } else if(ltype==OPRFLOAT) {
 	      f = i;	/* Convert to floating */
-	      SAVEFLOAT(f); /* Save variable */
-	      PUSHFLOAT(f); /* Put back on stack */
+	      SAVEFLOAT(f); /* Save variable *//*phil*/
+	      PUSHFLOAT(f); /* Put back on stack *//*phil*/
 	    } else {		/* if(ltype==OPRDOUBLE) */
 	      d = i;
-	      SAVEDOUBLE(d);
-	      PUSHDOUBLE(d);
+	      SAVEDOUBLE(d);/*phil*/
+	      PUSHDOUBLE(d);/*phil*/
 	    }
 	  } else if(rtype==OPRFLOAT) {
-	    POPFLOAT(f);
+	    POPFLOAT(f);/*phil*/
 	    if(ltype==OPRINT) {
 	      i = floatToLong(f);
-	      SAVEINT(i); /* Save result in result variable */
+	      SAVEINT(i); /* Save result in result variable *//*phil*/
 	      *sp++ = i;
 	    } else if(ltype==OPRFLOAT) {
-	      SAVEFLOAT(f); /* Save variable */
+	      SAVEFLOAT(f); /* Save variable *//*phil*/
 	      *sp++ = *(DAINT *)&f;
 	    } else {		/* if(ltype==OPRDOUBLE) */
 	      d = f;
-	      SAVEDOUBLE(d);
-	      PUSHDOUBLE(d);
+	      SAVEDOUBLE(d);/*phil*/
+	      PUSHDOUBLE(d);/*phil*/
 	    }
 	  } else {		/* if(rtype==OPRDOUBLE) */
-	    POPDOUBLE(d);
+	    POPDOUBLE(d);/*phil*/
 	    if(ltype==OPRINT) {
 	      i = floatToLong(d);
-	      SAVEINT(i); /* Save result in result variable */
+	      SAVEINT(i); /* Save result in result variable *//*phil*/
 	      *sp++ = i;
 	    } else if(ltype==OPRFLOAT) {
 	      f = d;
-	      SAVEFLOAT(f); /* Save variable */
+	      SAVEFLOAT(f); /* Save variable *//*phil*/
 	      *sp++ = *(DAINT *)&f;
 	    } else {		/* if(ltype==OPRDOUBLE) */
- 	      SAVEDOUBLE(d);
-	      PUSHDOUBLE(d);
+ 	      SAVEDOUBLE(d);/*phil*/
+	      PUSHDOUBLE(d);/*phil*/
 	    }
 	  }
 	  break;
@@ -397,19 +439,19 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 	  if(rtype==OPRINT) {
 	    POPINT(ir);
 	  } else if(rtype==OPRFLOAT) {
-	    POPFLOAT(f);
+	    POPFLOAT(f);/*phil*/
 	    ir = floatToLong(f);
 	  } else {
-	    POPDOUBLE(d);
+	    POPDOUBLE(d);/*phil*/
 	    ir = floatToLong(d);
 	  }
 	  if(ltype==OPRINT) {
 	    POPINT(il);
 	  } else if(ltype==OPRFLOAT) {
-	    POPFLOAT(f);
+	    POPFLOAT(f);/*phil*/
 	    il = floatToLong(f);
 	  } else {
-	    POPDOUBLE(d);
+	    POPDOUBLE(d);/*phil*/
 	    il = floatToLong(d);
 	  }
 	  switch(opcode)
@@ -448,19 +490,19 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 	    POPINT(ir);
 	    dr = ir;
 	  } else if (rtype==OPRFLOAT) {
-	    POPFLOAT(fr);
+	    POPFLOAT(fr);/*phil*/
 	    dr = fr;
 	  } else {
-	    POPDOUBLE(dr);
+	    POPDOUBLE(dr);/*phil*/
 	  }
 	  if(ltype==OPRINT) {
 	    POPINT(il);
 	    dl = il;
 	  } else if (ltype==OPRFLOAT) {
-	    POPFLOAT(fl);
+	    POPFLOAT(fl);/*phil*/
 	    dl = fl;
 	  } else {
-	    POPDOUBLE(dl);
+	    POPDOUBLE(dl);/*phil*/
 	  }
 	  if(rtype!=OPRINT || ltype!=OPRINT){
 	    switch(opcode)
@@ -485,15 +527,15 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 		break;
 	      case OPADD:
 		d = dl + dr;
-		PUSHDOUBLE(d);
+		PUSHDOUBLE(d);/*phil*/
 		break;
 	      case OPSUB:
 		d = dl - dr;
-		PUSHDOUBLE(d);
+		PUSHDOUBLE(d);/*phil*/
 		break;
 	      case OPTIMES:
 		d = dl * dr;	/* Need to deal with overflow */
-		PUSHDOUBLE(d);
+		PUSHDOUBLE(d);/*phil*/
 		break;
 	      case OPIDIV:
 /*		printf("OP=%x\n",rawopcode);*/
@@ -512,11 +554,11 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 		} else {
 		  d = dl / dr;	/* Need to deal with overflow and div 0 */
 		}
-		PUSHDOUBLE(d);
+		PUSHDOUBLE(d);/*phil*/
 		break;
 	      case OPMOD:
 		d = fmod(dl,dr);
-		PUSHDOUBLE(d);
+		PUSHDOUBLE(d);/*phil*/
 		break;
 	      }
 	  } else {		/* Both left and right are int */
@@ -564,7 +606,7 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 		  d = 0.0;
 		} else
 		  d = dl / dr; /* Need to deal with overflow and div 0 */
-		PUSHDOUBLE(d);
+		PUSHDOUBLE(d);/*phil*/
 		break;
 	      case OPMOD:
 		*sp++ = il % ir; /* Need to deal with overflow and div 0 */
@@ -584,9 +626,9 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 		f = -f;
 		*sp++ = *(DAINT *)&f;
 	      } else {
-		POPDOUBLE(d);
+		POPDOUBLE(d);/*phil*/
 		d = -d;
-		PUSHDOUBLE(d);
+		PUSHDOUBLE(d);/*phil*/
 	      }
 	      break;
 	    case OPNOT:
@@ -594,10 +636,10 @@ thStatus thExecuteCode(char *blockname,CODEPTR code, CODEPTR codelimit)
 	      if(rtype==OPRINT) {
 		POPINT(i);
 	      } else if(rtype==OPRFLOAT) {
-		POPFLOAT(f);
+		POPFLOAT(f);/*phil*/
 		i = floatToLong(f);
 	      } else {
-		POPDOUBLE(d);
+		POPDOUBLE(d);/*phil*/
 		i = floatToLong(d);
 	      }
 	      i = (opcode == OPNOT ? !i : ~i);

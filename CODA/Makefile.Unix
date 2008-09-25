@@ -16,6 +16,9 @@
 # 
 #  Revision History:
 #    $Log$
+#    Revision 1.5  2008/09/24 23:59:56  jones
+#    Updated to run with gfortran compiler
+#
 #    Revision 1.4  2004/07/07 21:07:21  saw
 #    Move CODA routine from libctp to libcoda
 #
@@ -44,6 +47,7 @@
 
 NEWSTYLE = 1
 include ../../etc/Makefile
+include ../../etc/Makefile.flags
 
   install-dirs := lib #include
 
@@ -53,12 +57,12 @@ include ../../etc/Makefile
 
   sources          = evio.c evtest.c swap_util.c ceMsgLib.c ceMsgTbl.c
 
-ifeq ($(ARCH),Linux)
+ifeq ($(MYOS),Linux)
   lib_targets := $(lib_targets) libcoda.a(misc.o)
   sources := $(sources) misc.c
 endif
 
-ifeq ($(ARCH),OSF1)
+ifeq ($(MYOS),OSF1)
   CC = cc
 else
   CC = gcc
