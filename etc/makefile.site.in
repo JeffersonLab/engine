@@ -1,109 +1,114 @@
+# This file isn't used anymore 
+# this file sets AR, FFLAGS, PW, and MAKEREG
 AR = ar
 
-ifeq ($(OSTYPE),HPUX)
-EXTRA = -D_HPUX_SOURCE -Dhpux
-ifeq ($(OSEXT),TEST)
-  FFLAGS=+ppu -C +es -O -G +Obb1000 +FPVZOU
-else
-  ifeq ($(OSEXT),09)
-    FFLAGS=+ppu -C +es -O +Obb1000 +FPVZOU
+ifeq ($(MYOS),HPUX)
+  EXTRA = -D_HPUX_SOURCE -Dhpux
+  ifeq ($(OSEXT),TEST)
+    FFLAGS=+ppu -C +es -O -G +Obb1000 +FPVZOU
   else
-    FFLAGS=+ppu -C +es -O +Onolimit +FPVZOU
-    AR=/usr/bin/ar
+    ifeq ($(OSEXT),09)
+      FFLAGS=+ppu -C +es -O +Obb1000 +FPVZOU
+    else
+      FFLAGS=+ppu -C +es -O +Onolimit +FPVZOU
+      AR=/usr/bin/ar
+    endif
   endif
+  
+  ARFLAGS=frv
+  CC = gcc
+  RPCGEN = rpcgen
+  FC = f77
+  CP=cp -f
+  RM        = rm -f 
 endif
 
-ARFLAGS=frv
-GCC = gcc
-RPCGEN = rpcgen
-F77 = f77
-CP=cp -f
-RM        = rm -f 
+ifeq ($(MYOS),ULTRIX)
+  EXTRA = 
+  FFLAGS=-check_bounds -extend_source -g2 -I.
+  CC = gcc
+  RPC_ROOT = /usr/site1/rpc/usr/lib
+  RPCGEN = rpcgen
+  FC = f77
+  ##CODA=/usr/site2/coda/1.3b
+  CP=cp -f
+  RM        = rm -f 
+  RANLIB = ranlib
 endif
 
-ifeq ($(OSTYPE),ULTRIX)
-EXTRA = 
-FFLAGS=-check_bounds -extend_source -g2 -I.
-GCC = gcc
-RPC_ROOT = /usr/site1/rpc/usr/lib
-RPCGEN = rpcgen
-F77 = f77
-##CODA=/usr/site2/coda/1.3b
-CP=cp -f
-RM        = rm -f 
-RANLIB = ranlib
-endif
-
-ifeq ($(OSTYPE),IRIX)
-EXTRA =
-FFLAGS=-check_bounds -extend_source -g2
-LDFLAGS=
-GCC = gcc
-RPCGEN = rpcgen
-F77 = f77
-CP=cp
-RM        = rm -f 
+ifeq ($(MYOS),IRIX)
+  EXTRA =
+  FFLAGS=-check_bounds -extend_source -g2
+  LDFLAGS=
+  CC = gcc
+  RPCGEN = rpcgen
+  FC = f77
+  CP=cp
+  RM        = rm -f 
 endif
 
 #Alpha port known to work on a
 #	DEC Alphastation 200 4/166 with DEC Unix V4.0B (Rev 564)
-ifeq ($(OSTYPE),OSF1)
-EXTRA =
-FFLAGS=-extend_source -align dcommons -I.
-LDFLAGS=
-GCC = gcc
-RPCGEN = rpcgen
-F77 = f77
-CP=cp -f
-RM        = rm
+ifeq ($(MYOS),OSF1)
+  EXTRA =
+  FFLAGS=-extend_source -align dcommons -I.
+  LDFLAGS=
+  CC = gcc
+  RPCGEN = rpcgen
+  FC = f77
+  CP=cp -f
+  RM        = rm
 endif
 
-ifeq ($(OSTYPE),Linux)
-GCC = cc
-CP=cp -f
-G77:=$(filter no,$(shell which g77))
-ifneq ($(G77),no)
-F77=g77
-f77 = g77
-FC = g77
-FFLAGS=-I. -ffixed-line-length-132 -finit-local-zero -fno-automatic
-else
-NOFORT77:=$(filter no,$(shell which fort77))
-ifneq ($(NOFORT77),no)
-F77=fort77
-FFLAGS=-Wf,-f -Nn1604
-else
-F77 = f77
-ifeq ($(F77COMPILER),Absoft)
-ifndef CERN_ROOT
-  CERN_ROOT = /usr/local/cernlib/96a_absoft
-endif
-FFLAGS=-f -W
-EXTRA=-DNOF77extname -DAbsoftUNIXFortran
-else
-ifndef CERN_ROOT
-  CERN_ROOT = /usr/local/cernlib/96a
-endif
-ifeq ($(F77COMPILER),fort77)
-F77 = fort77
-FFLAGS=-Wf,-f -Nn1604
-else
-ifeq ($(OSEXT),TEST)
-FFLAGS=-Nn1604 -O -f -g -pg
-else
-FFLAGS=-Nn1604 -O -f -g
-endif
-endif
-endif
-endif
-endif
-RM        = rm -f 
+ifeq ($(MYOS),Linux)
+  override FFLAGS += -I. -ffixed-line-length-132 -finit-local-zero -fno-automatic
 endif
 
-ifeq ($(OSTYPE),SunOS)
-GCC = gcc
+#this doesn't run anymore
+ifeq ($(MYOS),LinuxOLD)
+ CC = gcc
+ CP=cp -f
+ G77:=$(filter no,$(shell which g77))
+ ifneq ($(G77),no)
+  FC=g77
+  FFLAGS= -I. -ffixed-line-length-132 -finit-local-zero -fno-automatic
+ else
+  NOFORT77:=$(filter no,$(shell which fort77))
+  ifneq ($(NOFORT77),no)
+   FC=fort77
+   FFLAGS=-Wf,-f -Nn1604
+  else
+   FC = f77
+   ifeq ($(F77COMPILER),Absoft)
+    ifndef CERN_ROOT
+     CERN_ROOT = /usr/local/cernlib/96a_absoft
+    endif
+    FFLAGS=-f -W
+    EXTRA=-DNOF77extname -DAbsoftUNIXFortran
+   else
+    ifndef CERN_ROOT
+     CERN_ROOT = /usr/local/cernlib/96a
+    endif
+    ifeq ($(F77COMPILER),fort77)
+     FC = fort77
+     FFLAGS=-Wf,-f -Nn1604
+    else
+     ifeq ($(OSEXT),TEST)
+      FFLAGS=-Nn1604 -O -f -g -pg
+     else
+      FFLAGS=-Nn1604 -O -f -g
+     endif
+    endif
+   endif
+  endif
+ endif
+ RM        = rm -f 
+endif
+
+ifeq ($(MYOS),SunOS)
+CC = gcc
 CP=cp -f
-F77 = f77
+FC = f77
 FFLAGS=-e -O
 RM        = rm -f 
 ifeq ($(OSVERSION),4)
@@ -111,15 +116,14 @@ ifeq ($(OSVERSION),4)
 endif
 endif
 
-ifeq ($(OSTYPE),AIX)
-GCC = gcc
+ifeq ($(MYOS),AIX)
+CC = gcc
 CP=cp -f
-F77 =f77
+FC =f77
 FFLAGS=-qfixed=132 -qextname -O
 RM = rm -f
 endif
 
-ARCH = $(OSTYPE)
 PW := $(shell pwd)
-#MAKEREG=/group/hallc/saw/$(OSTYPE)$(OSEXT)/bin/makereg
-MAKEREG=$(PW)/../../../$(OSTYPE)$(OSEXT)/bin/makereg
+#MAKEREG=/group/hallc/saw/$(MYOS)$(OSEXT)/bin/makereg
+MAKEREG=$(PW)/../../../$(MYOS)$(OSEXT)/bin/makereg

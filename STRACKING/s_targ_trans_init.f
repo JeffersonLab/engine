@@ -8,6 +8,12 @@
 * Version:  0.1 (In development)
 *
 * $Log$
+* Revision 1.6  2008/09/25 00:08:35  jones
+* Updated to run with gfortran compiler
+*
+* Revision 1.5.16.1  2007/09/10 20:28:01  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.5  2004/02/19 16:42:13  jones
 * Can set filename for the SOS matrix elements using the parameter
 * s_recon_coeff_filename . If parameter is not set then uses
@@ -97,7 +103,7 @@ c      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
       write(*,*) '*******'
        write(*,*) ' Opening SOS matrix element file ',s_recon_coeff_filename
       write(*,*) '*******'
-      open (unit=chan,status='old',name=s_recon_coeff_filename,err=92)
+      open (unit=chan,status='old',file=s_recon_coeff_filename,err=92)
 
 ! Read header comments.
 

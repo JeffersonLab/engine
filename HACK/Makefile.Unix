@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.11  2008/09/25 00:07:29  jones
+# Updated to run with gfortran compiler
+#
 # Revision 1.10  1999/01/21 21:39:29  saw
 # Clean up Include file rules
 #
@@ -32,6 +35,7 @@
 #
 NEWSTYLE = 1
 include ../../etc/Makefile
+include ../../etc/Makefile.flags
 
 hack_source = hack_register_variables.f hack_initialize.f hack_anal.f \
 	 hack_shutdown.f hack_copyevt.f r_hack_.f

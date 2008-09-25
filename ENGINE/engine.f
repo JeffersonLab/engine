@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.43  2008/09/25 00:06:33  jones
+* Updated to run with gfortran compiler
+*
 * Revision 1.42  2004/07/08 20:10:01  saw
 * Close CTP Root trees
 *
@@ -177,6 +180,7 @@ c      program engine
 c
       IMPLICIT NONE
       SAVE
+      external jishft, jiand, jieor
 
       character*6 here
       parameter (here= 'Engine')
@@ -938,8 +942,8 @@ c...
       implicit none
       integer iarg
       character*132 arg
-      integer iargc
-      external iargc
+c      integer iargc
+c      external iargc
       logical outputflag
 *
 * Process command line args that set CTP variables

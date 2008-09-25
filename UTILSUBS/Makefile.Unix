@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.15  2008/09/25 00:09:53  jones
+# Updated to run with gfortran compiler
+#
 # Revision 1.14  2004/07/08 20:01:17  saw
 # Make include file rules like other directories.  Avoids leaving copies around.
 #
@@ -44,6 +47,7 @@
 #
 NEWSTYLE = 1
 include ../../etc/Makefile
+include ../../etc/Makefile.flags
 
 gsources = g_add_path.f g_build_note.f g_important_length.f g_int_sort.f \
 	g_log_message.f g_normalize.f g_prepend.f g_rep_err.f \

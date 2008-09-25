@@ -160,8 +160,8 @@ c
          enddo
          eb=eb*1000.
          t=qdc/eb
-D          write(lun,*) t
-D         write(lun,*) t,nhit,eb,x,xp,y,yp,nev
+c          write(lun,*) t
+c         write(lun,*) t,nhit,eb,x,xp,y,yp,nev
          avr=avr+t
          sig=sig+t*t
          nev=nev+1
@@ -169,12 +169,12 @@ c         print*,eb,qdc,nev
       end do
 
  3    close(lun)
-D      print*,avr,sig,nev
+c      print*,avr,sig,nev
       avr=avr/nev
       sig=sqrt(sig/nev-avr*avr)
       thr_lo=avr-3.*sig
       thr_hi=avr+3.*sig
-D      write(*,*) 'thr_lo=',thr_lo,'   thr_hi=',thr_hi
+c      write(*,*) 'thr_lo=',thr_lo,'   thr_hi=',thr_hi
 
       return
 
@@ -206,7 +206,7 @@ c
 	real*8 e0
 	real*8 ac(npmts)
 	real*8 au(npmts)
-	real*8 t
+c      real*8 t
 	real*8 s
 	integer nev
 	logical*1 eod
@@ -285,9 +285,9 @@ c	      print*,nums(numsel),numsel,nf(i)
 	      write(*,*) ' PMT ',i,' only ',nf(i),' events. Will not to be calibrated. Gain is set to 0.'
 	   end if
 	end do
-D	print*,'numsel =',numsel
+c	print*,'numsel =',numsel
 	write(*,'(''Number of events for each PMT for calib for run '',i7,'', '',
-	1    i6,'' events processed'')') nrun,nev
+     1    i6,'' events processed'')') nrun,nev
 	write(*,*) ' PMT with less than', minf,' events  are not included in calibration.'
 	write(*,*)
 	write(*,11) 'scal_pos_gain_cor=',(nf(i),i=       1,  nrow)
@@ -307,7 +307,7 @@ c
 	      nsj=nums(j)
 	      jp=j+(i-1)*numsel
 	      aux(jp)=qm(nsj,nsi)
-D	      write(65,'(e12.5)') aux(jp)
+c	      write(65,'(e12.5)') aux(jp)
 	   end do
 	end do
 
@@ -319,14 +319,14 @@ D	      write(65,'(e12.5)') aux(jp)
 	   ac(nsi)=acs(i)
 	end do
 
-D	write(*,'(2e10.3,i5)') (ac(i),au(i),i,i=1,npmts)
+c	write(*,'(2e10.3,i5)') (ac(i),au(i),i,i=1,npmts)
 
 	write(fn,'(a17,i5.5)') 'PARAM/scal.param.',nrun
 	call g_IO_control(spare_id,'ANY',ABORT,err)  !get IO channel
 	open(spare_id,file=fn)
 
 	write(spare_id,'(''; Calibration constants for run '',i7,'', '',
-	1    i6,'' events processed'')') nrun,nev
+     1    i6,'' events processed'')') nrun,nev
 	write(spare_id,*)
 
         write(spare_id,10) 'scal_pos_gain_cor=',(ac(i)*1.D+3,i=       1,  nrow)
@@ -351,7 +351,7 @@ D	write(*,'(2e10.3,i5)') (ac(i),au(i),i,i=1,npmts)
 
 	write(*,*)
 	write(*,'(''Calibration constants for run '',i7,'', '',
-	1    i6,'' events processed'')') nrun,nev
+     1    i6,'' events processed'')') nrun,nev
 	write(*,*)
 	write(*,*) ' constants written to ',fn
 	write(*,*)
@@ -530,7 +530,7 @@ c
 	 qnet=qnet/(eb*1000.)
 	 good_ev=(qnet.gt.thr_lo).and.(qnet.lt.thr_hi)
 
-D	 write(99,*) qnet
+c	 write(99,*) qnet
 
       end do   !.not.good_ev
 

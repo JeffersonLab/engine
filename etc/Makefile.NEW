@@ -1,11 +1,10 @@
-ifndef MYOS
-  MYOS := $(subst -,,$(shell uname))
-endif
+.DELETE_ON_ERROR: ;
+
+include ../etc/Makefile.variables
 
 MAKEFILENAME = Makefile.Unix
 
 ifeq ($(MYOS),HPUX)
-  OSTYPE = $(MYOS)
 
   ifneq (,$(findstring 09,$(shell uname -r)))
     HPUXVERSION := 09
@@ -17,13 +16,12 @@ ifeq ($(MYOS),HPUX)
 endif
 
 ifeq ($(MYOS),HPUXTEST)
-  OSTYPE = HPUX
+  MYOS = HPUX
   SUBDIRNAME = O.hpuxtest
   OSEXT = TEST
 endif
 
 ifeq ($(MYOS),ULTRIX)
-  OSTYPE = $(MYOS)
   SUBDIRNAME = O.ultrix
   OSEXT =
 endif
@@ -31,49 +29,52 @@ endif
 #Alpha port known to work on a
 #	DEC Alphastation 200 4/166 with DEC Unix V4.0B (Rev 564)
 ifeq ($(MYOS),OSF1)
-  OSTYPE = $(MYOS)
   SUBDIRNAME = O.OSF1
   OSEXT =
 endif
 
 ifeq ($(MYOS),Linux)
-  OSTYPE = $(MYOS)
   SUBDIRNAME = O.Linux
   OSEXT =
 endif
 
 ifeq ($(MYOS),LinuxTEST)
-  OSTYPE = Linux
+  MYOS = Linux
   SUBDIRNAME = O.LinuxTEST
   OSEXT = TEST
 endif
 
 ifeq ($(MYOS),SunOS)
-  ifeq ($(OSTYPE),SunOS4)
+  ifeq ($(MYOS),SunOS4)
     OSVERSION=4
   else
     OSVERSION=5
   endif
-  OSTYPE = $(MYOS)
   SUBDIRNAME = O.$(MYOS)
   OSEXT =
 endif
 
 ifeq ($(MYOS),AIX)
-  OSTYPE = $(MYOS)
   SUBDIRNAME = O.aix
   OSEXT = 
 endif
 
-export MYOS
-export OSTYPE
-export OSEXT
-export OSVERSION
+# OSEXT is either TEST or empty
+# If you want to use LinuxTEST as shown above, just pass OSEXT=TEST
+# after 'make' on the command line, and leave MYOS as the default (Linux)
+# we don't need to do anything with OSEXT here 
+#export OSEXT #either TEST or empty
+#export OSVERSION #not used since we probably can't compile on SunOS anyway
 
+.PHONY: all
 all:  $(SUBDIRNAME) $(SUBDIRNAME)/Makefile
-	make -C $(SUBDIRNAME) csoft
+	$(MAKE) -C $(SUBDIRNAME)
 
-$(SUBDIRNAME)/Makefile:
+$(MAKEFILENAME):
+	@echo change in $(CURDIR)/$(MAKEFILENAME)
+	(cd $(SUBDIRNAME) ; ln -f -s ../$(MAKEFILENAME) Makefile)
+$(SUBDIRNAME)/Makefile: $(MAKEFILENAME)
+	@echo copy $(CURDIR)/$(MAKEFILENAME)
 	(cd $(SUBDIRNAME) ; ln -f -s ../$(MAKEFILENAME) Makefile)
 
 $(SUBDIRNAME):

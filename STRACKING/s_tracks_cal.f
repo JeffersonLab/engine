@@ -18,12 +18,20 @@
 *-                                cut.  The default for this is now no cut.
 *-                                K.G. Vansyoc
 * $Log$
+* Revision 1.11  2008/09/25 00:08:35  jones
+* Updated to run with gfortran compiler
+*
+* Revision 1.10.6.1  2007/09/10 20:28:01  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.10  2005/03/15 20:08:23  jones
 * Modify the criterion for matching track and calorimeter cluster. As before,
 * the track must hit within (0.5*scal_block_xsize + scal_slop) of the cluster
-* position. Previously if more than one cluster was within (0.5*scal_block_xsize + scal_slop) then the last cluster in the loop was associated with the track.
-* Now, if more than one cluster meets that condition then cluster which has a position
-* closest to the track is associated with the track.
+* position. Previously if more than one cluster was within
+* (0.5*scal_block_xsize + scal_slop) then the last cluster in the loop was
+* associated with the track. Now, if more than one cluster meets that
+* condition then cluster which has a position closest to the track is
+* associated with the track.
 *
 * Revision 1.9  2003/04/03 00:45:01  jones
 * Update to calorimeter calibration (V. Tadevosyan)

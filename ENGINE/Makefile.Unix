@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.29  2008/09/25 00:06:33  jones
+# Updated to run with gfortran compiler
+#
 # Revision 1.28  2004/02/18 14:06:53  jones
 # Updated compile subroutines needed to allow the possibility of segmenting rzdat files.
 #
@@ -93,6 +96,7 @@
 #
 NEWSTYLE = 1
 include ../../etc/Makefile
+include ../../etc/Makefile.flags
 
 decode_source = g_decode_clear.f g_decode_config.f g_decode_event_by_banks.f \
 	g_decode_fb_bank.f g_decode_fb_detector.f \
@@ -146,14 +150,14 @@ libsources =  $(coin_source) $(sos_source) $(hms_source) $(general_source) \
 	$(ntuple_source) $(gmakeregstuff) $(cmakeregstuff) \
 	$(hmakeregstuff) $(smakeregstuff)
 
-ifeq ($(ARCH),AIX)
+ifeq ($(MYOS),AIX)
 xlibsources := $(filter-out g_decode_config.f,$(libsources))
 libsources = g_decode_config_aix.f $(xlibsources)
 ../g_%_aix.f : ../g_%.f
 	sed -e "s/READONLY/action='read'/"< $< > $@	
 endif
 
-ifeq ($(ARCH),Linux)
+ifeq ($(MYOS),Linux)
 xlibsources := $(filter-out g_decode_config.f,$(libsources))
 libsources = g_decode_config_linux.f $(xlibsources)
 # F2C doesn't know about READONLY
@@ -178,49 +182,52 @@ DEPLIBS = $(LIBROOT)/libengine.a \
 	$(LIBROOT)/libutils.a #$(LIBROOT)/libctp.a
 #$(LIBROOT)/libgmc.a 
 
-ifeq ($(ARCH),HPUX)
+ifeq ($(MYOS),HPUX)
 #  OTHERLIBS = -Wl,-L$(CODA)/HP_UX/lib \
 #	-lcoda -Wl,-L$(CERN_ROOT)/lib -lpacklib
   OTHERLIBS = -Wl,-L$(CERN_ROOT)/lib -lpacklib -lU77 -lm
 endif
 
-ifeq ($(ARCH),ULTRIX)
+ifeq ($(MYOS),ULTRIX)
   RPCLIBDIR = /usr/site1/rpc/usr/lib
   OTHERLIBS = -L$(CODA)/ULTRIX/lib -lcoda -L$(CERN_ROOT)/lib -lpacklib \
 	-L$(RPCLIBDIR) -lrpclib
 endif
 
-ifeq ($(ARCH),OSF1)
+ifeq ($(MYOS),OSF1)
   OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib
   FLDFLAGS= -g -Wl,-taso
 endif
 
-ifeq ($(ARCH),IRIX)
+ifeq ($(MYOS),IRIX)
   RPCLIBDIR = /usr/lib
   OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -L$(RPCLIBDIR) -lrpcsvc
 endif
 
-ifeq ($(ARCH),Linux)
-  CERN_ROOT = /usr/local/cernlib/98
-  OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -lc -lm
+ifeq ($(MYOS),Linux)
+  ifeq ($(MYREALOS),Darwin)
+     OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -lc -lm
+  else
+     OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib -lc -lm -lnsl
+  endif
   DEPLIBS := $(DEPLIBS) $(LIBROOT)/libport.a
 
 $(LIBROOT)/libport.a:
-	@make -C ../../PORT 
+	$(MAKE) -C ../../PORT 
 endif
 
-ifeq ($(ARCH),SunOS)
+ifeq ($(MYOS),SunOS)
   OTHERLIBS = -L$(LIBROOT) -lctpclient -lctp -L$(CERN_ROOT)/lib \
 	-lgeant$(GEANTVER) -lpawlib -lgraflib -lgrafX11 -lpacklib -lmathlib \
 	-lnsl -lsocket -lX11
 endif
 
-ifeq ($(ARCH),AIX)
+ifeq ($(MYOS),AIX)
   OTHERLIBS = -L$(CERN_ROOT)/lib -lpacklib
   DEPLIBS := $(DEPLIBS) $(LIBROOT)/libport.a
 endif
 
-#ifeq ($(ARCH),Linux)
+#ifeq ($(MYOS),Linux)
 ## F2C doesn't know about READONLY
 #../g_decode_config.f : $(NFSDIRECTORY)/ENGINE/g_decode_config.f
 #	sed -e "s/,READONLY//" $< > $@
@@ -234,32 +241,32 @@ endif
 ##libengine.a: $(engine_members)
 
 $(LIBROOT)/libutils.a:
-	@make -C ../../UTILSUBS
+	$(MAKE) -C ../../UTILSUBS
 
 $(LIBROOT)/libtracking.a:
-	@make -C ../../TRACKING
+	$(MAKE) -C ../../TRACKING
 
 $(LIBROOT)/libhtracking.a:
-	@make -C ../../HTRACKING
+	$(MAKE) -C ../../HTRACKING
 
 $(LIBROOT)/libstracking.a:
-	@make -C ../../STRACKING
+	$(MAKE) -C ../../STRACKING
 
 $(LIBROOT)/libctp.a:
-	@make -C ../../CTP
+	$(MAKE) -C ../../CTP
 
 $(LIBROOT)/libhack.a:
-	@make -C ../../HACK
+	$(MAKE) -C ../../HACK
 
-ifeq ($(ARCH),OSF1)
+ifeq ($(MYOS),OSF1)
 engine: $(DEPLIBS)
 	$(AR) x $(LIBROOT)/libengine.a engine.o
-	$(F77) $(FLDFLAGS) -o engine engine.o $(DEPLIBS) $(OTHERLIBS)
+	$(FC) $(FLDFLAGS) -o engine engine.o $(DEPLIBS) $(OTHERLIBS)
 	$(RM) engine.o
 else
 engine: $(DEPLIBS)
 	$(AR) x $(LIBROOT)/libengine.a engine.o
-	$(F77) $(FFLAGS) -o engine engine.o $(DEPLIBS) $(OTHERLIBS)
+	$(FC) $(FFLAGS) -o engine engine.o $(DEPLIBS) $(OTHERLIBS)
 	$(RM) engine.o
 endif
 
@@ -277,6 +284,9 @@ else
 
 .PRECIOUS: ../r_%.f
 endif
+
+%.cwn:: ../%.cwn
+	$(CP) $< $@
 
 %.cmn ../%.cmn:: ../../INCLUDE/%.cmn
 	$(CP) $< $@
