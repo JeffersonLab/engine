@@ -10,6 +10,15 @@
 *- 
 *-   Created  17-May-1994   Kevin B. Beard, Hampton U.
 * $Log$
+* Revision 1.7.22.1  2008/09/25 00:55:27  jones
+* Updated for running on Fedora 8 with gfortran
+*
+* Revision 1.8  2008/09/25 00:06:33  jones
+* Updated to run with gfortran compiler
+*
+* Revision 1.7.24.1  2007/09/10 20:33:37  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.7  1999/11/04 20:35:16  saw
 * Linux/G77 compatibility fixes
 *
@@ -36,6 +45,7 @@
 *--------------------------------------------------------
       IMPLICIT NONE
       SAVE
+      external jishft, jiand, jieor, bjtest
 *
       character*23 here
       parameter (here= 'G_examine_control_event')

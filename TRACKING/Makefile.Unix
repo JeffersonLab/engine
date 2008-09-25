@@ -1,5 +1,11 @@
 #
 # $Log$
+# Revision 1.14.22.1  2008/09/25 00:59:16  jones
+# Updated for running on Fedora 8 with gfortran
+#
+# Revision 1.15  2008/09/25 00:09:35  jones
+# Updated to run with gfortran compiler
+#
 # Revision 1.14  1999/02/24 15:43:52  saw
 # Add rule for getting .par files from INCLUDE
 #
@@ -44,6 +50,7 @@
 #
 NEWSTYLE=1
 include ../../etc/Makefile
+include ../../etc/Makefile.flags
 
 sources = find_space_points.f select_space_points.f solve_four_by_four.f \
 	total_eloss.f

@@ -1,3 +1,5 @@
+.DELETE_ON_ERROR: ; 
+
 # To disable compilation of CTP Root Trees, make sure that the environment
 # variable ROOTSYS is undefined, or uncomment "#ROOTSYS=" line below.
 # The same must be done in CTP/Makefile.Unix
@@ -9,10 +11,6 @@ disp_objs = glvolu.o
 
 Csoft=$(PWD)
 
-RM        = rm -f 
-SHELL     = /bin/sh
-
-MYOS := $(subst -,,$(shell uname))
 ifeq ($(MYOS),HPUX)
   ifneq (,$(findstring 09,$(shell uname -r)))
     HPUXVERSION := 09
@@ -76,11 +74,15 @@ ifeq ($(MYOS),OSF1)
 endif
 
 ifeq ($(MYOS),Linux)  
+   override FFLAGS += -I$(Csoft)/INCLUDE
 
-   F77=g77
-   FFLAGS=-g -I$(Csoft)/INCLUDE -ffixed-line-length-132
+
    DISPFLAGS=$(FFLAGS)
-   OTHERLIBS += -L$(CERN_ROOT)/lib -lpacklib -lc -lm -lnsl
+   ifeq ($(MYREALOS),Darwin)
+      OTHERLIBS += -L$(CERN_ROOT)/lib -lpacklib -lc -lm
+   else
+      OTHERLIBS += -L$(CERN_ROOT)/lib -lpacklib -lc -lm -lnsl
+   endif 
    OURLIBS := $(OURGENLIBS) $(LIBROOT)/libport.a
 
 endif
@@ -88,7 +90,7 @@ endif
 ifeq ($(MYOS),SunOS)
   FFLAGS=-e -O -I$(Csoft)/INCLUDE
   DISPFLAGS=$(FFLAGS)
-  ifeq ($(OSTYPE),SunOS4)
+  ifeq ($(MYOS),SunOS4)
     OTHERLIBS += -L$(CERN_ROOT)/lib $(CERNLIBS) -lnsl -lX11
   else
     OTHERLIBS += -L$(CERN_ROOT)/lib $(CERNLIBS) -lnsl -lsocket -lX11
@@ -100,7 +102,7 @@ ifeq ($(MYOS),SunOS)
 endif
  
 ifeq ($(MYOS),AIX)
-  F77=f77
+  FC=f77
   FFLAGS=-g -qfixed=132 -qextname -O -I$(Csoft)/INCLUDE
   DISPFLAGS=$(FFLAGS)
   OTHERLIBS += -L$(CERN_ROOT)/lib -lpacklib $(CERNLIBS) -lX11
@@ -110,6 +112,7 @@ endif
 r_%.f : %.cmn $(MAKEREG)
 	$(MAKEREG) $< -o $@ -e /dev/null
 
+.PHONY: all engine_replay clean
 .PRECIOUS: r_%.f
 
 all: engine_replay
@@ -117,33 +120,36 @@ all: engine_replay
 display: evdisplay
 
 glvolu.o: glvolu.f
-	$(F77) $(FFLAGS) -c $(DISPFLAGS) $<
+	$(FC) $(FFLAGS) -c $(DISPFLAGS) $<
 
 evdisplay.o: evdisplay.f
-	$(F77) $(FFLAGS) -c $(DISPFLAGS) $<
+	$(FC) $(FFLAGS) -c $(DISPFLAGS) $<
 
 %.o: %.f
-	$(F77) $(FFLAGS) -c $< -o $@
+	$(FC) $(FFLAGS) -c $< -o $@
 
-engine_replay_$(MYOS): Makefile  ../ENGINE/O.$(MYOS)/engine.o  $(OURLIBS)
-	echo $(MYVERSION)
-	cp ../ENGINE/O.$(MYOS)/engine.o engine.o
-	$(F77) -o $@ $(FFLAGS) engine.o $(OURLIBS) $(OTHERLIBS)
-	$(RM) engine.o
+engine_replay_$(MYOS): Makefile engine.o  $(OURLIBS)
+
+
+	$(FC) -o $@ $(FFLAGS) engine.o $(OURLIBS) $(OTHERLIBS)
+
 
 engine_replay: engine_replay_$(MYOS)
 	$(RM) ../../$(MYOS)/bin/engine_replay
 #	ln -s $< $@
-	cp engine_replay_$(MYOS) ../../$(MYOS)/bin/engine_replay
+	$(CP) engine_replay_$(MYOS) ../../$(MYOS)/bin/engine_replay
 	$(RM) engine_replay_$(MYOS)
-engine.o:
-	cp ../ENGINE/O.$(MYOS)/engine.o engine.o
+
+.INTERMEDIATE: engine.o
+engine.o: ../ENGINE/O.$(MYOS)/engine.o
+	$(CP) ../ENGINE/O.$(MYOS)/engine.o engine.o
+
 
 $(OURLIBS):
-	cp ../ENGINE/O.$(MYOS)/engine.o engine.o
+	$(CP) ../ENGINE/O.$(MYOS)/engine.o engine.o
 
 evdisplay: $(disp_objs) Makefile evdisplay.o $(disp_objs) $(ONEEVLIB) $(OURLIBS) 
-	$(F77) -o $@ $(DISPFLAGS) evdisplay.o $(disp_objs) $(ONEEVLIB) $(OURLIBS) $(OTHERLIBS)
+	$(FC) -o $@ $(DISPFLAGS) evdisplay.o $(disp_objs) $(ONEEVLIB) $(OURLIBS) $(OTHERLIBS)
 
 clean:
 	$(RM) *.o r_*.f engine_replay engine_replay_$(MYOS) evdisplay

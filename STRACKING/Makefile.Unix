@@ -1,5 +1,11 @@
 #
 # $Log$
+# Revision 1.27.4.1  2008/09/25 00:58:42  jones
+# Updated for running on Fedora 8 with gfortran
+#
+# Revision 1.28  2008/09/25 00:08:35  jones
+# Updated to run with gfortran compiler
+#
 # Revision 1.27  2005/03/23 16:34:08  jones
 # Add new code s_select_best_track_prune.f (P Bosted)
 #
@@ -86,6 +92,7 @@
 #
 NEWSTYLE = 1
 include ../../etc/Makefile
+include ../../etc/Makefile.flags
 
 osources = s_cal.f s_cer.f s_chamnum.f s_dpsifun.f s_drift_dist_calc.f \
 	s_drift_time_calc.f s_fcnchisq.f s_find_best_stub.f \
@@ -125,7 +132,7 @@ makeregstuff = r_sos_filenames.f r_sos_tracking.f r_sos_geometry.f \
 
 sources = $(osources) $(newstuff) $(newerstuff) $(makeregstuff)
 
-ifeq ($(ARCH),AIX)
+ifeq ($(MYOS),AIX)
 xsources := $(filter-out s_link_stubs.f s_track_tests.f ,$(sources))
 sources = s_link_stubs_aix.f s_track_tests_aix.f $(xsources)
 ../s_%_aix.f : ../s_%.f

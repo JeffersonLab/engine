@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.6.2  2008/09/25 00:55:27  jones
+* Updated for running on Fedora 8 with gfortran
+*
 * Revision 1.42.6.1  2007/05/08 21:54:36  cdaq
 * add call to g_examine_picture_event
 *
@@ -180,6 +183,7 @@ c      program engine
 c
       IMPLICIT NONE
       SAVE
+      external jishft, jiand, jieor
 
       character*6 here
       parameter (here= 'Engine')
@@ -944,8 +948,8 @@ c...
       implicit none
       integer iarg
       character*132 arg
-      integer iargc
-      external iargc
+c      integer iargc
+c      external iargc
       logical outputflag
 *
 * Process command line args that set CTP variables

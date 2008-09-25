@@ -8,7 +8,7 @@
 #CEBAF Data Acquisition Group, 12000 Jefferson Ave., Newport News, VA 23606  *
 #     heyescebaf.gov	Tel: (804) 249-7030    Fax: (804) 249-7363	     *
 #----------------------------------------------------------------------------*
-#Discription: follows this header.
+#Description: follows this header.
 #
 #Author:
 #	Graham Heyes
@@ -16,6 +16,15 @@
 #
 #  Revision History:
 #    $Log$
+#    Revision 1.5.22.1  2008/09/25 00:59:58  jones
+#    Updated for running on Fedora 8 with gfortran
+#
+#    Revision 1.6  2008/09/25 00:10:31  jones
+#    Updated to run with gfortran compiler
+#
+#    Revision 1.5.24.1  2007/09/10 20:08:03  pcarter
+#    Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+#
 #    Revision 1.5  2002/12/20 21:58:57  jones
 #    reduce output echoing
 #
@@ -33,73 +42,69 @@
 #
 #----------------------------------------------------------------------------
 # Generic Makefile add more directories here
-ifndef OSTYPE  # New tcsh sets this, let's force it.
-  OSTYPE := $(subst -,,$(shell uname))
-endif
-ifeq ($(OSTYPE),linux-gnu)
-  OSTYPE=Linux
-endif
 
-SHELL     = /bin/sh
+.DELETE_ON_ERROR: ;
+AR = ar
+PW := $(shell pwd)
+MAKEREG=$(PW)/../../../$(MYOS)$(OSEXT)/bin/makereg
 
-include ../../etc/makefile.site.in
 include $(sources:.f=.d) 
 include $(sources:.c=.d) 
 
-EVGENLIB   = ../../../$(OSTYPE)$(OSEXT)/lib/libevgen.a
-LIBROOT   = ../../../$(OSTYPE)$(OSEXT)/lib
-#INCROOT   = $(Csoft)/$(OSTYPE)/include
-OS     := $(shell echo $(OSTYPE) | tr "[A-Z]" "[a-z]")
+#EVGENLIB   = ../../../$(MYOS)$(OSEXT)/lib/libevgen.a
+LIBROOT   = ../../../$(MYOS)$(OSEXT)/lib
+#INCROOT   = $(Csoft)/$(MYOS)/include
+#OS     := $(shell echo $(MYOS) | tr "[A-Z]" "[a-z]")
 
-parent := $(shell pwd)
-MAKEDIRS:=$(addprefix $(parent)/,$(shell find . -type d -print | sed -e '/RCS/d'|xargs echo))
+#MAKEDIRS:=$(addprefix $(shell pwd)/,$(shell find . -type d -print | sed -e '/RCS/d'|xargs echo))
 
 
-TIMESTAMP := "\"$(shell date +%h\ %d\ %Y)\""
+#TIMESTAMP := "\"$(shell date +%h\ %d\ %Y)\""
 #CSOFT_VERSION := "\"$(shell grep define $(Csoft)/.version.h | sed -e 's|.*CSOFTVERSION ||')\""
-CSOFT_VERSION := "Version 0"
-
-CFLAGS    = $(INCS) $(DEFS) $(EXTRA) -D$(OSTYPE) -DOSTYPE="\"$(OSTYPE)\"" -DVERSION=$(CSOFT_VERSION) -DDAYTIME=$(TIMESTAMP)
+#CSOFT_VERSION := "Version 0"
 
 # OS dependent declarations of library and include directories etc...
 
-.PRECIOUS: *.d
-.PHONY : CSOFT csoft clean
+.PRECIOUS: %.d
+#.PRECIOUS: %.cmn ../%.cmn %.par ../%.par %.dte ../%.dte %.dec ../%.dec
+
+.PHONY : default depend CLEAN clean ALL_CLEAN all_clean directory csoft ALL_CSOFT all_csoft
 
 ifdef NFSDIRECTORY
-DEPENDS_RULE.c =  $(GCC) -MM $(CFLAGS) $< |\
-	(sed -e 's|$*.o|& $@|g' -e 's|:|: .os$(OSTYPE) Makefile |' ;\
+DEPENDS_RULE.c =  $(CC) -MM $(CFLAGS) $< |\
+	(sed -e 's|$*.o|& $@|g' -e 's|:|: .os$(MYOS) Makefile |' ;\
 	cat $< | sed -n -e \ "s|\#include \"|$@: ../|p" |\
 	sed -e "s|\".*$$||" | sed -e 's|.d:|.o:|') >$@
 else
-DEPENDS_RULE.c =  $(GCC) -MM $(CFLAGS) $< |\
-	 sed -e 's|$*.o|& $@|g' -e 's|:|: .os$(OSTYPE) Makefile |' > $@
+DEPENDS_RULE.c =  $(CC) -MM $(CFLAGS) $< |\
+	 sed -e 's|$*.o|& $@|g' -e 's|:|: .os$(MYOS) Makefile |' > $@
 endif
 DEPENDS_RULE.f = 	( cat $< | sed -n -e \
 	"s|^[ 	]*[Ii][Nn][Cc][Ll][Uu][Dd][Ee][ 	]*['\"]|$@: |p" | \
 	sed -e "s|['\"].*$$||" | sed -e 's|.d:|.o:|' ; \
-	echo $*.o: .os$(OSTYPE) ) > $@
-COMPILE_RULE.f = $(F77) $(FFLAGS) -c $< -o $@ 
+	echo $*.o: .os$(MYOS) ) > $@
+COMPILE_RULE.f = $(FC) $(FFLAGS) -c $< -o $@ 
 COMPILE_RULE.c = $(CC) $(CFLAGS) -c $< -o $@
 # Don't "Makefile" to .d files anymore
 
 ifdef NEWSTYLE
 %.d: ../%.c
-#	echo remaking $@
+#	@echo remaking $@
 	$(DEPENDS_RULE.c)
 
 %.d: ../%.cpp
-#	echo remaking $@
+#	@echo remaking $@
 	$(DEPENDS_RULE.c)
 
 #r_%.d:
-#	echo r_$*.o: r_$*.f > $@
+#	@echo r_$*.o: r_$*.f > $@
 
 %.d: ../%.f
-	echo remaking $@
+	@echo remaking $@
 	$(DEPENDS_RULE.f)
 
 %.o: ../%.f
+#	echo compiling  $@
 	$(COMPILE_RULE.f)
 
 %.o: ../%.c
@@ -107,28 +112,28 @@ ifdef NEWSTYLE
 
 else
 %.d: %.c
-#	echo remaking $@
+#	@echo remaking $@
 	$(DEPENDS_RULE.c)
 
 %.d: %.cpp
-#	echo remaking $@
+#	@echo remaking $@
 	$(DEPENDS_RULE.c)
 
-#%.d: %.f .os$(OSTYPE)
+#%.d: %.f .os$(MYOS)
 %.d: %.f
-	echo remaking $@
+	@echo remaking $@
 	$(DEPENDS_RULE.f)
 #	( cat $< | sed -n -e \
 #	"s/^[ 	]*[Ii][Nn][Cc][Ll][Uu][Dd][Ee][ 	]*['\"]/$<: /p" | \
 #	sed -e "s/['\"].*$$//" | sed -e 's/.f:/.o:/' ; \
-#	echo $*.o: .os$(OSTYPE) ) > $@
+#	@echo $*.o: .os$(MYOS) ) > $@
 
 %.o: %.f
 	$(COMPILE_RULE.f)
 endif
 
 #%.f : %.F
-#	$(F77) -F $<
+#	$(FC) -F $<
 
 (%.o): %.o
 #	@echo Adding $*.o to $@
@@ -138,32 +143,54 @@ ifdef RANLIB
 endif
 
 TARGET_PATH := ../../../$(OSPREFIX)$(SUBDIR)/
-FILES       = $(addsuffix ",$(addprefix "$(TARGET_PATH),$($(SUBDIR)_targets)))
-
+# Phil: the quot variable is used to keep from confusing my syntax highligher
+# I put it twice because the syntax highlighter likes to see two quotes
+# You could replace $(quot) with a literal " below, but it looks wierd
+# and doubly so with VIM's syntax highlighting
+quot = "
+quot = "
+FILES       = $(addsuffix $(quot),$(addprefix $(quot)$(TARGET_PATH),$($(SUBDIR)_targets)))
 
 ifdef TARGET_PATH
 $(TARGET_PATH)%: %	
 	@echo "Making $@ from $< "
-	rm -rf $@
-	cp $< $@
+	$(RM) -r $@
+	$(CP) $< $@
+	$(RM) $<
 endif
 
-.os$(OSTYPE):
-	rm -f *.d .os*
-	@echo $(OSTYPE) > .os$(OSTYPE)
-	@echo remade marker .os$(OSTYPE)
+.os$(MYOS):
+	$(RM) *.d .os*
+	@echo $(MYOS) > .os$(MYOS)
+	@echo remade marker .os$(MYOS)
 
-defaulT:
-	@echo "Nothing to do for $(SUBDIR)"
+csoft: $(REGSOURCES)
+#	@echo "CSOFT - Arch. $(MYOS) sys.vers $(MYOS)$(OSEXT)"
+#	@echo "`pwd` $(REGSOURCES)"
+# if ! ( $(MAKE) ... ) exits the for loop if there's an error. Otherwise the for loop will only return
+# an error if the last make command fails. This follows the default behavior of make but breaks the
+# -p option. This section could use a rewrite.
+	@echo "Considering $(shell pwd) ... "
+	@if test -z "$(install-dirs)"; then \
+	  echo Nothing to do for $(MYOS)$(OSEXT); \
+	else \
+	for subdir in $(install-dirs) dummy; do \
+            if test $$subdir != dummy; then \
+	        echo $(MAKE) SUBDIR=$$subdir OSPREFIX=$(MYOS)$(OSEXT)/ directory;\
+	        if ! ( $(MAKE) SUBDIR=$$subdir OSPREFIX=$(MYOS)$(OSEXT)/ directory ); then exit 1; fi; \
+	    fi \
+	done \
+	fi
+	@echo "Done $(shell pwd)"
 
-depend: .os$(OSTYPE)
+depend: .os$(MYOS)
 	@ echo depending...
 	@$(MAKE) $(sources:.f=.d) 
 	@$(MAKE) $(sources:.c=.d) 
 
 CLEAN clean::
 	@ echo Cleaning `pwd`
-	rm -f *.o *.d .os*
+	$(RM) -f *.o *.d .os*
 	@ echo Done.
 
 ALL_CLEAN all_clean: 
@@ -174,33 +201,14 @@ ALL_CLEAN all_clean:
         done
 
 directory:
-	@echo "Doing directory"
-	@echo "SUBDIR=$(SUBDIR)"
-	@echo "OSPREFIX=$(OSPREFIX)"
-##	@echo "FILES=$(FILES)"
-	@if test -d "$(TARGET_PATH)"; then echo ; else \
-		mkdir -p $(TARGET_PATH) ; \
-	fi;true
+	@echo Doing directory SUBDIR=$(SUBDIR) OSPREFIX=$(OSPREFIX)
+#	@echo 'FILES=$(FILES)'
+	mkdir -p $(TARGET_PATH)
 	$(MAKE) SUBDIR=$(SUBDIR) OSPREFIX=$(OSPREFIX) $(FILES)
-
-CSOFT csoft: $(REGSOURCES)
-	@echo "CSOFT - Arch. $(ARCH) sys.vers $(OSTYPE)$(OSEXT)"
-	@echo "`pwd` $(REGSOURCES)"
-	@echo "Considering $(shell pwd) ... "
-	@if test -z "$(install-dirs)"; then \
-	  echo Nothing to do for $(OSTYPE)$(OSEXT); \
-	else \
-	for subdir in $(install-dirs) dummy; do \
-            if test $$subdir != dummy; then \
-	    $(MAKE) SUBDIR=$$subdir OSPREFIX=$(OSTYPE)$(OSEXT)/ directory ; \
-            fi \
-	done \
-	fi;true
-	@echo "Done $(shell pwd)"
 
 ALL_CSOFT all_csoft: 
 	@ for makefile in `find . -name Makefile -print | sed -e '/Eiffel/d'  -e '/pre_/d' -e '/dev_/d`; do \
 	  echo ; \
 	  $(MAKE) -C `dirname $$makefile` csoft ; \
         done
-	@ echo Made csoft for $(OS)
+	@ echo Made csoft for $(MYOS)

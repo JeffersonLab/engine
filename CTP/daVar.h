@@ -16,6 +16,15 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.3.22.1  2008/09/25 00:54:05  jones
+ *   Updated for running on Fedora 8 with gfortran
+ *
+ *   Revision 1.4  2008/09/25 00:01:29  jones
+ *   Updated to run with gfortran compiler
+ *
+ *   Revision 1.3.24.1  2007/09/10 21:32:47  pcarter
+ *   Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+ *
  *   Revision 1.3  2003/02/21 20:55:24  saw
  *   Clean up some types and casts to reduce compiler warnings.
  *
@@ -71,7 +80,7 @@
 /* If set, varptr may be changed (it doesn't point to fixed "user" data) */
 #define DAVAR_REPOINTOK 4
 /* If set, this variable is a dynamically created "parm." type variable.
-   It's type and size will be adjusted */
+   Its type and size will be adjusted */
 #define DAVAR_DYNAMIC_PAR 8
 
 #ifndef RPCGEN

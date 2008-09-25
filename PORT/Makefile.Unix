@@ -4,6 +4,12 @@
 # definitions of some fortran functions that are missing under F2C/Linux.
 #
 # $Log$
+# Revision 1.5.22.1  2008/09/25 00:58:16  jones
+# Updated for running on Fedora 8 with gfortran
+#
+# Revision 1.6  2008/09/25 00:08:06  jones
+# Updated to run with gfortran compiler
+#
 # Revision 1.5  2000/11/30 14:23:03  saw
 # Add other_wrappers.f for jidnnt
 #
@@ -21,12 +27,13 @@
 #
 NEWSTYLE=1
 include ../../etc/Makefile
+include ../../etc/Makefile.flags
 
-ifeq ($(ARCH),AIX)
+ifeq ($(MYOS),AIX)
   libsources =  bit_wrappers.f
   install-dirs := lib
 else
-  ifeq ($(ARCH),Linux)
+  ifeq ($(MYOS),Linux)
     ifeq ($(F77COMPILER),Absoft)
       libsources =  absoft_wrappers.f
     else

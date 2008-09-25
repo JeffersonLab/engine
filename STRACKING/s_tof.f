@@ -15,9 +15,14 @@
 *-   Created 22-FEB-1994   John Arrington
 *
 * $Log$
-* Revision 1.14.4.1  2007/05/02 21:20:04  jones
-* Add new code needed for  adjusting scintillator timing using P Bosted's method.
-* Only used when flag  stofusinginvadc.eq.1 .
+* Revision 1.14.4.2  2008/09/25 00:58:42  jones
+* Updated for running on Fedora 8 with gfortran
+*
+* Revision 1.15  2008/09/25 00:08:35  jones
+* Updated to run with gfortran compiler
+*
+* Revision 1.14.6.1  2007/09/10 20:28:01  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *
 * Revision 1.14  2005/03/15 21:13:09  jones
 * Add code to filter the scintillator tdc hits and group them by time. ( P. Bosted)
@@ -92,7 +97,6 @@
       INCLUDE 'gen_units.par'
       include 'sos_scin_parms.cmn'
       include 'sos_scin_tof.cmn'
-      include 'sos_tracking.cmn'
       integer*4 hit, trk
       integer*4 plane,ind
       integer*4 sntof_pairs
@@ -100,9 +104,9 @@
       real*4 xhit_coord,yhit_coord
       real*4 time
       real*4 p,betap         !momentum and velocity from momentum, assuming desired mass
-      real*4 path,zcor,num_fp_time
+      real*4 path
       real*4 sum_fp_time,sum_plane_time(snum_scin_planes)
-      integer*4 num_plane_time(snum_scin_planes)
+      integer*4 num_fp_time,num_plane_time(snum_scin_planes)
       integer timehist(200),i,j,jmax,maxhit,nfound
       real*4 time_pos(1000),time_neg(1000),tmin,time_tolerance
       logical keep_pos(1000),keep_neg(1000),first/.true./
@@ -138,7 +142,7 @@
         betap = p/sqrt(p*p+spartmass*spartmass)
 
 ! Calculate all corrected hit times and histogram
-! This uses a copy of code below. Results are save in time_pos,neg
+! This uses a copy of code below. Results are saved in time_pos,neg
 ! including the z-pos. correction assuming nominal value of betap
 ! Code is currently hard-wired to look for a peak in the
 ! range of 0 to 100 nsec, with a group of times that all
@@ -152,20 +156,11 @@
         if(stof_tolerance.gt.0.5.and.stof_tolerance.lt.10000.) then
           time_tolerance=stof_tolerance
         endif
-! Use wide window if dumping events for fitting
-        if(sdumptof.eq.1) time_tolerance=20.0
         if(first) then
            first=.false.
-           write(*,'(/1x,''USING '',f8.2,'' NSEC WINDOW FOR'',
+           write(*,'(//1x,''USING '',f8.2,'' NSEC WINDOW FOR'',
      >     ''  SOS TOF AND FP CALCULATIONS'')') time_tolerance
-           if(stofusinginvadc.eq.1) then
-             write(*,'(/1x,''TOF using 1/sqrt(ADC), separate '',
-     >         ''velocities for pos and neg tubes'')')
-           else
-             write(*,'(/1x,''TOF using ADC for slewing correction'',
-     >         ''  and same vecolicty for pos and neg tubes'')')
-           endif
-           write(*,'(/)')
+           write(*,'(//)')
         endif
         nfound = 0
         do j=1,200
@@ -199,18 +194,12 @@
               adc_ph = sscin_adc_pos(hit)
               path = sscin_pos_coord(hit) - sscin_long_coord(hit)
               time = sscin_tdc_pos(hit) * sscin_tdc_to_time
-              time = time - (sscin_zpos(hit)/(29.979*betap) *
-     &               sqrt(1.+sxp_fp(trk)**2+syp_fp(trk)**2))
-              if(stofusinginvadc.eq.1) then
-                time_pos(i) = time - sscin_pos_invadc_offset(hit) -
-     >            path / sscin_pos_invadc_linear(hit) -
-     >            sscin_pos_invadc_adc(hit)/sqrt(max(20,adc_ph))
-              else
-                time = time - sscin_pos_phc_coeff(hit) *
-     &               sqrt(max(0.,(adc_ph/sscin_pos_minph(hit)-1.)))
-                time = time - path/sscin_vel_light(hit)
-                time_pos(i) = time - sscin_pos_time_offset(hit)
-              endif
+              time = time - sscin_pos_phc_coeff(hit) *
+     &             sqrt(max(0.,(adc_ph/sscin_pos_minph(hit)-1.)))
+              time = time - path/sscin_vel_light(hit)
+     &                  - (sscin_zpos(hit)/(29.979*betap) *
+     &          sqrt(1.+sxp_fp(trk)*sxp_fp(trk)+syp_fp(trk)*syp_fp(trk)))
+              time_pos(i) = time - sscin_pos_time_offset(hit)
               nfound = nfound + 1
               do j=1,200
                 tmin = 0.5*float(j)                
@@ -224,18 +213,12 @@
               adc_ph = sscin_adc_neg(hit)
               path = sscin_long_coord(hit) - sscin_neg_coord(hit)
               time = sscin_tdc_neg(hit) * sscin_tdc_to_time
-              time = time - (sscin_zpos(hit)/(29.979*betap) *
-     &               sqrt(1.+sxp_fp(trk)**2+syp_fp(trk)**2))
-              if(stofusinginvadc.eq.1) then
-                time_neg(i) = time + sscin_neg_invadc_offset(hit) -
-     >            path / sscin_neg_invadc_linear(hit) -
-     >            sscin_neg_invadc_adc(hit)/sqrt(max(20,adc_ph))
-              else
-                time = time - sscin_neg_phc_coeff(hit) *
-     &               sqrt(max(0.,(adc_ph/sscin_neg_minph(hit)-1.)))
-                time = time - path/sscin_vel_light(hit)
-                time_neg(i) = time - sscin_neg_time_offset(hit)
-              endif
+              time = time - sscin_neg_phc_coeff(hit) *
+     &             sqrt(max(0.,(adc_ph/sscin_neg_minph(hit)-1.)))
+              time = time - path/sscin_vel_light(hit)
+     &                    - (sscin_zpos(hit)/(29.979*betap) *
+     &          sqrt(1.+sxp_fp(trk)*sxp_fp(trk)+syp_fp(trk)*syp_fp(trk)))
+              time_neg(i) = time - sscin_neg_time_offset(hit)
               nfound = nfound + 1
               do j=1,200
                 tmin = 0.5*float(j)                
@@ -282,7 +265,7 @@
           sgood_tdc_pos(trk,hit) = .false.
           sgood_tdc_neg(trk,hit) = .false.
           sscin_time(hit) = 0
-          sscin_sigma(hit) = 100.0
+          sscin_sigma(hit) = 0
         enddo
         
         do hit = 1 , sscin_tot_hits
@@ -325,28 +308,10 @@
 *     Convert TDC value to time, do pulse height correction, correction for
 *     propogation of light thru scintillator, and offset.
               time = sscin_tdc_pos(hit) * sscin_tdc_to_time
-              if(stofusinginvadc.eq.1) then
-                sscin_pos_time(hit)=time - sscin_pos_invadc_offset(hit) -
-     >            path / sscin_pos_invadc_linear(hit) -
-     >            sscin_pos_invadc_adc(hit)/sqrt(max(20,adc_ph))
-              else
-                time = time - sscin_pos_phc_coeff(hit) *
-     &               sqrt(max(0.,(adc_ph/sscin_pos_minph(hit)-1.)))
-                time = time - path/sscin_vel_light(hit)
-                sscin_pos_time(hit) = time - sscin_pos_time_offset(hit)
-              endif
-              zcor =  (sscin_zpos(hit)/(29.979*betap) * sqrt(1.+
-     >               sxp_fp(trk)*sxp_fp(trk)+syp_fp(trk)*syp_fp(trk)))
-              if(sntracks_fp.eq.1.and.
-     >          sdumptof.eq.1.and.
-     >          timehist(max(1,jmax)).gt.6) then
-                write(38,'(1x,''1'',2i3,5f10.3)') 
-     >             sscin_plane_num(hit),
-     >             sscin_counter_num(hit),
-     >             sscin_tdc_pos(hit) * sscin_tdc_to_time,
-     >             path,zcor,
-     >             sscin_pos_time(hit)-zcor,adc_ph
-              endif
+              time = time - sscin_pos_phc_coeff(hit) *
+     &             sqrt(max(0.,(adc_ph/sscin_pos_minph(hit)-1.)))
+              time = time - path/sscin_vel_light(hit)
+              sscin_pos_time(hit) = time - sscin_pos_time_offset(hit)
             endif
 
 **    Repeat for pmts on 'negative' side
@@ -359,48 +324,30 @@
               adc_ph = sscin_adc_neg(hit)
               path = sscin_long_coord(hit) - sscin_neg_coord(hit)
               time = sscin_tdc_neg(hit) * sscin_tdc_to_time
-              if(stofusinginvadc.eq.1) then
-                sscin_neg_time(hit)=time - sscin_neg_invadc_offset(hit) -
-     >            path / sscin_neg_invadc_linear(hit) -
-     >            sscin_neg_invadc_adc(hit)/sqrt(max(20,adc_ph))
-              else
-                time = time - sscin_neg_phc_coeff(hit) *
-     &               sqrt(max(0.,(adc_ph/sscin_neg_minph(hit)-1.)))
-                time = time - path/sscin_vel_light(hit)
-                sscin_neg_time(hit) = time - sscin_neg_time_offset(hit)
-              endif
-              zcor =  (sscin_zpos(hit)/(29.979*betap) * sqrt(1.+
-     >               sxp_fp(trk)*sxp_fp(trk)+syp_fp(trk)*syp_fp(trk)))
-              if(sntracks_fp.eq.1.and.
-     >          sdumptof.eq.1.and.
-     >          timehist(max(1,jmax)).gt.6) then
-                write(38,'(1x,''2'',2i3,5f10.3)') 
-     >             sscin_plane_num(hit),
-     >             sscin_counter_num(hit),
-     >             sscin_tdc_neg(hit) * sscin_tdc_to_time,
-     >             path,zcor,
-     >             sscin_neg_time(hit)-zcor,adc_ph
-              endif
+              time = time - sscin_neg_phc_coeff(hit) *
+     &             sqrt(max(0.,(adc_ph/sscin_neg_minph(hit)-1.)))
+              time = time - path/sscin_vel_light(hit)
+              sscin_neg_time(hit) = time - sscin_neg_time_offset(hit)
             endif
 
 **    Calculate ave time for scintillator and error.
             if (sgood_tdc_pos(trk,hit)) then
               if (sgood_tdc_neg(trk,hit)) then
                 sscin_time(hit) = (sscin_neg_time(hit) + sscin_pos_time(hit))/2.
-                sscin_sigma(hit) = max(0.1,sqrt(sscin_neg_sigma(hit)**2 + 
-     1               sscin_pos_sigma(hit)**2)/2.)
+                sscin_sigma(hit) = sqrt(sscin_neg_sigma(hit)**2 + 
+     1               sscin_pos_sigma(hit)**2)/2.
                 sgood_scin_time(trk,hit) = .true.
                 sntof_pairs = sntof_pairs + 1
               else
                 sscin_time(hit) = sscin_pos_time(hit)
-                sscin_sigma(hit) = max(0.1,sscin_pos_sigma(hit))
+                sscin_sigma(hit) = sscin_pos_sigma(hit)
                 sgood_scin_time(trk,hit) = .true.
 *                sgood_scin_time(trk,hit) = .false.
               endif
             else                        ! if sgood_tdc_neg = .false.
               if (sgood_tdc_neg(trk,hit)) then
                 sscin_time(hit) = sscin_neg_time(hit)
-                sscin_sigma(hit) = max(0.1,sscin_neg_sigma(hit))
+                sscin_sigma(hit) = sscin_neg_sigma(hit)
                 sgood_scin_time(trk,hit) = .true.
 *                sgood_scin_time(trk,hit) = .false.
               endif
@@ -410,9 +357,8 @@ c     Get time at focal plane
               sscin_time_fp(hit) = sscin_time(hit)
      &             - (sscin_zpos(hit)/(29.979*betap) *
      &             sqrt(1.+sxp_fp(trk)*sxp_fp(trk)+syp_fp(trk)*syp_fp(trk)) )
-              sum_fp_time = sum_fp_time + sscin_time_fp(hit)/
-     >          sscin_sigma(hit)**2
-              num_fp_time = num_fp_time + 1./ sscin_sigma(hit)**2
+              sum_fp_time = sum_fp_time + sscin_time_fp(hit)
+              num_fp_time = num_fp_time + 1
               sum_plane_time(plane)=sum_plane_time(plane)
      &             +sscin_time_fp(hit)
               num_plane_time(plane)=num_plane_time(plane)+1
@@ -464,7 +410,7 @@ c     Get time at focal plane
         endif
 
         if (num_fp_time .ne. 0) then
-          stime_at_fp(trk) = sum_fp_time / num_fp_time
+          stime_at_fp(trk) = sum_fp_time / float(num_fp_time)
         endif
 
         do ind=1,4
@@ -496,11 +442,6 @@ c     Get time at focal plane
      >      sdelta_tar(trk),sy_tar(trk),sxp_tar(trk),syp_tar(trk)
         endif
 
-        if(sntracks_fp.eq.1.and.
-     >    sdumptof.eq.1.and.
-     >     timehist(max(1,jmax)).gt.6) then
-           write(38,'(1x,''0'')') 
-        endif
       enddo                             !end of loop over tracks
 *     
  666  continue

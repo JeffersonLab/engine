@@ -1,5 +1,14 @@
       subroutine g_examine_epics_event
 * $Log$
+* Revision 1.5.18.1  2008/09/25 00:55:27  jones
+* Updated for running on Fedora 8 with gfortran
+*
+* Revision 1.6  2008/09/25 00:06:32  jones
+* Updated to run with gfortran compiler
+*
+* Revision 1.5.20.1  2007/09/10 20:33:37  pcarter
+* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+*
 * Revision 1.5  2003/09/05 15:28:05  jones
 * Merge in online03 changes (mkj)
 *
@@ -22,6 +31,7 @@
 *--------------------------------------------------------
       implicit none
       save
+      external jieor
 
       character buffer*12000
       equivalence (craw(5), buffer)

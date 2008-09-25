@@ -12,6 +12,12 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log$
+*- Revision 1.1.6.1  2008/09/25 00:57:53  jones
+*- Updated for running on Fedora 8 with gfortran
+*-
+*- Revision 1.2  2008/09/25 00:12:08  jones
+*- Updated for gfortran compiler
+*-
 *- Revision 1.1  2005/03/23 16:33:32  jones
 *- Add new code s_select_best_track_prune.f (P Bosted)
 *-
@@ -45,7 +51,7 @@ c
       logical first,keep(1000)
       real*4 chi2perdeg,chi2min,betap,p
 c
-      integer*4 i,j
+c      integer*4 i,j
       data first /.true./
 *--------------------------------------------------------
 *
@@ -67,7 +73,7 @@ c
         hprune_df    = max(1,  hprune_df)
         hprune_chibeta= max(2.,  hprune_chibeta)
         hprune_fptime= max(5.,  hprune_fptime)
-        hprune_npmt  = max(6.,  hprune_npmt)  
+        hprune_npmt  = max(6,  hprune_npmt)  
         write(*,'(1x,'' using following HMS limits''/
      >    1x,''abs(xptar)<'',f6.3/
      >    1x,''abs(yptar)<'',f6.3/
