@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.13.2.2  2008/09/25 18:43:14  cdaq
+* Updated for F1 hi res
+*
 * Revision 1.23.20.13.2.1  2008/05/15 18:59:21  bhovik
 * 1'st version
 *
@@ -171,10 +174,10 @@
           goto 987
 ! Check for extra events in FB modules on sync events
         else if(jieor(jiand(evfrag(pointer),'FFFF0000'x),'DCFE0000'x).eq.0) then
-c          write(6,'(a,i2,a,i3,a,i3,a,i10)') 'ROC',roc,': Slot'
-c     $         ,jiand(jishft(evfrag(pointer),-11),'1F'x),': '
-c     $         ,jiand(evfrag(pointer),'7FF'x),' extra events, event=',
-c     &         gen_event_id_number
+          write(6,'(a,i2,a,i3,a,i3,a,i10)') 'ROC',roc,': Slot'
+     $         ,jiand(jishft(evfrag(pointer),-11),'1F'x),': '
+     $         ,jiand(evfrag(pointer),'7FF'x),' extra events, event=',
+     &         gen_event_id_number
           pointer = pointer + 1
           goto 987
         else if(jieor(jiand(evfrag(pointer),'FF000000'x),'DC000000'x).eq.0) then ! Catch arrington's headers
@@ -203,10 +206,10 @@ c     &         gen_event_id_number
         slot = jiand(JISHFT(evfrag(pointer),-27),'1F'X)
         if(slot.ne.oslot.or.firsttime) then
           if (slot.le.0 .or. slot.ge.26 .or. roc.le.0 .or. roc.ge.G_DECODE_MAXSLOTS) then
-c$$$            write (6,'(a,i3,i3,i3,z10,a,i5,a,i8)') 'roc,slot,oslot,evfrag=',roc,
-c$$$     &           slot,oslot,evfrag(pointer),
-c$$$     $           '(p=',pointer,') for event #',gen_event_id_number
-c$$$            write (6,'(a,i3)') '  Probably after slot',jiand(JISHFT(evfrag(pointer-1),-27),'1F'X)
+c            write (6,'(a,i3,i3,i3,z10,a,i5,a,i8)') 'roc,slot,oslot,evfrag=',roc,
+c     &           slot,oslot,evfrag(pointer),
+c     $           '(p=',pointer,') for event #',gen_event_id_number
+c            write (6,'(a,i3)') '  Probably after slot',jiand(JISHFT(evfrag(pointer-1),-27),'1F'X)
             pointer = pointer + 1
             goto 987
           else
@@ -282,7 +285,14 @@ c     ,               write(*,*)"Jump 1 ROC12 SLOT4 CHAN=",subadd
 *        * F1 uses 1 as the first channel, not 0!!!	
          if (jiand(ishft(evfrag(pointer),-23),'1'X).eq.1) then  !data
            subadd = jiand(jishft(evfrag(pointer),-subaddbit),'3F'X) + 1
+cc For hi res mode, have to take in pairs
+           if(subadd.lt.1.or.subadd.gt.64)
+     >       write(6,'(''ERROR'',i6)') subadd
+           subadd = (subadd - 1) / 2 + 1
            signal =jiand(evfrag(pointer),g_decode_slotmask(roc,slot))
+cc           write(6,'(''subadd,signal='',5i10)') roc,slot,
+cc     >       subadd,signal,gen_event_id_number
+
 	   if (signal.eq.65535) then   ! skip overflow entries
 	     pointer = pointer + 1
              
@@ -290,7 +300,11 @@ c     ,               write(*,*)"Jump 1 ROC12 SLOT4 CHAN=",subadd
 	   endif
 	   
 *	   * histogram F1 raw hits
-           call hf2(hid_rawROC(roc),float(slot),float(subadd),1.)
+c           write(6,'(''hf2'',4i10)') roc,
+c     >       hid_rawROC(roc),slot,subadd
+c           call hf2(hid_rawROC(roc),float(slot),float(subadd),1.)
+c           write(6,'(''hf2'',4i10)') roc,
+c     >       hid_rawROC(roc),slot,subadd
 
          else  !header
            subadd = jiand(evfrag(pointer),'3F'X) + 1
@@ -322,26 +336,34 @@ c     ,         write(*,*)"ROC12 SLOT4 CHAN=",subadd
 c        if(roc.eq.12.and.slot.eq.4.and.subadd.eq.44)
 c     ,         write(*,*)"ROC12 SLOT4 CHAN=",subadd
                                         ! Skips headers for 1881 and 1876
+c          write(6,'(''did'',2i10)') did
           if(mappointer.gt.0) then
             newdid = g_decode_didmap(mappointer+subadd)
           else
             newdid = UNINST_ID
           endif
+c          write(6,'(''old,newdid'',2i10)') newdid,did
           if(newdid.eq.did) then
             if(did.ne.UNINST_ID) then
+c              write(6,'(''plane'',i8)') mappointer+subadd
               plane = g_decode_planemap(mappointer+subadd)
+c              write(6,'(''plane'',i8)') plane
               counter = g_decode_countermap(mappointer+subadd)
+c              write(6,'(''counter'',i8)') counter
               signal =jiand(evfrag(pointer),g_decode_slotmask(roc,slot))
+c              write(6,'(''signal'',i8)') signal
 *     fix roll-over if module is F1 TDC
              if (g_decode_modtyp(roc,slot).eq.1) then
                if (signal.lt.trigger_time) then  ! roll-over!!
                  signal = signal + F1TDC_WINDOW_SIZE(roc)
+c                 write(6,'(''signalcorr'',i8)') signal
                endif
              endif
             else
               plane = jishft(roc,16) + slot
               counter = subadd
               signal = evfrag(pointer)
+c              write(6,'(''p,c,s'',3i8)') plane,counter,signal
             endif
             if(hitcount .lt. maxhits .or.
      $           (hitcount.eq.maxhits .and. signalcount .gt. 1)) then ! Don't overwrite arrays
@@ -446,6 +468,7 @@ c     ,         write(*,*)"ROC12 SLOT4 CHAN=",subadd
           pointer = pointer + 1
         endif
  987    continue
+
       enddo
 
       g_decode_fb_detector = pointer - 1 ! Number of words processed
