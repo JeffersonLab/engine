@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.21.2.1  2008/09/26 21:03:18  cdaq
+* *** empty log message ***
+*
 * Revision 1.42.8.21  2008/01/08 22:50:36  cdaq
 * *** empty log message ***
 *
@@ -308,6 +311,7 @@ c
 c
       integer*4 skipped_events_scal,tindex
       real*8 delta_time
+      real*8 omega
 *
 *
 *--------------------------------------------------------
@@ -318,6 +322,7 @@ c
       print *
 
 c      ncalls_calc_ped = 0
+      call trgInit('trg_field_map_extended.dat',omega,0.)
 
       total_event_count= 0                      ! Need to register this
       lastdump=0

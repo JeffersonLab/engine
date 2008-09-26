@@ -48,6 +48,17 @@
 
       cycle= 0
       call HROUT(id,cycle,' ')
+      call HROUT(10100,cycle,' ')
+      call HROUT(10101,cycle,' ')
+      call HROUT(10102,cycle,' ')
+      call HROUT(10111,cycle,' ')
+      call HROUT(10112,cycle,' ')
+      call HROUT(10121,cycle,' ')
+      call HROUT(10122,cycle,' ')
+      call HROUT(10125,cycle,' ')
+      call HROUT(10126,cycle,' ')
+      call HROUT(10200,cycle,' ')
+
       call HREND(name)
       call G_IO_control(io,'FREE',ABORT,err)
       close(io)

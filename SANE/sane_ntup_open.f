@@ -82,6 +82,7 @@ c     get any free IO channel
 
 
       if(sane_ntuple_type.eq.2) then ! col-wise ntuple for cluster analysis
+                                     ! for calibration purposses
          call hbset('BSIZE',8176,status)
          call HBNT(id,title,' ')
          
@@ -120,11 +121,6 @@ c
      $       'ltdc_pos(luc_hit):I*4,ltdc_neg(luc_hit):I*4,'//
      $       'luc_y(luc_hit):R*4')
 
-        call HBNAME(id,'HMSINFO',hms_p,
-     $       'hms_p:R*4,hms_e:R*4,hms_theta:R*4,hms_phi:R*4,'//
-     $       'hms_ytar:R*4,hms_yptar:R*4,'//
-     $       'hms_xptar:R*4,hms_delta:R*4,hms_start:R*4,'//
-     $       'rast_x:R*4,rast_y:R*4')
         
 
         if(bbypass_find_clusters.eq.0) then
@@ -184,9 +180,89 @@ c
      $          'second_max(nmax):L')
         endif
 
-
 c
 c
 c
       endif
+c     ! For physics analysis  added on Jul 3 2008
+        call HBOOK2(10100,'TRACK X1',64, 1.,  65., 200,   200., 900.,0.)
+        call HBOOK2(10101,'TRACK Y1',128,1., 129., 200,   200., 900.,0.)
+        call HBOOK2(10102,'TRACK Y1',128,1., 129., 200,   200., 900.,0.)
+        call HBOOK2(10111,'CER TDC',8, 0.,  5., 200,    1., 1000., 0.)
+        call HBOOK2(10112,'CER ADC',8, 0.,  5., 200,    1., 1000., 0.)
+        call HBOOK2(10121,'LUC TDCPOS',59,0., 28., 200, 1000., 4000., 0.)
+        call HBOOK2(10122,'LUC TDCNEG',59,0., 28., 200, 1000., 4000., 0.)
+        call HBOOK2(10125,'LUC ADCPOS',59,0., 28., 200,    0., 4000., 0.)
+        call HBOOK2(10126,'LUC ADCNEG',59,0., 28., 200,    0., 4000., 0.)
+        call HBOOK2(10200,'BIGCAL' ,33,0., 33.,  56,    0.,   56., 0.)
+
+        call HBNAME(id,'HMSINFO',hms_p,
+     $       'hms_p:R*4,hms_e:R*4,hms_theta:R*4,hms_phi:R*4,'//
+     $       'hms_ytar:R*4,hms_yptar:R*4,'//
+     $       'hms_xptar:R*4,hms_delta:R*4,hms_start:R*4,'//
+     $       'rast_x:R*4,rast_y:R*4,'//
+     $       'slow_rast_x:R*4,slow_rast_y:R*4,'//
+     $       'i_helicity:I*4')
+
+      if(sane_ntuple_type.eq.1) then ! col-wise ntuple
+                                     ! for Physics purposses
+         call hbset('BSIZE',8176,status)
+         call HBNT(id,title,' ')
+         call HBNAME(id,'bevinfo',bgid,'bgid:I*4,bgtype:I*4,'//
+     $        'btrigtype:I*4')
+         call HBNAME(id,'bhits',ngooda,'ngooda:I*4,ngoodt:I*4,'//
+     $        'ngoodta:I*4,ngoodtt:I*4,irowmax:I*4,icolmax:I*4,'//
+     $        'max_adc:R*4')
+
+         
+
+        call HBNAME(id,'SANEPHYS',n_clust,
+     $   'n_clust[1,4]:I*4,'//
+     $   'E_clust(n_clust):R*4,'//
+     $   'X_clust(n_clust):R*4, Y_clust(n_clust):R*4,'//
+     $   'Z_clust(n_clust):R*4,'//
+     $   'X_clust_r(n_clust):R*4, Y_clust_r(n_clust):R*4,'//
+     $   'Z_clust_r(n_clust):R*4,'//
+     $   'luc_h(n_clust)[0,10]:I*4,'//
+     $   'X_luc(10,n_clust), Y_luc(10,n_clust), Z_luc(10,n_clust),'//
+     $   'X_luc_r(10,n_clust), Y_luc_r(10,n_clust), Z_luc_r(10,n_clust),'//
+     $   'trc_hx(n_clust)[0,10]:I*4, X_trc(10,n_clust), Z_trc(10,n_clust),'//
+     $   'X_trc_r(10,n_clust), Z_trc_r(10,n_clust),'//
+     $       'trc_hy1(n_clust)[0,10]:I*4, Y1_trc(10,n_clust), Z1_trc(10,n_clust),'//
+     $       'Y1_trc_r(10,n_clust), Z1_trc_r(10,n_clust),'//
+     $       'trc_hy2(n_clust)[0,10]:I*4, Y2_trc(10,n_clust), Z2_trc(10,n_clust),'//
+     $       'Y2_trc_r(10,n_clust), Z2_trc_r(10,n_clust),'//
+     $       'Tr_Vertex(3,n_clust), Tr_Vertex_r(3,n_clust),'//
+     $       'cer_h(n_clust)[0,10]:I*4')
+ 
+      endif
+
+      call HCDIR(sane_ntuple_directory,'R')     ! record ntuple directory
+
+      call HCDIR(directory,' ')          !reset CERNLIB directory
+
+      sane_ntuple_exists = HEXIST(sane_ntuple_id)
+
+      abort = .not.sane_ntuple_exists
+
+      iv(1) = id
+      iv(2) = io
+      pat = 'Ntuple id#$ [' // sane_ntuple_directory // '/]' //
+     $     name // ' IO#$ "' // file // '"'
+      call G_build_note(pat,'$',iv,' ',rv,' ',msg)
+
+      call sub_string(msg,'/]','/]')
+
+      if(abort) then
+         err = 'unable to create '//msg
+         call G_add_path(here,err)
+      else
+         pat=':created '//msg
+         call G_add_path(here,pat)
+         call G_log_message('INFO: '//pat)
+      endif
+
+      return 
+
+
       end

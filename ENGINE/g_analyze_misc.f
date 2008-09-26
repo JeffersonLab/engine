@@ -7,6 +7,9 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.9.20.4.2.1  2008/09/26 21:03:49  cdaq
+* *** empty log message ***
+*
 * Revision 1.9.20.4  2007/10/20 19:55:06  cdaq
 * Added more helicity analysis
 *
@@ -325,7 +328,10 @@ c     figure out helicity from ADC signals:
          gbeam_helicity_ADC = -1
       else
          gbeam_helicity_ADC = 0
-      endif
+      endif 
+c      write(*,*)gmisc_dec_data(1,2),gmisc_dec_data(2,2),
+c     ,     gmisc_dec_data(2,2),gmisc_dec_data(1,2),gbeam_helicity_ADC
+ 
 
 c     for now just trust the trigger supervisor more than the ADC which can be noisy
 
@@ -333,6 +339,21 @@ c     for now just trust the trigger supervisor more than the ADC which can be n
 
 c      write(*,*) 'h+ signal = ',gmisc_dec_data(1,2)
 c      write(*,*) 'h- signal = ',gmisc_dec_data(2,2)
+
+
+*     Slow Raster Signals:  !!!!!! SLOTS NEED TO BE DETERMINED
+*     ===================
+      gsrx_raw_adc = gmisc_dec_data(1,2)   ! raw info matching MAP (reversed order)!
+      gsry_raw_adc = gmisc_dec_data(3,2)
+      
+c      gsrx_adc = gsrx_raw_adc    ! we do not want peds subtracted
+c      gsry_adc = gsry_raw_adc   
+      
+c      gsrx_adc = gsrx_raw_adc - gsrx_adc_ped
+c      gsry_adc = gsry_raw_adc - gsry_adc_ped
+
+      gsrx_sync =  gmisc_dec_data(2,2)! - gsrx_sync_mean
+      gsry_sync =  gmisc_dec_data(4,2)! - gsry_sync_mean
 
       return
       end

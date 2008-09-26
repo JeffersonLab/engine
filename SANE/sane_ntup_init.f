@@ -77,8 +77,12 @@ c      write(*,*)'SANE',sane_ntuple_file,sane_ntuple_exists,sane_ntuple_id
      $        first filename: ',file
       endif
 
-      if(sane_ntuple_type.eq.2) then ! cosmics ntuple
+      if(sane_ntuple_type.eq.2) then ! raw ntuple
          sane_ntuple_id = 9502
+         write(*,*)'SANE NT ID is',sane_ntuple_id
+      endif
+      if(sane_ntuple_type.eq.1) then ! physics  ntuple added Jul 3,2008
+         sane_ntuple_id = 9501
          write(*,*)'SANE NT ID is',sane_ntuple_id
       endif
 
