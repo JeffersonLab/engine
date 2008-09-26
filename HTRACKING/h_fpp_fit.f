@@ -132,7 +132,8 @@ c==============================================================================
       real*4 Projects(H_FPP_MAX_FITPOINTS,3)
       real*4 Drifts(H_FPP_MAX_FITPOINTS)
       real*4 BestTrack(6)  ! does NOT include hit count
-      logical*4 ambiguous  ! left/right give identical best results
+      logical*4 ambiguous1  ! left/right give identical best results
+      logical*4 ambiguous ! same as above but with drift dist ne to 0
 
 
 ** now we use the supplied hits and the absolute drift distance (in layer!)
@@ -149,6 +150,7 @@ c==============================================================================
 
       logical*4 drift2plus(H_FPP_MAX_FITPOINTS)
       logical*4 anyPerm2try, carry
+      logical*4 zerodrift !drift dist eq 0 for a particular hit
 
 *     * this flag resolves the +/- ambiguity in a predictable but randomized way
       logical*4 fppfitLRlast
@@ -179,6 +181,7 @@ c==============================================================================
 
       anyPerm2try = .true.
       attempts = 0
+      zerodrift = .false.
       do while (anyPerm2try)
         attempts = attempts+1
 
@@ -190,7 +193,8 @@ c==============================================================================
 	  else
 	    driftreal(iHit) = -1.*abs(DriftAbs(iHit))
 	  endif
-
+          if ( driftreal(iHit) .eq. 0) zerodrift = .true.
+	  
 *     	  * adjust hit position based on drift
           HitPos(iHit,1) = Points(iHit,1) + driftreal(iHit)	! u
           HitPos(iHit,2) = Points(iHit,2)			! z
@@ -206,7 +210,8 @@ c==============================================================================
 * NEW, AMBIGUITY-RESOLVING LOGIC
 *     	* remember best track and set of drift flags
       	if (Track(5).le.BestTrack(5).and.Track(5).gt.0.0) then
-      	  ambiguous = (Track(5).eq.BestTrack(5))
+      	  ambiguous1 = (Track(5).eq.BestTrack(5))
+	  ambiguous = (ambiguous1.and..not.zerodrift)
 *         * remember all _not_ ambiguous and every other ambiguous alternative
           if (fppfitLRlast.or.(.not.ambiguous)) then
       	    do ii=1,6
