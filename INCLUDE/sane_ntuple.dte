@@ -1,0 +1,10 @@
+          data sane_ntuple_exists/.false./
+          data sane_ntuple_id/0/
+          data sane_ntuple_size/0/
+          data sane_ntuple_iochannel/0/
+          data sane_ntuple_name/' '/
+          data sane_ntuple_title/' '/
+          data sane_ntuple_directory/' '/
+          data sane_ntuple_file/' '/
+          data sane_ntuple_tag/sanemax_ntuple_size*' '/
+          data sane_ntuple_contents/sanemax_ntuple_size*0/

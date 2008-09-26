@@ -1,0 +1,188 @@
+*
+*     CTPTYPE=parm
+*
+      integer SANEMAX_Ntuple_size
+      parameter (SANEMAX_Ntuple_size=200)
+      integer default_SANE_Ntuple_ID
+      parameter (default_sane_Ntuple_ID=9030)
+*     array dimensions for cluster ntuple: 
+
+      logical sane_Ntuple_exists
+      integer sane_Ntuple_ID
+      integer sane_Ntuple_size
+      integer sane_Ntuple_IOchannel
+      integer sane_ntuple_type 
+      character*80 sane_Ntuple_name
+      character*80 sane_Ntuple_title
+      character*132 sane_Ntuple_directory
+      character*256 sane_Ntuple_file
+c      character*256 b_tree_filename
+      character*8 sane_Ntuple_tag(SANEMAX_Ntuple_size)
+      integer sane_Ntuple_max_segmentevents
+*
+*     CTPTYPE=event
+*
+      integer sane_Ntuple_segmentevents
+      integer sane_Ntuple_filesegments
+      integer sane_ntuple_auxsegments	
+      real sane_Ntuple_contents(SANEMAX_Ntuple_size)
+      common/sane_ntuple/
+     $     sane_Ntuple_exists,sane_Ntuple_ID,
+     $ 	   sane_ntuple_size,sane_Ntuple_IOchannel,
+     $     sane_Ntuple_name,sane_Ntuple_title,sane_Ntuple_directory,
+     $     sane_Ntuple_file,sane_Ntuple_tag,
+     $     sane_Ntuple_max_segmentevents,
+     $     sane_Ntuple_segmentevents,sane_Ntuple_filesegments,
+     $     sane_Ntuple_contents,sane_ntuple_type,
+     $	   sane_ntuple_auxsegments
+
+
+c      integer*4 sanegid 
+c      integer*4 sanegtype 
+c      integer*4 sanetrigtype
+c      common/SANEEV/
+c     $     sanegid,
+c     $     sanegtype,
+c     $     sanetrigtype
+
+      integer TRACKER_MAX_HITS
+      parameter (TRACKER_MAX_HITS=300)
+      
+      integer*4 y1t_hit
+      integer*4 y1t_row(TRACKER_MAX_HITS)
+      integer*4 y1t_tdc(TRACKER_MAX_HITS)
+      real*4    y1t_y(TRACKER_MAX_HITS)
+
+      common/SANEY1/y1t_hit,  y1t_row,  y1t_tdc,  y1t_y
+      
+      integer*4 y2t_hit
+      integer*4 y2t_row(TRACKER_MAX_HITS)
+      integer*4 y2t_tdc(TRACKER_MAX_HITS)
+      real*4    y2t_y(TRACKER_MAX_HITS)
+      common/SANEY2/y2t_hit,  y2t_row,  y2t_tdc,  y2t_y
+      
+      integer*4 y3t_hit
+      integer*4 y3t_row(TRACKER_MAX_HITS)
+      integer*4 y3t_tdc(TRACKER_MAX_HITS)
+      real*4    y3t_y(TRACKER_MAX_HITS)
+      common/SANEY3/y3t_hit,  y3t_row,  y3t_tdc,  y3t_y
+      
+      integer*4 x1t_hit
+      integer*4 x1t_row(TRACKER_MAX_HITS)
+      integer*4 x1t_tdc(TRACKER_MAX_HITS)
+      real*4    x1t_x(TRACKER_MAX_HITS)
+      common/SANEX1/x1t_hit,  x1t_row,  x1t_tdc,  x1t_x
+      
+      integer*4 cer_hit
+      integer*4 cer_num(50)
+      integer*4 cer_tdc(50)
+      integer*4 cer_adc(50)
+      common/SANECER/cer_hit, cer_num, cer_tdc, cer_adc
+      
+      
+      integer*4 luc_hit
+      integer*4 luc_row(50)
+      integer*4 ladc_pos(50),ladc_neg(50)
+      integer*4 ltdc_pos(50),ltdc_neg(50)
+      real*4    luc_y(50)
+      common/SANELUC/luc_hit, luc_row, ladc_pos, ladc_neg,
+     ,     ltdc_pos, ltdc_neg, luc_y
+      
+      
+      real*4 hms_p
+      real*4 hms_e
+      real*4 hms_theta
+      real*4 hms_phi
+      real*4 hms_ytar
+      real*4 hms_yptar
+      real*4 hms_xptar
+      real*4 hms_delta
+      real*4 hms_start
+      real*4 rast_x
+      real*4 rast_y
+      real*4 slow_rast_x
+      real*4 slow_rast_y
+      integer*4 i_helicity
+      
+      COMMON/HMSINFO/hms_p,hms_e,hms_theta,hms_phi,hms_ytar,hms_yptar,
+     ,     hms_xptar,hms_delta,hms_start,rast_x,rast_y,
+     ,     slow_rast_x, slow_rast_y, i_helicity
+      
+      integer*4 maxcl
+      parameter (maxcl=4)
+      integer*4 n_clust
+      integer*4 luc_h(maxcl)
+      integer*4 trc_hx(maxcl)
+      integer*4 trc_hy1(maxcl)
+      integer*4 trc_hy2(maxcl)
+ 
+
+      real*4 E_clust(maxcl)
+      real*4 X_clust(maxcl)
+      real*4 Y_clust(maxcl)
+      real*4 Z_clust(maxcl)
+      real*4 X_clust_r(maxcl)
+      real*4 Y_clust_r(maxcl)
+      real*4 Z_clust_r(maxcl)
+
+      real*4 X_luc(10,maxcl)
+      real*4 Y_luc(10,maxcl)
+      real*4 Z_luc(10,maxcl)
+      real*4 X_luc_r(10,maxcl)
+      real*4 Y_luc_r(10,maxcl)
+      real*4 Z_luc_r(10,maxcl)
+
+      real*4 X_trc(10,maxcl)
+      real*4 Y1_trc(10,maxcl)
+      real*4 Y2_trc(10,maxcl)
+      real*4 X_trc_r(10,maxcl)
+      real*4 Y1_trc_r(10,maxcl)
+      real*4 Y2_trc_r(10,maxcl)
+      real*4 Z_trc(10,maxcl)
+      real*4 Z1_trc(10,maxcl)
+      real*4 Z2_trc(10,maxcl)
+      real*4 Z_trc_r(10,maxcl)
+      real*4 Z1_trc_r(10,maxcl)
+      real*4 Z2_trc_r(10,maxcl)
+      real*4 Tr_Vertex(3,maxcl)
+      real*4 Tr_Vertex_r(3,maxcl)
+
+      integer*4 cer_h(maxcl)
+      COMMON/SANEPHYS/n_clust, 
+     ,     E_clust, 
+     ,     X_clust, Y_clust, Z_clust, 
+     ,     X_clust_r, Y_clust_r, Z_clust_r,
+     ,     luc_h, 
+     ,     X_luc, Y_luc, Z_luc, 
+     ,     X_luc_r, Y_luc_r, Z_luc_r,
+     ,     trc_hx, X_trc, X_trc_r, Z_trc_r, 
+     ,     trc_hy1, Y1_trc, Y1_trc_r, Z1_trc_r, 
+     ,     trc_hy2, Y2_trc, Y2_trc_r, Z2_trc_r, 
+     ,     Tr_Vertex, Tr_Vertex_r, cer_h  
+
+      real*4 X_luc_av(maxcl),Y_luc_av(maxcl),Z_luc_av(maxcl)
+      real*4 X_tr_av(maxcl),Y_tr_av(maxcl),Z_tr_av(maxcl)
+
+      COMMON/AverPhysEventPositions/X_luc_av,
+     ,     Y_luc_av,Z_luc_av,
+     ,     X_tr_av,Y_tr_av,Z_tr_av
+c
+c
+c     Parameters to define tracker and bigcal Planes
+c
+c
+
+      real*4 P1_track_r(3),P2_track_r(3),P3_track_r(3)
+      real*4 P1_track(3),P2_track(3),P3_track(3)
+      real*4 P1_bigcal(3),P2_bigcal(3),P3_bigcal(3)
+      real*4 P1_bigcal_r(3),P2_bigcal_r(3),P3_bigcal_r(3)
+      real*8 a_tracker, b_tracker, c_tracker, d_tracker
+      real*8 a_bigcal, b_bigcal, c_bigcal, d_bigcal
+
+      COMMON /BETA_PLANE/P1_track, P2_track, P3_track,
+     ,     P1_track_r, P2_track_r, P3_track_r,
+     ,     P1_bigcal, P2_bigcal, P3_bigcal,
+     ,     P1_bigcal_r, P2_bigcal_r, P3_bigcal_r,
+     ,     a_tracker, b_tracker, c_tracker, d_tracker,
+     ,     a_bigcal, b_bigcal, c_bigcal, d_bigcal
+

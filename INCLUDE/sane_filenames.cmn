@@ -1,0 +1,24 @@
+*
+*     CTPTYPE=parm
+*     
+      character*80 sane_report_template_filename ! CTP file with bigcal report
+      character*80 sane_report_blockname
+      character*80 sane_report_output_filename
+      character*80 sane_pedestal_output_filename
+      character*80 sane_tree_filename
+      character*80 sane_calib_matrix_filename
+      character*80 sane_calib_parm_filename
+      character*80 sane_debug_output_filename
+      character*80 sane_bad_chan_list_filename
+
+      common/sane_filenames/
+     $     sane_report_template_filename,
+     $     sane_report_blockname,
+     $     sane_report_output_filename,
+     $     sane_pedestal_output_filename,
+     $     sane_tree_filename,
+     $     sane_calib_matrix_filename,
+     $     sane_calib_parm_filename,
+     $     sane_debug_output_filename,
+     $     sane_bad_chan_list_filename
+      

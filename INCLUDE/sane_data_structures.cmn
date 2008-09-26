@@ -1,0 +1,222 @@
+*****************begin: luc_data_structures.cmn*************************
+*
+*     include file     sane_data_structures.cmn
+*
+*     Author:   H. Baghdasaryan     18 Jan,2008
+*
+* $Log$
+* Revision 1.1.2.1  2008/09/26 21:42:48  cdaq
+* *** empty log message ***
+*
+
+c
+c
+c	SANE RAW DATA Structure
+c
+c
+
+c
+c     VERY IMPORTANT look at CTPTYPE DO not ignore.. Makes sence.
+c
+
+*
+*
+*     CTPTYPE=event
+*
+
+      INTEGER*4 LUCITE_SANE_MAX_HITS           ! MAXIMUM TOTAL NUMBER OF LUCITE HITS
+      PARAMETER (LUCITE_SANE_MAX_HITS=29)      ! Should exceed # of paddles
+      INTEGER*4 LUCITE_SANE_MAX_COUNTER_NUM         ! MAXIMUM TOTAL NUMBER OF LUCITE HITS
+      PARAMETER (LUCITE_SANE_MAX_COUNTER_NUM=28)    ! Should exceed # of paddles
+      INTEGER*4 LUCITE_SANE_RAW_PLANE(LUCITE_SANE_MAX_HITS)
+      INTEGER*4 LUCITE_SANE_RAW_COUNTER_NUM(LUCITE_SANE_MAX_HITS)
+      INTEGER*4 LUCITE_SANE_RAW_ADC_POS(LUCITE_SANE_MAX_HITS)
+      INTEGER*4 LUCITE_SANE_RAW_ADC_NEG(LUCITE_SANE_MAX_HITS)
+      INTEGER*4 LUCITE_SANE_RAW_TDC_POS(LUCITE_SANE_MAX_HITS)
+      INTEGER*4 LUCITE_SANE_RAW_TDC_NEG(LUCITE_SANE_MAX_HITS)
+      INTEGER*4 LUCITE_SANE_RAW_TOT_HITS
+
+      COMMON/LUCITE_SANE_RAW_SCIN/
+     &	LUCITE_SANE_RAW_COUNTER_NUM,
+     &	LUCITE_SANE_RAW_ADC_POS,
+     &	LUCITE_SANE_RAW_ADC_NEG,
+     &	LUCITE_SANE_RAW_TDC_POS,
+     &	LUCITE_SANE_RAW_TDC_NEG,
+     &	LUCITE_SANE_RAW_TOT_HITS, 
+     &	LUCITE_SANE_RAW_PLANE 
+
+ccc    END of the RAW DATA
+
+
+cccccccccccccccccccccccccccccccccc
+c
+c	LUCITE Pedestal Structure
+c
+cccccccccccccccccccccccccccccccccc
+      INTEGER*4       luc_min_peds
+      INTEGER*4       luc_ped_num_neg(LUCITE_SANE_MAX_COUNTER_NUM)
+      INTEGER*4       luc_ped_sum2_neg(LUCITE_SANE_MAX_COUNTER_NUM)
+      INTEGER*4       luc_ped_sum_neg(LUCITE_SANE_MAX_COUNTER_NUM)
+      INTEGER*4       luc_ped_limit_neg(LUCITE_SANE_MAX_COUNTER_NUM)
+      INTEGER*4       luc_ped_num_pos(LUCITE_SANE_MAX_COUNTER_NUM)
+      INTEGER*4       luc_ped_sum2_pos(LUCITE_SANE_MAX_COUNTER_NUM)
+      INTEGER*4       luc_ped_sum_pos(LUCITE_SANE_MAX_COUNTER_NUM)
+      INTEGER*4       luc_ped_limit_pos(LUCITE_SANE_MAX_COUNTER_NUM)
+      real*4 	      luc_ped_threshold_neg(LUCITE_SANE_MAX_COUNTER_NUM)
+      real*4 	      luc_ped_threshold_pos(LUCITE_SANE_MAX_COUNTER_NUM)
+      real*4 	      luc_ped_mean_neg(LUCITE_SANE_MAX_COUNTER_NUM)
+      real*4 	      luc_ped_mean_pos(LUCITE_SANE_MAX_COUNTER_NUM)
+      real*4 	      luc_ped_rms_neg(LUCITE_SANE_MAX_COUNTER_NUM)
+      real*4 	      luc_ped_rms_pos(LUCITE_SANE_MAX_COUNTER_NUM)
+
+
+      COMMON /LUCITE_SANE_PED_SCIN/
+     $	     luc_min_peds,
+     $       luc_ped_num_neg,
+     $       luc_ped_sum2_neg,
+     $       luc_ped_sum_neg,
+     $       luc_ped_limit_neg,
+     $       luc_ped_num_pos,
+     $       luc_ped_sum2_pos,
+     $       luc_ped_sum_pos,
+     $       luc_ped_limit_pos,
+     & 	     luc_ped_threshold_neg,
+     & 	     luc_ped_threshold_pos,
+     & 	     luc_ped_mean_neg,
+     & 	     luc_ped_mean_pos,
+     & 	     luc_ped_rms_neg,
+     & 	     luc_ped_rms_pos
+
+ccc END OF THE PEDESTAL
+cccc
+c
+c     Cerenkov SANE
+c
+cc
+
+      INTEGER*4 CERENKOV_SANE_MAX_HITS           ! MAXIMUM TOTAL NUMBER OF Cerenkov HITS
+      PARAMETER (CERENKOV_SANE_MAX_HITS=29) ! Should exceed # of paddles
+      INTEGER*4 CERENKOV_SANE_MAX_CER_COUNTER           ! MAXIMUM TOTAL NUMBER OF Cerenkov HITS
+      PARAMETER (CERENKOV_SANE_MAX_CER_COUNTER=8) ! Should exceed # of paddles
+      INTEGER*4 CERENKOV_SANE_RAW_PLANE(CERENKOV_SANE_MAX_HITS)
+      INTEGER*4 CERENKOV_SANE_RAW_COUNTER_NUM(CERENKOV_SANE_MAX_HITS)
+      INTEGER*4 CERENKOV_SANE_RAW_ADC(CERENKOV_SANE_MAX_HITS)
+      INTEGER*4 CERENKOV_SANE_RAW_TDC(CERENKOV_SANE_MAX_HITS)
+      INTEGER*4 CERENKOV_SANE_RAW_TOT_HITS
+
+      COMMON/CERENKOV_SANE_RAW_SCIN/
+     &	CERENKOV_SANE_RAW_COUNTER_NUM,
+     &	CERENKOV_SANE_RAW_ADC,
+     &	CERENKOV_SANE_RAW_TDC,
+     &	CERENKOV_SANE_RAW_TOT_HITS, 
+     & 	CERENKOV_SANE_RAW_PLANE 
+
+ccc    END of the RAW DATA
+
+
+cccccccccccccccccccccccccccccccccc
+c
+c	CER_SANE Pedestal Structure
+c
+cccccccccccccccccccccccccccccccccc
+
+      INTEGER*4       cer_sane_min_peds
+      INTEGER*4       cer_sane_ped_num(CERENKOV_SANE_MAX_CER_COUNTER)
+      INTEGER*4       cer_sane_ped_sum2(CERENKOV_SANE_MAX_CER_COUNTER)
+      INTEGER*4       cer_sane_ped_sum(CERENKOV_SANE_MAX_CER_COUNTER)
+      INTEGER*4       cer_sane_ped_limit(CERENKOV_SANE_MAX_CER_COUNTER)
+      real*4 	      cer_sane_ped_threshold(CERENKOV_SANE_MAX_CER_COUNTER)
+      real*4 	      cer_sane_ped_mean(CERENKOV_SANE_MAX_CER_COUNTER)
+      real*4 	      cer_sane_ped_rms(CERENKOV_SANE_MAX_CER_COUNTER)
+
+
+      COMMON /CERENKOV_SANE_PED_SCIN/
+     $	     cer_sane_min_peds,
+     $       cer_sane_ped_num,
+     $       cer_sane_ped_sum2,
+     $       cer_sane_ped_sum,
+     $       cer_sane_ped_limit,
+     & 	     cer_sane_ped_threshold,
+     & 	     cer_sane_ped_mean,
+     & 	     cer_sane_ped_rms
+
+ccc END OF THE PEDESTAL
+cccc
+c
+c     Traker SANE
+c
+cc
+
+      INTEGER*4 TRACKER_SANE_MAX_HITS           ! MAXIMUM TOTAL NUMBER OF Tracker HITS
+      PARAMETER (TRACKER_SANE_MAX_HITS=448)     ! Should exceed # of paddles
+c      PARAMETER (TRACKER_SANE_RAW_COUNTER=448)  ! Should exceed # of paddles
+      INTEGER*4 TRACKER_SANE_RAW_PLANE_Y(TRACKER_SANE_MAX_HITS)
+      INTEGER*4 TRACKER_SANE_RAW_PLANE_X(TRACKER_SANE_MAX_HITS)
+      INTEGER*4 TRACKER_SANE_RAW_COUNTER_Y(TRACKER_SANE_MAX_HITS)
+      INTEGER*4 TRACKER_SANE_RAW_COUNTER_X(TRACKER_SANE_MAX_HITS)
+      INTEGER*4 TRACKER_SANE_RAW_TDC_Y(TRACKER_SANE_MAX_HITS)
+      INTEGER*4 TRACKER_SANE_RAW_TDC_X(TRACKER_SANE_MAX_HITS)
+      INTEGER*4 TRACKER_SANE_RAW_TOT_HITS_Y
+      INTEGER*4 TRACKER_SANE_RAW_TOT_HITS_X
+
+      COMMON/TRACKER_SANE_RAW/
+     &  TRACKER_SANE_RAW_PLANE_Y,          
+     &	TRACKER_SANE_RAW_PLANE_X, 
+     &	TRACKER_SANE_RAW_COUNTER_Y, 
+     &  TRACKER_SANE_RAW_COUNTER_X,
+     &	TRACKER_SANE_RAW_TDC_Y, 
+     &  TRACKER_SANE_RAW_TDC_X,
+     &	TRACKER_SANE_RAW_TOT_HITS_Y, 
+     &  TRACKER_SANE_RAW_TOT_HITS_X
+
+*
+*     CTPTYPE=parm
+*     
+*     parameters from CALIBRATION
+
+      INTEGER*4  TRACKER_SANE_XCALIBRATION(64)
+      INTEGER*4  TRACKER_SANE_Y1CALIBRATION(128)
+      INTEGER*4  TRACKER_SANE_Y2CALIBRATION(128)
+      INTEGER*4  TRACKER_SANE_XSIGMA(64)
+      INTEGER*4  TRACKER_SANE_Y1SIGMA(128)
+      INTEGER*4  TRACKER_SANE_Y2SIGMA(128)
+      COMMON/TRACKER_CALIB/
+     &     TRACKER_SANE_XCALIBRATION,
+     &     TRACKER_SANE_Y1CALIBRATION,	
+     &     TRACKER_SANE_Y2CALIBRATION,	
+     &     TRACKER_SANE_XSIGMA,	
+     &     TRACKER_SANE_Y1SIGMA,
+     &     TRACKER_SANE_Y2SIGMA
+      
+      real LUCITE_SANE_TDC_TIMING(28)
+      real LUCITE_SANE_MEAN_POS(28)
+      real LUCITE_SANE_MEAN_NEG(28)
+      real LUCITE_SANE_SIGMA_POS(28)
+      real LUCITE_SANE_SIGMA_NEG(28)
+      COMMON/LUCITE_CALIB/
+     &     LUCITE_SANE_TDC_TIMING,
+     &     LUCITE_SANE_MEAN_POS,
+     &     LUCITE_SANE_MEAN_NEG,
+     &     LUCITE_SANE_SIGMA_POS,
+     &     LUCITE_SANE_SIGMA_NEG
+
+      real CER_SANE_MEAN(8)
+      real CER_SANE_SIGMA(8)
+      COMMON/CER_CALIB/
+     &     CER_SANE_MEAN,
+     &     CER_SANE_SIGMA
+
+      real TrackerX_SHIFT(4) ! position in X,Y,Z Z-betta detector dirrection, 4- angleof betta detector
+      real TrackerY1_SHIFT(4) !  position in Z-betta detector dirrection
+      real TrackerY2_SHIFT(4) !  position in Z-betta detector dirrection
+      real Lucite_SHIFT(4) !  position in Z-betta detector dirrection
+      real Bigcal_SHIFT(4) !  position in Z-betta detector dirrection
+      COMMON/Z_SHIFTS/
+     &     TrackerX_SHIFT,
+     &     TrackerY1_SHIFT,
+     &     TrackerY2_SHIFT,
+     &     Lucite_SHIFT,
+     &     Bigcal_SHIFT
+      real BigCal_Calib_Gain(32,55)
+      COMMON/BigCal_Calib_H/BigCal_Calib_Gain
+ccc    END of the RAW DATA
