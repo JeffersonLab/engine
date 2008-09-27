@@ -38,11 +38,12 @@ TRACKINGLIB = $(LIBROOT)/libtracking.a
 HTRACKINGLIB = $(LIBROOT)/libhtracking.a
 STRACKINGLIB = $(LIBROOT)/libstracking.a
 BTRACKINGLIB = $(LIBROOT)/libbtracking.a
+SANETRACKINGLIB = $(LIBROOT)/libsanetracking.a
 HACKLIB = $(LIBROOT)/libhack.a
 CERNLIBS = -lgeant$(GEANTVER) -lpawlib -lgraflib -lgrafX11 -lpacklib -lmathlib
 OURGENLIBS = $(ENGINELIB) $(HTRACKINGLIB) $(STRACKINGLIB) $(TRACKINGLIB) \
 	$(HACKLIB) $(UTILLIB) $(CODALIB) $(CTPLIB) $(CTPCLIENTLIB) \
-	$(BTRACKINGLIB)
+	$(BTRACKINGLIB) $(SANETRACKINGLIB) 
 MAKEREG=$(Csoft)/../$(MYOS)/bin/makereg
 
 ifeq ($(MYOS),HPUX)
