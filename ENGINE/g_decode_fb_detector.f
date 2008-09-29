@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.16  2008/09/29 15:11:42  puckett
+* added checking for existence of FPP histograms
+*
 * Revision 1.23.20.15  2008/04/23 18:02:31  cdaq
 * *** empty log message ***
 *
@@ -276,7 +279,7 @@ c
         subadd = jiand(JISHFT(evfrag(pointer),-subaddbit),'7F'X)
 
         if (roc.eq.13) then
-           call hf2(hid_rawROC(roc),float(slot),float(subadd),1.)
+           if(hid_rawROC(roc).gt.0) call hf2(hid_rawROC(roc),float(slot),float(subadd),1.)
         endif
 
        elseif (g_decode_modtyp(roc,slot).eq.1) then  ! VME F1 TDC
@@ -290,7 +293,7 @@ c
 	   endif
 	   
 *	   * histogram F1 raw hits
-           call hf2(hid_rawROC(roc),float(slot),float(subadd),1.)
+           if(hid_rawROC(roc).gt.0) call hf2(hid_rawROC(roc),float(slot),float(subadd),1.)
 
          else  !header
            subadd = jiand(evfrag(pointer),'3F'X) + 1
