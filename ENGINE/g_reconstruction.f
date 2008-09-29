@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.13  2008/09/29 16:02:11  puckett
+* added checking for existence of histograms before calling fill routines
+*
 * Revision 1.13.24.12  2008/07/29 16:16:28  puckett
 * added HMS cointime cut
 *
@@ -255,6 +258,9 @@ c         write(*,*) 'calling HMS reconstruction, gen_event_type=',gen_event_typ
         ENDIF
         ABORT= ABORT .or. FAIL
       ENDIF
+
+c      write(*,*) 'h_reconstruction successful'
+
 *
 *-SOS reconstruction
       IF(gen_event_type.eq.2 .or. gen_event_type.eq.3) then  !SOS/COIN trig
@@ -280,6 +286,9 @@ c         write(*,*) 'calling HMS reconstruction, gen_event_type=',gen_event_typ
          ENDIF
          ABORT= ABORT .or. FAIL
       endif
+
+c      write(*,*) 'b_reconstruction successful'
+
 *-GEP-COIN reconstruction
       if(gen_event_type.eq.6) then !GEp-coin. trig
 *         write(*,*) 'calling gep_reconstruction'
@@ -292,6 +301,8 @@ c         write(*,*) 'calling HMS reconstruction, gen_event_type=',gen_event_typ
          endif
          ABORT = ABORT.or.FAIL
       endif
+      
+c      write(*,*) 'gep_reconstruction successful'
 *
 *-COIN reconstruction
       IF(gen_event_type.eq.3) then  !COIN trig
