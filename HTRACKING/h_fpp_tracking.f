@@ -88,14 +88,14 @@ c          write(*,*)'Simple track: Nraw = ',SimpleTrack(6),' Chi2 = ',Simpletra
 *         * works just fine and we will probably stop filling these soon anyway!
           if (.true.) then
             if (int(SimpleTrack(6)).le.0) then
-	      call hf1(hidFPP_trkrough(DCset,6),0.,1.)  !Nraw
+	      if(hidFPP_trkrough(DCset,6).gt.0) call hf1(hidFPP_trkrough(DCset,6),0.,1.)  !Nraw
 	    else
-	      call hf1(hidFPP_trkrough(DCset,1),SimpleTrack(1),1.)  !mx  
-	      call hf1(hidFPP_trkrough(DCset,2),SimpleTrack(2),1.)  !bx  
-	      call hf1(hidFPP_trkrough(DCset,3),SimpleTrack(3),1.)  !my  
-	      call hf1(hidFPP_trkrough(DCset,4),SimpleTrack(4),1.)  !by  
-	      call hf1(hidFPP_trkrough(DCset,5),SimpleTrack(5),1.)  !chi2
-	      call hf1(hidFPP_trkrough(DCset,6),SimpleTrack(6),1.)  !Nraw
+	      if(hidFPP_trkrough(DCset,1).gt.0) call hf1(hidFPP_trkrough(DCset,1),SimpleTrack(1),1.)  !mx  
+	      if(hidFPP_trkrough(DCset,2).gt.0) call hf1(hidFPP_trkrough(DCset,2),SimpleTrack(2),1.)  !bx  
+	      if(hidFPP_trkrough(DCset,3).gt.0) call hf1(hidFPP_trkrough(DCset,3),SimpleTrack(3),1.)  !my  
+	      if(hidFPP_trkrough(DCset,4).gt.0) call hf1(hidFPP_trkrough(DCset,4),SimpleTrack(4),1.)  !by  
+	      if(hidFPP_trkrough(DCset,5).gt.0) call hf1(hidFPP_trkrough(DCset,5),SimpleTrack(5),1.)  !chi2
+	      if(hidFPP_trkrough(DCset,6).gt.0) call hf1(hidFPP_trkrough(DCset,6),SimpleTrack(6),1.)  !Nraw
 	    endif
 	  endif
 
