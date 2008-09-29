@@ -8,6 +8,9 @@
 *                                   Transfer ID in common block
 *                                   Implement flag to turn block on
 * $Log$
+* Revision 1.5.24.1  2008/09/29 16:01:20  puckett
+* added checking for existence of histograms, prevents analyzer crash when histograms are turned off to save memory
+*
 * Revision 1.5  1995/05/22 19:39:11  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -52,28 +55,30 @@
         if(HNTRACKS_FP .gt. 0 ) then
 * Loop over all hits
           do itrk=1,HNTRACKS_FP
-            call hf1(hidhx_fp,HX_FP(itrk),1.)
-            call hf1(hidhy_fp,HY_FP(itrk),1.)
-            call hf1(hidhxp_fp,HXP_FP(itrk),1.)
-            call hf1(hidhyp_fp,HYP_FP(itrk),1.)
+            if(hidhx_fp.gt.0) call hf1(hidhx_fp,HX_FP(itrk),1.)
+            if(hidhy_fp.gt.0) call hf1(hidhy_fp,HY_FP(itrk),1.)
+            if(hidhxp_fp.gt.0) call hf1(hidhxp_fp,HXP_FP(itrk),1.)
+            if(hidhyp_fp.gt.0) call hf1(hidhyp_fp,HYP_FP(itrk),1.)
             if(HCHI2_FP(itrk) .gt. 0 ) then
               histval=log10(HCHI2_FP(itrk))            
             else 
               histval = 10.
             endif
-            call hf1(hidhlogchi2_fp,histval,1.)
+            if(hidhlogchi2_fp.gt.0) call hf1(hidhlogchi2_fp,histval,1.)
             histval= HNFREE_FP(itrk)
-            call hf1(hidhnfree_fp,histval,1.)
+            if(hidhnfree_fp.gt.0) call hf1(hidhnfree_fp,histval,1.)
             if( HNFREE_FP(itrk) .ne.0) then
               histval= HCHI2_FP(itrk) /  HNFREE_FP(itrk)
             else
               histval = -1.
             endif
-            call hf1(hidhchi2perdeg_fp,histval,1.)
+            if(hidhchi2perdeg_fp.gt.0) call hf1(hidhchi2perdeg_fp,histval,1.)
 *     
             do plane = 1,hdc_num_planes
-              call hf1(hidres_fp(plane),hdc_double_residual(itrk,plane),1.)
-              call hf1(hidsingres_fp(plane),hdc_single_residual(itrk,plane),1.)
+              if(hidres_fp(plane).gt.0)
+     $              call hf1(hidres_fp(plane),hdc_double_residual(itrk,plane),1.)
+              if(hidsingres_fp(plane).gt.0)
+     $             call hf1(hidsingres_fp(plane),hdc_single_residual(itrk,plane),1.)
             enddo
 
           enddo                         ! end loop over hits

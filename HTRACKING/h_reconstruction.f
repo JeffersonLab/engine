@@ -11,6 +11,9 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 * $Log$
+* Revision 1.13.24.7  2008/09/29 16:01:20  puckett
+* added checking for existence of histograms, prevents analyzer crash when histograms are turned off to save memory
+*
 * Revision 1.13.24.6  2007/11/02 19:52:52  cdaq
 * Implementation of simple "constant drift velocity" type model. (ejb)
 *
@@ -151,6 +154,8 @@ c      h_recon_num= h_recon_num + 1
 *     TRANSLATE FPP
 *     HMS_RAW_FPP ====> HMS_FPP_event
 *
+c      write(*,*) 'ENTERING H_TRANS_FPP'
+
       If(hbypass_trans_fpp.eq.0.or.hbypass_trans_fpp.eq.4) then
          call h_trans_fpp(ABORT,err)
          if(ABORT)  then
@@ -158,6 +163,9 @@ c      h_recon_num= h_recon_num + 1
 *            return
          endif                          ! end test on FPP ABORT
       endif
+      
+c      write(*,*) 'h_trans_fpp successful'
+
 *
 *     Next Aerogel Cerenkov information
 *     HMS_DECODED_AERO====> HMS_TRACK_TESTS
@@ -190,18 +198,23 @@ c      h_recon_num= h_recon_num + 1
             return
          endif                          ! end test on H_TRANS_DC ABORT
       endif                             ! end test on hbypass_trans_dc
+c      write(*,*) 'h_trans_dc successful'
       if(hbypass_track.eq.0) then
          call H_TRACK(ABORT,err)
          if(ABORT)  then
             call G_add_path(here,err)
             return
          endif                          ! end test on H_TRACK ABORT
+c         write(*,*) 'h_track successful'
          if(hbypass_track_eff.eq.0) then
             call h_track_tests
          endif                  ! end test on hbypass_trackeff
+c         write(*,*) 'h_track_tests successful'
       endif                     ! end test on hbypass_track
 *     only proceed if the number of tracks is greater than one
 *     
+c      write(*,*) 'h_track successful'
+
       if(HNTRACKS_FP .lt. 1) then
 c         don't want error message every time a track is not found.
 c         ABORT=.FALSE.
@@ -222,6 +235,8 @@ c         print *,' HMS track found!'
                return
             endif                       ! end test on H_TARG_TRANS ABORT
          endif                          ! end test on hbypass_target_trans
+         
+c         write(*,*) 'h_targ_trans successful'
 *        
 *        Now begin to process particle identification information
 *        First scintillator and time of flight
@@ -237,6 +252,8 @@ c         print *,' HMS track found!'
 *        Next Calorimeter information
 *        HMS_DECODED_CAL ====> HMS_TRACK_TESTS
 *
+c         write(*,*) 'h_tof successful'
+
          if(hbypass_cal.eq.0) then
             call H_CAL(ABORT,err)
             if(ABORT) then
@@ -259,6 +276,8 @@ c         print *,' HMS track found!'
          if( hdebugprinttracktests .ne. 0 ) then
             call h_prt_track_tests
          endif
+
+c         write(*,*) 'h_prt_track_tests successful'
 *     
 *        Combine results in HMS physics analysis
 *        HMS_TARGET + HMS_TRACK_TESTS ====>  HMS_PHYSICS
@@ -270,6 +289,8 @@ c         print *,' HMS track found!'
              return
            endif
          endif
+
+c         write(*,*) 'h_select_best_track successful'
 *
          if(hbypass_physics.eq.0) then
             call h_physics(abort,err)
@@ -281,6 +302,8 @@ c         print *,' HMS track found!'
 *     
 *        process FPP information
 *     
+c         write(*,*) 'All HMS reconstruction successful'
+
          if(hbypass_trans_fpp.eq.2) then !option to use HMS tracks to fill FPP variables
             call h_trans_fpp_hms(ABORT,err)
             if(ABORT)  then
@@ -288,6 +311,7 @@ c         print *,' HMS track found!'
 *               return
             endif                          ! end test on FPP ABORT
          endif                             ! end test on hbypass_trans_fpp
+c         write(*,*) 'h_trans_fpp_hms successful'
          if(hbypass_fpp.eq.0) then
             call h_fpp(ABORT,err)
             if(ABORT) then
@@ -295,6 +319,7 @@ c         print *,' HMS track found!'
 *               return
             endif                       ! end test of h_fpp ABORT
          endif                          ! end test on hbypass_fpp
+c         write(*,*) 'h_fpp successful'
 *     
       endif                             ! end test no tracks found       
 
@@ -307,7 +332,9 @@ c         print *,' HMS track found!'
            return
          endif
       endif ! end test on hbypass_fpp
-    
+      
+c      write(*,*) 'h_fill_fpp successful'
+
 *
 *     Successful return
       ABORT=.FALSE.
