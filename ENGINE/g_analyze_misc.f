@@ -7,6 +7,9 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.9.20.5  2008/09/30 14:23:26  puckett
+* corrected definition of beam position in relevant routines
+*
 * Revision 1.9.20.4  2007/10/20 19:55:06  cdaq
 * Added more helicity analysis
 *
@@ -79,6 +82,7 @@
 
       integer*4 numfr
       real*4 sumfry,sumfrx,avefry,avefrx
+      real*4 rastersign
 
       real*4 small
       parameter (small = 1.e-6)
@@ -311,11 +315,18 @@
       gfrxp     = gfrx/gfrx_dist
       gfryp     = gfry/gfry_dist
 
+c     optionally reverse all raster signals--signs appear to be confused 
+c     based on analysis of the data
+
+      rastersign = 1.
+      if(g_invert_raster_sign.ne.0) rastersign = -1. 
+
       if (gusefr .ne. 0) then   ! correct for raster
-         gbeam_x  = gbeam_x  + gfrx
-         gbeam_xp = gbeam_xp + gfrxp
-         gbeam_y  = gbeam_y  + gfry
-         gbeam_yp = gbeam_yp + gfryp
+         gbeam_x  = gbeam_x  + rastersign * gfrx
+         gbeam_xp = gbeam_xp + rastersign * gfrxp
+c         gbeam_y  = gbeam_y  + gfry
+         gbeam_y = gbeam_y + rastersign * gfry
+         gbeam_yp = gbeam_yp + rastersign * gfryp
       endif
 
 c     figure out helicity from ADC signals:
@@ -330,6 +341,9 @@ c     figure out helicity from ADC signals:
 c     for now just trust the trigger supervisor more than the ADC which can be noisy
 
       gbeam_helicity = gbeam_helicity_TS
+
+c     actually, we should throw out events where the Trigger Supervisor and the ADC disagree:
+      if(gbeam_helicity_TS.ne.gbeam_helicity_ADC) gbeam_helicity = 0
 
 c      write(*,*) 'h+ signal = ',gmisc_dec_data(1,2)
 c      write(*,*) 'h- signal = ',gmisc_dec_data(2,2)

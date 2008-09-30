@@ -244,21 +244,21 @@ c     vertex coordinates expressed in BigCal coordinate system
 c     turns out that beam x and y coordinates are the same as BigCal coordinates
 c     also correct the z vertex position for raster x:
 
-      vx = gbeam_xoff - gspec_xoff
-      vy = gbeam_yoff - gspec_yoff
+      vx = -gbeam_x
+      vy = gbeam_y
       vz = hszbeam
 
 c      vx = gbeam_x
 c      vy = gbeam_y
 c      vz = hszbeam
       
-      if(gep_use_frx.ne.0) then
-         vx = vx + gfrx
-      endif
+c      if(gep_use_frx.ne.0) then
+c         vx = vx + gfrx
+c      endif
       
-      if(gep_use_fry.ne.0) then
-         vy = vy + gfry
-      endif
+c      if(gep_use_fry.ne.0) then
+c         vy = vy + gfry
+c      endif
       
       if(gep_use_xbeam_zcorr.ne.0) then
          vz = vz - vx / tan(htheta_lab*PI/180. - hsyp_tar)
@@ -413,8 +413,8 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       GEP_xptar_p = HSXP_TAR
       GEP_yptar_p = HSYP_TAR
       GEP_ytar_p = HSY_TAR
-      GEP_xbeam = gbeam_xoff - gspec_xoff + gfrx ! always use this formula for the ntuple, whether or not we use raster in reconstruction
-      GEP_ybeam = gbeam_yoff - gspec_yoff + gfry ! always use this formula for the ntuple, whether or not we use raster in reconstruction
+      GEP_xbeam = -gbeam_x ! always use this formula for the ntuple, whether or not we use raster in reconstruction
+      GEP_ybeam = gbeam_y ! always use this formula for the ntuple, whether or not we use raster in reconstruction
       GEP_xclust = bigcal_all_clstr_x(ibest_cal) ! raw xclust in BigCal coordinates
       GEP_yclust = bigcal_all_clstr_y(ibest_cal) ! raw yclust in BigCal coordinates
       GEP_eclust = bigcal_energy

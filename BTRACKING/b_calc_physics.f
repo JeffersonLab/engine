@@ -123,17 +123,17 @@ c     need to set up eloss params for BigCal absorber!
             zrot = -x * Sinth + z * Costh
 
             if(gen_event_type.eq.6.and.hsnum_fptrack.gt.0) then ! correct angles for IP determined by HMS/bpm/raster:
-               vx = gbeam_xoff - gspec_xoff
-               vy = gbeam_yoff - gspec_yoff
+               vx = -gbeam_x
+               vy = gbeam_y
                vz = hszbeam
 
-               if(gep_use_frx.ne.0) then
-                  vx = vx + gfrx
-               endif
+c               if(gep_use_frx.ne.0) then
+c                  vx = vx + gfrx
+c               endif
       
-               if(gep_use_fry.ne.0) then
-                  vy = vy + gfry
-               endif
+c               if(gep_use_fry.ne.0) then
+c                  vy = vy + gfry
+c               endif
       
                if(gep_use_xbeam_zcorr.ne.0) then
                   vz = vz - vx / tan(htheta_lab*PI/180. - hsyp_tar)

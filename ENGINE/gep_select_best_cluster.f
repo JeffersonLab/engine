@@ -108,17 +108,17 @@ c$$$      nu_pth = Q2_pth / (2.*Mp)
       eyhat = -sin(eth_pp) * cos(eph_pp)
       ezhat = cos(eth_pp)
 
-      vx = gbeam_xoff - gspec_xoff ! average beam position
-      vy = gbeam_yoff - gspec_yoff ! average beam position
+      vx = -gbeam_x ! average beam position
+      vy = gbeam_y ! average beam position
       vz = hszbeam ! HMS zbeam calculated from ytar and yptar
 
-      if(gep_use_frx.ne.0) then ! use raster x in vertex correction to BigCal angles
-         vx = vx + gfrx
-      endif
+c      if(gep_use_frx.ne.0) then ! use raster x in vertex correction to BigCal angles
+c         vx = vx + gfrx
+c      endif
       
-      if(gep_use_fry.ne.0) then ! use raster y in vertex correction to BigCal angles
-         vy = vy + gfry
-      endif
+c      if(gep_use_fry.ne.0) then ! use raster y in vertex correction to BigCal angles
+c         vy = vy + gfry
+c      endif
       
       if(gep_use_xbeam_zcorr.ne.0) then ! correct vertex z for beam x (can be as large as 1-2 cm for small htheta_lab, large xbeam)
          vz = vz - vx / tan(htheta_lab*PI/180. - hsyp_tar)
