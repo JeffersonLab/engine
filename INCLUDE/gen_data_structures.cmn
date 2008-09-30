@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.35.20.8  2008/09/30 14:20:56  puckett
+* added flag to optionally reverse the sign of both raster signals
+*
 * Revision 1.35.20.7  2007/10/23 17:02:07  cdaq
 * Added eloss parameters for everything in front of BigCal: 4 inch Al absorber, .5 inch lucite, .75 inches Al (.5 in front plate and .25 in support frame for lucite)
 *
@@ -166,21 +169,24 @@
       REAL*4  GEBEAM         ! BEAM ENERGY (GEV)
       REAL*4  GPBEAM         ! BEAM MOMENTUM (GEV/C)
       REAL*4  G_BEAM_TARGET_S      ! s computed from beam and target info
+      integer*4 g_invert_raster_sign ! allow to change the sign of the raster signals
 *
 *     CTPTYPE=event
 *
       integer*4 ncalls_calc_ped
-      integer*4 gbeam_helicity ! whatever we decide
+      integer*4 gbeam_helicity ! = value from ADC/TS if ADC and TS agree, 0 otherwise
       integer*4 gbeam_helicity_ADC ! value from ADC
       integer*4 gbeam_helicity_TS ! value from TS
       REAL*4 GBEAM_X,GBEAM_Y    !final beam position from bpm & raster info
       REAL*4 GBEAM_XP,GBEAM_YP  !final beam angles from bpm & raster info
       REAL*4 geloss
+      
 
       COMMON/GEN_BEAM/
      &     GEBEAM,
      &     GPBEAM,
      &     G_BEAM_TARGET_S,
+     &     g_invert_raster_sign,
      &     ncalls_calc_ped,
      &     gbeam_helicity,
      &     gbeam_helicity_ADC,
