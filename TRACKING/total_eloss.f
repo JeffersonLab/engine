@@ -16,6 +16,9 @@
 *-    Created   1-Dec-1995  Rolf Ent
 *
 * $Log$
+* Revision 1.8.20.6  2008/09/30 13:42:44  puckett
+* added option to use zero thickness on BigCal side--effectively neglecting eloss calculation for BigCal
+*
 * Revision 1.8.20.5  2007/11/29 18:32:13  cdaq
 * commented out "eloss > 1e-2" error message
 *
@@ -378,14 +381,14 @@
 *********************************************************************
       if (liquid .and. arm.ne.0) then
 *     Liquid target*********
-         if (type.eq.1) then   
+         if (type.eq.1) then   ! TUNA CAN
             call loss(prt,z,a,thick,dens,velocity,back_loss) !liquid
             total_loss = total_loss + back_loss
             call loss(prt,gz_cell,ga_cell,gfront_thk,gcell_den !aluminum 
      >           ,velocity,cell_wall_loss)                          
             total_loss = total_loss + cell_wall_loss
             
-         else
+         else ! BEER CAN
 *     write(6,*)'********************I am HERE*****************(VT)'
             thick=0.0
             thick_front=0.0
@@ -541,23 +544,32 @@ c       write(*,*) "In HMS"
 ****************************************
       if(arm.eq.3) then
 c     scattering window on bigcal side!!!!
-         call loss(prt,bscat_win_z,bscat_win_a,bscat_win_thk,
+         scat_win_loss = 0.0
+         if(bscat_win_thk.gt.0.)
+     $        call loss(prt,bscat_win_z,bscat_win_a,bscat_win_thk,
      $        bscat_win_den,velocity,scat_win_loss) !aluminum
          total_loss = total_loss + scat_win_loss
 c     air gap between the chamber and the entrance window!
-         call loss(prt,gair_z,gair_a,gair_thk,gair_dens,velocity,air_loss) ! air
-         total_loss = total_loss + air_loss
+c     this quantity not meaningful for BigCal side. comment out!
+c         call loss(prt,gair_z,gair_a,gair_thk,gair_dens,velocity,air_loss) ! air
+c         total_loss = total_loss + air_loss
 c     BigCal Al absorber loss (most significant)
-         call loss(prt,babs_z,babs_a,babs_thk,babs_den,velocity,b_abs_loss) ! absorber
+         b_abs_loss = 0.0
+         if(babs_thk.gt.0.)
+     $        call loss(prt,babs_z,babs_a,babs_thk,babs_den,velocity,b_abs_loss) ! absorber
          total_loss = total_loss + b_abs_loss
          
 c     BigCal lucite plate loss 
-         call loss(prt,bluc_z,bluc_a,bluc_thk,bluc_den,velocity,b_luc_loss) ! lucite
+         b_luc_loss = 0.0
+         if(bluc_thk.gt.0.)
+     $        call loss(prt,bluc_z,bluc_a,bluc_thk,bluc_den,velocity,b_luc_loss) ! lucite
          total_loss = total_loss + b_luc_loss
 c     BigCal front plate(plates) loss:
-         call loss(prt,bfpl_z,bfpl_a,bfpl_thk,bfpl_den,velocity,b_fpl_loss) ! front plate(s)
+         b_fpl_loss = 0.0
+         if(bfpl_thk.gt.0.)
+     $        call loss(prt,bfpl_z,bfpl_a,bfpl_thk,bfpl_den,velocity,b_fpl_loss) ! front plate(s)
          total_loss = total_loss + b_fpl_loss
-
+         
          e_loss = total_loss
 
          if(gelossdebug.ne.0)then
