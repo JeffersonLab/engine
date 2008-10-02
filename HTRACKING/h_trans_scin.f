@@ -8,7 +8,13 @@
 * needed for the drift chamber and tof analysis.
 *
 * modifications:
+* Added corrections for trigger time and rollover
+* for F1 TDCs (should still work if go back to FASTBUS)
+* 2008/09/30 P. Bosted
 * $Log$
+* Revision 1.21.8.1  2008/10/02 17:13:47  cdaq
+* Added F1trig subraction
+*
 * Revision 1.21  2005/03/15 21:08:08  jones
 * Add code to filter the scintillator tdc hits and group them by time. ( P. Bosted)
 *
@@ -87,6 +93,7 @@
       include 'hms_scin_parms.cmn'
       include 'hms_scin_tof.cmn'
       include 'hms_id_histid.cmn'
+      include 'f1trigger_data_structures.cmn'
 
       logical abort
       character*1024 errmsg
@@ -111,9 +118,25 @@
       integer timehist(200),i,j,jmax,maxhit,nfound
       real*4 time_pos(1000),time_neg(1000),tmin,time_tolerance
       logical keep_pos(1000),keep_neg(1000),first/.true./
+      integer rawtime, corrtime
       save
       
       abort = .false.
+
+
+! Correct for trigger time 
+      do ihit = 1 , hscin_all_tot_hits 
+       rawtime = hscin_all_tdc_pos(ihit)
+       if(rawtime.ge.0) then
+        call CORRECT_RAW_TIME_HMS(rawtime,corrtime)
+        hscin_all_tdc_pos(ihit) = corrtime
+       endif
+       rawtime = hscin_all_tdc_neg(ihit)
+       if(rawtime.ge.0) then
+        call CORRECT_RAW_TIME_HMS(rawtime,corrtime)
+        hscin_all_tdc_neg(ihit) = corrtime
+       endif
+      enddo
 
 **    Find scintillators with real hits (good TDC values)
       call h_strip_scin(abort,errmsg)
@@ -368,6 +391,87 @@
       else
         hbeta_notrk = 0.
         hbeta_chisq_notrk = -1.
+      endif
+
+      return
+      end
+
+c subtract trigger times
+      SUBROUTINE CORRECT_RAW_TIME_HMS(RAW_TDC,CORRECTED_TDC)
+      IMPLICIT NONE
+      include 'hms_data_structures.cmn'
+      include 'f1trigger_data_structures.cmn'
+c
+c     Function arguments are RAW_TDC -raw TDC value
+c     and CORRECTED_TDC -Corrected by Trigger time and rolover time 
+c     MAKE SURE TO Include correct parameter files
+c
+c
+      integer*4 RAW_TDC, CORRECTED_TDC,tdc_offset
+      integer*4 f1trigmax,nprint
+      logical roll
+      save
+
+c hard-wired to make TDC spectra centered on 1500
+c or so. This is for F1 TDCs
+      tdc_offset=2000
+
+C correct for trigger time. If using F1 TDC's, make
+C sure rolloever values are defined in parameter file
+      if(HMS_TRIGGER_COUNTER.eq.0.or.
+     >   HMS_TRIGGER_COUNTER.gt.10) then
+        write(6,'(''error, HMS_TRIGGER_COUNTER='',i4)')
+     >    HMS_TRIGGER_COUNTER
+c set to useful default
+        HMS_TRIGGER_COUNTER=1
+      endif
+      if(HMS_TRIGGER_WINDOW.lt.100) then
+        write(6,'(''error, HMS_TRIGGER_WINDOW='',i5)')
+     >   HMS_TRIGGER_WINDOW
+         HMS_TRIGGER_WINDOW = 2000
+      endif
+
+c find largest value of trigger time, to check rollover
+      if(TRIGGER_F1_START_TDC_COUNTER(
+     >        HMS_TRIGGER_COUNTER) .gt.f1trigmax) then
+        write(6,'('' HMS trigger time max='',i8)')
+     >  TRIGGER_F1_START_TDC_COUNTER(
+     >        HMS_TRIGGER_COUNTER)
+        f1trigmax = 
+     >  TRIGGER_F1_START_TDC_COUNTER(
+     >        HMS_TRIGGER_COUNTER)
+      endif
+
+c subtract trigger time
+c and add a constant so generally in range
+c of 1000 to 3000
+      CORRECTED_TDC =  RAW_TDC - 
+     >  TRIGGER_F1_START_TDC_COUNTER(HMS_TRIGGER_COUNTER)
+     >  + tdc_offset
+c
+c     Taking care of ROLOVER For 
+c     
+      roll = .false.
+c This happens if scin. TDC rolled over
+      if(CORRECTED_TDC.lt.-30000) then
+        CORRECTED_TDC = CORRECTED_TDC + 
+     >   TRIGGER_F1_ROLOVER(HMS_TRIGGER_COUNTER)
+        roll = .true.
+      endif
+
+c This happens if trigger TDC rolled over
+      if(CORRECTED_TDC.gt.30000) then
+        CORRECTED_TDC = CORRECTED_TDC - 
+     >   TRIGGER_F1_ROLOVER(HMS_TRIGGER_COUNTER)
+        roll=.true.
+      endif
+
+      if(nprint.lt.100.and.roll) then
+       write(6,'(''dbg hscin'',4i8)') 
+     >  RAW_TDC, CORRECTED_TDC,
+     >  TRIGGER_F1_START_TDC_COUNTER(
+     >  HMS_TRIGGER_COUNTER)
+       nprint = nprint+1
       endif
 
       return
