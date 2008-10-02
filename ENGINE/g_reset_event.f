@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
 * $Log$
+* Revision 1.11.24.3.2.2  2008/10/02 17:59:26  cdaq
+* *** empty log message ***
+*
 * Revision 1.11.24.3.2.1  2008/05/15 18:59:22  bhovik
 * 1'st version
 *
@@ -135,6 +138,7 @@
       
       call B_reset_event(BIGCAL_ABORT,BIGCAL_err)
       call SANE_reset_event(SANE_ABORT,SANE_err)
+      call f1trigger_reset_event(SANE_ABORT,SANE_err)
       
 
       

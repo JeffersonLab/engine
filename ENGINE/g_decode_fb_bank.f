@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.15.2.2  2008/10/02 17:57:58  cdaq
+* *** empty log message ***
+*
 * Revision 1.32.20.15.2.1  2008/05/15 18:59:21  bhovik
 * 1'st version
 *
@@ -178,6 +181,7 @@
       character*(*) error
       integer*4 bank(*)
       logical SANE_TRUE
+      logical F1TRIGGER_TRUE
 
 *     This routine unpacks a ROC bank.  It looks a fastbus word to
 *     determine which detector it belongs to.  It then passes the
@@ -214,6 +218,7 @@ cajp
 
       integer*4 ntrig
       
+c      write(*,*)'Start'
 
       banklength = bank(1) + 1          ! Bank length including count
       last_first = banklength
@@ -222,6 +227,7 @@ cajp
       roc = jiand(stat_roc,'1F'X)                ! Get ROC from header
 
       if(roc.eq.20.or.roc.eq.5) then
+c        write(*,*)'END'
         return                  ! scaler ROC
       endif
 
@@ -286,6 +292,7 @@ c        write(*,*) 'event = ',(bank(i),i=1,banklength)
 
 c        write(*,*) ' hel min = ',hmin_ts,' hel plus = ',hplus_ts
 c     > ,ts_input
+c      write(*,*)'END'
         return                  ! scaler ROC
       endif
 *
@@ -298,6 +305,7 @@ c     > ,ts_input
         if(ABORT) then
           call g_add_path(here,error)
         endif
+c      write(*,*)'END'
         return
       endif
 *
@@ -305,6 +313,7 @@ c     > ,ts_input
         ABORT = .false.                 ! Just warn
         write(error,*) ':ROC out of range, ROC#=',roc
         call g_add_path(here,error)
+c      write(*,*)'END'
         return
       endif
 *
@@ -393,6 +402,8 @@ c     > ,ts_input
 	  else  !data
 	    subadd = jiand(jishft( bank(pointer),
      $                            -g_decode_subaddbit(roc,slot) ),'3F'X) + 1
+           subadd = (subadd - 1) / 2 + 1
+
 	  endif
 	endif
 
@@ -415,6 +426,9 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddress
      &         did.eq.CERENKOV_SANE_ID.or.
      &         did.eq.TRACKER_SANE_X_ID.or.
      &         did.eq.TRACKER_SANE_Y_ID
+          F1TRIGGER_TRUE = did.eq.F1TRIGGER_ID
+c      write(*,*)did,roc,slot,slotp,subadd
+c          if(did.gt.0)write(*,*)did,roc,slot,slotp,subadd
 
 *
 *        1         2         3         4         5         6         7
@@ -429,14 +443,28 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddress
      $           HDC_RAW_WIRE_NUM,1 ,HDC_RAW_TDC,0, 0, 0)
 
           else if (did.eq.HSCIN_ID) then
-            pointer = pointer +
+             pointer = pointer +
      $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
      &           maxwords, did, 
      $           HMAX_ALL_SCIN_HITS, HSCIN_ALL_TOT_HITS, 
      $           HSCIN_ALL_PLANE_NUM, HSCIN_ALL_COUNTER_NUM, 4,
      $           HSCIN_ALL_ADC_POS, HSCIN_ALL_ADC_NEG,
      $           HSCIN_ALL_TDC_POS, HSCIN_ALL_TDC_NEG)
-
+c            if(gen_event_type.eq.1) then
+c               write(6,'(''dbg'',i4,i14,3i8)') 
+c     >          roc,bank(pointer),
+c     $           HMAX_ALL_SCIN_HITS, HSCIN_ALL_TOT_HITS
+c     >           ,pointer
+c             do i=1,HSCIN_ALL_TOT_HITS
+c               write(6,'(i4,6i8)') i,
+c     >            HSCIN_ALL_PLANE_NUM(i),
+c     >            HSCIN_ALL_COUNTER_NUM(i),
+c     >            HSCIN_ALL_TDC_POS(i),
+c     >            HSCIN_ALL_TDC_NEG(i),
+c     >            HSCIN_ALL_ADC_POS(i),
+c     >              HSCIN_ALL_ADC_NEG(i)
+c             enddo
+c           endif
           else if (did.eq.HCAL_ID) then
             pointer = pointer +
      $           g_decode_fb_detector(lastslot, roc, bank(pointer), 
@@ -501,6 +529,13 @@ c
 
           else if(SANE_TRUE)then
             call sane_decode(pointer,lastslot, roc, bank, 
+     &           maxwords, did)
+***************************************
+c
+c     F1 Trigger Decode
+c
+          else if(F1TRIGGER_TRUE)then
+            call F1TRIGGER_decode(pointer,lastslot, roc, bank, 
      &           maxwords, did)
 
 *===================== BIGCAL ==========================================
@@ -652,6 +687,7 @@ c
      &           maxwords, did,
      $           GMAX_MISC_HITS, GMISC_TOT_HITS, GMISC_RAW_ADDR1,
      $           GMISC_RAW_ADDR2, 1, GMISC_RAW_DATA, 0, 0, 0)
+
               
 *
 *     Data from Uninstrumented channels and slots go into a special array
@@ -682,6 +718,7 @@ c
       enddo
       ABORT= .FALSE.
       error= ' '
+c      write(*,*)'END'
       return
       end
 **************

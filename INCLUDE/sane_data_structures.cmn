@@ -5,6 +5,9 @@
 *     Author:   H. Baghdasaryan     18 Jan,2008
 *
 * $Log$
+* Revision 1.1.2.2  2008/10/02 18:01:49  cdaq
+* *** empty log message ***
+*
 * Revision 1.1.2.1  2008/09/26 21:42:48  cdaq
 * *** empty log message ***
 *
@@ -219,4 +222,13 @@ c      PARAMETER (TRACKER_SANE_RAW_COUNTER=448)  ! Should exceed # of paddles
      &     Bigcal_SHIFT
       real BigCal_Calib_Gain(32,55)
       COMMON/BigCal_Calib_H/BigCal_Calib_Gain
+c
+c
+c     SANE TRIGGER COUNTER is for F1 TDC 
+c     We need it to subtract TDC value of each detector.
+c     PLEASE MAKE SURE YOU INCLUDED it in one of the param files.
+c
+      integer*4 SANE_TRIGGER_COUNTER, SANE_TRIGGER_WINDOW
+      COMMON/SANE_TRIG_COUNTER/SANE_TRIGGER_COUNTER, SANE_TRIGGER_WINDOW
+
 ccc    END of the RAW DATA

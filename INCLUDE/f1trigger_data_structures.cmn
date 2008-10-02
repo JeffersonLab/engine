@@ -1,0 +1,48 @@
+*****************begin: luc_data_structures.cmn*************************
+*
+*     include file     f1trigger_data_structures.cmn
+*
+*     Author:   H. Baghdasaryan     18 Jan,2008
+*
+* $Log$
+* Revision 1.1.2.1  2008/10/02 18:01:48  cdaq
+* *** empty log message ***
+*
+
+c
+c
+c	F1 Trigger RAW DATA Structure
+c
+c
+
+c
+c     VERY IMPORTANT look at CTPTYPE DO not ignore.. Makes sence.
+c
+
+*
+*
+*     CTPTYPE=event
+*
+
+      INTEGER*4 TRIGGER_F1_MAX_HITS           ! MAXIMUM TOTAL NUMBER OF TRIGGERS
+      PARAMETER (TRIGGER_F1_MAX_HITS=10)     ! Should exceed # of paddles
+      integer*4 TRIGGER_F1_MAX_COUNTERS
+      PARAMETER (TRIGGER_F1_MAX_COUNTERS=10)  
+      INTEGER*4 TRIGGER_F1_RAW_COUNTER(TRIGGER_F1_MAX_HITS)
+      INTEGER*4 TRIGGER_F1_RAW_PLANE(TRIGGER_F1_MAX_HITS)
+      INTEGER*4 TRIGGER_F1_START_TDC(TRIGGER_F1_MAX_HITS)
+      INTEGER*4 TRIGGER_F1_RAW_TOT_HITS
+      INTEGER*4 TRIGGER_F1_START_TDC_COUNTER(TRIGGER_F1_MAX_COUNTERS)
+      COMMON/TRIGGER_F1_RAW/
+     &     TRIGGER_F1_RAW_PLANE,
+     &     TRIGGER_F1_RAW_COUNTER,
+     &     TRIGGER_F1_START_TDC,
+     &     TRIGGER_F1_RAW_TOT_HITS,
+     &     TRIGGER_F1_START_TDC_COUNTER
+   
+*
+*     CTPTYPE=parm
+*     
+*     parameters from CALIBRATION
+      INTEGER*4 TRIGGER_F1_ROLOVER(TRIGGER_F1_MAX_COUNTERS)
+      COMMON/TRIGGER_F1_ROL/TRIGGER_F1_ROLOVER

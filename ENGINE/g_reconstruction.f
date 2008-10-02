@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.9.2.1  2008/10/02 17:58:46  cdaq
+* *** empty log message ***
+*
 * Revision 1.13.24.9  2008/01/08 22:43:13  cdaq
 * *** empty log message ***
 *
@@ -117,6 +120,10 @@
          call G_add_path(here,err)
          RETURN
       ENDIF
+C
+C     SORTING F1 TRIGGERS BY COUNTERS 
+C
+      CALL f1trigger_sort_by_counter()
 
       !write(*,*) 'g_decode_event_by_banks finished successfully'
 

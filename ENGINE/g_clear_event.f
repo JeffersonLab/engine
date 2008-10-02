@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard, Hampton U.
 *-   Modified 19-Nov-1993   Kevin B. Beard for new error standards
 *-      $Log$
+*-      Revision 1.10.24.2.2.2  2008/10/02 17:57:23  cdaq
+*-      *** empty log message ***
+*-
 *-      Revision 1.10.24.2.2.1  2008/05/15 18:59:21  bhovik
 *-      1'st version
 *-
@@ -104,6 +107,8 @@
      
 *     
       call sane_clear_event(SANE_ABORT,SANE_err) ! SANE
+
+      call f1trigger_clear_event(SANE_ABORT,SANE_err) ! F1 trigger
      
 *     
       

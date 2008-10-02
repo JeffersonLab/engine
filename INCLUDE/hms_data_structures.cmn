@@ -5,6 +5,9 @@
 *     Author:   D. F. Geesaman          1 September 1993
 *
 * $Log$
+* Revision 1.12.20.1.2.1  2008/10/02 18:01:49  cdaq
+* *** empty log message ***
+*
 * Revision 1.12.20.1  2007/08/22 19:09:31  frw
 * added FPP
 *
@@ -681,6 +684,10 @@
 *     constants definitions for Foacl Plane Polarimeter   (frw 2006/06/22)
 *     these are used for array limits etc.
 *                                          
+      integer HMS_TRIGGER_COUNTER,HMS_TRIGGER_WINDOW
+      common/hmstrig/ HMS_TRIGGER_COUNTER,
+     >  HMS_TRIGGER_WINDOW
+
       integer*4  H_FPP_N_DCSETS        ! # of DC sets
       parameter (H_FPP_N_DCSETS=2)
 
@@ -740,6 +747,8 @@
      &                   , HFPP_raw_plane(H_FPP_MAX_RAWHITS)
      &                   , HFPP_raw_wire(H_FPP_MAX_RAWHITS)
      &                   , HFPP_raw_TDC(H_FPP_MAX_RAWHITS)
+
+
 *
 *                                          
 *******************end: hms_data_structures.cmn*************************

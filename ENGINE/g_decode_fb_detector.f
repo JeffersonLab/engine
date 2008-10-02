@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.13.2.3  2008/10/02 17:58:28  cdaq
+* *** empty log message ***
+*
 * Revision 1.23.20.13.2.2  2008/09/25 18:43:14  cdaq
 * Updated for F1 hi res
 *
@@ -353,12 +356,12 @@ c              write(6,'(''counter'',i8)') counter
               signal =jiand(evfrag(pointer),g_decode_slotmask(roc,slot))
 c              write(6,'(''signal'',i8)') signal
 *     fix roll-over if module is F1 TDC
-             if (g_decode_modtyp(roc,slot).eq.1) then
-               if (signal.lt.trigger_time) then  ! roll-over!!
-                 signal = signal + F1TDC_WINDOW_SIZE(roc)
+c             if (g_decode_modtyp(roc,slot).eq.1) then
+c               if (signal.lt.trigger_time) then  ! roll-over!!
+c                 signal = signal + F1TDC_WINDOW_SIZE(roc)
 c                 write(6,'(''signalcorr'',i8)') signal
-               endif
-             endif
+c               endif
+c             endif
             else
               plane = jishft(roc,16) + slot
               counter = subadd
@@ -389,6 +392,9 @@ c              write(6,'(''p,c,s'',3i8)') plane,counter,signal
                 counterlist(h) = counter
                 signal0(h) = signal
                 hitcount = hitcount + 1
+c                if(did.eq.25) write(6,'(''dbg did 25'',
+c     >            8i8)') h,plane,counter,signal,hitcount,
+c     >            roc,slot
               else ! Multiple signal counter sigcount= 2 or 4 allowed
 *     
 *     Starting at the end of the hist list, search back until a hit on

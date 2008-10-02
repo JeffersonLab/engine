@@ -373,15 +373,15 @@ c$$$  $             yt(nthit),hn(nthit),tt(nthit)
       
       
       abort=.not.HEXIST(b_ntuple_ID)
-      if(abort) then
-         call G_build_note(':Ntuple ID#$ does not exist',
-     $        '$',b_ntuple_ID,' ',0.,' ',err)
-         call G_add_path(here,err)
-      else 
-         
-         call HFNT(b_ntuple_ID)
-         
-      endif
+c      if(abort) then
+c         call G_build_note(':Ntuple ID#$ does not exist',
+c     $        '$',b_ntuple_ID,' ',0.,' ',err)
+c         call G_add_path(here,err)
+c      else 
+c         
+c         call HFNT(b_ntuple_ID)
+c         
+c      endif
 
       return 
       end
