@@ -1,0 +1,55 @@
+NEWSTYLE=1
+include ../../etc/Makefile
+include ../../etc/Makefile.flags
+
+
+osources = f1trigger_clear_event.f     f1trigger_register_variables.f \
+	   f1trigger_decode.f          f1trigger_reset_event.f \
+	   f1trigger_sort_by_counter.f
+	
+makeregstuff = r_f1trigger_data_structures.f
+               
+
+sources = $(osources) $(makeregstuff)
+
+libsources = $(sources)
+
+lib_targets := $(patsubst %.f, libf1trigger.a(%.o), $(libsources))
+install-dirs := lib
+bin_targets =
+
+#default:
+#	@echo "nothing to make"
+
+ifdef NFSDIRECTORY
+../%.f : $(NFSDIRECTORY)/F1TRIGGER/%.f
+	ln -s $< $@
+
+.PRECIOUS: ../%.f
+else
+#
+# Rule for making the register subroutines
+#
+../r_%.f : ../%.cmn $(MAKEREG)
+	(cd .. ; $(MAKEREG) $(<F) -o $(@F) -e /dev/null)
+
+.PRECIOUS: ../r_%.f
+endif
+
+#
+# Get include files from INCLUDE directory
+#
+
+%.cmn ../%.cmn:: ../../INCLUDE/%.cmn
+	$(CP) $< $@
+
+%.dec ../%.dec:: ../../INCLUDE/%.dec
+	$(CP) $< $@
+
+%.par ../%.par:: ../../INCLUDE/%.par
+	$(CP) $< $@
+
+%.dte ../%.dte:: ../../INCLUDE/%.dte
+	$(CP) $< $@
+
+include $(sources:.f=.d)
