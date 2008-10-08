@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.35.20.7.2.2  2008/10/08 17:38:19  cdaq
+* Added 2nd copy of slow raster info
+*
 * Revision 1.35.20.7.2.1  2008/09/26 21:42:49  cdaq
 * *** empty log message ***
 *
@@ -341,9 +344,12 @@
       REAL*4 GFRX_SYNC_MEAN,GFRY_SYNC_MEAN
       REAL*4 GFRX,GFRY
       REAL*4 GFRXP,GFRYP
-*     SLOW Raster PART
+*     SLOW Raster PART as read by HMS
       REAL*4 GSRX_RAW_ADC,GSRY_RAW_ADC
       REAL*4 GSRX_SYNC,GSRY_SYNC
+*     SLOW Raster PART as read by BETA
+      REAL*4 GSRX_RAW_ADC2,GSRY_RAW_ADC2
+      REAL*4 GSRX_SYNC2,GSRY_SYNC2
 *
 *     CTPTYPE=parm
 *
@@ -382,7 +388,9 @@
      &     GSPEC_XOFF,GSPEC_XPOFF,
      &     GSPEC_YOFF,GSPEC_YPOFF,
      &     GSRX_RAW_ADC,GSRY_RAW_ADC,  ! SLOW raster part
-     &     GSRX_SYNC,GSRY_SYNC
+     &     GSRX_SYNC,GSRY_SYNC,
+     &     GSRX_RAW_ADC2,GSRY_RAW_ADC2, ! SLOW raster 2
+     &     GSRX_SYNC2,GSRY_SYNC2
 *
 *     Misc. signals read out for hms AND sos events. Mostly
 *     beamline information: BPMs, BLMs, Fast Raster, slow raster, ...
