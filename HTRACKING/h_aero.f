@@ -1,6 +1,9 @@
        SUBROUTINE H_AERO(ABORT,err)
 *-
 * $Log$
+* Revision 1.4.14.1.2.1  2008/10/08 17:23:14  cdaq
+* updated for F1 TDC
+*
 * Revision 1.4.14.1  2007/09/10 20:28:00  pcarter
 * Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *
@@ -54,7 +57,7 @@
       character*(*) err
 *
      
-      integer*4 ihit,npmt
+      integer*4 ihit,npmt,rawtime,corrtime
 *
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_pedestals.cmn'
@@ -94,6 +97,23 @@ c      pause
       enddo
 
 
+
+
+! Correct for trigger time.
+! If NOT using F1 TDC's, comment this section out
+      do ihit = 1,haero_tot_hits
+       npmt=haero_pair_num(ihit)
+       rawtime = haero_tdc_pos(npmt)
+       if(rawtime.ge.0) then
+        call CORRECT_RAW_TIME_HMS(rawtime,corrtime)
+        haero_tdc_pos(npmt) = corrtime
+       endif
+       rawtime = haero_tdc_neg(npmt)
+       if(rawtime.ge.0) then
+        call CORRECT_RAW_TIME_HMS(rawtime,corrtime)
+        haero_tdc_neg(npmt) = corrtime
+       endif
+      enddo
 
       do ihit = 1,haero_tot_hits
 

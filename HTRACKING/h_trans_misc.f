@@ -6,6 +6,9 @@
 * h_trans_misc fills the hms_decoded_misc common block
 *
 * $Log$
+* Revision 1.7.26.1  2008/10/08 17:21:47  cdaq
+* updated for F1 TDC
+*
 * Revision 1.7  1999/01/27 16:02:39  saw
 * Check if some hists are defined before filling
 *
@@ -41,9 +44,25 @@
       character*20 here
       parameter (here = 'h_trans_misc')
 
-      integer*4 ihit,ich,isig
+      integer*4 ihit,ich,isig,rawtime,corrtime
 
       save
+
+! Correct for trigger time.
+! If NOT using F1 TDC's, comment this section out
+      do ihit = 1,hmisc_tot_hits
+       ich=hmisc_raw_addr2(ihit)
+       isig=hmisc_raw_addr1(ihit)
+! check if TDC
+! for now just do channels 1-32
+       if(ich.le.32 .and.isig.eq.1) then
+        rawtime = hmisc_raw_data(ihit)
+        if(rawtime.ge.0) then
+         call CORRECT_RAW_TIME_HMS(rawtime,corrtime)
+         hmisc_raw_data(ihit) = corrtime
+        endif
+       endif
+      enddo
 
       do ihit = 1 , hmax_misc_hits
         hmisc_dec_data(ihit,1) = 0     ! Clear TDC's
