@@ -180,7 +180,7 @@
       real*4 hfpp_prune_thetamin(2) ! FPP1 and FPP2
       real*4 hfpp_prune_thetamax(2) 
       real*4 hfpp_prune_sclose(2) 
-      real*4 hfpp_prune_zclose(2,2) ! FPP1 and FPP2 zlow and zhigh
+      real*4 hfpp_prune_zclose(4) ! FPP1 and FPP2 zlow and zhigh
       real*4 hfpp_prune_zslop(2) ! FPP1 and FPP2 theta-dependent additional tolerance on zclose
       common/hfpp_prune_params/
      $     hselectfpptrackprune,
