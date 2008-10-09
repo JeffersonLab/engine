@@ -23,6 +23,8 @@
 
       real*4 chi2,minchi2(2)
       real*4 criterion,mincriterion(2),scloseweight(2)
+      real*4 ztest(2,2)
+      
       logical firsttry
 
       logical keep(2,h_fpp_max_tracks)
@@ -140,14 +142,18 @@ c     We would like to have a "slop" parameter for zclose that
 c     allows for zclose values well outside the analyzer in the situation that theta is small:
 
       do ifpp=1,2
+         
+         ztest(ifpp,1) = hfpp_prune_zclose(2*(ifpp-1)+1)
+         ztest(ifpp,2) = hfpp_prune_zclose(2*(ifpp-1)+2)
+
          ngood(ifpp) = 0
          do itrack=1,hfpp_n_tracks(ifpp)
             zslop = hfpp_prune_zslop(ifpp) * 
      $           max(1.0,min(1000.0,1.0/tan(hfpp_track_theta(ifpp,itrack))))
             if(keep(ifpp,itrack).and.hfpp_track_zclose(ifpp,itrack).ge.
-     $           hfpp_prune_zclose(ifpp,1)-zslop.and.
+     $           ztest(ifpp,1)-zslop.and.
      $           hfpp_track_zclose(ifpp,itrack).le.
-     $           hfpp_prune_zclose(ifpp,2)+zslop) then
+     $           ztest(ifpp,2)+zslop) then
                ngood(ifpp) = ngood(ifpp) + 1
             endif
          enddo
@@ -157,9 +163,9 @@ c     allows for zclose values well outside the analyzer in the situation that t
                zslop = hfpp_prune_zslop(ifpp) * 
      $              max(1.0,min(1000.0,1.0/tan(hfpp_track_theta(ifpp,itrack))))
                if(hfpp_track_zclose(ifpp,itrack).lt.
-     $              hfpp_prune_zclose(ifpp,1)-zslop.or.
+     $              ztest(ifpp,1)-zslop.or.
      $              hfpp_track_zclose(ifpp,itrack).gt.
-     $              hfpp_prune_zclose(ifpp,2)+zslop) then
+     $              ztest(ifpp,2)+zslop) then
                   keep(ifpp,itrack) = .false.
                endif
             enddo
