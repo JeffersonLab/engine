@@ -183,7 +183,8 @@ c     now we choose the best track based on Sitnik's criterion:
          do itrack=1,hfpp_n_tracks(ifpp)
             criterion = hschi2perdeg + hfpp_track_chi2(ifpp,itrack) + 
      $           scloseweight(ifpp) * (hfpp_track_sclose(ifpp,itrack))**2
-            if(firsttry.or.criterion.lt.mincriterion(ifpp)) then
+            if(keep(ifpp,itrack).and.
+     $           (firsttry.or.criterion.lt.mincriterion(ifpp))) then
                mincriterion(ifpp) = criterion
                firsttry = .false.
                besttrack(ifpp) = itrack
