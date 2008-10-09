@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.29.6.6  2008/10/09 15:53:29  puckett
+# added best track selection method for FPP1 and FPP2
+#
 # Revision 1.29.6.5  2008/07/29 16:50:12  puckett
 # added new routines to help with tracking
 #
@@ -150,7 +153,8 @@ newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f \
 fppstuff = h_fill_fpp.f  h_fpp_drift.f  h_fpp.f \
         h_fpp_fit.f  h_fpp_statistics.f  \
         h_fpp_tracking.f  h_init_fpp.f  \
-        h_trans_fpp.f  h_trans_fpp_hms.f mt19937.f h_fpp_geometry.f
+        h_trans_fpp.f  h_trans_fpp_hms.f mt19937.f h_fpp_geometry.f \
+	h_fpp_select_best_track_prune.f
 makeregstuff =	r_hms_filenames.f r_hms_scin_parms.f r_hms_scin_tof.f \
 	r_hms_calorimeter.f r_hms_id_histid.f r_hms_tracking.f \
 	r_hms_geometry.f r_hms_track_histid.f r_hms_recon_elements.f \

@@ -11,6 +11,9 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 * $Log$
+* Revision 1.13.24.8  2008/10/09 15:53:29  puckett
+* added best track selection method for FPP1 and FPP2
+*
 * Revision 1.13.24.7  2008/09/29 16:01:20  puckett
 * added checking for existence of histograms, prevents analyzer crash when histograms are turned off to save memory
 *
@@ -313,7 +316,7 @@ c         write(*,*) 'All HMS reconstruction successful'
          endif                             ! end test on hbypass_trans_fpp
 c         write(*,*) 'h_trans_fpp_hms successful'
          if(hbypass_fpp.eq.0) then
-            call h_fpp(ABORT,err)
+            call h_fpp(ABORT,err) ! now includes "best track" selection for each FPP (AJP)
             if(ABORT) then
                call G_add_path(here,err)
 *               return
