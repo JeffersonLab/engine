@@ -137,6 +137,7 @@
                                      ! dx/dz, x, dy/dz, y
 
       logical*4 HFPP_track_uniq      ! track fitting result was un-ambiguous
+      integer*4 HFPP_best_track      ! best track in each FPP
 
 
       common/HMS_FPP_track/
@@ -166,4 +167,25 @@
      >                        H_FPP_N_DCLAYERS,H_FPP_MAX_TRACKS)
      &  , HFPP_track_angresol(H_FPP_N_DCSETS,H_FPP_N_DCINSET,
      >                        H_FPP_N_DCLAYERS,H_FPP_MAX_TRACKS)
-     &  , HFPP_track_uniq(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
+     &  , HFPP_track_uniq(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS),
+     $     HFPP_best_track(H_FPP_N_DCSETS)
+
+*
+*     CTPTYPE=parm
+*
+*     the following are parameters used to select the best among multiple tracks reconstructed 
+*     in the FPP:
+
+      integer*4 hselectfpptrackprune ! flag to turn on FPP track selection using pruning
+      real*4 hfpp_prune_thetamin(2) ! FPP1 and FPP2
+      real*4 hfpp_prune_thetamax(2) 
+      real*4 hfpp_prune_sclose(2) 
+      real*4 hfpp_prune_zclose(2,2) ! FPP1 and FPP2 zlow and zhigh
+      real*4 hfpp_prune_zslop(2) ! FPP1 and FPP2 theta-dependent additional tolerance on zclose
+      common/hfpp_prune_params/
+     $     hselectfpptrackprune,
+     $     hfpp_prune_thetamin,
+     $     hfpp_prune_thetamax,
+     $     hfpp_prune_sclose,
+     $     hfpp_prune_zclose,
+     $     hfpp_prune_zslop
