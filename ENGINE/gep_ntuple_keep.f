@@ -22,7 +22,7 @@
       integer m,iTrk,iSet
       real zclose_store,sclose_store
       real theta_store,phi_store
-      real conetest_store,track_store
+      integer conetest_store,track_store
       real zanalyzer(2)
       
       logical HEXIST ! cernlib function
@@ -160,39 +160,52 @@ c
 c Algorithm to select "best" track for final analysis
 c
       do iSet=1,2
+       track_store=0
        theta_store=1.0e15
        phi_store=1.0e15
-       conetest_store=1.0e15
+       conetest_store=-1
        zclose_store=1.0e15
        sclose_store=1.0e15
-       zanalyzer(1)=140.3
-       zanalyzer(2)=237.8
+
+       if(hselectfpptrackprune.ne.0) then ! use best FPP track selection based on prune tests, Sitnik
+          track_store = hfpp_best_track(iSet)
+          if(track_store.gt.0) then
+             theta_store = hfpp_track_theta(iSet,track_store)
+             phi_store = hfpp_track_phi(iSet,track_store)
+             conetest_store = hfpp_track_conetest(iSet,track_store)
+             zclose_store = hfpp_track_zclose(iSet,track_store)
+             sclose_store = hfpp_track_sclose(iSet,track_store)
+          endif
+       else
+          zanalyzer(1)=140.3
+          zanalyzer(2)=237.8
 c      
-       do iTrk=1,HFPP_N_tracks(iSet)
-        if(abs(HFPP_track_zclose(iSet,iTrk)-zanalyzer(iSet)).le.27.0) then
-          if(HFPP_track_sclose(iSet,iTrk).lt.8.0) then
-            if(HFPP_track_conetest(iSet,iTrk).eq.1) then
-              if(HFPP_track_theta(iSet,iTrk).gt.0.1/180.0*3.14159265.and.
-     >                 HFPP_track_theta(iSet,iTrk).lt.theta_store) then
-                track_store=iTrk
-                theta_store=HFPP_track_theta(iSet,iTrk)
-                phi_store=HFPP_track_phi(iSet,iTrk)
-                conetest_store=HFPP_track_conetest(iSet,iTrk)
-                zclose_store=HFPP_track_zclose(iSet,iTrk)
-                sclose_store=HFPP_track_sclose(iSet,iTrk)
-              endif
-            endif
-          endif  
-        endif 
-       enddo       
+          do iTrk=1,HFPP_N_tracks(iSet)
+             if(abs(HFPP_track_zclose(iSet,iTrk)-zanalyzer(iSet)).le.27.0) then
+                if(HFPP_track_sclose(iSet,iTrk).lt.8.0) then
+                   if(HFPP_track_conetest(iSet,iTrk).eq.1) then
+                      if(HFPP_track_theta(iSet,iTrk).gt.0.1/180.0*3.14159265.and.
+     >                     HFPP_track_theta(iSet,iTrk).lt.theta_store) then
+                         track_store=iTrk
+                         theta_store=HFPP_track_theta(iSet,iTrk)
+                         phi_store=HFPP_track_phi(iSet,iTrk)
+                         conetest_store=HFPP_track_conetest(iSet,iTrk)
+                         zclose_store=HFPP_track_zclose(iSet,iTrk)
+                         sclose_store=HFPP_track_sclose(iSet,iTrk)
+                      endif
+                   endif
+                endif  
+             endif 
+          enddo       
+       endif
        m=m+1
-       gep_ntuple_contents(m) = track_store
+       gep_ntuple_contents(m) = float(track_store)
        m=m+1     
        gep_ntuple_contents(m) = zclose_store 
        m=m+1     
        gep_ntuple_contents(m) = sclose_store 
        m=m+1     
-       gep_ntuple_contents(m) = conetest_store 
+       gep_ntuple_contents(m) = float(conetest_store) 
        m=m+1     
        gep_ntuple_contents(m) = theta_store 
        m=m+1     
