@@ -18,13 +18,17 @@
       integer ifpp,itrack ! = 1, 2 for FPP1, FPP2
       integer ngood(2)
       integer besttrack(2)
+      integer icone
 
       real zslop ! theta-dependent tolerance parameter for zclose
 
       real*4 chi2,minchi2(2)
       real*4 criterion,mincriterion(2),scloseweight(2)
       real*4 ztest(2,2)
+      real*4 theta,phi,sclose,zclose
       
+      real*4 trackin(4),trackout(4)
+
       logical firsttry
 
       logical keep(2,h_fpp_max_tracks)
@@ -189,9 +193,44 @@ c     now we choose the best track based on Sitnik's criterion:
                firsttry = .false.
                besttrack(ifpp) = itrack
             endif
+            
+            if(ifpp.eq.2.and.hfpp_best_track(1).gt.0) then 
+c     calculate and store theta/phi/sclose and zclose and conetest of FPP2 track 
+c     relative to "best" FPP1 track for comparison with the same quantities relative to 
+c     HMS track:
+               call h_fpp_relative_angles(hfpp_track_dx(1,hfpp_best_track(1)),
+     $              hfpp_track_dy(1,hfpp_best_track(1)),hfpp_track_dx(ifpp,itrack),
+     $              hfpp_track_dy(ifpp,itrack),theta,phi)
+               hfpp_track_theta(ifpp+1,itrack) = theta
+               hfpp_track_phi(ifpp+1,itrack) = phi
+               
+               trackin(1) = hfpp_track_dx(1,hfpp_best_track(1))
+               trackin(2) = hfpp_track_x(1,hfpp_best_track(1))
+               trackin(3) = hfpp_track_dy(1,hfpp_best_track(1))
+               trackin(4) = hfpp_track_y(1,hfpp_best_track(1))
+               
+               trackout(1) = hfpp_track_dx(ifpp,itrack)
+               trackout(2) = hfpp_track_x(ifpp,itrack)
+               trackout(3) = hfpp_track_dy(ifpp,itrack)
+               trackout(4) = hfpp_track_y(ifpp,itrack)
+               
+               call h_fpp_closest(trackin,trackout,sclose,zclose)
+               
+               hfpp_track_sclose(ifpp+1,itrack) = sclose
+               hfpp_track_zclose(ifpp+1,itrack) = zclose
+               
+               icone = 1
+               
+               call h_fpp_conetest(trackin,ifpp,zclose,theta,icone)
+               
+               hfpp_track_conetest(ifpp+1,itrack) = icone
+               
+            endif
+
          enddo
          
          hfpp_best_track(ifpp) = besttrack(ifpp)
+
       enddo
 
       abort = .false.
