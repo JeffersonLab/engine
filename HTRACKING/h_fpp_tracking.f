@@ -612,7 +612,6 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
           HFPP_track_theta(DCset,iTrack) = theta
           HFPP_track_phi(DCset,iTrack)   = phi
 
-
 *         * get point and distance of closest approach
 	  HMStrack(1) = hsxp_fp
 	  HMStrack(2) = hsx_fp
