@@ -193,6 +193,16 @@
       gep_ntuple_tag(m) = 'theta2' ! polar theta FPP2
       m=m+1
       gep_ntuple_tag(m) = 'phi2' ! azimuthal phi FPP2
+      m=m+1
+      gep_ntuple_tag(m) = 'zclos3' ! zclose of FPP2 relative to FPP1
+      m=m+1
+      gep_ntuple_tag(m) = 'sclos3' ! sclose of FPP2 relative to FPP1
+      m=m+1
+      gep_ntuple_tag(m) = 'conet3' ! conetest of FPP2 relative to FPP1
+      m=m+1
+      gep_ntuple_tag(m) = 'theta3' ! theta of FPP2 relative to FPP1
+      m=m+1
+      gep_ntuple_tag(m) = 'phi3' ! phi of FPP2 relative to FPP1
 
 c     now all tags are set, initialize the ntuple:
 
