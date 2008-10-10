@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *
 * $Log$
+* Revision 1.15.24.3  2008/10/10 21:26:29  puckett
+* it:RupK: Command not found.
+*
 * Revision 1.15.24.2  2007/09/11 19:14:17  frw
 * fixed FPP related arrays and limits
 *
@@ -180,6 +183,7 @@ cfrw       enddo
 *     *  number of tracks in each set of DCs
       do iSet=1, H_FPP_N_DCSETS
         hfpp_N_tracks(iSet) = 0
+        hfpp_best_track(iSet) = 0
       enddo !iSet
 
 *     *  FPP F1 trigger time references

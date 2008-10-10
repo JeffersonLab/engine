@@ -153,9 +153,9 @@
       m=m+1
       gep_ntuple_contents(m) = gbeam_helicity
       m=m+1
-      gep_ntuple_contents(m) = HFPP_N_tracks(1)
+      gep_ntuple_contents(m) = float(HFPP_N_tracks(1))
       m=m+1
-      gep_ntuple_contents(m) = HFPP_N_tracks(2)
+      gep_ntuple_contents(m) = float(HFPP_N_tracks(2))
 c      
 c Algorithm to select "best" track for final analysis
 c
