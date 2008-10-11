@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.18.5.2.1  2008/10/11 15:03:54  cdaq
+* slow raster
+*
 * Revision 1.10.18.5  2007/12/12 15:53:53  cdaq
 * added focal plane time to ntuple
 *
@@ -109,32 +112,32 @@ c
       m= m+1
       h_Ntuple_contents(m)= HCER_NPE_SUM ! cerenkov photoelectron spectrum
       m= m+1
-      h_Ntuple_contents(m)= HSP	        ! Lab momentum of chosen track in GeV/c
+      h_Ntuple_contents(m)= HSP ! Lab momentum of chosen track in GeV/c
       m= m+1
-      h_Ntuple_contents(m)= HSENERGY    ! Lab total energy of chosen track in GeV
+      h_Ntuple_contents(m)= HSENERGY ! Lab total energy of chosen track in GeV
       m= m+1
       h_Ntuple_contents(m)= gbcm1_charge ! Charge of last scaler event
       m= m+1
-      h_Ntuple_contents(m)= HSDELTA	! Spectrometer delta of chosen track
+      h_Ntuple_contents(m)= HSDELTA ! Spectrometer delta of chosen track
       m= m+1
-      h_Ntuple_contents(m)= HSTHETA	! Lab Scattering angle in radians
+      h_Ntuple_contents(m)= HSTHETA ! Lab Scattering angle in radians
       m= m+1
-      h_Ntuple_contents(m)= HSPHI	! Lab Azymuthal angle in radians
+      h_Ntuple_contents(m)= HSPHI ! Lab Azymuthal angle in radians
       m= m+1
-      h_Ntuple_contents(m)= HINVMASS	! Invariant Mass of remaing hadronic system
+      h_Ntuple_contents(m)= HINVMASS ! Invariant Mass of remaing hadronic system
       m= m+1
-      h_Ntuple_contents(m)= HSZBEAM! Lab Z coordinate of intersection of beam
+      h_Ntuple_contents(m)= HSZBEAM ! Lab Z coordinate of intersection of beam
 c                                ! track with spectrometer ray
       m= m+1
-      h_Ntuple_contents(m)= HSDEDX(1)	! DEDX of chosen track in 1st scin plane
+      h_Ntuple_contents(m)= HSDEDX(1) ! DEDX of chosen track in 1st scin plane
       m= m+1
-      h_Ntuple_contents(m)= HSBETA	! BETA of chosen track
+      h_Ntuple_contents(m)= HSBETA ! BETA of chosen track
       m= m+1
-      h_Ntuple_contents(m)= HSTRACK_ET	! Total shower energy of chosen track
+      h_Ntuple_contents(m)= HSTRACK_ET ! Total shower energy of chosen track
       m= m+1
       h_Ntuple_contents(m)= HSTRACK_PRESHOWER_E	! preshower of chosen track
       m= m+1
-      h_Ntuple_contents(m)= HSX_FP		! X focal plane position 
+      h_Ntuple_contents(m)= HSX_FP ! X focal plane position 
       m= m+1
       h_Ntuple_contents(m)= HSY_FP
       m= m+1

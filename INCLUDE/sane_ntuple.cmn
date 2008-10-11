@@ -18,7 +18,7 @@
       character*256 sane_Ntuple_file
 c      character*256 b_tree_filename
       character*8 sane_Ntuple_tag(SANEMAX_Ntuple_size)
-      integer sane_Ntuple_max_segmentevents
+      integer sane_ntuple_max_segmentevents
 *
 *     CTPTYPE=event
 *
@@ -146,7 +146,9 @@ c     $     sanetrigtype
       real*4 Z2_trc_r(10,maxcl)
       real*4 Tr_Vertex(3,maxcl)
       real*4 Tr_Vertex_r(3,maxcl)
-
+      real*4 Theta_e(maxcl),Phi_e(maxcl)
+      real*4 Delta_Y(maxcl),Delta_X(maxcl)
+      real*4 X_Bjorken(maxcl), Q2(maxcl), W2(maxcl), ENue(maxcl)
       integer*4 cer_h(maxcl)
       COMMON/SANEPHYS/n_clust, 
      ,     E_clust, 
@@ -158,7 +160,9 @@ c     $     sanetrigtype
      ,     trc_hx, X_trc, X_trc_r, Z_trc_r, 
      ,     trc_hy1, Y1_trc, Y1_trc_r, Z1_trc_r, 
      ,     trc_hy2, Y2_trc, Y2_trc_r, Z2_trc_r, 
-     ,     Tr_Vertex, Tr_Vertex_r, cer_h  
+     ,     Tr_Vertex, Tr_Vertex_r, cer_h,  
+     ,     Theta_e, Phi_e, Delta_X,
+     ,     X_Bjorken, Q2, W2, ENue
 
       real*4 X_luc_av(maxcl),Y_luc_av(maxcl),Z_luc_av(maxcl)
       real*4 X_tr_av(maxcl),Y_tr_av(maxcl),Z_tr_av(maxcl)
@@ -166,6 +170,7 @@ c     $     sanetrigtype
       COMMON/AverPhysEventPositions/X_luc_av,
      ,     Y_luc_av,Z_luc_av,
      ,     X_tr_av,Y_tr_av,Z_tr_av
+
 c
 c
 c     Parameters to define tracker and bigcal Planes
@@ -186,3 +191,9 @@ c
      ,     a_tracker, b_tracker, c_tracker, d_tracker,
      ,     a_bigcal, b_bigcal, c_bigcal, d_bigcal
 
+      real SANE_IF_ELECTRON_ANGLE_THETA
+      real SANE_IF_ELECTRON_ANGLE_PHI
+      real SANE_DISTANCE_FROM_ELECTRON_TRACK
+      COMMON /ANGLE_TRACK/SANE_IF_ELECTRON_ANGLE_THETA,
+     ,     SANE_IF_ELECTRON_ANGLE_PHI,
+     ,     SANE_DISTANCE_FROM_ELECTRON_TRACK

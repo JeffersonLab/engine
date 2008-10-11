@@ -34,6 +34,8 @@
       integer*4 gepid_hgep_xydiff(2)
       integer*4 gepid_hgep_ediff(2)
       integer*4 gepid_hgep_dpel(2)
+      integer*4 gepid_slowrastx
+      integer*4 gepid_slowrasty
 
       common/gep_hist_id/
      $     gepid_gep_trigtype,
@@ -67,4 +69,7 @@
      $     gepid_hgep_ydiff,
      $     gepid_hgep_xydiff,
      $     gepid_hgep_ediff,
-     $     gepid_hgep_dpel
+     $     gepid_hgep_dpel,
+     >     gepid_slowrastx,
+     >     gepid_slowrasty
+

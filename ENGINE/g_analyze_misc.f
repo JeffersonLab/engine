@@ -7,6 +7,9 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.9.20.4.2.2  2008/10/11 15:03:34  cdaq
+* slow raster
+*
 * Revision 1.9.20.4.2.1  2008/09/26 21:03:49  cdaq
 * *** empty log message ***
 *
@@ -63,13 +66,14 @@
 
       include 'gen_data_structures.cmn'
       include 'gen_constants.par'
+      include 'gep_hist_id.cmn'
 
       logical abort
       character*(*) errmsg
       character*20 here
       parameter (here = 'g_analyze_misc')
 
-      integer*4 ibpm,ibpm_sample,n_use_bpms
+      integer*4 ibpm,ibpm_sample,n_use_bpms,nprt
       real*8 normfrx,frxphase,frxdphase
       real*8 normfry,fryphase,frydphase
 
@@ -343,17 +347,35 @@ c      write(*,*) 'h- signal = ',gmisc_dec_data(2,2)
 
 *     Slow Raster Signals:  !!!!!! SLOTS NEED TO BE DETERMINED
 *     ===================
-      gsrx_raw_adc = gmisc_dec_data(1,2)   ! raw info matching MAP (reversed order)!
-      gsry_raw_adc = gmisc_dec_data(3,2)
-      
+      gsrx_raw_adc = gmisc_dec_data(4,2)   ! raw info matching MAP (reversed order)!
+      gsry_raw_adc = gmisc_dec_data(6,2)
+
+! 2nd copy of slow raster read out in Hall C (for use
+! when HMS and BETA re  running stand-alone)
+      gsrx_raw_adc2 = gmisc_dec_data(24,2)   ! raw info matching MAP (reversed order)!
+      gsry_raw_adc2 = gmisc_dec_data(26,2)
+
+c histrogram
+      if(gepid_slowrastx.gt.0)
+     >   call hf1(gepid_slowrastx,gsrx_raw_adc,1.)
+      if(gepid_slowrasty.gt.0)
+     >   call hf1(gepid_slowrasty,gsry_raw_adc,1.)
+c for debuging
+      if(nprt.lt.100) then
+        nprt = nprt + 1
+c        write(6,'(''dbg slow raster='',4f8.1)') 
+c     >   gsrx_raw_adc,  gsry_raw_adc,
+c     >   gsrx_raw_adc2, gsry_raw_adc2
+      endif
+
 c      gsrx_adc = gsrx_raw_adc    ! we do not want peds subtracted
 c      gsry_adc = gsry_raw_adc   
       
 c      gsrx_adc = gsrx_raw_adc - gsrx_adc_ped
 c      gsry_adc = gsry_raw_adc - gsry_adc_ped
 
-      gsrx_sync =  gmisc_dec_data(2,2)! - gsrx_sync_mean
-      gsry_sync =  gmisc_dec_data(4,2)! - gsry_sync_mean
+      gsrx_sync =  gmisc_dec_data(3,2)! - gsrx_sync_mean
+      gsry_sync =  gmisc_dec_data(5,2)! - gsry_sync_mean
 
       return
       end

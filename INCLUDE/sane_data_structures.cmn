@@ -5,6 +5,9 @@
 *     Author:   H. Baghdasaryan     18 Jan,2008
 *
 * $Log$
+* Revision 1.1.2.3  2008/10/11 15:05:05  cdaq
+* slow raster
+*
 * Revision 1.1.2.2  2008/10/02 18:01:49  cdaq
 * *** empty log message ***
 *
@@ -205,21 +208,25 @@ c      PARAMETER (TRACKER_SANE_RAW_COUNTER=448)  ! Should exceed # of paddles
 
       real CER_SANE_MEAN(8)
       real CER_SANE_SIGMA(8)
+      real CER_SANE_TDC_TIMING(8)
       COMMON/CER_CALIB/
      &     CER_SANE_MEAN,
-     &     CER_SANE_SIGMA
+     &     CER_SANE_SIGMA,
+     &     CER_SANE_TDC_TIMING
 
       real TrackerX_SHIFT(4) ! position in X,Y,Z Z-betta detector dirrection, 4- angleof betta detector
       real TrackerY1_SHIFT(4) !  position in Z-betta detector dirrection
       real TrackerY2_SHIFT(4) !  position in Z-betta detector dirrection
       real Lucite_SHIFT(4) !  position in Z-betta detector dirrection
       real Bigcal_SHIFT(4) !  position in Z-betta detector dirrection
+      real MAGNETIC_FIELD_ANGLE
       COMMON/Z_SHIFTS/
      &     TrackerX_SHIFT,
      &     TrackerY1_SHIFT,
      &     TrackerY2_SHIFT,
      &     Lucite_SHIFT,
-     &     Bigcal_SHIFT
+     &     Bigcal_SHIFT,
+     &     MAGNETIC_FIELD_ANGLE
       real BigCal_Calib_Gain(32,55)
       COMMON/BigCal_Calib_H/BigCal_Calib_Gain
 c
@@ -231,4 +238,15 @@ c
       integer*4 SANE_TRIGGER_COUNTER, SANE_TRIGGER_WINDOW
       COMMON/SANE_TRIG_COUNTER/SANE_TRIGGER_COUNTER, SANE_TRIGGER_WINDOW
 
+c
+c     Parameters for Tracking Tranformatio
+c
+c
+      real SANE_TRANSFORM_MATRIX_40_80(26),SANE_TRANSFORM_MATRIX_40_180(26)
+      real SANE_TRANSFORM_MATRIX_36_80(26),SANE_TRANSFORM_MATRIX_36_180(26)
+      COMMON/SANE_TRANSFORM/SANE_TRANSFORM_MATRIX_40_80,
+     ,     SANE_TRANSFORM_MATRIX_40_180,SANE_TRANSFORM_MATRIX_36_80,
+     ,     SANE_TRANSFORM_MATRIX_36_180
 ccc    END of the RAW DATA
+	
+      

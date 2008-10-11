@@ -28,6 +28,8 @@ c     miscellaneous hard-coded histograms for checkout
       gepid_gep_ntrigs = thgetid('gep_ntrigs')
       gepid_gep_HMS1_rawtdc = thgetid('gep_HMS1_rawtdc')
       gepid_gep_HMS2_rawtdc = thgetid('gep_HMS2_rawtdc')
+      gepid_slowrastx = thgetid('gep_slowrastx')
+      gepid_slowrasty = thgetid('gep_slowrasty')
       gepid_gep_bigcal_rawtdc = thgetid('gep_bigcal_rawtdc')
       gepid_gep_coin1_times = thgetid('gep_coin1_times')
       gepid_gep_coin2_times = thgetid('gep_coin2_times')
