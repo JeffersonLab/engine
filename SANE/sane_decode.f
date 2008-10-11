@@ -46,7 +46,7 @@ c        WRITE(*,*)'HITS = ',CERENKOV_SANE_RAW_TOT_HITS
      $        0, 0)
 c         WRITE(*,*)'HITS = ',CERENKOV_SANE_RAW_TOT_HITS
 c         WRITE(*,*)'cer tdc ',CERENKOV_SANE_RAW_TDC
-         WRITE(*,*)'cer ADC ',CERENKOV_SANE_RAW_ADC
+c         WRITE(*,*)'cer ADC ',CERENKOV_SANE_RAW_ADC
          
 
       else if(did.eq.TRACKER_SANE_X_ID)then
