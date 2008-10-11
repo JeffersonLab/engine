@@ -18,7 +18,7 @@
       logical FAIL
       character*80 why,directory,name
       character*1000 msg
-      integer io,id,cycle,m
+      integer io,id,cycle,m,i
 
       err=' '
       abort=.false.
@@ -58,7 +58,12 @@
       call HROUT(10125,cycle,' ')
       call HROUT(10126,cycle,' ')
       call HROUT(10200,cycle,' ')
+      do i =1,8
+         call HROUT(10500+i,cycle,' ')
 
+      enddo
+      call HROUT(10550,cycle,' ')
+         
       call HREND(name)
       call G_IO_control(io,'FREE',ABORT,err)
       close(io)

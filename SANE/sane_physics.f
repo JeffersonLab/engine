@@ -1,15 +1,20 @@
       subroutine Bigcal_Betta(inum)
+      IMPLICIT NONE
       include 'bigcal_data_structures.cmn'
       include 'sane_data_structures.cmn'
       include 'b_ntuple.cmn'
       include 'sane_ntuple.cmn'
+      include 'gen_data_structures.cmn'
       integer inum
-      real Vector(3),Vector_r(3)
+      real*4 Vector(3),Vector_r(3)
       INTEGER jj
-      real en
-      real ebj(25), coorX, coorY,E(10),esum(10)
+      real*4 en
+      real*4 ebj(25), coorX, coorY,E(10),esum(10)
       esum(inum) = 0
       do jj=1,ncellclust(inum)
+         if(BigCal_Calib_Gain(iycell(jj,inum),ixcell(jj,inum)).eq.0)
+     ,        BigCal_Calib_Gain(iycell(jj,inum),ixcell(jj,inum))=1. 
+
          en =((eblock(jj,inum)))/
      ,        BigCal_Calib_Gain(iycell(jj,inum),ixcell(jj,inum))
          ebj(jj)=en
@@ -37,10 +42,24 @@
       Vector(1)         = X_clust(inum)
       Vector(2)         = Y_clust(inum)
       Vector(3)         = Z_clust(inum)
-      call ROTATE(Vector,0.,Bigcal_SHIFT(4)*3.141/180.,0.,Vector_r)
+      call ROTATE(Vector,0.,-Bigcal_SHIFT(4)*3.1415926536/180.,0.,Vector_r)
+
       X_clust_r(inum) =  Vector_r(1)
       Y_clust_r(inum) =  Vector_r(2)
       Z_clust_r(inum) =  Vector_r(3)
+cc
+cc     OBTAIN Angles THeta and Phi Assuming the particle was Electron
+c     Angles are in degree
+
+      call CORRECT_ANGLES(
+     ,     X_clust_r(inum)-slow_rast_x-rast_x,
+     ,     Y_clust_r(inum)-slow_rast_y-rast_y,
+     ,     Z_clust_r(inum),E_clust(inum),
+     ,     SANE_IF_ELECTRON_ANGLE_THETA,
+     ,     SANE_IF_ELECTRON_ANGLE_PHI)
+      Theta_e(inum) = SANE_IF_ELECTRON_ANGLE_THETA
+      Phi_e(inum) = SANE_IF_ELECTRON_ANGLE_PHI
+      call PHYSICS_VARIABLES(inum,SANE_IF_ELECTRON_ANGLE_THETA,SANE_IF_ELECTRON_ANGLE_PHI)
       end
 cccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
@@ -55,6 +74,7 @@ c
 c
 
       subroutine tracker(inum) ! inum -cluster number ! 
+      IMPLICIT NONE
       include 'bigcal_data_structures.cmn'
       include 'sane_data_structures.cmn'
       include 'b_ntuple.cmn'
@@ -153,6 +173,7 @@ c
 ccccccccccccccccccccccccccccccccccccc
 
       subroutine lucite(inum)
+      IMPLICIT NONE
       include 'bigcal_data_structures.cmn'
       include 'sane_data_structures.cmn'
       include 'b_ntuple.cmn'
@@ -160,8 +181,8 @@ ccccccccccccccccccccccccccccccccccccc
 
       integer inum,i
       integer luc
-      real tdc_dif, xDelta1,fluc
-      real Vector(3),Vector_r(3)
+      real*4 tdc_dif, xDelta1,fluc
+      real*4 Vector(3),Vector_r(3)
       luc=0
       
       if(luc_hit.gt.0)then
@@ -206,7 +227,7 @@ C
                         Vector(1)         = X_luc(luc,inum)
                         Vector(2)         = Y_luc(luc,inum)
                         Vector(3)         = Z_luc(luc,inum)
-                        call ROTATE(Vector,0.,Lucite_SHIFT(4)*3.141/180.,0.,Vector_r)
+                        call ROTATE(Vector,0.,-BIGCAL_SHIFT(4)*3.1415926536/180.,0.,Vector_r)
                         X_luc_r(luc,inum)   = Vector_r(1)
                         Y_luc_r(luc,inum)   = Vector_r(2)
                         Z_luc_r(luc,inum)   = Vector_r(3)
@@ -237,6 +258,7 @@ c     Cerencov
 c
 ccccccccccc
       Subroutine  icer(inum)
+      IMPLICIT NONE
       include 'bigcal_data_structures.cmn'
       include 'sane_data_structures.cmn'
       include 'b_ntuple.cmn'
@@ -262,74 +284,142 @@ c     Particle ID
 c
 cccccccccccccccccccccccccccccccccccccccccc
       subroutine TrackerCoordnate(inum)
+      IMPLICIT NONE
       include 'sane_data_structures.cmn'
       include 'sane_ntuple.cmn'
       real*4 TrakerVertex(3), TrakerVertex_r(3)
       real*4 TrakerTEMP_Y1,TrakerTEMP_Y2 
       integer i,inum
+      logical TRAKER_STATUS
+      common/TRACKER_LOGICS/TRAKER_STATUS
+      TRAKER_STATUS=.FALSE.
 
 c
 c     Average coordinate on X plane
+      Tr_Vertex(1,inum)        = 0
+      Tr_Vertex(2,inum)        = 0
+      Tr_Vertex(3,inum)        = 0
+      
+      Tr_Vertex_r(1,inum)        = 0
+      Tr_Vertex_r(2,inum)        = 0
+      Tr_Vertex_r(3,inum)        = 0
+      TrakerVertex(3) = TrackerY2_SHIFT(3)
+      if(trc_hx(inum).gt.0.or.(trc_hy1(inum).gt.0.or.trc_hy2(inum).gt.0))then
+      TRAKER_STATUS=.TRUE.
 
-      TrakerVertex(1)       = 0
-      if(trc_hx(inum).eq.1)then
-         TrakerVertex(1)    = X_trc(trc_hx(inum),inum)
-      else if(trc_hx(inum).gt.1)then 
-         do i=1, trc_hx(inum)
-            TrakerVertex(1) = TrakerVertex(1) + X_trc(trc_hx(inum),inum)/trc_hx(inum) 
-         enddo
-      endif
-      TrakerVertex(2)       = 0
-c
+         TrakerVertex(1)       = 0
+         if(trc_hx(inum).eq.1)then
+            TrakerVertex(1)    = X_trc(trc_hx(inum),inum)
+         else if(trc_hx(inum).gt.1)then 
+            do i=1, trc_hx(inum)
+               TrakerVertex(1) = TrakerVertex(1) + X_trc(trc_hx(inum),inum)/trc_hx(inum) 
+            enddo
+         endif
+         TrakerVertex(2)       = 0
+c     
 c     Average coordinate on Y1 plane
-
-      TrakerTEMP_Y1         = 0
-      if(trc_hy1(inum).eq.1)then
-         TrakerTEMP_Y1      = Y1_trc(trc_hy1(inum),inum)
-      else if(trc_hy1(inum).gt.1)then 
-         do i=1, trc_hy1(inum)
-            TrakerTEMP_Y1   = TrakerTEMP_Y1 + Y1_trc(trc_hy1(inum),inum)/trc_hy1(inum) 
-         enddo
-      endif
+         
+         TrakerTEMP_Y1         = 0
+         if(trc_hy1(inum).eq.1)then
+            TrakerTEMP_Y1      = Y1_trc(trc_hy1(inum),inum)
+         else if(trc_hy1(inum).gt.1)then 
+            do i=1, trc_hy1(inum)
+               TrakerTEMP_Y1   = TrakerTEMP_Y1 + Y1_trc(trc_hy1(inum),inum)/trc_hy1(inum) 
+            enddo
+         endif
 c     
 c     Average coordinate on Y2 plane
-      
-      TrakerTEMP_Y2         = 0
-      if(trc_hy2(inum).eq.1)then
-         TrakerTEMP_Y2      = Y2_trc(trc_hy2(inum),inum)
-      else if(trc_hy2(inum).gt.1)then 
-         do i=1, trc_hy2(inum)
-            TrakerTEMP_Y2   = TrakerTEMP_Y2 + Y2_trc(trc_hy2(inum),inum)/trc_hy2(inum) 
-         enddo
+         
+         TrakerTEMP_Y2         = 0
+         if(trc_hy2(inum).eq.1)then
+            TrakerTEMP_Y2      = Y2_trc(trc_hy2(inum),inum)
+         else if(trc_hy2(inum).gt.1)then 
+            do i=1, trc_hy2(inum)
+               TrakerTEMP_Y2   = TrakerTEMP_Y2 + Y2_trc(trc_hy2(inum),inum)/trc_hy2(inum) 
+            enddo
+         endif
+         if(TrakerTEMP_Y1.gt.0.and.TrakerTEMP_Y2.gt.0)then
+            TrakerVertex(2)       = (TrakerTEMP_Y1+TrakerTEMP_Y2)/2.
+            TrakerVertex(3)       = (Z2_trc(trc_hy2(inum),inum)+Z1_trc(trc_hy1(inum),inum))/2.
+         else if(TrakerTEMP_Y1.gt.0.and.TrakerTEMP_Y2.eq.0)then
+            TrakerVertex(2)       = TrakerTEMP_Y1
+            TrakerVertex(3)       = Z1_trc(trc_hy1(inum),inum)
+         else if(TrakerTEMP_Y1.eq.0.and.TrakerTEMP_Y2.gt.0)then
+            TrakerVertex(2)       = TrakerTEMP_Y2
+            TrakerVertex(3)       = Z2_trc(trc_hy2(inum),inum)
+         endif
+         if(Z_trc(trc_hx(inum),inum).ne.0)then
+            TrakerVertex(1)          = TrakerVertex(1)*TrakerVertex(3)/Z_trc(trc_hx(inum),inum) 
+         endif
+         call ROTATE(TrakerVertex,0.,-Bigcal_SHIFT(4)*3.1415926536/180.,0.,TrakerVertex_r)
+C         WRITE(*,*)TrakerVertex,TrakerVertex_r
+         Tr_Vertex(1,inum)        = TrakerVertex(1)
+         Tr_Vertex(2,inum)        = TrakerVertex(2)
+         Tr_Vertex(3,inum)        = TrakerVertex(3)
+         
+         Tr_Vertex_r(1,inum)        = TrakerVertex_r(1)
+         Tr_Vertex_r(2,inum)        = TrakerVertex_r(2)
+         Tr_Vertex_r(3,inum)        = TrakerVertex_r(3)
       endif
-      if(TrakerTEMP_Y1.gt.0.and.TrakerTEMP_Y2.gt.0)then
-         TrakerVertex(2)       = (TrakerTEMP_Y1+TrakerTEMP_Y2)/2.
-         TrakerVertex(3)       = (Z2_trc(trc_hy2(inum),inum)+Z1_trc(trc_hy1(inum),inum))/2.
-      else if(TrakerTEMP_Y1.gt.0.and.TrakerTEMP_Y2.eq.0)then
-         TrakerVertex(2)       = TrakerTEMP_Y1
-         TrakerVertex(3)       = Z1_trc(trc_hy1(inum),inum)
-      else if(TrakerTEMP_Y1.eq.0.and.TrakerTEMP_Y2.gt.0)then
-         TrakerVertex(2)       = TrakerTEMP_Y2
-         TrakerVertex(3)       = Z2_trc(trc_hy2(inum),inum)
-      endif
-      TrakerVertex(1)          = TrakerVertex(1)*TrakerVertex(3)/Z_trc(trc_hx(inum),inum)  
-      call ROTATE(TrakerVertex,0.,Bigcal_SHIFT(4)*3.141/180.,0.,TrakerVertex_r)
-      Tr_Vertex(1,inum)        = TrakerVertex(1)
-      Tr_Vertex(2,inum)        = TrakerVertex(2)
-      Tr_Vertex(3,inum)        = TrakerVertex(3)
-
-      Tr_Vertex_r(1,inum)        = TrakerVertex_r(1)
-      Tr_Vertex_r(2,inum)        = TrakerVertex_r(2)
-      Tr_Vertex_r(3,inum)        = TrakerVertex_r(3)
-      
       end
+c
+c     Real Angles
+c
+ccccccccccccccccccccccccccccccccccccccccccccccccccccc
+      Subroutine CORRECT_ANGLES(X,Y,Z,EE,TH,PHI)
+      IMPLICIT NONE
+c
+c     X = X(Bigcal)-X(raster)
+c     Y = Y(Bigcal)-Y(raster)
+c     Z = Z(Bigcal)
+c     EE - energy in GEV
+c     RETURNS THeta and PHI In Degree.
+c
+cccccccccccc      
+      include 'sane_data_structures.cmn'
+      real*4 omega,X,Y,Z,TH,Phi,thr,phr,EE 
+      real*4 DIST
+      DIST = sqrt(X**2+Y**2+Z**2)
+      thr  = acos(Z/Dist)
+      phr= atan2(y/Dist,x/Dist)
+      if(MAGNETIC_FIELD_ANGLE.eq.-80.and.Bigcal_SHIFT(4).eq.40)
+     ,     call POLYNOM_CORRECTION(SANE_TRANSFORM_MATRIX_40_80,thr,phr,EE,TH,PHI)
+      if(MAGNETIC_FIELD_ANGLE.eq.180.and.Bigcal_SHIFT(4).eq.40)
+     ,     call POLYNOM_CORRECTION(SANE_TRANSFORM_MATRIX_40_180,thr,phr,EE,TH,PHI)
+      if(MAGNETIC_FIELD_ANGLE.eq.-80.and.Bigcal_SHIFT(4).eq.36)
+     ,     call POLYNOM_CORRECTION(SANE_TRANSFORM_MATRIX_36_80,thr,phr,EE,TH,PHI)
+      if(MAGNETIC_FIELD_ANGLE.eq.180.and.Bigcal_SHIFT(4).eq.36)
+     ,     call POLYNOM_CORRECTION(SANE_TRANSFORM_MATRIX_36_180,thr,phr,EE,TH,PHI)
+      end
+ccccccc
+      Subroutine POLYNOM_CORRECTION(P,thr,phr,EE,TH,PHI)
+      IMPLICIT NONE
+      
+c
+c     Input patameters are P(26) -transformation Matrix
+c     input thr and phr angles from CALORIMETER ,THr and PHr in radians
+c     EE Energy in GEV
+c     Output :TH and Phi Correctes in degrees
+cc      
+      real*4 X,Y,TH,Phi,thr,phr,EE
+      real*4 P(26)
+      th  = thr*180/3.1415926+
+     ,     (p(1)+P(2)*phr+P(3)*thr+P(4)*phr**2+P(5)*thr**2)/EE+
+     ,      (p(6)+P(7)*thr+P(8)*phr+P(9)*phr**2+P(10)*thr**2)/EE**2
 
+      phi = phr*180/3.1415926+(p(11)+p(12)*phr+p(13)*phr**2+
+     ,     p(14)*phr**3+p(15)*thr+p(16)*thr**2+
+     ,     p(17)*thr**3+p(18)*phr*thr+p(19)*phr**2*thr+
+     ,     p(20)*phr*thr**2)+(p(21)+p(22)*phr+p(23)*phr**2+
+     ,     p(24)*thr+p(25)*thr**2+p(26)*phr*thr)/EE
+      end
 
 c
 c     Geometry match of the tracks
 c
 ccccccccccccccccccccccccccccccccccccc
       Subroutine GeometryMatch(inum)
+      IMPLICIT NONE
       include 'bigcal_data_structures.cmn'
       include 'sane_data_structures.cmn'
       include 'b_ntuple.cmn'
@@ -337,71 +427,143 @@ ccccccccccccccccccccccccccccccccccccc
       integer i,j,inum
       real*8 U, U_pos, U_neg
       real*8 dl
+      real*4 P_tr(3),P_big(3),P_tar(3)
+      real*4 Vector(3),Vector_r(3)
       LOGICAL ok1
+      logical TRAKER_STATUS
       data P1_bigcal /0.,0.,320./
       data P2_bigcal /0.,1.,320./
       data P3_bigcal /1.,0.,320./
       data P1_track /0.,0.,66./
       data P2_track /0.,1.,66./
       data P3_track /1.,0.,66./
-      dl =0.1
-      if(a_tracker.eq.0.or.b_tracker.eq.0)then
-cc
+      common/TRACKER_LOGICS/TRAKER_STATUS
+      if(TRAKER_STATUS)then
+         P1_track(3) = Tr_Vertex(3,inum)
+         P2_track(3) = Tr_Vertex(3,inum)
+         P3_track(3) = Tr_Vertex(3,inum)
+         dl =0.1
+C         if(a_tracker.eq.0.and.b_tracker.eq.0.and.c_tracker.eq.0)then
+c     c
 c     Define Traker plane
 c     
-         call ROTATE(P1_track, 0., 50*3.141/180., 0.,P1_track_r)
-         call ROTATE(P2_track, 0., 50*3.141/180., 0.,P2_track_r)
-         call ROTATE(P3_track, 0., 50*3.141/180., 0.,P3_track_r)
-         call Plane(P1_track_r,P2_track_r,P3_track_r,
-     ,        a_tracker,b_tracker,c_tracker,d_tracker)
-         
-      endif
-      if(a_bigcal.eq.0.or.b_bigcal.eq.0)then
-cc
+            call ROTATE(P1_track, 0., -Bigcal_SHIFT(4)*3.1415926536/180., 0.,P1_track_r)
+            call ROTATE(P2_track, 0., -Bigcal_SHIFT(4)*3.1415926536/180., 0.,P2_track_r)
+            call ROTATE(P3_track, 0., -Bigcal_SHIFT(4)*3.1415926536/180., 0.,P3_track_r)
+            call Plane(P1_track_r,P2_track_r,P3_track_r,
+     ,           a_tracker,b_tracker,c_tracker,d_tracker)
+            
+C         endif
+C         if(a_bigcal.eq.0.and.b_bigcal.eq.0.and.c_bigcal.eq.0)then
+c     c
 c     Define Bigcal plane
 c     
-         call ROTATE(P1_bigcal, 0., 50*3.141/180., 0. ,P1_bigcal_r)
-         call ROTATE(P2_bigcal, 0., 50*3.141/180., 0. ,P2_bigcal_r)
-         call ROTATE(P3_bigcal, 0., 50*3.141/180., 0. ,P3_bigcal_r)
-         call Plane(P1_bigcal_r,P2_bigcal_r,P3_bigcal_r,
-     ,        a_bigcal,b_bigcal,c_bigcal,d_bigcal)
-         
-      endif
+c     call ROTATE(P1_bigcal, 0., Bigcal_SHIFT(4)*3.141/180., 0. ,P1_bigcal_r)
+c     call ROTATE(P2_bigcal, 0., Bigcal_SHIFT(4)*3.141/180., 0. ,P2_bigcal_r)
+c     call ROTATE(P3_bigcal, 0., Bigcal_SHIFT(4)*3.141/180., 0. ,P3_bigcal_r)
+            call Plane(P1_track,P2_track,P3_track,
+     ,           a_bigcal,b_bigcal,c_bigcal,d_bigcal)
+            
+C         endif
 c
 c
-c     Start tracking
+c     Start Particle Identification
 c
-      if(cer_h(inum).gt.0)then
-         
 c
-c     The particle is charged. 
-c
-         if(luc_h(inum).gt.0)then
-            do i=1,luc_h(inum)
-               call CalcMomComp(
-     ,              X_luc_r(i,inum),Y_luc_r(i,inum),Z_luc_r(i,inum),
-     ,              X_clust_r(inum),Y_clust_r(inum),Z_clust_r(inum),
-     ,              px, py, pz, E_clust(inum), 0.0005)
-               call TransformTo6Vector(
-     ,              X_luc_r(i,inum),Y_luc_r(i,inum),Z_luc_r(i,inum),
-     ,              px,py,pz,E_clust(inum),U)  
-               call EqVector(U,U_pos)
-               call EqVector(U,U_neg)
 
-               ok1 = .TRUE.
-               call  trgTrackToPlane(U_pos,E_clust(inum),dl,
-     ,              a_tracker,b_tracker,c_tracker,d_tracker,ok1)
-               ok1 = .TRUE.
-               call  trgTrackToPlane(U_neg,-E_clust(inum),dl,
-     ,              a_tracker,b_tracker,c_tracker,d_tracker,ok1)
-               
-            enddo
+         Delta_Y(inum) =-100
+         Delta_X(inum) =-100
+         if(cer_h(inum).ge.0)then
+c     
+c     It's most probably electron or positron 
+c     Next step is calculate distance between tracker position and 
+c     Virtual position reconstructed by linear track to target.
+c     
+            P_tar(1) = slow_rast_x
+            P_tar(2) = slow_rast_y
+            P_tar(3) = 0
+            P_tar(1) = 0
+            P_tar(2) = 0
+            P_tar(3) = 0
+            
+            P_big(1) = X_clust_r(inum)
+            P_big(2) = Y_clust_r(inum)
+            P_big(3) = Z_clust_r(inum)
+            call PlaneLineIntersection(a_tracker,b_tracker,c_tracker,
+     ,           d_tracker,P_tar,P_big,P_tr)
+            Delta_Y(inum) = Tr_Vertex_r(2,inum)-P_tr(2)
+            Delta_X(inum) = Tr_Vertex_r(1,inum)-P_tr(1)
+            call HFILL(10550,E_clust(inum),Delta_Y(inum), 1.)
 
+            write(*,*) 'TRACK MATCH 1',Delta_X(inum)
+            P_tar(1) = 0
+            P_tar(2) = 0
+            P_tar(3) = 0
+            P_big(1) = X_clust(inum)
+            P_big(2) = Y_clust(inum)
+            P_big(3) = Z_clust(inum)
+            call PlaneLineIntersection(a_bigcal,b_bigcal,c_bigcal,
+     ,           d_bigcal,P_tar,P_big,P_tr)
+            Delta_Y(inum) = Tr_Vertex(2,inum)-P_tr(2)
+            Delta_X(inum) = Tr_Vertex(1,inum)-P_tr(1)
+            write(*,*) 'TRACK MATCH 2',Delta_X(inum)
+            write(*,*) 'TRACK MATCH 3'
+           
+c     c
+cc     The particle is charged. 
+c     c
+c     if(luc_h(inum).gt.0)then
+c            do i=1,luc_h(inum)
+c     call CalcMomComp(
+c     ,              X_luc_r(i,inum),Y_luc_r(i,inum),Z_luc_r(i,inum),
+c     ,              X_clust_r(inum),Y_clust_r(inum),Z_clust_r(inum),
+c     ,              px, py, pz, E_clust(inum), 0.0005)
+c     call TransformTo6Vector(
+c     ,              X_luc_r(i,inum),Y_luc_r(i,inum),Z_luc_r(i,inum),
+c     ,              px,py,pz,E_clust(inum),U)  
+c     call EqVector(U,U_pos)
+c               call EqVector(U,U_neg)
+c     
+c     ok1 = .TRUE.
+c     call  trgTrackToPlane(U_pos,E_clust(inum),dl,
+c     ,              a_tracker,b_tracker,c_tracker,d_tracker,ok1)
+c               ok1 = .TRUE.
+c               call  trgTrackToPlane(U_neg,-E_clust(inum),dl,
+c     ,              a_tracker,b_tracker,c_tracker,d_tracker,ok1)
+c     
+c            enddo
+c     
+c     endif
+         else
+            
+            
          endif
-      else
-
-
       endif
 
+      end
+      Subroutine PHYSICS_VARIABLES(inum,theta,phi)
+      IMPLICIT NONE
+      include 'sane_ntuple.cmn'
+      include 'gen_data_structures.cmn'
+      include 'sane_data_structures.cmn'
+      integer inum, ihistnum
+      real*4 theta,phi
+      real*4 thetar,phir
+      real*4 deg2rad, Mp
+      Mp = 0.938272309
+      deg2rad = 3.1415926536/180.
+      
+      thetar= theta*deg2rad
+      phir= theta*deg2rad
+
+      ENue(inum)      = GEBeam - E_clust(inum)
+      Q2(inum)        = 2*GEBeam*E_clust(inum)*(1-cos(thetar))
+      X_Bjorken(inum) = Q2(inum)/( 2*Mp*ENue(inum) )
+      W2(inum)        = Mp**2 + 2*Mp*ENue(inum) -Q2(inum)
+      ihistnum        = (Q2(inum)-2.5)+1
+      if(ihistnum.gt.0.and.ihistnum.lt.5)then
+c         call HF1(10600+ihistnum,X_Bjorken(inum),i_helicity)
+c         call HF1(10610+ihistnum,X_Bjorken(inum),1.)
+      endif
 
       end
