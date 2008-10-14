@@ -14,11 +14,14 @@
       include 'gen_decode_common.cmn'
       include 'hms_fpp_event.cmn'
       include 'hms_geometry.cmn'
+      include 'hms_fpp_params.cmn'
 
       integer ifpp,itrack ! = 1, 2 for FPP1, FPP2
       integer ngood(2)
       integer besttrack(2)
       integer icone
+
+      integer nhitsprune
 
       real zslop ! theta-dependent tolerance parameter for zclose
 
@@ -44,22 +47,27 @@ c     use Sitnik's selection: select on minimum of
 c     chi2(HMS) + chi2(FPP) + weight * sclose^2,
 c     where weight = chi2(HMS) + chi2best(FPP)
 
+c     after learning a little bit about this tracking algorithm, it is clear that we also want to prune on the
+c     number of hits on a track--many of the bad tracks are five-hit tracks. But should we do this test before or 
+c     after the theta prune test, conetest, sclose and zclose pruning? Seems like AFTER is the way to go.
+
 c     first step: initialize keep on all tracks to true:
 c     while we're at it, find the track with minimum chi2 in each FPP:
 
       do ifpp=1,2
-         firsttry=.true.
+c         firsttry=.true.
          do itrack=1,hfpp_n_tracks(ifpp)
             keep(ifpp,itrack) = .true.
 
-            chi2 = hfpp_track_chi2(ifpp,itrack)
-            if(firsttry.or.chi2.lt.minchi2(ifpp)) then
-               minchi2(ifpp) = chi2
-               firsttry = .false.
-            endif
+c            chi2 = hfpp_track_chi2(ifpp,itrack)
+c            if(firsttry.or.chi2.lt.minchi2(ifpp)) then
+c               minchi2(ifpp) = chi2
+c               firsttry = .false.
+c            endif
 
          enddo
       enddo
+
 c     zeroth prune test = conetest:
       do ifpp=1,2
          ngood(ifpp) = 0
@@ -178,7 +186,42 @@ c     allows for zclose values well outside the analyzer in the situation that t
             enddo
          endif
       enddo
-      
+c     fifth prune test: number of hits on a track: if we have six, throw out all other five-hit
+c     tracks
+
+      nhitsprune = h_fpp_n_dcinset * hfpp_optchamberhits
+
+      do ifpp=1,2
+         ngood(ifpp) = 0
+         do itrack=1,hfpp_n_tracks(ifpp)
+            if(keep(ifpp,itrack).and.hfpp_track_nhits(ifpp,itrack).ge.
+     $           nhitsprune) then
+               ngood(ifpp) = ngood(ifpp) + 1
+            endif
+         enddo
+         
+         if(ngood(ifpp).gt.0) then
+            do itrack=1,hfpp_n_tracks(ifpp)
+               if(hfpp_track_nhits(ifpp,itrack).lt.nhitsprune) then
+                  keep(ifpp,itrack) = .false.
+               endif
+            enddo
+         endif
+      enddo
+
+c     NOW find the minimum chi2 of tracks with keep==true
+
+      do ifpp=1,2
+         firsttry=.true.
+         do itrack=1,hfpp_n_tracks(ifpp)
+            if(keep(ifpp,itrack).and.(hfpp_track_chi2(ifpp,itrack)
+     $           .lt.minchi2(ifpp).or.firsttry)) then
+               firsttry = .false.
+               minchi2(ifpp) = hfpp_track_chi2(ifpp,itrack)
+            endif
+         enddo
+      enddo
+
 c     now we choose the best track based on Sitnik's criterion:
 
       do ifpp=1,2

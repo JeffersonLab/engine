@@ -67,8 +67,8 @@
              Project(nPoints,1) = HFPP_direction(DCset,iChamber,iLayer,1)
              Project(nPoints,2) = HFPP_direction(DCset,iChamber,iLayer,2)
 
-*            * we dont use drift here so use 1/3 wire spacing as sigma!
-             Sigmas(nPoints) = (HFPP_spacing(DCset,iChamber,iLayer)/3.0)**2
+*            * we dont use drift here so use wire spacing over sqrt(12) as sigma!
+             Sigmas(nPoints) = (HFPP_spacing(DCset,iChamber,iLayer)/sqrt(12.0))**2
 
            enddo !iRaw
          endif
