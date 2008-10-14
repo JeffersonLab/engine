@@ -7,6 +7,9 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.9.20.6  2008/10/14 14:55:55  puckett
+* some runs have problems with helicity ADC signals, don't want to throw these out
+*
 * Revision 1.9.20.5  2008/09/30 14:23:26  puckett
 * corrected definition of beam position in relevant routines
 *
@@ -343,7 +346,7 @@ c     for now just trust the trigger supervisor more than the ADC which can be n
       gbeam_helicity = gbeam_helicity_TS
 
 c     actually, we should throw out events where the Trigger Supervisor and the ADC disagree:
-      if(gbeam_helicity_TS.ne.gbeam_helicity_ADC) gbeam_helicity = 0
+c      if(gbeam_helicity_TS.ne.gbeam_helicity_ADC) gbeam_helicity = 0
 
 c      write(*,*) 'h+ signal = ',gmisc_dec_data(1,2)
 c      write(*,*) 'h- signal = ',gmisc_dec_data(2,2)
