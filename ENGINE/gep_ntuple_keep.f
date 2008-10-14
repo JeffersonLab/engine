@@ -21,8 +21,8 @@
 
       integer m,iTrk,iSet
       real zclose_store,sclose_store
-      real theta_store,phi_store
-      integer conetest_store,track_store
+      real theta_store,phi_store,chi2_store
+      integer conetest_store,track_store,nhits_store
       real zanalyzer(2)
       
       logical HEXIST ! cernlib function
@@ -171,20 +171,24 @@ c Algorithm to select "best" track for final analysis
 c
       do iSet=1,2
          track_store=0
+         nhits_store=0
          theta_store=1.0e15
          phi_store=1.0e15
          conetest_store=-1
          zclose_store=1.0e15
          sclose_store=1.0e15
+         chi2_store=1.0e15
 
          if(hselectfpptrackprune.ne.0) then ! use best FPP track selection based on prune tests, Sitnik
             track_store = hfpp_best_track(iSet)
             if(track_store.gt.0) then
+               nhits_store = hfpp_track_nhits(iSet,track_store)
                theta_store = hfpp_track_theta(iSet,track_store)
                phi_store = hfpp_track_phi(iSet,track_store)
                conetest_store = hfpp_track_conetest(iSet,track_store)
                zclose_store = hfpp_track_zclose(iSet,track_store)
                sclose_store = hfpp_track_sclose(iSet,track_store)
+               chi2_store = hfpp_track_chi2(iSet,track_store)
             endif
          else
             zanalyzer(1)=140.3
@@ -202,6 +206,7 @@ c
                            conetest_store=HFPP_track_conetest(iSet,iTrk)
                            zclose_store=HFPP_track_zclose(iSet,iTrk)
                            sclose_store=HFPP_track_sclose(iSet,iTrk)
+                           chi2_store=hfpp_track_chi2(iSet,iTrk)
                         endif
                      endif
                   endif  
@@ -211,6 +216,8 @@ c
          m=m+1
          gep_ntuple_contents(m) = float(track_store)
          m=m+1     
+         gep_ntuple_contents(m) = float(nhits_store)
+         m=m+1
          gep_ntuple_contents(m) = zclose_store 
          m=m+1     
          gep_ntuple_contents(m) = sclose_store 
@@ -220,6 +227,8 @@ c
          gep_ntuple_contents(m) = theta_store 
          m=m+1     
          gep_ntuple_contents(m) = phi_store
+         m=m+1
+         gep_ntuple_contents(m) = chi2_store
       enddo
 c     initialize variables for FPP2 relative to FPP1
       theta_store = 1.0e15
