@@ -29,6 +29,9 @@
       
       real*4 trackin(4),trackout(4)
 
+      real*4 PI
+      parameter(PI=3.141592653)
+
       logical firsttry
 
       logical keep(2,h_fpp_max_tracks)
@@ -81,7 +84,7 @@ c     polar scattering angle theta>thetamin:
       do ifpp=1,2
          ngood(ifpp) = 0
          do itrack=1,hfpp_n_tracks(ifpp)
-            if(hfpp_track_theta(ifpp,itrack).ge.hfpp_prune_thetamin(ifpp)
+            if(hfpp_track_theta(ifpp,itrack).ge.hfpp_prune_thetamin(ifpp)*PI/180.0
      $           .and.keep(ifpp,itrack))then
                ngood(ifpp) = ngood(ifpp) + 1
             endif
@@ -89,7 +92,7 @@ c     polar scattering angle theta>thetamin:
 
          if(ngood(ifpp).gt.0) then
             do itrack=1,hfpp_n_tracks(ifpp)
-               if(hfpp_track_theta(ifpp,itrack).lt.hfpp_prune_thetamin(ifpp)) 
+               if(hfpp_track_theta(ifpp,itrack).lt.hfpp_prune_thetamin(ifpp)*PI/180.0) 
      $              then
                   keep(ifpp,itrack) = .false.
                endif
@@ -103,14 +106,14 @@ c     second test: polar scattering angle theta<thetamax:
          ngood(ifpp) = 0
          do itrack=1,hfpp_n_tracks(ifpp)
             if(keep(ifpp,itrack).and.hfpp_track_theta(ifpp,itrack).le.
-     $           hfpp_prune_thetamax(ifpp)) then
+     $           hfpp_prune_thetamax(ifpp)*PI/180.0) then
                ngood(ifpp) = ngood(ifpp) + 1
             endif
          enddo
          
          if(ngood(ifpp).gt.0) then
             do itrack=1,hfpp_n_tracks(ifpp)
-               if(hfpp_track_theta(ifpp,itrack).gt.hfpp_prune_thetamax(ifpp))
+               if(hfpp_track_theta(ifpp,itrack).gt.hfpp_prune_thetamax(ifpp)*PI/180.0)
      $              then
                   keep(ifpp,itrack) = .false.
                endif
