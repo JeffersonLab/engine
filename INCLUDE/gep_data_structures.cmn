@@ -156,6 +156,12 @@ c     use raster info for vertex correction to BigCal angles? Let the user decid
       real*4 GEP_yclust ! best cluster vertical position in BigCal
       real*4 GEP_eclust ! best cluster energy
       real*4 GEP_aclust ! best cluster ADC sum
+c--second cluster information(lw):
+      real*4 GEP_xclust2        ! Second best cluster horizontal position in BigCal
+      real*4 GEP_yclust2        ! Second best cluster vertical position in BigCal
+      real*4 GEP_eclust2        ! Second best cluster energy
+      real*4 GEP_aclust2        ! Second best cluster ADC sum
+c--   lw
       real*4 GEP_epsilon        ! virtual photon long. polarization, usual definition
       real*4 GEP_etheta_deg ! electron scattering angle in degrees
       real*4 GEP_ptheta_deg ! proton scattering angle in degrees
@@ -206,6 +212,10 @@ c     system for the polarization measurement.
      $     GEP_yclust,
      $     GEP_eclust,
      $     GEP_aclust,
+     $     GEP_xclust2,
+     $     GEP_yclust2,
+     $     GEP_eclust2,
+     $     GEP_aclust2,
      $     GEP_epsilon,
      $     GEP_etheta_deg,
      $     GEP_ptheta_deg,
