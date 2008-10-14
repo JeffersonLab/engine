@@ -62,6 +62,8 @@ c     get any free IO channel
 
       recL = default_recl
 
+      recL = 4096
+
       call HROPEN(io,name,file,'N',recL,status)
 
       abort= status.ne.0

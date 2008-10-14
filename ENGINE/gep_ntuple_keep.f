@@ -126,6 +126,16 @@
       gep_ntuple_contents(m) = GEP_eclust
       m=m+1
       gep_ntuple_contents(m) = GEP_aclust
+c     lw
+      m=m+1
+      gep_ntuple_contents(m) = GEP_xclust2
+      m=m+1
+      gep_ntuple_contents(m) = GEP_yclust2
+      m=m+1
+      gep_ntuple_contents(m) = GEP_eclust2
+      m=m+1
+      gep_ntuple_contents(m) = GEP_aclust2      
+c     lw
       m=m+1
       gep_ntuple_contents(m) = GEP_epsilon
       m=m+1

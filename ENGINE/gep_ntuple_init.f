@@ -140,6 +140,14 @@
       m=m+1
       gep_ntuple_tag(m) = 'aclust' ! copy of bigcal cluster adc sum
       m=m+1
+      gep_ntuple_tag(m) = 'xclust2' ! copy of second best bigcal cluster x --lw
+      m=m+1
+      gep_ntuple_tag(m) = 'yclust2' ! copy of second best bigcal cluster y
+      m=m+1
+      gep_ntuple_tag(m) = 'eclust2' ! copy of second best bigcal cluster energy
+      m=m+1
+      gep_ntuple_tag(m) = 'aclust2' ! copy of second best bigcal cluster adc sum --lw
+      m=m+1
       gep_ntuple_tag(m) = 'epsilon' ! virtual photon long. polarization
       m=m+1
       gep_ntuple_tag(m) = 'etheta' ! electron polar scattering angle in degrees

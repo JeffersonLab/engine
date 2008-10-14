@@ -67,7 +67,7 @@ c      logical fixed_bigcal
       
       real Me
 
-      integer i,ibest_cal
+      integer i,ibest_cal,isecond_cal
 
       real PI
       parameter(PI=3.14159265359)
@@ -330,6 +330,24 @@ c     this routine should only get called once per event!!!!!!!!!!!!!!!!
       ibest_cal = bigcal_itrack_best
 
       if(ibest_cal.eq.0) return
+
+      if(bigcal_all_nclust_good.gt.1) then !lw to add second best cluster to gep ntuple
+
+         if(ibest_cal.eq.1) then  
+            isecond_cal = 2
+         else
+            isecond_cal = 1
+         endif                    
+         GEP_xclust2 = bigcal_all_clstr_x(isecond_cal) ! second best ADC cluster raw xclust in BigCal coordinates
+         GEP_yclust2 = bigcal_all_clstr_y(isecond_cal) ! second best ADC cluster raw yclust in BigCal coordinates
+         GEP_eclust2 = bigcal_track_energy(isecond_cal)
+         GEP_aclust2 = bigcal_all_clstr_atot(isecond_cal) ! second best ADC sum for best cluster
+      else
+         GEP_xclust2 = -1000.
+         GEP_yclust2 = -1000.
+         GEP_eclust2 = 0.
+         GEP_aclust2 = 0.
+      endif                     !lw 
 
 c     correct angles since we know vertex:
       
