@@ -186,7 +186,7 @@ c     allows for zclose values well outside the analyzer in the situation that t
             enddo
          endif
       enddo
-c     fifth prune test: number of hits on a track: if we have six, throw out all other five-hit
+c     fifth prune test: number of layers on a track: if we have six, throw out all other five-hit
 c     tracks
 
       nhitsprune = h_fpp_n_dcinset * hfpp_optchamberhits
@@ -194,7 +194,7 @@ c     tracks
       do ifpp=1,2
          ngood(ifpp) = 0
          do itrack=1,hfpp_n_tracks(ifpp)
-            if(keep(ifpp,itrack).and.hfpp_track_nhits(ifpp,itrack).ge.
+            if(keep(ifpp,itrack).and.hfpp_track_nlayers(ifpp,itrack).ge.
      $           nhitsprune) then
                ngood(ifpp) = ngood(ifpp) + 1
             endif
@@ -202,7 +202,7 @@ c     tracks
          
          if(ngood(ifpp).gt.0) then
             do itrack=1,hfpp_n_tracks(ifpp)
-               if(hfpp_track_nhits(ifpp,itrack).lt.nhitsprune) then
+               if(hfpp_track_nlayers(ifpp,itrack).lt.nhitsprune) then
                   keep(ifpp,itrack) = .false.
                endif
             enddo
