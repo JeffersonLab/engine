@@ -7,6 +7,9 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.9.20.4.2.3  2008/10/19 21:49:24  cdaq
+* slow raster
+*
 * Revision 1.9.20.4.2.2  2008/10/11 15:03:34  cdaq
 * slow raster
 *
@@ -360,12 +363,18 @@ c histrogram
      >   call hf1(gepid_slowrastx,gsrx_raw_adc,1.)
       if(gepid_slowrasty.gt.0)
      >   call hf1(gepid_slowrasty,gsry_raw_adc,1.)
+      if(gepid_slowrastxy.gt.0)
+     >   call hf2(gepid_slowrastxy,
+     >   gsrx_raw_adc,gsry_raw_adc,1.)
+      if(gepid_slowrastxy2.gt.0)
+     >   call hf2(gepid_slowrastxy2,
+     >   gsrx_raw_adc2,gsry_raw_adc2,1.)
 c for debuging
-      if(nprt.lt.100) then
+      if(nprt.lt.200) then
         nprt = nprt + 1
-c        write(6,'(''dbg slow raster='',4f8.1)') 
-c     >   gsrx_raw_adc,  gsry_raw_adc,
-c     >   gsrx_raw_adc2, gsry_raw_adc2
+        write(6,'(''dbg slow raster='',4f8.1)') 
+     >   gsrx_raw_adc,  gsry_raw_adc,
+     >   gsrx_raw_adc2, gsry_raw_adc2
       endif
 
 c      gsrx_adc = gsrx_raw_adc    ! we do not want peds subtracted
