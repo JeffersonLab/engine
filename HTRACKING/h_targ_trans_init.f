@@ -7,6 +7,9 @@
 *
 * Version:  0.1 (In development)
 * $Log$
+* Revision 1.6.16.1.2.1  2008/10/21 20:33:17  cdaq
+* target recon with B field added
+*
 * Revision 1.6.16.1  2007/09/10 20:28:01  pcarter
 * Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *
@@ -60,6 +63,7 @@
       include 'hms_recon_elements.cmn'  !Recon coefficients.
       include 'gen_filenames.cmn'
       include 'hms_filenames.cmn'
+
  
 * Misc. variables.
 
@@ -74,6 +78,10 @@
       err= ' '
       ABORT = .FALSE.
       h_recon_initted = 0
+
+
+c     ! target field, vertical beam offset
+
       do j = 1,hmax_recon_elements
          do i = 1,4
             h_recon_coeff(i,j) = 0.

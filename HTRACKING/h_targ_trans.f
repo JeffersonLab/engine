@@ -16,6 +16,9 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
+* Revision 1.16.24.2.2.1  2008/10/21 20:33:17  cdaq
+* target recon with B field added
+*
 * Revision 1.16.24.2  2007/10/27 21:15:32  cdaq
 * fix erroneous submissions
 *
@@ -95,18 +98,22 @@
       character*12 here
       parameter (here= 'h_targ_trans')
 *
-      logical ABORT
+      logical ABORT,ok
       character*(*) err
       integer*4   istat
+      real*4 x_coord, y_coord
 *
-      include 'gen_data_structures.cmn'
+      INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
-      include 'hms_tracking.cmn'
-      include 'hms_recon_elements.cmn'
-      include 'hms_track_histid.cmn'
-      include 'hms_physics_sing.cmn'
+      INCLUDE 'hms_tracking.cmn'
+      INCLUDE 'hms_recon_elements.cmn'
+      INCLUDE 'hms_track_histid.cmn'
+      INCLUDE 'hms_physics_sing.cmn'
+      INCLUDE 'sane_data_structures.cmn'
+
+
 *
 *--------------------------------------------------------
 *
@@ -114,7 +121,10 @@
 
       integer*4        i,j,itrk
 
-      real*8           sum(4),hut(5),term,hut_rot(5)
+      real*8   sum(4),hut(5),term,hut_rot(5)
+      real*8   trg(6),bdl,dx
+
+      COMMON /hmsfocalplane/sum,hut,hut_rot 
 *=============================Executable Code =============================
       ABORT= .FALSE.
       err= ' '
@@ -126,14 +136,22 @@
       endif
       istat = 1
 
+      x_coord = gsr_beamx/100.  ! SLOW RASTER BEAM X coordinate obtained from the ADCs, in meters 
+      y_coord = gsr_beamy/100.  ! SLOW RASTER BEAM Y coordinate obtained from the ADCs, in meters 
+      
+
 * Loop over tracks.
 
       hntracks_tar = hntracks_fp
+      
       do itrk = 1,hntracks_fp
+         
 *     set link between target and focal plane track. Currently 1 to 1
+         
          hlink_tar_fp(itrk) = itrk
-
-* Reset COSY sums.
+         
+         
+*     Reset COSY sums.
          do i = 1,4
             sum(i) = 0.
          enddo
@@ -157,8 +175,11 @@
 
          hut(4) = hyp_fp(itrk) + h_ang_offset_y           !radians
 
-         hut(5)= -gbeam_y/100. ! spectrometer target X in meter!
-                                ! note that pos. spect. X = neg. beam Y
+*         hut(5)= -gbeam_y/100. ! spectrometer target X in meter!
+                                ! note that pos. spect. X = neg. beam Y, here should be the coordinate given by the slow raster
+         hut(5)= x_coord ! spectrometer target X in meter - given by the Slow Raster!
+                                ! note that pos. spect. X = neg. beam Y, here should be the coordinate given by the slow raster
+
 
 ! now transform 
 *         hx_fp_rot(itrk)=  hut(1) + h_det_offset_x    ! include detector offset
@@ -176,55 +197,95 @@
          hut_rot(3) = hut(3)
          hut_rot(4) = hut(4) + hut(3)*h_ang_slope_y
          hut_rot(5) = hut(5)
-* Compute COSY sums.
-         do i = 1,h_num_recon_terms
-            term = 1.
-            do j = 1,5
-               if (h_recon_expon(j,i).ne.0.)
-     $             term = term*hut_rot(j)**h_recon_expon(j,i)
+
+* Introducing the target magnetic field option 
+
+         if (SANE_TGTFIELD_B.eq.0.0) then
+            
+            
+*     Compute COSY sums.
+            
+            do i = 1,h_num_recon_terms
+               term = 1.
+               do j = 1,4
+                  if (h_recon_expon(j,i).ne.0.)
+     ,                 term = term*hut_rot(j)**h_recon_expon(j,i)
+               enddo
+               sum(1) = sum(1) + term*h_recon_coeff(1,i) ! xp uT(2) trg(2)
+               sum(2) = sum(2) + term*h_recon_coeff(2,i) ! y  uT(3) trg(3)
+               sum(3) = sum(3) + term*h_recon_coeff(3,i) ! yp uT(4) trg(4)
+               sum(4) = sum(4) + term*h_recon_coeff(4,i) ! delta uT(6) trg(6)
             enddo
-            sum(1) = sum(1) + term*h_recon_coeff(1,i)
-            sum(2) = sum(2) + term*h_recon_coeff(2,i)
-            sum(3) = sum(3) + term*h_recon_coeff(3,i)
-            sum(4) = sum(4) + term*h_recon_coeff(4,i)
-         enddo
-* Protext against asin argument > 1.
-c         if(sum(1).gt. 1.0) sum(1)=  0.99
-c         if(sum(1).lt. -1.0) sum(1)= -.99
-c         if(sum(3).gt. 1.0) sum(3)=  0.99
-c         if(sum(3).lt. -1.0) sum(3)= -.99
-
-     
-* Load output values.
-
-         hx_tar(itrk) = 0.              ! ** No beam raster yet **
-         hy_tar(itrk) = sum(2)*100.     !cm.
-         hxp_tar(itrk) = sum(1)         !Slope xp
-         hyp_tar(itrk) = sum(3)         !Slope yp
-
-         hz_tar(itrk) = 0.0             !Track is at origin
-         hdelta_tar(itrk) = sum(4)*100. !percent.
-
-* Apply offsets to reconstruction.
-         hdelta_tar(itrk) = hdelta_tar(itrk) + hdelta_offset
-         hyp_tar(itrk) = hyp_tar(itrk) + htheta_offset
-         hxp_tar(itrk) = hxp_tar(itrk) + hphi_offset
-
-         hp_tar(itrk)  = hpcentral*(1.0 + hdelta_tar(itrk)/100.) !Momentum in GeV
-
-* The above coordinates are in the spectrometer reference frame in which the
-* Z axis is along the central ray. Do we need to rotate to the lab frame?
-* For now, I assume not.
-
-      enddo                             !End of loop over tracks.
-
-* All done...
-*       print target bank if debug flag set
+!     uT(5),trg(5) is z-position along the HMS spectrometer axis
+!     used in tracking back to the target
+!     uT(1),trg(1) is xtarget position, measured by slow raster.
+            
+*     Load output values.
+            
+            hx_tar(itrk) = x_coord ! beam slow raster coord.
+            hy_tar(itrk) = sum(2)*100. !cm.
+            hxp_tar(itrk) = sum(1) !Slope xp
+            hyp_tar(itrk) = sum(3) !Slope yp            
+            hz_tar(itrk) = 0.0  !Track is at origin
+            hdelta_tar(itrk) = sum(4)*100. !percent.
+            
+         else
+            
+*     Parameter:
+*     subroutine genRecon(u,x,y,uT,ok,dx,bdl)
+*     u      I : focal plane coordinates  
+*     u(1,2)  : x [m], dx/dz = out of plane coords. (downwards) 
+*     u(3,4)  : y [m], dy/dz = inplane coords. (perp. on x,z)
+*     u(5)    :  vert. beam offset [m] (out of plane coord.; downwards)
+*     x_coord      I : vert. beam offset [m] (out of plane coord.; downwards)
+*     y_coord      I : hori. beam offsey [m] (inplane coord.; perp on x-beam, z-beam)
+*     uT     O : target coordinates
+*     uT(1,2) : x [m], dx/dz = out of plane coord. (downwards) 
+*                    uT(3,4) : y [m], dy/dz = inplane coord. (perp. on x,z)
+*     uT(5)   : z [m] = in axis coordinate (towards HMS)  
+*     uT(6)   : delta = relative deviation of the particle 
+*     momentum from p0
+*     ok   IO  : status variable 
+*     - if false no action is taken 
+*     - set to false when no reconstruction is found 
+            
+            
+            ok = .TRUE.
+            
+            CALL trgInitFieldANGLES(SANE_HMS_OMEGA,SANE_HMS_PHI)
+            
+            CALL genRecon (hut_rot, x_coord, y_coord, trg, ok, dx, bdl,
+     >           htheta_lab, hpcentral, hpartmass, 1.) ! set for protons
+            
+*     CALL genRecon (hut_rot, x_coord, y_coord, trg, ok, dx, bdl,
+*     >           hpcentral, mass_electron, -1.)  ! set for electrons
+            
+            hx_tar(itrk)     = trg(1)*meter ! target x 
+            hy_tar(itrk)     = trg(3)*meter ! target y   
+            hz_tar(itrk)     = trg(5)*meter ! target z 
+            hxp_tar(itrk)    = trg(2) ! slope  xp
+            hyp_tar(itrk)    = trg(4) ! slope  yp
+            hdelta_tar(itrk) = trg(6)*100. !percent.
+            h_bdl(itrk)  = bdl
+            
+         endif                  ! loop over the magnetic field (on or off)
+      enddo                     !End of loop over tracks.
+      
+*     Apply offesets to the reconstructed variables
+      
+      hdelta_tar(itrk) = hdelta_tar(itrk) + hdelta_offset
+      hyp_tar(itrk) = hyp_tar(itrk) + htheta_offset
+      hxp_tar(itrk) = hxp_tar(itrk) + hphi_offset
+      
+      hp_tar(itrk)  = hpcentral*(1.0 + hdelta_tar(itrk)/100.) !Momentum in GeV
+      
+*     All done...
+*     print target bank if debug flag set
       if(hdebugtartrackprint.gt.0) then
          call h_print_tar_tracks
       endif
-* Fill hardwired histograms if hturnon_target_hist is non zero
-*
+*     Fill hardwired histograms if hturnon_target_hist is non zero
+*     
       if(hturnon_target_hist.gt.0) then
          call h_fill_dc_target_hist(ABORT,err)
          if(ABORT) then
@@ -233,3 +294,4 @@ c         if(sum(3).lt. -1.0) sum(3)= -.99
       endif
       return
       end
+      
