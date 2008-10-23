@@ -113,9 +113,14 @@ c          write(*,*)'Simple track: Nraw = ',SimpleTrack(6),' Chi2 = ',Simpletra
           FullTrack(5) = H_FPP_BAD_CHI2
           FullTrack(6) = 0.
 
-          call h_fpp_tracking_drifttrack(DCset,SimpleTrack, BestClusters,track_good,FullTrack, ABORT,err)
+          if(hfppuseajptracking.ne.0) then
+             call h_fpp_tracking_drifttrack_ajp(dcset,simpletrack,bestclusters,
+     $            track_good,fulltrack,abort,err)
+          else 
+             call h_fpp_tracking_drifttrack(DCset,SimpleTrack, BestClusters,track_good,FullTrack, ABORT,err)
 *         * the global tracking results are stored by this subroutine as well
 *         * also note that  BestClusters()  may be changed in this call!
+          endif
           if (ABORT) then
              call g_add_path(here,err)
              return
@@ -270,7 +275,7 @@ c==============================================================================
 
 *             * get next useful combo
               call h_fpp_tracking_NextHitCombo(DCset,nHitsRequired,nHitsInTrack, HitCluster)
-             enddo !while permutations to try
+           enddo                !while permutations to try
 
           if (iterations.gt.HFPP_maxcombos) then
             SimpleTrack(5) = H_FPP_BAD_CHI2
@@ -718,7 +723,7 @@ c      write(*,*)'Results: chi2 = ',newTrack(5),' nPoints = ',nPoints,' HFPP_min
               enddo !CSkip
 
             endif !HFPP_minsethits
-          endif !HFPP_calc_resolution
+         endif                  !HFPP_calc_resolution
 
 	endif !iTrack.le.H_FPP_MAX_TRACKS
       endif !track_good
@@ -891,13 +896,35 @@ c==============================================================================
                    else
                      Hits(iChamber,iLayer) = iHit  ! found free hit
                      iLayer = 0     ! restart increment at lowest layer, chamber
-                     iChamber = 1
-*                    * continue until we have enough hits in this combo
-                     trynextlayer = (nHitsInTrack.lt.nHitsRequired)
+                     iChamber = 1   ! why do we reset layer and chamber?
+* continue until we have enough hits in this combo
+* the following condition should only be satisfied in the event that we removed one hit from an earlier layer 
+* due to running out of free hits in that layer. Otherwise, nhitsintrack should be unchanged and we exit
+* the loop. What happens when we come back into this loop? Well, it appears that we will loop over all the 
+* free hits in the first layer without changing any hits in subsequent layers, until we run out of hits in the first layer
+* at that point, we end up in the upper half of this if-block--thus, we reset Hits(chamber,layer) to zero and 
+* subtract one hit from the track. Then we move to the next layer, where we increment to the next free hit in that layer.
+* Once we've found the next free hit in the next layer, we find that the nhitsintrack<nhitsrequired condition is satisfied
+* because we rolled all the way past the last hit in the previous layer. Thus, we have to go back again, starting with the 
+* first layer, and then we will find that the hits(chamber,layer)=0 condition is satisfied. At that point, we have rolled
+* the hit index of the first layer back to the first available free hit while having incremented the hit index of the 
+* second layer to the next available free hit. With the hit index of the next layer incremented, the loop will then roll
+* through all available free hits in the first layer again. Once we get to the combination of the last free hit in the 
+* second layer with the last free hit in the first layer, we will find the hits(chamber,layer)=0 condition to be satisfied
+* for both layers, which will cause the hit index of the third layer to be incremented and the hit indices of the first 
+* two layers to roll back to the first available free hit. 
+* NOTE that this routine is only called from within h_fpp_tracking_simple, and it is called until we run out of 
+* combinations of nhitsrequired hits. The only way this happens is when we get to the last free hit of the last layer
+* and then the condition chamber>ndcinset is met, and we exit this do while loop with trynextlayer still equal to true
+* which results in a reset of nhitsintrack to zero. In the context of subroutine h_fpp_tracking_simple, this causes us
+* to exit the loop over combinations of hits and/or clusters of hits, at which point we check whether the combination of 
+* hits with the best fit to wire positions satisfies the chi2 requirement for a track, in which case we move on to
+* tracking with drift.
+                     trynextlayer = (nHitsInTrack.lt.nHitsRequired) 
                    endif
 
                endif  !(HFPP_Nfreehits(DCset,iChamber,iLayer).le.0)
-          enddo !trynextlayer
+          enddo               !trynextlayer
 	 
 *         * change hit count to none if we exited due to layer count exceeded
           if (trynextlayer) then
