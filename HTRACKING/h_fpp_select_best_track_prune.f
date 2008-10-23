@@ -186,28 +186,28 @@ c     allows for zclose values well outside the analyzer in the situation that t
             enddo
          endif
       enddo
-c     fifth prune test: number of layers on a track: if we have six, throw out all other five-hit
-c     tracks
-
-      nhitsprune = h_fpp_n_dcinset * hfpp_optchamberhits
-
-      do ifpp=1,2
-         ngood(ifpp) = 0
-         do itrack=1,hfpp_n_tracks(ifpp)
-            if(keep(ifpp,itrack).and.hfpp_track_nlayers(ifpp,itrack).ge.
-     $           nhitsprune) then
-               ngood(ifpp) = ngood(ifpp) + 1
-            endif
-         enddo
-         
-         if(ngood(ifpp).gt.0) then
-            do itrack=1,hfpp_n_tracks(ifpp)
-               if(hfpp_track_nlayers(ifpp,itrack).lt.nhitsprune) then
-                  keep(ifpp,itrack) = .false.
-               endif
-            enddo
-         endif
-      enddo
+c$$$c     fifth prune test: number of layers on a track: if we have six, throw out all other five-hit
+c$$$c     tracks
+c$$$
+c$$$      nhitsprune = h_fpp_n_dcinset * hfpp_optchamberhits
+c$$$
+c$$$      do ifpp=1,2
+c$$$         ngood(ifpp) = 0
+c$$$         do itrack=1,hfpp_n_tracks(ifpp)
+c$$$            if(keep(ifpp,itrack).and.hfpp_track_nlayers(ifpp,itrack).ge.
+c$$$     $           nhitsprune) then
+c$$$               ngood(ifpp) = ngood(ifpp) + 1
+c$$$            endif
+c$$$         enddo
+c$$$         
+c$$$         if(ngood(ifpp).gt.0) then
+c$$$            do itrack=1,hfpp_n_tracks(ifpp)
+c$$$               if(hfpp_track_nlayers(ifpp,itrack).lt.nhitsprune) then
+c$$$                  keep(ifpp,itrack) = .false.
+c$$$               endif
+c$$$            enddo
+c$$$         endif
+c$$$      enddo
 
 c     NOW find the minimum chi2 of tracks with keep==true
 
@@ -226,13 +226,16 @@ c     now we choose the best track based on Sitnik's criterion:
 
       do ifpp=1,2
          firsttry=.true.
-         scloseweight(ifpp) = minchi2(ifpp) + hschi2perdeg
+c         scloseweight(ifpp) = minchi2(ifpp) + hschi2perdeg
 
          besttrack(ifpp) = 0
 
          do itrack=1,hfpp_n_tracks(ifpp)
-            criterion = hschi2perdeg + hfpp_track_chi2(ifpp,itrack) + 
-     $           scloseweight(ifpp) * (hfpp_track_sclose(ifpp,itrack))**2
+c            criterion = hschi2perdeg + hfpp_track_chi2(ifpp,itrack) + 
+c     $           scloseweight(ifpp) * (hfpp_track_sclose(ifpp,itrack))**2
+c     instead of this criterion, do track selection based on smallest theta:
+            criterion = hfpp_track_theta(ifpp,itrack)
+
             if(keep(ifpp,itrack).and.
      $           (firsttry.or.criterion.lt.mincriterion(ifpp))) then
                mincriterion(ifpp) = criterion
