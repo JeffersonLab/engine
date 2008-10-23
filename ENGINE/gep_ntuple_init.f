@@ -182,6 +182,8 @@
       m=m+1
       gep_ntuple_tag(m) = 'nhits1' ! number of hits on chosen track in FPP1
       m=m+1
+      gep_ntuple_tag(m) = 'nplanes1' ! number of layers on chosen track in FPP1
+      m=m+1
       gep_ntuple_tag(m) = 'zclos1' ! reconstructed zclose in FPP1
       m=m+1
       gep_ntuple_tag(m) = 'sclos1' ! reconstructed sclose in FPP1
@@ -197,6 +199,8 @@
       gep_ntuple_tag(m) = 'trk2' ! track number of the chosen track in FPP2
       m=m+1
       gep_ntuple_tag(m) = 'nhits2' ! number of hits on chosen track in FPP2
+      m=m+1
+      gep_ntuple_tag(m) = 'nplanes2' ! number of planes on chosen track in FPP2
       m=m+1
       gep_ntuple_tag(m) = 'zclos2' ! reconstructed zclose in FPP2
       m=m+1

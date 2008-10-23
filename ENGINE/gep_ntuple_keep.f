@@ -22,7 +22,7 @@
       integer m,iTrk,iSet
       real zclose_store,sclose_store
       real theta_store,phi_store,chi2_store
-      integer conetest_store,track_store,nhits_store
+      integer conetest_store,track_store,nhits_store,nplanes_store
       real zanalyzer(2)
       
       logical HEXIST ! cernlib function
@@ -172,6 +172,7 @@ c
       do iSet=1,2
          track_store=0
          nhits_store=0
+         nplanes_store=0
          theta_store=1.0e15
          phi_store=1.0e15
          conetest_store=-1
@@ -183,6 +184,7 @@ c
             track_store = hfpp_best_track(iSet)
             if(track_store.gt.0) then
                nhits_store = hfpp_track_nhits(iSet,track_store)
+               nplanes_store = hfpp_track_nlayers(iSet,track_store)
                theta_store = hfpp_track_theta(iSet,track_store)
                phi_store = hfpp_track_phi(iSet,track_store)
                conetest_store = hfpp_track_conetest(iSet,track_store)
@@ -217,6 +219,8 @@ c
          gep_ntuple_contents(m) = float(track_store)
          m=m+1     
          gep_ntuple_contents(m) = float(nhits_store)
+         m=m+1
+         gep_ntuple_contents(m) = float(nplanes_store)
          m=m+1
          gep_ntuple_contents(m) = zclose_store 
          m=m+1     
