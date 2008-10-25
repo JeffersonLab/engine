@@ -382,17 +382,12 @@ cccccccccccc
       DIST = sqrt(X**2+Y**2+Z**2)
       thr  = acos(Z/Dist)
       phr= atan2(y/Dist,x/Dist)
-      if(MAGNETIC_FIELD_ANGLE.eq.-80.and.Bigcal_SHIFT(4).eq.40)
-     ,     call POLYNOM_CORRECTION(SANE_TRANSFORM_MATRIX_40_80,thr,phr,EE,TH,PHI)
-      if(MAGNETIC_FIELD_ANGLE.eq.180.and.Bigcal_SHIFT(4).eq.40)
-     ,     call POLYNOM_CORRECTION(SANE_TRANSFORM_MATRIX_40_180,thr,phr,EE,TH,PHI)
-      if(MAGNETIC_FIELD_ANGLE.eq.-80.and.Bigcal_SHIFT(4).eq.36)
-     ,     call POLYNOM_CORRECTION(SANE_TRANSFORM_MATRIX_36_80,thr,phr,EE,TH,PHI)
-      if(MAGNETIC_FIELD_ANGLE.eq.180.and.Bigcal_SHIFT(4).eq.36)
-     ,     call POLYNOM_CORRECTION(SANE_TRANSFORM_MATRIX_36_180,thr,phr,EE,TH,PHI)
+      call POLYNOM_CORRECTION(SANE_TRANSFORM_MATRIX_THETA, 
+     ,     SANE_TRANSFORM_MATRIX_PHI,thr,
+     ,     phr,EE,TH,PHI,SANE_BETA_OMEGA)
       end
 ccccccc
-      Subroutine POLYNOM_CORRECTION(P,thr,phr,EE,TH,PHI)
+      Subroutine POLYNOM_CORRECTION(P_th,P_phi,thr,phr,EE,TH,PHI,omega)
       IMPLICIT NONE
       
 c
@@ -402,16 +397,41 @@ c     EE Energy in GEV
 c     Output :TH and Phi Correctes in degrees
 cc      
       real*4 X,Y,TH,Phi,thr,phr,EE
-      real*4 P(26)
-      th  = thr*180/3.1415926+
-     ,     (p(1)+P(2)*phr+P(3)*thr+P(4)*phr**2+P(5)*thr**2)/EE+
-     ,      (p(6)+P(7)*thr+P(8)*phr+P(9)*phr**2+P(10)*thr**2)/EE**2
+      REAL*8 OMEGA
+      real*4 P_th(14),P_phi(39),COSOM,SINOM
+      cosom = cos(omega*3.1415926/180.)
+      sinom = sin(omega*3.1415926/180.)
 
-      phi = phr*180/3.1415926+(p(11)+p(12)*phr+p(13)*phr**2+
-     ,     p(14)*phr**3+p(15)*thr+p(16)*thr**2+
-     ,     p(17)*thr**3+p(18)*phr*thr+p(19)*phr**2*thr+
-     ,     p(20)*phr*thr**2)+(p(21)+p(22)*phr+p(23)*phr**2+
-     ,     p(24)*thr+p(25)*thr**2+p(26)*phr*thr)/EE
+         th  = THR+
+     ,      ((P_th(1)+P_th(2)*phr+P_th(3)*thr+P_th(4)*phr**2+P_th(5)*thr**2)/EE)*
+     ,        (P_th(6)*cosom+P_th(7)*sinom)+
+     ,      ((P_th(8)+P_th(9)*thr+P_th(10)*phr+
+     ,        P_th(11)*phr**2+P_th(12)*thr**2)/EE**2)*
+     ,       (P_th(13)*cosom+P_th(14)*sinom)
+
+
+
+         phi = phR
+     ,        +(P_phi(1)*cosom+P_phi(2)*phr*cosom+P_phi(3)*phr**2*cosom+
+     ,        P_phi(4)*phr**3*cosom+P_phi(5)*thr*cosom+P_phi(6)*thr**2*cosom+
+     ,        P_phi(7)*thr**3*cosom+P_phi(8)*phr*thr*cosom+
+     ,        P_phi(9)*phr**2*thr*cosom+
+     ,        P_phi(10)*phr*thr**2*cosom)+
+     ,        ( P_phi(11)*cosom+P_phi(12)*phr*cosom+P_phi(13)*phr**2*cosom+
+     ,        P_phi(14)*thr*cosom+P_phi(15)*thr**2*cosom+
+     ,        P_phi(16)*phr*thr*cosom)/EE
+     ,        +(P_phi(17)*sinom+P_phi(18)*phr*sinom+P_phi(19)*phr**2*sinom+
+     ,        P_phi(20)*phr**3*sinom+P_phi(21)*thr*sinom+P_phi(22)*thr**2*sinom+
+     ,        P_phi(23)*thr**3*sinom+P_phi(24)*phr*thr*sinom+
+     ,        P_phi(25)*phr**2*thr*sinom+
+     ,        P_phi(26)*phr*thr**2*sinom)+
+     ,        ( P_phi(27)*sinom+P_phi(28)*phr*sinom+
+     ,        P_phi(29)*phr**2*sinom+
+     ,        P_phi(30)*thr*sinom+P_phi(31)*thr**2*sinom+
+     ,        P_phi(32)*phr*thr*sinom)/EE+
+     ,         P_phi(33)*sinom**2+P_phi(34)*sinom**3+P_phi(35)*sinom**4+
+     ,        P_phi(36)*sinom**5+P_phi(37)*sinom**6+P_phi(38)*sinom**7
+
       end
 
 c
@@ -486,16 +506,15 @@ c
             P_tar(2) = 0
             P_tar(3) = 0
             
-            P_big(1) = X_clust_r(inum)
-            P_big(2) = Y_clust_r(inum)
-            P_big(3) = Z_clust_r(inum)
-            call PlaneLineIntersection(a_tracker,b_tracker,c_tracker,
-     ,           d_tracker,P_tar,P_big,P_tr)
-            Delta_Y(inum) = Tr_Vertex_r(2,inum)-P_tr(2)
-            Delta_X(inum) = Tr_Vertex_r(1,inum)-P_tr(1)
-            call HFILL(10550,E_clust(inum),Delta_Y(inum), 1.)
+c            P_big(1) = X_clust_r(inum)
+c            P_big(2) = Y_clust_r(inum)
+c            P_big(3) = Z_clust_r(inum)
+c            call PlaneLineIntersection(a_tracker,b_tracker,c_tracker,
+c     ,           d_tracker,P_tar,P_big,P_tr)
+c            Delta_Y(inum) = Tr_Vertex_r(2,inum)-P_tr(2)
+c            Delta_X(inum) = Tr_Vertex_r(1,inum)-P_tr(1)
 
-            write(*,*) 'TRACK MATCH 1',Delta_X(inum)
+c            write(*,*) 'TRACK MATCH 1',Delta_X(inum)
             P_tar(1) = 0
             P_tar(2) = 0
             P_tar(3) = 0
@@ -506,8 +525,10 @@ c
      ,           d_bigcal,P_tar,P_big,P_tr)
             Delta_Y(inum) = Tr_Vertex(2,inum)-P_tr(2)
             Delta_X(inum) = Tr_Vertex(1,inum)-P_tr(1)
-            write(*,*) 'TRACK MATCH 2',Delta_X(inum)
-            write(*,*) 'TRACK MATCH 3'
+            call HFILL(10550,E_clust(inum),Delta_Y(inum), 1.)
+            call HFILL(10551,E_clust(inum),Delta_X(inum), 1.)
+c            write(*,*) 'TRACK MATCH 2',Delta_X(inum)
+c            write(*,*) 'TRACK MATCH 3'
            
 c     c
 cc     The particle is charged. 
@@ -562,8 +583,10 @@ c     endif
       W2(inum)        = Mp**2 + 2*Mp*ENue(inum) -Q2(inum)
       ihistnum        = (Q2(inum)-2.5)+1
       if(ihistnum.gt.0.and.ihistnum.lt.5)then
-c         call HF1(10600+ihistnum,X_Bjorken(inum),i_helicity)
-c         call HF1(10610+ihistnum,X_Bjorken(inum),1.)
+         call HF1(10600+ihistnum,X_Bjorken(inum),i_helicity)
+         call HF1(10610+ihistnum,X_Bjorken(inum),1.)
       endif
+      call HFILL(10620,X_Bjorken(inum),Q2(inum),1.)
+      call HFILL(10621,W2(inum),Q2(inum),1.)
 
       end

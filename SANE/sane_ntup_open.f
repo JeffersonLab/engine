@@ -216,6 +216,9 @@ c     ! For physics analysis  added on Jul 3 2008
       call HBOOK1(10613,'Xbj 4.5<Q2<5.5 no helicity normalized' ,10, 0.2, 0.8 ,0)
       call HBOOK1(10604,'Xbj 5.5<Q2<6.5 helicity normalized' ,10, 0.2, 0.8 ,0)
       call HBOOK1(10614,'Xbj 5.5<Q2<6.5 no helicity normalized' ,10, 0.2, 0.8 ,0)
+
+      call HBOOK2(10620,'Xbj vs Q2' ,40, 0.1, 0.9,  100, 0.,  8., 0.)
+      call HBOOK2(10621,'Xbj vs Q2' ,100, 0.5, 2.5,  100, 0.,  8., 0.)
 c
 c
 c     Physics Histograms
@@ -226,11 +229,16 @@ c
       
       call HBNAME(id,'HMSINFO',hms_p,
      $     'hms_p:R*4,hms_e:R*4,hms_theta:R*4,hms_phi:R*4,'//
+     $     'hsxfp_s:R*4,hsyfp_s:R*4,hsxpfp_s:R*4,hsypfp_s:R*4,'//
      $     'hms_ytar:R*4,hms_yptar:R*4,'//
      $     'hms_xptar:R*4,hms_delta:R*4,hms_start:R*4,'//
+     $     'hsshtrk_s:R*4, hsshsum_s:R*4, hsbeta_s:R*4,'//
      $     'rast_x:R*4,rast_y:R*4,'//
      $     'slow_rast_x:R*4,slow_rast_y:R*4,'//
-     $     'i_helicity:I*4')
+     $     'sem_x:R*4,sem_y:R*4,'//
+     $     'i_helicity:I*4,'//
+     $     'hms_cer_npe1:R*4,hms_cer_npe2:R*4,'//
+     $     ' hms_cer_adc1:R*4,hms_cer_adc2:R*4')
       
       if(sane_ntuple_type.eq.1) then ! col-wise ntuple
                                 ! for Physics purposses

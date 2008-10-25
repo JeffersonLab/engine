@@ -1,4 +1,4 @@
-      subroutine sane_ntup_close(ABORT,err)
+ 2    subroutine sane_ntup_close(ABORT,err)
 
       implicit none
       save
@@ -62,8 +62,22 @@
          call HROUT(10500+i,cycle,' ')
 
       enddo
+      call HROUT(10210,cycle,' ')
+      call HROUT(10211,cycle,' ')
       call HROUT(10550,cycle,' ')
-         
+      call HROUT(10551,cycle,' ')
+
+      call HROUT(10601,cycle,' ')
+      call HROUT(10611,cycle,' ')
+      call HROUT(10602,cycle,' ')
+      call HROUT(10612,cycle,' ')
+      call HROUT(10603,cycle,' ')
+      call HROUT(10613,cycle,' ')
+      call HROUT(10604,cycle,' ')
+      call HROUT(10614,cycle,' ')
+      call HROUT(10620,cycle,' ')
+      call HROUT(10621,cycle,' ')
+        
       call HREND(name)
       call G_IO_control(io,'FREE',ABORT,err)
       close(io)

@@ -93,20 +93,29 @@ c     $     sanetrigtype
       real*4 hms_e
       real*4 hms_theta
       real*4 hms_phi
-      real*4 hms_ytar
-      real*4 hms_yptar
-      real*4 hms_xptar
+      real*4 hsxfp_s,hsyfp_s,hsxpfp_s,hsypfp_s
+      real*4 hms_ytar,hms_yptar,hms_xptar
       real*4 hms_delta
       real*4 hms_start
+      real*4 hsshtrk_s, hsshsum_s, hsbeta_s
       real*4 rast_x
       real*4 rast_y
       real*4 slow_rast_x
       real*4 slow_rast_y
+      real*4 sem_x,sem_y
       integer*4 i_helicity
+      real*4 hms_cer_npe1,hms_cer_npe2, hms_cer_adc1,hms_cer_adc2
       
-      COMMON/HMSINFO/hms_p,hms_e,hms_theta,hms_phi,hms_ytar,hms_yptar,
-     ,     hms_xptar,hms_delta,hms_start,rast_x,rast_y,
-     ,     slow_rast_x, slow_rast_y, i_helicity
+      
+      COMMON/HMSINFO/hms_p,hms_e,hms_theta,hms_phi,
+     ,     hsxfp_s,hsyfp_s,hsxpfp_s,hsypfp_s,
+     ,     hms_ytar,hms_yptar,hms_xptar,
+     ,     hms_delta, hms_start,
+     ,     hsshtrk_s, hsshsum_s, hsbeta_s,
+     ,     rast_x, rast_y,
+     ,     slow_rast_x, slow_rast_y,
+     ,     sem_x,sem_y,i_helicity, 
+     ,     hms_cer_npe1,hms_cer_npe2, hms_cer_adc1,hms_cer_adc2
       
       integer*4 maxcl
       parameter (maxcl=4)

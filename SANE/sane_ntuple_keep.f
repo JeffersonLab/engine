@@ -20,8 +20,10 @@
       include 'gep_data_structures.cmn'
       include 'sane_ntuple.cmn'
       include 'sane_data_structures.cmn'
+      include 'sem_data_structures.cmn'
       INCLUDE 'h_ntuple.cmn'
       include 'f1trigger_data_structures.cmn'
+      include 'hms_calorimeter.cmn'
       logical HEXIST ! CERNLIB function
       integer t_sane,l_sane,cer_sane
       integer icycle,inum,ihit
@@ -132,35 +134,48 @@ c      logical middlebest
          hms_e        = h_Ntuple_contents(3)
          hms_theta    = h_Ntuple_contents(6)
          hms_phi      = h_Ntuple_contents(7)
+         hsxfp_s      = hsx_fp
+         hsyfp_s      = hsy_fp
+         hsxpfp_s     = hsxp_fp
+         hsypfp_s     = hsyp_fp
          hms_ytar     = h_Ntuple_contents(18)
          hms_yptar    = h_Ntuple_contents(20)
          hms_xptar    = h_Ntuple_contents(19)
          hms_delta    = h_Ntuple_contents(21)
+         hms_start    = hstart_time
+         hsshtrk_s    = HSTRACK_ET
+         hsshsum_s    = hsshsum
+         hsbeta_s     = hsbeta 
+         hms_cer_npe1 = hcer_npe(1)
+         hms_cer_npe2 = hcer_npe(2)
+         hms_cer_adc1 = hcer_adc(1) 
+         hms_cer_adc2 = hcer_adc(2)
+
       endif
       rast_x       = gfry_raw_adc
       rast_y       = gfrx_raw_adc
       i_helicity   = gbeam_helicity_ADC
-      slow_rast_x  = gsry_raw_adc
-      slow_rast_y  = gsrx_raw_adc
+      slow_rast_x  = gsr_beamx
+      slow_rast_y  = gsr_beamy
+      sem_x        = ntbpmx
+      sem_y        = ntbpmy
       call HFILL(10210,gsry_raw_adc,gsrx_raw_adc, 1.)
       call HFILL(10211,gfry_raw_adc,gfrx_raw_adc, 1.)
 
       do i =1,  nclust
+         call Bigcal_Betta(i)
          do j=1, ncellclust(i)
             call HFILL(10200,float(ixcell(j,i)),float(iycell(j,i)), 1.)
          enddo
-      enddo
-      if(sane_ntuple_type.eq.1)then
-         n_clust = nclust
-         do i =1,  n_clust
+         if(sane_ntuple_type.eq.1)then
+            n_clust = nclust
             call icer(i)
-            call Bigcal_Betta(i)
             call Lucite(i)
             call tracker(i)
             call TrackerCoordnate(i)
             call GeometryMatch(i)
-         enddo
-      endif
+         endif
+      enddo
       abort=.not.HEXIST(sane_ntuple_ID)
       if(abort) then
          call G_build_note(':Ntuple ID#$ does not exist',

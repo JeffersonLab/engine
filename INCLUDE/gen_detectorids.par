@@ -8,6 +8,9 @@
 *     Added new detector ids for BigCal
 *
 *     $Log$
+*     Revision 1.8.24.3.2.3  2008/10/25 12:45:30  cdaq
+*     *** empty log message ***
+*
 *     Revision 1.8.24.3.2.2  2008/10/02 18:01:48  cdaq
 *     *** empty log message ***
 *
@@ -57,7 +60,7 @@
      $     SLUC_ID, HAERO_ID, BIGCAL_PROT_ID, BIGCAL_RCS_ID,
      $     BIGCAL_TDC_ID, BIGCAL_ATRIG_ID, BIGCAL_TTRIG_ID, HFPP_ID,
      $     LUCITE_SANE_ID,CERENKOV_SANE_ID,TRACKER_SANE_X_ID,
-     $     TRACKER_SANE_Y_ID,F1TRIGGER_ID
+     $     TRACKER_SANE_Y_ID, F1TRIGGER_ID, SEM_ID
 
       parameter (MAXID=30)
       parameter (UNINST_ID=0)           ! Uninstrumented channels
@@ -75,6 +78,7 @@
       parameter (CERENKOV_SANE_ID=23)		! SANE CERENKOV DETECTOR
       parameter (LUCITE_SANE_ID=24)		! SANE LUCITE DETECTOR
       parameter (F1TRIGGER_ID=25)		! F1 TRIGGER
+      parameter (SEM_ID=26)                     ! SEM Detector
 cajp 
       parameter (BIGCAL_PROT_ID=8) ! protvino glass ADCs
       parameter (BIGCAL_RCS_ID=9) ! RCS glass ADCs

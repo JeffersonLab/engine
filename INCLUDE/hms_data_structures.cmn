@@ -5,6 +5,9 @@
 *     Author:   D. F. Geesaman          1 September 1993
 *
 * $Log$
+* Revision 1.12.20.1.2.2  2008/10/25 12:38:14  cdaq
+* *** empty log message ***
+*
 * Revision 1.12.20.1.2.1  2008/10/02 18:01:49  cdaq
 * *** empty log message ***
 *
@@ -433,6 +436,7 @@
       REAL*4  HXP_FP               ! X SLOPE OF TRACK IN FOCAL PLANE
       REAL*4  HYP_FP               ! Y SLOPE OF TRACK IN FOCAL PLANE
       REAL*4  HCHI2_FP             ! FIT QUALITY IN FOCAL PLANE
+      REAL*4  H_BDL                ! Bdl of track thru target field
       REAL*4 HCHI2PERDOF_FP        ! fp chi2 per degree of freedom
       INTEGER*4 HNFREE_FP          ! NUMBER OF DEGREES OF FREEDOM IN FIT
       INTEGER*4 HNTRACK_HITS      ! LIST OF HITS ON EACH TRACK
@@ -450,6 +454,7 @@
 *      DELYPX  DELYXP  DELYY   DELYYP
 *      DELYPX DELYPXP  DELYPY  DELYPYP
       COMMON/HMS_FOCAL_PLANE/
+     1     H_BDL(HNTRACKS_MAX),
      1     HX_FP(HNTRACKS_MAX),
      2     HY_FP(HNTRACKS_MAX),
      3     HZ_FP(HNTRACKS_MAX),
@@ -684,6 +689,10 @@
 *     constants definitions for Foacl Plane Polarimeter   (frw 2006/06/22)
 *     these are used for array limits etc.
 *                                          
+      real*8 SANE_HMS_ANGLE_THETA, SANE_HMS_ANGLE_PHI
+      COMMON /HMSFIELDANGLES/SANE_HMS_ANGLE_THETA, SANE_HMS_ANGLE_PHI
+
+
       integer HMS_TRIGGER_COUNTER,HMS_TRIGGER_WINDOW
       common/hmstrig/ HMS_TRIGGER_COUNTER,
      >  HMS_TRIGGER_WINDOW
@@ -751,6 +760,8 @@
 
 *
 *                                          
+*
+
 *******************end: hms_data_structures.cmn*************************
 *     Local Variables:
 *     mode: fortran

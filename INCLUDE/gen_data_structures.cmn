@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.35.20.7.2.4  2008/10/25 12:41:09  cdaq
+* *** empty log message ***
+*
 * Revision 1.35.20.7.2.3  2008/10/11 15:04:23  cdaq
 * slow raster
 *
@@ -229,6 +232,8 @@
 *
 *     CTPTYPE=parm
 *
+
+
       INTEGER gelossdebug,gen_eloss_enable
       REAL*4 hscat_win_thk,hscat_win_den,hscat_win_a,hscat_win_z
       REAL*4 hdet_ent_thk,hdet_ent_den,hdet_ent_a,hdet_ent_z
@@ -355,6 +360,9 @@
       REAL*4 GSRX_ADC_PED2,GSRY_ADC_PED2
       REAL*4 GSRX_RAW_ADC2,GSRY_RAW_ADC2
       REAL*4 GSRX_SYNC2,GSRY_SYNC2
+      REAL*4 GSRX_ADC,GSRY_ADC
+      REAL*4 GSRX_CALIB,GSRY_CALIB
+      REAL*4 GSR_beamx,GSR_beamy
 *
 *     CTPTYPE=parm
 *
@@ -397,7 +405,33 @@
      &     GSRX_RAW_ADC2,GSRY_RAW_ADC2, ! SLOW raster 2
      &     GSRX_SYNC2,GSRY_SYNC2,
      &     GSRX_ADC_PED,GSRY_ADC_PED,
-     &     GSRX_ADC_PED2,GSRY_ADC_PED2
+     &     GSRX_ADC_PED2,GSRY_ADC_PED2,
+     &     GSRX_ADC,GSRY_ADC,
+     &     GSRX_CALIB,GSRY_CALIB,
+     &     GSR_BEAMX,GSR_BEAMY
+*
+*
+*
+*
+*                  !   B E A M   P O S I T I O N   --   S E M
+*
+*     CTPTYPE=parm
+      integer slow_raster_correction ! STATUS of correction
+      real*4 n_sr_slopex
+      real*4 n_sr_offsetx
+      real*4 n_sr_slopey
+      real*4 n_sr_offsety
+      real*4 n_sr_adcy_zero
+      real*4 n_sr_adcx_zero
+
+      common /n_raster_calib/
+     &     slow_raster_correction,
+     &     n_sr_slopex, 
+     &     n_sr_offsetx,
+     &     n_sr_slopey, 
+     &     n_sr_offsety,n_sr_adcy_zero,n_sr_adcx_zero
+
+
 
 *
 *     Misc. signals read out for hms AND sos events. Mostly

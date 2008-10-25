@@ -1,0 +1,55 @@
+NEWSTYLE=1
+include ../../etc/Makefile
+include ../../etc/Makefile.flags
+
+
+osources = sem_analyze_pedestal.f  sem_calc_pedestal.f sem_fill_tbpm.f \
+           sem_clear_event.f       sem_register_variables.f  sem_reset_event.f \
+	   sem_decode.f            sem_calc_sr_beampos.f
+	
+makeregstuff = r_sem_data_structures.f 
+               
+
+sources = $(osources) $(makeregstuff)
+
+libsources = $(sources)
+
+lib_targets := $(patsubst %.f, libsem.a(%.o), $(libsources))
+install-dirs := lib
+bin_targets =
+
+#default:
+#	@echo "nothing to make"
+
+ifdef NFSDIRECTORY
+../%.f : $(NFSDIRECTORY)/SEM/%.f
+	ln -s $< $@
+
+.PRECIOUS: ../%.f
+else
+#
+# Rule for making the register subroutines
+#
+../r_%.f : ../%.cmn $(MAKEREG)
+	(cd .. ; $(MAKEREG) $(<F) -o $(@F) -e /dev/null)
+
+.PRECIOUS: ../r_%.f
+endif
+
+#
+# Get include files from INCLUDE directory
+#
+
+%.cmn ../%.cmn:: ../../INCLUDE/%.cmn
+	$(CP) $< $@
+
+%.dec ../%.dec:: ../../INCLUDE/%.dec
+	$(CP) $< $@
+
+%.par ../%.par:: ../../INCLUDE/%.par
+	$(CP) $< $@
+
+%.dte ../%.dte:: ../../INCLUDE/%.dte
+	$(CP) $< $@
+
+include $(sources:.f=.d)

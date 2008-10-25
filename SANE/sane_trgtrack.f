@@ -1,134 +1,122 @@
 *------------------------------------------------------------------------
-*
+*       
 *       TRG_TRACK  GEN Target Rracking routines 
-*      -=========-
-* 
+*       -=========-
+*       
 *       tracks ELECTRONS through polarized target B field
 *
 *	Raytracing of 3-d motion in polarized target field by solution
 *	of differential equations of motion via 4th order Runge-Kutta. Field 
 *	orientation arbitrary. 
-*
+*       
 *       Note: - the HMS routines use a right handed coord. system with
-*                 x : pointing downwards
-*                 y : perpendicular to x,z, 
+*       x : pointing downwards
+*       y : perpendicular to x,z, 
 *                     pointing to the left (if seen in z-direction)
-*                 z : BEAM axis or HMS axis, pointing downstream or 
-*                     from the target to the focal plane respectively
-*
-*             - the B field map uses a cylindrical coordinate system
-*               with z along the field axis and r perpendicular to it
-*
-*             - all length (x,y,z,dl,l,...) are measured in [cm]
-*             - all velocities are measured in [cm/ns]
-*             - all angles are measured counter clock wise in [deg]
-*             - time is measured in [ns] 
-*             - the B field is measured in [T]
-* 
+*       z : BEAM axis or HMS axis, pointing downstream or 
+*       from the target to the focal plane respectively
+*       
+*       - the B field map uses a cylindrical coordinate system
+*       with z along the field axis and r perpendicular to it
+*       
+*       - all length (x,y,z,dl,l,...) are measured in [cm]
+*       - all velocities are measured in [cm/ns]
+*       - all angles are measured counter clock wise in [deg]
+*       - time is measured in [ns] 
+*       - the B field is measured in [T]
+*       
 *       original devloped by ???
 *       widely modified by MM 
-*         - converted into subroutines  
-*         - rotation algorytm correced (at moment: phi==0 assumed)
-*         - changed coordinate system 
-*             beam direction:   z
-*             horizontal plane: zy
-*             out of plane:     x  (points downwards) 
-*
+*       - converted into subroutines  
+*       - rotation algorytm correced (at moment: phi==0 assumed)
+*       - changed coordinate system 
+*       beam direction:   z
+*       horizontal plane: zy
+*       out of plane:     x  (points downwards) 
+*       
 *       Supplies:
-*         trgInit (map,theta,phi) 
-*           load the target field map
-*         trgTrack (u,E,dl,l)
+*       trgInit (map,theta,phi) 
+*       load the target field map
+*       trgTrack (u,E,dl,l)
 *       
 *       Note: - Before calling trgTrack,trgXTrack or trgTrackToPlane
-*               the target field map has to be loaded by a call to 
-*               trgInit
+*       the target field map has to be loaded by a call to 
+*       trgInit
 *------------------------------------------------------------------------
-   
+	
 	
 *------------------------------------------------------------------------------
-* load the field map and calculate the magnetic field strength  
-*
-      SUBROUTINE trgInit (map,theta,phi)
-      IMPLICIT NONE
-      CHARACTER map*(*)
-      REAL*8     theta,phi
-* --  read field map (for calculations in the LAB system)
-*
-*     Parameter:
-*        map        I : filename of the fieldmap (=' ': uniform field test case)
-*        theta,phi  I : inplane (theta) and out of plane (phi) angle
-*        
-*        note: currently phi is always treated as 0
-*
+*       load the field map and calculate the magnetic field strength  
+*       
+	SUBROUTINE trgInit (map,SANE_TGTFIELD_B)
+	IMPLICIT NONE
+	CHARACTER map*(*)
+	real*8 SANE_TGTFIELD_B
+*       --  read field map (for calculations in the LAB system)
+*       
+*       Parameter:
+*       map        I : filename of the fieldmap (=' ': uniform field test case)
+*       
+*       note: currently phi is always treated as 0
+*       
 
-      INTEGER    nz,nr 
-      PARAMETER (nz = 337)
-      PARAMETER (nr = 337)
-
-      REAL*8   B_field_z(nz,nr),B_field_r(nz,nr),zz(nz),rr(nr)
-      REAL*8   B_theta,B_stheta,B_ctheta,B_phi,B_sphi,B_cphi 
+	INTEGER    nz,nr 
+	PARAMETER (nz = 337)
+	PARAMETER (nr = 337)
+	
+	REAL*8   B_field_z(nz,nr),B_field_r(nz,nr),zz(nz),rr(nr)
+	REAL*8   B_theta,B_stheta,B_ctheta,B_phi,B_sphi,B_cphi 
  
-      COMMON  /trgFieldStrength/ B_field_z,B_field_r,zz,rr
-      COMMON  /trgFieldAngles/   B_theta,B_stheta,B_ctheta,
-     >                           B_phi,  B_sphi,  B_cphi 
+	COMMON  /trgFieldStrength/ B_field_z,B_field_r,zz,rr
+	COMMON  /trgFieldAngles/   B_theta,B_stheta,B_ctheta,
+     ,   B_phi,  B_sphi,  B_cphi 
  
-      REAL*8      pi180
-      PARAMETER (pi180 = 3.141592653/180.) 
-
-      INTEGER ir,iz 
-      REAL*8   xx, scale
+	REAL*8      pi180
+	PARAMETER (pi180 = 3.141592653/180.) 
+	
+	INTEGER ir,iz 
+	REAL*8   xx, scale
   
-      real*8 gen_tgtfield_B
-
-      write(*,*) 'target theta = ',theta
-      B_theta  = theta
-      B_stheta = SIN(theta*pi180) 
-      B_ctheta = COS(theta*pi180)
-
-      ! Note: for performance reasons B_phi is always treated 0 in trgField
-      B_phi    = phi
-      B_sphi   = SIN(phi*pi180) 
-      B_cphi   = COS(phi*pi180)
-      
-      ! if desired target field is 0, set it to nominal 5.1
-      ! if it is -999.9 set it to 0
+	
+				! if desired target field is 0, set it to nominal 5.1
+				! if it is -999.9 set it to 0
 c      scale = 10.0d0  ! return field in kG for GEANT, not T
-      gen_tgtfield_B = 5.1
-      if (gen_tgtfield_B .eq. 0.0) then
-         scale = 1.0
-	 print *,"  f-f-f-f  target field NOT rescaled  f-f-f-f"
-      elseif (gen_tgtfield_B .eq. -999.9) then
-         scale = 0.0
-	 print *,"  f-f-f-f  target field scaled to 0  f-f-f-f"
-      else
-         scale = gen_tgtfield_B/5.1
-	 print *,"  f-f-f-f  target field scaled to ",
-     & gen_tgtfield_B,"  f-f-f-f"
-      endif 
-c	scale=10000
 
-      IF (map .NE. ' ') THEN           !read in numerical field map
-	 write(*,*)'OPENING MAP FILE =',map
-        OPEN (unit=1,file=map,status='old')
-          DO ir=1,nr
-            rr(ir) = 2.*float(ir-1)
-            zz(ir) = 2.*float(ir-1)
-            DO iz=1,nz
-              READ (1,*)xx,xx,B_field_z(iz,ir),B_field_r(iz,ir),xx,xx,xx
-	      ! rescale field to desired value
-	      B_field_z(iz,ir) = B_field_z(iz,ir) * scale
+	if (SANE_TGTFIELD_B .eq. 0.0) then
+	   scale = 1.0
+	   print *,"  f-f-f-f  target field NOT rescaled  f-f-f-f"
+	elseif (SANE_TGTFIELD_B.eq. -999.9) then
+	   scale = 0.0
+	 print *,"  f-f-f-f  target field scaled to 0  f-f-f-f"
+	else
+	   scale = SANE_TGTFIELD_B/5.1
+	   print *,"  f-f-f-f  target field scaled to ",
+     ,	"  f-f-f-f"
+	endif 
+c	scale=10000
+	
+	IF (map .NE. ' ') THEN	!read in numerical field map
+	   write(*,*)'OPENING MAP FILE =',map
+	   OPEN (unit=1,file=map,status='old')
+	   DO ir=1,nr
+	      rr(ir) = 2.*float(ir-1)
+	      zz(ir) = 2.*float(ir-1)
+	      DO iz=1,nz
+		 READ (1,*)xx,xx,B_field_z(iz,ir),B_field_r(iz,ir),xx,xx,xx
+				! rescale field to desired value
+		 B_field_z(iz,ir) = B_field_z(iz,ir) * scale
 	      B_field_r(iz,ir) = B_field_r(iz,ir) * scale
-          ENDDO
+	   ENDDO
         ENDDO
         CLOSE (unit=1)
-      ELSE
-        DO ir=1,nr			! uniform 5T field over 26 cm in z
+	ELSE
+	   DO ir=1,nr		! uniform 5T field over 26 cm in z
           rr(ir) = 2.*float(ir-1)	! and 16 cm in r
           zz(ir) = 2.*float(ir-1)
           DO iz=1,nz
-            B_field_r(iz,ir) = 0.
+	     B_field_r(iz,ir) = 0.
             IF (rr(ir) .LE. 16. .and. zz(ir) .LE. 26.) THEN
-              B_field_z(iz,ir) = gen_tgtfield_B
+              B_field_z(iz,ir) = SANE_TGTFIELD_B 
             ELSE
 	      B_field_z(iz,ir) = 0.0
 	    ENDIF
@@ -141,6 +129,29 @@ c	scale=10000
       RETURN
       END
       
+* ******************************************************
+	Subroutine trgInitFieldANGLES(theta,phi)
+*       theta,phi  I : inplane (theta) and out of plane (phi) angle
+	IMPLICIT NONE
+	REAL*8     theta,phi
+	
+	REAL*8   B_theta,B_stheta,B_ctheta,B_phi,B_sphi,B_cphi 
+	COMMON  /trgFieldAngles/   B_theta,B_stheta,B_ctheta,
+     >                           B_phi,  B_sphi,  B_cphi 
+	REAL*8      pi180,p,p0
+	PARAMETER (pi180 = 3.141592653/180.) 
+c	write(*,*) 'target theta = ',theta
+
+	B_theta  = theta
+	B_stheta = SIN(theta*pi180) 
+	B_ctheta = COS(theta*pi180)
+	
+	! Note: for performance reasons B_phi is always treated 0 in trgField
+	B_phi    = phi
+	B_sphi   = SIN(phi*pi180) 
+	B_cphi   = COS(phi*pi180)
+	end
+
        
 *------------------------------------------------------------------------
 
@@ -292,7 +303,7 @@ c     U(6) is six dimentional vector used in Tracking
 c
 cc      
       real*8 U(6)
-      real*4 x,y,z,px,py,pz
+      real*4 x,y,z,px,py,pz,E
       
       y    = U(1)
       x    = U(2) 

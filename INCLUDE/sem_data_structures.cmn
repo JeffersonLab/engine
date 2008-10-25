@@ -1,0 +1,112 @@
+*      
+*
+*  CTPTYPE = parm    NEUTRON DETECTOR PARAMETERS
+*
+      integer NUM_TBPM
+      parameter (NUM_TBPM=8)
+*
+*    TBPM
+*
+*
+*     CTPTYPE=event      
+*
+*
+
+      integer*4 N_TBPM_ALL_CHAN
+      parameter (N_TBPM_ALL_CHAN=64)
+      integer*4 N_TBPM_TOT_HITS
+      integer*4 N_TBPM_ADDR1(N_TBPM_ALL_CHAN)
+      integer*4 N_TBPM_ADDR2(N_TBPM_ALL_CHAN)
+      integer*4 N_TBPM_RAW_DATA(N_TBPM_ALL_CHAN)
+      real*4 N_TBPM_DATA(N_TBPM_ALL_CHAN)
+      real*4 ntbpmx,ntbpmy
+*
+*     CTPTYPE=event      
+*
+*
+      COMMON /N_TBPM/
+     &     N_TBPM_TOT_HITS,
+     &     N_TBPM_ADDR1,
+     &     N_TBPM_ADDR2,
+     &     N_TBPM_RAW_DATA,
+     &     N_TBPM_DATA,
+     &     ntbpmx,ntbpmy
+*
+*
+*
+*     CTPTYPE=parm
+*
+*
+      integer*4 n_tbpm_methode
+      real*4    n_tbpm_cutoff
+      real*4    n_tbpm_adccut
+
+      COMMON /N_TBPM_PAR/
+     $     n_tbpm_methode,
+     $     n_tbpm_cutoff,
+     $     n_tbpm_adccut
+      
+      real*4 n_force_SEMx
+      real*4 n_force_SEMy
+
+      common/ndet_special_options/
+     $     n_force_SEMx,
+     $     n_force_SEMy
+
+*
+*
+*                  !   B E A M   P O S I T I O N   --   S E M
+*
+*     CTPTYPE=parm
+*
+      integer*4 gsemx_index   !SEM x position
+      integer*4 gsemy_index   !SEM y position
+      integer*4 gsemdx_index  !SEM size -- x diameter
+      integer*4 gsemdy_index  !SEM size -- y diameter
+*
+      real*4 gsem_xcal_lo     !SEM calibration frequency at x= -15mm
+      real*4 gsem_xcal_hi     !SEM calibration frequency at x= +15mm
+      real*4 gsem_ycal_lo     !SEM calibration frequency at y= -15mm
+      real*4 gsem_ycal_hi     !SEM calibration frequency at y= +15mm
+      real*4 gsem_dxcal_lo    !SEM calibration frequency at x dia = 0
+      real*4 gsem_dxcal_hi    !SEM calibration frequency at x dia = 30mm
+      real*4 gsem_dycal_lo    !SEM calibration frequency at y dia = 0
+      real*4 gsem_dycal_hi    !SEM calibration frequency at y dia = 30mm
+*
+*     CTPTYPE=event
+*
+      real*4 gsem_meanxpos
+      real*4 gsem_meanypos
+      real*4 gsem_meanxsize
+      real*4 gsem_meanysize
+*
+      common/BEAMPOSITION/
+     &    gsemx_index, gsemy_index, gsemdx_index, gsemdy_index,
+     &    gsem_xcal_lo, gsem_xcal_hi, gsem_dxcal_lo, gsem_dxcal_hi,
+     &    gsem_ycal_lo, gsem_ycal_hi, gsem_dycal_lo, gsem_dycal_hi,
+     &    gsem_meanxpos, gsem_meanxsize,
+     &    gsem_meanypos, gsem_meanysize
+*
+*
+*     CTPTYPE=event      
+*
+* Neutron Detector PEDESTALS
+* replace ndet_all_ped_pos with float(ndet_pos_ped_sum/ndet_pos_ped_num)
+* if ndet_pos_ped_num > ndet_min_peds.
+*
+      real*4 ndet_ped_tbpm(N_tbpm_all_chan)
+      real*4 ndet_ped_tbpm_sig(N_tbpm_all_chan)
+      real*4 ndet_thresh_tbpm(N_tbpm_all_chan)
+      real*4 ndet_thresh_tbpm_sig(N_tbpm_all_chan)
+      integer*4 ndet_ped_tbpm_sum(N_tbpm_all_chan)
+      integer*4 ndet_ped_tbpm_sum2(N_tbpm_all_chan)
+      integer*4 ndet_tbpm_ped_counts
+*
+      common/ndet_ped_tbpm/ 
+     &     ndet_ped_tbpm,
+     &     ndet_ped_tbpm_sig,
+     &     ndet_thresh_tbpm,
+     &     ndet_thresh_tbpm_sig,
+     &     ndet_ped_tbpm_sum,
+     &     ndet_ped_tbpm_sum2,
+     &     ndet_tbpm_ped_counts

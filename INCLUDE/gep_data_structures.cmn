@@ -109,7 +109,11 @@ c     and the e- and p carry all of the energy and momentum in the reaction.
 c     by defining both polar and azimuthal scattering angles theta and phi, we
 c     can define the unit vector in the q-direction, which defines the coord. 
 c     system for the polarization measurement. 
-      
+c trigger times (up to 10 per trigger type) from F1
+c TDCs in electronics bunker in Hall
+      real*4 gep_trigtimes(8,10)
+      integer gep_ntrigs(8)
+
       common/GEPBLOCK/
      $     ntrigH1,
      $     ntrigH2,
@@ -147,7 +151,9 @@ c     system for the polarization measurement.
      $     GEP_xfp_p,
      $     GEP_yfp_p,
      $     GEP_xpfp_p,
-     $     GEP_ypfp_p
+     $     GEP_ypfp_p,
+     >     gep_trigtimes,
+     >     gep_ntrigs
 
 c     expected hit positions in the calorimeter from the HMS:
       
