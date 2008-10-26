@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.15.2.3  2008/10/26 19:12:33  cdaq
+* SEM
+*
 * Revision 1.32.20.15.2.2  2008/10/02 17:57:58  cdaq
 * *** empty log message ***
 *
@@ -182,7 +185,7 @@
       integer*4 bank(*)
       logical SANE_TRUE
       logical F1TRIGGER_TRUE
-
+      logical SEM_TRUE
 *     This routine unpacks a ROC bank.  It looks a fastbus word to
 *     determine which detector it belongs to.  It then passes the
 *     appropriate arrays for that detector to detector independent unpacker
@@ -361,6 +364,7 @@ c      write(*,*)'END'
       endif
 *
       slot = jiand(jishft(bank(pointer),-27),'1F'X)
+
       if(slot.gt.0.and.slot.le.G_DECODE_MAXSLOTS .and.
      $     roc.gt.0 .and. roc.le.g_decode_maxrocs) then
 
@@ -417,17 +421,21 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddress
           else
             did = UNINST_ID
           endif
+c          if(roc.eq.12.and.slot.eq.5) write(6,
+c     >      '(''found did with roc,slot'',3i6)') 
+c     >      did,roc,slot
 
           !write(*,*) 'detector id this bank = ',did
 
           maxwords = last_first - pointer + 1
-
+          
           SANE_TRUE = did.eq.LUCITE_SANE_ID.or.
      &         did.eq.CERENKOV_SANE_ID.or.
      &         did.eq.TRACKER_SANE_X_ID.or.
      &         did.eq.TRACKER_SANE_Y_ID
           F1TRIGGER_TRUE = did.eq.F1TRIGGER_ID
-c      write(*,*)did,roc,slot,slotp,subadd
+          SEM_TRUE = did.eq.SEM_ID
+c       write(*,*)did,roc,slot,slotp,subadd
 c          if(did.gt.0)write(*,*)did,roc,slot,slotp,subadd
 
 *
@@ -536,6 +544,13 @@ c     F1 Trigger Decode
 c
           else if(F1TRIGGER_TRUE)then
             call F1TRIGGER_decode(pointer,lastslot, roc, bank, 
+     &           maxwords, did)
+          else if(SEM_TRUE)then
+***********************************
+c
+c     SEM Decode
+c
+            call sem_decode(pointer,lastslot, roc, bank, 
      &           maxwords, did)
 
 *===================== BIGCAL ==========================================

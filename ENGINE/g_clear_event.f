@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard, Hampton U.
 *-   Modified 19-Nov-1993   Kevin B. Beard for new error standards
 *-      $Log$
+*-      Revision 1.10.24.2.2.3  2008/10/26 19:12:33  cdaq
+*-      SEM
+*-
 *-      Revision 1.10.24.2.2.2  2008/10/02 17:57:23  cdaq
 *-      *** empty log message ***
 *-
@@ -73,9 +76,9 @@
       include 'gen_run_info.cmn'
 *
       logical HMS_ABORT,SOS_ABORT,COIN_ABORT,gmc_abort,BIGCAL_ABORT
-      logical GEP_ABORT,SANE_ABORT
+      logical GEP_ABORT,SANE_ABORT,F1Trigger_abort,sem_abort
       character*132 HMS_err,SOS_err,COIN_err,gmc_err,BIGCAL_err
-      character*132 GEP_err,SANE_err
+      character*132 GEP_err,SANE_err,F1trigger_err,SEM_err
       
 *
 *--------------------------------------------------------
@@ -87,6 +90,8 @@
       GEP_err=' '
       gmc_err= ' '
       sane_err= ' '
+      F1trigger_err= ' '
+      sem_err= ' '
 *
       GUNINST_TOT_HITS = 0              ! Unistrumented hit counter
       GMISC_TOT_HITS = 0
@@ -108,7 +113,8 @@
 *     
       call sane_clear_event(SANE_ABORT,SANE_err) ! SANE
 
-      call f1trigger_clear_event(SANE_ABORT,SANE_err) ! F1 trigger
+      call f1trigger_clear_event(F1trigger_ABORT,f1trigger_err) ! F1 trigger
+      call f1trigger_clear_event(Sem_ABORT,Sem_err) ! sem 
      
 *     
       

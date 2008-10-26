@@ -1,6 +1,9 @@
       subroutine g_analyze_pedestal(ABORT,err)
 *
 * $Log$
+* Revision 1.2.24.1.2.2  2008/10/26 19:12:33  cdaq
+* SEM
+*
 * Revision 1.2.24.1.2.1  2008/05/15 18:59:21  bhovik
 * 1'st version
 *
@@ -41,6 +44,11 @@
       endif
 *
       call sane_analyze_pedestal(ABORT,err) ! bigcal
+      if(ABORT) then
+         call G_add_path(here,err)
+         return
+      endif
+      call sem_analyze_pedestal(ABORT,err) ! bigcal
       if(ABORT) then
          call G_add_path(here,err)
          return

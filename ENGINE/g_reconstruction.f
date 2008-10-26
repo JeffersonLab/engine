@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.9.2.2  2008/10/26 19:12:33  cdaq
+* SEM
+*
 * Revision 1.13.24.9.2.1  2008/10/02 17:58:46  cdaq
 * *** empty log message ***
 *
@@ -186,6 +189,14 @@ c         write(*,*) 'found annoying pulser event, skipping'
         ENDIF
         ABORT= ABORT .or. FAIL
       ENDIF
+c
+c
+c     SEM FILL
+c     
+c
+      call sem_fill_tbpm()
+      call sem_calc_sr_beampos()
+
 *
 *-HMS reconstruction
 c      IF(gen_event_type.eq.1 .or. gen_event_type.eq.3) then  !HMS/COIN trig

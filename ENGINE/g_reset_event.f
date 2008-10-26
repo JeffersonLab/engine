@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
 * $Log$
+* Revision 1.11.24.3.2.3  2008/10/26 19:12:33  cdaq
+* SEM
+*
 * Revision 1.11.24.3.2.2  2008/10/02 17:59:26  cdaq
 * *** empty log message ***
 *
@@ -77,9 +80,9 @@
       character*(*) err
 *
       logical HMS_ABORT,SOS_ABORT,COIN_ABORT,SCAL_ABORT
-      logical BIGCAL_ABORT,GEP_ABORT,SANE_ABORT
+      logical BIGCAL_ABORT,GEP_ABORT,SANE_ABORT,F1trigger_abort,sem_abort
       character*132 HMS_err,SOS_err,COIN_err,SCAL_err,BIGCAL_err
-      character*132 GEP_err,SANE_err
+      character*132 GEP_err,SANE_err,F1trigger_err,sem_err
 *
       integer hit,chan,roc,slot
 *
@@ -95,6 +98,9 @@
       sos_err = ' '
       coin_err = ' '
       bigcal_err = ' '
+      sane_err = ' '
+      f1trigger_err = ' '
+      sem_err = ' '
       gep_err = ' '
 *
 *     Uninstrumented hits
@@ -138,7 +144,8 @@
       
       call B_reset_event(BIGCAL_ABORT,BIGCAL_err)
       call SANE_reset_event(SANE_ABORT,SANE_err)
-      call f1trigger_reset_event(SANE_ABORT,SANE_err)
+      call f1trigger_reset_event(F1Trigger_ABORT,F1Trigger_err)
+      call sem_reset_event(SEM_ABORT,SEM_err)
       
 
       
@@ -154,6 +161,10 @@
          call G_prepend(HMS_err,err)
          call G_prepend(SCAL_err,err)
          call G_prepend(BIGCAL_err,err)
+         call G_prepend(BIGCAL_err,err)
+         call G_prepend(SANE_err,err)
+         call G_prepend(F1TRIGGER_err,err)
+         call G_prepend(SEM_err,err)
          call G_prepend(GEP_err,err)
          call G_add_path(here,err)
       else

@@ -19,6 +19,9 @@
 *     Modified: 24-May-1994 K.B.Beard
 *
 * $Log$
+* Revision 1.11.24.2.2.3  2008/10/26 19:12:33  cdaq
+* SEM
+*
 * Revision 1.11.24.2.2.2  2008/10/02 17:59:13  cdaq
 * *** empty log message ***
 *
@@ -197,6 +200,17 @@
       ABORT= ABORT .or. FAIL 
 *
       call sane_register_variables(FAIL,why) ! BIGCAL
+      IF(err.NE.' ' .and. why.NE.' ') THEN
+         call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+         err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL 
+*
+*
+*    SEM register variables
+*
+      call sem_register_variables(FAIL,why) ! BIGCAL
       IF(err.NE.' ' .and. why.NE.' ') THEN
          call G_append(err,' & '//why)
       ELSEIF(why.NE.' ') THEN

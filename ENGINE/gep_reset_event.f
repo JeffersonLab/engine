@@ -11,7 +11,7 @@
 
       include 'gep_data_structures.cmn'
 
-      integer i
+      integer i,j
 
       abort=.false.
       err=' '
@@ -62,6 +62,13 @@
       gep_by_expect_H = 0.
       gep_etheta_expect_H = 0.
       gep_ephi_expect_h = 0.
+
+      do i=1,8
+        gep_ntrigs(i)=0
+        do j=1,10
+          gep_trigtimes(i,j)=0.
+        enddo
+      enddo
 
       return
       end
