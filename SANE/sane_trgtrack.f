@@ -48,10 +48,10 @@
 *------------------------------------------------------------------------------
 *       load the field map and calculate the magnetic field strength  
 *       
-	SUBROUTINE trgInit (map,SANE_TGTFIELD_B)
+	SUBROUTINE trgInit(map)
 	IMPLICIT NONE
 	CHARACTER map*(*)
-	real*8 SANE_TGTFIELD_B
+        include 'sane_data_structures.cmn'
 *       --  read field map (for calculations in the LAB system)
 *       
 *       Parameter:
@@ -124,6 +124,7 @@ c	scale=10000
 	ENDDO
       ENDIF
       
+      write(*,*) 'Target field : ',SANE_TGTFIELD_B 
       write(*,*) 'Target field initiated with file: ',map
 
       RETURN
