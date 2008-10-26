@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.21.2.3  2008/10/26 18:53:06  cdaq
+* *** empty log message ***
+*
 * Revision 1.42.8.21.2.2  2008/10/26 18:49:04  cdaq
 * trginit moved
 *
@@ -267,7 +270,7 @@ c
       include 'gen_data_structures.cmn'
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
-      include 'sanw_data_structures.cmn'
+      include 'sane_data_structures.cmn'
       include 'bigcal_data_structures.cmn' 
       include 'bigcal_bypass_switches.cmn'
       include 'bigcal_filenames.cmn'
