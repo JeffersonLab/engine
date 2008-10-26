@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.21.2.4  2008/10/26 18:59:13  cdaq
+* fixed trginit call
+*
 * Revision 1.42.8.21.2.3  2008/10/26 18:53:06  cdaq
 * *** empty log message ***
 *
@@ -415,7 +418,6 @@ c     initialize CTP ROOT trees: substitute run number into filename!!!!
          err= ' '
       endif
 
-
       g_data_source_opened = .false.     !not opened yet
       g_data_source_in_hndl= 0           !none
       call G_open_source(ABORT,err)
@@ -606,7 +608,14 @@ c
       call G_apply_offsets(ABORT,err)  
 c
 c initial polarized target field
-      if (SANE_TGTFIELD_B .gt. 0)  call trgInit('trg_field_map_extended.dat')
+      if (SANE_TGTFIELD_B .gt. 0)  then
+      SANE_BETA_OMEGA = SANE_BETA_ANGLE_THETA - SANE_FIELD_ANGLE_THETA
+      SANE_HMS_OMEGA  = SANE_HMS_ANGLE_THETA - SANE_FIELD_ANGLE_THETA
+      SANE_BETA_PHI   = SANE_BETA_ANGLE_PHI - SANE_FIELD_ANGLE_PHI 
+      SANE_HMS_PHI    = SANE_HMS_ANGLE_PHI - SANE_FIELD_ANGLE_PHI 
+      call trgInit('trg_field_map_extended.dat')
+      call trgInitFieldANGLES(SANE_BETA_OMEGA,SANE_BETA_PHI)
+      endif
 c      
 c
 c  call G_apply_offsets which calls  s_apply_offsets, h_apply_offsets
