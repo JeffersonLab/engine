@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.21.2.2  2008/10/26 18:49:04  cdaq
+* trginit moved
+*
 * Revision 1.42.8.21.2.1  2008/09/26 21:03:18  cdaq
 * *** empty log message ***
 *
@@ -264,6 +267,7 @@ c
       include 'gen_data_structures.cmn'
       include 'hms_data_structures.cmn'
       include 'sos_data_structures.cmn'
+      include 'sanw_data_structures.cmn'
       include 'bigcal_data_structures.cmn' 
       include 'bigcal_bypass_switches.cmn'
       include 'bigcal_filenames.cmn'
@@ -322,7 +326,6 @@ c
       print *
 
 c      ncalls_calc_ped = 0
-      call trgInit('trg_field_map_extended.dat',omega,0.)
 
       total_event_count= 0                      ! Need to register this
       lastdump=0
@@ -598,6 +601,10 @@ c
 c     
        
       call G_apply_offsets(ABORT,err)  
+c
+c initial polarized target field
+      if (SANE_TGTFIELD_B .gt. 0)  call trgInit('trg_field_map_extended.dat')
+c      
 c
 c  call G_apply_offsets which calls  s_apply_offsets, h_apply_offsets
 c   which apply offsets to spect. momenta, angles
