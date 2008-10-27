@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19.6.2.2.1  2008/10/27 16:34:54  cdaq
+* changes for F1 TDCs
+*
 * Revision 1.19.6.2  2007/10/26 16:44:55  pcarter
 * made the arguments to max() match data types -- GCC 4 is picky about that
 *
@@ -128,9 +131,6 @@
       integer timehist(200),i,j,jmax,maxhit,nfound
       real*4 time_pos(1000),time_neg(1000),tmin,time_tolerance
       logical keep_pos(1000),keep_neg(1000),first/.true./
-! new next 2 lines
-      integer ndumped(4,16,2),ndumpmax
-      logical oktodump
       save
 *
 *--------------------------------------------------------
@@ -138,6 +138,9 @@
       ABORT= .FALSE.
       errmsg = ' '
 
+c      if(hdumptof.eq.1) write(37,
+c     > '(''ntrk,tothits''2i4,f8.3)') 
+c     >  hntracks_fp,hscin_tot_hits,hscin_tdc_to_time
       if(hntracks_fp.le.0 .or. hscin_tot_hits.le.0) then
         do trk = 1 , hntracks_fp
           hnum_scin_hit(trk) = 0
@@ -160,8 +163,14 @@
         hnum_scin_hit(trk) = 0
         hnum_pmt_hit(trk) = 0
         p = hp_tar(trk)
-        betap = p/sqrt(p*p+hpartmass*hpartmass)
-
+c if p=0, assume cosmics
+        if(abs(p).lt.0.1) then
+          betap = -1.
+        else
+          betap = p/sqrt(p*p+hpartmass*hpartmass)
+c put in check for reasonable
+          betap = min(1., max(0.3, betap))
+        endif
         do plane = 1 , hnum_scin_planes
           hgood_plane_time(trk,plane) = .false.
           sum_plane_time(plane) = 0.
@@ -184,7 +193,7 @@
           time_tolerance=htof_tolerance
         endif
 ! Use wide window if dumping events for fitting
-        if(hdumptof.eq.1) time_tolerance=50.0
+        if(hdumptof.eq.1) time_tolerance=300.0
         if(first) then
            first=.false.
            write(*,'(1x,''Using '',f8.2,'' nsec window for'',
@@ -196,18 +205,9 @@
 !online             write(*,'(/1x,''TOF using ADC for slewing correction'',
 !online     >         ''  and same vecolicty for pos and neg tubes'')')
            endif
-! new: next 10 lines
-           ndumpmax = 1000.
            if(hdumptof.eq.1) 
      >       write(*,'(/1x,''Dumping TDC, ADC to fort.37 for'',
-     >         ''  TOF calibration, ndumpmax='',i5)') ndumpmax
-!online           write(*,'(/)')
-           do i=1,4
-            do j=1,16
-             ndumped(i,j,1)= 0.
-             ndumped(i,j,2)= 0.
-            enddo
-           enddo
+     >         ''  TOF calibration'')')
         endif
         nfound = 0
         do j=1,200
@@ -291,14 +291,17 @@
 ! Find bin with most hits
         jmax=0
         maxhit=0
-! new next line
-        oktodump = .false.
         do j=1,200
           if(timehist(j) .gt. maxhit) then
             jmax = j
             maxhit = timehist(j)
           endif
         enddo
+c        if(hdumptof.eq.1) then
+c          write(37,'(''trk='',2i3,8f8.3)') trk,jmax,
+c     >      hx_fp(trk),hxp_fp(trk),hy_fp(trk),hyp_fp(trk),
+c     >      hp_tar(trk)
+c        endif
         if(jmax.gt.0) then
           tmin = 0.5*float(jmax) 
           do hit = 1 , hscin_tot_hits
@@ -306,20 +309,10 @@
             if(time_pos(i) .gt. tmin .and.
      >         time_pos(i) .lt. tmin + time_tolerance) then
               keep_pos(i) = .true.
-! new next 4 lines
-              ndumped(hscin_plane_num(hit),hscin_counter_num(hit),1) =  
-     >        ndumped(hscin_plane_num(hit),hscin_counter_num(hit),1) + 1
-              if(ndumped(hscin_plane_num(hit),
-     >          hscin_counter_num(hit),1).lt.ndumpmax) oktodump=.true.
            endif
             if(time_neg(i) .gt. tmin .and.
      >         time_neg(i) .lt. tmin + time_tolerance) then
               keep_neg(i) = .true.
-! new next 4 lines
-              ndumped(hscin_plane_num(hit),hscin_counter_num(hit),2) =  
-     >        ndumped(hscin_plane_num(hit),hscin_counter_num(hit),2) + 1
-              if(ndumped(hscin_plane_num(hit),
-     >          hscin_counter_num(hit),2).lt.ndumpmax) oktodump=.true.
             endif
           enddo
         endif
@@ -385,11 +378,13 @@
               endif
               zcor =  (hscin_zpos(hit)/(29.979*betap) * sqrt(1.+
      >               hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
-              if(hntracks_fp.eq.1.and.
-     >          hdumptof.eq.1.and.
-! new next line
-     >          oktodump.and.
-     >          timehist(max(1,jmax)).gt.6) then
+c              if(hntracks_fp.eq.1.and.
+c              if(hntracks_fp.ne.0.and.
+c     >          hdumptof.eq.1.and.
+d     >          timehist(max(1,jmax)).gt.6) then
+c changed for now
+c     >          timehist(max(1,jmax)).gt.0) then
+              if(hdumptof.eq.1) then
                 write(37,'(1x,''1'',2i3,5f10.3)') 
      >             hscin_plane_num(hit),
      >             hscin_counter_num(hit),
@@ -430,11 +425,12 @@ c    >              1./sqrt(max(20,adc_ph))
               endif
               zcor =  (hscin_zpos(hit)/(29.979*betap) * sqrt(1.+
      >               hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
-              if(hntracks_fp.eq.1.and.
-     >          hdumptof.eq.1.and.
-! new next line
-     >          oktodump.and.
-     >          timehist(max(1,jmax)).gt.6) then
+d              if(hntracks_fp.eq.1.and.
+c     >          hdumptof.eq.1.and.
+c     >          timehist(max(1,jmax)).gt.6) then
+c changed for now
+c     >          timehist(max(1,jmax)).gt.0) then
+               if(hdumptof.eq.1) then
                 write(37,'(1x,''2'',2i3,5f10.3)') 
      >             hscin_plane_num(hit),
      >             hscin_counter_num(hit),
@@ -565,9 +561,10 @@ c     Get time at focal plane
      >      htime_at_fp(trk),hbeta(trk),hbeta_chisq(trk),
      >      hdelta_tar(trk),hy_tar(trk),hxp_tar(trk),hyp_tar(trk)
         endif
-        if(hntracks_fp.eq.1.and.
-     >    hdumptof.eq.1.and.
-     >     timehist(max(1,jmax)).gt.6) then
+c        if(hntracks_fp.eq.1.and.
+c     >    hdumptof.eq.1.and.
+c     >     timehist(max(1,jmax)).gt.6) then
+        if(hdumptof.eq.1) then
            write(37,'(1x,''0'')') 
         endif
       enddo                             !end of loop over tracks

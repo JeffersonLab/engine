@@ -12,6 +12,9 @@
 * for F1 TDCs (should still work if go back to FASTBUS)
 * 2008/09/30 P. Bosted
 * $Log$
+* Revision 1.21.8.2  2008/10/27 16:34:47  cdaq
+* changes for F1 TDCs
+*
 * Revision 1.21.8.1  2008/10/02 17:13:47  cdaq
 * Added F1trig subraction
 *
@@ -124,19 +127,34 @@
       abort = .false.
 
 
-! Correct for trigger time 
+! Correct for trigger time.
+! If NOT using F1 TDC's, comment this section out
+c      write(37,'(/1x,''alltothits='',i3)') 
+c     >  hscin_all_tot_hits
       do ihit = 1 , hscin_all_tot_hits 
        rawtime = hscin_all_tdc_pos(ihit)
+c       postime(ihit) = rawtime
        if(rawtime.ge.0) then
         call CORRECT_RAW_TIME_HMS(rawtime,corrtime)
         hscin_all_tdc_pos(ihit) = corrtime
        endif
        rawtime = hscin_all_tdc_neg(ihit)
+c       negtime(ihit) = rawtime
        if(rawtime.ge.0) then
         call CORRECT_RAW_TIME_HMS(rawtime,corrtime)
         hscin_all_tdc_neg(ihit) = corrtime
        endif
+c       if(postime(ihit).ge.0. .or.
+c     >    negtime(ihit).ge.0.) 
+c     >  write(37,'(2i3,f6.0,i5,f6.0,3i5)') 
+c     >   hscin_all_plane_num(ihit),
+c     >   hscin_all_counter_num(ihit),
+c     >   postime(ihit),hscin_all_tdc_pos(ihit),
+c     >   postime(ihit),hscin_all_tdc_neg(ihit),
+c     >   hscin_all_adc_pos(ihit),
+c     >   hscin_all_adc_neg(ihit)
       enddo
+
 
 **    Find scintillators with real hits (good TDC values)
       call h_strip_scin(abort,errmsg)
@@ -466,7 +484,7 @@ c This happens if trigger TDC rolled over
         roll=.true.
       endif
 
-      if(nprint.lt.100.and.roll) then
+      if(nprint.lt.20.and.roll) then
        write(6,'(''dbg hscin'',4i8)') 
      >  RAW_TDC, CORRECTED_TDC,
      >  TRIGGER_F1_START_TDC_COUNTER(
