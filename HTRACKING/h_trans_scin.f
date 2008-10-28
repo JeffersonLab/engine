@@ -12,6 +12,9 @@
 * for F1 TDCs (should still work if go back to FASTBUS)
 * 2008/09/30 P. Bosted
 * $Log$
+* Revision 1.21.8.3  2008/10/28 20:57:10  cdaq
+* Changed tdc_offset
+*
 * Revision 1.21.8.2  2008/10/27 16:34:47  cdaq
 * changes for F1 TDCs
 *
@@ -432,7 +435,7 @@ c
 
 c hard-wired to make TDC spectra centered on 1500
 c or so. This is for F1 TDCs
-      tdc_offset=2000
+      tdc_offset=1200
 
 C correct for trigger time. If using F1 TDC's, make
 C sure rolloever values are defined in parameter file
@@ -484,7 +487,7 @@ c This happens if trigger TDC rolled over
         roll=.true.
       endif
 
-      if(nprint.lt.20.and.roll) then
+      if(nprint.lt.0.and.roll) then
        write(6,'(''dbg hscin'',4i8)') 
      >  RAW_TDC, CORRECTED_TDC,
      >  TRIGGER_F1_START_TDC_COUNTER(
