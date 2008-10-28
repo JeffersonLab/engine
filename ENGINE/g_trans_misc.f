@@ -6,6 +6,9 @@
 * g_trans_misc fills the gen_decoded_misc common block
 *
 * $Log$
+* Revision 1.2.24.5.2.1  2008/10/28 20:53:12  cdaq
+* Added trigger F1 TDC code
+*
 * Revision 1.2.24.5  2007/11/29 18:33:05  cdaq
 * commented out diagnostic message
 *
@@ -32,6 +35,7 @@
       implicit none
 
       include 'gen_data_structures.cmn'
+      include 'gen_event_info.cmn'
       include 'gep_data_structures.cmn'
       include 'gep_hist_id.cmn'
 
@@ -40,8 +44,8 @@
       character*20 here
       parameter (here = 'g_trans_misc')
 
-      integer*4 ihit
-      integer*4 nH1,nH2,nB
+      integer*4 ihit,rawtime,corrtime
+      integer*4 nH1,nH2,nB,nprt,itrig,j,ncall
       real hittime
 
       save
@@ -53,7 +57,8 @@
         gmisc_dec_data(ihit,1) = 0     ! Clear TDC's
         gmisc_dec_data(ihit,2) = -1     ! Clear ADC's
       enddo
-      
+      ncall = ncall + 1
+
       nH1 = 0
       nH2 = 0
       nB  = 0
@@ -118,8 +123,35 @@ c     $           gmisc_raw_data(ihit)
             endif
          endif
 
-         gmisc_dec_data(gmisc_raw_addr2(ihit),gmisc_raw_addr1(ihit)) =
+c trigger times in F1 TDCs. These arrays allow for multiple TDC hits,
+c whereas gmisc_dec_data will just have the last hit, if more than one.
+c Also, correct raw data for trigger time and rollovers
+         if(gmisc_raw_addr2(ihit).ge.11 .and.
+     >      gmisc_raw_addr2(ihit).le.16 .and.
+     >      gmisc_raw_addr1(ihit).eq.1) then
+c correct for trigger time and rollovers assuming this is ROC 13
+           rawtime = gmisc_raw_data(ihit)
+           call CORRECT_RAW_TIME_SANE(rawtime,corrtime)
+           if(nprt .lt.0.and.gen_event_type.ne.4) then
+             nprt = nprt + 1
+             write(6,'(''dbg trigs'',6i8)') ncall, gen_event_ID_number,
+     >         gmisc_raw_addr1(ihit),gmisc_raw_addr2(ihit),
+     >         rawtime,corrtime
+           endif
+c Add an offset to make all values positive, and convert to nsec
+           corrtime = (corrtime + 3000) * 0.0566 
+           gmisc_dec_data(gmisc_raw_addr2(ihit),gmisc_raw_addr1(ihit)) =
+     $       corrtime
+c Increment the multiple hit versions of the arrays
+           itrig = gmisc_raw_addr2(ihit) - 10
+           gep_ntrigs(itrig) = gep_ntrigs(itrig) +1
+           j = max(1, min(10,gep_ntrigs(itrig)))
+           gep_trigtimes(itrig,j) = corrtime
+         else
+
+           gmisc_dec_data(gmisc_raw_addr2(ihit),gmisc_raw_addr1(ihit)) =
      $       gmisc_raw_data(ihit)
+         endif
       enddo
 
       ntrigH1 = nH1
