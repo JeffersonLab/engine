@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19.6.2.2.2  2008/10/28 21:03:18  cdaq
+* Changed default betap to 1
+*
 * Revision 1.19.6.2.2.1  2008/10/27 16:34:54  cdaq
 * changes for F1 TDCs
 *
@@ -163,9 +166,9 @@ c     >  hntracks_fp,hscin_tot_hits,hscin_tdc_to_time
         hnum_scin_hit(trk) = 0
         hnum_pmt_hit(trk) = 0
         p = hp_tar(trk)
-c if p=0, assume cosmics
+c if p=0, assume electrons
         if(abs(p).lt.0.1) then
-          betap = -1.
+          betap = 1.0
         else
           betap = p/sqrt(p*p+hpartmass*hpartmass)
 c put in check for reasonable
@@ -565,7 +568,8 @@ c        if(hntracks_fp.eq.1.and.
 c     >    hdumptof.eq.1.and.
 c     >     timehist(max(1,jmax)).gt.6) then
         if(hdumptof.eq.1) then
-           write(37,'(1x,''0'')') 
+           write(37,'(1x,''0'',2i3,5f10.3)') trk,hntracks_fp,
+     >      p, betap
         endif
       enddo                             !end of loop over tracks
 
