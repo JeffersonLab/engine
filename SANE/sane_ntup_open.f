@@ -101,15 +101,15 @@ c
      $        'y1t_y(y1t_hit):R*4')
          call HBNAME(id,'SANEY2',y2t_hit,
      $        'y2t_hit[0,300]:I*4,y2t_row(y2t_hit):I*4,'//
-     $        'y2t_tdc(y2t_hit)[0,20000]:I*4,'//
+     $        'y2t_tdc(y2t_hit):I*4,'//
      $        'y2t_y(y2t_hit):R*4')
          call HBNAME(id,'SANEY3',y3t_hit,
      $        'y3t_hit[0,300]:I*4,y3t_row(y3t_hit):I*4,'//
-     $        'y3t_tdc(y3t_hit)[0,20000]:I*4,'//
+     $        'y3t_tdc(y3t_hit):I*4,'//
      $        'y3t_y(y3t_hit):R*4')
          call HBNAME(id,'SANEX1',x1t_hit,
      $        'x1t_hit[0,300]:I*4,x1t_row(x1t_hit):I*4,'//
-     $        'x1t_tdc(x1t_hit)[0,20000]:I*4,'//
+     $        'x1t_tdc(x1t_hit):I*4,'//
      $        'x1t_x(x1t_hit):R*4')
          call HBNAME(id,'SANECER',cer_hit,
      $        'cer_hit[0,50]:I*4,cer_num(cer_hit):I*4,'//
