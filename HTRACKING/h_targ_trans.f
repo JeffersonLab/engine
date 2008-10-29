@@ -16,6 +16,10 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
+* Revision 1.16.24.2.2.2  2008/10/29 06:20:21  cdaq
+* Set hut(5)=rast_y
+* Set loop from 4 to 5
+*
 * Revision 1.16.24.2.2.1  2008/10/21 20:33:17  cdaq
 * target recon with B field added
 *
@@ -175,9 +179,9 @@
 
          hut(4) = hyp_fp(itrk) + h_ang_offset_y           !radians
 
-*         hut(5)= -gbeam_y/100. ! spectrometer target X in meter!
+         hut(5)= -gbeam_y/100. ! spectrometer target X in meter!
                                 ! note that pos. spect. X = neg. beam Y, here should be the coordinate given by the slow raster
-         hut(5)= x_coord ! spectrometer target X in meter - given by the Slow Raster!
+c         hut(5)= x_coord ! spectrometer target X in meter - given by the Slow Raster!
                                 ! note that pos. spect. X = neg. beam Y, here should be the coordinate given by the slow raster
 
 
@@ -202,12 +206,11 @@
 
          if (SANE_TGTFIELD_B.eq.0.0) then
             
-            
 *     Compute COSY sums.
             
             do i = 1,h_num_recon_terms
                term = 1.
-               do j = 1,4
+               do j = 1,5
                   if (h_recon_expon(j,i).ne.0.)
      ,                 term = term*hut_rot(j)**h_recon_expon(j,i)
                enddo
