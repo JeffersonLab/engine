@@ -22,7 +22,7 @@ c      character*256 b_tree_filename
 *
 *     CTPTYPE=event
 *
-      integer sane_Ntuple_segmentevents
+      integer sane_Ntuple_segmentevents,isane_plots
       integer sane_Ntuple_filesegments
       integer sane_ntuple_auxsegments	
       real sane_Ntuple_contents(SANEMAX_Ntuple_size)
@@ -34,7 +34,7 @@ c      character*256 b_tree_filename
      $     sane_Ntuple_max_segmentevents,
      $     sane_Ntuple_segmentevents,sane_Ntuple_filesegments,
      $     sane_Ntuple_contents,sane_ntuple_type,
-     $	   sane_ntuple_auxsegments
+     $	   sane_ntuple_auxsegments,isane_plots
 
 
 c      integer*4 sanegid 
@@ -46,7 +46,7 @@ c     $     sanegtype,
 c     $     sanetrigtype
 
       integer TRACKER_MAX_HITS
-      parameter (TRACKER_MAX_HITS=300)
+      parameter (TRACKER_MAX_HITS=900)
       
       integer*4 y1t_hit
       integer*4 y1t_row(TRACKER_MAX_HITS)

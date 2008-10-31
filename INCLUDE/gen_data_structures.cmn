@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.35.20.7.2.5  2008/10/31 08:26:25  cdaq
+* *** empty log message ***
+*
 * Revision 1.35.20.7.2.4  2008/10/25 12:41:09  cdaq
 * *** empty log message ***
 *
@@ -363,6 +366,7 @@
       REAL*4 GSRX_ADC,GSRY_ADC
       REAL*4 GSRX_CALIB,GSRY_CALIB
       REAL*4 GSR_beamx,GSR_beamy
+
 *
 *     CTPTYPE=parm
 *
@@ -409,6 +413,13 @@
      &     GSRX_ADC,GSRY_ADC,
      &     GSRX_CALIB,GSRY_CALIB,
      &     GSR_BEAMX,GSR_BEAMY
+*
+*
+*     TRIGGER TIMING
+*
+*
+      real*4 T_trgHMS, T_trgBIG, T_trgPI0, T_trgBETA, T_trgCOIN1,T_trgCOIN2
+      COMMON /TRIGGERTIME/T_trgHMS, T_trgBIG, T_trgPI0, T_trgBETA, T_trgCOIN1,T_trgCOIN2
 *
 *
 *
