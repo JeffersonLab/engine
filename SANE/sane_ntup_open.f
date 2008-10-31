@@ -12,7 +12,7 @@
       include 'sane_ntuple.cmn'
       include 'bigcal_bypass_switches.cmn'
       include 'gen_run_info.cmn'
-
+      include 'gen_data_structures.cmn'
 
       integer default_bank,default_recl, histnum
       parameter(default_bank=8000)     !4 bytes/word
@@ -96,19 +96,15 @@ c
      $        'ngoodta:I*4,ngoodtt:I*4,irowmax:I*4,icolmax:I*4,'//
      $        'max_adc:R*4')
          call HBNAME(id,'SANEY1',y1t_hit,
-     $        'y1t_hit[0,300]:I*4,y1t_row(y1t_hit):I*4,'//
+     $        'y1t_hit[0,900]:I*4,y1t_row(y1t_hit):I*4,'//
      $        'y1t_tdc(y1t_hit):I*4,'//
      $        'y1t_y(y1t_hit):R*4')
          call HBNAME(id,'SANEY2',y2t_hit,
-     $        'y2t_hit[0,300]:I*4,y2t_row(y2t_hit):I*4,'//
+     $        'y2t_hit[0,900]:I*4,y2t_row(y2t_hit):I*4,'//
      $        'y2t_tdc(y2t_hit):I*4,'//
      $        'y2t_y(y2t_hit):R*4')
-         call HBNAME(id,'SANEY3',y3t_hit,
-     $        'y3t_hit[0,300]:I*4,y3t_row(y3t_hit):I*4,'//
-     $        'y3t_tdc(y3t_hit):I*4,'//
-     $        'y3t_y(y3t_hit):R*4')
          call HBNAME(id,'SANEX1',x1t_hit,
-     $        'x1t_hit[0,300]:I*4,x1t_row(x1t_hit):I*4,'//
+     $        'x1t_hit[0,900]:I*4,x1t_row(x1t_hit):I*4,'//
      $        'x1t_tdc(x1t_hit):I*4,'//
      $        'x1t_x(x1t_hit):R*4')
          call HBNAME(id,'SANECER',cer_hit,
@@ -184,24 +180,28 @@ c
 c     
 c     
       endif
+      if(isane_plots.ne.100)then
+         isane_plots = 100
 c     ! For physics analysis  added on Jul 3 2008
-      call HBOOK2(10100,'TRACK X1',64, 1.,  65., 200,   -20., 20.,0.)
-      call HBOOK2(10101,'TRACK Y1',128,1., 129., 200,   -20., 20.,0.)
-      call HBOOK2(10102,'TRACK Y1',128,1., 129., 200,   -20., 20.,0.)
-      call HBOOK2(10111,'CER TDC',8, 0.,  5., 200,    -20, 20., 0.)
-      call HBOOK2(10112,'CER ADC',8, 0.,  5., 200,    1., 1000., 0.)
+      call HBOOK2(10100,'TRACK X1',64, 1.,  65., 200,   -6500., -4000.,0.)
+      call HBOOK2(10101,'TRACK Y1',128,1., 129., 200,   -6500., -4000.,0.)
+      call HBOOK2(10102,'TRACK Y2',128,1., 129., 200,   -6500., -4000.,0.)
+      call HBOOK2(10111,'CER TDC',8, 1.,  9., 300,    -8000, 1000., 0.)
+      call HBOOK2(10112,'CER ADC',8, 1.,  9., 100,    10., 5000., 0.)
       do histnum=1,8
-         call HBOOK2(10500+histnum,'CER ADC vs TDC ',200, 1.,  1000., 200,    -20, 20., 0.)
+         call HBOOK2(10500+histnum,'CER ADC vs TDC ',100, 10.,  5000., 200,    -8000, 1000., 0.)
       enddo
       
-      call HBOOK2(10121,'LUC TDCPOS',59,0., 28., 200, -20., 20., 0.)
-      call HBOOK2(10122,'LUC TDCNEG',59,0., 28., 200, -20., 20., 0.)
-      call HBOOK2(10125,'LUC ADCPOS',59,0., 28., 200,    0., 4000., 0.)
-      call HBOOK2(10126,'LUC ADCNEG',59,0., 28., 200,    0., 4000., 0.)
+      call HBOOK2(10121,'LUC TDCPOS',28,1., 29., 200, -3500., 0., 0.)
+      call HBOOK2(10122,'LUC TDCNEG',28,1., 29., 200, -3500., 0., 0.)
+      call HBOOK2(10125,'LUC ADCPOS',28,1., 29., 200,    0., 4000., 0.)
+      call HBOOK2(10126,'LUC ADCNEG',28,1., 29., 200,    0., 4000., 0.)
       call HBOOK2(10200,'BIGCAL' ,33,0., 33.,  56,    0.,   56., 0.)
 
-      call HBOOK2(10210,'SLOW RASTER ADC' ,90,1000., 10000.,  90,    1000.,   10000., 0.)
-      call HBOOK2(10211,'FAST RASTER ADC' ,90,1000., 10000.,  90,    1000.,   10000., 0.)
+      call HBOOK2(10210,'SLOW RASTER ADC' ,90,5000., 8000.,  90,    5000.,   8000., 0.)
+      call HBOOK2(10211,'FAST RASTER ADC' ,90,2000., 5000.,  90,    2000.,   5000., 0.)
+      call HBOOK2(10212,'SLOW RASTER ADC Corrected' ,90,-1500., 1500.,  90,    -1500.,   1500., 0.)
+      call HBOOK2(10213,'FAST RASTER ADC Corrected' ,90,-1500., 1500.,  90,    -1500.,   1500., 0.)
 
       
 
@@ -223,7 +223,7 @@ c
 c
 c     Physics Histograms
 c
-
+      endif
 
       
       
@@ -239,9 +239,13 @@ c
      $     'i_helicity:I*4,'//
      $     'hms_cer_npe1:R*4,hms_cer_npe2:R*4,'//
      $     ' hms_cer_adc1:R*4,hms_cer_adc2:R*4')
+      call HBNAME(id,'TRIGGERTIME',T_trgHMS,
+     $     'T_trgHMS:R*4, T_trgBIG:R*4, T_trgPI0:R*4,'//
+     $     'T_trgBETA:R*4, T_trgCOIN1:R*4,T_trgCOIN2:R*4')
+
       
       if(sane_ntuple_type.eq.1) then ! col-wise ntuple
-                                ! for Physics purposses
+                                 ! for Physics purposses
 
          call HBNAME(id,'bevinfo',bgid,'bgid:I*4,bgtype:I*4,'//
      $        'btrigtype:I*4')

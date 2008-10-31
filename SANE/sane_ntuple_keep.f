@@ -24,6 +24,7 @@
       INCLUDE 'h_ntuple.cmn'
       include 'f1trigger_data_structures.cmn'
       include 'hms_calorimeter.cmn'
+      include 'gen_detectorids.par'
       logical HEXIST ! CERNLIB function
       integer t_sane,l_sane,cer_sane
       integer icycle,inum,ihit
@@ -50,84 +51,116 @@ c      logical middlebest
 
 
 
-      luc_hit         =  LUCITE_SANE_RAW_TOT_HITS
-
+      luc_hit = 0
       do i=1,LUCITE_SANE_RAW_TOT_HITS
-            luc_row(i)   =  LUCITE_SANE_RAW_COUNTER_NUM(i)
-            ladc_pos(i)  =  LUCITE_SANE_RAW_ADC_POS(i) - luc_ped_mean_pos(luc_row(i))
-            ladc_neg(i)  =  LUCITE_SANE_RAW_ADC_NEG(i) - luc_ped_mean_neg(luc_row(i))
-            call CORRECT_RAW_TIME_SANE(LUCITE_SANE_RAW_TDC_POS(i),ltdc_pos(i))
-            call CORRECT_RAW_TIME_SANE(LUCITE_SANE_RAW_TDC_NEG(i),ltdc_NEG(i))
+         if(LUCITE_SANE_RAW_TDC_POS(i).gt.0.or.LUCITE_SANE_RAW_TDC_NEG(i).gt.0)then
+            luc_hit         =  luc_hit+1
+            luc_row(luc_hit)   =  LUCITE_SANE_RAW_COUNTER_NUM(i)
+            ladc_pos(luc_hit)  =  LUCITE_SANE_RAW_ADC_POS(i) - luc_ped_mean_pos(luc_row(luc_hit))
+            ladc_neg(luc_hit)  =  LUCITE_SANE_RAW_ADC_NEG(i) - luc_ped_mean_neg(luc_row(luc_hit))
+            call CORRECT_RAW_TIME_SANE(LUCITE_SANE_RAW_TDC_POS(i),ltdc_pos(luc_hit))
+            call CORRECT_RAW_TIME_SANE(LUCITE_SANE_RAW_TDC_NEG(i),ltdc_NEG(luc_hit))
+c            write(*,*)LUCITE_SANE_RAW_TDC_POS(i),ltdc_pos(luc_hit),LUCITE_SANE_RAW_TDC_NEG(i),ltdc_neg(luc_hit),luc_row(luc_hit)
 
-            luc_y(i)     =  -82.35 + (luc_row(i)-1)*6.1
-            call HFILL(10121, float(luc_row(i)), float(ltdc_pos(i))*LUCITE_SANE_TDC_TIMING(luc_row(i)), 1.)
-            call HFILL(10122, float(luc_row(i)), float(ltdc_neg(i))*LUCITE_SANE_TDC_TIMING(luc_row(i)), 1.)
-            call HFILL(10125, float(luc_row(i)), float(ladc_pos(i)), 1.)
-            call HFILL(10126, float(luc_row(i)), float(ladc_neg(i)), 1.)
-
+            luc_y(luc_hit)     =  -82.35 + (luc_row(luc_hit)-1)*6.1
+            call NANcheck(luc_hit,LUCITE_SANE_ID)
+            call NANcheck(luc_row(luc_hit),LUCITE_SANE_ID)
+            call NANcheck(ladc_neg(luc_hit),LUCITE_SANE_ID)
+            call NANcheck(ladc_pos(luc_hit),LUCITE_SANE_ID)
+            call NANcheck(ltdc_neg(luc_hit),LUCITE_SANE_ID)
+            call NANcheck(ltdc_pos(luc_hit),LUCITE_SANE_ID)
+            
+            call HFILL(10121, float(luc_row(luc_hit)), float(ltdc_pos(luc_hit)), 1.)
+            call HFILL(10122, float(luc_row(luc_hit)), float(ltdc_neg(luc_hit)), 1.)
+            call HFILL(10125, float(luc_row(luc_hit)), float(ladc_pos(luc_hit)), 1.)
+            call HFILL(10126, float(luc_row(luc_hit)), float(ladc_neg(luc_hit)), 1.)
+         endif
       enddo
-
-      cer_hit         =  CERENKOV_SANE_RAW_TOT_HITS
+      cer_hit = 0
       do i=1,CERENKOV_SANE_RAW_TOT_HITS
-            cer_num(i)   =  CERENKOV_SANE_RAW_COUNTER_NUM(i)
-            call CORRECT_RAW_TIME_SANE(CERENKOV_SANE_RAW_TDC(i),cer_tdc(i))
-            cer_adc(i)   =  CERENKOV_SANE_RAW_ADC(i)-cer_sane_ped_mean(cer_num(i))
-            call HFILL(10111,float(cer_num(i)),float(cer_tdc(i))*CER_SANE_TDC_TIMING(cer_num(i)), 1.)
-            call HFILL(10112,float(cer_num(i)),float(cer_adc(i)), 1.)
-            call HFILL(10500+cer_num(i),float(cer_adc(i)),
-     ,           float(cer_tdc(i))*CER_SANE_TDC_TIMING(cer_num(i)),1.)
+         if(CERENKOV_SANE_RAW_TDC(i).gt.0)then
+            cer_hit         =  cer_hit+1
+            cer_num(cer_hit)   =  CERENKOV_SANE_RAW_COUNTER_NUM(i)
+            call CORRECT_RAW_TIME_SANE(CERENKOV_SANE_RAW_TDC(i),cer_tdc(cer_hit))
+            cer_adc(cer_hit)   =  CERENKOV_SANE_RAW_ADC(i)-cer_sane_ped_mean(cer_num(cer_hit))
+            call NANcheck(cer_hit,CERENKOV_SANE_ID)
+            call NANcheck(cer_num(cer_hit),CERENKOV_SANE_ID)
+            call NANcheck(cer_tdc(cer_hit),CERENKOV_SANE_ID)
+            call NANcheck(cer_adc(cer_hit),CERENKOV_SANE_ID)
+
+            call HFILL(10111,float(cer_num(cer_hit)),float(cer_tdc(cer_hit)), 1.)
+            call HFILL(10112,float(cer_num(cer_hit)),float(cer_adc(cer_hit)), 1.)
+            call HFILL(10500+cer_num(cer_hit),float(cer_adc(cer_hit)),
+     ,           float(cer_tdc(cer_hit)),1.)
+         endif
 
       enddo
  
-      x1t_hit         =  TRACKER_SANE_RAW_TOT_HITS_X
+      x1t_hit         =  0
       if(x1t_hit.gt.300) go to 10
-      do i=1,x1t_hit
-         x1t_row(i)   =  TRACKER_SANE_RAW_COUNTER_X(i)
-         call CORRECT_RAW_TIME_SANE(TRACKER_SANE_RAW_TDC_X(i),x1t_tdc(i))
-         x1t_x(i)     =  -12.32+0.37422*(x1t_row(i)-1)
+      do i=1,TRACKER_SANE_RAW_TOT_HITS_X
+         if(TRACKER_SANE_RAW_TDC_X(i).gt.0)then
+            x1t_hit         =  x1t_hit+1
+            x1t_row(x1t_hit)   =  TRACKER_SANE_RAW_COUNTER_X(i)
+            call CORRECT_RAW_TIME_SANE(TRACKER_SANE_RAW_TDC_X(i),x1t_tdc(x1t_hit))
+            x1t_x(x1t_hit)     =  -12.32+0.37422*(x1t_row(x1t_hit)-1)
+            call NANcheck(x1t_hit,TRACKER_SANE_X_ID)
+            call NANcheck(x1t_row(x1t_hit),TRACKER_SANE_X_ID)
+            call NANcheck(x1t_tdc(x1t_hit),TRACKER_SANE_X_ID)
+         endif
       enddo
-
+      y1t_hit=0
+      y2t_hit=0
       do i=1,TRACKER_SANE_RAW_TOT_HITS_Y
-         if(TRACKER_SANE_RAW_TDC_Y(i).lt.10000.and.
+         if(TRACKER_SANE_RAW_TDC_Y(i).lt.67000.and.
      ,        TRACKER_SANE_RAW_TDC_Y(i).gt.0)then
             if(TRACKER_SANE_RAW_COUNTER_Y(i).lt.129)then
                y1t_hit            =  y1t_hit + 1 
-               if(y1t_hit.gt.300) go to 10
+c               write(*,*)'Tracker TDC', y1t_hit,TRACKER_SANE_RAW_TDC_Y(i)
+               if(y1t_hit.gt.300) go to 20
                y1t_row(y1t_hit)   =  TRACKER_SANE_RAW_COUNTER_Y(i)
-               call CORRECT_RAW_TIME_SANE(TRACKER_SANE_RAW_TDC_Y(i),y1t_tdc(y1t_tdc(y1t_hit)))
+               call CORRECT_RAW_TIME_SANE(TRACKER_SANE_RAW_TDC_Y(i),y1t_tdc(y1t_hit))
                y1t_y(y1t_hit)     =  -22.225+(y1t_row(y1t_hit)-1)*0.35
+               call NANcheck(y1t_hit,TRACKER_SANE_Y_ID)
+               call NANcheck(y1t_row(y1t_hit),TRACKER_SANE_Y_ID)
+               call NANcheck(y1t_tdc(y1t_hit),TRACKER_SANE_Y_ID)
+
              else if(TRACKER_SANE_RAW_COUNTER_Y(i).lt.257)then
                y2t_hit            =  y2t_hit + 1 
-               if(y2t_hit.gt.300) go to 10
+               if(y2t_hit.gt.300) go to 20
                y2t_row(y2t_hit)   =  TRACKER_SANE_RAW_COUNTER_Y(i)-128
-               call CORRECT_RAW_TIME_SANE(TRACKER_SANE_RAW_TDC_Y(i),y2t_tdc(y2t_tdc(y2t_hit)))
+               call CORRECT_RAW_TIME_SANE(TRACKER_SANE_RAW_TDC_Y(i),y2t_tdc(y2t_hit))
                y2t_y(y2t_hit)     =  -22.4+(y2t_row(y2t_hit)-1)*0.35
+               call NANcheck(y2t_hit,TRACKER_SANE_Y_ID)
+               call NANcheck(y2t_row(y1t_hit),TRACKER_SANE_Y_ID)
+               call NANcheck(y2t_tdc(y1t_hit),TRACKER_SANE_Y_ID)
             endif
          endif
+ 20      CONTINUE
       enddo
-          do inum=1,nclust
+c          do inum=1,nclust
              do ihit=1,x1t_hit
-                IF(abs(x1t_x(ihit)-TrackerX_SHIFT(1)-
-     ,               TrackerX_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,               (xclust(inum))-Bigcal_SHIFT(1)).lt.0.6)then
-                   call HFILL(10100,float(x1t_row(ihit)),float(x1t_tdc(ihit))*0.06,1.)
-                ENDIF
+c                IF(abs(x1t_x(ihit)-TrackerX_SHIFT(1)-
+c     ,               TrackerX_SHIFT(3)/Bigcal_SHIFT(3)*
+c     ,               (xclust(inum))-Bigcal_SHIFT(1)).lt.2.6)then
+                   call HFILL(10100,float(x1t_row(ihit)),float(x1t_tdc(ihit)),1.)
+c                ENDIF
              enddo
              do ihit=1,y1t_hit
-                IF(abs(y1t_y(ihit)-TrackerY1_SHIFT(2)-
-     ,               TrackerY1_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,               (yclust(inum))-Bigcal_SHIFT(2)).lt.0.6)then
-                   call HFILL(10101,float(y1t_row(ihit)),float(y1t_tdc(i))*0.06,1.)
-                ENDIF
+c                IF(abs(y1t_y(ihit)-TrackerY1_SHIFT(2)-
+c     ,               TrackerY1_SHIFT(3)/Bigcal_SHIFT(3)*
+c     ,               (yclust(inum))-Bigcal_SHIFT(2)).lt.2.6)then
+                   call HFILL(10101,float(y1t_row(ihit)),float(y1t_tdc(ihit)),1.)
+c                ENDIF
              enddo
              do ihit=1,y2t_hit
-                IF(abs(y2t_y(ihit)-TrackerY2_SHIFT(2)-
-     ,               TrackerY2_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,               (yclust(inum))-Bigcal_SHIFT(2)).lt.0.6)then
-                   call HFILL(10102,float(y2t_row(ihit)),float(y2t_tdc(i))*0.06,1.) ! 0.06 is ns convertion
-                ENDIF
+c                IF(abs(y2t_y(ihit)-TrackerY2_SHIFT(2)-
+c     ,               TrackerY2_SHIFT(3)/Bigcal_SHIFT(3)*
+c     ,               (yclust(inum))-Bigcal_SHIFT(2)).lt.2.6)then
+                   call HFILL(10102,float(y2t_row(ihit)),float(y2t_tdc(ihit)),1.) ! 0.06 is ns convertion
+c                ENDIF
              enddo
-         enddo
+c         enddo
 
       if(HSNUM_FPTRACK.gt.0)then
          hms_p        = h_Ntuple_contents(2)	
@@ -159,11 +192,20 @@ c      logical middlebest
       slow_rast_y  = gsr_beamy
       sem_x        = ntbpmx
       sem_y        = ntbpmy
+      T_trgHMS     = gmisc_dec_data(11,1)
+      T_trgBIG     = gmisc_dec_data(12,1) 
+      T_trgPI0     = gmisc_dec_data(13,1)
+      T_trgBETA    = gmisc_dec_data(14,1)
+      T_trgCOIN1   = gmisc_dec_data(15,1)
+      T_trgCOIN2   = gmisc_dec_data(16,1)
+
       call HFILL(10210,gsry_raw_adc,gsrx_raw_adc, 1.)
       call HFILL(10211,gfry_raw_adc,gfrx_raw_adc, 1.)
 
+      call HFILL(10212,-(gsry_raw_adc-n_sr_adcy_zero),-(gsrx_raw_adc-n_sr_adcx_zero), 1.)
+      call HFILL(10213,gfry_raw_adc,gfrx_raw_adc, 1.)
       do i =1,  nclust
-         call Bigcal_Betta(i)
+         call Bigcal_Betta(i) 
          do j=1, ncellclust(i)
             call HFILL(10200,float(ixcell(j,i)),float(iycell(j,i)), 1.)
          enddo
@@ -213,15 +255,28 @@ c find largest value of trigger time, to check rollover
      >  TRIGGER_F1_START_TDC_COUNTER(
      >        SANE_TRIGGER_COUNTER)
       endif
-
-             CORRECTED_TDC =  RAW_TDC - 
-     ,           TRIGGER_F1_START_TDC_COUNTER(SANE_TRIGGER_COUNTER)
+      if(RAW_TDC.gt.0)then
+         CORRECTED_TDC =  RAW_TDC - 
+     ,        TRIGGER_F1_START_TDC_COUNTER(SANE_TRIGGER_COUNTER)
 c
 c     Taking care of ROLOVER For positive TDC
 c     
-            if(CORRECTED_TDC.lt.-30000)
-     ,           CORRECTED_TDC = CORRECTED_TDC+TRIGGER_F1_ROLOVER(SANE_TRIGGER_COUNTER)
-            if(CORRECTED_TDC.gt.30000)
-     ,           CORRECTED_TDC = CORRECTED_TDC-TRIGGER_F1_ROLOVER(SANE_TRIGGER_COUNTER)
+         if(CORRECTED_TDC.lt.-30000)
+     ,        CORRECTED_TDC = CORRECTED_TDC+TRIGGER_F1_ROLOVER(SANE_TRIGGER_COUNTER)
+         if(CORRECTED_TDC.gt.30000)
+     ,        CORRECTED_TDC = CORRECTED_TDC-TRIGGER_F1_ROLOVER(SANE_TRIGGER_COUNTER)
+      else
+         CORRECTED_TDC =0
+      endif 
 
+      end
+
+      subroutine NANcheck(l,did)
+      IMPLICIT NONE
+      integer*4 l
+      integer did
+      if(l.ne.l)then
+         l=0
+         write(*,*)did
+      endif
       end
