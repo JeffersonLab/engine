@@ -16,6 +16,9 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
+* Revision 1.16.24.2.2.3  2008/10/31 07:59:10  cdaq
+* fix bug with enddo in wrong place
+*
 * Revision 1.16.24.2.2.2  2008/10/29 06:20:21  cdaq
 * Set hut(5)=rast_y
 * Set loop from 4 to 5
@@ -272,15 +275,17 @@ c         hut(5)= x_coord ! spectrometer target X in meter - given by the Slow R
             h_bdl(itrk)  = bdl
             
          endif                  ! loop over the magnetic field (on or off)
-      enddo                     !End of loop over tracks.
+
       
 *     Apply offesets to the reconstructed variables
       
-      hdelta_tar(itrk) = hdelta_tar(itrk) + hdelta_offset
-      hyp_tar(itrk) = hyp_tar(itrk) + htheta_offset
-      hxp_tar(itrk) = hxp_tar(itrk) + hphi_offset
+         hdelta_tar(itrk) = hdelta_tar(itrk) + hdelta_offset
+         hyp_tar(itrk) = hyp_tar(itrk) + htheta_offset
+         hxp_tar(itrk) = hxp_tar(itrk) + hphi_offset
       
-      hp_tar(itrk)  = hpcentral*(1.0 + hdelta_tar(itrk)/100.) !Momentum in GeV
+         hp_tar(itrk)  = hpcentral*(1.0 + hdelta_tar(itrk)/100.) !Momentum in GeV
+
+      enddo                     !End of loop over tracks.
       
 *     All done...
 *     print target bank if debug flag set
