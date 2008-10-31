@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.13.2.4  2008/10/31 07:54:39  cdaq
+* comment out some warnings on detector limits
+*
 * Revision 1.23.20.13.2.3  2008/10/02 17:58:28  cdaq
 * *** empty log message ***
 *
@@ -159,7 +162,7 @@
       logical printerr  !flag to turn off printing of error after 1 time.
       logical firsttime
 *
-      integer*4 jishft, jiand, jieor
+      integer*4 jishft, jiand, jieor, nprt
 *     
       printerr = .true.
       pointer = 1
@@ -388,6 +391,11 @@ c              write(6,'(''p,c,s'',3i8)') plane,counter,signal
                   h = h - 1
                 enddo
                 h = h + 1               ! Put hit pointer to blank
+                if(did.eq.6 .and. nprt .lt.10) then
+c                  write(6,'(''dbg gmisc'',6i8)') roc,slot,
+c     >              plane,counter,signal
+                  nprt = nprt + 1
+                endif
                 planelist(h) = plane
                 counterlist(h) = counter
                 signal0(h) = signal
@@ -435,9 +443,9 @@ c     >            roc,slot
                     hitcount = hitcount + 1
                   else                  ! Too many hits
                     if(printerr) then
-                      print *,'g_decode_fb_detector: Max exceeded, did=',
-     $                     did,', max=',maxhits,': event',gen_event_id_number
-                      print *,'   roc,slot,cntr,sig,subadd=',roc,slot,counter,sigtyp,subadd
+c                      print *,'g_decode_fb_detector: Max exceeded, did=',
+c     $                     did,', max=',maxhits,': event',gen_event_id_number
+c                      print *,'   roc,slot,cntr,sig,subadd=',roc,slot,counter,sigtyp,subadd
                       printerr = .false.
                     endif
                   endif
@@ -457,9 +465,9 @@ c     >            roc,slot
               endif !multi-signal
 
             else if(hitcount.eq.maxhits .and. printerr) then ! Only print this message once
-              print *,'g_decode_fb_detector: Max exceeded, did=',
-     $             did,', max=',maxhits,': event',gen_event_id_number
-              print *,'   roc,slot,cntr=',roc,slot,counter
+c              print *,'g_decode_fb_detector: Max exceeded, did=',
+c     $             did,', max=',maxhits,': event',gen_event_id_number
+c              print *,'   roc,slot,cntr=',roc,slot,counter
               printerr = .false.
 *     
 *     Print/generate some kind of error that the hit array has been
