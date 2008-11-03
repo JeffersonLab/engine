@@ -63,7 +63,7 @@
 
       integer*4 npoints,nclusters,npointsthislayer(h_fpp_n_dcinset,h_fpp_n_dclayers)
 
-      integer*4 ntrackpoints,bestcombo,worstpoint
+      integer*4 ntrackpoints,bestcombo,worstpoint,ntrackplanes
 
       logical plusminusfixed(h_fpp_max_fitpoints),notunique
 
@@ -169,6 +169,7 @@ c      write(*,*) 'npoints on potential track = ',npoints
       nfixed = 0
 
       ntrackpoints = 0
+      ntrackplanes = 0
 
       ipoint = 0
 
@@ -180,6 +181,9 @@ c      write(*,*) 'npoints on potential track = ',npoints
          do ilayer=1,h_fpp_n_dclayers
 c            write(*,*) 'number of points chamber ',ichamber,'layer ',ilayer,
 c     $           '=',npointsthislayer(ichamber,ilayer)
+            if(npointsthislayer(ichamber,ilayer).gt.0) then
+               ntrackplanes = ntrackplanes + 1
+            endif
 
             if(npointsthislayer(ichamber,ilayer).eq.1) then 
 *     only one hit in this chamber/layer. Don't fix left-right choice 
@@ -466,6 +470,9 @@ c            write(*,*) 'current best track=',besttrack
       do ipoint=1,ntrackpoints
          if(npointsthislayer(trackchambers(ipoint),tracklayers(ipoint))
      $        .eq.3.and..not.plusminusfixed(ipoint)) then ! Do "final" initialization of the next point, which is fixed:
+*     reduce number of points in this layer to two (we never actually use 3 hits in the same layer on a track:
+            npointsthislayer(trackchambers(ipoint),tracklayers(ipoint))
+     $           = 2
             
             if(plusminusbest(ipoint).eq.1.0) then
                copypoint = pointright(trackchambers(ipoint),tracklayers(ipoint))
@@ -501,19 +508,76 @@ c      write(*,*) 'best LR combo=',plusminusbest
       if( besttrack(5).le.hfpp_min_chi2 .and.
      $     besttrack(5).ge.0.0          .and.
      $     besttrack(5).ne.h_fpp_bad_chi2 ) then
-         track_good = .true.
-         do ihit=1,ntrackpoints
-            ichamber = trackchambers(ihit)
-            ilayer = tracklayers(ihit)
-            wire = trackwires(ihit)
-            hfpp_drift_dist(dcset,ichamber,ilayer,wire) = 
-     $           trackdrifts(ihit) * plusminusbest(ihit)
-         enddo
+*     if we have "more hits than we need" (all planes hit, at least one plane with >1 hit) AND
+*     the chi2 of those hits is worse than the "superclean" chi2 test, 
+*     strike out the worst of the hits from a plane with two adjacent hits:
+         if(ntrackplanes.eq.h_fpp_n_dcinset*h_fpp_n_dclayers.and.
+     $        ntrackpoints.gt.h_fpp_n_dcinset*h_fpp_n_dclayers.and.
+     $        besttrack(5).gt.hfpp_superclean_chi2) then
+            firsttry = .true.
+
+            do ihit=1,ntrackpoints
+               ichamber = trackchambers(ihit)
+               ilayer = tracklayers(ihit)
+               if(npointsthislayer(ichamber,ilayer).gt.1) then
+                  x = besttrack(1) * trackpoints(ihit,2) + besttrack(2)
+                  y = besttrack(3) * trackpoints(ihit,2) + besttrack(4)
+                  u = x * trackprojects(ihit,1) + y * trackprojects(ihit,2)
+
+                  residual = (u - hitpos(ihit,1))**2/tracksigma2s(ihit)
+
+                  if(firsttry.or.residual.gt.maxresidual) then
+                     firsttry = .false.
+                     maxresidual = residual
+                     worstpoint = ihit
+                  endif
+               endif
+            enddo
+
+            npoints = 0
+
+            do ichamber=1,h_fpp_n_dcinset
+               do ilayer=1,h_fpp_n_dclayers
+                  npointsthislayer(ichamber,ilayer) = 0
+               enddo
+            enddo
+*     now initialize the "points" array from "trackpoints", in order to prepare for re-fitting:
+            do ipoint=1,ntrackpoints
+               if(ipoint.ne.worstpoint) then
+                  npoints = npoints + 1
+                  ichamber = trackchambers(ipoint)
+                  ilayer = tracklayers(ipoint)
+                  npointsthislayer(ichamber,ilayer) = npointsthislayer(ichamber,ilayer) + 1
+                  chambers(npoints) = ichamber
+                  layers(npoints) = ilayer
+                  wires(npoints) = trackwires(ipoint)
+                  points(npoints,1) = trackpoints(ipoint,1)
+                  points(npoints,2) = trackpoints(ipoint,2)
+                  sigma2s(npoints) = tracksigma2s(ipoint)
+                  projects(npoints,1) = trackprojects(ipoint,1)
+                  projects(npoints,2) = trackprojects(ipoint,2)
+                  drifts(npoints) = trackdrifts(ipoint)
+               endif
+            enddo
+            
+            if(npoints.ge.hfpp_minsethits) goto 101 ! repeat track fitting with the worst hit thrown out
+
+         else 
+            track_good = .true.
+
+            do ihit=1,ntrackpoints
+               ichamber = trackchambers(ihit)
+               ilayer = tracklayers(ihit)
+               wire = trackwires(ihit)
+               hfpp_drift_dist(dcset,ichamber,ilayer,wire) = 
+     $              trackdrifts(ihit) * plusminusbest(ihit)
+            enddo
 *     Fill output track variables: 
-         do j=1,5
-            drifttrack(j) = besttrack(j)
-         enddo
-         drifttrack(6) = float(ntrackpoints)
+            do j=1,5
+               drifttrack(j) = besttrack(j)
+            enddo
+            drifttrack(6) = float(ntrackpoints)
+         endif
 *     Otherwise, go back and drop the hit with the worst contribution to the chi2:
       else if(ntrackpoints.gt.hfpp_minsethits) then
 *     here we will drop the hit with the worst contribution to the 
