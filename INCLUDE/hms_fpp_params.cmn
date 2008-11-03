@@ -43,6 +43,8 @@
 
       real*4 HFPP_min_chi2           ! minimum chi**2 for kept track
       real*4 HFPP_aOK_chi2           ! sufficient chi**2 for extra hit
+      real*4 hfpp_superclean_chi2    ! criterion for "Great" tracks to throw out hits down to 
+                                     ! nlayers = 6 and nhits = 6.
 
       integer*4 HFPP_effic_dist      ! how far hit wire can be from track and
                                      ! still be considered hit for "efficient"
@@ -63,6 +65,7 @@
      &  , HFPP_maxcombos
      &  , HFPP_min_chi2
      &  , HFPP_aOK_chi2
+     $  , hfpp_superclean_chi2
      &  , HFPP_effic_dist
 
 *
