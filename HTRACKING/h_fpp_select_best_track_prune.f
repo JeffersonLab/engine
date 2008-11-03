@@ -21,7 +21,7 @@
       integer besttrack(2)
       integer icone
 
-      integer nhitsprune
+      integer nplanesprune
 
       real zslop ! theta-dependent tolerance parameter for zclose
 
@@ -86,6 +86,30 @@ c     zeroth prune test = conetest:
             enddo
          endif
       enddo
+c$$$  c     fifth prune test: number of layers on a track: if we have six, throw out all other five-hit
+c$$$  c     tracks
+c$$$  
+      nplanesprune = h_fpp_n_dcinset * hfpp_optchamberhits
+c$$$  
+      do ifpp=1,2
+         ngood(ifpp) = 0
+         do itrack=1,hfpp_n_tracks(ifpp)
+            if(keep(ifpp,itrack).and.hfpp_track_nlayers(ifpp,itrack).ge.
+     $           nplanesprune) then
+               ngood(ifpp) = ngood(ifpp) + 1
+            endif
+         enddo
+         
+         if(ngood(ifpp).gt.0) then
+            do itrack=1,hfpp_n_tracks(ifpp)
+               if(hfpp_track_nlayers(ifpp,itrack).lt.nplanesprune) then
+                  keep(ifpp,itrack) = .false.
+               endif
+            enddo
+         endif
+      enddo
+      
+
 c     first prune tests: prune separately on minimum and maximum 
 c     polar scattering angle theta>thetamin:
 
@@ -186,41 +210,19 @@ c     allows for zclose values well outside the analyzer in the situation that t
             enddo
          endif
       enddo
-c$$$c     fifth prune test: number of layers on a track: if we have six, throw out all other five-hit
-c$$$c     tracks
-c$$$
-c$$$      nhitsprune = h_fpp_n_dcinset * hfpp_optchamberhits
-c$$$
-c$$$      do ifpp=1,2
-c$$$         ngood(ifpp) = 0
-c$$$         do itrack=1,hfpp_n_tracks(ifpp)
-c$$$            if(keep(ifpp,itrack).and.hfpp_track_nlayers(ifpp,itrack).ge.
-c$$$     $           nhitsprune) then
-c$$$               ngood(ifpp) = ngood(ifpp) + 1
-c$$$            endif
-c$$$         enddo
-c$$$         
-c$$$         if(ngood(ifpp).gt.0) then
-c$$$            do itrack=1,hfpp_n_tracks(ifpp)
-c$$$               if(hfpp_track_nlayers(ifpp,itrack).lt.nhitsprune) then
-c$$$                  keep(ifpp,itrack) = .false.
-c$$$               endif
-c$$$            enddo
-c$$$         endif
-c$$$      enddo
 
 c     NOW find the minimum chi2 of tracks with keep==true
 
-      do ifpp=1,2
-         firsttry=.true.
-         do itrack=1,hfpp_n_tracks(ifpp)
-            if(keep(ifpp,itrack).and.(hfpp_track_chi2(ifpp,itrack)
-     $           .lt.minchi2(ifpp).or.firsttry)) then
-               firsttry = .false.
-               minchi2(ifpp) = hfpp_track_chi2(ifpp,itrack)
-            endif
-         enddo
-      enddo
+c$$$      do ifpp=1,2
+c$$$         firsttry=.true.
+c$$$         do itrack=1,hfpp_n_tracks(ifpp)
+c$$$            if(keep(ifpp,itrack).and.(hfpp_track_chi2(ifpp,itrack)
+c$$$     $           .lt.minchi2(ifpp).or.firsttry)) then
+c$$$               firsttry = .false.
+c$$$               minchi2(ifpp) = hfpp_track_chi2(ifpp,itrack)
+c$$$            endif
+c$$$         enddo
+c$$$      enddo
 
 c     now we choose the best track based on Sitnik's criterion:
 
