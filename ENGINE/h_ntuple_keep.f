@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.18.5.2.2  2008/11/04 18:59:35  cdaq
+* Added Slow Raster
+*
 * Revision 1.10.18.5.2.1  2008/10/11 15:03:54  cdaq
 * slow raster
 *
@@ -206,6 +209,10 @@ c
       h_Ntuple_contents(m)= hncham_hits(1)
       m= m+1
       h_Ntuple_contents(m)= hncham_hits(2)
+      m= m+1
+      h_Ntuple_contents(m)= gsry_raw_adc
+      m= m+1
+      h_Ntuple_contents(m)= gsrx_raw_adc
 
 * Experiment dependent entries start here.
 
