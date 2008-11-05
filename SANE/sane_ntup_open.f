@@ -256,26 +256,26 @@ c
          
          
          call HBNAME(id,'SANEPHYS',n_clust,
-     $        'n_clust[1,4]:I*4,'//
+     $        'n_clust[1,10]:I*4,'//
      $        'E_clust(n_clust):R*4,'//
      $        'X_clust(n_clust):R*4, Y_clust(n_clust):R*4,'//
      $        'Z_clust(n_clust):R*4,'//
      $        'X_clust_r(n_clust):R*4, Y_clust_r(n_clust):R*4,'//
      $        'Z_clust_r(n_clust):R*4,'//
-     $        'luc_h(n_clust)[0,10]:I*4,'//
-     $        'X_luc(10,n_clust), Y_luc(10,n_clust), Z_luc(10,n_clust),'//
-     $        'X_luc_r(10,n_clust),Y_luc_r(10,n_clust), Z_luc_r(10,n_clust),'//
-     $        'trc_hx(n_clust)[0,10]:I*4,'//
-     $        'X_trc(10,n_clust),Z_trc(10,n_clust),'//
-     $        'X_trc_r(10,n_clust), Z_trc_r(10,n_clust),'//
-     $        'trc_hy1(n_clust)[0,10]:I*4,'//
-     $        'Y1_trc(10,n_clust),Z1_trc(10,n_clust),'//
-     $        'Y1_trc_r(10,n_clust), Z1_trc_r(10,n_clust),'//
-     $        'trc_hy2(n_clust)[0,10]:I*4,'//
-     $        ' Y2_trc(10,n_clust), Z2_trc(10,n_clust),'//
-     $        'Y2_trc_r(10,n_clust), Z2_trc_r(10,n_clust),'//
+     $        'luc_h(n_clust)[0,20]:I*4,'//
+     $        'X_luc(20,n_clust), Y_luc(20,n_clust), Z_luc(20,n_clust),'//
+     $        'X_luc_r(20,n_clust),Y_luc_r(20,n_clust), Z_luc_r(20,n_clust),'//
+     $        'trc_hx(n_clust)[0,20]:I*4,'//
+     $        'X_trc(20,n_clust),Z_trc(20,n_clust),'//
+     $        'X_trc_r(20,n_clust), Z_trc_r(20,n_clust),'//
+     $        'trc_hy1(n_clust)[0,20]:I*4,'//
+     $        'Y1_trc(20,n_clust),Z1_trc(20,n_clust),'//
+     $        'Y1_trc_r(20,n_clust), Z1_trc_r(20,n_clust),'//
+     $        'trc_hy2(n_clust)[0,20]:I*4,'//
+     $        ' Y2_trc(20,n_clust), Z2_trc(20,n_clust),'//
+     $        'Y2_trc_r(20,n_clust), Z2_trc_r(20,n_clust),'//
      $        'Tr_Vertex(3,n_clust), Tr_Vertex_r(3,n_clust),'//
-     $        'cer_h(n_clust)[0,10]:I*4,'//
+     $        'cer_h(n_clust)[0,20]:I*4,'//
      $        'Theta_e(n_clust):R*4,Phi_e(n_clust):R*4,'//
      $        'Delta_Y(n_clust):R*4,Delta_X(n_clust):R*4,'//
      $        'X_Bjorken(n_clust):R*4, Q2(n_clust):R*4, W2(n_clust):R*4, ENue(n_clust):R*4')
