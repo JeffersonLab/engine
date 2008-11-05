@@ -7,6 +7,9 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.9.20.4.2.5  2008/11/05 15:41:54  cdaq
+* Set variables gsrx_adc and gsry_adc
+*
 * Revision 1.9.20.4.2.4  2008/10/28 20:55:21  cdaq
 * Changed raster channels
 *
@@ -380,8 +383,8 @@ c for debuging
      >   gsrx_raw_adc2, gsry_raw_adc2
       endif
 
-c      gsrx_adc = gsrx_raw_adc    ! we do not want peds subtracted
-c      gsry_adc = gsry_raw_adc   
+      gsrx_adc = gsrx_raw_adc    ! we do not want peds subtracted
+      gsry_adc = gsry_raw_adc   
       
 c      gsrx_adc = gsrx_raw_adc - gsrx_adc_ped
 c      gsry_adc = gsry_raw_adc - gsry_adc_ped
