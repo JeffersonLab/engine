@@ -187,7 +187,12 @@ ccccccccccccccccccccccccccccccccccccc
       
       if(luc_hit.gt.0)then
          do i=1,luc_hit
-            if(ltdc_pos(i).gt.0.AND.ltdc_neg(i).gt.0)then
+c      write(*,*)ltdc_pos(i),LUCITE_SANE_MEAN_POS(luc_row(i)),
+c     ,           LUCITE_SANE_SIGMA_POS(luc_row(i))
+c      write(*,*)'POS ',ltdc_pos(i),LUCITE_SANE_MEAN_POS(luc_row(i)),
+c     ,           LUCITE_SANE_SIGMA_POS(luc_row(i))
+c      write(*,*)'NEG ', ltdc_neg(i),LUCITE_SANE_MEAN_NEG(luc_row(i)),
+c     ,           LUCITE_SANE_SIGMA_NEG(luc_row(i))
                If(abs(ltdc_pos(i)-LUCITE_SANE_MEAN_POS(luc_row(i))).lt.
      ,              4*LUCITE_SANE_SIGMA_POS(luc_row(i)).and.
      ,              abs(ltdc_neg(i)-LUCITE_SANE_MEAN_NEG(luc_row(i))).lt.
@@ -208,16 +213,19 @@ c
                   
 C     
 C     Y Geometrical CUT
-C     
-                  IF(abs(luc_y(i)-Lucite_SHIFT(2)-
-     ,                 Lucite_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,                 (yclust(inum))-Bigcal_SHIFT(2)).lt.6)then
+C
+**********     
+c                  IF(abs(luc_y(i)-Lucite_SHIFT(2)-
+c     ,                 Lucite_SHIFT(3)/Bigcal_SHIFT(3)*
+c     ,                 (yclust(inum))-Bigcal_SHIFT(2)).lt.6)then
+
 C     
 C     X Geometrical CUT
 C     
-                     If(abs(xDelta1-Lucite_SHIFT(1)-
-     ,                    Lucite_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,                    (xclust(inum))-Bigcal_SHIFT(1)).lt.10)then
+***********
+c                     If(abs(xDelta1-Lucite_SHIFT(1)-
+c     ,                    Lucite_SHIFT(3)/Bigcal_SHIFT(3)*
+c     ,                    (xclust(inum))-Bigcal_SHIFT(1)).lt.10)then
                         
                         luc = luc+1
                         X_luc(luc,inum)   = xDelta1
@@ -232,12 +240,11 @@ C
                         Y_luc_r(luc,inum)   = Vector_r(2)
                         Z_luc_r(luc,inum)   = Vector_r(3)
                         
-                     Endif
+c                     Endif
                      
-                  ENDIF
+c                  ENDIF
                endif
                
-            endif
          enddo
          luc_h(inum) = luc
          X_luc_av(inum) = 0
