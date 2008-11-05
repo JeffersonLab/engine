@@ -27,7 +27,7 @@ c$$$     $     BIGCAL_MID_NCLSTR.gt.0) then
 c$$$         call b_ntuple_keep(ABORT,err)
 c$$$      endif
 
-c      if (gen_event_type .le. 2) return
+      if (gen_event_type .le. 4) return
       if(sane_ntuple_type.gt.0)then
         if(bigcal_all_nclstr.gt.0.or.
      ,        LUCITE_SANE_RAW_TOT_HITS.GT.0.OR.
