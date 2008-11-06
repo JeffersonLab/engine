@@ -8,8 +8,8 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
-* Revision 1.10.18.5.2.2  2008/11/04 18:59:35  cdaq
-* Added Slow Raster
+* Revision 1.10.18.5.2.3  2008/11/06 14:35:38  cdaq
+* Removed S0, added helicte
 *
 * Revision 1.10.18.5.2.1  2008/10/11 15:03:54  cdaq
 * slow raster
@@ -161,46 +161,6 @@ c                                ! track with spectrometer ray
       h_Ntuple_contents(m)= float(gen_event_ID_number)
       m= m+1
       h_Ntuple_contents(m)= float(gen_event_type)
-c
-      do ihit=1,hscin_all_tot_hits
-          pln=hscin_all_plane_num(ihit)
-          cnt=hscin_all_counter_num(ihit)
-          if ( pln .eq. 3) then
-                if (cnt .eq. 1) then
-                   s0x1nadc = hscin_all_adc_neg(ihit)
-     > -hscin_all_ped_neg(pln,cnt)
-                   s0x1padc = hscin_all_adc_pos(ihit)
-     > -hscin_all_ped_neg(pln,cnt)
-                   s0x1ntdc = FLOAT(hscin_all_tdc_neg(ihit)) 
-                   s0x1ptdc = FLOAT(hscin_all_tdc_pos(ihit)) 
-                endif
-                if (cnt .eq. 2) then
-                   s0x2nadc = hscin_all_adc_neg(ihit)
-     > -hscin_all_ped_neg(pln,cnt)
-                   s0x2padc = hscin_all_adc_pos(ihit)
-     > -hscin_all_ped_neg(pln,cnt)
-                   s0x2ntdc = FLOAT(hscin_all_tdc_neg(ihit)) 
-                   s0x2ptdc = FLOAT(hscin_all_tdc_pos(ihit)) 
-                endif
-             endif
-         enddo
-c
-      m= m+1
-      h_Ntuple_contents(m)= s0x1padc
-      m= m+1
-      h_Ntuple_contents(m)= s0x1nadc
-      m= m+1
-      h_Ntuple_contents(m)= s0x2padc
-      m= m+1
-      h_Ntuple_contents(m)= s0x2nadc
-      m= m+1
-      h_Ntuple_contents(m)= s0x1ptdc
-      m= m+1
-      h_Ntuple_contents(m)= s0x1ntdc
-      m= m+1
-      h_Ntuple_contents(m)= s0x2ptdc
-      m= m+1
-      h_Ntuple_contents(m)= s0x2ntdc
       m= m+1
       h_Ntuple_contents(m)= gfry_raw_adc
       m= m+1
@@ -213,7 +173,12 @@ c
       h_Ntuple_contents(m)= gsry_raw_adc
       m= m+1
       h_Ntuple_contents(m)= gsrx_raw_adc
-
+      m=m+1
+      h_ntuple_contents(m) = float(gbeam_helicity)
+c      write(6,'(i8,3f8.1)')gbeam_helicity,
+c     >  h_ntuple_contents(m),float(gbeam_helicity),
+c     >  h_ntuple_contents(m-1)
+ 
 * Experiment dependent entries start here.
 
 

@@ -10,8 +10,8 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
-* Revision 1.11.18.5.2.1  2008/11/04 18:59:21  cdaq
-* Added Slow Raster
+* Revision 1.11.18.5.2.2  2008/11/06 14:35:46  cdaq
+* Removed S0, added helicte
 *
 * Revision 1.11.18.5  2007/12/12 15:54:17  cdaq
 * added focal plane time to HMS ntuple
@@ -141,85 +141,71 @@ c
 *
       m= 0
       m= m+1
-      h_Ntuple_tag(m)= 'hcer_npe' ! 1 cerenkov photoelectron spectrum
+      h_Ntuple_tag(m)= 'hcer_npe' ! cerenkov photoelectron spectrum
       m= m+1
-      h_Ntuple_tag(m)= 'hsp'     ! 2 Lab momentum of chosen track in GeV/c
+      h_Ntuple_tag(m)= 'hsp'     ! Lab momentum of chosen track in GeV/c
       m= m+1
-      h_Ntuple_tag(m)= 'hse'      ! 3 Lab total energy of chosen track in GeV
+      h_Ntuple_tag(m)= 'hse'      ! Lab total energy of chosen track in GeV
       m= m+1
-      h_Ntuple_tag(m)= 'charge' ! 4 charge
+      h_Ntuple_tag(m)= 'charge' ! charge
       m= m+1
-      h_Ntuple_tag(m)= 'hsdelta'       ! 5 Spectrometer delta of chosen track
+      h_Ntuple_tag(m)= 'hsdelta'       ! Spectrometer delta of chosen track
       m= m+1
-      h_Ntuple_tag(m)= 'hstheta'       ! 6 Lab Scattering angle in radians
+      h_Ntuple_tag(m)= 'hstheta'       ! Lab Scattering angle in radians
       m= m+1
-      h_Ntuple_tag(m)= 'hsphi' ! 7 Lab Azymuthal angle in radians
+      h_Ntuple_tag(m)= 'hsphi' ! Lab Azymuthal angle in radians
       m= m+1
-      h_Ntuple_tag(m)= 'w'     ! 8 Invariant Mass of remaing hadronic system
+      h_Ntuple_tag(m)= 'w'     ! Invariant Mass of remaing hadronic system
       m= m+1
-      h_Ntuple_tag(m)= 'hszbeam'! 9 Lab Z coordinate of intersection of beam
+      h_Ntuple_tag(m)= 'hszbeam'! Lab Z coordinate of intersection of beam
                                 ! track with spectrometer ray
       m= m+1
-      h_Ntuple_tag(m)= 'hsdedx1'       ! 10 DEDX of chosen track in 1st scin plane
+      h_Ntuple_tag(m)= 'hsdedx1'       ! DEDX of chosen track in 1st scin plane
       m= m+1
-      h_Ntuple_tag(m)= 'hsbeta'        ! 11 BETA of chosen track
+      h_Ntuple_tag(m)= 'hsbeta'        ! BETA of chosen track
       m= m+1
-      h_Ntuple_tag(m)= 'hsshtrk'  ! 12 'HSTRACK_ET'       ! Total shower energy of chosen track
+      h_Ntuple_tag(m)= 'hsshtrk'  ! 'HSTRACK_ET'       ! Total shower energy of chosen track
       m= m+1
-      h_Ntuple_tag(m)= 'hsprtrk'   ! 13 'HSTRACK_PRESHOWER_E' ! preshower of chosen track
+      h_Ntuple_tag(m)= 'hsprtrk'   !'HSTRACK_PRESHOWER_E' ! preshower of chosen track
       m= m+1
-      h_Ntuple_tag(m)= 'hsxfp'		! 14 X focal plane position 
+      h_Ntuple_tag(m)= 'hsxfp'		! X focal plane position 
       m= m+1
-      h_Ntuple_tag(m)= 'hsyfp'  ! 15
+      h_Ntuple_tag(m)= 'hsyfp'
       m= m+1
-      h_Ntuple_tag(m)= 'hsxpfp' !16
+      h_Ntuple_tag(m)= 'hsxpfp'
       m= m+1
-      h_Ntuple_tag(m)= 'hsypfp'!17
+      h_Ntuple_tag(m)= 'hsypfp'
       m= m+1
-      h_Ntuple_tag(m)= 'hsytar' !18
+      h_Ntuple_tag(m)= 'hsytar'
       m= m+1
-      h_Ntuple_tag(m)= 'hsxptar' !19
+      h_Ntuple_tag(m)= 'hsxptar'
       m= m+1
-      h_Ntuple_tag(m)= 'hsyptar' !20
+      h_Ntuple_tag(m)= 'hsyptar'
       m= m+1
-      h_Ntuple_tag(m)= 'hstart' !21
+      h_Ntuple_tag(m)= 'hstart'
       m= m+1
-      h_Ntuple_tag(m)= 'hsfptime' !22
+      h_Ntuple_tag(m)= 'hsfptime'
       m= m+1
-      h_Ntuple_tag(m)= 'eventID' !23
+      h_Ntuple_tag(m)= 'eventID'
       m= m+1
-      h_Ntuple_tag(m)= 'ev_type' !24
+      h_Ntuple_tag(m)= 'ev_type'
 
 * Experiment dependent entries start here.
 c
       m= m+1
-      h_Ntuple_tag(m)= 'S0X1padc' !25
+      h_Ntuple_tag(m)= 'frast_y'
       m= m+1
-      h_Ntuple_tag(m)= 'S0X1nadc' !26
+      h_Ntuple_tag(m)= 'frast_x'
       m= m+1
-      h_Ntuple_tag(m)= 'S0X2padc' !27
+      h_Ntuple_tag(m)= 'hdchits1'
       m= m+1
-      h_Ntuple_tag(m)= 'S0X2nadc' !28
+      h_Ntuple_tag(m)= 'hdchits2'
       m= m+1
-      h_Ntuple_tag(m)= 'S0X1ptdc' !29
+      h_Ntuple_tag(m)= 'srast_y'
       m= m+1
-      h_Ntuple_tag(m)= 'S0X1ntdc' !30
-      m= m+1
-      h_Ntuple_tag(m)= 'S0X2ptdc' !31
-      m= m+1
-      h_Ntuple_tag(m)= 'S0X2ntdc' !32
-      m= m+1
-      h_Ntuple_tag(m)= 'rast_y' !33
-      m= m+1
-      h_Ntuple_tag(m)= 'rast_x' !34
-      m= m+1
-      h_Ntuple_tag(m)= 'hdchits1' !35
-      m= m+1
-      h_Ntuple_tag(m)= 'hdchits2'!36
-      m= m+1
-      h_Ntuple_tag(m)= 'srast_y' ! 37
-      m= m+1
-      h_Ntuple_tag(m)= 'srast_x' ! 38
+      h_Ntuple_tag(m)= 'srast_x'
+      m=m+1
+      h_ntuple_tag(m)= 'helicite'
 
       h_Ntuple_size= m     !total size
 * Open ntuple
