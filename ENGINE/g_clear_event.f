@@ -12,6 +12,16 @@
 *-   Created  29-Oct-1993   Kevin B. Beard, Hampton U.
 *-   Modified 19-Nov-1993   Kevin B. Beard for new error standards
 *-      $Log$
+*-      Revision 1.10.24.2.2.4  2008/11/06 21:38:50  cdaq
+*-      Fix typo which had
+*-            call f1trigger_clear_event(F1trigger_ABORT,f1trigger_err) ! F1 trigger
+*-            call f1trigger_clear_event(Sem_ABORT,Sem_err) ! sem
+*-
+*-      instead of
+*-
+*-            call f1trigger_clear_event(F1trigger_ABORT,f1trigger_err) ! F1 trigger
+*-            call sem_clear_event(Sem_ABORT,Sem_err) ! sem
+*-
 *-      Revision 1.10.24.2.2.3  2008/10/26 19:12:33  cdaq
 *-      SEM
 *-
@@ -114,7 +124,7 @@
       call sane_clear_event(SANE_ABORT,SANE_err) ! SANE
 
       call f1trigger_clear_event(F1trigger_ABORT,f1trigger_err) ! F1 trigger
-      call f1trigger_clear_event(Sem_ABORT,Sem_err) ! sem 
+      call sem_clear_event(Sem_ABORT,Sem_err) ! sem 
      
 *     
       
