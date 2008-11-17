@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.21.2.5  2008/11/17 20:52:33  cdaq
+*  Added call to h_tofcal_endrun
+*
 * Revision 1.42.8.21.2.4  2008/10/26 18:59:13  cdaq
 * fixed trginit call
 *
@@ -1091,6 +1094,10 @@ c...  Calibrate HMS and SOS calorimeters.
       if(hdbg_tracks_cal.lt.0) call h_cal_calib(1)
 
       if(sdbg_tracks_cal.lt.0) call s_cal_calib(1)
+
+c calibrate HMS scintilattor tof
+      call h_tofcal_endrun(gen_run_number)
+
 c...  call to calibration routine for BigCal. 
       if(bigcal_do_calibration.ne.0) then
          write(*,*) '*****CALLING BIGCAL CALIBRATION*****'
