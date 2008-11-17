@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19.6.2.2.4  2008/11/17 16:03:47  cdaq
+* Fixed minor bug in printing of ADCHIST
+*
 * Revision 1.19.6.2.2.3  2008/11/17 16:00:22  cdaq
 * Major revision to do tof calibration internatlly
 *
@@ -978,7 +981,7 @@ c     >      k,nhit(k),ip1(k),ip2(k),ip3(k)
       write(10,'(''ADCHIST'')')
       do i=1,200
         if(nhit(i).gt.0) write(10,'(i4,16i4)') 
-     >    i,(adchist(i,j/10),j=1,16)
+     >    i,(adchist(i,j)/10,j=1,16)
       enddo
       write(10,'(''THIST'')')
       do i=1,200
