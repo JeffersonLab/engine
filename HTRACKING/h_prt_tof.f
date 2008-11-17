@@ -8,6 +8,9 @@
 *
 * modifications:
 * $Log$
+* Revision 1.5.26.1  2008/11/17 15:58:28  cdaq
+* Changed from old to new tof offset
+*
 * Revision 1.5  1996/01/24 15:59:22  saw
 * (JRA) Add scin.center column to output
 *
@@ -48,7 +51,8 @@
       do ihit=1,hscin_tot_hits
         write(hluno,'(f8.3,f8.3,2f8.3,2f8.3,f10.2)')
      &       hscin_pos_coord(ihit), hscin_neg_coord(ihit),
-     &       hscin_pos_time_offset(ihit), hscin_neg_time_offset(ihit),
+     &       hscin_pos_invadc_offset(ihit), 
+     >       hscin_neg_invadc_offset(ihit),
      &       hscin_pos_sigma(ihit), hscin_neg_sigma(ihit),
      &       hscin_center_coord(ihit)
       enddo
