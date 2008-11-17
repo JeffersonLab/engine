@@ -117,7 +117,8 @@
       real p                ! momentum (MeV). (mom<0 for e-, mom>0 for p,d)
       real mass               ! mass of particle (MeV)
       integer spect            
-
+      REAL*8 TARGET_COORD(6),Eprot,Pprot
+      COMMON/TARGET_GENRECON/TARGET_COORD,Eprot,Pprot
       INCLUDE 'gen_constants.par'
 
 
@@ -141,8 +142,8 @@
 *     ok   IO  : status variable 
 *     - if false no action is taken 
 *     - set to false when no reconstruction is found 
-      
-      REAL*8 th,ctheta,stheta ! cosine and sine of central spectrometer angle
+      real*4 th
+      REAL*8 ctheta,stheta ! cosine and sine of central spectrometer angle
 *      COMMON /genParameter/theta,ctheta,stheta,p 
 c     
       INCLUDE 'gen_event_info.cmn'
@@ -150,11 +151,12 @@ c
       common /mkjtemp/ outside_fieldmap
       
 !     REAL    xx,dx,vT(6),vTx(6),utsave(6),vtsave(6),usave(4)
-      REAL*8    xx,dx,vT(9),vTx(9),utsave(6),vtsave(6),usave(6)
+      REAL*8    xx,vT(9),vTx(9),utsave(6),vtsave(6),usave(6)
+      real dx
       real*8 save_dx,save_diff_dx
       INTEGER i,n,ii
       real*8 REF_VAL	
-      parameter (REF_VAL=100.)  ! what does this acyually correspond to?
+      parameter (REF_VAL=100.)  ! what does this actually correspond to?
 !     parameter (REF_VAL=80.)         ! what does this acyually correspond to?
       real*8 OTHER_REF
       parameter (OTHER_REF=30.) ! what does this acyually correspond to?
@@ -163,7 +165,7 @@ c
       PARAMETER (eps = 0.2)     ! (one more iteration is performed 
 !  after the given accuraccy is reached) 
       real bdl
-      real eng              ! energy of the particle     
+      real*8 eng              ! energy of the particle     
       integer flag_az           !	OR - 7/04
       common /azimuth/ flag_az	!	OR - 7/04	
       
@@ -171,26 +173,11 @@ c
       
       bdl = 0.0
       xx = u(5)
+
 ! find a first approximation for uT
-c     CALL hmsReconOutOfPlane (u,xx,uT,ok)
-!     write(*,*)'u(1:4) - 0', u(1),u(2),u(3),u(4)
-!     write(*,*)'uT(1:4) - before 1st. ReconXTar', uT(1),uT(2),uT(3),uT(4)
-      
       CALL hmsReconXtar (u,uT,ok)
-      
-      
-      
-!     write(*,*)'u(1:4) - 1', u(1),u(2),u(3),u(4)
-!     write(*,*)'uT(1:4) - after 1st. ReconXTar', uT(1),uT(2),uT(3),uT(4)
-      
-c     if (.not. ok) write(*,*) ' hmsreconxtar is not ok'
-c     
-c     
-      
-!     write(*,*)'x,y, u(5), uT(1)',x,y,u(5),uT(1)
-      
+c       write(*,*)dx,th,p,mass
       IF (.NOT. ok) RETURN
-c     write(*,*) ' after hmsReconXtar uT = ',uT
 !     drift to a field free region and calculate the velocities
       vT(1) = REF_VAL*(uT(1)+1.*uT(2))
 !     vT(1) = REF_VAL*(x+1.*uT(2))
@@ -205,9 +192,6 @@ c     write(*,*) ' after hmsReconXtar uT = ',uT
          usave(ii)=u(ii)
       enddo
 !     and track into the magnetic field to the beam plane (perp. to y)
-c     write(*,*) ' before trgtracktoplane vt = ',vt
-      
-!     write(*,*) 'vT(1:6) before 1st. trk2plane',vT(1),vT(2),vT(3),vT(4),vT(5),vT(6)
       
 *     Here need to to implement detection of protons/electrons in the HMS arm
 *     p should be initialized as hpcentral
@@ -216,33 +200,27 @@ c     write(*,*) ' before trgtracktoplane vt = ',vt
       stheta = SIN(th*degree)
 
       if (spect.eq.-1) then
-         eng = -1.*sqrt(p**2+mass**2)
-      else if (spect.eq.1.) then
-         eng = 1.*sqrt(p**2+mass**2)
+         eng = -1.*sqrt(p**2+mass**2)/MeV
+
+      else if (spect.eq.1) then
+         eng = 1.*sqrt(p**2+mass**2)/MeV
+
       else
       endif
 
-      
-*   CALL trgTrackToPlane (vT,-p*(1+uT(6))/MeV,1.d00,
-*   >     0.0d00,-ctheta,stheta,y*REF_VAL,ok)
 
-
-      CALL trgTrackToPlane (vT,eng,1.0d00,0.0d00,-ctheta,stheta,y*REF_VAL,ok)
+c      write(*,*)'TESTING VT',VT(1),VT(2),VT(3)
+c      write(*,*)'TESTING VT',VT(4),VT(5),VT(6),eng,ok
+      CALL trgTrackToPlaneBDL (vT,eng,1.0d00,0.0d00,-ctheta,stheta,y*REF_VAL,ok)
      
-!     write(*,*) 'vT(1:6) after 1st. trk2plane',vT(1),vT(2),vT(3),vT(4),vT(5),vT(6)
-!     write(*,*) ' Bdl - 1',vT(7),vT(8),vT(9),ok
       
-      if ( .not. ok) then
+c      if ( .not. ok) then
 c     write(*,*) '**** failed first call to trgTrackToPlane in gen_recon *** outside fieldmap = ',outside_fieldmap
-      endif
+c      endif
       n  = 0
       dx = 1.
       save_diff_dx = 1.  
       save_dx=dx
-c     if (outside_fieldmap) then
-c     write(*,*) gen_event_ID_number,'trgtracktoplane',n,dx,ok,outside_fieldmap,x,vt(1)
-c     write(*,'(i2,2f10.5,/,4f15.5,/6f15.8,/6f15.8)') ok,x,y,usave,utsave,vt
-c     endif
       DO WHILE ((dx .GT. .1) .AND. (n .LT. 10) .and. (save_diff_dx .gt. 0) .AND. ok)
 !     DO WHILE ((dx .GT. .01) .AND. (n .LT. 10) .and. (save_diff_dx .gt. 0) .AND. ok)
          dx = abs(x*REF_VAL-vT(1))
@@ -253,36 +231,18 @@ c     endif
          ENDDO
          
 *         CALL trgTrackToPlane (vT, -p*(1+uT(6))/MeV,1.,0., 0.,1.,0., ok)
-         CALL trgTrackToPlane (vT,eng,1.0d00,0.0d00,0.0d00,1.0d00,0.0d00,ok)
+         ok = .TRUE.
+         CALL trgTrackToPlaneBDL (vT,eng,1.0d00,0.0d00,0.0d00,1.0d00,0.0d00,ok)
+         ok = .TRUE.
+         CALL trgTrackToPlaneBDL (vTx,eng,1.0d00,0.0d00,0.0d00,1.0d00,0.0d00,ok) 
          
-!     write(*,*) ' Bdl - 2',vT(7),vT(8),vT(9),ok
-         
-c     if (outside_fieldmap) then
-c     write(*,*) gen_event_ID_number,'trgtracktoplane',n,dx,ok,outside_fieldmap,x,vt(1)
-c     write(*,'(i2,2f10.5,/,4f15.5,/6f15.8,/6f15.8)') ok,x,y,usave,utsave,vt
-c     endif
-*         CALL trgTrackToPlane (vTx,-p*(1+uT(6))/MeV,1.,0., 0.,1.,0., ok) 
-         CALL trgTrackToPlane (vTx,eng,1.0d00,0.0d00,0.0d00,1.0d00,0.0d00,ok) 
-         
-!     write(*,*) ' Bdl - 3',vTx(7),vTx(8),vTx(9),ok
-         
-c     if (outside_fieldmap) then
-c     write(*,*) gen_event_ID_number,'trgtracktoplane',n,dx,ok,outside_fieldmap,x,vt(1)
-c     write(*,'(i2,2f10.5,/,4f15.5,/6f15.8,/6f15.8)') ok,x,y,usave,utsave,vt
-c     endif
          xx = xx+(vTx(1)-vT(1))*0.01 ! what unit conversion is this???
          
 !     now find a better approximation for uT
-c     CALL hmsReconOutOfPlane (u,xx,uT,ok)
-         
-!     write(*,*)'u(1:4) - 2', u(1),u(2),u(3),u(4)
-!     write(*,*)'uT(1:4) - before 2nd. ReconXTar', uT(1),uT(2),uT(3),uT(4)
          
          u(5) = xx
          CALL hmsReconXtar (u,uT,ok)
          
-!     write(*,*)'u(1:4) - 3', u(1),u(2),u(3),u(4)
-!     write(*,*)'uT(1:4) - after 2nd. ReconXTar', uT(1),uT(2),uT(3),uT(4)
          
 !     drift to a field free region and calculate the velocities
          vT(1) = REF_VAL*(uT(1)+1.*uT(2))
@@ -296,31 +256,20 @@ c     CALL hmsReconOutOfPlane (u,xx,uT,ok)
          
 !     write(*,*) 'vT(1:6) before last trk2plane',vT(1),vT(2),vT(3),vT(4),vT(5),vT(6)
          
-*         CALL trgTrackToPlane (vT,-p*(1+uT(6))/MeV,1.,
-*     >        0.,-ctheta,stheta,y*REF_VAL,ok) 
-         CALL trgTrackToPlane (vT,eng,1.d00,0.d00,-ctheta,stheta,y*REF_VAL,ok) 
-!     write(*,*) 'vT(1:6) after last trk2plane',vT(1),vT(2),vT(3),vT(4),vT(5),vT(6)
+         CALL trgTrackToPlaneBDL (vT,eng,1.0d00,0.0d00,-ctheta,stheta,y*REF_VAL,ok) 
          
          
          
          bdl = sqrt(vT(7)**2+vT(8)**2+vT(9)**2)
-!     write(*,*) ' Bdl - 4',vT(7),vT(8),vT(9),ok
-         
-c     if (outside_fieldmap) then
-c     write(*,*) gen_event_ID_number,'trgtracktoplane',n,dx,ok,outside_fieldmap,x,vt(1)
-c     write(*,'(i2,2f10.5,/,4f15.5,/6f15.8,/6f15.8)') ok,x,y,usave,utsave,vt
-c     endif
          dx = abs(x*REF_VAL-vT(1))
          save_diff_dx = save_dx - dx
          if (save_diff_dx .lt. 0 .and.   n .ne. 0) then
-c     write(*,*) gen_event_ID_number,'trgtracktoplane1',n,dx,save_dx,save_diff_dx,ok,outside_fieldmap,x,vt(1)
             do ii=1,6
                vt(ii)=vtsave(ii)
             enddo
             ok = .false.
             if ( save_dx .lt. 1.0) ok = .true.
          else
-c     write(*,*) gen_event_ID_number,'trgtracktoplane2',n,dx,save_dx,save_diff_dx,ok,outside_fieldmap,x,vt(1)
             n = n+1
             do ii=1,6
                vtsave(ii)=vt(ii)
@@ -330,15 +279,19 @@ c     write(*,*) gen_event_ID_number,'trgtracktoplane2',n,dx,save_dx,save_diff_d
       ENDDO
       IF (n .ge. 10 ) ok = .FALSE.
       if (.not. ok) then
-c     write(*,*) '*** failed converging **** '
-c     write(*,'(i2,i5,i3,2f10.5,/,4f15.5,/6f15.8,/2f15.8)') ok,gen_event_ID_number,n,x,y,usave,utsave,dx,save_dx
       endif      
 !     calculate the result in HMS coordinates
-      
-!     write(*,*) 'vT(1:6) before return',vT(1),vT(2),vT(3),vT(4),vT(5),vT(6)
-!     write(*,*) ' '
-      
-      
+c      write(*,*)'TESTING VT 3',VT(1),VT(2),VT(3)
+c      write(*,*)'TESTING VT 3',VT(4),VT(5),VT(6),eng,ok
+      TARGET_COORD(1) = VT(1)      
+      TARGET_COORD(2) = VT(2)      
+      TARGET_COORD(3) = VT(3)      
+      TARGET_COORD(4) = VT(4) !p*1000*VT(4)/29.97/eng 
+      TARGET_COORD(5) = VT(5) !p*1000*VT(5)/29.97/eng 
+      TARGET_COORD(6) = VT(6) !p*1000*VT(6)/29.97/eng     
+      Eprot           = eng
+      Pprot           = p
+    
       uT(1) =  0.01*vT(1)  
       uT(2) = vT(4)/vT(6)
       uT(3) =  0.01*vT(2)
@@ -393,10 +346,10 @@ c     write(*,*) ' after tracktoplane uT = ',uT
       ! matrix elemnts needed for calculating the focal plane offset 
  
       INTEGER i,j 
-      REAL*8 tm
-      real*8   sum(4),hut(5),hut_rot(5)
+      REAL tm
+      real   sum(4),hut_rot(5)
  
-      COMMON /hmsfocalplane/sum,hut,hut_rot     
+      COMMON /hmsfocalplane/sum,hut_rot     
       DO i=1,6
          uT(i)  = 0.
       ENDDO
@@ -409,9 +362,9 @@ c     write(*,*) ' after tracktoplane uT = ',uT
       
       do i = 1,h_num_recon_terms
          tm = 1
-         do j = 1,4
+         do j = 1,5
             if (h_recon_expon(j,i).ne.0.) then
-               tm = tm*hut_rot(j)**h_recon_expon(j,i)
+               tm = tm*u(j)**h_recon_expon(j,i)
             endif
          enddo
          sum(1) = sum(1) + tm*h_recon_coeff(1,i) ! xp uT(2) trg(2)
@@ -422,8 +375,7 @@ c     write(*,*) ' after tracktoplane uT = ',uT
                                 !  uT(5),trg(5) is z-position along the HMS spectrometer axis
                                 !        used in tracking back to the target
 !     uT(1),trg(1) is xtarget position, measured by slow raster.
-      
-      uT(1) = hut(5)
+      uT(1) = u(5)
       uT(2) = sum(1)            ! unit meters
       uT(3) = sum(2)            ! unit meters
       uT(4) = sum(3)
@@ -436,5 +388,3 @@ c     write(*,*) ' after tracktoplane uT = ',uT
       RETURN
       END   
       
-************************************************************
-************************************************************

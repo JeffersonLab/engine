@@ -32,6 +32,7 @@
 c      character*256 b_tree_filename
       character*8 b_Ntuple_tag(BMAX_Ntuple_size)
       integer b_Ntuple_max_segmentevents
+      integer b_ntuple_switch ! 0 means is off.
 *
 *     CTPTYPE=event
 *
@@ -45,7 +46,7 @@ c      character*256 b_tree_filename
      $     b_Ntuple_file,b_Ntuple_tag,
      $     b_Ntuple_max_segmentevents,
      $     b_Ntuple_segmentevents,b_Ntuple_filesegments,
-     $     b_Ntuple_contents,bigcal_ntuple_type
+     $     b_Ntuple_contents,bigcal_ntuple_type,b_ntuple_switch
 
 *     Basic event info:
 

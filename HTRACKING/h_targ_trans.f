@@ -16,6 +16,9 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
+* Revision 1.16.24.2.2.4  2008/11/17 01:17:55  cdaq
+* *** empty log message ***
+*
 * Revision 1.16.24.2.2.3  2008/10/31 07:59:10  cdaq
 * fix bug with enddo in wrong place
 *
@@ -128,10 +131,10 @@
 
       integer*4        i,j,itrk
 
-      real*8   sum(4),hut(5),term,hut_rot(5)
-      real*8   trg(6),bdl,dx
-
-      COMMON /hmsfocalplane/sum,hut,hut_rot 
+      real   sum(4),hut(5),term
+      real   bdl,dx
+      real trg(6),hut_rot(5)
+      COMMON /hmsfocalplane/sum,hut_rot 
 *=============================Executable Code =============================
       ABORT= .FALSE.
       err= ' '
@@ -143,9 +146,9 @@
       endif
       istat = 1
 
-      x_coord = gsr_beamx/100.  ! SLOW RASTER BEAM X coordinate obtained from the ADCs, in meters 
-      y_coord = gsr_beamy/100.  ! SLOW RASTER BEAM Y coordinate obtained from the ADCs, in meters 
-      
+      x_coord = -gsr_beamy/100  ! SLOW RASTER BEAM X coordinate obtained from the ADCs, in meters 
+      y_coord = gsr_beamx/100       ! SLOW RASTER BEAM Y coordinate obtained from the ADCs, in meters 
+c      write(*,*)x_coord,y_coord
 
 * Loop over tracks.
 
@@ -182,7 +185,7 @@
 
          hut(4) = hyp_fp(itrk) + h_ang_offset_y           !radians
 
-         hut(5)= -gbeam_y/100. ! spectrometer target X in meter!
+         hut(5)= x_coord ! spectrometer target X in meter!
                                 ! note that pos. spect. X = neg. beam Y, here should be the coordinate given by the slow raster
 c         hut(5)= x_coord ! spectrometer target X in meter - given by the Slow Raster!
                                 ! note that pos. spect. X = neg. beam Y, here should be the coordinate given by the slow raster
@@ -207,7 +210,6 @@ c         hut(5)= x_coord ! spectrometer target X in meter - given by the Slow R
 
 * Introducing the target magnetic field option 
 
-         if (SANE_TGTFIELD_B.eq.0.0) then
             
 *     Compute COSY sums.
             
@@ -229,13 +231,20 @@ c         hut(5)= x_coord ! spectrometer target X in meter - given by the Slow R
 *     Load output values.
             
             hx_tar(itrk) = x_coord ! beam slow raster coord.
-            hy_tar(itrk) = sum(2)*100. !cm.
+            hy_tar(itrk) = sum(2) !cm.
             hxp_tar(itrk) = sum(1) !Slope xp
             hyp_tar(itrk) = sum(3) !Slope yp            
             hz_tar(itrk) = 0.0  !Track is at origin
             hdelta_tar(itrk) = sum(4)*100. !percent.
-            
-         else
+c            write(*,*)'1 ',hx_tar(itrk),hy_tar(itrk),hxp_tar(itrk),hyp_tar(itrk),hdelta_tar(itrk)
+         if (SANE_TGTFIELD_B.ne.0.0) then
+
+            trg(1) = 1
+            trg(2) = 0.1
+            trg(3) = 1
+            trg(4) = 0.1
+            trg(5) = 1
+            trg(6) = 1 
             
 *     Parameter:
 *     subroutine genRecon(u,x,y,uT,ok,dx,bdl)
@@ -257,22 +266,34 @@ c         hut(5)= x_coord ! spectrometer target X in meter - given by the Slow R
             
             
             ok = .TRUE.
-            
+c            write(*,*)'SANE OMEGA AND PHI ',SANE_HMS_OMEGA,SANE_HMS_PHI
             CALL trgInitFieldANGLES(SANE_HMS_OMEGA,SANE_HMS_PHI)
-            
+c       write(*,*)dx,htheta_lab,hpcentral, hpartmass
+
             CALL genRecon (hut_rot, x_coord, y_coord, trg, ok, dx, bdl,
-     >           htheta_lab, hpcentral, hpartmass, 1.) ! set for protons
+     >           htheta_lab, hpcentral, hpartmass, -1) ! set for protons
             
 *     CALL genRecon (hut_rot, x_coord, y_coord, trg, ok, dx, bdl,
 *     >           hpcentral, mass_electron, -1.)  ! set for electrons
             
-            hx_tar(itrk)     = trg(1)*meter ! target x 
-            hy_tar(itrk)     = trg(3)*meter ! target y   
-            hz_tar(itrk)     = trg(5)*meter ! target z 
+c            hx_tar(itrk) = x_coord ! beam slow raster coord.
+c            hy_tar(itrk) = sum(2)*100. !cm.
+c            hxp_tar(itrk) = sum(1) !Slope xp
+c            hyp_tar(itrk) = sum(3) !Slope yp            
+c            hz_tar(itrk) = 0.0  !Track is at origin
+c            hdelta_tar(itrk) = sum(4)*100. !percent.
+
+            hx_tar(itrk)     = trg(1) ! target x 
+            hy_tar(itrk)     = trg(3) ! target y   
+            hz_tar(itrk)     = trg(5) ! target z 
             hxp_tar(itrk)    = trg(2) ! slope  xp
             hyp_tar(itrk)    = trg(4) ! slope  yp
-            hdelta_tar(itrk) = trg(6)*100. !percent.
+            hdelta_tar(itrk) = trg(6)*100 !percent.
             h_bdl(itrk)  = bdl
+c            write(*,*)'2 ',hx_tar(itrk),hy_tar(itrk),hxp_tar(itrk),hyp_tar(itrk),hdelta_tar(itrk)
+c            write(*,*)'2 '
+*            write(*,*)'2 ',hx_tar(itrk),hy_tar(itrk),hxp_tar(itrk),hdelta_tar(itrk)
+*            write(*,*)'++++++++++++++++++++++++++++++++++++++++'
             
          endif                  ! loop over the magnetic field (on or off)
 

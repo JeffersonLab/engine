@@ -458,9 +458,6 @@ ccccccccccccccccccccccccccccccccccccc
       real*4 Vector(3),Vector_r(3)
       LOGICAL ok1
       logical TRAKER_STATUS
-      data P1_bigcal /0.,0.,320./
-      data P2_bigcal /0.,1.,320./
-      data P3_bigcal /1.,0.,320./
       data P1_track /0.,0.,66./
       data P2_track /0.,1.,66./
       data P3_track /1.,0.,66./

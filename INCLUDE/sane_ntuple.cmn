@@ -1,6 +1,13 @@
 *
 *     CTPTYPE=parm
 *
+      integer sane_bigcal_time_include
+      integer sane_bigcal_clust8_include
+      integer sane_bigcal_clust64_include
+      integer sane_bigcal_ntrack_include
+      integer sane_bigcal_badclust_include
+      integer sane_bigcal_hms_include
+
       integer SANEMAX_Ntuple_size
       parameter (SANEMAX_Ntuple_size=200)
       integer default_SANE_Ntuple_ID
@@ -118,7 +125,7 @@ c     $     sanetrigtype
      ,     hms_cer_npe1,hms_cer_npe2, hms_cer_adc1,hms_cer_adc2
       
       integer*4 maxcl
-      parameter (maxcl=4)
+      parameter (maxcl=10)
       integer*4 n_clust
       integer*4 luc_h(maxcl)
       integer*4 trc_hx(maxcl)
@@ -134,25 +141,25 @@ c     $     sanetrigtype
       real*4 Y_clust_r(maxcl)
       real*4 Z_clust_r(maxcl)
 
-      real*4 X_luc(10,maxcl)
-      real*4 Y_luc(10,maxcl)
-      real*4 Z_luc(10,maxcl)
-      real*4 X_luc_r(10,maxcl)
-      real*4 Y_luc_r(10,maxcl)
-      real*4 Z_luc_r(10,maxcl)
+      real*4 X_luc(20,maxcl)
+      real*4 Y_luc(20,maxcl)
+      real*4 Z_luc(20,maxcl)
+      real*4 X_luc_r(20,maxcl)
+      real*4 Y_luc_r(20,maxcl)
+      real*4 Z_luc_r(20,maxcl)
 
-      real*4 X_trc(10,maxcl)
-      real*4 Y1_trc(10,maxcl)
-      real*4 Y2_trc(10,maxcl)
-      real*4 X_trc_r(10,maxcl)
-      real*4 Y1_trc_r(10,maxcl)
-      real*4 Y2_trc_r(10,maxcl)
-      real*4 Z_trc(10,maxcl)
-      real*4 Z1_trc(10,maxcl)
-      real*4 Z2_trc(10,maxcl)
-      real*4 Z_trc_r(10,maxcl)
-      real*4 Z1_trc_r(10,maxcl)
-      real*4 Z2_trc_r(10,maxcl)
+      real*4 X_trc(20,maxcl)
+      real*4 Y1_trc(20,maxcl)
+      real*4 Y2_trc(20,maxcl)
+      real*4 X_trc_r(20,maxcl)
+      real*4 Y1_trc_r(20,maxcl)
+      real*4 Y2_trc_r(20,maxcl)
+      real*4 Z_trc(20,maxcl)
+      real*4 Z1_trc(20,maxcl)
+      real*4 Z2_trc(20,maxcl)
+      real*4 Z_trc_r(20,maxcl)
+      real*4 Z1_trc_r(20,maxcl)
+      real*4 Z2_trc_r(20,maxcl)
       real*4 Tr_Vertex(3,maxcl)
       real*4 Tr_Vertex_r(3,maxcl)
       real*4 Theta_e(maxcl),Phi_e(maxcl)

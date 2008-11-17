@@ -160,7 +160,7 @@ c
             
             
             
-            if(bbypass_calc_physics.eq.0) then
+            if(bbypass_calc_physics.eq.0)then
                call HBNAME(id,'clustphys',ntrack,'ntrack[0,25]:I*4,'//
      $              'ibest[0,25]:I*4,thetarad(ntrack),'//
      $              'phirad(ntrack),energy(ntrack),'//
@@ -168,12 +168,13 @@ c
      $              'zface(ntrack),px(ntrack),py(ntrack),pz(ntrack),'//
      $              'ctime_clust(ntrack)')
             endif
-            
             call HBNAME(id,'bad_clust',nmax,'nmax[0,25]:I*4,'//
      $           'edge_max(nmax):L,not_enough(nmax):L,'//
      $           'too_long_x(nmax):L,too_long_y(nmax):L,'//
      $           'below_thresh(nmax):L,above_max(nmax):L,'//
      $           'second_max(nmax):L')
+           call HBNAME(id,'hmsblk',TH_HMS,'TH_HMS,PH_HMS,E_HMS,'//
+     $          'X_HMS,Y_HMS,dPel_HMS')
          endif
          
 c     
@@ -200,8 +201,14 @@ c     ! For physics analysis  added on Jul 3 2008
 
       call HBOOK2(10210,'SLOW RASTER ADC' ,90,5000., 8000.,  90,    5000.,   8000., 0.)
       call HBOOK2(10211,'FAST RASTER ADC' ,90,2000., 5000.,  90,    2000.,   5000., 0.)
-      call HBOOK2(10212,'SLOW RASTER ADC Corrected' ,90,-1500., 1500.,  90,    -1500.,   1500., 0.)
-      call HBOOK2(10213,'FAST RASTER ADC Corrected' ,90,-1500., 1500.,  90,    -1500.,   1500., 0.)
+      call HBOOK2(10212,'SLOW RASTER ADC Corrected' ,90,-3., 3.,  90,    -3.,   3., 0.)
+      call HBOOK2(10213,'FAST RASTER ADC Corrected' ,90,-3., 3.,  90,    -3.,   3., 0.)
+
+      call HBOOK2(10300,'X_HMS vs xclust' ,60,-60., 60.,  60,    -60.,   60., 0.)
+      call HBOOK2(10301,'Y_HMS vs yclust' ,120,-120., 120.,  120,    -120.,   120., 0.)
+      call HBOOK2(10302,'X_HMS vs Y_HMS' ,60,-60., 60.,  120,    -120.,   120., 0.)
+      call HBOOK2(10303,'Xclust vs Yclust' ,60,-60., 60.,  120,    -120.,   120., 0.)
+      call HBOOK2(10304,'DX vs DY' ,40,-20., 20.,  60,    -30.,   30., 0.)
 
       
 

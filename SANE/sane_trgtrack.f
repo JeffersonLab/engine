@@ -142,7 +142,6 @@ c	scale=10000
 	REAL*8      pi180,p,p0
 	PARAMETER (pi180 = 3.141592653/180.) 
 c	write(*,*) 'target theta = ',theta
-
 	B_theta  = theta
 	B_stheta = SIN(theta*pi180) 
 	B_ctheta = COS(theta*pi180)
@@ -158,7 +157,7 @@ c	write(*,*) 'target theta = ',theta
 
       SUBROUTINE GUFLD (xin,Bout)
       IMPLICIT NONE
-      REAL xin(3),Bout(3)
+      REAL*8 xin(3),Bout(3)
       REAL*8 x_(3),B_(3)
 * --  calculate actual field
 *
@@ -524,6 +523,114 @@ c
 	P12(2) = P1(2) - P2(2)
 	P12(3) = P1(3) - P2(3)
 	end
+	
+*------------------------------------------------------------------------
+
+      SUBROUTINE trgTrackToPlaneBDL (u,E,dl,a,b,c,d,ok)
+      IMPLICIT NONE
+!      REAL    u(6),E,dl,a,b,c,d 
+      REAL*8    u(9),E,dl,a,b,c,d 
+      LOGICAL ok
+* --  track a single particle with given start parameters
+*     and find the intersection of the particle track with a given plane
+*
+*     Parameter:
+*        u     IO : coordinate vector (initial/final)
+*                     u0(1,2,3) : x, y, z [cm]
+*                     u0(4,5,6) : dx/dt, dy/dt, dz/dt [cm/ns] 
+*        E     I  : particle energy [MeV] * sign of particle charge
+*                   (negative for electrons, positive for protons/deuterons)
+*        dl    I  : step size [cm]
+*        a..d  I  : parameter of the intersection plane 
+*                   0 = a*x+b*y+c*z+d; 
+*        ok    IO : status variable 
+*                   - if false no action is taken 
+*                   - set to false when no intersection point is found 
+*                    
+c
+      INCLUDE 'gen_event_info.cmn'
+      logical outside_fieldmap
+      common /mkjtemp/ outside_fieldmap
+c                 
+      REAL*8   factor
+      COMMON /trgConversionFactor/factor
+
+!      REAL    ts,n,an,bn,cn,dn,maxdist,dist0,dist1,u0(6),u1(6)
+      REAL*8    ts,n,an,bn,cn,dn,maxdist,dist0,dist1,u0(9),u1(9)
+       
+      INTEGER i,steps,max_steps
+!	For Bdl
+	do i=7,9
+	   u(i)=0.0
+	   u0(i)=0.0
+	   u1(i)=0.0
+	end do
+
+      IF (.NOT. OK) RETURN   
+        
+	n  = 1/SQRT (a*a+b*b+c*c)
+	an = a*n
+	bn = b*n
+	cn = c*n
+	dn = d*n
+    
+	factor =  90./E
+!       ts     = -dl/30.
+	ts     = -dl/sqrt(u(4)**2+u(5)**2+u(6)**2) ! to match MC OR - 4/04
+	
+	
+	dist0   = u(1)*an + u(2)*bn + u(3)*cn + dn
+	maxdist = max(ABS(dist0)*4.,1.0)
+	
+				! check for the tracking direction 
+!      CALL trgRK4(u,u1,ts)
+	CALL trgRK4Bdl(u,u1,ts)
+	dist1 = u1(1)*an + u1(2)*bn + u1(3)*cn + dn  
+	IF ((SIGN(1.,dist0) .EQ. SIGN(1.,dist1)) .AND.
+     >    (ABS(dist0) .LT. ABS(dist1))) ts=-ts
+         
+      ! track through the intersection plane
+      steps=0
+      max_steps = int(max(dist0,10.*dl)/dl)*10
+      if (SIGN(1.,dist0) .EQ. SIGN(1.,dist1)) then
+      dist1 = dist0   
+      DO WHILE ((SIGN(1.,dist0) .EQ. SIGN(1.,dist1)) .AND. ok) 
+!        CALL trgRK4(u1,u0,ts)
+        CALL trgRK4Bdl(u1,u0,ts)
+        dist0 = u0(1)*an + u0(2)*bn + u0(3)*cn + dn 
+        IF (SIGN(1.,dist0) .EQ. SIGN(1.,dist1)) THEN
+!          CALL trgRK4(u0,u1,ts)
+          CALL trgRK4Bdl(u0,u1,ts)
+          dist1 = u1(1)*an + u1(2)*bn + u1(3)*cn + dn  
+        ENDIF
+        ok = (ABS(dist1) .LT. maxdist) .and. steps .lt. max_steps
+        steps = steps + 1
+      ENDDO  
+      else
+         do i=1,6
+            u0(i) = u(i)
+         enddo
+      endif
+      
+
+
+      IF (ok) THEN        
+        ! calculate the intersection point
+        DO i=1,6
+          u(i) = u0(i) + (u1(i)-u0(i)) * dist0/(dist0-dist1)
+        ENDDO
+
+!	Bdl
+
+	do i=7,9
+          u(i) = u0(i) + (u1(i)-u0(i)) * dist0/(dist0-dist1)
+!	u(i)=u0(i)
+	end do
+
+      ENDIF
+                  
+      RETURN
+      END
 	
 *------------------------------------------------------------------------
 

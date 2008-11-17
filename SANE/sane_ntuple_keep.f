@@ -183,13 +183,24 @@ c         enddo
          hms_cer_npe2 = hcer_npe(2)
          hms_cer_adc1 = hcer_adc(1) 
          hms_cer_adc2 = hcer_adc(2)
+         call HFILL(10302,X_HMS,Y_HMS,1.) 
+c         if(nclust.eq.1)then
+         do i=1,nclust
+            call HFILL(10300,X_HMS,xclust(i)+Bigcal_SHIFT(1),1.) 
+            call HFILL(10304,X_HMS-Xclust(i)-Bigcal_SHIFT(1),Y_HMS-Yclust(i)-Bigcal_SHIFT(2),1.)
+            if(abs(X_HMS-xclust(i)).lt.20)then
+               call HFILL(10301,Y_HMS,Yclust(i)+Bigcal_SHIFT(2),1.) 
+               call HFILL(10303,Xclust(i)+Bigcal_SHIFT(1),Yclust(i)+Bigcal_SHIFT(2),1.)
+            endif
+         enddo
+c         endif
 
       endif
       rast_x       = gfry_raw_adc
       rast_y       = gfrx_raw_adc
       i_helicity   = gbeam_helicity_ADC
-      slow_rast_x  = gsr_beamx
-      slow_rast_y  = gsr_beamy
+      slow_rast_x  = -n_sr_slopex*(gsrx_raw_adc-n_sr_adcx_zero)
+      slow_rast_y  = -n_sr_slopey*(gsry_raw_adc-n_sr_adcy_zero)
       sem_x        = ntbpmx
       sem_y        = ntbpmy
       T_trgHMS     = gmisc_dec_data(11,1)
@@ -202,7 +213,7 @@ c         enddo
       call HFILL(10210,gsry_raw_adc,gsrx_raw_adc, 1.)
       call HFILL(10211,gfry_raw_adc,gfrx_raw_adc, 1.)
 
-      call HFILL(10212,-(gsry_raw_adc-n_sr_adcy_zero),-(gsrx_raw_adc-n_sr_adcx_zero), 1.)
+      call HFILL(10212,-n_sr_slopey*(gsry_raw_adc-n_sr_adcy_zero),-n_sr_slopex*(gsrx_raw_adc-n_sr_adcx_zero), 1.)
       call HFILL(10213,gfry_raw_adc,gfrx_raw_adc, 1.)
       do i =1,  nclust
          call Bigcal_Betta(i) 

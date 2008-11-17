@@ -20,6 +20,9 @@
 *-                           Dummy Shell routine
 *
 * $Log$
+* Revision 1.23.20.2.2.1  2008/11/17 01:17:55  cdaq
+* *** empty log message ***
+*
 * Revision 1.23.20.2  2007/11/06 19:14:42  cdaq
 *  fix zbeam calculation
 *
@@ -366,8 +369,8 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
       else
         hstheta = -10.
       endif
-      hsphi = atan(hs_kpvec(3)/hs_kpvec(2))
-
+      hsphi = atan2(hs_kpvec(3),hs_kpvec(2))
+c      write(*,*)hsphi*57.3, hphi_lab*57.3,htheta_lab
       sinhstheta = sin(hstheta)
       coshstheta = cos(hstheta)
 c      write(*,*) ' hsphi = ',hsphi,hphi_lab,hs_kpvec(3),hs_kpvec(2)

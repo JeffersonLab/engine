@@ -24,6 +24,9 @@
       include 'bigcal_shower_parms.cmn'
       include 'bigcal_geometry.cmn'
       include 'bigcal_bypass_switches.cmn'
+      include 'sane_data_structures.cmn'
+
+      include 'sane_ntuple.cmn'
 c
 c     local variables:
 c
@@ -44,7 +47,7 @@ c      logical fixed_bigcal
       real ycal_hexpect
       real Ecal_hexpect
       real tcal_hexpect
-      real Eprime,ethetarad,ephirad,Q2,nu
+      real Eprime,ethetarad,ephirad,Q2_gep,nu
       real pthetarad,pphirad
       real vx,vy,vz
       real etint
@@ -54,7 +57,20 @@ c      logical fixed_bigcal
       real nu_btheta
       real Ee_btheta 
       real hoffset_ctime,boffset_ctime,htrigt,btrigt,mindiff
+cc
+c
+c     Implementetion of the magnetic field for electron tracking to BIGCAL
+c
+cc
+      REAL*8 TARGET_COORD(6),Eprot,Pprot
+      COMMON/TARGET_GENRECON/TARGET_COORD,Eprot,Pprot
+      real*8 u(6),Eb,dl,temp
+      real*8 theta_big, phi_big!,ccx,ccy,ccz
 
+c      real*8 P1_bigcal(3),P2_bigcal(3),P3_bigcal(3)
+c      real*8 P1_bigcal_r(3),P2_bigcal_r(3),P3_bigcal_r(3)
+      logical ok
+ccccccccccccccccccccccccccccccc 
       real Mp
       parameter(Mp=.938272)
       
@@ -266,8 +282,86 @@ c      tcal_hexpect = bigcal_window_center
 
  173  continue
 
+cc
+c
+c     Implementetion of the magnetic field for electron tracking to BIGCAL
+c
+cc
+      if(a_bigcal.eq.0.and.b_bigcal.eq.0.and.c_bigcal.eq.0)then
+c     
+c     Define Bigcal plane
+c     
+               P1_bigcal(1) = 0 
+               P1_bigcal(2) = 0 
+               P1_bigcal(3) = Bigcal_SHIFT(3)
+               P2_bigcal(1) = 0 
+               P2_bigcal(2) = 1 
+               P2_bigcal(3) = Bigcal_SHIFT(3)
+               P3_bigcal(1) = 1 
+               P3_bigcal(2) = 0 
+               P3_bigcal(3) =  Bigcal_SHIFT(3)
+
+
+               call ROTATE(P1_bigcal, 0., -Bigcal_SHIFT(4)*3.141/180., 0. ,P1_bigcal_r)
+               call ROTATE(P2_bigcal, 0., -Bigcal_SHIFT(4)*3.141/180., 0. ,P2_bigcal_r)
+               call ROTATE(P3_bigcal, 0., -Bigcal_SHIFT(4)*3.141/180., 0. ,P3_bigcal_r)
+               temp           = P1_bigcal_r(2)
+               P1_bigcal_r(2) = P1_bigcal_r(1)
+               P1_bigcal_r(1) = temp
+               temp           = P2_bigcal_r(2)
+               P2_bigcal_r(2) = P2_bigcal_r(1)
+               P2_bigcal_r(1) = temp
+               temp           = P3_bigcal_r(2)
+               P3_bigcal_r(2) = P3_bigcal_r(1)
+               P3_bigcal_r(1) = temp
+               call Plane(P1_bigcal_r,P2_bigcal_r,P3_bigcal_r,
+     ,              a_bigcal,b_bigcal,c_bigcal,d_bigcal)
+               write(*,*)P1_bigcal_r,P2_bigcal_r,P3_bigcal_r
+      endif
+      CALL trgInitFieldANGLES(SANE_BETA_OMEGA,SANE_BETA_PHI)
+         
+      Eb   =  -Eprime*1000.
+      U(1) =  TARGET_COORD(1)
+      U(2) =  TARGET_COORD(2)
+      U(3) =  TARGET_COORD(3)
+c      U(4) =  -TARGET_COORD(4)
+c      U(5) =  -TARGET_COORD(5)
+c      U(6) =  29.979-TARGET_COORD(6)
+
+c      write(*,*)TARGET_COORD,Pprot,eprot
+c      write(*,*)etheta_expect*57.3,hsphi*57.3-270+180,ephi_expect*57.3,(ephi_expect-pi)*57.3
+      theta_big = etheta_expect
+      phi_big   = (ephi_expect)
+      U(4) =  sin(theta_big)*cos(phi_big)*29.979
+      U(5) =  sin(theta_big)*sin(phi_big)*29.979
+      U(6) =  cos(theta_big)*29.979
+      dl   =  0.1
+      ok   = .TRUE. 
+c      write(*,*)SANE_BETA_OMEGA,SANE_BETA_PHI
+c      write(*,*)a_bigcal,b_bigcal,c_bigcal,d_bigcal
+c      write(*,*)'Angles ',atan2()
+c      write(*,*)'At Target ',U
+      call  trgTrackToPlane(U,Eb,dl,
+     ,     a_bigcal,b_bigcal,c_bigcal,d_bigcal,ok)
+      p1_bigcal_r(1) =  u(2)
+      p1_bigcal_r(2) =  -u(1)
+      p1_bigcal_r(3) =  u(3)
+      
+      call ROTATE( P1_bigcal_r , 0., Bigcal_SHIFT(4)*3.141/180., 0. , P1_bigcal )
+c     
+c      write(*,*)'At BIGCAL ',U
+c      write(*,*)pthetarad*180/3.141,(hsphi - 3.*PI/2.)*180/3.141,etheta_expect*180/3.141,ephi_expect*180/3.141
+
+c      if(abs(P1_bigcal(2)).lt.120.and.abs(P1_bigcal(1)).lt.120)then
+c         write(*,*)'At BIGCAL ',P1_bigcal
+c         write(*,*)acos(ezhat_tar)*180/3.141,atan2(u(5)/29.97,u(4)/29.97)*180/3.141
+c      endif
+      
+ccccccccccccccccccccccc
       gep_bx_expect_H = xcal_hexpect
       gep_by_expect_H = ycal_hexpect
+      gep_bx_expect_H = P1_bigcal(1)
+      gep_by_expect_H = P1_bigcal(2)
 
       !write(*,*) 'bigcal e_hms,x_hms,y_hms=',Eprime,xcal_hexpect,ycal_hexpect
 
@@ -403,6 +497,7 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       
       include 'gep_data_structures.cmn'
       include 'bigcal_data_structures.cmn'
+      include 'bigcal_tof_parms.cmn'
 
       logical restore_E
       integer itrack,ibest
@@ -413,14 +508,13 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
 
       real PI
       parameter(PI=3.14159265359)
-
-
+      
       restore_E = .false.
-
+      
       if(bigcal_phys_ntrack.gt.0) then
          do itrack = 1,bigcal_phys_ntrack
             E_cal = bigcal_track_energy(itrack)
-
+            
             if(E_cal .gt. 10.0) then ! divide by 1000
                E_cal = E_cal / 1000.
                restore_E = .true.
@@ -428,13 +522,13 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
             
             TH_cal = bigcal_track_thetarad(itrack)
             PH_cal = bigcal_track_phirad(itrack) + PI/2.
-
-
+            
+            
             T_cal = bigcal_track_time(itrack) - bigcal_track_tof_cor(itrack) -
-     $(bigcal_end_time - gep_btime_elastic)
+     $           (bigcal_end_time - gep_btime_elastic)
             X_cal = bigcal_all_clstr_x(itrack)
             Y_cal = bigcal_all_clstr_y(itrack)
-
+            
             diffsum = 0.
             diffsum = diffsum + ( (E_cal - E_H)/GEP_sigma_Ediff )**2
             diffsum = diffsum + ( (TH_cal - TH_H)/GEP_sigma_thdiff )**2
@@ -442,7 +536,7 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
             diffsum = diffsum + ( (T_cal - T_H)/GEP_sigma_Tdiff )**2
             diffsum = diffsum + ( (X_cal - X_H)/GEP_sigma_Xdiff )**2
             diffsum = diffsum + ( (Y_cal - Y_H)/GEP_sigma_Ydiff )**2
-
+            
             if(itrack.eq.1) then
                mindiffsum = diffsum
                ibest = itrack
@@ -452,7 +546,7 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
                   ibest = itrack
                endif
             endif
-
+            
             bigcal_all_clstr_chi2(itrack) = diffsum/6.
             bigcal_all_clstr_chi2contr(itrack,1) = ( (E_cal - E_H)/GEP_sigma_Ediff )**2
             bigcal_all_clstr_chi2contr(itrack,2) = ( (TH_cal - TH_H)/GEP_sigma_thdiff )**2
@@ -462,7 +556,7 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
             bigcal_all_clstr_chi2contr(itrack,6) = ( (T_cal - T_H)/GEP_sigma_Tdiff )**2
             
             if(restore_E) E_cal = E_cal * 1000.
-
+            
          enddo
          pick_best_cal_track = ibest
       else

@@ -93,6 +93,7 @@ c$$$      endif
       if(bigcal_ntuple_type.eq.1) then ! col-wise ntuple for cluster analysis
          call hbset('BSIZE',8176,status)
          call HBNT(id,title,' ')
+      if(b_ntuple_switch.ne.0)then
 
         call HBNAME(id,'bevinfo',bgid,'bgid:I*4,bgtype:I*4,'//
      $        'btrigtype:I*4,btrigtime')
@@ -172,6 +173,7 @@ c        write(*,*) 'before adding hmsblk, gen_bigcal_mc=',gen_bigcal_mc
 c           write(*,*) 'adding block hmsblk to bigcal ntuple'
            call HBNAME(id,'hmsblk',TH_HMS,'TH_HMS,PH_HMS,E_HMS,'//
      $          'X_HMS,Y_HMS,dPel_HMS')
+        endif
         endif
       else if(bigcal_ntuple_type.eq.2) then ! col-wise ntuple for cosmics analysis
 
