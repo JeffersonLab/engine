@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19.6.2.2.3  2008/11/17 16:00:22  cdaq
+* Major revision to do tof calibration internatlly
+*
 * Revision 1.19.6.2.2.2  2008/10/28 21:03:18  cdaq
 * Changed default betap to 1
 *
@@ -43,7 +46,6 @@
 *
 * Revision 1.19.4.1  2007/05/02 21:19:30  jones
 * Add new code needed for  adjusting scintillator timing using P Bosted's method.
-* Only used when flag  htofusinginvadc.eq.1 .
 *
 * Revision 1.19  2005/03/15 21:08:08  jones
 * Add code to filter the scintillator tdc hits and group them by time. ( P. Bosted)
@@ -134,12 +136,17 @@
       integer timehist(200),i,j,jmax,maxhit,nfound
       real*4 time_pos(1000),time_neg(1000),tmin,time_tolerance
       logical keep_pos(1000),keep_neg(1000),first/.true./
+      integer nsv, idetsv(100)
+      real*8 tr0sv(100),psv(100),zcsv(100)
+      real*8 tc1sv(100),adcsv(100)
       save
 *
 *--------------------------------------------------------
 *
       ABORT= .FALSE.
       errmsg = ' '
+
+      nsv = 0
 
 c      if(hdumptof.eq.1) write(37,
 c     > '(''ntrk,tothits''2i4,f8.3)') 
@@ -196,21 +203,14 @@ c put in check for reasonable
           time_tolerance=htof_tolerance
         endif
 ! Use wide window if dumping events for fitting
-        if(hdumptof.eq.1) time_tolerance=300.0
+cc        if(hdumptof.eq.1) time_tolerance=25.0
         if(first) then
            first=.false.
            write(*,'(1x,''Using '',f8.2,'' nsec window for'',
      >     '' hms tof and fp calculations'')') time_tolerance
-           if(htofusinginvadc.eq.1) then
-!online             write(*,'(/1x,''TOF using 1/sqrt(ADC), separate '',
-!online     >         ''velocities for pos and neg tubes'')')
-           else
-!online             write(*,'(/1x,''TOF using ADC for slewing correction'',
-!online     >         ''  and same vecolicty for pos and neg tubes'')')
-           endif
            if(hdumptof.eq.1) 
-     >       write(*,'(/1x,''Dumping TDC, ADC to fort.37 for'',
-     >         ''  TOF calibration'')')
+     >       write(*,'(/1x,''TOF calibration being done:'',
+     >         ''  see output in HTOFCAL directory'')')
         endif
         nfound = 0
         do j=1,200
@@ -246,16 +246,9 @@ c put in check for reasonable
               time = hscin_tdc_pos(hit) * hscin_tdc_to_time
               time = time - (hscin_zpos(hit)/(29.979*betap) *
      &               sqrt(1. + hxp_fp(trk)**2 + hyp_fp(trk)**2))
-              if(htofusinginvadc.eq.1) then
-                time_pos(i) = time - hscin_pos_invadc_offset(hit) -
+              time_pos(i) = time - hscin_pos_invadc_offset(hit) -
      >            path / hscin_pos_invadc_linear(hit) -
      >            hscin_pos_invadc_adc(hit)/sqrt(max(20.,adc_ph))
-              else
-                time = time - hscin_pos_phc_coeff(hit) *
-     &               sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
-                time = time - path/hscin_vel_light(hit)
-                time_pos(i) = time - hscin_pos_time_offset(hit)
-              endif
               nfound = nfound + 1
               do j=1,200
                 tmin = 0.5*float(j)                
@@ -271,16 +264,9 @@ c put in check for reasonable
               time = hscin_tdc_neg(hit) * hscin_tdc_to_time
               time = time - (hscin_zpos(hit)/(29.979*betap) *
      &               sqrt(1. + hxp_fp(trk)**2 + hyp_fp(trk)**2))
-              if(htofusinginvadc.eq.1) then
-                time_neg(i) = time + hscin_neg_invadc_offset(hit) -
+              time_neg(i) = time - hscin_neg_invadc_offset(hit) -
      >            path / hscin_neg_invadc_linear(hit) -
      >            hscin_neg_invadc_adc(hit)/sqrt(max(20.,adc_ph))
-              else
-                time = time - hscin_neg_phc_coeff(hit) *
-     &               sqrt(max(0.,(adc_ph/hscin_neg_minph(hit)-1.)))
-                time = time - path/hscin_vel_light(hit)
-                time_neg(i) = time - hscin_neg_time_offset(hit)
-              endif
               nfound = nfound + 1
               do j=1,200
                 tmin = 0.5*float(j)                
@@ -369,40 +355,27 @@ c        endif
 *     Convert TDC value to time, do pulse height correction, correction for
 *     propogation of light thru scintillator, and offset.
               time = hscin_tdc_pos(hit) * hscin_tdc_to_time
-              if(htofusinginvadc.eq.1) then
-                hscin_pos_time(hit)=time - hscin_pos_invadc_offset(hit) -
+              hscin_pos_time(hit)=time - hscin_pos_invadc_offset(hit) -
      >            path / hscin_pos_invadc_linear(hit) -
      >            hscin_pos_invadc_adc(hit)/sqrt(max(20.,adc_ph))
-              else
-                time = time - hscin_pos_phc_coeff(hit) *
-     &               sqrt(max(0.,(adc_ph/hscin_pos_minph(hit)-1.)))
-                time = time - path/hscin_vel_light(hit)
-                hscin_pos_time(hit) = time - hscin_pos_time_offset(hit)
-              endif
               zcor =  (hscin_zpos(hit)/(29.979*betap) * sqrt(1.+
      >               hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
-c              if(hntracks_fp.eq.1.and.
-c              if(hntracks_fp.ne.0.and.
-c     >          hdumptof.eq.1.and.
-d     >          timehist(max(1,jmax)).gt.6) then
-c changed for now
-c     >          timehist(max(1,jmax)).gt.0) then
               if(hdumptof.eq.1) then
-                write(37,'(1x,''1'',2i3,5f10.3)') 
-     >             hscin_plane_num(hit),
-     >             hscin_counter_num(hit),
-     >             hscin_tdc_pos(hit) * hscin_tdc_to_time,
-     >             path,zcor,
-     >             hscin_pos_time(hit)-zcor,adc_ph
-c               write(39,'(1x,''1'',2i3,8f8.2)') 
-c    >             hscin_plane_num(hit),
-c    >             hscin_counter_num(hit),
-c    >             hscin_tdc_pos(hit) * hscin_tdc_to_time - zcor,
-c    >             hscin_pos_time(hit) - zcor,
-c    >             -1.*hscin_pos_invadc_offset(hit),
-c    >             -1./hscin_pos_invadc_linear(hit),path,
-c    >             -1.*hscin_pos_invadc_adc(hit),
-c    >              1./sqrt(max(20,adc_ph))
+c                write(37,'(1x,''1'',2i3,5f10.3)') 
+c     >             hscin_plane_num(hit),
+c     >             hscin_counter_num(hit),
+c     >             hscin_tdc_pos(hit) * hscin_tdc_to_time,
+c     >             path,zcor,
+c     >             hscin_pos_time(hit)-zcor,adc_ph
+                nsv = min(100, nsv + 1)
+                idetsv(nsv) = 20 * (hscin_plane_num(hit)-1) +
+     >            hscin_counter_num(hit)
+                tr0sv(nsv) = hscin_tdc_pos(hit) * 
+     >            hscin_tdc_to_time
+                psv(nsv) = path
+                zcsv(nsv) = zcor
+                tc1sv(nsv) = hscin_pos_time(hit)-zcor
+                adcsv(nsv) = adc_ph
               endif
             endif
 
@@ -416,39 +389,27 @@ c    >              1./sqrt(max(20,adc_ph))
               adc_ph = hscin_adc_neg(hit)
               path = hscin_long_coord(hit) - hscin_neg_coord(hit)
               time = hscin_tdc_neg(hit) * hscin_tdc_to_time
-              if(htofusinginvadc.eq.1) then
-                hscin_neg_time(hit)=time - hscin_neg_invadc_offset(hit) -
+              hscin_neg_time(hit)=time - hscin_neg_invadc_offset(hit) -
      >            path / hscin_neg_invadc_linear(hit) -
      >            hscin_neg_invadc_adc(hit)/sqrt(max(20.,adc_ph))
-              else
-                time = time - hscin_neg_phc_coeff(hit) *
-     &               sqrt(max(0.,(adc_ph/hscin_neg_minph(hit)-1.)))
-                time = time - path/hscin_vel_light(hit)
-                hscin_neg_time(hit) = time - hscin_neg_time_offset(hit)
-              endif
               zcor =  (hscin_zpos(hit)/(29.979*betap) * sqrt(1.+
      >               hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
-d              if(hntracks_fp.eq.1.and.
-c     >          hdumptof.eq.1.and.
-c     >          timehist(max(1,jmax)).gt.6) then
-c changed for now
-c     >          timehist(max(1,jmax)).gt.0) then
                if(hdumptof.eq.1) then
-                write(37,'(1x,''2'',2i3,5f10.3)') 
-     >             hscin_plane_num(hit),
-     >             hscin_counter_num(hit),
-     >             hscin_tdc_neg(hit) * hscin_tdc_to_time,
-     >             path,zcor,
-     >             hscin_neg_time(hit)-zcor,adc_ph
-c               write(39,'(1x,''1'',2i3,8f8.2)') 
-c    >             hscin_plane_num(hit),
-c    >             hscin_counter_num(hit),
-c    >             hscin_tdc_neg(hit) * hscin_tdc_to_time - zcor,
-c    >             hscin_neg_time(hit) - zcor,
-c    >             -1.*hscin_neg_invadc_offset(hit),
-c    >             -1./hscin_neg_invadc_linear(hit),path,
-c    >             -1.*hscin_neg_invadc_adc(hit),
-c    >              1./sqrt(max(20,adc_ph))
+c                write(37,'(1x,''2'',2i3,5f10.3)') 
+c     >             hscin_plane_num(hit),
+c     >             hscin_counter_num(hit),
+c     >             hscin_tdc_neg(hit) * hscin_tdc_to_time,
+c     >             path,zcor,
+c     >             hscin_neg_time(hit)-zcor,adc_ph
+                nsv = min(100, nsv + 1)
+                idetsv(nsv) = 20 * (hscin_plane_num(hit)-1) +
+     >            hscin_counter_num(hit) + 100
+                tr0sv(nsv) = hscin_tdc_neg(hit) * 
+     >            hscin_tdc_to_time
+                psv(nsv) = path
+                zcsv(nsv) = zcor
+                tc1sv(nsv) = hscin_neg_time(hit)-zcor
+                adcsv(nsv) = adc_ph
               endif
             endif
 
@@ -568,8 +529,10 @@ c        if(hntracks_fp.eq.1.and.
 c     >    hdumptof.eq.1.and.
 c     >     timehist(max(1,jmax)).gt.6) then
         if(hdumptof.eq.1) then
-           write(37,'(1x,''0'',2i3,5f10.3)') trk,hntracks_fp,
-     >      p, betap
+c           write(37,'(1x,''0'',2i3,5f10.3)') trk,hntracks_fp,
+c     >      p, betap
+          call h_tofcal_fill(nsv,idetsv,tr0sv,psv,zcsv,
+     >       tc1sv,adcsv)
         endif
       enddo                             !end of loop over tracks
 
@@ -577,4 +540,459 @@ c     >     timehist(max(1,jmax)).gt.6) then
 
       RETURN
       END
+
+
+
+! Fit TOF for Hall C HMS with the form for each PMT:
+! tcorr = time - offset - path * velocity - adccor / sqrt(ADC)
+! where offset, velocity, and adccor are parameters
+! September 20085 P. Bosted
+! Modified to run automatically during replay: no longer
+! any need to dump large text files
+! To activate, set hdumptof = 1 in hdebug.param in
+! the PARAM directory (can also do from command line)
+! The output parameters will be in tof/hodoxxxx.param, where
+! xxxxx is the run number
+! Normal values of invadc_offset are between -50 and 50,
+! normal values of invadc_velocity are between 12 and 17 (50 is
+! default if not enough data for the fit), and normal values of
+! shodo_pos_invadc_adc are 20 to 50. Normal values of the sigmas
+! are 0.3 to 0.8 nsec. 
+
+      subroutine h_tofcal_init
+! initialize common block variables at begin run
+      implicit none
+      integer i,j
+! common block variables
+      integer thist(200,10),adchist(200,18),phist(200,18)
+      integer nhit(200),ip1(200),ip2(200),ip3(200)
+      integer ipdet(600),iptyp(600),nparam
+      real*8 ax(1000,1000),bx(1000),avtime,ntime,avsig(200)
+      common/htofcal/ ax,bx,thist,adchist,phist,nhit,
+     >   ip1,ip2,ip3,ipdet,iptyp,avtime,ntime,avsig,nparam
+
+      nparam=0
+      do i=1,200
+        nhit(i)=0
+        ip1(i)=0
+        ip2(i)=0
+        ip3(i)=0
+        avsig(i)=0.
+        do j=1,10
+          thist(i,j)=0
+        enddo
+        do j=1,18
+          adchist(i,j)=0
+          phist(i,j)=0
+        enddo
+      enddo
+      do i=1,600
+        ipdet(i)=0
+        iptyp(i)=0
+      enddo
+
+! Initialize the fitting arrays
+      do i=1,1000
+        bx(i)=0.
+        do j=1,1000
+          ax(i,j)=0.
+        enddo
+      enddo
+
+      avtime = 0.
+      ntime = 0.
+
+      return
+      end
+
+      subroutine h_tofcal_fill(n,idet,tr0,p,zc,tc1,adc)
+! Fill in the arrays for HMS tof cal
+! Inputs are:
+! n  number of PMTs n
+! idet detector code (from 1 to 200)
+! tr0 TDCtime
+! p path length
+! zc time correction due to z 
+! tc1 corrected time using current variables
+! adc ADC
+
+      implicit none
+
+! local and input variables
+      integer i,j,k,n,idt,idet(100)
+      integer k1,k2,k3,k4,k5,k6
+      real*8 tr0(100),p(100),zc(100),tc1(100),p2(100),adc(100),tr(100)
+      real*8 dt,avval
+      logical first_time/.true./
+! common block variables
+      integer thist(200,10),adchist(200,18),phist(200,18)
+      integer nhit(200),ip1(200),ip2(200),ip3(200)
+      integer ipdet(600),iptyp(600),nparam
+      real*8 ax(1000,1000),bx(1000),avtime,ntime,avsig(200)
+      common/htofcal/ ax,bx,thist,adchist,phist,nhit,
+     >   ip1,ip2,ip3,ipdet,iptyp,avtime,ntime,avsig,nparam
+
+      if(first_time) then
+        first_time = .false.
+        call h_tofcal_init
+      endif
+
+! need at least 6 PMTs for fitting
+      if(n.le.5) return
+
+c      write(6,'(/i3,10f6.1)') n,(tc1(i),i=1,min(10,n))
+c      write(6,'(i3,10i6)') n,(idet(i),i=1,min(10,n))
+! Loop over all PMTs
+      avval = 0. 
+      do i=1,n
+! Check for valid detector code
+        if(idet(i).le.0.or.idet(i).gt.200) then
+          write(6,'(''ERROR, in h_tofcal, idet='',2i8)') i,idet(i)
+          return
+        endif
+
+! Fill in ADC histograms
+        k = min(18, max(1, (adc(i)/20.)+1))
+        adchist(idet(i), k) = adchist(idet(i), k) + 1 
+
+! correct raw times for zpos using betap
+        tr(i) = tr0(i)- zc(i)
+
+! Put 1./sqrt(ADC) in p2 variable
+        p2(i) = 1./sqrt(max(20., adc(i)))
+
+! Histogram path length variable
+        k = min(18, max(1, int(p(i)/7.)+1))
+        phist(idet(i), k) = phist(idet(i), k) + 1 
+! average time
+        avval = avval + tc1(i)
+      enddo
+      avval = avval / float(n)
+
+! Loop over PMTS again
+! Get average h_start_time and sigmas for each PMT
+! THESE SHOULD BE DONE on a 2nd iteration of the
+! TOF calibration for a given run, setting
+! h_tof_tolerance to something small like 3 nsec
+      do j=1,n
+        nhit(idet(j))=nhit(idet(j))+1
+        avsig(idet(j)) = avsig(idet(j)) + 
+     >    (tc1(j) - avval)**2
+
+! If first time detector used, assign corresponding parameters
+! Note that detector 4 had has a fixed time offset (ip1) of zero
+! since all times are relative. 
+        if(nhit(idet(j)).eq.1) then
+          if(idet(j).eq.4) then
+            ip1(idet(j))=0
+          else
+! fixed time offsets
+            nparam=nparam+1
+            ip1(idet(j))=nparam
+            ipdet(nparam)=idet(j)
+            iptyp(nparam)=1
+          endif
+
+! linear term in path
+! Changed 11/08 to make same for both pos. and neg. ends! 
+          if(idet(j).le.100) then
+           nparam=nparam+1
+           ip2(idet(j))=nparam
+           ip2(idet(j)+100)=nparam
+           ipdet(nparam)=idet(j)
+           iptyp(nparam)=2
+          endif
+
+! 1/sqrt(adc) terms (or could be path length**2 if desired)
+          nparam=nparam+1
+          ip3(idet(j))=nparam
+          ipdet(nparam)=idet(j)
+          iptyp(nparam)=3
+          k=idet(j)
+c          write(6,'(''h_tofcal_fill'',i3,4i5)') 
+c     >      k,nhit(k),ip1(k),ip2(k),ip3(k)
+        endif
+        avtime = avtime + tc1(j)
+        ntime = ntime + 1.
+       enddo ! loop over n
+
+! now loop over all pairs in fill in the matrix
+! Also, histogram time differences using current corrections
+       do j=1,n-1
+          do k=j+1,n
+            if(ip2(idet(j)).gt.0.and.ip2(idet(k)).gt.0) then
+              dt = tc1(j)-tc1(k)
+              idt = min(10,max(1,int((dt+5.))+1))
+              thist(idet(j),idt) = thist(idet(j),idt) + 1
+              dt = tc1(k)-tc1(j)
+              idt = min(10,max(1,int((dt+5.))+1))
+              thist(idet(k),idt) = thist(idet(k),idt) + 1
+              k1 = idet(j)
+              k2 = idet(k)
+              k1=ip1(idet(j))
+              k2=ip1(idet(k))
+              k3=ip2(idet(j))
+              k4=ip2(idet(k))
+              k5=ip3(idet(j))
+              k6=ip3(idet(k))
+              if(k1.gt.0) then
+                bx(k1) = bx(k1) - (tr(j)-tr(k))
+                ax(k1,k1) = ax(k1,k1) + 1.
+                ax(k1,k3) = ax(k1,k3) + p(j)
+                ax(k1,k4) = ax(k1,k4) - p(k)
+                ax(k1,k5) = ax(k1,k5) + p2(j)
+                ax(k1,k6) = ax(k1,k6) - p2(k)
+                ax(k3,k1) = ax(k3,k1) + p(j)
+                ax(k4,k1) = ax(k4,k1) - p(k)
+                ax(k5,k1) = ax(k5,k1) + p2(j)
+                ax(k6,k1) = ax(k6,k1) - p2(k)
+              endif
+              if(k1.gt.0.and.k2.gt.0) then
+                ax(k1,k2) = ax(k1,k2) - 1.
+                ax(k2,k1) = ax(k2,k1) - 1.
+              endif
+              if(k2.gt.0) then
+                bx(k2) = bx(k2) + (tr(j)-tr(k))
+                ax(k2,k2) = ax(k2,k2) + 1.
+                ax(k2,k3) = ax(k2,k3) - p(j)
+                ax(k2,k4) = ax(k2,k4) + p(k)
+                ax(k2,k5) = ax(k2,k5) - p2(j)
+                ax(k2,k6) = ax(k2,k6) + p2(k)
+                ax(k3,k2) = ax(k3,k2) - p(j)    
+                ax(k4,k2) = ax(k4,k2) + p(k)    
+                ax(k5,k2) = ax(k5,k2) - p2(j)    
+                ax(k6,k2) = ax(k6,k2) + p2(k)    
+              endif
+              bx(k3) = bx(k3) - (tr(j)-tr(k)) * p(j)
+              bx(k4) = bx(k4) + (tr(j)-tr(k)) * p(k)
+              bx(k5) = bx(k5) - (tr(j)-tr(k)) * p2(j)
+              bx(k6) = bx(k6) + (tr(j)-tr(k)) * p2(k)
+              ax(k3,k3) = ax(k3,k3) + p(j)*p(j)
+              ax(k3,k4) = ax(k3,k4) - p(k)*p(j)
+              ax(k3,k5) = ax(k3,k5) + p2(j)*p(j)
+              ax(k3,k6) = ax(k3,k6) - p2(k)*p(j)
+              ax(k4,k3) = ax(k4,k3) - p(j)*p(k)
+              ax(k4,k4) = ax(k4,k4) + p(k)*p(k)
+              ax(k4,k5) = ax(k4,k5) - p2(j)*p(k)
+              ax(k4,k6) = ax(k4,k6) + p2(k)*p(k)
+              ax(k5,k3) = ax(k5,k3) + p(j)*p2(j)
+              ax(k5,k4) = ax(k5,k4) - p(k)*p2(j)
+              ax(k5,k5) = ax(k5,k5) + p2(j)*p2(j)
+              ax(k5,k6) = ax(k5,k6) - p2(k)*p2(j)
+              ax(k6,k3) = ax(k6,k3) - p(j)*p2(k)
+              ax(k6,k4) = ax(k6,k4) + p(k)*p2(k)
+              ax(k6,k5) = ax(k6,k5) - p2(j)*p2(k)
+              ax(k6,k6) = ax(k6,k6) + p2(k)*p2(k)
+           endif
+         enddo
+      enddo
+
+
+      return
+      end
+
+
+      subroutine h_tofcal_endrun(runno)
+! Solve simultaneous linear equations for best values of
+! tof parameters, and write to file
+! local and input variables
+      implicit none
+
+      INCLUDE 'hms_data_structures.cmn'
+      include 'hms_scin_parms.cmn'
+      include 'hms_scin_tof.cmn'
+      integer i,j,runno,iwork(1000),ifail
+      real*8 toff(200),vel(200),quad(200)
+      character*80 fname
+! common block variables
+      integer thist(200,10),adchist(200,18),phist(200,18)
+      integer nhit(200),ip1(200),ip2(200),ip3(200)
+      integer ipdet(600),iptyp(600),nparam
+      real*8 ax(1000,1000),bx(1000),avtime,ntime,avsig(200)
+      common/htofcal/ ax,bx,thist,adchist,phist,nhit,
+     >   ip1,ip2,ip3,ipdet,iptyp,avtime,ntime,avsig,nparam
+
+
+! find the solutions
+      call deqn (nparam,ax,1000,iwork,ifail,1,bx)
+
+! association of parameters with detectors
+      do i=1,200
+        toff(i)=0
+        vel(i)=0.
+        quad(i)=0.
+      enddo
+
+      do i=1,nparam
+        if(iptyp(i).eq.1) toff(ipdet(i))=bx(i)
+        if(iptyp(i).eq.2)  vel(ipdet(i))=bx(i)
+        if(iptyp(i).eq.2)  vel(ipdet(i)+100)=bx(i)
+        if(iptyp(i).eq.3) quad(ipdet(i))=bx(i)
+      enddo
+
+
+! write solutions
+      write(fname,'(''HTOFCAL/htofcal'',i5.5,''.param'')') 
+     >  runno
+
+      open(unit=10,file=fname)
+
+      write(10,'(''; This parameter determines how close'',
+     >  '' in time the ''/
+     >  ''; corrected scint. have to be to each other. '',
+     >  '' For initial calibrations, use 50.  ''/
+     >  ''; For final calibration,use 3. For regular '',
+     >  '' running, use about 10.''/
+     >  ''; Used in h_trans_scin.f and h_tof.f''/
+     >  ''   htof_tolerance = '',f6.1)') 
+     >  htof_tolerance
+
+      write(10,'(/''; This is default (average) value'',
+     >  '' of start time for ''/
+     >  ''; drift chambers. It is used in h_trans_scin.f''/
+     >  ''   hstart_time_center = '',f6.1)') avtime/
+     >  max(1.,ntime)
+
+! copied from previous hhodo.param
+      write(10,'(/''; This is 1/2 width of winow'',
+     >  '' on hstart_time_center''/
+     >  ''; it is used in h_trans_scin.f''/
+     >  ''   hstart_time_slop = '',f6.1)') 
+     >  hstart_time_slop
+
+      write(10,'(/''; Minimum and Maximum raw TDC'',
+     >  '' that will be used ''/
+     >  ''; Check raw TDC spectra to make sure ok''/
+     >  ''   hscin_tdc_min = '',i6/ 
+     >  ''   hscin_tdc_max = '',i6)') 
+     >  int(hscin_tdc_min),int(hscin_tdc_max)
+
+      write(10,'(/''; TDC time in nsec per channel''/
+     >  ''   hscin_tdc_to_time = '',f8.4)') 
+     >  hscin_tdc_to_time
+
+      write(10,'(/''; Position tolerance in cm'',
+     >  '' used in efficiency calcultions ''/
+     >  ''; used in hms_scin_eff.f''/
+     >  ''   hhodo_slop = '',
+     >  f5.0,'','',f5.0,'','',f5.0,'','',f5.0)') 
+     >  (hhodo_slop(i),i=1,4)
+
+      write(10,'(/''hhodo_pos_invadc_offset ='',3(f8.2,'',''),
+     >  f8.2)') (-1.0*toff(i),i=1,80,20)
+      do j=2,16
+       write(10,'(1x,''                        '',3(f8.2,'',''),
+     >  f8.2)')(-1.0*toff(i),i=j,79+j,20)
+      enddo
+
+      write(10,'(/''hhodo_neg_invadc_offset ='',3(f8.2,'',''),
+     >  f8.2)')(-1.0*toff(i),i=101,180,20)
+      do j=2,16
+       write(10,'(1x,''                        '',3(f8.2,'',''),
+     >  f8.2)')(-1.0*toff(i),i=100+j,179+j,20)
+      enddo
+
+      write(10,'(/''hhodo_pos_invadc_linear ='',3(f8.2,'',''),
+     >  f8.2)')( -1./min(-0.02,vel(i)),i=1,80,20)
+      do j=2,16
+       write(10,'(1x,''                        '',3(f8.2,'',''),
+     >  f8.2)')(-1./min(-0.02,vel(i)),i=j,79+j,20)
+      enddo
+
+      write(10,'(/''hhodo_neg_invadc_linear ='',3(f8.2,'',''),
+     >  f8.2)')( -1./min(-0.02,vel(i)),i=101,180,20)
+      do j=2,16
+       write(10,'(1x,''                        '',3(f8.2,'',''),
+     >  f8.2)')(-1./min(-0.02,vel(i)),i=100+j,179+j,20)
+      enddo
+
+      write(10,'(/''hhodo_pos_invadc_adc='',3(f9.2,'',''),
+     >  f9.2)')(-1.*quad(i),i=1,80,20)
+      do j=2,16
+       write(10,'(1x,''                   '',3(f9.2,'',''),
+     >  f9.2)')(-1.*quad(i),i=j,79+j,20)
+      enddo
+
+      write(10,'(/''hhodo_neg_invadc_adc='',3(f9.2,'',''),
+     >  f9.2)')(-1.0*quad(i),i=101,180,20)
+      do j=2,16
+       write(10,'(1x,''                   '',3(f9.2,'',''),
+     >  f9.2)')(-1.*quad(i),i=100+j,179+j,20)
+      enddo
+
+      do i=1,200
+        avsig(i) = avsig(i) / max(1.,nhit(i))
+      enddo
+
+      write(10,'(/''hhodo_pos_sigma ='',3(f8.2,'',''),
+     >  f8.2)') (max(0.1,min(100.,avsig(i))),i=1,80,20)
+      do j=2,16
+       write(10,'(1x,''               '',3(f8.2,'',''),
+     >  f8.2)')(max(0.1,min(100.,avsig(i))),i=j,79+j,20)
+      enddo
+
+      write(10,'(/''hhodo_neg_sigma ='',3(f8.2,'',''),
+     >  f8.2)') (max(0.3,min(100.,avsig(i))),i=101,180,20)
+      do j=2,16
+       write(10,'(1x,''               '',3(f8.2,'',''),
+     >  f8.2)')(max(0.3,min(100.,avsig(i))),i=100+j,179+j,20)
+      enddo
+
+      write(10,'(/''hhodo_pos_ped_limit = 1000,'',
+     >  ''1000,1000,1000,1000,1000,1000,1000''/
+     >  22x,''1000,1000,1000,1000,1000,1000,1000,1000''/   
+     >  22x,''1000,1000,1000,1000,1000,1000,1000,1000''/   
+     >  22x,''1000,1000,1000,1000,1000,1000,1000,1000''/   
+     >  22x,''1000,1000,1000,1000,1000,1000,1000,1000''/   
+     >  22x,''1000,1000,1000,1000,1000,1000,1000,1000''/   
+     >  22x,''1000,1000,1000,1000,1000,1000,1000,1000''/   
+     >  22x,''1000,1000,1000,1000,1000,1000,1000,1000'')')
+
+      write(10,'(/''hhodo_neg_ped_limit = 1000,'',
+     >  ''1000,1000,1000,1000,1000,1000,1000''/
+     >  22x,''1000,1000,1000,1000,1000,1000,1000,1000''/   
+     >  22x,''1000,1000,1000,1000,1000,1000,1000,1000''/   
+     >  22x,''1000,1000,1000,1000,1000,1000,1000,1000''/   
+     >  22x,''1000,1000,1000,1000,1000,1000,1000,1000''/   
+     >  22x,''1000,1000,1000,1000,1000,1000,1000,1000''/   
+     >  22x,''1000,1000,1000,1000,1000,1000,1000,1000''/   
+     >  22x,''1000,1000,1000,1000,1000,1000,1000,1000'')')
+
+      close(unit=10)
+
+! Diagnositc information 
+      write(fname,'(''HTOFCAL/htofcal'',i5.5,''.diag'')') 
+     >  runno
+      open(unit=10,file=fname)
+
+      write(10,'(1x,''ifail='',i10,
+     >  '' (desired value is 0 if fit worked)'')') ifail
+
+      do i=1,100
+       if(nhit(i).gt.0 .or.nhit(100+i).gt.0.) then
+        write(10,'(i3,2i6,6f7.1)') i,nhit(i),nhit(100+i),
+     >    -toff(i),-toff(100+i),-1./vel(i),-1./vel(100+i),
+     >    -quad(i),-quad(100+i) 
+       endif
+      enddo
+      write(10,'(''ADCHIST'')')
+      do i=1,200
+        if(nhit(i).gt.0) write(10,'(i4,16i4)') 
+     >    i,(adchist(i,j/10),j=1,16)
+      enddo
+      write(10,'(''THIST'')')
+      do i=1,200
+        if(nhit(i).gt.0) write(10,'(i4,10i5)') 
+     >    i,(thist(i,j)/100,j=1,10)
+      enddo
+      write(10,'('' PHIST'')')
+      do i=1,200
+        if(nhit(i).gt.0) write(10,'(i4,16i4)') 
+     >    i,(phist(i,j)/20,j=1,16)
+      enddo
+
+      close(unit=10)
+
+      return
+      end
 
