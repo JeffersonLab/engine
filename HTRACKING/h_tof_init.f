@@ -9,6 +9,9 @@
 *
 * modifications: 31 Mar 1994    DFG  Check for 0 hits
 * $Log$
+* Revision 1.6.24.1.2.1  2008/11/17 15:58:44  cdaq
+* Removed old tof varaibles
+*
 * Revision 1.6.24.1  2007/10/24 16:37:16  cdaq
 * *** empty log message ***
 *
@@ -59,13 +62,6 @@
           hscin_pos_sigma(ihit) = hhodo_pos_sigma(plane,counter)
           hscin_neg_sigma(ihit) = hhodo_neg_sigma(plane,counter)
           hscin_center_coord(ihit) = hhodo_center(plane,counter)
-          hscin_vel_light(ihit) = hhodo_vel_light(plane,counter)
-          hscin_pos_phc_coeff(ihit) = hhodo_pos_phc_coeff(plane,counter)
-          hscin_neg_phc_coeff(ihit) = hhodo_neg_phc_coeff(plane,counter)
-          hscin_pos_time_offset(ihit) = hhodo_pos_time_offset(plane,counter)
-          hscin_neg_time_offset(ihit) = hhodo_neg_time_offset(plane,counter)
-          hscin_pos_minph(ihit) = hhodo_pos_minph(plane,counter)
-          hscin_neg_minph(ihit) = hhodo_neg_minph(plane,counter)
           hscin_pos_invadc_offset(ihit) = 
      >      hhodo_pos_invadc_offset(plane,counter)
           hscin_neg_invadc_offset(ihit) = 

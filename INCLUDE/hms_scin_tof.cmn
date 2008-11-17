@@ -1,6 +1,9 @@
 * hms_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the hms time of flight.
 * $Log$
+* Revision 1.12.6.1.2.1  2008/11/17 15:57:00  cdaq
+* Removed old tof varaibles
+*
 * Revision 1.12.6.1  2007/10/24 16:37:21  cdaq
 * *** empty log message ***
 *
@@ -69,11 +72,6 @@
       real*4 hscin_neg_time(hmax_scin_hits)
       real*4 hscin_sigma(hmax_scin_hits)
       real*4 hscin_time(hmax_scin_hits)
-      real*4 hscin_vel_light(hmax_scin_hits)
-      real*4 hscin_pos_phc_coeff(hmax_scin_hits)
-      real*4 hscin_neg_phc_coeff(hmax_scin_hits)
-      real*4 hscin_pos_time_offset(hmax_scin_hits)
-      real*4 hscin_neg_time_offset(hmax_scin_hits)
       real*4 hscin_time_fp(hmax_scin_hits)
       real*4 hscin_pos_invadc_offset(hmax_scin_hits)
       real*4 hscin_neg_invadc_offset(hmax_scin_hits)
@@ -85,8 +83,6 @@
 *
 *     CTPTYPE=parm
 *
-      real*4 hscin_pos_minph(hmax_scin_hits) ! ADC Offset for PH correction
-      real*4 hscin_neg_minph(hmax_scin_hits) ! ADC Offset for PH correction
       real*4 hscin_tdc_min
       real*4 hscin_tdc_max
       real*4 hscin_tdc_to_time
@@ -112,10 +108,6 @@
      &     hscin_pos_time, hscin_neg_time, !time for 'pos' and 'neg' tubes.
      &     hscin_sigma,                 !time resolution for scin.
      &     hscin_time,                  !time for scin. (ave of tubes)
-     &     hscin_vel_light,
-     &     hscin_pos_phc_coeff,hscin_neg_phc_coeff,
-     &     hscin_pos_time_offset,hscin_neg_time_offset,
-     &     hscin_pos_minph, hscin_neg_minph,
      &     hscin_tdc_min,
      &     hscin_tdc_max,
      &     hscin_tdc_to_time,

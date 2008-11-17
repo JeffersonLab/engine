@@ -11,6 +11,9 @@
 *       Modified 23 March 1994   DFG
 *           Add definition of hnum_scin_elements and set parameter value
 * $Log$
+* Revision 1.11.24.1.2.1  2008/11/17 15:57:39  cdaq
+* Removed old tof varaibles
+*
 * Revision 1.11.24.1  2007/10/24 16:37:21  cdaq
 * *** empty log message ***
 *
@@ -144,22 +147,14 @@
 
 *     callibration type variables.
       real*4 hhodo_slop(hnum_scin_planes)
-      real*4 hhodo_vel_light(hnum_scin_planes,hnum_scin_elements)
       real*4 hhodo_pos_sigma(hnum_scin_planes,hnum_scin_elements)
       real*4 hhodo_neg_sigma(hnum_scin_planes,hnum_scin_elements)
-      real*4 hhodo_pos_phc_coeff(hnum_scin_planes,hnum_scin_elements)
-      real*4 hhodo_neg_phc_coeff(hnum_scin_planes,hnum_scin_elements)
-      real*4 hhodo_pos_time_offset(hnum_scin_planes,hnum_scin_elements)
-      real*4 hhodo_neg_time_offset(hnum_scin_planes,hnum_scin_elements)
-      real*4 hhodo_pos_minph(hnum_scin_planes,hnum_scin_elements) ! ADC offset for PH correction
-      real*4 hhodo_neg_minph(hnum_scin_planes,hnum_scin_elements) ! ADC offset for PH correction
       real*4 hhodo_pos_invadc_offset(hnum_scin_planes,hnum_scin_elements)
       real*4 hhodo_neg_invadc_offset(hnum_scin_planes,hnum_scin_elements)
       real*4 hhodo_pos_invadc_linear(hnum_scin_planes,hnum_scin_elements)
       real*4 hhodo_neg_invadc_linear(hnum_scin_planes,hnum_scin_elements)
       real*4 hhodo_pos_invadc_adc(hnum_scin_planes,hnum_scin_elements)
       real*4 hhodo_neg_invadc_adc(hnum_scin_planes,hnum_scin_elements)
-      integer htofusinginvadc
 
 *     correction parameters and position information converted to arryas
 *     over plane and counter
@@ -171,22 +166,14 @@
      &     hhodo_pos_coord,
      &     hhodo_neg_coord,
      &     hhodo_slop,
-     &     hhodo_vel_light,
      &     hhodo_pos_sigma,
      &     hhodo_neg_sigma,
-     &     hhodo_pos_phc_coeff,
-     &     hhodo_neg_phc_coeff,
-     &     hhodo_pos_time_offset,
-     &     hhodo_neg_time_offset,
-     $     hhodo_pos_minph,
-     $     hhodo_neg_minph,
      >     hhodo_pos_invadc_offset,
      >     hhodo_neg_invadc_offset,
      >     hhodo_pos_invadc_linear,
      >     hhodo_neg_invadc_linear,
      >     hhodo_pos_invadc_adc,
-     >     hhodo_neg_invadc_adc,
-     >     htofusinginvadc
+     >     hhodo_neg_invadc_adc
 *
 *
 * hms_misc_parms.cmn -  misc tdc's filled as array over signal number
