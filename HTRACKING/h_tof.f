@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19.6.2.2.5  2008/11/19 12:46:50  cdaq
+* Add line to reutrn if nparam < 1
+*
 * Revision 1.19.6.2.2.4  2008/11/17 16:03:47  cdaq
 * Fixed minor bug in printing of ADCHIST
 *
@@ -817,6 +820,7 @@ c     >      k,nhit(k),ip1(k),ip2(k),ip3(k)
 
 
 ! find the solutions
+      if (nparam .lt. 1) return
       call deqn (nparam,ax,1000,iwork,ifail,1,bx)
 
 ! association of parameters with detectors
