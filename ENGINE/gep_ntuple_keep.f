@@ -23,6 +23,7 @@
       real zclose_store,sclose_store
       real theta_store,phi_store,chi2_store
       integer conetest_store,track_store,nhits_store,nplanes_store
+      integer ref_store
       real zanalyzer(2)
       
       logical HEXIST ! cernlib function
@@ -235,6 +236,8 @@ c
          gep_ntuple_contents(m) = chi2_store
       enddo
 c     initialize variables for FPP2 relative to FPP1
+      track_store = 0
+      ref_store = 0
       theta_store = 1.0e15
       phi_store = 1.0e15
       conetest_store = -1
@@ -249,8 +252,10 @@ c     initialize variables for FPP2 relative to FPP1
          conetest_store = hfpp_track_conetest(3,track_store)
          sclose_store = hfpp_track_sclose(3,track_store)
          zclose_store = hfpp_track_zclose(3,track_store)
+         ref_store = hfpp2_best_reference(track_store)
       endif
-      
+      m=m+1
+      gep_ntuple_contents(m) = float(ref_store)
       m=m+1
       gep_ntuple_contents(m) = zclose_store
       m=m+1

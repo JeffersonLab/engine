@@ -214,6 +214,8 @@
       m=m+1
       gep_ntuple_tag(m) = 'chi2fpp2' ! chi2/df of chosen track in FPP2
       m=m+1
+      gep_ntuple_tag(m) = 'bestref' ! track number in FPP1 of best reference track for chosen in FPP2
+      m=m+1
       gep_ntuple_tag(m) = 'zclos3' ! zclose of FPP2 relative to FPP1
       m=m+1
       gep_ntuple_tag(m) = 'sclos3' ! sclose of FPP2 relative to FPP1
