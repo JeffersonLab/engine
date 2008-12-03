@@ -1,5 +1,8 @@
 **************** begin: gen_pawspace.cmn **********************
 *     $Log$
+*     Revision 1.2.24.5  2008/12/03 17:35:33  puckett
+*     updated common blocks to include new variables
+*
 *     Revision 1.2.24.4  2008/09/23 22:33:17  brash
 *     Modify to reduce memory usage - important for running on batch farm nodes ... EJB
 *
@@ -22,7 +25,7 @@
 *-sizes of CERNLIB working space
 *
       INTEGER G_sizeHBOOK,G_sizeHIGZ,G_sizeKUIP,G_sizePAW
-      PARAMETER (G_sizeHBOOK= 2000000)
+      PARAMETER (G_sizeHBOOK= 3000000)
       PARAMETER (G_sizeHIGZ=   50000)
       PARAMETER (G_sizeKUIP=   75000)
       PARAMETER (G_sizePAW=G_sizeHIGZ+G_sizeKUIP+

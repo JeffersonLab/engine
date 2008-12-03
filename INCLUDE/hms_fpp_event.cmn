@@ -113,6 +113,7 @@
       integer*4 HFPP_TrackCluster    ! Clusters used in track
       integer*4 HFPP_TrackHit        ! above cluster reduced to 1 wire
       integer*4 HFPP_track_conetest  ! conetest variable
+      integer*4 hfpp2_best_reference  ! for FPP2, the best reference track from either HMS or FPP1:
 
       real*4 HFPP_track_residual     ! uTrack - (uWire + drift)
       real*4 HFPP_track_resolution   !  similar but uses special tracking
@@ -150,6 +151,7 @@
      &  , HFPP_TrackHit(H_FPP_N_DCSETS,H_FPP_N_DCINSET,
      >                  H_FPP_N_DCLAYERS,H_FPP_MAX_TRACKS)
      &  , HFPP_track_conetest(H_FPP_N_DCSETS+1,H_FPP_MAX_TRACKS)
+     $  , hfpp2_best_reference(h_fpp_max_tracks)
      &  , HFPP_track_x(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
      &  , HFPP_track_dx(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
      &  , HFPP_track_y(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)

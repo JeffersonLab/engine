@@ -17,6 +17,9 @@
 *                add     hdc_xcenter
 *                        hdc_ycenter
 * $Log$
+* Revision 1.11.24.4  2008/12/03 17:35:34  puckett
+* updated common blocks to include new variables
+*
 * Revision 1.11.24.3  2008/04/23 17:58:25  brash
 * *** empty log message ***
 *
@@ -196,6 +199,11 @@
       real*4 HFPP_alpha         ! rotation angle alpha of each chamber set
       real*4 HFPP_beta  	! rotation angle beta  of each chamber set
       real*4 HFPP_gamma 	! rotation angle gamma of each chamber set
+*     alternative rotation angles for the FPP (AJP 11/11/2008):
+      real*4 HFPP_alpha_x       ! rotation angle about the x axis
+      real*4 HFPP_alpha_y       ! rotation angle about the y axis
+      real*4 HFPP_alpha_z       ! rotation angle about the z axis
+      integer*4 hfppuseajprotation ! flag to turn on usage of these angles
 
       real*4 HFPP_Xoff	        ! x offset in lab of each chamber set (cm)
       real*4 HFPP_Yoff	        ! y offset in lab of each chamber set (cm)
@@ -231,6 +239,10 @@
      &   , HFPP_alpha(H_FPP_N_DCSETS)
      &   , HFPP_beta(H_FPP_N_DCSETS)
      &   , HFPP_gamma(H_FPP_N_DCSETS)
+     $   , HFPP_alpha_x(H_FPP_N_DCSETS)
+     $   , HFPP_alpha_y(H_FPP_N_DCSETS)
+     $   , HFPP_alpha_z(H_FPP_N_DCSETS)
+     $   , hfppuseajprotation
      &   , HFPP_Xoff(H_FPP_N_DCSETS)
      &   , HFPP_Yoff(H_FPP_N_DCSETS)
      &   , HFPP_Xoff_fine(H_FPP_N_PLANES)
