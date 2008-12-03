@@ -142,6 +142,7 @@ c      call HLIMIT(nh)
      1 //',hsytar:R'
      1 //',hsxptar:R'
      1 //',hsyptar:R'
+     1 //',hschi2df:R'
      1
      1 //',trig_TDC1:I*4'
      1 //',trig_TDC2:I*4'
@@ -158,9 +159,11 @@ c      call HLIMIT(nh)
      1// ',h1_resid(Nhits1):R'
      1// ',h1_d_HMS(Nhits1):R'
      1
-     1// ',Ntrack[0,18]:U*4'
+     1// ',Ntrack[0,18]:I*4'
+     1// ',Ntrack1[0,9]:I*4' 
      1// ',Pol(Ntrack)[0,2]:U*4'
      1// ',trackNo(Ntrack)[0,9]:U*4'
+     1// ',trk_best(2)[0,9]:I*4'    
      1// ',trk_hits(Ntrack)[0,6]:U*4'
      1// ',trk_conet(Ntrack):I*4'
      1// ',trk_s_xp(Ntrack):R'

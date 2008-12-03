@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *
 * $Log$
+* Revision 1.15.24.4  2008/12/03 17:26:01  puckett
+* added several vars to FPP ntuple, added initialization of new variables to h_clear_event
+*
 * Revision 1.15.24.3  2008/10/10 21:26:29  puckett
 * it:RupK: Command not found.
 *
@@ -185,6 +188,10 @@ cfrw       enddo
         hfpp_N_tracks(iSet) = 0
         hfpp_best_track(iSet) = 0
       enddo !iSet
+      
+      do i=1,h_fpp_max_tracks
+         hfpp2_best_reference(i) = 0
+      enddo
 
 *     *  FPP F1 trigger time references
       do i=0,G_DECODE_MAXROCS

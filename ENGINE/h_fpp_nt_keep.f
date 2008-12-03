@@ -75,6 +75,7 @@ c      write(*,*)'Beam helicity = ',gbeam_helicity_TS,gbeam_helicity
       cwnFPP_hsytar   = HSY_TAR
       cwnFPP_hsxptar  = HSXP_TAR
       cwnFPP_hsyptar  = HSYP_TAR
+      cwnFPP_hschi2df = hschi2perdeg
 
 *******  global FPP info
 c      WRITE(*,*)HFPP_TRIGGER_TDC(1)
@@ -91,6 +92,7 @@ c      WRITE(*,*)HFPP_RAW_TOT_HITS
       n = 0
       trkoffset = 0
       do iSet=1,2  ! Upstream & downstream polarimeter
+         cwnFPP_trk_best(iSet) = hfpp_best_track(iSet)
        do iCham=1, H_FPP_N_DCINSET	! record all 1st hits on all wires (=all cluster hits)
 	do iLay=1, H_FPP_N_DCLAYERS
 
@@ -157,6 +159,7 @@ c      WRITE(*,*)HFPP_RAW_TOT_HITS
        enddo !iTrk
       enddo !iSet
       cwnFPP_Ntracks = n
+      cwnFPP_Ntracks1 = hfpp_n_tracks(1)
       
 
 ************************************************
