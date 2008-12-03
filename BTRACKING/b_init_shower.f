@@ -9,7 +9,7 @@
       logical ABORT
       character*(*) err
 
-      integer irow,icol,ipar,icell,i,j
+      integer irow,icol,ipar,icell,i,j,nbinstot
 
       include 'bigcal_data_structures.cmn'
       include 'bigcal_shower_parms.cmn'
@@ -66,18 +66,20 @@ c$$$      write(*,*) 'rcs_ypar = ',bigcal_rcs_ypar
 c     initialize shower maps
 
       if(b_recon_using_map.ne.0) then
+         nbinstot = 0
          do i=1,28
             do j=1,bigcal_xmap_nbin(i)
-               bigcal_xmap_xfrac(i,j) = bigcal_xmap_frac(j+
-     $              bigcal_xmap_nbin(i)*(i-1))
+               bigcal_xmap_xfrac(i,j) = bigcal_xmap_frac(j+nbinstot)
             enddo
+            nbinstot = nbinstot + bigcal_xmap_nbin(i)
          enddo
          
+         nbinstot = 0
          do i=1,28
             do j=1,bigcal_ymap_nbin(i)
-               bigcal_ymap_yfrac(i,j) = bigcal_ymap_frac(j+
-     $              bigcal_ymap_nbin(i)*(i-1))
+               bigcal_ymap_yfrac(i,j) = bigcal_ymap_frac(j+nbinstot)
             enddo
+            nbinstot = nbinstot + bigcal_ymap_nbin(i)
          enddo
       endif
 

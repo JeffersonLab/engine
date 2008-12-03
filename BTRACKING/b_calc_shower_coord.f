@@ -158,8 +158,17 @@ c     This is a small correction of at MOST 2 cm
             x = xcenter + xdiff
             y = ycenter + ydiff
 
-            xshift = tmax * x / sqrt(x**2 + bigcal_r_tgt**2) ! sin(thetax) of incident electron
-            yshift = tmax * y / sqrt(y**2 + bigcal_r_tgt**2) ! sin(thetay) of incident electron
+            if(b_use_distcorr.ne.0) then
+
+               xshift = tmax * x / sqrt(x**2 + bigcal_r_tgt**2) ! sin(thetax) of incident electron
+               yshift = tmax * y / sqrt(y**2 + bigcal_r_tgt**2) ! sin(thetay) of incident electron
+
+            else 
+               
+               xshift = 0.0
+               yshift = 0.0
+               
+            endif
 
             bigcal_all_clstr_x(i) = xcenter + xdiff - xshift
             bigcal_all_clstr_y(i) = ycenter + ydiff - yshift
