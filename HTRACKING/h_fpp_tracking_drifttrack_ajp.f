@@ -53,7 +53,7 @@
       real*4 plusminusbest(h_fpp_max_fitpoints)
       real*4 plusminustest(h_fpp_max_fitpoints)
       
-      real*4 sclosweight,criterion,theta1,theta2
+      real*4 sclosweight,criterion,theta1,theta2,mintheta
 
       real*4 chi2_1,chi2_2,sclos1,sclos2,chi2_H
 
@@ -64,6 +64,7 @@
       integer*4 npoints,nclusters,npointsthislayer(h_fpp_n_dcinset,h_fpp_n_dclayers)
 
       integer*4 ntrackpoints,bestcombo,worstpoint,ntrackplanes
+      integer*4 bestref,jtrack
 
       logical plusminusfixed(h_fpp_max_fitpoints),notunique
 
@@ -734,6 +735,55 @@ c         write(*,*) 'residual^2/sigma^2=',maxresidual
 
             hfpp_track_conetest(dcset,itrack) = icone
  
+            if(dcset.eq.2) then ! figure out theta,phi,sclose,zclose of fpp2 track relative to fpp1 track. 
+c     if multiple FPP1 tracks, store relative angles and closest approach to the track in FPP1 for which theta of 
+c     the track in FPP2 is minimimum
+               firsttry=.true.
+               bestref = 0
+               
+               do jtrack=1,hfpp_n_tracks(1)
+                  call h_fpp_relative_angles(hfpp_track_dx(1,jtrack),
+     $                 hfpp_track_dy(1,jtrack),hfpp_track_dx(dcset,itrack),
+     $                 hfpp_track_dy(dcset,itrack),theta,phi)
+                  if(firsttry.or.theta.lt.mintheta) then
+                     firsttry=.false.
+                     mintheta = theta
+                     bestref = jtrack
+                  endif
+               enddo
+
+               hfpp2_best_reference(itrack) = bestref
+c     calculate values to store in common block:
+               if(bestref.gt.0) then
+                  call h_fpp_relative_angles(hfpp_track_dx(1,bestref),
+     $                 hfpp_track_dy(1,bestref),
+     $                 hfpp_track_dx(dcset,itrack),
+     $                 hfpp_track_dy(dcset,itrack),theta,phi)
+                  hfpp_track_theta(dcset+1,itrack) = theta
+                  hfpp_track_phi(dcset+1,itrack) = phi
+c     calculate closest approach variables relative to "best" reference track:
+                  hmstrack(1) = hfpp_track_dx(1,bestref)
+                  hmstrack(2) = hfpp_track_x(1,bestref)
+                  hmstrack(3) = hfpp_track_dy(1,bestref)
+                  hmstrack(4) = hfpp_track_y(1,bestref)
+                  
+                  fpptrack(1) = hfpp_track_dx(dcset,itrack)
+                  fpptrack(2) = hfpp_track_x(dcset,itrack)
+                  fpptrack(3) = hfpp_track_dy(dcset,itrack)
+                  fpptrack(4) = hfpp_track_y(dcset,itrack)
+                  
+                  call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
+
+                  hfpp_track_sclose(dcset+1,itrack) = sclose
+                  hfpp_track_zclose(dcset+1,itrack) = zclose
+
+                  icone = 1
+                  
+                  call h_fpp_conetest(hmstrack,dcset,zclose,theta,icone)
+                  
+                  hfpp_track_conetest(dcset+1,itrack) = icone
+               endif
+            endif   
          endif
       endif
 

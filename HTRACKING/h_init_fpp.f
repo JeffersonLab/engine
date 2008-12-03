@@ -31,6 +31,7 @@
       integer*4 ilab, iloc, ii, wlo, whi, wstep, sign
       real*4 sinalpha, sinbeta, singamma
       real*4 cosalpha, cosbeta, cosgamma
+      real*4 alphax,alphay,alphaz
       real*4 matrix(3,3)
       real*4 Imatrix(3,3)
 
@@ -194,6 +195,24 @@ c
             Imatrix(3,2) =	         sinbeta*singamma
             Imatrix(3,3) =	         cosbeta
 
+            if(hfppuseajprotation.ne.0) then
+               alphax = hfpp_alpha_x(iset)
+               alphay = hfpp_alpha_y(iset)
+               alphaz = hfpp_alpha_z(iset)
+
+               Imatrix(1,1) = cos(alphay)*cos(alphaz)
+               Imatrix(1,2) = -cos(alphay)*sin(alphaz)
+               Imatrix(1,3) = sin(alphay)
+              
+               Imatrix(2,1) = cos(alphax)*sin(alphaz)+sin(alphax)*sin(alphay)*cos(alphaz)
+               Imatrix(2,2) = cos(alphax)*cos(alphaz)-sin(alphax)*sin(alphay)*sin(alphaz)
+               Imatrix(2,3) = -cos(alphay)*sin(alphax)
+
+               Imatrix(3,1) = sin(alphax)*sin(alphaz) - cos(alphax)*sin(alphay)*cos(alphaz)
+               Imatrix(3,2) = sin(alphax)*cos(alphaz) + cos(alphax)*sin(alphay)*sin(alphaz)
+               Imatrix(3,3) = cos(alphax)*cos(alphay)
+            endif
+
 *           * now copy the easy-to-read local matrix to the shared array
 *           * note the reversal of indices between the matrices!!
             do ilab=1,3
@@ -202,7 +221,7 @@ c
                 HFPP_Irotation(iset,ilab,iloc) = Imatrix(ilab,iloc)
               enddo !iloc
             enddo !ilab
-
+               
       enddo !iset
 
 

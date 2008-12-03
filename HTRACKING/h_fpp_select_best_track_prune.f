@@ -21,7 +21,7 @@
       integer besttrack(2)
       integer icone
 
-      integer nplanesprune
+      integer nplanesprune,bestreferencetrack
 
       real zslop ! theta-dependent tolerance parameter for zclose
 
@@ -54,6 +54,7 @@ c     after the theta prune test, conetest, sclose and zclose pruning? Seems lik
 c     first step: initialize keep on all tracks to true:
 c     while we're at it, find the track with minimum chi2 in each FPP:
 
+
       do ifpp=1,2
 c         firsttry=.true.
          do itrack=1,hfpp_n_tracks(ifpp)
@@ -68,12 +69,17 @@ c            endif
          enddo
       enddo
 
-c     zeroth prune test = conetest:
+c     zeroth prune test = conetest
+c     for FPP2, check conetest using either HMS or FPP1 as reference track
       do ifpp=1,2
          ngood(ifpp) = 0
          do itrack=1,hfpp_n_tracks(ifpp)
             if(hfpp_track_conetest(ifpp,itrack).eq.1.and.
      $           keep(ifpp,itrack)) then
+               ngood(ifpp) = ngood(ifpp) + 1
+            else if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0.and.
+     $              hfpp_track_conetest(ifpp+1,itrack).eq.1.and.
+     $              keep(ifpp,itrack)) then
                ngood(ifpp) = ngood(ifpp) + 1
             endif
          enddo
@@ -81,7 +87,12 @@ c     zeroth prune test = conetest:
          if(ngood(ifpp).gt.0) then
             do itrack=1,hfpp_n_tracks(ifpp)
                if(hfpp_track_conetest(ifpp,itrack).eq.0) then
-                  keep(ifpp,itrack) = .false.
+                  if(ifpp.eq.1) then 
+                     keep(ifpp,itrack) = .false.
+                  else if(hfpp2_best_reference(itrack).eq.0.or.
+     $                    hfpp_track_conetest(ifpp+1,itrack).eq.0) then
+                     keep(ifpp,itrack) = .false.
+                  endif
                endif
             enddo
          endif
@@ -112,12 +123,17 @@ c$$$
 
 c     first prune tests: prune separately on minimum and maximum 
 c     polar scattering angle theta>thetamin:
-
+c     for FPP2, check using either FPP1 or HMS as reference track:
       do ifpp=1,2
          ngood(ifpp) = 0
          do itrack=1,hfpp_n_tracks(ifpp)
             if(hfpp_track_theta(ifpp,itrack).ge.hfpp_prune_thetamin(ifpp)*PI/180.0
      $           .and.keep(ifpp,itrack))then
+               ngood(ifpp) = ngood(ifpp) + 1
+            else if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0.and.
+     $              hfpp_track_theta(ifpp+1,itrack).ge.
+     $              hfpp_prune_thetamin(ifpp)*PI/180.0.and.
+     $              keep(ifpp,itrack)) then
                ngood(ifpp) = ngood(ifpp) + 1
             endif
          enddo
@@ -126,19 +142,30 @@ c     polar scattering angle theta>thetamin:
             do itrack=1,hfpp_n_tracks(ifpp)
                if(hfpp_track_theta(ifpp,itrack).lt.hfpp_prune_thetamin(ifpp)*PI/180.0) 
      $              then
-                  keep(ifpp,itrack) = .false.
+                  if(ifpp.eq.1) then
+                     keep(ifpp,itrack) = .false.
+                  else if(hfpp2_best_reference(itrack).eq.0.or.
+     $                    hfpp_track_theta(ifpp+1,itrack).lt.
+     $                    hfpp_prune_thetamin(ifpp)*PI/180.0) then
+                     keep(ifpp,itrack) = .false.
+                  endif
                endif
             enddo
          endif
       enddo
 
 c     second test: polar scattering angle theta<thetamax:
-      
+c     for FPP2, check using either FPP1 or HMS as reference track:      
       do ifpp=1,2
          ngood(ifpp) = 0
          do itrack=1,hfpp_n_tracks(ifpp)
             if(keep(ifpp,itrack).and.hfpp_track_theta(ifpp,itrack).le.
      $           hfpp_prune_thetamax(ifpp)*PI/180.0) then
+               ngood(ifpp) = ngood(ifpp) + 1
+            else if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0.and.
+     $              hfpp_track_theta(ifpp+1,itrack).le.
+     $              hfpp_prune_thetamax(ifpp)*PI/180.0.and.
+     $              keep(ifpp,itrack)) then
                ngood(ifpp) = ngood(ifpp) + 1
             endif
          enddo
@@ -147,7 +174,13 @@ c     second test: polar scattering angle theta<thetamax:
             do itrack=1,hfpp_n_tracks(ifpp)
                if(hfpp_track_theta(ifpp,itrack).gt.hfpp_prune_thetamax(ifpp)*PI/180.0)
      $              then
-                  keep(ifpp,itrack) = .false.
+                  if(ifpp.eq.1) then
+                     keep(ifpp,itrack) = .false.
+                  else if(hfpp2_best_reference(itrack).eq.0.or.
+     $                    hfpp_track_theta(ifpp+1,itrack).gt.
+     $                    hfpp_prune_thetamax(ifpp)*PI/180.0) then
+                     keep(ifpp,itrack) = .false.
+                  endif
                endif
             enddo
          endif
@@ -161,6 +194,11 @@ c     third prune test: sclose = distance of closest approach between two tracks
             if(keep(ifpp,itrack).and.hfpp_track_sclose(ifpp,itrack).le.
      $           hfpp_prune_sclose(ifpp)) then
                ngood(ifpp) = ngood(ifpp) + 1
+            else if(keep(ifpp,itrack).and.ifpp.eq.2.and.
+     $              hfpp2_best_reference(itrack).gt.0.and.
+     $              hfpp_track_sclose(ifpp+1,itrack).le.
+     $              hfpp_prune_sclose(1)) then
+               ngood(ifpp) = ngood(ifpp) + 1
             endif
          enddo
          
@@ -168,7 +206,13 @@ c     third prune test: sclose = distance of closest approach between two tracks
             do itrack=1,hfpp_n_tracks(ifpp)
                if(hfpp_track_sclose(ifpp,itrack).gt.
      $              hfpp_prune_sclose(ifpp)) then
-                  keep(ifpp,itrack) = .false.
+                  if(ifpp.eq.1) then
+                     keep(ifpp,itrack) = .false.
+                  else if(hfpp2_best_reference(itrack).eq.0.or.
+     $                    hfpp_track_sclose(ifpp+1,itrack).gt.
+     $                    hfpp_prune_sclose(1)) then
+                     keep(ifpp,itrack) = .false.
+                  endif
                endif
             enddo
          endif
@@ -194,6 +238,12 @@ c     allows for zclose values well outside the analyzer in the situation that t
      $           hfpp_track_zclose(ifpp,itrack).le.
      $           ztest(ifpp,2)+zslop) then
                ngood(ifpp) = ngood(ifpp) + 1
+            else if(keep(ifpp,itrack).and.
+     $              hfpp2_best_reference(itrack).gt.0.and.
+     $              hfpp_track_zclose(ifpp+1,itrack).ge.ztest(ifpp,1)-zslop
+     $              .and.hfpp_track_zclose(ifpp+1,itrack).le.ztest(ifpp,2)+zslop)
+     $              then
+               ngood(ifpp) = ngood(ifpp) + 1
             endif
          enddo
 
@@ -205,7 +255,15 @@ c     allows for zclose values well outside the analyzer in the situation that t
      $              ztest(ifpp,1)-zslop.or.
      $              hfpp_track_zclose(ifpp,itrack).gt.
      $              ztest(ifpp,2)+zslop) then
-                  keep(ifpp,itrack) = .false.
+                  if(ifpp.eq.1) then
+                     keep(ifpp,itrack) = .false.
+                  else if(hfpp2_best_reference(itrack).eq.0.or.
+     $                    hfpp_track_zclose(ifpp+1,itrack).lt.
+     $                    ztest(ifpp,1)-zslop.or.
+     $                    hfpp_track_zclose(ifpp+1,itrack).gt.
+     $                    ztest(ifpp,2)+zslop) then
+                     keep(ifpp,itrack) = .false.
+                  endif
                endif
             enddo
          endif
@@ -224,19 +282,24 @@ c$$$            endif
 c$$$         enddo
 c$$$      enddo
 
-c     now we choose the best track based on Sitnik's criterion:
+c     now we choose the best track based on smallest polar scattering angle theta
 
       do ifpp=1,2
          firsttry=.true.
-c         scloseweight(ifpp) = minchi2(ifpp) + hschi2perdeg
-
+c     scloseweight(ifpp) = minchi2(ifpp) + hschi2perdeg
+         
          besttrack(ifpp) = 0
 
          do itrack=1,hfpp_n_tracks(ifpp)
-c            criterion = hschi2perdeg + hfpp_track_chi2(ifpp,itrack) + 
+c     criterion = hschi2perdeg + hfpp_track_chi2(ifpp,itrack) + 
 c     $           scloseweight(ifpp) * (hfpp_track_sclose(ifpp,itrack))**2
 c     instead of this criterion, do track selection based on smallest theta:
             criterion = hfpp_track_theta(ifpp,itrack)
+c     for FPP2, compare theta of current track with both HMS and FPP1 as reference track:
+c     routine will select the single track from FPP2 whose theta wrt EITHER the HMS track or 
+c     any FPP1 track is minimum.
+            if(ifpp.eq.2) criterion = 
+     $           min(hfpp_track_theta(ifpp,itrack),hfpp_track_theta(ifpp+1,itrack))
 
             if(keep(ifpp,itrack).and.
      $           (firsttry.or.criterion.lt.mincriterion(ifpp))) then
@@ -245,38 +308,38 @@ c     instead of this criterion, do track selection based on smallest theta:
                besttrack(ifpp) = itrack
             endif
             
-            if(ifpp.eq.2.and.hfpp_best_track(1).gt.0) then 
-c     calculate and store theta/phi/sclose and zclose and conetest of FPP2 track 
-c     relative to "best" FPP1 track for comparison with the same quantities relative to 
-c     HMS track:
-               call h_fpp_relative_angles(hfpp_track_dx(1,hfpp_best_track(1)),
-     $              hfpp_track_dy(1,hfpp_best_track(1)),hfpp_track_dx(ifpp,itrack),
-     $              hfpp_track_dy(ifpp,itrack),theta,phi)
-               hfpp_track_theta(ifpp+1,itrack) = theta
-               hfpp_track_phi(ifpp+1,itrack) = phi
-               
-               trackin(1) = hfpp_track_dx(1,hfpp_best_track(1))
-               trackin(2) = hfpp_track_x(1,hfpp_best_track(1))
-               trackin(3) = hfpp_track_dy(1,hfpp_best_track(1))
-               trackin(4) = hfpp_track_y(1,hfpp_best_track(1))
-               
-               trackout(1) = hfpp_track_dx(ifpp,itrack)
-               trackout(2) = hfpp_track_x(ifpp,itrack)
-               trackout(3) = hfpp_track_dy(ifpp,itrack)
-               trackout(4) = hfpp_track_y(ifpp,itrack)
-               
-               call h_fpp_closest(trackin,trackout,sclose,zclose)
-               
-               hfpp_track_sclose(ifpp+1,itrack) = sclose
-               hfpp_track_zclose(ifpp+1,itrack) = zclose
-               
-               icone = 1
-               
-               call h_fpp_conetest(trackin,ifpp,zclose,theta,icone)
-               
-               hfpp_track_conetest(ifpp+1,itrack) = icone
-               
-            endif
+c$$$            if(ifpp.eq.2.and.hfpp_best_track(1).gt.0) then 
+c$$$c     calculate and store theta/phi/sclose and zclose and conetest of FPP2 track 
+c$$$c     relative to "best" FPP1 track for comparison with the same quantities relative to 
+c$$$c     HMS track:
+c$$$               call h_fpp_relative_angles(hfpp_track_dx(1,hfpp_best_track(1)),
+c$$$     $              hfpp_track_dy(1,hfpp_best_track(1)),hfpp_track_dx(ifpp,itrack),
+c$$$     $              hfpp_track_dy(ifpp,itrack),theta,phi)
+c$$$               hfpp_track_theta(ifpp+1,itrack) = theta
+c$$$               hfpp_track_phi(ifpp+1,itrack) = phi
+c$$$               
+c$$$               trackin(1) = hfpp_track_dx(1,hfpp_best_track(1))
+c$$$               trackin(2) = hfpp_track_x(1,hfpp_best_track(1))
+c$$$               trackin(3) = hfpp_track_dy(1,hfpp_best_track(1))
+c$$$               trackin(4) = hfpp_track_y(1,hfpp_best_track(1))
+c$$$               
+c$$$               trackout(1) = hfpp_track_dx(ifpp,itrack)
+c$$$               trackout(2) = hfpp_track_x(ifpp,itrack)
+c$$$               trackout(3) = hfpp_track_dy(ifpp,itrack)
+c$$$               trackout(4) = hfpp_track_y(ifpp,itrack)
+c$$$               
+c$$$               call h_fpp_closest(trackin,trackout,sclose,zclose)
+c$$$               
+c$$$               hfpp_track_sclose(ifpp+1,itrack) = sclose
+c$$$               hfpp_track_zclose(ifpp+1,itrack) = zclose
+c$$$               
+c$$$               icone = 1
+c$$$               
+c$$$               call h_fpp_conetest(trackin,ifpp,zclose,theta,icone)
+c$$$               
+c$$$               hfpp_track_conetest(ifpp+1,itrack) = icone
+c$$$               
+c$$$            endif
 
          enddo
          
