@@ -416,6 +416,19 @@ c==============================================================================
       real*8 dtheta,dphi	! for convenience, double precision versions of OUT
       real*8 x,y,z,xin,yin,zin
 
+      real*8 xunit(3)
+      real*8 yunit(3)
+      real*8 zunit(3)
+
+      real*8 idotf
+
+      real*8 Mstore(3,3)
+
+      real*4 thetastore,phistore
+
+      real*8 PI
+      parameter(PI=3.14159265359)
+
       integer i,j
 
 
@@ -423,92 +436,210 @@ c==============================================================================
 
 c      write(*,*)'Theta calculation 1: ',mx_ref,mx_new,my_ref,my_new
 
-      beta  = datan(dble(my_ref))
-      alpha = datan(dble(mx_ref)*dcos(beta))     ! this ought to be safe as the negative angle works
-
-      M(1,1) =       dcos(alpha)
-      M(1,2) = -1.d0*dsin(alpha)*dsin(beta)
-      M(1,3) = -1.d0*dsin(alpha)*dcos(beta)
-
-      M(2,1) =  0.d0
-      M(2,2) =                   dcos(beta)
-      M(2,3) = -1.d0*            dsin(beta)
-
-      M(3,1) =       dsin(alpha)
-      M(3,2) =       dcos(alpha)*dsin(beta)
-      M(3,3) =       dcos(alpha)*dcos(beta)
+c$$$      beta  = datan(dble(my_ref))
+c$$$      alpha = datan(dble(mx_ref)*dcos(beta))     ! this ought to be safe as the negative angle works
+c$$$
+c$$$      M(1,1) =       dcos(alpha)
+c$$$      M(1,2) = -1.d0*dsin(alpha)*dsin(beta)
+c$$$      M(1,3) = -1.d0*dsin(alpha)*dcos(beta)
+c$$$
+c$$$      M(2,1) =  0.d0
+c$$$      M(2,2) =                   dcos(beta)
+c$$$      M(2,3) = -1.d0*            dsin(beta)
+c$$$
+c$$$      M(3,1) =       dsin(alpha)
+c$$$      M(3,2) =       dcos(alpha)*dsin(beta)
+c$$$      M(3,3) =       dcos(alpha)*dcos(beta)
 
 *     * normalize incoming vector
 
-      xin = dble(mx_ref)
-      yin = dble(my_ref)
-      zin = 1.d0
-      magnitude = dsqrt(xin*xin+yin*yin+zin*zin)
-      r_in(1)=xin/magnitude
-      r_in(2)=yin/magnitude
-      r_in(3)=zin/magnitude
-      
-      do i=1,3
-        r_fin(i) = 0.d0
-	do j=1,3
-	  r_fin(i) = r_fin(i) + M(i,j)*r_in(j)
-	enddo !j
-      enddo !i
+c$$$      xin = dble(mx_ref)
+c$$$      yin = dble(my_ref)
+c$$$      zin = 1.d0
+c$$$      magnitude = dsqrt(xin*xin+yin*yin+zin*zin)
+c$$$      r_in(1)=xin/magnitude
+c$$$      r_in(2)=yin/magnitude
+c$$$      r_in(3)=zin/magnitude
+c$$$      
+c$$$      do i=1,3
+c$$$        r_fin(i) = 0.d0
+c$$$	do j=1,3
+c$$$	  r_fin(i) = r_fin(i) + M(i,j)*r_in(j)
+c$$$          Mstore(i,j) = M(i,j)
+c$$$	enddo !j
+c$$$      enddo !i
 
 c      write(*,*)r_in(1),r_in(2),r_in(3)
 c      write(*,*)r_fin(1),r_fin(2),r_fin(3)
       
 *     * normalize direction vector
 
-      x = dble(mx_new)
-      y = dble(my_new)
-      z = 1.d0
-      magnitude = dsqrt(x*x + y*y + z*z)
-      r_i(1) = x / magnitude
-      r_i(2) = y / magnitude
-      r_i(3) = z / magnitude
+c$$$      x = dble(mx_new)
+c$$$      y = dble(my_new)
+c$$$      z = 1.d0
+c$$$      magnitude = dsqrt(x*x + y*y + z*z)
+c$$$      r_i(1) = x / magnitude
+c$$$      r_i(2) = y / magnitude
+c$$$      r_i(3) = z / magnitude
 
 
 *     * rotate vector of interest
 
+c$$$      do i=1,3
+c$$$        r_f(i) = 0.d0
+c$$$	do j=1,3
+c$$$	  r_f(i) = r_f(i) + M(i,j)*r_i(j)
+c$$$	enddo !j
+c$$$      enddo !i
+c$$$
+c$$$c      write(*,*)r_i(1),r_i(2),r_i(3)
+c$$$c      write(*,*)r_f(1),r_f(2),r_f(3)
+c$$$
+c$$$*     * find polar angles
+c$$$
+c$$$      dtheta = dacos(r_f(3))		! z = cos(theta)
+
+c$$$      if (r_f(1).ne.0.d0) then
+c$$$        if (r_f(1).gt.0.d0) then
+c$$$          if (r_f(2).gt.0.d0) then         
+c$$$            dphi = datan( r_f(2)/r_f(1) )	! y/x = tan(phi)
+c$$$          else
+c$$$            dphi = datan( r_f(2)/r_f(1) )	! y/x = tan(phi)
+c$$$            dphi = dphi + 6.28318d0
+c$$$          endif
+c$$$        else
+c$$$          dphi = datan( r_f(2)/r_f(1) )	! y/x = tan(phi)
+c$$$          dphi = dphi + 3.14159d0
+c$$$        endif                
+c$$$      elseif (r_f(2).gt.0.d0) then
+c$$$        dphi = 1.57080d0			! phi = +90
+c$$$      elseif (r_f(2).lt.0.d0) then
+c$$$        dphi = 4.71239d0			! phi = +270
+c$$$      else
+c$$$        dphi = 0.d0			! phi undefined if theta=0 or r=0
+c$$$      endif
+c$$$      
+c$$$      thetastore = sngl(dtheta)
+c$$$      phistore   = sngl(dphi)
+
+c$$$      write(*,*) 'rotation matrix (Frank) = ',M
+c$$$
+c$$$      write(*,*)'Theta, phi (Frank) = ',theta*180.0/3.14159265,phi*180.0/3.14159265
+
+      idotf = 0.0
+
+      x = dble(mx_ref)
+      y = dble(my_ref)
+      z = 1.0
+      magnitude = dsqrt(x**2 + y**2 + z**2)
+
+      r_i(1) = x / magnitude
+      r_i(2) = y / magnitude
+      r_i(3) = z / magnitude
+
+      x = dble(mx_new)
+      y = dble(my_new)
+      z = 1.0
+      magnitude = dsqrt(x**2 + y**2 + z**2)
+
+      r_f(1) = x / magnitude
+      r_f(2) = y / magnitude
+      r_f(3) = z / magnitude
+
       do i=1,3
-        r_f(i) = 0.d0
-	do j=1,3
-	  r_f(i) = r_f(i) + M(i,j)*r_i(j)
-	enddo !j
-      enddo !i
+         idotf = idotf + r_i(i)*r_f(i)
+      enddo
 
-c      write(*,*)r_i(1),r_i(2),r_i(3)
-c      write(*,*)r_f(1),r_f(2),r_f(3)
+      dtheta = dacos(idotf)
 
-*     * find polar angles
+c     now for the phi calculation:
 
-      dtheta = dacos(r_f(3))		! z = cos(theta)
+      xunit(1) = 1.0
+      xunit(2) = 0.0
+      xunit(3) = 0.0
 
-      if (r_f(1).ne.0.d0) then
-        if (r_f(1).gt.0.d0) then
-          if (r_f(2).gt.0.d0) then         
-            dphi = datan( r_f(2)/r_f(1) )	! y/x = tan(phi)
-          else
-            dphi = datan( r_f(2)/r_f(1) )	! y/x = tan(phi)
-            dphi = dphi + 6.28318d0
-          endif
-        else
-          dphi = datan( r_f(2)/r_f(1) )	! y/x = tan(phi)
-          dphi = dphi + 3.14159d0
-        endif                
-      elseif (r_f(2).gt.0.d0) then
-        dphi = 1.57080d0			! phi = +90
-      elseif (r_f(2).lt.0.d0) then
-        dphi = 4.71239d0			! phi = +270
-      else
-        dphi = 0.d0			! phi undefined if theta=0 or r=0
-      endif
+      zunit(1) = r_i(1)
+      zunit(2) = r_i(2)
+      zunit(3) = r_i(3)
+
+      yunit(1) = zunit(2)*xunit(3) - zunit(3)*xunit(2)
+      yunit(2) = zunit(3)*xunit(1) - zunit(1)*xunit(3)
+      yunit(3) = zunit(1)*xunit(2) - zunit(2)*xunit(1)
+c     make sure yunit is a unit vector so that the rotation matrix is unitary!!!!!!
+      magnitude = dsqrt( (yunit(1) )**2 + (yunit(2) )**2 + (yunit(3) )**2)
+
+      yunit(1) = yunit(1) / magnitude
+      yunit(2) = yunit(2) / magnitude
+      yunit(3) = yunit(3) / magnitude
+
+      xunit(1) = yunit(2)*zunit(3) - yunit(3)*zunit(2)
+      xunit(2) = yunit(3)*zunit(1) - yunit(1)*zunit(3)
+      xunit(3) = yunit(1)*zunit(2) - yunit(2)*zunit(1)
+
+c     make sure xunit is a unit vector so that the rotation matrix is unitary!!!!!!
       
-      theta = sngl(dtheta)
-      phi   = sngl(dphi)
+      magnitude = dsqrt( (xunit(1) )**2 + (xunit(2) )**2 + (xunit(3) )**2)
 
-c      write(*,*)'Theta, phi = ',theta*180.0/3.14159265,phi*180.0/3.14159265
+      xunit(1) = xunit(1) / magnitude
+      xunit(2) = xunit(2) / magnitude
+      xunit(3) = xunit(3) / magnitude
+
+c     rule of thumb: rotation matrix from OLD BASIS x,y,z to NEW BASIS x',y',z' has columns equal to
+c     the basis vectors of the old basis expressed in the coordinate system of the new basis:
+c     in this case, OLD BASIS = x, y, z of the TRANSPORT coord. system.
+c     NEW BASIS has y parallel to the OLD yz plane, perp. to trajectory, z = unit vector along trajectory, 
+c     x = y cross z. So xunit,yunit,and zunit are the basis vectors of the NEW basis expressed in the OLD basis.
+c     in this case we need the inverse rotation, which is actually equal to the matrix whose ROWS are equal to 
+c     the NEW basis vectors expressed in the coordinate system of the OLD basis.
+
+      M(1,1) = xunit(1)
+      M(1,2) = xunit(2)
+      M(1,3) = xunit(3)
+      M(2,1) = yunit(1)
+      M(2,2) = yunit(2)
+      M(2,3) = yunit(3)
+      M(3,1) = zunit(1)
+      M(3,2) = zunit(2)
+      M(3,3) = zunit(3)
+
+      do i=1,3
+         r_fin(i) = 0.d0
+         do j=1,3
+            r_fin(i) = r_fin(i) + M(i,j)*r_f(j)
+         enddo
+      enddo
+
+      if(r_fin(1).eq.0.d0.and.r_fin(2).eq.0.d0) then
+         dphi=0.0
+      else 
+         dphi = datan2( r_fin(2), r_fin(1) )
+         if(dphi.lt.0.d0) then
+            dphi = dphi + 2.d0*PI
+         endif
+      endif
+
+      theta = sngl(dtheta) 
+      phi = sngl(dphi)
+
+c$$$      if(abs(theta-thetastore).gt.1.0e-4) then
+c$$$         write(*,*) '(theta_AJP,theta_FRANK)=(',theta,',',thetastore,')'
+c$$$         write(*,*) '(phi_AJP,phi_FRANK)=(',phi,',',phistore,')'
+c$$$         do i=1,3
+c$$$            write(*,*) (M(i,j)-Mstore(i,j),j=1,3)
+c$$$         enddo
+c$$$         
+c$$$      endif
+c$$$      
+c$$$      if(abs(phi-phistore).gt.1.0e-4) then
+c$$$         write(*,*) '(theta_AJP,theta_FRANK)=(',theta,',',thetastore,')'
+c$$$         write(*,*) '(phi_AJP,phi_FRANK)=(',phi,',',phistore,')'
+c$$$         do i=1,3
+c$$$            write(*,*) (M(i,j)-Mstore(i,j),j=1,3)
+c$$$         enddo
+c$$$      endif
+
+c$$$      write(*,*)'rotation matrix (AJP) = ',M
+c$$$      write(*,*)'Theta, phi (AJP) = ',theta*180.0/PI,phi*180.0/PI
 
 
       RETURN

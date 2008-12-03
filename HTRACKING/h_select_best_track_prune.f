@@ -12,6 +12,9 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log$
+*- Revision 1.1.8.5  2008/12/03 17:34:23  puckett
+*- rewrote thetafpp,phifpp calculation using easier to understand notation, verified identical results to old calculation
+*-
 *- Revision 1.1.8.4  2008/09/10 15:07:57  puckett
 *- make sanity check on ytar prune cut angle-dependent
 *-
@@ -76,8 +79,8 @@ c      integer*4 i,j
 ! Make sure limits are reasonable
         hprune_xp    = max(0.08, hprune_xp)
         hprune_yp    = max(0.04, hprune_yp)
-        hprune_ytar  = max(15.*sin(htheta_lab*degree),  hprune_ytar)
-        hprune_delta = max(10.0, hprune_delta)
+        hprune_ytar  = max(16.*sin(htheta_lab*degree),  hprune_ytar)
+        hprune_delta = max(9.0, hprune_delta)
         hprune_beta  = max(0.1,  hprune_beta)
         hprune_df    = max(1,  hprune_df)
         hprune_chibeta= max(2.,  hprune_chibeta)

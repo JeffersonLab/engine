@@ -55,8 +55,7 @@ c     in each FPP for the gep ntuple. Loop over filled track arrays
 c     and set the variable hfpp_best_track(fpp1/2)
       if(hselectfpptrackprune.ne.0.and.(hfpp_n_tracks(1).gt.0.or.
      $     hfpp_n_tracks(2).gt.0) ) then 
-c     choose best FPP track using prune tests and Sitnik's method for selection
-c     using a combination of chi2 and sclose:
+c     choose best FPP track using prune tests
          call h_fpp_select_best_track_prune(abort,err)
          if (ABORT) then
             call g_add_path(here,err)
