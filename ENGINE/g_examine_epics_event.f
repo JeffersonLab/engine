@@ -1,5 +1,8 @@
       subroutine g_examine_epics_event
 * $Log$
+* Revision 1.5.20.2  2008/12/05 21:50:27  puckett
+* added printout of gen_event_id_number
+*
 * Revision 1.5.20.1  2007/09/10 20:33:37  pcarter
 * Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *
@@ -38,6 +41,7 @@
 
       include 'gen_craw.cmn'
       include 'gen_run_info.cmn'
+      include 'gen_event_info.cmn'
       include 'gen_filenames.cmn'
 *
 * event type =131 30 second epics read 
@@ -59,7 +63,9 @@ c
       if (evtype-gdebugdumpepics .gt. 130) dump_event = .false.
   
 c
-      if (dump_event) write (G_LUN_EPICS_OUTPUT,*) 'epics event #',numevent
+      if (dump_event) write (G_LUN_EPICS_OUTPUT,*) 'epics event #',numevent,
+     $     'gen_event_id_number=',gen_event_id_number
+      
 
       if (craw(3)-1.le.0) then
         write (6,*)
