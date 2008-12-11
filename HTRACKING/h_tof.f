@@ -23,6 +23,10 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19.6.2.2.6  2008/12/11 17:11:43  cdaq
+* For gfortran compiler the arguements generic functions
+* must be the same type.
+*
 * Revision 1.19.6.2.2.5  2008/11/19 12:46:50  cdaq
 * Add line to reutrn if nparam < 1
 *
@@ -658,7 +662,7 @@ c      write(6,'(i3,10i6)') n,(idet(i),i=1,min(10,n))
         endif
 
 ! Fill in ADC histograms
-        k = min(18, max(1, (adc(i)/20.)+1))
+        k = min(18., max(1., (adc(i)/20.)+1))
         adchist(idet(i), k) = adchist(idet(i), k) + 1 
 
 ! correct raw times for zpos using betap
@@ -928,7 +932,7 @@ c     >      k,nhit(k),ip1(k),ip2(k),ip3(k)
       enddo
 
       do i=1,200
-        avsig(i) = avsig(i) / max(1.,nhit(i))
+        avsig(i) = avsig(i) / max(1,nhit(i))
       enddo
 
       write(10,'(/''hhodo_pos_sigma ='',3(f8.2,'',''),

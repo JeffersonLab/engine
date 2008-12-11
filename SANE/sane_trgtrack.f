@@ -586,19 +586,19 @@ c
 !      CALL trgRK4(u,u1,ts)
 	CALL trgRK4Bdl(u,u1,ts)
 	dist1 = u1(1)*an + u1(2)*bn + u1(3)*cn + dn  
-	IF ((SIGN(1.,dist0) .EQ. SIGN(1.,dist1)) .AND.
+	IF ((sign(1.d00,dist0) .EQ. sign(1.d00,dist1)) .AND.
      >    (ABS(dist0) .LT. ABS(dist1))) ts=-ts
          
       ! track through the intersection plane
       steps=0
       max_steps = int(max(dist0,10.*dl)/dl)*10
-      if (SIGN(1.,dist0) .EQ. SIGN(1.,dist1)) then
+      if (sign(1.d00,dist0) .EQ. sign(1.d00,dist1)) then
       dist1 = dist0   
-      DO WHILE ((SIGN(1.,dist0) .EQ. SIGN(1.,dist1)) .AND. ok) 
+      DO WHILE ((sign(1.d00,dist0) .EQ. sign(1.d00,dist1)) .AND. ok) 
 !        CALL trgRK4(u1,u0,ts)
         CALL trgRK4Bdl(u1,u0,ts)
         dist0 = u0(1)*an + u0(2)*bn + u0(3)*cn + dn 
-        IF (SIGN(1.,dist0) .EQ. SIGN(1.,dist1)) THEN
+        IF (sign(1.d00,dist0) .EQ. sign(1.d00,dist1)) THEN
 !          CALL trgRK4(u0,u1,ts)
           CALL trgRK4Bdl(u0,u1,ts)
           dist1 = u1(1)*an + u1(2)*bn + u1(3)*cn + dn  
