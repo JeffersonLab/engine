@@ -16,6 +16,9 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
+* Revision 1.16.24.2.2.5  2008/12/11 20:26:43  cdaq
+* *** empty log message ***
+*
 * Revision 1.16.24.2.2.4  2008/11/17 01:17:55  cdaq
 * *** empty log message ***
 *
@@ -146,8 +149,8 @@
       endif
       istat = 1
 
-      x_coord = -gsr_beamy/100  ! SLOW RASTER BEAM X coordinate obtained from the ADCs, in meters 
-      y_coord = gsr_beamx/100       ! SLOW RASTER BEAM Y coordinate obtained from the ADCs, in meters 
+      x_coord = -gsry_calib/100.  ! SLOW RASTER BEAM X coordinate obtained from the ADCs, in meters 
+      y_coord = gsrx_calib/100.       ! SLOW RASTER BEAM Y coordinate obtained from the ADCs, in meters 
 c      write(*,*)x_coord,y_coord
 
 * Loop over tracks.
@@ -271,7 +274,7 @@ c            write(*,*)'SANE OMEGA AND PHI ',SANE_HMS_OMEGA,SANE_HMS_PHI
 c       write(*,*)dx,htheta_lab,hpcentral, hpartmass
 
             CALL genRecon (hut_rot, x_coord, y_coord, trg, ok, dx, bdl,
-     >           htheta_lab, hpcentral, hpartmass, -1) ! set for protons
+     >           htheta_lab, hpcentral, hpartmass, 1) ! set for protons
             
 *     CALL genRecon (hut_rot, x_coord, y_coord, trg, ok, dx, bdl,
 *     >           hpcentral, mass_electron, -1.)  ! set for electrons
@@ -285,6 +288,7 @@ c            hdelta_tar(itrk) = sum(4)*100. !percent.
 
             hx_tar(itrk)     = trg(1) ! target x 
             hy_tar(itrk)     = trg(3) ! target y   
+c            write(*,*)x_coord,y_coord,hx_tar(itrk),hy_tar(itrk)
             hz_tar(itrk)     = trg(5) ! target z 
             hxp_tar(itrk)    = trg(2) ! slope  xp
             hyp_tar(itrk)    = trg(4) ! slope  yp
