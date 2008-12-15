@@ -106,6 +106,7 @@
                                      ! see above for details
 
       integer*4 HFPP_N_tracks        ! actual # of tracks in set
+      integer*4 hfpp_n_simple        ! number of "candidate" tracks based on simple tracking
 
       integer*4 HFPP_track_Nlayers   ! # of layers with hits used on track
       integer*4 HFPP_track_Nhits     ! # of raw hits used on track
@@ -144,6 +145,7 @@
       common/HMS_FPP_track/
      &    HFPP_eventclass
      &  , HFPP_N_tracks(H_FPP_N_DCSETS)
+     $  , hfpp_n_simple(h_fpp_n_dcsets)   
      &  , HFPP_track_Nlayers(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
      &  , HFPP_track_Nhits(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
      &  , HFPP_TrackCluster(H_FPP_N_DCSETS,H_FPP_N_DCINSET,

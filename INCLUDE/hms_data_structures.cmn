@@ -5,6 +5,9 @@
 *     Author:   D. F. Geesaman          1 September 1993
 *
 * $Log$
+* Revision 1.12.20.6  2008/12/15 18:49:41  puckett
+* added some new variables for new FPP tracking routines + histogram id's for debugging
+*
 * Revision 1.12.20.5  2008/07/29 16:53:39  puckett
 * increased max ntracks from 20 to 100, and added variable to remember the left-right combo of track hits
 *
@@ -743,6 +746,9 @@
 
       integer*4  H_FPP_MAX_FITPOINTS   ! MAX # of space points to fit
       parameter (H_FPP_MAX_FITPOINTS=18)
+
+      integer*4 h_fpp_max_candidates   ! MAX # of candidate tracks to fit
+      parameter(h_fpp_max_candidates=100)
 
 * readability constants
 
