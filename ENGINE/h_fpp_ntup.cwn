@@ -53,6 +53,7 @@ c common block of variables for column-wise Ntuple for HMS FPP
       real*4    cwnFPP_simple_bx      ! 	     x-coord in chamber system
       real*4    cwnFPP_simple_my      ! 	     dy/dz in chamber coords
       real*4    cwnFPP_simple_by      ! 	     y-coord in chamber system
+      real*4    cwnFPP_simple_chi2    !            chi2/ndf of simple track
       real*4    cwnFPP_full_mx        ! full track dx/dz in FP coords, upstream polarimeter
       real*4    cwnFPP_full_bx        !  	  x-coord in FP system
       real*4    cwnFPP_full_my        !  	  dy/dz in FP coords
@@ -107,6 +108,7 @@ c common block of variables for column-wise Ntuple for HMS FPP
      & cwnFPP_simple_bx(MAX_cwn_tracks),
      & cwnFPP_simple_my(MAX_cwn_tracks),
      & cwnFPP_simple_by(MAX_cwn_tracks),
+     & cwnFPP_simple_chi2(MAX_cwn_tracks),
      & cwnFPP_full_mx(MAX_cwn_tracks),
      & cwnFPP_full_bx(MAX_cwn_tracks),
      & cwnFPP_full_my(MAX_cwn_tracks),

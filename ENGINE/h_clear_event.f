@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *
 * $Log$
+* Revision 1.15.24.5  2008/12/15 18:47:39  puckett
+* minor changes to FPP and gep ntuples
+*
 * Revision 1.15.24.4  2008/12/03 17:26:01  puckett
 * added several vars to FPP ntuple, added initialization of new variables to h_clear_event
 *
@@ -187,6 +190,7 @@ cfrw       enddo
       do iSet=1, H_FPP_N_DCSETS
         hfpp_N_tracks(iSet) = 0
         hfpp_best_track(iSet) = 0
+        hfpp_n_simple(iset) = 0
       enddo !iSet
       
       do i=1,h_fpp_max_tracks

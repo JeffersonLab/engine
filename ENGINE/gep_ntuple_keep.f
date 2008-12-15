@@ -252,6 +252,10 @@ c     initialize variables for FPP2 relative to FPP1
          conetest_store = hfpp_track_conetest(3,track_store)
          sclose_store = hfpp_track_sclose(3,track_store)
          zclose_store = hfpp_track_zclose(3,track_store)
+c     the following decision informs whether we should use theta,phi 
+c     relative to HMS track or FPP1 track in final analysis: 
+c     if ref_store>0 then we use FPP1 track, otherwise we use
+c     HMS track as reference
          ref_store = hfpp2_best_reference(track_store)
       endif
       m=m+1

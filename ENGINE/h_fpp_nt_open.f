@@ -170,6 +170,7 @@ c      call HLIMIT(nh)
      1// ',trk_s_x(Ntrack):R'
      1// ',trk_s_yp(Ntrack):R'
      1// ',trk_s_y(Ntrack):R'
+     1// ',trk_s_chi2(Ntrack):R'
      1// ',trk_f_xp(Ntrack):R'
      1// ',trk_f_x(Ntrack):R'
      1// ',trk_f_yp(Ntrack):R'

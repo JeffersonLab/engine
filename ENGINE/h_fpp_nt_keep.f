@@ -142,6 +142,7 @@ c      WRITE(*,*)HFPP_RAW_TOT_HITS
 	 cwnFPP_simple_bx(n)   = HFPP_track_rough(iSet,iTrk,2)
 	 cwnFPP_simple_my(n)   = HFPP_track_rough(iSet,iTrk,3)
 	 cwnFPP_simple_by(n)   = HFPP_track_rough(iSet,iTrk,4)
+         cwnFPP_simple_chi2(n)    = HFPP_track_rough(iSet,iTrk,5)
 
 	 cwnFPP_full_mx(n)	  = HFPP_track_dx(iSet,iTrk)	    ! track w/ drift
 	 cwnFPP_full_bx(n)	  = HFPP_track_x(iSet,iTrk)
