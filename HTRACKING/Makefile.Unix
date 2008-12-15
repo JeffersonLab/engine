@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.29.6.8  2008/12/15 18:46:07  puckett
+# New and improved FPP tracking routines--(hopefully) thoroughly debugged. Documentation forthcoming (AJP)
+#
 # Revision 1.29.6.7  2008/10/23 19:18:55  puckett
 # added alternate FPP tracking routine
 #
@@ -157,7 +160,8 @@ fppstuff = h_fill_fpp.f  h_fpp_drift.f  h_fpp.f \
         h_fpp_fit.f  h_fpp_statistics.f  \
         h_fpp_tracking.f  h_init_fpp.f  \
         h_trans_fpp.f  h_trans_fpp_hms.f mt19937.f h_fpp_geometry.f \
-	h_fpp_select_best_track_prune.f h_fpp_tracking_drifttrack_ajp.f
+	h_fpp_select_best_track_prune.f h_fpp_tracking_drifttrack_ajp.f \
+	h_fpp_tracking_ajp.f
 makeregstuff =	r_hms_filenames.f r_hms_scin_parms.f r_hms_scin_tof.f \
 	r_hms_calorimeter.f r_hms_id_histid.f r_hms_tracking.f \
 	r_hms_geometry.f r_hms_track_histid.f r_hms_recon_elements.f \

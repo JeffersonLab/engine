@@ -7,6 +7,9 @@
 *     Date:      9 April 1994
 *
 * $Log$
+* Revision 1.8.24.4  2008/12/15 18:46:08  puckett
+* New and improved FPP tracking routines--(hopefully) thoroughly debugged. Documentation forthcoming (AJP)
+*
 * Revision 1.8.24.3  2007/10/30 00:28:27  cdaq
 * added FPP geometric alignment checks
 *
@@ -359,6 +362,12 @@ c
 	write(histname,'(''hfpp_'',i1,''angresol'')') set	! angular trk res
 	hidFPP_resol_ang(set) = thgetid(histname)
       enddo
+
+      hidFPP_Nsimp(1) = thgetid('hfpp_1nsimple')
+      hidFPP_Nsimp(2) = thgetid('hfpp_2nsimple')
+
+      hidFPP_resid(1) = thgetid('hfpp_1resid')
+      hidFPP_resid(2) = thgetid('hfpp_2resid')
 
       do set=1,H_FPP_N_DCSETS
        do chamber=1,H_FPP_N_DCINSET

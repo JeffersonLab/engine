@@ -40,7 +40,11 @@ c        write(*,*)'Calling fpp_tracking ->'
 c        write(*,*)'iset,layers,min = ',iset,HFPP_Nlayershit_set(iset),
 c     &   HFPP_minsethits
         if (HFPP_Nlayershit_set(iset) .ge. HFPP_minsethits) then
-          call h_fpp_tracking(iset,ABORT,err)
+           if(hfppuseajptracking.ne.0) then
+              call h_fpp_tracking_ajp(iset,abort,err)
+           else
+              call h_fpp_tracking(iset,ABORT,err)
+           endif
           if (ABORT) then
             call g_add_path(here,err)
             return

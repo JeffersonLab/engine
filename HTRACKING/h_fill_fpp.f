@@ -124,6 +124,8 @@
 	  enddo !iCluster
 	enddo !iLayer
        enddo !iChamber
+       if(hidfpp_nsimp(dcset).gt.0)
+     $      call hf1(hidFPP_Nsimp(dcset),float(hfpp_n_simple(dcset)),1.0)
       enddo !DCset
 
 
@@ -246,7 +248,19 @@
           enddo !iLayer
          enddo !iChamber
        enddo !DCset
+      else ! fill residuals histogram:
+         do dcset=1,h_fpp_n_dcsets
+            hid = hidFPP_resid(dcset)
+            do ichamber=1,h_fpp_n_dcinset
+               do ilayer = 1,h_fpp_n_dclayers
+                  ii = h_fpp_n_dclayers * (ichamber - 1) + ilayer
+                  if(hid.gt.0) call hf2(hid,float(ii),hfpp_track_residual(dcset,ichamber,ilayer,itrack),1.)
+               enddo
+            enddo
+         enddo
       endif
+
+      
 
 *     * for each track in each set, track chi**2, mx,bx,my,by, # hits, HFPP_track_fine,
 *     *  sclose,zclose,theta,phi

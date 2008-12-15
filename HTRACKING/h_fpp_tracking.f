@@ -115,7 +115,7 @@ c          write(*,*)'Simple track: Nraw = ',SimpleTrack(6),' Chi2 = ',Simpletra
 
           if(hfppuseajptracking.ne.0) then
              call h_fpp_tracking_drifttrack_ajp(dcset,simpletrack,bestclusters,
-     $            track_good,fulltrack,abort,err)
+     $            track_good,fulltrack,0,abort,err)
           else 
              call h_fpp_tracking_drifttrack(DCset,SimpleTrack, BestClusters,track_good,FullTrack, ABORT,err)
 *         * the global tracking results are stored by this subroutine as well
@@ -127,6 +127,9 @@ c          write(*,*)'Simple track: Nraw = ',SimpleTrack(6),' Chi2 = ',Simpletra
           endif
 c          write(*,*)'FullTrack: Chi2 = ',FullTrack(5),' track_good = ',track_good
          
+c     what we want to do here, instead of failing the event if the chi2 test fails, is to add the track to an
+c     array of candidate tracks if track_good is true. If, on the other hand, track_good is false, we want to go 
+c     back and try other hit combinations, as long as the chi2 of the simple tracking is reasonable. 
 
 *         * update event quality flags
           if (track_good) then

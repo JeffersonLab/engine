@@ -79,9 +79,11 @@
 
 *     * then we feed these coords to our fitting routine to get track
       if (nPoints.gt.0) then
-
-        call h_fpp_fit3d(nPoints, Coords, Sigmas, Project, FitParm)
-
+         if(hfppuseajptracking.ne.0) then
+            call h_fpp_fit3d_ajp(nPoints, Coords, Sigmas, Project, FitParm)
+         else
+            call h_fpp_fit3d(nPoints, Coords, Sigmas, Project, FitParm)
+         endif
 *       * transfer results
         do ii=1,5
           Track(ii) = FitParm(ii)
@@ -480,3 +482,126 @@ c==============================================================================
 
       RETURN
       END
+
+      subroutine h_fpp_fit3d_ajp(n, coords, sig2s, projs, params)
+
+      implicit none 
+      save
+
+      INCLUDE 'hms_data_structures.cmn'
+
+*     * function arguments    INPUT: n, coords, sig2s    OUTPUT: params, chi2
+
+      integer*4 n,i,j,ihit                 ! number of points to fit
+      real*4 coords(H_FPP_MAX_FITPOINTS,2) ! coords of points to fit u,z
+      real*4 sig2s(H_FPP_MAX_FITPOINTS)    ! resolution (sigma**2) of each
+                                           ! point on own axis
+      real*4 projs(H_FPP_MAX_FITPOINTS,2)  ! u=proj(1)*x + proj(2)*y
+      real*4 params(5)                     ! resulting fit params mx bx my by
+                                           !      and the reduced chi2 of fit
+
+*     * short form of fit parameters
+      real*8 mx, my, bx, by
+*     * short form of point coords, sigma and projection factors
+      real*8 ui,zi, Px,Py, sigma2, utrack
+
+      real*8 chi2
+
+      real*8 TT(4)
+      real*8 AA(4,4)
+
+      real*8 dray(4)
+
+      integer*4 ierr
+
+      mx =  dble(H_FPP_BAD_COORD)
+      bx =  dble(H_FPP_BAD_COORD)
+      my =  dble(H_FPP_BAD_COORD)
+      by =  dble(H_FPP_BAD_COORD)
+      
+      chi2 = dble(H_FPP_BAD_CHI2)
+
+* Order of params is:
+* 1 = dx/dz
+* 2 = x
+* 3 = dy/dz
+* 4 = y
+
+      do i=1,4
+         TT(i) = 0.d0
+         do j=1,4
+            AA(i,j) = 0.d0
+         enddo
+      enddo
+         
+
+      do ihit=1,n
+         ui = dble(coords(ihit,1))
+         zi = dble(coords(ihit,2))
+         Px = dble(projs(ihit,1))
+         Py = dble(projs(ihit,2))
+         sigma2 = dble(sig2s(ihit))
+
+         TT(1) = TT(1) + ui*zi*Px/sigma2
+         TT(2) = TT(2) + ui*Px/sigma2
+         TT(3) = TT(3) + ui*zi*Py/sigma2
+         TT(4) = TT(4) + ui*Py/sigma2
+
+         AA(1,1) = AA(1,1) + zi**2*Px**2/sigma2
+         AA(1,2) = AA(1,2) + zi*Px**2/sigma2
+         AA(1,3) = AA(1,3) + zi**2*Px*Py/sigma2
+         AA(1,4) = AA(1,4) + zi*Px*Py/sigma2
+
+         AA(2,1) = AA(2,1) + zi*Px**2/sigma2
+         AA(2,2) = AA(2,2) + Px**2/sigma2
+         AA(2,3) = AA(2,3) + zi*Px*Py/sigma2
+         AA(2,4) = AA(2,4) + Px*Py/sigma2
+         
+         AA(3,1) = AA(3,1) + zi**2*Px*Py/sigma2
+         AA(3,2) = AA(3,2) + zi*Py*Px/sigma2
+         AA(3,3) = AA(3,3) + zi**2*Py**2/sigma2
+         AA(3,4) = AA(3,4) + zi*Py**2/sigma2
+
+         AA(4,1) = AA(4,1) + zi*Px*Py/sigma2
+         AA(4,2) = AA(4,2) + Px*Py/sigma2
+         AA(4,3) = AA(4,3) + zi*Py**2/sigma2
+         AA(4,4) = AA(4,4) + Py**2/sigma2
+      enddo
+
+      call solve_four_by_four(TT,AA,dray,ierr)
+
+      if(ierr.ne.0) then
+         dray(1) = dble(H_FPP_BAD_COORD)
+         dray(2) = dble(H_FPP_BAD_COORD)
+         dray(3) = dble(H_FPP_BAD_COORD)
+         dray(4) = dble(H_FPP_BAD_COORD)
+         chi2 = dble(h_fpp_bad_chi2)
+      else ! calculate the chi2
+         chi2 = 0.d0
+         do ihit=1,n
+            ui = dble(coords(ihit,1))
+            zi = dble(coords(ihit,2))
+            Px = dble(projs(ihit,1))
+            Py = dble(projs(ihit,2))
+            sigma2 = dble(sig2s(ihit))
+
+            utrack = Px*(dray(1)*zi + dray(2)) + Py*(dray(3)*zi + dray(4))
+            chi2 = chi2 + (ui - utrack)**2 / sigma2
+         enddo
+
+         if(n.gt.4) then 
+            chi2 = chi2 / dfloat(n-4)
+         else 
+            chi2 = -1.d0
+         endif
+      endif
+
+      params(1) = sngl(dray(1))
+      params(2) = sngl(dray(2))
+      params(3) = sngl(dray(3))
+      params(4) = sngl(dray(4))
+      params(5) = sngl(chi2)
+
+      return 
+      end
+      
