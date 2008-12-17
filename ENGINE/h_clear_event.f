@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *
 * $Log$
+* Revision 1.15.24.6  2008/12/17 22:29:41  puckett
+* minor diagnostic addition
+*
 * Revision 1.15.24.5  2008/12/15 18:47:39  puckett
 * minor changes to FPP and gep ntuples
 *
@@ -189,6 +192,7 @@ cfrw       enddo
 *     *  number of tracks in each set of DCs
       do iSet=1, H_FPP_N_DCSETS
         hfpp_N_tracks(iSet) = 0
+        hfpp_n_goodtracks(iset) = 0
         hfpp_best_track(iSet) = 0
         hfpp_n_simple(iset) = 0
       enddo !iSet

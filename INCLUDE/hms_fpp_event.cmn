@@ -106,6 +106,7 @@
                                      ! see above for details
 
       integer*4 HFPP_N_tracks        ! actual # of tracks in set
+      integer*4 hfpp_n_goodtracks
       integer*4 hfpp_n_simple        ! number of "candidate" tracks based on simple tracking
 
       integer*4 HFPP_track_Nlayers   ! # of layers with hits used on track
@@ -145,6 +146,7 @@
       common/HMS_FPP_track/
      &    HFPP_eventclass
      &  , HFPP_N_tracks(H_FPP_N_DCSETS)
+     $  , hfpp_n_goodtracks(h_fpp_n_dcsets)   
      $  , hfpp_n_simple(h_fpp_n_dcsets)   
      &  , HFPP_track_Nlayers(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
      &  , HFPP_track_Nhits(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
@@ -182,6 +184,7 @@
 
       integer*4 hfppuseajptracking ! flag to call h_fpp_tracking_drifttrack_ajp instead of std. routine
       integer*4 hselectfpptrackprune ! flag to turn on FPP track selection using pruning
+      integer*4 hfpp_prune_nplanes ! flag to turn on pruning on the number of layers on a track:
       real*4 hfpp_prune_thetamin(2) ! FPP1 and FPP2
       real*4 hfpp_prune_thetamax(2) 
       real*4 hfpp_prune_sclose(2) 
@@ -189,6 +192,7 @@
       real*4 hfpp_prune_zslop(2) ! FPP1 and FPP2 theta-dependent additional tolerance on zclose
       common/hfpp_prune_params/
      $     hfppuseajptracking,
+     $     hfpp_prune_nplanes,
      $     hselectfpptrackprune,
      $     hfpp_prune_thetamin,
      $     hfpp_prune_thetamax,
