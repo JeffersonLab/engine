@@ -102,28 +102,30 @@ c     for FPP2, check conetest using either HMS or FPP1 as reference track
             enddo
          endif
       enddo
-c$$$  c     fifth prune test: number of layers on a track: if we have six, throw out all other five-hit
-c$$$  c     tracks
+c     fifth prune test: number of layers on a track: if we have six, throw out all other five-hit
+c     tracks
+  
+      nplanesprune = h_fpp_n_dcinset * hfpp_optchamberhits
 c$$$  
-c$$$      nplanesprune = h_fpp_n_dcinset * hfpp_optchamberhits
-c$$$c$$$  
-c$$$      do ifpp=1,2
-c$$$         ngood(ifpp) = 0
-c$$$         do itrack=1,hfpp_n_tracks(ifpp)
-c$$$            if(keep(ifpp,itrack).and.hfpp_track_nlayers(ifpp,itrack).ge.
-c$$$     $           nplanesprune) then
-c$$$               ngood(ifpp) = ngood(ifpp) + 1
-c$$$            endif
-c$$$         enddo
-c$$$         
-c$$$         if(ngood(ifpp).gt.0) then
-c$$$            do itrack=1,hfpp_n_tracks(ifpp)
-c$$$               if(hfpp_track_nlayers(ifpp,itrack).lt.nplanesprune) then
-c$$$                  keep(ifpp,itrack) = .false.
-c$$$               endif
-c$$$            enddo
-c$$$         endif
-c$$$      enddo
+      if(hfpp_prune_nplanes.ne.0) then ! apply this test iff flag is set.
+         do ifpp=1,2
+            ngood(ifpp) = 0
+            do itrack=1,hfpp_n_tracks(ifpp)
+               if(keep(ifpp,itrack).and.hfpp_track_nlayers(ifpp,itrack).ge.
+     $              nplanesprune) then
+                  ngood(ifpp) = ngood(ifpp) + 1
+               endif
+            enddo
+            
+            if(ngood(ifpp).gt.0) then
+               do itrack=1,hfpp_n_tracks(ifpp)
+                  if(hfpp_track_nlayers(ifpp,itrack).lt.nplanesprune) then
+                     keep(ifpp,itrack) = .false.
+                  endif
+               enddo
+            endif
+         enddo
+      endif
       
 
 c     first prune tests: prune separately on minimum and maximum 
@@ -315,6 +317,8 @@ c     for FPP1, the selection method is simply smallest theta wrt the incident H
 
       besttrack(1) = 0
 
+      ngood(1) = 0
+
       do itrack=1,hfpp_n_tracks(1)
          criterion = hfpp_track_theta(1,itrack)
          if(keep(1,itrack).and.
@@ -323,11 +327,16 @@ c     for FPP1, the selection method is simply smallest theta wrt the incident H
             besttrack(1) = itrack
             mincriterion(1) = criterion
          endif
+         if(keep(1,itrack)) ngood(1) = ngood(1) + 1
       enddo
             
+      hfpp_n_goodtracks(1) = ngood(1)
+
       besttrack(2) = 0
 
       firsttry = .true.
+
+      ngood(2) = 0
 
       do itrack=1,hfpp_n_tracks(2)
          if(keep(2,itrack).and.keep(3,itrack)) then ! either HMS or FPP1 could be the best reference track
@@ -350,7 +359,12 @@ c     for FPP1, the selection method is simply smallest theta wrt the incident H
             firsttry = .false.
             besttrack(2) = itrack
          endif
+
+         if(keep(2,itrack).or.keep(3,itrack) ) ngood(2) = ngood(2) + 1
+
       enddo
+
+      hfpp_n_goodtracks(2) = ngood(2)
 
       do ifpp=1,2
          hfpp_best_track(ifpp) = besttrack(ifpp)         

@@ -124,7 +124,7 @@
 	  enddo !iCluster
 	enddo !iLayer
        enddo !iChamber
-       if(hidfpp_nsimp(dcset).gt.0)
+       if(hidfpp_nsimp(dcset).gt.0.and.hfpp_n_tracks(dcset).gt.0)
      $      call hf1(hidFPP_Nsimp(dcset),float(hfpp_n_simple(dcset)),1.0)
       enddo !DCset
 
@@ -265,7 +265,14 @@
 *     * for each track in each set, track chi**2, mx,bx,my,by, # hits, HFPP_track_fine,
 *     *  sclose,zclose,theta,phi
       do DCset=1,H_FPP_N_DCSETS
-	if(hidFPP_Ntrk(DCset).gt.0) call hf1(hidFPP_Ntrk(DCset),float(HFPP_N_tracks(DCset)),1.)
+	if(hidFPP_Ntrk(DCset).gt.0) then
+           if(hselectfpptrackprune.eq.0) then
+              call hf1(hidFPP_Ntrk(DCset),float(HFPP_N_tracks(DCset)),1.)
+           else 
+              call hf1(hidFPP_Ntrk(dcset),float(hfpp_n_goodtracks(dcset)),1.0)
+              
+           endif
+        endif
         do iTrack=1,HFPP_N_tracks(DCset)
 	  if(hidFPP_Nhitontrk(DCset).gt.0) 
      $          call hf1(hidFPP_Nhitontrk(DCset),float(HFPP_track_Nlayers(DCset,iTrack)),1.)
