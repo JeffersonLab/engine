@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.14  2008/12/18 03:38:58  puckett
+* added pruning based on BigCal clusters
+*
 * Revision 1.13.24.13  2008/09/29 16:02:11  puckett
 * added checking for existence of histograms before calling fill routines
 *
@@ -239,7 +242,20 @@ c            if(.not. h_passed_cointime_cut) return
       endif
 
       if(.not.(h_passed_cointime_cut.and.b_passed_cointime_cut)) return
-
+*-BIGCAL reconstruction
+      if(gen_event_type.ge.5 .and. gen_event_type.le.8) then !5.BIGCAL/6.HMS-BIGCAL COIN/7.COSMIC/8.LIGHT BOX
+*write(*,*) 'calling b_reconstruction'
+         
+         call B_reconstruction(FAIL,why)
+         
+*write(*,*) 'b_reconstruction successful'
+         IF(err.NE.' ' .and. why.NE.' ') THEN
+            call G_append(err,' & '//why)
+         ELSEIF(why.NE.' ') THEN
+            err= why
+         ENDIF
+         ABORT= ABORT .or. FAIL
+      endif
 c
 *
 *-HMS reconstruction
@@ -273,19 +289,19 @@ c      write(*,*) 'h_reconstruction successful'
         ABORT= ABORT .or. FAIL
       ENDIF
 *-BIGCAL reconstruction
-      if(gen_event_type.ge.5 .and. gen_event_type.le.8) then !5.BIGCAL/6.HMS-BIGCAL COIN/7.COSMIC/8.LIGHT BOX
-         !write(*,*) 'calling b_reconstruction'
-         
-         call B_reconstruction(FAIL,why)
-
-         !write(*,*) 'b_reconstruction successful'
-         IF(err.NE.' ' .and. why.NE.' ') THEN
-            call G_append(err,' & '//why)
-         ELSEIF(why.NE.' ') THEN
-            err= why
-         ENDIF
-         ABORT= ABORT .or. FAIL
-      endif
+c$$$      if(gen_event_type.ge.5 .and. gen_event_type.le.8) then !5.BIGCAL/6.HMS-BIGCAL COIN/7.COSMIC/8.LIGHT BOX
+c$$$         !write(*,*) 'calling b_reconstruction'
+c$$$         
+c$$$         call B_reconstruction(FAIL,why)
+c$$$
+c$$$         !write(*,*) 'b_reconstruction successful'
+c$$$         IF(err.NE.' ' .and. why.NE.' ') THEN
+c$$$            call G_append(err,' & '//why)
+c$$$         ELSEIF(why.NE.' ') THEN
+c$$$            err= why
+c$$$         ENDIF
+c$$$         ABORT= ABORT .or. FAIL
+c$$$      endif
 
 c      write(*,*) 'b_reconstruction successful'
 

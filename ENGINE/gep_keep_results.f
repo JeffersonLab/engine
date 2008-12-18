@@ -18,7 +18,7 @@ c      include 'gen_event_info.cmn'
       abort=.false.
       err=' '
 
-      if(HSNUM_FPTRACK.gt.0 .and. BIGCAL_PHYS_NTRACK .gt. 0 .and. 
+      if(HSNUM_FPTRACK.gt.0 .and. bigcal_all_nclust_good .gt. 0 .and. 
      $     b_passed_cointime_cut.and.h_passed_cointime_cut) then
 c         gep_evid = gen_event_id_number
          call gep_ntuple_keep(abort,err)
