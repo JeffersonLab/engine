@@ -1,5 +1,8 @@
 *    This include file contains all the variables required for h_physics
 * $Log$
+* Revision 1.11.6.2  2008/12/18 03:40:24  puckett
+* added prune parameter for BigCal missing momentum
+*
 * Revision 1.11.6.1  2008/07/29 16:52:43  puckett
 * added missing momentum prune test for track selection
 *
@@ -94,6 +97,7 @@
       integer hprune_npmt               ! Minimum PMTs for track
 c     ajp added 072308
       real*4 hprune_pmiss               ! maximum p - pel(theta)
+      real*4 hprune_epmiss              ! maximum p - pel(etheta)   
                  
       INTEGER*4 hsel_ndegreesmin        ! Minimum number of degrees of freedom
       INTEGER*4 hsel_using_scin       ! =1 select best track using scin info
@@ -119,7 +123,8 @@ c     ajp added 072308
      &     hprune_chibeta,
      &     hprune_npmt,
      &     hprune_fptime,
-     $     hprune_pmiss
+     $     hprune_pmiss,
+     $     hprune_epmiss
 *
       COMMON/hms_chose_one_track_i4/
      &     hsel_ndegreesmin,
