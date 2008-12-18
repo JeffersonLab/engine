@@ -12,6 +12,9 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log$
+*- Revision 1.1.8.6  2008/12/18 03:41:09  puckett
+*- added prune test based on BigCal clusters
+*-
 *- Revision 1.1.8.5  2008/12/03 17:34:23  puckett
 *- rewrote thetafpp,phifpp calculation using easier to understand notation, verified identical results to old calculation
 *-
@@ -49,19 +52,22 @@
       INCLUDE 'gen_routines.dec'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
+      include 'gen_event_info.cmn'
       INCLUDE 'hms_physics_sing.cmn'
       INCLUDE 'hms_calorimeter.cmn'
       INCLUDE 'hms_scin_parms.cmn'
       INCLUDE 'hms_scin_tof.cmn'
       INCLUDE 'hms_tracking.cmn'
+      include 'bigcal_data_structures.cmn'
 c
 *
 *     local variables 
-      integer*4 goodtrack,track,ngood,reject(1000),trk
+      integer*4 goodtrack,track,ngood,reject(1000),trk,iclust
       logical first,keep(1000)
       real*4 chi2perdeg,chi2min,betap,p
 c     new local variables to calculate missing momentum as a prune test:
-      real*4 pmiss,theta,phi,pel,pz,px,py,pz_spec
+      real*4 pmiss,theta,phi,pel,pz,px,py,pz_spec,z,edx,edy,edz,L,etheta
+      real*4 pp_etheta,Ee_etheta,nu_etheta
 c
 c      integer*4 i,j
       data first /.true./
@@ -87,6 +93,7 @@ c      integer*4 i,j
         hprune_fptime= max(5.,  hprune_fptime)
         hprune_npmt  = max(2,  hprune_npmt)  
         hprune_pmiss = max(2.,hprune_pmiss) / 100. ! set this value in param file in percent
+        hprune_epmiss = max(1.5,hprune_epmiss) / 100. ! set this value in param file in percent
         write(*,'(1x,'' using following HMS limits''/
      >    1x,''abs(xptar)<'',f6.3/
      >    1x,''abs(yptar)<'',f6.3/
@@ -319,7 +326,81 @@ c            ngood = ngood + 1
               endif
            enddo
         endif
+! prune on missing momentum wrt BigCal clusters as well
+        if(gen_event_type.eq.6.and.bigcal_all_nclust_good.gt.0) then
 
+           ngood = 0
+           do track = 1,hntracks_fp
+
+              if(keep(track)) then
+                 p = hp_tar(track)
+                 
+                 z = hy_tar(track) * (coshthetas / tan(htheta_lab*degree - 
+     $                hyp_tar(track) ) + sinhthetas)
+                 
+                 do iclust=1,bigcal_all_nclstr
+
+                    if(bigcal_clstr_keep(iclust)) then
+                       edx = bigcal_all_clstr_x(iclust)*bigcal_costheta 
+     $                      + bigcal_r_tgt * bigcal_sintheta
+                       edy = bigcal_all_clstr_y(iclust)
+                       edz = -bigcal_all_clstr_x(iclust)*bigcal_sintheta 
+     $                      + bigcal_r_tgt * bigcal_costheta - z
+                       L = sqrt(edx**2 + edy**2 + edz**2)
+
+                       etheta = acos(edz/L)
+
+                       Ee_etheta = gebeam / (1. + gebeam/hpartmass * 
+     $                      (1.-cos(etheta)))
+                       nu_etheta = gebeam - Ee_etheta
+                       pp_etheta = sqrt(nu_etheta**2 + 2.*hpartmass*nu_etheta)
+                       
+                       pmiss = p - pp_etheta
+
+                       if(abs(pmiss/hpcentral).lt.hprune_epmiss) then
+                          ngood = ngood + 1
+                       endif
+                    endif
+                 enddo
+              endif
+           enddo
+
+           if(ngood.gt.0) then
+              do track=1,hntracks_fp
+                 if(keep(track)) then
+                    p = hp_tar(track)
+                    
+                    z = hy_tar(track) * (coshthetas / tan(htheta_lab*degree - 
+     $                   hyp_tar(track) ) + sinhthetas)
+                    
+                    do iclust=1,bigcal_all_nclstr
+                       
+                       if(bigcal_clstr_keep(iclust)) then
+                          edx = bigcal_all_clstr_x(iclust)*bigcal_costheta 
+     $                         + bigcal_r_tgt * bigcal_sintheta
+                          edy = bigcal_all_clstr_y(iclust)
+                          edz = -bigcal_all_clstr_x(iclust)*bigcal_sintheta 
+     $                         + bigcal_r_tgt * bigcal_costheta - z
+                          L = sqrt(edx**2 + edy**2 + edz**2)
+                          
+                          etheta = acos(edz/L)
+                          
+                          Ee_etheta = gebeam / (1. + gebeam/hpartmass * 
+     $                         (1.-cos(etheta)))
+                          nu_etheta = gebeam - Ee_etheta
+                          pp_etheta = sqrt(nu_etheta**2 + 2.*hpartmass*nu_etheta)
+                          
+                          pmiss = p - pp_etheta
+                          
+                          if(abs(pmiss/hpcentral).ge.hprune_epmiss) then
+                             keep(track) = .false.
+                          endif
+                       endif
+                    enddo
+                 endif
+              enddo
+           endif
+        endif       
 
 ! Pick track with best chisq if more than one track passed prune tests
         goodtrack = 1
