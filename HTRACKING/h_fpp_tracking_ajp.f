@@ -223,22 +223,23 @@ c     prioritize: tracks passing theta cut take precedence over six-plane tracks
 c     we want tracks with six planes passing theta cut, but we will take a five-plane track 
 c     passing theta over a six-plane track failing theta:
             if(firsttry.or.chi2.lt.minchi2) then
-               if(any6theta) then ! there is at least one track passing six planes AND theta cut. Require both
-                  if(candidate_nplanes(track).eq.h_fpp_n_dcinset*h_fpp_n_dclayers
-     $                 .and.thetatracks(track).le.hfpp_prune_thetamax(dcset)*PI/180.0)
-     $                 then
-                     firsttry = .false.
-                     minchi2 = chi2
-                     bestcandidate = track
-                  endif
-               else if(anytheta) then ! there is no track passing six planes AND theta, require theta cut
-                  if(thetatracks(track).le.hfpp_prune_thetamax(dcset)*PI/180.0)
-     $                 then
-                     firsttry = .false.
-                     minchi2 = chi2
-                     bestcandidate = track
-                  endif
-               else if(any6) then ! there is no track passing theta cut. Require six planes
+c$$$               if(any6theta) then ! there is at least one track passing six planes AND theta cut. Require both
+c$$$                  if(candidate_nplanes(track).eq.h_fpp_n_dcinset*h_fpp_n_dclayers
+c$$$     $                 .and.thetatracks(track).le.hfpp_prune_thetamax(dcset)*PI/180.0)
+c$$$     $                 then
+c$$$                     firsttry = .false.
+c$$$                     minchi2 = chi2
+c$$$                     bestcandidate = track
+c$$$                  endif
+c$$$               else if(anytheta) then ! there is no track passing six planes AND theta, require theta cut
+c$$$                  if(thetatracks(track).le.hfpp_prune_thetamax(dcset)*PI/180.0)
+c$$$     $                 then
+c$$$                     firsttry = .false.
+c$$$                     minchi2 = chi2
+c$$$                     bestcandidate = track
+c$$$                  endif
+c$$$               else if(any6) then ! there is no track passing theta cut. Require six planes
+               if(any6) then
                   if(candidate_nplanes(track).eq.h_fpp_n_dcinset*h_fpp_n_dclayers)
      $                 then
                      firsttry = .false.

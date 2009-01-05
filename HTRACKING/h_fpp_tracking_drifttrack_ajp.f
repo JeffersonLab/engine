@@ -49,6 +49,7 @@
 
       real*4 points(h_fpp_max_fitpoints,2),trackpoints(h_fpp_max_fitpoints,2) ! u and z
       real*4 sigma2s(h_fpp_max_fitpoints), tracksigma2s(h_fpp_max_fitpoints)
+      real*4 trackcorrsigma2s(h_fpp_max_fitpoints)
       real*4 projects(h_fpp_max_fitpoints,2), trackprojects(h_fpp_max_fitpoints,2)
       real*4 drifts(h_fpp_max_fitpoints), trackdrifts(h_fpp_max_fitpoints)
 
@@ -59,7 +60,8 @@
 
       real*4 chi2_1,chi2_2,sclos1,sclos2,chi2_H
 
-      real*4 x,y,z,u,v,roughu,roughv,u1,u2
+      real*4 x,y,z,u,v,roughu,roughv,u1,u2,rough_wprime,rough_trkthetaw
+      real*4 fine_wprime,fine_trkthetaw
 
       real*4 hitpos(h_fpp_max_fitpoints,2) ! generalized coordinate u and z with drift
 
@@ -123,6 +125,13 @@ c     always initialize to zero
                roughv = y * hfpp_direction(dcset,ichamber,ilayer,1) - 
      $              x * hfpp_direction(dcset,ichamber,ilayer,2)
                roughv = roughv / hfpp_wirespeed
+
+c     record the slope of the simple track along the coordinate measured by this layer
+c     for optional correction to drift distance and z of the hit:
+
+               rough_wprime = simpletrack(1) * hfpp_direction(dcset,ichamber,ilayer,1) + 
+     $              simpletrack(3) * hfpp_direction(dcset,ichamber,ilayer,2)
+               rough_trkthetaw = atan(rough_wprime)
 
                do ihit=1,hfpp_nhitsincluster(dcset,ichamber,ilayer,icluster)
                   hit = hfpp_clusters(dcset,ichamber,ilayer,icluster,ihit)
@@ -364,14 +373,32 @@ c         write(*,*) 'LR combo ',icombo+1,' of ',ncombos
                endif
             endif
 
+            rough_wprime = simpletrack(1) * trackprojects(ipoint,1) + 
+     $           simpletrack(3) * trackprojects(ipoint,2)
+            rough_trkthetaw = atan2(rough_wprime,1.0)
+
 *     initialize hitpos arrays
-            hitpos(ipoint,1) = trackpoints(ipoint,1) + 
-     $           plusminustest(ipoint) * trackdrifts(ipoint)
-            hitpos(ipoint,2) = trackpoints(ipoint,2)
+            if(hfppcorrectdriftforangle.ne.0) then ! assume drift distance represents closest approach distance
+c     and correct this point for track angle as measured by the simple track:
+               hitpos(ipoint,1) = trackpoints(ipoint,1) + 
+     $              plusminustest(ipoint) * trackdrifts(ipoint) / cos(rough_trkthetaw)
+               hitpos(ipoint,2) = trackpoints(ipoint,2)
+
+               trackcorrsigma2s(ipoint) = tracksigma2s(ipoint) / ( (cos(rough_trkthetaw))**2 )
+            else
+               hitpos(ipoint,1) = trackpoints(ipoint,1) + 
+     $              plusminustest(ipoint) * trackdrifts(ipoint)
+               hitpos(ipoint,2) = trackpoints(ipoint,2)
+            endif
          enddo ! end loop over points on the track/plusminustest initialization
 *     fit the test track
-         call h_fpp_fit3d_ajp(ntrackpoints,hitpos,tracksigma2s,trackprojects,
-     $        TestTrack)
+         if(hfppcorrectdriftforangle.ne.0) then
+            call h_fpp_fit3d_ajp(ntrackpoints,hitpos,trackcorrsigma2s,trackprojects,
+     $           testtrack)
+         else
+            call h_fpp_fit3d_ajp(ntrackpoints,hitpos,tracksigma2s,trackprojects,
+     $           TestTrack)
+         endif
 *     get the chi2
          chi2 = TestTrack(5)
 *     first check for "ambiguity": is the chi2 of this track exactly 
@@ -495,14 +522,37 @@ c            write(*,*) 'current best track=',besttrack
 
          endif
 
-         hitpos(ipoint,1) = trackpoints(ipoint,1) + 
-     $        plusminusbest(ipoint) * trackdrifts(ipoint)
-         hitpos(ipoint,2) = trackpoints(ipoint,2)
+c     do final initialization of hitpos arrays using fitted track angles:
+         
+         fine_wprime = besttrack(1) * trackprojects(ipoint,1) + 
+     $        besttrack(3) * trackprojects(ipoint,2)
+         fine_trkthetaw = atan2(fine_wprime,1.0)
+
+         if(hfppcorrectdriftforangle.ne.0) then
+            hitpos(ipoint,1) = trackpoints(ipoint,1) + 
+     $           plusminusbest(ipoint) * trackdrifts(ipoint) / cos(fine_trkthetaw)
+            hitpos(ipoint,2) = trackpoints(ipoint,2)
+
+            trackcorrsigma2s(ipoint) = tracksigma2s(ipoint) / ((cos(fine_trkthetaw))**2)
+         else
+            hitpos(ipoint,1) = trackpoints(ipoint,1) + 
+     $           plusminusbest(ipoint) * trackdrifts(ipoint)
+            hitpos(ipoint,2) = trackpoints(ipoint,2)
+         endif
       enddo
-*     fit the set of points using the BEST left-right combo to the "BEST" track--NOT really necessary to do this again.
-*     but just for safety's and redundancy's sake:
-      call h_fpp_fit3d_ajp(ntrackpoints,hitpos,tracksigma2s,trackprojects,
-     $     BestTrack)
+*     fit the set of points using the BEST left-right combo to the "BEST" track
+*     hit position within the cell is now corrected for the FITTED track angles rather than the 
+*     rough track angles. In principle we could iterate this procedure to arbitrary precision
+*     limited only by the drift distance resolution and the extent to which the approximation that drift distance 
+*     equals closest approach distance is valid, but one iteration should be quite sufficient.
+
+      if(hfppcorrectdriftforangle.ne.0) then
+         call h_fpp_fit3d_ajp(ntrackpoints,hitpos,trackcorrsigma2s,trackprojects,
+     $        besttrack)
+      else
+         call h_fpp_fit3d_ajp(ntrackpoints,hitpos,tracksigma2s,trackprojects,
+     $        BestTrack)
+      endif
          
 c      write(*,*) 'best track found=',besttrack
 c      write(*,*) 'best LR combo=',plusminusbest
@@ -525,11 +575,16 @@ c      write(*,*) 'best LR combo=',plusminusbest
                ichamber = trackchambers(ihit)
                ilayer = tracklayers(ihit)
                if(npointsthislayer(ichamber,ilayer).gt.1) then
+                  
                   x = besttrack(1) * trackpoints(ihit,2) + besttrack(2)
                   y = besttrack(3) * trackpoints(ihit,2) + besttrack(4)
                   u = x * trackprojects(ihit,1) + y * trackprojects(ihit,2)
-
-                  residual = (u - hitpos(ihit,1))**2/tracksigma2s(ihit)
+                  
+                  if(hfppcorrectdriftforangle.ne.0) then
+                     residual = (u - hitpos(ihit,1))**2/trackcorrsigma2s(ihit)
+                  else
+                     residual = (u - hitpos(ihit,1))**2/tracksigma2s(ihit)
+                  endif
 
                   if(firsttry.or.residual.gt.maxresidual) then
                      firsttry = .false.
@@ -579,6 +634,16 @@ c      write(*,*) 'best LR combo=',plusminusbest
                wire = trackwires(ihit)
                hfpp_drift_dist(dcset,ichamber,ilayer,wire) = 
      $              trackdrifts(ihit) * plusminusbest(ihit)
+
+               if(hfppcorrectdriftforangle.ne.0) then
+                  fine_wprime = trackprojects(ihit,1)*besttrack(1) + 
+     $                 trackprojects(ihit,2)*besttrack(3)
+
+                  fine_trkthetaw = atan2(fine_wprime,1.0)
+                  
+                  hfpp_drift_dist(dcset,ichamber,ilayer,wire) = 
+     $                 trackdrifts(ihit) * plusminusbest(ihit) / cos(fine_trkthetaw)
+               endif
             enddo
 *     Fill output track variables: 
             do j=1,5
@@ -604,7 +669,11 @@ c      write(*,*) 'best LR combo=',plusminusbest
 *     convert to generalized coordinate:
             u = x * trackprojects(ipoint,1) + y * trackprojects(ipoint,2)
 
-            residual = (u - hitpos(ipoint,1))**2/tracksigma2s(ipoint)
+            if(hfppcorrectdriftforangle.ne.0) then
+               residual = (u - hitpos(ipoint,1))**2/trackcorrsigma2s(ipoint)
+            else
+               residual = (u - hitpos(ipoint,1))**2/tracksigma2s(ipoint)
+            endif
 
             if(firsttry.or.residual.gt.maxresidual) then
 c     first, ask whether this track has ANY multi-hit clusters:
@@ -668,7 +737,6 @@ c               ontrack(ichamber,ilayer) = .true.
                endif
             enddo
          enddo
-
 
          if(ntrackpoints.ge.hfpp_minsethits.and.
      $        ntrackplanes.ge.hfpp_minsethits) goto 101 ! repeat track fitting/LR determination

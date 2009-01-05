@@ -12,6 +12,9 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log$
+*- Revision 1.1.8.7  2009/01/05 22:46:39  puckett
+*- minor modifications, including an optional angle-dependent correction to the measured FPP in-plane coordinate
+*-
 *- Revision 1.1.8.6  2008/12/18 03:41:09  puckett
 *- added prune test based on BigCal clusters
 *-
@@ -92,8 +95,8 @@ c      integer*4 i,j
         hprune_chibeta= max(2.,  hprune_chibeta)
         hprune_fptime= max(5.,  hprune_fptime)
         hprune_npmt  = max(2,  hprune_npmt)  
-        hprune_pmiss = max(2.,hprune_pmiss) / 100. ! set this value in param file in percent
-        hprune_epmiss = max(1.5,hprune_epmiss) / 100. ! set this value in param file in percent
+        hprune_pmiss = max(5.,hprune_pmiss) / 100. ! set this value in param file in percent
+        hprune_epmiss = max(5.,hprune_epmiss) / 100. ! set this value in param file in percent
         write(*,'(1x,'' using following HMS limits''/
      >    1x,''abs(xptar)<'',f6.3/
      >    1x,''abs(yptar)<'',f6.3/
