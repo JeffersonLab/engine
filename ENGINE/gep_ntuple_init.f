@@ -178,6 +178,10 @@
       m=m+1
       gep_ntuple_tag(m) = 'ntrack2' ! number of tracks in FPP2
       m=m+1
+      gep_ntuple_tag(m) = 'ngood1' ! number of "good" tracks in FPP1 (passed prune tests)
+      m=m+1
+      gep_ntuple_tag(m) = 'ngood2' ! number of "good" tracks in FPP2 (passed prune tests)
+      m=m+1
       gep_ntuple_tag(m) = 'trk1' ! track number of the chosen track in FPP1
       m=m+1
       gep_ntuple_tag(m) = 'nhits1' ! number of hits on chosen track in FPP1

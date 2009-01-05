@@ -163,10 +163,17 @@ c     lw
       gep_ntuple_contents(m) = GEP_Mmiss
       m=m+1
       gep_ntuple_contents(m) = gbeam_helicity
+c$$$      if(hselectfpptrackprune.eq.0) then
       m=m+1
       gep_ntuple_contents(m) = float(HFPP_N_tracks(1))
       m=m+1
       gep_ntuple_contents(m) = float(HFPP_N_tracks(2))
+c$$$      else
+      m=m+1
+      gep_ntuple_contents(m) = float(HFPP_N_goodtracks(1))
+      m=m+1
+      gep_ntuple_contents(m) = float(HFPP_N_goodtracks(2))
+c$$$      endif
 c      
 c Algorithm to select "best" track for final analysis
 c
