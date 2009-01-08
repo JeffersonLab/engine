@@ -11,6 +11,9 @@
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *
 * $Log$
+* Revision 1.6.24.6  2009/01/08 18:14:49  puckett
+* fixed problem that resulted in no events in FPP ntuple when AJP tracking routines are used
+*
 * Revision 1.6.24.5  2008/07/29 16:07:48  puckett
 * added HMS cointime cut to criteria for keeping HMS event
 *
@@ -90,7 +93,10 @@
 *
 *
 c      write(*,*)'Calling h_fpp_nt_keep:',HFPP_eventclass,HFPP_min_event_code
-      if (HFPP_eventclass.ge.HFPP_min_event_code) call h_fpp_nt_keep(ABORT,err)
+      if (HFPP_eventclass.ge.HFPP_min_event_code.or.
+     $     (hfppuseajptracking.ne.0.and.HSNUM_FPTRACK.gt.0 .and. 
+     $     b_passed_cointime_cut .and. 
+     $     h_passed_cointime_cut)) call h_fpp_nt_keep(ABORT,err)
 *
       IF(ABORT) THEN
          call G_add_path(here,err)
