@@ -1,5 +1,8 @@
       subroutine g_examine_epics_event
 * $Log$
+* Revision 1.5.20.3  2009/01/13 18:28:52  puckett
+* minor fixes
+*
 * Revision 1.5.20.2  2008/12/05 21:50:27  puckett
 * added printout of gen_event_id_number
 *
@@ -63,9 +66,11 @@ c
       if (evtype-gdebugdumpepics .gt. 130) dump_event = .false.
   
 c
-      if (dump_event) write (G_LUN_EPICS_OUTPUT,*) 'epics event #',numevent,
-     $     'gen_event_id_number=',gen_event_id_number
-      
+      if (dump_event) then
+         write (G_LUN_EPICS_OUTPUT,*) 'epics event #',numevent
+c     
+         write (G_LUN_EPICS_OUTPUT,*) 'event id #',gen_event_id_number
+      endif
 
       if (craw(3)-1.le.0) then
         write (6,*)

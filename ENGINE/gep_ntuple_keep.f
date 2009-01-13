@@ -162,7 +162,7 @@ c     lw
       m=m+1
       gep_ntuple_contents(m) = GEP_Mmiss
       m=m+1
-      gep_ntuple_contents(m) = gbeam_helicity
+      gep_ntuple_contents(m) = float(gbeam_helicity)
 c$$$      if(hselectfpptrackprune.eq.0) then
       m=m+1
       gep_ntuple_contents(m) = float(HFPP_N_tracks(1))
@@ -190,7 +190,7 @@ c
 
          if(hselectfpptrackprune.ne.0) then ! use best FPP track selection based on prune tests, Sitnik
             track_store = hfpp_best_track(iSet)
-            if(track_store.gt.0) then
+            if(track_store.gt.0.and.track_store.le.hfpp_n_tracks(iset)) then
                nhits_store = hfpp_track_nhits(iSet,track_store)
                nplanes_store = hfpp_track_nlayers(iSet,track_store)
                theta_store = hfpp_track_theta(iSet,track_store)
@@ -251,9 +251,10 @@ c     initialize variables for FPP2 relative to FPP1
       sclose_store = 1.0e15
       zclose_store = 1.0e15
 
-      if(hfpp_best_track(1).gt.0.and.hfpp_best_track(2).gt.0) then
+      if(hfpp_best_track(1).gt.0.and.hfpp_best_track(2).gt.0.and.
+     $     hfpp_best_track(1).le.hfpp_n_tracks(1).and.
+     $     hfpp_best_track(2).le.hfpp_n_tracks(2)) then
          track_store = hfpp_best_track(2)
-         
          theta_store = hfpp_track_theta(3,track_store)
          phi_store = hfpp_track_phi(3,track_store)
          conetest_store = hfpp_track_conetest(3,track_store)
@@ -278,6 +279,7 @@ c     HMS track as reference
       m=m+1
       gep_ntuple_contents(m) = phi_store
 
+c      write(*,*) 'gep_ntuple, number of variables filled = ',m
 
       abort = .not. HEXIST(gep_ntuple_ID)
       if(abort) then

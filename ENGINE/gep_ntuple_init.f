@@ -234,6 +234,8 @@ c     now all tags are set, initialize the ntuple:
 
       gep_ntuple_size = m
 
+c      write(*,*) 'gep_ntuple_size=',gep_ntuple_size
+
       call gep_ntuple_open(file,ABORT,err)
 
       if(abort) then
