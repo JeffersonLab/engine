@@ -248,7 +248,7 @@
           enddo !iLayer
          enddo !iChamber
        enddo !DCset
-      else ! fill residuals histogram:
+      else  ! fill residuals histogram:
          do dcset=1,h_fpp_n_dcsets
             hid = hidFPP_resid(dcset)
             do ichamber=1,h_fpp_n_dcinset

@@ -96,7 +96,7 @@ c     for FPP2, check conetest using either HMS or FPP1 as reference track
             enddo
          endif
 
-         if(ngood(3).gt.0) then
+         if(ifpp.eq.2.and.ngood(3).gt.0) then
             do itrack=1,hfpp_n_tracks(2)
                if(hfpp_track_conetest(3,itrack).eq.0) then
                   keep(3,itrack) = .false.
@@ -112,10 +112,16 @@ c$$$
       if(hfpp_prune_nplanes.ne.0) then ! apply this test iff flag is set.
          do ifpp=1,2
             ngood(ifpp) = 0
+            ngood(3) = 0
             do itrack=1,hfpp_n_tracks(ifpp)
                if(keep(ifpp,itrack).and.hfpp_track_nlayers(ifpp,itrack).ge.
      $              nplanesprune) then
                   ngood(ifpp) = ngood(ifpp) + 1
+               endif
+
+               if(ifpp.eq.2.and.keep(3,itrack).and.hfpp_track_nlayers(ifpp,itrack)
+     $              .ge.nplanesprune) then
+                  ngood(3) = ngood(3) + 1
                endif
             enddo
             
@@ -126,9 +132,16 @@ c$$$
                   endif
                enddo
             endif
+
+            if(ifpp.eq.2.and.ngood(3).gt.0) then
+               do itrack=1,hfpp_n_tracks(2)
+                  if(hfpp_track_nlayers(ifpp,itrack).lt.nplanesprune) then
+                     keep(3,itrack) = .false.
+                  endif
+               enddo
+            endif
          enddo
       endif
-      
 
 c     first prune tests: prune separately on minimum and maximum 
 c     polar scattering angle theta>thetamin:
@@ -158,9 +171,9 @@ c     for FPP2, check using either FPP1 or HMS as reference track:
             enddo
          endif
          
-         if(ngood(3).gt.0) then
+         if(ifpp.eq.2.and.ngood(3).gt.0) then
             do itrack=1,hfpp_n_tracks(2)
-               if(hfpp_track_theta(3,itrack).lt.hfpp_prune_thetamin(2)*PI/180.0)
+               if(hfpp_track_theta(3,itrack).lt.hfpp_prune_thetamin(1)*PI/180.0)
      $              then
                   keep(3,itrack) = .false.
                endif
@@ -193,7 +206,7 @@ c     for FPP2, check using either FPP1 or HMS as reference track:
             enddo
          endif
 
-         if(ngood(3).gt.0) then
+         if(ifpp.eq.2.and.ngood(3).gt.0) then
             do itrack=1,hfpp_n_tracks(2)
                if(hfpp_track_theta(3,itrack).gt.hfpp_prune_thetamax(1)*PI/180.0)
      $              then
@@ -228,7 +241,7 @@ c     third prune test: sclose = distance of closest approach between two tracks
             enddo
          endif
 
-         if(ngood(3).gt.0) then
+         if(ifpp.eq.2.and.ngood(3).gt.0) then
             do itrack=1,hfpp_n_tracks(2)
                if(hfpp_track_sclose(3,itrack).gt.
      $              hfpp_prune_sclose(1)) then
@@ -288,7 +301,7 @@ c            write(*,*) 'FPP,zslop=',ifpp,zslop
             enddo
          endif
          
-         if(ngood(3).gt.0) then
+         if(ifpp.eq.2.and.ngood(3).gt.0) then
             do itrack=1,hfpp_n_tracks(2)
                zslop = hfpp_prune_zslop(2) * 
      $              max(1.0,min(1000.0,1.0/tan(hfpp_track_theta(3,itrack))))
@@ -417,7 +430,7 @@ c     for FPP1, the selection method is simply smallest theta wrt the incident H
       hfpp_n_goodtracks(2) = ngood(2)
       
       do ifpp=1,2
-         hfpp_best_track(ifpp) = besttrack(ifpp)         
+         hfpp_best_track(ifpp) = besttrack(ifpp)
       enddo
       
       abort = .false.
