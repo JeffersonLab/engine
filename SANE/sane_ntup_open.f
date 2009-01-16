@@ -7,6 +7,8 @@
 
       logical ABORT
       character*(*) err
+      integer iquest
+      Common /QUEST/ Iquest(100)
 
       include 'b_ntuple.cmn'
       include 'sane_ntuple.cmn'
@@ -14,9 +16,9 @@
       include 'gen_run_info.cmn'
       include 'gen_data_structures.cmn'
 
-      integer default_bank,default_recl, histnum
+      integer default_bank,default_recl, histnum,ii
       parameter(default_bank=8000)     !4 bytes/word
-      parameter(default_recl=1024)     !record length
+      parameter(default_recl=8191)     !record length
       character*80 title,file
       character*80 directory,name
       character*1000 pat,msg,chform
@@ -24,7 +26,7 @@
       real rv(10)
 
       logical HEXIST        !CERNLIB function
-
+ccccccccccccccc
       err=' '
       ABORT=.false.
       if(sane_ntuple_exists) then
@@ -38,7 +40,7 @@
 c     get any free IO channel
 
       call g_IO_control(io,'ANY',ABORT,err)
-      sane_ntuple_exists = .not.ABORT
+c      sane_ntuple_exists = .not.ABORT
       if(ABORT) then
          call G_add_path(here,err)
          return
@@ -59,9 +61,10 @@ c     get any free IO channel
       endif
 
       call HCDIR(directory,'R') !CERNLIB read current directory
-
+      write(*,*)'DIR ',directory,name
+c      call HLIMIT(NWPAWC)
       recL = 8191
-      iquest(10) = 65000
+      iquest(10) = 512000
       call HROPEN(io,name,file,'NQ',recL,status)
       
       write(*,*)'ifile=',file
@@ -121,19 +124,19 @@ c
          
          if(bbypass_find_clusters.eq.0) then
             call HBNAME(id,'clustblock',nclust,
-     $           'nclust[0,25]:I*4,ncellclust(nclust)[0,25]:I*4,'//
-     $           'ncellbad(nclust)[0,25]:I*4,'//
-     $           'ncellx(nclust),ncelly(nclust),iycell(25,nclust),'//
-     $           'ixcell(25,nclust),cellbad(25,nclust):L,'//
-     $           'xcell(25,nclust),ycell(25,nclust),'//
-     $           'eblock(25,nclust),ablock(25,nclust),'//
+     $           'nclust[0,50]:I*4,ncellclust(nclust)[0,50]:I*4,'//
+     $           'ncellbad(nclust)[0,50]:I*4,'//
+     $           'ncellx(nclust),ncelly(nclust),iycell(50,nclust),'//
+     $           'ixcell(50,nclust),cellbad(50,nclust):L,'//
+     $           'xcell(50,nclust),ycell(50,nclust),'//
+     $           'eblock(50,nclust),ablock(50,nclust),'//
      $           'xmoment(nclust),ymoment(nclust),'//
      $           'eclust(nclust),aclust(nclust),'//
      $           'xclust(nclust),yclust(nclust)')
             if(bbypass_calc_cluster_time.eq.0) then
                if(bbypass_sum8.eq.0) then
                   call HBNAME(id,'clusttdc',nclust8,
-     $                 'nclust8[0,25]:I*4,'//
+     $                 'nclust8[0,50]:I*4,'//
      $                 'ncell8clust(nclust8)[0,10]:I*4,'//
      $                 'irow8hit(10,nclust8)[0,56]:I*4,'//
      $                 'icol8hit(10,nclust8)[0,4]:I*4,'//
@@ -146,7 +149,7 @@ c
                
                if(bbypass_sum64.eq.0) then
                   call HBNAME(id,'clusttrig',nclust64,
-     $                 'nclust64[0,25]:I*4,'//
+     $                 'nclust64[0,50]:I*4,'//
      $                 'ncell64clust(nclust64)[0,6]:I*4,'//
      $                 'irow64hit(6,nclust64)[0,19]:I*4,'//
      $                 'icol64hit(6,nclust64)[0,2]:I*4,'//
@@ -161,14 +164,14 @@ c
             
             
             if(bbypass_calc_physics.eq.0)then
-               call HBNAME(id,'clustphys',ntrack,'ntrack[0,25]:I*4,'//
-     $              'ibest[0,25]:I*4,thetarad(ntrack),'//
+               call HBNAME(id,'clustphys',ntrack,'ntrack[0,50]:I*4,'//
+     $              'ibest[0,50]:I*4,thetarad(ntrack),'//
      $              'phirad(ntrack),energy(ntrack),'//
      $              'xface(ntrack),yface(ntrack),'//
      $              'zface(ntrack),px(ntrack),py(ntrack),pz(ntrack),'//
      $              'ctime_clust(ntrack)')
             endif
-            call HBNAME(id,'bad_clust',nmax,'nmax[0,25]:I*4,'//
+            call HBNAME(id,'bad_clust',nmax,'nmax[0,50]:I*4,'//
      $           'edge_max(nmax):L,not_enough(nmax):L,'//
      $           'too_long_x(nmax):L,too_long_y(nmax):L,'//
      $           'below_thresh(nmax):L,above_max(nmax):L,'//
@@ -197,35 +200,62 @@ c     ! For physics analysis  added on Jul 3 2008
       call HBOOK2(10122,'LUC TDCNEG',28,1., 29., 200, -3500., 0., 0.)
       call HBOOK2(10125,'LUC ADCPOS',28,1., 29., 200,    0., 4000., 0.)
       call HBOOK2(10126,'LUC ADCNEG',28,1., 29., 200,    0., 4000., 0.)
+      if(sane_ntuple_type.eq.1) then 
+         do ii=1,28
+c            call HBPROF(10150+ii,'LUC_X vs BIG_X',100,-60., 60., 100,  -60., 60., 0.)
+            call HBPROF(10150+ii,'LUC_X vs BIG_X',100,-60., 60., -60,  60., 'S')
+         enddo
+         call HBOOK2(10128,'LUC_Y vs BIG_Y',120,-120., 120., 120,  -120., 120., 0.)
+         call HBOOK2(10131,'LUC TDCPOS cut',28,1., 29., 200, -3500., 0., 0.)
+         call HBOOK2(10132,'LUC TDCNEG cut',28,1., 29., 200, -3500., 0., 0.)
+         call HBOOK2(10135,'LUC ADCPOS cut',28,1., 29., 200,    0., 4000., 0.)
+         call HBOOK2(10136,'LUC ADCNEG cut',28,1., 29., 200,    0., 4000., 0.)
+      endif
       call HBOOK2(10200,'BIGCAL' ,33,0., 33.,  56,    0.,   56., 0.)
 
       call HBOOK2(10210,'SLOW RASTER ADC' ,90,5000., 8000.,  90,    5000.,   8000., 0.)
       call HBOOK2(10211,'FAST RASTER ADC' ,90,2000., 5000.,  90,    2000.,   5000., 0.)
       call HBOOK2(10212,'SLOW RASTER ADC Corrected' ,90,-3., 3.,  90,    -3.,   3., 0.)
       call HBOOK2(10213,'FAST RASTER ADC Corrected' ,90,-3., 3.,  90,    -3.,   3., 0.)
+      call HBOOK2(10214,'SEM X Y' ,90,-3., 3.,  90,    -3.,   3., 0.)
 
       call HBOOK2(10300,'X_HMS vs xclust' ,60,-60., 60.,  60,    -60.,   60., 0.)
       call HBOOK2(10301,'Y_HMS vs yclust' ,120,-120., 120.,  120,    -120.,   120., 0.)
       call HBOOK2(10302,'X_HMS vs Y_HMS' ,60,-60., 60.,  120,    -120.,   120., 0.)
       call HBOOK2(10303,'Xclust vs Yclust' ,60,-60., 60.,  120,    -120.,   120., 0.)
-      call HBOOK2(10304,'DX vs DY' ,40,-20., 20.,  60,    -30.,   30., 0.)
+      call HBOOK2(10304,'DX vs DY' ,40,-40., 40.,  60,    -60.,   60., 0.)
+      call HBOOK2(10310,'hsdelta vs hsyptar' ,40,-20., 20.,  100, -0.1,   0.1, 0.)
+      call HBOOK2(10311,'hsdelta vs hsxptar' ,40,-20., 20.,  200, -0.1,   0.3, 0.)
+      call HBOOK2(10312,'dpel_hms vs hsyptar' ,40,-0.2, 0.2,  100, -0.1,   0.1, 0.)
+      call HBOOK2(10313,'dpel_hms vs hsxptar' ,40,-0.2, 0.2,  200, -0.1,   0.3, 0.)
+      call HBOOK2(10314,'dpel_hms vs hsxtar' ,40,-0.2, 0.2,  100, -3,   3, 0.)
+      call HBOOK2(10315,'dpel_hms vs hsytar' ,40,-0.2, 0.2,  100, -3,   3, 0.)
+      call HBOOK2(10316,'raster_x vs xtar' ,100,-3., 3.,  100, -3.,   3., 0.)
+      call HBOOK2(10317,'raster_y vs ytar' ,100,-3., 3.,  100, -3.,   3., 0.)
 
+
+
+
+      call HBOOK1(10321, 'hsdelta' , 100,-.1,.1,0.)
+      call HBOOK1(10322, 'W2', 100, -0.3, 0.6,0.)
+      call HBOOK2(10323,' W2 vs hsxtar' ,100,-0.3, 0.3,  100, -0.1,   0.1, 0.)
+      call HBOOK2(10324,' W2 vs hsxtar' ,100,-0.3, 0.3,  100, -3,   3, 0.)
       
 
       call HBOOK2(10550,'Ytracker-Yrec vs P' ,100, 0.7, 1.5,  100, -1.5,   1.5, 0.)
       call HBOOK2(10551,'Xtracker-Xrec vs P' ,100, 0.7, 1.5,  100, -1.5,   1.5, 0.)
 
-      call HBOOK1(10601,'Xbj 2.5<Q2<3.5 helicity normalized' ,10, 0.2, 0.8 ,0)
-      call HBOOK1(10611,'Xbj 2.5<Q2<3.5 no helicity normalized' ,10, 0.2, 0.8 ,0)
-      call HBOOK1(10602,'Xbj 3.5<Q2<4.5 helicity normalized' ,10, 0.2, 0.8 ,0)
-      call HBOOK1(10612,'Xbj 3.5<Q2<4.5 no helicity normalized' ,10, 0.2, 0.8 ,0)
-      call HBOOK1(10603,'Xbj 4.5<Q2<5.5 helicity normalized' ,10, 0.2, 0.8 ,0)
-      call HBOOK1(10613,'Xbj 4.5<Q2<5.5 no helicity normalized' ,10, 0.2, 0.8 ,0)
-      call HBOOK1(10604,'Xbj 5.5<Q2<6.5 helicity normalized' ,10, 0.2, 0.8 ,0)
-      call HBOOK1(10614,'Xbj 5.5<Q2<6.5 no helicity normalized' ,10, 0.2, 0.8 ,0)
+      call HBOOK1(10601,'Xbj 2.5<Q2<3.5 helicity normalized' ,10, 0.2, 0.8 ,0.)
+      call HBOOK1(10611,'Xbj 2.5<Q2<3.5 no helicity normalized' ,10, 0.2, 0.8 ,0.)
+      call HBOOK1(10602,'Xbj 3.5<Q2<4.5 helicity normalized' ,10, 0.2, 0.8 ,0.)
+      call HBOOK1(10612,'Xbj 3.5<Q2<4.5 no helicity normalized' ,10, 0.2, 0.8 ,0.)
+      call HBOOK1(10603,'Xbj 4.5<Q2<5.5 helicity normalized' ,10, 0.2, 0.8 ,0.)
+      call HBOOK1(10613,'Xbj 4.5<Q2<5.5 no helicity normalized' ,10, 0.2, 0.8 ,0.)
+      call HBOOK1(10604,'Xbj 5.5<Q2<6.5 helicity normalized' ,10, 0.2, 0.8 ,0.)
+      call HBOOK1(10614,'Xbj 5.5<Q2<6.5 no helicity normalized' ,10, 0.2, 0.8 ,0.)
 
       call HBOOK2(10620,'Xbj vs Q2' ,40, 0.1, 0.9,  100, 0.,  8., 0.)
-      call HBOOK2(10621,'Xbj vs Q2' ,100, 0.5, 2.5,  100, 0.,  8., 0.)
+      call HBOOK2(10621,'W2 vs Q2' ,100, 0.5, 2.5,  100, 0.,  8., 0.)
 c
 c
 c     Physics Histograms
@@ -233,11 +263,10 @@ c
       endif
 
       
-      
       call HBNAME(id,'HMSINFO',hms_p,
      $     'hms_p:R*4,hms_e:R*4,hms_theta:R*4,hms_phi:R*4,'//
      $     'hsxfp_s:R*4,hsyfp_s:R*4,hsxpfp_s:R*4,hsypfp_s:R*4,'//
-     $     'hms_ytar:R*4,hms_yptar:R*4,'//
+     $     'hms_xtar:R*4,hms_ytar:R*4,hms_yptar:R*4,'//
      $     'hms_xptar:R*4,hms_delta:R*4,hms_start:R*4,'//
      $     'hsshtrk_s:R*4, hsshsum_s:R*4, hsbeta_s:R*4,'//
      $     'rast_x:R*4,rast_y:R*4,'//
@@ -263,7 +292,7 @@ c
          
          
          call HBNAME(id,'SANEPHYS',n_clust,
-     $        'n_clust[1,10]:I*4,'//
+     $        'n_clust[0,50]:I*4,'//
      $        'E_clust(n_clust):R*4,'//
      $        'X_clust(n_clust):R*4, Y_clust(n_clust):R*4,'//
      $        'Z_clust(n_clust):R*4,'//
@@ -289,7 +318,7 @@ c
       endif
      
       call HCDIR(sane_ntuple_directory,'R') ! record ntuple directory
-
+      write(*,*)'SANE DIR ',sane_ntuple_directory
       call HCDIR(directory,' ') !reset CERNLIB directory
       
       sane_ntuple_exists = HEXIST(sane_ntuple_id)

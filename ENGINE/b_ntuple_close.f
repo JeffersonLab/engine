@@ -50,7 +50,7 @@
       call HREND(name)
       call G_IO_control(io,'FREE',ABORT,err)
       close(io)
-      
+      write(*,*)'B NTUPLE IO',io
       call HCDIR(directory,' ')     ! return to "current" directory
 
       b_ntuple_directory=' '

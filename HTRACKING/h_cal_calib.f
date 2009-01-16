@@ -45,6 +45,15 @@ c
          enddo
       endif
 
+c      print*,'hntracks_fp    =',hntracks_fp
+c      print*,'hnclusters_cal =',hnclusters_cal
+c      print*,'hntracks_cal   =',hntracks_cal
+c      print*,'hdelta_tar     =',hdelta_tar
+c      print*,'hcer_npe_sum   =',hcer_npe_sum
+c      print*,'hbeta          =',hbeta
+c      print*,'spare_id       =',spare_id
+c      pause
+
       if(mode.eq.0) then        !collect data.
 
 c        Choose clean single electron tracks within HMS momentum acceptance.
@@ -165,16 +174,17 @@ c         write(lun,*) t,nhit,eb,x,xp,y,yp,nev
          avr=avr+t
          sig=sig+t*t
          nev=nev+1
-c         print*,eb,qdc,nev
+c         print*,eb,qdc,nev, avr,sig
+c         pause
       end do
 
  3    close(lun)
-c      print*,avr,sig,nev
+      print*,avr,sig,nev
       avr=avr/nev
       sig=sqrt(sig/nev-avr*avr)
       thr_lo=avr-3.*sig
       thr_hi=avr+3.*sig
-c      write(*,*) 'thr_lo=',thr_lo,'   thr_hi=',thr_hi
+      write(*,*) 'thr_lo=',thr_lo,'   thr_hi=',thr_hi
 
       return
 
@@ -212,7 +222,7 @@ c
 	integer i,j
 	integer nf(npmts)
 	integer minf
-	parameter (minf=200) ! minimum number to hit pmt before including pmt in  calib
+	parameter (minf=100) ! minimum number to hit pmt before including pmt in  calib
 	integer nums(npmts)
 	integer numsel
 	real*8 q0s(npmts)

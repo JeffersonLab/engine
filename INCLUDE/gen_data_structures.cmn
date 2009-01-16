@@ -5,6 +5,9 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log$
+* Revision 1.35.20.7.2.6  2009/01/16 18:48:01  cdaq
+* *** empty log message ***
+*
 * Revision 1.35.20.7.2.5  2008/10/31 08:26:25  cdaq
 * *** empty log message ***
 *
@@ -427,7 +430,8 @@
 *                  !   B E A M   P O S I T I O N   --   S E M
 *
 *     CTPTYPE=parm
-      integer slow_raster_correction ! STATUS of correction
+      integer slow_raster_correction                             ! STATUS of correction
+      real*4 n_sr_size
       real*4 n_sr_slopex
       real*4 n_sr_offsetx
       real*4 n_sr_slopey
@@ -436,11 +440,25 @@
       real*4 n_sr_adcx_zero
 
       common /n_raster_calib/
-     &     slow_raster_correction,
+     &     slow_raster_correction,n_sr_size,
      &     n_sr_slopex, 
      &     n_sr_offsetx,
      &     n_sr_slopey, 
      &     n_sr_offsety,n_sr_adcy_zero,n_sr_adcx_zero
+
+      real*4 n_fr_size
+      real*4 n_fr_slopex
+      real*4 n_fr_offsetx
+      real*4 n_fr_slopey
+      real*4 n_fr_offsety
+      real*4 n_fr_adcy_zero
+      real*4 n_fr_adcx_zero
+      common /n_fraster_calib/
+     &     n_fr_size,
+     &     n_fr_slopex, 
+     &     n_fr_offsetx,
+     &     n_fr_slopey, 
+     &     n_fr_offsety,n_fr_adcy_zero,n_fr_adcx_zero
 
 
 

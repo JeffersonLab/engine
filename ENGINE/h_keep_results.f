@@ -11,6 +11,9 @@
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *
 * $Log$
+* Revision 1.6.24.3.2.1  2009/01/16 18:47:11  cdaq
+* *** empty log message ***
+*
 * Revision 1.6.24.3  2007/09/12 14:40:03  brash
 * *** empty log message ***
 *
@@ -69,7 +72,7 @@
       ABORT= .FALSE.
       err= ' '
 *
-      if(HSNUM_FPTRACK.gt.0) call h_ntuple_keep(ABORT,err)! check for good tracks
+      if(HSNUM_FPTRACK.gt.0)         call h_ntuple_keep(ABORT,err)! check for good tracks
 *
       IF(ABORT) THEN
          call G_add_path(here,err)

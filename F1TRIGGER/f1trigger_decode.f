@@ -24,6 +24,7 @@
      $        TRIGGER_F1_RAW_COUNTER, 1, 
      $        TRIGGER_F1_START_TDC, 
      $        0, 0, 0)
+c         write(*,*)'F1 Trigger time = ',TRIGGER_F1_START_TDC
 
       endif
 *****************************************

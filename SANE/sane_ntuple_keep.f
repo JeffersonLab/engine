@@ -28,6 +28,10 @@
       logical HEXIST ! CERNLIB function
       integer t_sane,l_sane,cer_sane
       integer icycle,inum,ihit
+      real*8 Eb,theta_big, phi_big!,ccx,ccy,ccz
+      real P_el(4),p_e,WW2
+      common/FAKEBIG/Eb,theta_big, phi_big
+
 c      logical middlebest
 
       real Mp
@@ -48,7 +52,7 @@ c      logical middlebest
 
       if(.not.sane_ntuple_exists) return
 
-
+    
 
 
       luc_hit = 0
@@ -69,12 +73,17 @@ c            write(*,*)LUCITE_SANE_RAW_TDC_POS(i),ltdc_pos(luc_hit),LUCITE_SANE_
             call NANcheck(ladc_pos(luc_hit),LUCITE_SANE_ID)
             call NANcheck(ltdc_neg(luc_hit),LUCITE_SANE_ID)
             call NANcheck(ltdc_pos(luc_hit),LUCITE_SANE_ID)
-            
-            call HFILL(10121, float(luc_row(luc_hit)), float(ltdc_pos(luc_hit)), 1.)
-            call HFILL(10122, float(luc_row(luc_hit)), float(ltdc_neg(luc_hit)), 1.)
-            call HFILL(10125, float(luc_row(luc_hit)), float(ladc_pos(luc_hit)), 1.)
-            call HFILL(10126, float(luc_row(luc_hit)), float(ladc_neg(luc_hit)), 1.)
-         endif
+            if(nclust.eq.1)then
+               if(abs(xclust(1)+30.).lt.2.and.abs(luc_y(luc_hit)-Lucite_SHIFT(2)-
+     ,              Lucite_SHIFT(3)/Bigcal_SHIFT(3)*
+     ,              (yclust(1))-Bigcal_SHIFT(2)).lt.12)then
+                  call HFILL(10121, float(luc_row(luc_hit)), float(ltdc_pos(luc_hit)), 1.)
+                  call HFILL(10122, float(luc_row(luc_hit)), float(ltdc_neg(luc_hit)), 1.)
+                  call HFILL(10125, float(luc_row(luc_hit)), float(ladc_pos(luc_hit)), 1.)
+                  call HFILL(10126, float(luc_row(luc_hit)), float(ladc_neg(luc_hit)), 1.)
+               endif
+            endif
+          endif
       enddo
       cer_hit = 0
       do i=1,CERENKOV_SANE_RAW_TOT_HITS
@@ -161,62 +170,133 @@ c     ,               (yclust(inum))-Bigcal_SHIFT(2)).lt.2.6)then
 c                ENDIF
              enddo
 c         enddo
-
+             hms_p = 0
       if(HSNUM_FPTRACK.gt.0)then
-         hms_p        = h_Ntuple_contents(2)	
-         hms_e        = h_Ntuple_contents(3)
-         hms_theta    = h_Ntuple_contents(6)
-         hms_phi      = h_Ntuple_contents(7)
+         hms_p        = hsp	
+         call NANcheckF(hms_p,4)
+         hms_e        = hsenergy
+         call NANcheckF(hms_e,4)
+         hms_theta    = hstheta
+         call NANcheckF(hms_theta,4)
+         hms_phi      = hsphi
+         call NANcheckF(hms_phi,4)
          hsxfp_s      = hsx_fp
+         call NANcheckF(hsxfp_s,4)
          hsyfp_s      = hsy_fp
+         call NANcheckF(hsyfp_s,4)
          hsxpfp_s     = hsxp_fp
+         call NANcheckF(hsxpfp_s,4)
          hsypfp_s     = hsyp_fp
-         hms_ytar     = h_Ntuple_contents(18)
-         hms_yptar    = h_Ntuple_contents(20)
-         hms_xptar    = h_Ntuple_contents(19)
-         hms_delta    = h_Ntuple_contents(21)
+         call NANcheckF(hsypfp_s,4)
+         hms_xtar     = hsx_tar*100
+         call NANcheckF(hms_xtar,4)
+         hms_ytar     = hsy_tar*100
+         call NANcheckF(hms_ytar,4)
+c         write(*,*)hms_ytar,hsy_tar
+         hms_yptar    = hsyp_tar
+         call NANcheckF(hms_yptar,4)
+         hms_xptar    = hsxp_tar
+c         write(*,*)hms_yptar,hms_xptar
+         call NANcheckF(hms_xptar,4)
+         hms_delta    = hsdelta
+         call NANcheckF(hms_delta,4)
          hms_start    = hstart_time
+         call NANcheck(hms_start,4)
          hsshtrk_s    = HSTRACK_ET
+         call NANcheckF(hsshtrk_s,4)
          hsshsum_s    = hsshsum
+         call NANcheckF(hsshsum_s,4)
          hsbeta_s     = hsbeta 
+         call NANcheckF(hsbeta_s,4)
          hms_cer_npe1 = hcer_npe(1)
+         call NANcheckF(hms_cer_npe1,4)
          hms_cer_npe2 = hcer_npe(2)
+         call NANcheckF(hms_cer_npe2,4)
          hms_cer_adc1 = hcer_adc(1) 
+         call NANcheckF(hms_cer_adc1,4)
          hms_cer_adc2 = hcer_adc(2)
-         call HFILL(10302,X_HMS,Y_HMS,1.) 
+         call NANcheckF(hms_cer_adc2,4)
+         call HFILL(10302,X_HMS,Y_HMS,1.)
 c         if(nclust.eq.1)then
          do i=1,nclust
             call HFILL(10300,X_HMS,xclust(i)+Bigcal_SHIFT(1),1.) 
-            call HFILL(10304,X_HMS-Xclust(i)-Bigcal_SHIFT(1),Y_HMS-Yclust(i)-Bigcal_SHIFT(2),1.)
-            if(abs(X_HMS-xclust(i)).lt.20)then
-               call HFILL(10301,Y_HMS,Yclust(i)+Bigcal_SHIFT(2),1.) 
-               call HFILL(10303,Xclust(i)+Bigcal_SHIFT(1),Yclust(i)+Bigcal_SHIFT(2),1.)
-            endif
+            
+            call HFILL(10304,X_HMS-Xclust(i),Y_HMS-Yclust(i),1.)
+            call HFILL(10301,Y_HMS,Yclust(i)+Bigcal_SHIFT(2),1.) 
+c            write(*,*)Bigcal_SHIFT(1),Bigcal_SHIFT(2)
+               if(abs(X_HMS-xclust(i)-Bigcal_SHIFT(1)).lt.10.and.
+     ,              abs(Y_HMS-Yclust(i)-Bigcal_SHIFT(2)).lt.10)then
+c                  write(*,*)'Slow raster ',gsrx_calib,gsry_calib
+c                  write(*,*)'HMS raster ',hms_xtar,hms_ytar
+                  call HFILL(10303,Xclust(i)+Bigcal_SHIFT(1),Yclust(i)+Bigcal_SHIFT(2),1.)
+                  call HFILL(10310,hms_delta,hms_yptar ,1.)
+                  call HFILL(10311,hms_delta,hms_xptar ,1.)
+                  call HFILL(10312,dpel_hms,hms_yptar ,1.)
+                  call HFILL(10313,dpel_hms,hms_xptar ,1.)
+                  call HFILL(10315,dpel_hms,hms_ytar ,1.)
+                  call HFILL(10314,dpel_hms,hms_xtar ,1.)
+                  call HF1(10321,0.006*hms_delta+0.01-hms_yptar,1.)
+                  P_e = hms_p
+                  P_el(1) = p_e*sin(hms_theta)*cos(HMS_phi)
+                  P_el(2) = p_e*sin(hms_theta)*sin(HMS_phi)
+                  P_el(3) = p_e*cos(hms_theta)
+                  P_el(4) = hms_e
+                  ww2 = (GEBEAM+Mp-P_el(4))**2-
+     ,                 (P_el(1)**2+p_el(2)**2+(GEBEAM-p_el(3))**2)
+c                  write(*,*)ww2
+                  call HF1(10322,ww2,1.)
+                  call HFILL(10323,ww2,hms_yptar,1.)
+                  call HFILL(10324,ww2,hms_xtar,1.)
+                
+               endif
          enddo
 c         endif
 
       endif
       rast_x       = gfry_raw_adc
+      call NANcheckF(rast_x,3)
       rast_y       = gfrx_raw_adc
+      call NANcheckF(rast_y,3)
       i_helicity   = gbeam_helicity_ADC
-      slow_rast_x  = -n_sr_slopex*(gsrx_raw_adc-n_sr_adcx_zero)
-      slow_rast_y  = -n_sr_slopey*(gsry_raw_adc-n_sr_adcy_zero)
-      sem_x        = ntbpmx
-      sem_y        = ntbpmy
+      call NANcheck(i_helicity,3)
+      slow_rast_x  = gsrx_calib
+      call NANcheckF(gsrx_raw_adc,3)
+      slow_rast_y  = gsry_calib
+      if(HSNUM_FPTRACK.gt.0)then
+            
+                  call HFILL(10316,slow_rast_y,-hms_xtar ,1.)
+                  call HFILL(10317,slow_rast_x,hms_ytar ,1.)
+      endif
+      call NANcheckF(gsry_raw_adc,3)
+      sem_x        = -ntbpmx/10.
+      call NANcheckF(sem_x,3)
+      sem_y        = ntbpmy/10.
+      call NANcheckF(sem_y,3)
+      call HFILL(10214,sem_x,sem_y, 1.)
+c      write(*,*)'2 ',sem_x,sem_y
       T_trgHMS     = gmisc_dec_data(11,1)
+      call NANcheckF(T_trgHMS,3)
       T_trgBIG     = gmisc_dec_data(12,1) 
+      call NANcheckF(T_trgBIG,3)
       T_trgPI0     = gmisc_dec_data(13,1)
+      call NANcheckF(T_trgPI0,3)
       T_trgBETA    = gmisc_dec_data(14,1)
+      call NANcheckF(T_trgBETA,3)
       T_trgCOIN1   = gmisc_dec_data(15,1)
+      call NANcheckF(T_trgCOIN1,3)
       T_trgCOIN2   = gmisc_dec_data(16,1)
+      call NANcheckF(T_trgCOIN2,3)
 
-      call HFILL(10210,gsry_raw_adc,gsrx_raw_adc, 1.)
-      call HFILL(10211,gfry_raw_adc,gfrx_raw_adc, 1.)
-
-      call HFILL(10212,-n_sr_slopey*(gsry_raw_adc-n_sr_adcy_zero),-n_sr_slopex*(gsrx_raw_adc-n_sr_adcx_zero), 1.)
-      call HFILL(10213,gfry_raw_adc,gfrx_raw_adc, 1.)
       do i =1,  nclust
-         call Bigcal_Betta(i) 
+c         write(*,*)eclust(i)
+c         if(HSNUM_FPTRACK.gt.0)then
+               call Bigcal_Betta(i)
+c            if(abs(X_HMS-Xclust(i)-Bigcal_SHIFT(1)).lt.10.and.
+c     ,           abs(Y_HMS-Yclust(i)-Bigcal_SHIFT(2)).lt.10)then
+c                  WRITE(*,*)'call 2',NCLUST
+c               call Bigcal_Betta(i)
+c            endif
+c         endif
          do j=1, ncellclust(i)
             call HFILL(10200,float(ixcell(j,i)),float(iycell(j,i)), 1.)
          enddo
@@ -288,6 +368,15 @@ c
       integer did
       if(l.ne.l)then
          l=0
-         write(*,*)did
+c         write(*,*)did
+      endif
+      end
+      subroutine NANcheckF(l,did)
+      IMPLICIT NONE
+      real*4 l
+      integer did
+      if(l.ne.l)then
+         l=0
+c         write(*,*)did
       endif
       end

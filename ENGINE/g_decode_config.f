@@ -21,6 +21,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton Univ.; rewrote parsing
 * $Log$
+* Revision 1.7.24.3.2.1  2009/01/16 18:47:12  cdaq
+* *** empty log message ***
+*
 * Revision 1.7.24.3  2007/09/12 14:40:02  brash
 * *** empty log message ***
 *
@@ -214,6 +217,7 @@
      &                       nsubadd
                         lastroc = roc
                         lastslot = slot
+
                      endif
                   EndIf
 

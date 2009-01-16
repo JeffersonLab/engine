@@ -7,6 +7,9 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.9.20.4.2.6  2009/01/16 18:47:12  cdaq
+* *** empty log message ***
+*
 * Revision 1.9.20.4.2.5  2008/11/05 15:41:54  cdaq
 * Set variables gsrx_adc and gsry_adc
 *
@@ -393,6 +396,7 @@ c commented this out, becuse (3,2) is used for slow raster, and
 c (5,2) is 
 c      gsrx_sync =  gmisc_dec_data(3,2)! - gsrx_sync_mean
 c      gsry_sync =  gmisc_dec_data(5,2)! - gsry_sync_mean
+
 
       return
       end

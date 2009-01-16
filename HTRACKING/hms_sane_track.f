@@ -112,7 +112,8 @@
       
       SUBROUTINE genRecon (u,x,y,uT,ok,dx,bdl,th,p,mass,spect)
       IMPLICIT NONE
-      REAL     u(5),x,y,uT(6)
+      REAL     u(5),x,y,uT(6),uu1(5),uu1T(6),uu2(5),uu2T(6),uu3(5),uu3T(6),uu4(5),uu4T(6)
+      
       LOGICAL  ok
       real p                ! momentum (MeV). (mom<0 for e-, mom>0 for p,d)
       real mass               ! mass of particle (MeV)
@@ -144,16 +145,18 @@
 *     - set to false when no reconstruction is found 
       real*4 th
       REAL*8 ctheta,stheta ! cosine and sine of central spectrometer angle
+
 *      COMMON /genParameter/theta,ctheta,stheta,p 
 c     
       INCLUDE 'gen_event_info.cmn'
+      integer wait3tursx,wait3tursy
       logical outside_fieldmap
       common /mkjtemp/ outside_fieldmap
       
 !     REAL    xx,dx,vT(6),vTx(6),utsave(6),vtsave(6),usave(4)
-      REAL*8    xx,vT(9),vTx(9),utsave(6),vtsave(6),usave(6)
-      real dx
-      real*8 save_dx,save_diff_dx
+      REAL*8    xx,vT(9),vTx(9),utsave(6),vtsave(6),usave(6),P1(3),P2(3)
+      real dx,dy,ddx1,ddy1,ddx2,ddy2,oddx,oddy
+      real*8 save_dx,save_diff_dx,vtold(6),vtfirst(9),xx1,yy1,xx2,yy2
       INTEGER i,n,ii
       real*8 REF_VAL	
       parameter (REF_VAL=100.)  ! what does this actually correspond to?
@@ -171,8 +174,22 @@ c
       
       flag_az = 1		!	OR - 7/04
       
+c
+c     Added by Hovhannes
+c
+      P1(1) = x
+      P1(2) = y
+      P1(3) = 0
+      P2(1) = x
+      P2(2) = y
+      P2(3) = 1
+
       bdl = 0.0
       xx = u(5)
+      xx1 = u(5)
+      xx2 = u(5)
+      yy1 = u(4)
+      yy2 = u(4)
 
 ! find a first approximation for uT
       CALL hmsReconXtar (u,uT,ok)
@@ -211,38 +228,95 @@ c       write(*,*)dx,th,p,mass
 
 c      write(*,*)'TESTING VT',VT(1),VT(2),VT(3)
 c      write(*,*)'TESTING VT',VT(4),VT(5),VT(6),eng,ok
+      do i=1,6
+         vtfirst(i) = vt(i)
+      enddo
+      call trgTrackToLineBDL (vTfirst,eng,1.0d00,P1,P2,ok)
       CALL trgTrackToPlaneBDL (vT,eng,1.0d00,0.0d00,-ctheta,stheta,y*REF_VAL,ok)
-     
+      vtfirst(7) = vT(7)
+      vtfirst(8) = vT(8)
+      vtfirst(9) = vT(9)
       
 c      if ( .not. ok) then
 c     write(*,*) '**** failed first call to trgTrackToPlane in gen_recon *** outside fieldmap = ',outside_fieldmap
 c      endif
       n  = 0
       dx = 1.
+      dy = 1.
+      ddx1 = 1.
+      ddy1 = 1.
       save_diff_dx = 1.  
       save_dx=dx
-      DO WHILE ((dx .GT. .1) .AND. (n .LT. 10) .and. (save_diff_dx .gt. 0) .AND. ok)
+      wait3tursx =3
+      wait3tursy =3
+      DO WHILE ((dx .GT. .0002) .AND.!(dy .GT. .1) .AND. 
+     ,     (n .LT. 50) .and.
+     ,     save_diff_dx .gt. 0. .AND. 
+     ,     ok
+     ,     )
 !     DO WHILE ((dx .GT. .01) .AND. (n .LT. 10) .and. (save_diff_dx .gt. 0) .AND. ok)
          dx = abs(x*REF_VAL-vT(1))
+         dy = abs(y*REF_VAL-vT(2))
+
 !     track to the z=0 plane to find a correction for the x-offset   
          vTx(1) = REF_VAL*x 
-         DO i=2,6
+c         vTx(2) = REF_VAL*y 
+         
+         DO i=3,6
             vTx(i) = vT(i)
          ENDDO
+         ddx2 = abs(x*REF_VAL-vTold(1))
+         ddy2 = abs(y*REF_VAL-vTold(2))
+         DO i=1,6
+            vTold(i) = vT(i)
+         ENDDO
+         if(n.gt.0)then
+c            write(*,*)ddx2,dx
+            if(ddx2.lt.dx)then
+               wait3tursx=wait3tursx+1
+               
+               if(wait3tursx.gt.2)then
+c                  write(*,*)'Changing sight because x ',
+c     ,                 ddx2,'is less than ',dx
+                  
+                  ddx1=-ddx1
+                   wait3tursx=0
+                  endif
+            endif
+            if(ddy2.lt.dy)then
+               wait3tursy=wait3tursy+1
+               
+               if(wait3tursy.gt.2)then
+c                  write(*,*)'Changing sight because y ',ddy2,
+c     ,                 'is less than ',dy
+                  ddy1=-ddy1
+                  wait3tursy =0
+               endif
+            endif
+         endif
+c         write(*,*)"N =",n,oddx,(x*REF_VAL-vT(1)),(y*REF_VAL-vT(2)),u(3)
          
 *         CALL trgTrackToPlane (vT, -p*(1+uT(6))/MeV,1.,0., 0.,1.,0., ok)
          ok = .TRUE.
+c         call trgTrackToLineBDL (vT,eng,1.0d00,P1,P2,ok)
          CALL trgTrackToPlaneBDL (vT,eng,1.0d00,0.0d00,0.0d00,1.0d00,0.0d00,ok)
          ok = .TRUE.
+c         call trgTrackToLineBDL (vTx,eng,1.0d00,P1,P2,ok)
          CALL trgTrackToPlaneBDL (vTx,eng,1.0d00,0.0d00,0.0d00,1.0d00,0.0d00,ok) 
+         if(dx .gT. .08)then
+            xx = xx + ddx1*(vTx(1)-vT(1))*0.003 ! what unit conversion is this???
+            u(5) = xx
+         endif
          
-         xx = xx+(vTx(1)-vT(1))*0.01 ! what unit conversion is this???
-         
-!     now find a better approximation for uT
-         
-         u(5) = xx
+!     now find a better approximation for uTc
+c         if(dy.gt.0.1)then
+c            u(4) =  u(4) + ddy1*abs(vTx(2)-vT(2))*0.002 !ddy1*dy*0.002
+c         endif
+
          CALL hmsReconXtar (u,uT,ok)
-         
+c         write(*,*)'1 ',REF_VAL*(uu1T(1)+1.*uu1T(2))-x*ref_val,REF_VAL*(uu1T(3)+1.*uu1T(4))-y*ref_val
+c         write(*,*)'2 ',REF_VAL*(uu2T(1)+1.*uu2T(2))-x*ref_val,REF_VAL*(uu2T(3)+1.*uu2T(4))-y*ref_val
+c         write(*,*)'3 ',REF_VAL*(uu3T(1)+1.*uu3T(2))-x*ref_val,REF_VAL*(uu3T(3)+1.*uu3T(4))-y*ref_val
          
 !     drift to a field free region and calculate the velocities
          vT(1) = REF_VAL*(uT(1)+1.*uT(2))
@@ -262,13 +336,15 @@ c      endif
          
          bdl = sqrt(vT(7)**2+vT(8)**2+vT(9)**2)
          dx = abs(x*REF_VAL-vT(1))
+         dy = abs(y*REF_VAL-vT(2))
          save_diff_dx = save_dx - dx
          if (save_diff_dx .lt. 0 .and.   n .ne. 0) then
+            n=n+1
             do ii=1,6
                vt(ii)=vtsave(ii)
             enddo
             ok = .false.
-            if ( save_dx .lt. 1.0) ok = .true.
+            if ( save_dx .le. 1.0) ok = .true.
          else
             n = n+1
             do ii=1,6
@@ -277,12 +353,21 @@ c      endif
             save_dx = dx
          endif
       ENDDO
-      IF (n .ge. 10 ) ok = .FALSE.
+      IF (n .ge. 150 ) ok = .FALSE.
       if (.not. ok) then
       endif      
 !     calculate the result in HMS coordinates
 c      write(*,*)'TESTING VT 3',VT(1),VT(2),VT(3)
 c      write(*,*)'TESTING VT 3',VT(4),VT(5),VT(6),eng,ok
+c      write(*,*)dx,dy
+      if(N.eq.50.and.dx.gt.1)then
+         do i=1,6
+            VT(i) = Vtfirst(i)
+            dx = abs(x*REF_VAL-vT(1))
+            dy = abs(y*REF_VAL-vT(2))
+         enddo
+      endif
+
       TARGET_COORD(1) = VT(1)      
       TARGET_COORD(2) = VT(2)      
       TARGET_COORD(3) = VT(3)      
@@ -291,6 +376,9 @@ c      write(*,*)'TESTING VT 3',VT(4),VT(5),VT(6),eng,ok
       TARGET_COORD(6) = VT(6) !p*1000*VT(6)/29.97/eng     
       Eprot           = eng
       Pprot           = p
+c      write(*,*)x*100.,y*100
+c      write(*,*)Vt(1),Vt(2)
+c      write(*,*)Vtold(1),Vtold(2)
     
       uT(1) =  0.01*vT(1)  
       uT(2) = vT(4)/vT(6)

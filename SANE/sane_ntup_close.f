@@ -29,7 +29,7 @@
 
       id=sane_ntuple_ID
       io=sane_ntuple_IOchannel
-      name=sane_ntuple_name
+      name=sane_Ntuple_name
 
       abort=.not.HEXIST(id)
 
@@ -46,6 +46,7 @@
       call G_add_path(here,msg)
       call G_log_message('INFO: '//msg)
 
+c      write(*,*) HEXIST(9502),sane_ntuple_directory
       cycle= 0
       call HROUT(id,cycle,' ')
       call HROUT(10100,cycle,' ')
@@ -53,25 +54,39 @@
       call HROUT(10102,cycle,' ')
       call HROUT(10111,cycle,' ')
       call HROUT(10112,cycle,' ')
-      call HROUT(10121,cycle,' ')
-      call HROUT(10122,cycle,' ')
-      call HROUT(10125,cycle,' ')
-      call HROUT(10126,cycle,' ')
-      call HROUT(10200,cycle,' ')
       do i =1,8
+         call HROUT(10120+i,cycle,' ')
          call HROUT(10500+i,cycle,' ')
-
+         call HROUT(10130+i,cycle,' ')
       enddo
+      do i =1,28
+        call HROUT(10150+i,cycle,' ')
+      enddo
+      call HROUT(10200,cycle,' ')
       call HROUT(10210,cycle,' ')
       call HROUT(10211,cycle,' ')
       call HROUT(10212,cycle,' ')
       call HROUT(10213,cycle,' ')
+      call HROUT(10214,cycle,' ')
 
       call HROUT(10300,cycle,' ')
       call HROUT(10301,cycle,' ')
       call HROUT(10302,cycle,' ')
       call HROUT(10303,cycle,' ')
       call HROUT(10304,cycle,' ')
+      call HROUT(10310,cycle,' ')
+      call HROUT(10311,cycle,' ')
+      call HROUT(10312,cycle,' ')
+      call HROUT(10313,cycle,' ')
+      call HROUT(10314,cycle,' ')
+      call HROUT(10315,cycle,' ')
+      call HROUT(10316,cycle,' ')
+      call HROUT(10317,cycle,' ')
+      call HROUT(10321,cycle,' ')
+      call HROUT(10322,cycle,' ')
+      call HROUT(10323,cycle,' ')
+      call HROUT(10324,cycle,' ')
+
 
 
       call HROUT(10550,cycle,' ')
@@ -87,11 +102,15 @@
       call HROUT(10614,cycle,' ')
       call HROUT(10620,cycle,' ')
       call HROUT(10621,cycle,' ')
-        
+c      call HPRINT(9502)
+ 
+      write(*,*)name
       call HREND(name)
       call G_IO_control(io,'FREE',ABORT,err)
       close(io)
-      
+            call HROUT(10312,cycle,' ')
+      call HROUT(10313,cycle,' ')
+
       call HCDIR(directory,' ')     ! return to "current" directory
 
       sane_ntuple_directory=' '

@@ -64,9 +64,9 @@ c
 cc
       REAL*8 TARGET_COORD(6),Eprot,Pprot
       COMMON/TARGET_GENRECON/TARGET_COORD,Eprot,Pprot
-      real*8 u(6),Eb,dl,temp
-      real*8 theta_big, phi_big!,ccx,ccy,ccz
-
+      real*8 u(6),dl,temp
+      real*8 Eb,theta_big, phi_big!,ccx,ccy,ccz
+      common/FAKEBIG/Eb,theta_big, phi_big
 c      real*8 P1_bigcal(3),P2_bigcal(3),P3_bigcal(3)
 c      real*8 P1_bigcal_r(3),P2_bigcal_r(3),P3_bigcal_r(3)
       logical ok
@@ -179,6 +179,7 @@ c     expected electron energy:
       Ecal_hexpect = Eprime
 
       pthetarad = hstheta
+c      pthetarad = 2*SANE_HMS_ANGLE_THETA*3.1415/180.-hstheta
       pphirad = hsphi - 3.*PI/2.
 
 c     calculate proton momentum (assuming elastic) from hstheta:
@@ -287,6 +288,7 @@ c
 c     Implementetion of the magnetic field for electron tracking to BIGCAL
 c
 cc
+      if(SANE_TGTFIELD_B.gt.0)then
       if(a_bigcal.eq.0.and.b_bigcal.eq.0.and.c_bigcal.eq.0)then
 c     
 c     Define Bigcal plane
@@ -316,7 +318,7 @@ c
                P3_bigcal_r(1) = temp
                call Plane(P1_bigcal_r,P2_bigcal_r,P3_bigcal_r,
      ,              a_bigcal,b_bigcal,c_bigcal,d_bigcal)
-               write(*,*)P1_bigcal_r,P2_bigcal_r,P3_bigcal_r
+c               write(*,*)P1_bigcal_r,P2_bigcal_r,P3_bigcal_r
       endif
       CALL trgInitFieldANGLES(SANE_BETA_OMEGA,SANE_BETA_PHI)
          
@@ -331,6 +333,10 @@ c      U(6) =  29.979-TARGET_COORD(6)
 c      write(*,*)TARGET_COORD,Pprot,eprot
 c      write(*,*)etheta_expect*57.3,hsphi*57.3-270+180,ephi_expect*57.3,(ephi_expect-pi)*57.3
       theta_big = etheta_expect
+c      write(*,*)'1 ',etheta_expect*57.3
+ccc Lets ty this
+c      theta_big = -etheta_expect+2*SANE_HMS_ANGLE_THETA*3.1415/180.
+c      write(*,*)'2 ',theta_big*57.3
       phi_big   = (ephi_expect)
       U(4) =  sin(theta_big)*cos(phi_big)*29.979
       U(5) =  sin(theta_big)*sin(phi_big)*29.979
@@ -346,7 +352,6 @@ c      write(*,*)'At Target ',U
       p1_bigcal_r(1) =  u(2)
       p1_bigcal_r(2) =  -u(1)
       p1_bigcal_r(3) =  u(3)
-      
       call ROTATE( P1_bigcal_r , 0., Bigcal_SHIFT(4)*3.141/180., 0. , P1_bigcal )
 c     
 c      write(*,*)'At BIGCAL ',U
@@ -358,10 +363,12 @@ c         write(*,*)acos(ezhat_tar)*180/3.141,atan2(u(5)/29.97,u(4)/29.97)*180/3
 c      endif
       
 ccccccccccccccccccccccc
-      gep_bx_expect_H = xcal_hexpect
-      gep_by_expect_H = ycal_hexpect
       gep_bx_expect_H = P1_bigcal(1)
       gep_by_expect_H = P1_bigcal(2)
+      else
+         gep_bx_expect_H = xcal_hexpect
+         gep_by_expect_H = ycal_hexpect
+      endif
 
       !write(*,*) 'bigcal e_hms,x_hms,y_hms=',Eprime,xcal_hexpect,ycal_hexpect
 

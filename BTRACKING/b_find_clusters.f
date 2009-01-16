@@ -43,7 +43,8 @@
       real copyreal
       integer copyint
       logical copybool
-
+c      real  big_en(32,56),big_x(32),big_y(56)
+c     in_cluster,iik,iij
       abort=.false.
       err=' '
 
@@ -51,6 +52,42 @@ c     Strategy: Find Maximum, then build cluster around it using "add_neighbors"
 
 c      nmaximum = 0
 c      ncluster = 0
+ccccccccccc
+c      do ihit=1,bigcal_all_ngood
+c         irow = bigcal_all_iygood(ihit)
+c         icol = bigcal_all_ixgood(ihit)
+c         ecell = bigcal_all_ecell(ihit)
+c         big_en(icol,irow) =  0
+c         big_x(icol)       =  0
+c         big_y(irow)       =  0
+c         if(irow.ne.0.and.icol.ne.0)then
+c            big_en(icol,irow) =  ecell
+c            big_x(icol)       =  bigcal_all_xgood(ihit)
+c            big_y(irow)       =  bigcal_all_ygood(ihit)
+c         endif
+c        if(ecell.gt.emax) then
+c            emax = ecell
+c            ixmax = icol
+c            iymax = irow
+c            ihitmax = ihit
+c         endif
+c      enddo
+c 199  CONTINUE
+c      
+c      i_ncell_x1 = abs(30*tan(atan(big_x(ixmax)/320.)+6.))/4.+1 
+c      i_ncell_x2 = abs(30*tan(atan(big_x(ixmax)/320.)-6.))/4.+1 
+c      i_ncell_y1 = abs(30*tan(atan(big_y(ixmax)/320.)+6.))/4.+1 
+c      i_ncell_y2 = abs(30*tan(atan(big_y(ixmax)/320.)-6.))/4.+1 
+c      in_cluster = 0
+c      do iik = ixmax-i_ncell_x2 , ixmax+i_ncell_x1
+c         do iij = iymax-i_ncell_y2, iymax+i_ncell_y1
+c            if(iik.lt.32.and.iij.lt.56.and.iik.gt.0.and.iij.gt.0)then
+c               if(big_en(iik,iij).gt.0)then
+c                  in_cluster = in_cluster+1
+c               endif
+c            endif
+c         enddo
+c      enddo
 
  102  continue
       found_cluster = .false.
@@ -80,7 +117,7 @@ c     so regardless of the adc value, the "ecell" value should be zero!
          irow = bigcal_all_iygood(ihit)
          icol = bigcal_all_ixgood(ihit)
          ecell = bigcal_all_ecell(ihit)
-         if(ecell.gt.emax) then
+        if(ecell.gt.emax) then
             emax = ecell
             ixmax = icol
             iymax = irow

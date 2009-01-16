@@ -56,6 +56,7 @@ c      write(*,*), 'ifile = ',ifile, file
 
       if((ilo.gt.1).and.(ilo.lt.fn_len)) then
          file = file(1:ilo-1)//'.'//iifile//'.'//ifile//file(ilo:fn_len)
+         sane_Ntuple_name = sane_Ntuple_name(1:ilo-7)//'_'//iifile//'_'//ifile
 c         write(*,*)'File name is', file
 c      else 
 c         abort=.true.
@@ -69,7 +70,7 @@ c         abort=.true.
          err=':unable to change BigCal ntuple file segment'
          call G_add_path(here,err)
       else
-         pat=':changed BigCal ntuple file segment'
+         pat=':changed SANE ntuple file segment'
          call G_add_path(here,pat)
          call G_log_message('INFO: '//pat)
       endif

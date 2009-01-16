@@ -8,6 +8,8 @@
 
       logical ABORT
       character*(*) err
+      integer iquest
+      Common /QUEST/ Iquest(100)
 
       include 'b_ntuple.cmn'
       include 'bigcal_bypass_switches.cmn'
@@ -69,7 +71,7 @@ c$$$        recL = 8191
 c$$$        iquest(10) = 65000
 c$$$        call HROPEN(io,name,file,'NQ',recL,status)
 c$$$      endif
-      
+
       recL = 8191
       iquest(10) = 65000
       call HROPEN(io,name,file,'NQ',recL,status)
@@ -103,19 +105,19 @@ c$$$      endif
         
         if(bbypass_find_clusters.eq.0) then
            call HBNAME(id,'clustblock',nclust,
-     $          'nclust[0,25]:I*4,ncellclust(nclust)[0,25]:I*4,'//
-     $          'ncellbad(nclust)[0,25]:I*4,'//
-     $          'ncellx(nclust),ncelly(nclust),iycell(25,nclust),'//
-     $          'ixcell(25,nclust),cellbad(25,nclust):L,'//
-     $          'xcell(25,nclust),ycell(25,nclust),'//
-     $          'eblock(25,nclust),ablock(25,nclust),'//
+     $          'nclust[0,50]:I*4,ncellclust(nclust)[0,50]:I*4,'//
+     $          'ncellbad(nclust)[0,50]:I*4,'//
+     $          'ncellx(nclust),ncelly(nclust),iycell(50,nclust),'//
+     $          'ixcell(50,nclust),cellbad(50,nclust):L,'//
+     $          'xcell(50,nclust),ycell(50,nclust),'//
+     $          'eblock(50,nclust),ablock(50,nclust),'//
      $          'xmoment(nclust),ymoment(nclust),'//
      $          'eclust(nclust),aclust(nclust),'//
      $          'xclust(nclust),yclust(nclust)')
            if(bbypass_calc_cluster_time.eq.0) then
               if(bbypass_sum8.eq.0) then
                  call HBNAME(id,'clusttdc',nclust8,
-     $                'nclust8[0,25]:I*4,'//
+     $                'nclust8[0,50]:I*4,'//
      $                'ncell8clust(nclust8)[0,10]:I*4,'//
      $                'irow8hit(10,nclust8)[0,56]:I*4,'//
      $                'icol8hit(10,nclust8)[0,4]:I*4,'//
@@ -128,7 +130,7 @@ c$$$      endif
               
               if(bbypass_sum64.eq.0) then
                  call HBNAME(id,'clusttrig',nclust64,
-     $                'nclust64[0,25]:I*4,'//
+     $                'nclust64[0,50]:I*4,'//
      $                'ncell64clust(nclust64)[0,6]:I*4,'//
      $                'irow64hit(6,nclust64)[0,19]:I*4,'//
      $                'icol64hit(6,nclust64)[0,2]:I*4,'//
@@ -141,8 +143,8 @@ c$$$      endif
            endif
            
            if(bbypass_calc_physics.eq.0) then
-              call HBNAME(id,'clustphys',ntrack,'ntrack[0,25]:I*4,'//
-     $             'ibest[0,25]:I*4,thetarad(ntrack),'//
+              call HBNAME(id,'clustphys',ntrack,'ntrack[0,50]:I*4,'//
+     $             'ibest[0,50]:I*4,thetarad(ntrack),'//
      $             'phirad(ntrack),energy(ntrack),'//
      $             'xface(ntrack),yface(ntrack),'//
      $             'zface(ntrack),px(ntrack),py(ntrack),pz(ntrack),'//
@@ -150,7 +152,7 @@ c$$$      endif
      $             'chi2contr(6,ntrack)')
            endif
            
-           call HBNAME(id,'bad_clust',nmax,'nmax[0,25]:I*4,'//
+           call HBNAME(id,'bad_clust',nmax,'nmax[0,50]:I*4,'//
      $          'edge_max(nmax):L,not_enough(nmax):L,'//
      $          'too_long_x(nmax):L,too_long_y(nmax):L,'//
      $          'below_thresh(nmax):L,above_max(nmax):L,'//
@@ -159,7 +161,7 @@ c$$$      endif
 
         if(gen_bigcal_mc.ne.0) then
            call HBNAME(id,'MC_Clust',evid_g,'evid_g:I*4,'//
-     $          'ntrk_g[0,25]:I*4,'//
+     $          'ntrk_g[0,50]:I*4,'//
      $          'pid_g(ntrk_g)[0,50]:I*4,xvertex_g,yvertex_g,'//
      $          'zvertex_g,pxgeant(ntrk_g),pygeant(ntrk_g),'//
      $          'pzgeant(ntrk_g),xgeant(ntrk_g),ygeant(ntrk_g),'//

@@ -29,9 +29,9 @@
      $        LUCITE_SANE_RAW_ADC_NEG, 
      $        LUCITE_SANE_RAW_TDC_POS, 
      $        LUCITE_SANE_RAW_TDC_NEG)
-c         write(*,*)'LUC Count NUM ',LUCITE_SANE_COUNTER_NUM
-c         write(*,*)'LUC ADC POS ',LUCITE_SANE_RAW_TDC_POS
-c         write(*,*)'LUC ADC NEG ',LUCITE_SANE_RAW_TDC_NEG
+C         write(*,*)'LUC Count NUM ',LUCITE_SANE_RAW_COUNTER_NUM
+C         write(*,*)'LUC ADC POS ',LUCITE_SANE_RAW_TDC_POS
+C         write(*,*)'LUC ADC NEG ',LUCITE_SANE_RAW_TDC_NEG
       else if(did.eq.CERENKOV_SANE_ID)then
 c        WRITE(*,*)'HITS = ',CERENKOV_SANE_RAW_TOT_HITS
          pointer = pointer + 
@@ -44,9 +44,9 @@ c        WRITE(*,*)'HITS = ',CERENKOV_SANE_RAW_TOT_HITS
      $        CERENKOV_SANE_RAW_ADC, 
      $        CERENKOV_SANE_RAW_TDC, 
      $        0, 0)
-c         WRITE(*,*)'HITS = ',CERENKOV_SANE_RAW_TOT_HITS
-c         WRITE(*,*)'cer tdc ',CERENKOV_SANE_RAW_TDC
-c         WRITE(*,*)'cer ADC ',CERENKOV_SANE_RAW_ADC
+C         WRITE(*,*)'HITS = ',CERENKOV_SANE_RAW_TOT_HITS
+C         WRITE(*,*)'cer tdc ',CERENKOV_SANE_RAW_TDC
+C         WRITE(*,*)'cer ADC ',CERENKOV_SANE_RAW_ADC
          
 
       else if(did.eq.TRACKER_SANE_X_ID)then

@@ -8,9 +8,12 @@
       integer inum
       real*4 Vector(3),Vector_r(3)
       INTEGER jj
-      real*4 en
+      real*4 en,add_factor
       real*4 ebj(25), coorX, coorY,E(10),esum(10)
+      real*8 Eb,theta_big, phi_big!,ccx,ccy,ccz
+      common/FAKEBIG/Eb,theta_big, phi_big
       esum(inum) = 0
+      E(inum) =0
       do jj=1,ncellclust(inum)
          if(BigCal_Calib_Gain(iycell(jj,inum),ixcell(jj,inum)).eq.0)
      ,        BigCal_Calib_Gain(iycell(jj,inum),ixcell(jj,inum))=1. 
@@ -18,14 +21,18 @@
          en =((eblock(jj,inum)))/
      ,        BigCal_Calib_Gain(iycell(jj,inum),ixcell(jj,inum))
          ebj(jj)=en
+         E(inum)=E(inum)+ebj(jj)
          esum(inum)=sqrt(ebj(jj))+esum(inum)
       enddo
       coorX =0
       coory =0
+      add_factor = 1!-Eb/1000./e(inum)
+      E(inum) =0
       do jj=1,ncellclust(inum)
+c         write(34,*)ixcell(jj,inum),iycell(jj,inum),add_factor
          if(iycell(jj,inum).le.55.and.ixcell(jj,inum).le.32)then
             if(iycell(jj,inum).gt.0.and.ixcell(jj,inum).gt.0)then
-               E(inum)=E(inum)+ebj(jj)
+               E(inum)=E(inum)+ebj(jj)*add_factor
                coorX = coorX +
      ,              xcell(jj,inum)*sqrt(ebj(jj))/esum(inum)
                coorY = coorY +
@@ -50,11 +57,11 @@
 cc
 cc     OBTAIN Angles THeta and Phi Assuming the particle was Electron
 c     Angles are in degree
-
+c      write(*,*)E_clust(inum),X_clust(inum),Y_clust(inum),Z_clust(inum) 
       call CORRECT_ANGLES(
-     ,     X_clust_r(inum)-slow_rast_x-rast_x,
-     ,     Y_clust_r(inum)-slow_rast_y-rast_y,
-     ,     Z_clust_r(inum),E_clust(inum),
+     ,     X_clust_r(inum)-slow_rast_x,
+     ,     Y_clust_r(inum)-slow_rast_y-Bigcal_SHIFT(2),
+     ,     Z_clust_r(inum),E_clust(inum)*1000,
      ,     SANE_IF_ELECTRON_ANGLE_THETA,
      ,     SANE_IF_ELECTRON_ANGLE_PHI)
       Theta_e(inum) = SANE_IF_ELECTRON_ANGLE_THETA
@@ -187,60 +194,71 @@ ccccccccccccccccccccccccccccccccccccc
       
       if(luc_hit.gt.0)then
          do i=1,luc_hit
-c      write(*,*)ltdc_pos(i),LUCITE_SANE_MEAN_POS(luc_row(i)),
+c     write(*,*)ltdc_pos(i),LUCITE_SANE_MEAN_POS(luc_row(i)),
 c     ,           LUCITE_SANE_SIGMA_POS(luc_row(i))
-c      write(*,*)'POS ',ltdc_pos(i),LUCITE_SANE_MEAN_POS(luc_row(i)),
+c     write(*,*)'POS ',ltdc_pos(i),LUCITE_SANE_MEAN_POS(luc_row(i)),
 c     ,           LUCITE_SANE_SIGMA_POS(luc_row(i))
-c      write(*,*)'NEG ', ltdc_neg(i),LUCITE_SANE_MEAN_NEG(luc_row(i)),
+c     write(*,*)'NEG ', ltdc_neg(i),LUCITE_SANE_MEAN_NEG(luc_row(i)),
 c     ,           LUCITE_SANE_SIGMA_NEG(luc_row(i))
-               If(abs(ltdc_pos(i)-LUCITE_SANE_MEAN_POS(luc_row(i))).lt.
-     ,              4*LUCITE_SANE_SIGMA_POS(luc_row(i)).and.
-     ,              abs(ltdc_neg(i)-LUCITE_SANE_MEAN_NEG(luc_row(i))).lt.
-     ,              4*LUCITE_SANE_SIGMA_NEG(luc_row(i))
-     ,              )then
-                  
-                  tdc_dif=float(ltdc_pos(i))-
-     ,                 float(ltdc_neg(i))
-     ,                 +LUCITE_SANE_MEAN_NEG(luc_row(i))
-     ,                 -LUCITE_SANE_MEAN_POS(luc_row(i))
+            If(abs(ltdc_pos(i)-LUCITE_SANE_MEAN_POS(luc_row(i))).lt.
+     ,           4*LUCITE_SANE_SIGMA_POS(luc_row(i)).and.
+     ,           abs(ltdc_neg(i)-LUCITE_SANE_MEAN_NEG(luc_row(i))).lt.
+     ,           4*LUCITE_SANE_SIGMA_NEG(luc_row(i))
+     ,           )then
+               
+               tdc_dif=float(ltdc_pos(i))-
+     ,              float(ltdc_neg(i))
+     ,              +LUCITE_SANE_MEAN_NEG(luc_row(i))
+     ,              -LUCITE_SANE_MEAN_POS(luc_row(i))
 c     
 c     X coordinate for Lucite
 c     
-                  
-                  xDelta1    = 
-     ,                 (tdc_dif)*LUCITE_SANE_TDC_TIMING(luc_row(i))*
-     ,                 29.979/1.49*0.7313
-                  
+               
+               xDelta1    = 
+     ,              (tdc_dif)*LUCITE_SANE_TDC_TIMING(luc_row(i))*
+     ,              29.979/1.49*0.7313
+               
 C     
 C     Y Geometrical CUT
-C
-**********     
-c                  IF(abs(luc_y(i)-Lucite_SHIFT(2)-
-c     ,                 Lucite_SHIFT(3)/Bigcal_SHIFT(3)*
-c     ,                 (yclust(inum))-Bigcal_SHIFT(2)).lt.6)then
-
+C     
+**********
+               
+               IF(abs(luc_y(i)-Lucite_SHIFT(2)-
+     ,              Lucite_SHIFT(3)/Bigcal_SHIFT(3)*
+     ,              (yclust(inum))-Bigcal_SHIFT(2)).lt.6)then
+                  call HFILL(10128,luc_y(i),Y_clust(inum),1.)
+c                  if(luc_row(i).eq.10)then
+                  call HFILL(10150+luc_row(i),xDelta1,
+     ,                 sqrt(Lucite_SHIFT(3)**2+luc_y(i)**2)/sqrt(Bigcal_SHIFT(3)**2+
+     ,                 Y_clust(inum)**2)*X_clust(inum),1.)
+c                   endif
+                  call HFILL(10131, float(luc_row(i)), float(ltdc_pos(i)), 1.)
+                  call HFILL(10132, float(luc_row(i)), float(ltdc_neg(i)), 1.)
+                  call HFILL(10135, float(luc_row(i)), float(ladc_pos(i)), 1.)
+                  call HFILL(10136, float(luc_row(i)), float(ladc_neg(i)), 1.)
+               endif
 C     
 C     X Geometrical CUT
 C     
 ***********
-c                     If(abs(xDelta1-Lucite_SHIFT(1)-
+c     If(abs(xDelta1-Lucite_SHIFT(1)-
 c     ,                    Lucite_SHIFT(3)/Bigcal_SHIFT(3)*
 c     ,                    (xclust(inum))-Bigcal_SHIFT(1)).lt.10)then
-                        
-                        luc = luc+1
-                        X_luc(luc,inum)   = xDelta1
-                        Y_luc(luc,inum)   = luc_y(i)+3/1.33
-                        Z_luc(luc,inum)   = sqrt(Lucite_SHIFT(3)**2-
-     ,                       X_luc(luc,inum)**2)
-                        Vector(1)         = X_luc(luc,inum)
-                        Vector(2)         = Y_luc(luc,inum)
-                        Vector(3)         = Z_luc(luc,inum)
-                        call ROTATE(Vector,0.,-BIGCAL_SHIFT(4)*3.1415926536/180.,0.,Vector_r)
-                        X_luc_r(luc,inum)   = Vector_r(1)
-                        Y_luc_r(luc,inum)   = Vector_r(2)
-                        Z_luc_r(luc,inum)   = Vector_r(3)
-                        
-c                     Endif
+               
+               luc = luc+1
+               X_luc(luc,inum)   = xDelta1
+               Y_luc(luc,inum)   = luc_y(i)+3/1.33
+               Z_luc(luc,inum)   = sqrt(Lucite_SHIFT(3)**2-
+     ,              X_luc(luc,inum)**2)
+               Vector(1)         = X_luc(luc,inum)
+               Vector(2)         = Y_luc(luc,inum)
+               Vector(3)         = Z_luc(luc,inum)
+               call ROTATE(Vector,0.,-BIGCAL_SHIFT(4)*3.1415926536/180.,0.,Vector_r)
+               X_luc_r(luc,inum)   = Vector_r(1)
+               Y_luc_r(luc,inum)   = Vector_r(2)
+               Z_luc_r(luc,inum)   = Vector_r(3)
+               
+c            Endif
                      
 c                  ENDIF
                endif
@@ -409,7 +427,7 @@ cc
       cosom = cos(omega*3.1415926/180.)
       sinom = sin(omega*3.1415926/180.)
 
-         th  = THR+
+         th  = THR*180/3.1415926+
      ,      ((P_th(1)+P_th(2)*phr+P_th(3)*thr+P_th(4)*phr**2+P_th(5)*thr**2)/EE)*
      ,        (P_th(6)*cosom+P_th(7)*sinom)+
      ,      ((P_th(8)+P_th(9)*thr+P_th(10)*phr+
@@ -418,7 +436,7 @@ cc
 
 
 
-         phi = phR
+         phi = phR*180/3.1415926
      ,        +(P_phi(1)*cosom+P_phi(2)*phr*cosom+P_phi(3)*phr**2*cosom+
      ,        P_phi(4)*phr**3*cosom+P_phi(5)*thr*cosom+P_phi(6)*thr**2*cosom+
      ,        P_phi(7)*thr**3*cosom+P_phi(8)*phr*thr*cosom+
@@ -571,26 +589,43 @@ c     endif
       include 'sane_ntuple.cmn'
       include 'gen_data_structures.cmn'
       include 'sane_data_structures.cmn'
+      include 'b_ntuple.cmn'
+      real*8 Eb,theta_big, phi_big!,ccx,ccy,ccz
+      common/FAKEBIG/Eb,theta_big, phi_big
       integer inum, ihistnum
       real*4 theta,phi
       real*4 thetar,phir
-      real*4 deg2rad, Mp
+      real*4 deg2rad, Mp,shelicity
       Mp = 0.938272309
       deg2rad = 3.1415926536/180.
+c                  WRITE(*,*)'call 3',NCLUST
       
       thetar= theta*deg2rad
-      phir= theta*deg2rad
-
-      ENue(inum)      = GEBeam - E_clust(inum)
-      Q2(inum)        = 2*GEBeam*E_clust(inum)*(1-cos(thetar))
-      X_Bjorken(inum) = Q2(inum)/( 2*Mp*ENue(inum) )
-      W2(inum)        = Mp**2 + 2*Mp*ENue(inum) -Q2(inum)
-      ihistnum        = (Q2(inum)-2.5)+1
-      if(ihistnum.gt.0.and.ihistnum.lt.5)then
-         call HF1(10600+ihistnum,X_Bjorken(inum),i_helicity)
-         call HF1(10610+ihistnum,X_Bjorken(inum),1.)
+      phir= phi*deg2rad
+c      write(*,*)GEBeam,E_clust(inum),theta
+      if(GEBeam - E_clust(inum).gt.0)then
+         ENue(inum)      = GEBeam - E_clust(inum)
+         Q2(inum)        = 2*GEBeam*E_clust(inum)*(1-cos(thetar))
+         X_Bjorken(inum) = Q2(inum)/( 2*Mp*ENue(inum) )
+         W2(inum)        = Mp**2 + 2*Mp*ENue(inum) -Q2(inum)
+         ihistnum        = (Q2(inum)-2.5)+1
+         call NANcheckF(ENue(inum),5)
+         call NANcheckF(Q2(inum),5)
+         call NANcheckF(X_Bjorken(inum),5)
+         call NANcheckF(W2(inum),5)
+         shelicity       = i_helicity
+         if(ihistnum.gt.0.and.ihistnum.lt.5)then
+            call HF1(10600+ihistnum,X_Bjorken(inum),shelicity)
+            call HF1(10610+ihistnum,X_Bjorken(inum),1.)
+         endif
+         if(abs(X_HMS-X_clust(inum)-Bigcal_SHIFT(1)).lt.10.and.
+     ,        abs(Y_HMS-Y_clust(inum)-Bigcal_SHIFT(2)).lt.10)then
+c            write(*,*)2,E_clust(inum),thetar*57.3,phir*57.3
+            
+            call HFILL(10620,X_Bjorken(inum),Q2(inum),1.)
+            call HFILL(10621,W2(inum),Q2(inum),1.)
+         endif
+      else
+c         write(*,*)'BIG CAL CALIBRATION IS WRONG',E_clust(inum),X_clust(inum),Y_clust(inum)
       endif
-      call HFILL(10620,X_Bjorken(inum),Q2(inum),1.)
-      call HFILL(10621,W2(inum),Q2(inum),1.)
-
       end

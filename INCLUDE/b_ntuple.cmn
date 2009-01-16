@@ -7,9 +7,9 @@
       parameter (default_b_Ntuple_ID=9030)
 *     array dimensions for cluster ntuple: 
       integer maxnclust
-      parameter(maxnclust=25)
+      parameter(maxnclust=50)
       integer maxncellclust
-      parameter(maxncellclust=25)
+      parameter(maxncellclust=50)
 *     array dimensions for cosmics ntuple:
       integer maxahit
       parameter(maxahit=1856)
@@ -310,5 +310,4 @@ c      character*256 b_tree_filename
 *
 *     CTPTYPE=parm
 *
-      integer iquest(100)
-      common/quest/iquest
+

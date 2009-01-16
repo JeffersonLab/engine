@@ -1,6 +1,7 @@
 *
 *     CTPTYPE=parm
 *
+
       integer sane_bigcal_time_include
       integer sane_bigcal_clust8_include
       integer sane_bigcal_clust64_include
@@ -11,7 +12,7 @@
       integer SANEMAX_Ntuple_size
       parameter (SANEMAX_Ntuple_size=200)
       integer default_SANE_Ntuple_ID
-      parameter (default_sane_Ntuple_ID=9030)
+      parameter (default_sane_Ntuple_ID=9502)
 *     array dimensions for cluster ntuple: 
 
       logical sane_Ntuple_exists
@@ -101,7 +102,7 @@ c     $     sanetrigtype
       real*4 hms_theta
       real*4 hms_phi
       real*4 hsxfp_s,hsyfp_s,hsxpfp_s,hsypfp_s
-      real*4 hms_ytar,hms_yptar,hms_xptar
+      real*4 hms_xtar,hms_ytar,hms_yptar,hms_xptar
       real*4 hms_delta
       real*4 hms_start
       real*4 hsshtrk_s, hsshsum_s, hsbeta_s
@@ -116,7 +117,7 @@ c     $     sanetrigtype
       
       COMMON/HMSINFO/hms_p,hms_e,hms_theta,hms_phi,
      ,     hsxfp_s,hsyfp_s,hsxpfp_s,hsypfp_s,
-     ,     hms_ytar,hms_yptar,hms_xptar,
+     ,     hms_xtar,hms_ytar,hms_yptar,hms_xptar,
      ,     hms_delta, hms_start,
      ,     hsshtrk_s, hsshsum_s, hsbeta_s,
      ,     rast_x, rast_y,
@@ -125,7 +126,7 @@ c     $     sanetrigtype
      ,     hms_cer_npe1,hms_cer_npe2, hms_cer_adc1,hms_cer_adc2
       
       integer*4 maxcl
-      parameter (maxcl=10)
+      parameter (maxcl=50)
       integer*4 n_clust
       integer*4 luc_h(maxcl)
       integer*4 trc_hx(maxcl)

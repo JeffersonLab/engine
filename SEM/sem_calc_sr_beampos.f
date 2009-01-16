@@ -16,6 +16,7 @@ c      INCLUDE 'gen_constants.par'
 c      include 'hms_bypass_switches.cmn'
       include 'sem_data_structures.cmn'
       include 'gen_constants.par'
+      include 'gen_event_info.cmn'
 c      include 'gen_scalers.cmn'
 c      include 'n_id_histid.cmn'
 
@@ -70,8 +71,8 @@ c      include 'n_id_histid.cmn'
      >    .or. (slow_raster_correction.eq.1)) then     !use SEM data
         x_coord = ntbpmx
         y_coord = ntbpmy
-        gsrx_calib = gsry_adc  ! uncalibrated so we can
-        gsry_calib = gsrx_adc  !  determine calibration
+        gsrx_calib = gsry_raw_adc  ! uncalibrated so we can
+        gsry_calib = gsrx_raw_adc  !  determine calibration
 *
 *
 * mkj 2/20/2004 added parameters n_sr_adcx_zero,n_sr_adcy_zero
@@ -79,11 +80,22 @@ c      include 'n_id_histid.cmn'
 *   position in which +x is horizontal beam right,+y is vertical up.
 *
       else if (slow_raster_correction.eq.2) then       ! use raster data
-        gsrx_calib = n_sr_slopex*(gsry_adc-n_sr_adcx_zero) + n_sr_offsetx
-        gsry_calib = n_sr_slopey*(gsrx_adc-n_sr_adcy_zero) + n_sr_offsety
-        x_coord = gsrx_calib
-        y_coord = gsry_calib
+c         write(*,*)n_sr_size,n_sr_slopex,n_sr_adcx_zero
+         gsry_calib = -n_sr_size/n_sr_slopex*(gsrx_raw_adc-n_sr_adcx_zero)!-
+c     ,     n_fr_size/n_fr_slopex*(gfrx_raw_adc-n_fr_adcx_zero)   
+         gsrx_calib = n_sr_size/n_sr_slopey*(gsry_raw_adc-n_sr_adcy_zero)!+
+c     ,        n_fr_size/n_fr_slopey*(gfry_raw_adc-n_fr_adcy_zero)
+c         write(*,*)n_fr_slopey,n_fr_slopex
+         x_coord = gsrx_calib
+         y_coord = gsry_calib
+      if (gen_event_type .ne. 4 ) then
+      call HFILL(10210,gsry_raw_adc,gsrx_raw_adc, 1.)
+      call HFILL(10211,gfry_raw_adc,gfrx_raw_adc, 1.)
 
+      call HFILL(10212,gsrx_calib,gsry_calib, 1.)
+      call HFILL(10213,gbeam_y,gbeam_x, 1.)
+      endif
+c        write(*,*)gsrx_calib,gsry_calib
 c      else if (slow_raster_correction.eq.4) then       ! use mixed mode
 c        gsrx_calib = n_sr_slopex*(gsry_adc-n_sr_adcx_zero) + n_sr_offsetx
 c        gsry_calib = n_sr_slopey*(gsrx_adc-n_sr_adcy_zero) + n_sr_offsety
@@ -96,8 +108,9 @@ c        y_coord = gsry_calib - gsem_meanypos
 
       endif
 *     * correct units and switch to TRANSPORT system
-      gSR_beamx = -y_coord * millimeter/centimeter
-      gSR_beamy = -x_coord * millimeter/centimeter
+      gSR_beamx = x_coord 
+      gSR_beamy = y_coord 
+c      write(*,*)gSR_beamx,gSR_beamy
 
 c*     * in any case plot event SEM vs calib ADC
 c* mkj 1/23/02 change to plot tbpm without negative sign

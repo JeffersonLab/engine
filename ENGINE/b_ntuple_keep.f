@@ -50,7 +50,7 @@ c      integer itype
       ABORT=.false.
 
       if(.not.b_ntuple_exists) return
-
+c      write(*,*)'Filling ntuple data'
       if(b_ntuple_max_segmentevents.gt.0) then
          if(b_ntuple_segmentevents.gt.b_ntuple_max_segmentevents) then
             call b_ntuple_change(ABORT,err)
@@ -59,7 +59,9 @@ c      integer itype
             b_ntuple_segmentevents = b_ntuple_segmentevents + 1
          endif
       endif
-
+c
+c      if (gen_event_type .ne. 6) return
+c
       if(bigcal_ntuple_type.eq.1) then
          bgid = gen_event_ID_number
          bgtype = gen_event_type

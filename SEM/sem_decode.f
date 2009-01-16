@@ -23,6 +23,9 @@
      &        maxwords, did, 
      $            N_TBPM_ALL_CHAN , N_TBPM_TOT_HITS, N_TBPM_ADDR1,
      $            N_TBPM_ADDR2, 1, N_TBPM_RAW_DATA, 0, 0, 0)
+c         write(*,*)'SEM ',N_TBPM_TOT_HITS,did
+c         write(*,*)'SEM ',N_TBPM_ADDR2
+c         write(*,*)'SEM ',N_TBPM_RAW_DATA
       endif
 
       end

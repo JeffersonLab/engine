@@ -153,99 +153,6 @@ c	write(*,*) 'target theta = ',theta
 	end
 
        
-*------------------------------------------------------------------------
-
-      SUBROUTINE GUFLD (xin,Bout)
-      IMPLICIT NONE
-      REAL*8 xin(3),Bout(3)
-      REAL*8 x_(3),B_(3)
-* --  calculate actual field
-*
-*     Parameter:
-*        x_   I : lab coordinates  
-*        B_   O : B field in lab coordinates
-*
-*      Notes:
-*      - 2-Dimensional Linear Interpolation:                               
-*        Assumes uniform spacing of fieldmap in x,y        
-*      - for performance reasons B_phi is always treated 0 
-       
-      INTEGER    nz,nr 
-      PARAMETER (nz = 337)
-      PARAMETER (nr = 337)
-
-      REAL*8   B_field_z(nz,nr),B_field_r(nz,nr),zz(nz),rr(nr)
-      REAL*8   B_theta,B_stheta,B_ctheta,B_phi,B_sphi,B_cphi 
-       
-      COMMON  /trgFieldStrength/ B_field_z,B_field_r,zz,rr
-      COMMON  /trgFieldAngles/   B_theta,B_stheta,B_ctheta,
-     >                           B_phi,  B_sphi,  B_cphi 
-
-      INTEGER i,j
-      REAL*8   x(3),B(3),z,r,az,ar,a0,a1
-     
-*      x_(1) =  xin(1)
-*      x_(2) =  xin(2)
-      x_(1) = -xin(2)
-      x_(2) =  xin(1)
-      x_(3) =  xin(3) + 182.5   ! offset in z so that in target coordinate sys
-C      write(*,'(a11,3e12.3)') 'GUFLD: x = ',x_
-      ! rotate to coordinates with z' along field direction
-      x(1) =           x_(1)
-      x(2) =  B_stheta*x_(3) + B_ctheta*x_(2)
-      x(3) =  B_ctheta*x_(3) - B_stheta*x_(2)  
-        
-      ! compute zylinder coordinates
-      z  = ABS  (x(3))
-      r  = SQRT (x(1)**2 + x(2)**2)
-        
-      ! interpolate the field map 
-      i = INT((z-zz(1))/(zz(2)-zz(1))) + 1                                              
-      j = INT((r-rr(1))/(rr(2)-rr(1))) + 1                                              
-      IF ((i+1 .GT. nz) .OR. (i .LT. 1) .OR. 
-     >    (j+1 .GT. nr) .OR. (j .LT. 1)) THEN                
-        B(1)=0.
-        B(2)=0.
-        B(3)=0.
-      ELSE                                                                     
-        ! calculate the Bz component 
-        az = ((z-zz(i))/(zz(2)-zz(1))) 
-        ar = ((r-rr(j))/(rr(2)-rr(1))) 
-        a0=az*(B_field_z(i+1,j)  -B_field_z(i,j))  +B_field_z(i,j)                                           
-        a1=az*(B_field_z(i+1,j+1)-B_field_z(i,j+1))+B_field_z(i,j+1)                                           
-        B(3) = (ar*(a1-a0)+a0)           
-        IF (r .gt. 0.) THEN
-          ! calculate the Bx,By components 
-          a0=az*(B_field_r(i+1,j)  -B_field_r(i,j))  +B_field_r(i,j)                                           
-          a1=az*(B_field_r(i+1,j+1)-B_field_r(i,j+1))+B_field_r(i,j+1)                                           
-          B(2) = (ar*(a1-a0)+a0)/r
-          IF (x(3) .LT. 0.) B(2)= -B(2)
-          B(1) = B(2)*x(1)
-          B(2) = B(2)*x(2)       
-           
-          ! transform B field to lab. system
-          B_(1) =            B(1)  
-          B_(2) = - B_stheta*B(3) + B_ctheta*B(2)
-          B_(3) =   B_ctheta*B(3) + B_stheta*B(2)  
-        ELSE  
-          B_(1) =   0.
-          B_(2) = - B_stheta*B(3)
-          B_(3) =   B_ctheta*B(3)
-        ENDIF
-      ENDIF	   
-       
-      Bout(1) =  B_(2)
-      Bout(2) = -B_(1)
-      Bout(3) =  B_(3)
-C      if (xin(3).lt.-182.4) then
-C        write(*,'(a11,3e13.4)') 'GUFLD: x = ',xin
-C        write(*,'(a11,3e13.4)') 'GUFLD: Bout = ',Bout
-C        write(*,'(a11,3e13.4)') 'GUFLD: B = ',B
-C	write(*,*) B_stheta,B_ctheta
-C      endif
-
-      RETURN
-      END
 
 *------------------------------------------------------------------------
       subroutine TransformTo6Vector(x,y,z,px,py,pz,E,U)
@@ -414,6 +321,82 @@ ccccccccccccccccccccccccccccccccccccccccccccccccc
       SUBROUTINE trgTrackToLine (u,E,dl,P1,P2,ok)
       IMPLICIT NONE
       REAL*8   u(6),E,dl,p1(3),P2(3)
+      LOGICAL ok
+* --  track a single particle with given start parameters
+*     and find the closest aproach of the particle track with a given lane
+*
+*     Parameter:
+*        u     IO : coordinate vector (initial/final)
+*                     u0(1,2,3) : x, y, z [cm]
+*                     u0(4,5,6) : dx/dt, dy/dt, dz/dt [cm/ns] 
+*        E     I  : particle energy [MeV] * sign of particle charge
+*                   (negative for electrons, positive for protons/deuterons)
+*        dl    I  : step size [cm]
+*        P1 and P2 I  : two poinst on the lane 
+*        ok    IO : status variable 
+*                   - if false no action is taken 
+*                   - set to false when no intersection point is found 
+*                    
+                 
+      REAL*8  factor
+      COMMON /trgConversionFactor/factor
+      REAL*8 one, Coordinate(3)
+      REAL*8   ts,n,an,bn,cn,dn,maxdist,dist0,dist1,u0(6),u1(6)
+      integer idist0,idist1,icount	
+      INTEGER i
+      one = 1.
+      
+      IF (.NOT. OK) RETURN   
+
+      factor =  90./E
+      ts     = -dl/30.
+      Coordinate(1) = u(1)
+      Coordinate(2) = u(2)
+      Coordinate(3) = u(3)
+      call  Dist2Lane(P1,P2,Coordinate,dist0)
+      maxdist = max(ABS(dist0)*4.,1.0)
+      
+      ! check for the tracking direction 
+      CALL trgRK4(u,u0,ts)
+	do i=1,6
+	   u1(i) = u0(i)
+	enddo
+      
+      Coordinate(1) = u1(1)
+      Coordinate(2) = u1(2)
+      Coordinate(3) = u1(3)
+      call Dist2Lane(P1,P2,Coordinate,dist1) 
+      IF (dist1.gt.dist0) ts=-ts
+         
+      ! track through the intersection plane 
+      dist0 = dist1 
+      icount=0
+      DO WHILE (dist1.le.dist0.and.icount.lt.100000)
+c      write(*,*)dist0,dist1,icount
+	icount=icount+1 
+	dist0 = dist1
+	do i=1,6
+	   u1(i) = u0(i)
+	enddo
+        CALL trgRK4(u1,u0,ts)
+        Coordinate(1) = u0(1)
+        Coordinate(2) = u0(2)
+        Coordinate(3) = u0(3)
+        call Dist2Lane(P1,P2,Coordinate,dist1) 
+
+      ENDDO  
+      if(icount.lt.100000)then
+	do i=1,6
+	   u(i) = u1(i)
+	enddo
+      endif
+      if(icount.gt.100000) write(*,*)'Failed'                  
+      RETURN
+      END
+
+      SUBROUTINE trgTrackToLineBDL (u,E,dl,P1,P2,ok)
+      IMPLICIT NONE
+      REAL*8   u(9),E,dl,p1(3),P2(3)
       LOGICAL ok
 * --  track a single particle with given start parameters
 *     and find the closest aproach of the particle track with a given lane

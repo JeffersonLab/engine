@@ -101,9 +101,8 @@ c     choose ntuple type based on input argument
       
 
       !write(*,*) 'calling b_ntuple_open'
-
-      call b_ntuple_open(file,ABORT,err)
-
+c      b_ntuple_exists=.TRUE.
+         call b_ntuple_open(file,ABORT,err)
       !write(*,*) 'b_ntuple_open successful, itype=',bigcal_ntuple_type
 
       if(abort) then

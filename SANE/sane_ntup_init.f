@@ -46,6 +46,7 @@ c      write(*,*)'SANE',sane_ntuple_file,sane_ntuple_exists,sane_ntuple_id
          !write(*,*) 'bigcal ntuple title = ',msg
          call only_one_blank(msg)
          sane_ntuple_title= msg
+c         sane_ntuple_title= sane_ntuple_file
          
       endif
       
@@ -65,6 +66,7 @@ c      write(*,*)'SANE',sane_ntuple_file,sane_ntuple_exists,sane_ntuple_id
          
          if((ilo.gt.1).and.(ilo.lt.fn_len)) then
             file = file(1:ilo-1)//'.'//iifile//'.'//ifile//file(ilo:fn_len)
+            sane_Ntuple_name = default_name(1:ilo-7)//'_'//iifile//'_'//ifile
          else
             abort=.true.
             return
