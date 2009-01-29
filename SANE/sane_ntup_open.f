@@ -187,79 +187,80 @@ c
       if(isane_plots.ne.100)then
          isane_plots = 100
 c     ! For physics analysis  added on Jul 3 2008
-      call HBOOK2(10100,'TRACK X1',64, 1.,  65., 200,   -6500., -4000.,0.)
-      call HBOOK2(10101,'TRACK Y1',128,1., 129., 200,   -6500., -4000.,0.)
-      call HBOOK2(10102,'TRACK Y2',128,1., 129., 200,   -6500., -4000.,0.)
-      call HBOOK2(10111,'CER TDC',8, 1.,  9., 300,    -8000, 1000., 0.)
-      call HBOOK2(10112,'CER ADC',8, 1.,  9., 100,    10., 5000., 0.)
-      do histnum=1,8
-         call HBOOK2(10500+histnum,'CER ADC vs TDC ',100, 10.,  5000., 200,    -8000, 1000., 0.)
-      enddo
-      
-      call HBOOK2(10121,'LUC TDCPOS',28,1., 29., 200, -3500., 0., 0.)
-      call HBOOK2(10122,'LUC TDCNEG',28,1., 29., 200, -3500., 0., 0.)
-      call HBOOK2(10125,'LUC ADCPOS',28,1., 29., 200,    0., 4000., 0.)
-      call HBOOK2(10126,'LUC ADCNEG',28,1., 29., 200,    0., 4000., 0.)
-      if(sane_ntuple_type.eq.1) then 
-         do ii=1,28
-c            call HBPROF(10150+ii,'LUC_X vs BIG_X',100,-60., 60., 100,  -60., 60., 0.)
-            call HBPROF(10150+ii,'LUC_X vs BIG_X',100,-60., 60., -60,  60., 'S')
+         call HBOOK2(10100,'TRACK X1',64, 1.,  65., 200,   -6500., -4000.,0.)
+         call HBOOK2(10101,'TRACK Y1',128,1., 129., 200,   -6500., -4000.,0.)
+         call HBOOK2(10102,'TRACK Y2',128,1., 129., 200,   -6500., -4000.,0.)
+         call HBOOK2(10111,'CER TDC',8, 1.,  9., 300,    -8000, 1000., 0.)
+         call HBOOK2(10112,'CER ADC',8, 1.,  9., 100,    10., 5000., 0.)
+         do histnum=1,8
+            call HBOOK2(10500+histnum,'CER ADC vs TDC ',100, 10.,  5000., 200,    -8000, 1000., 0.)
+            call HBOOK2(10510+histnum,'BIGCAL' ,33,0., 33.,  56,    0.,   56., 0.)
          enddo
-         call HBOOK2(10128,'LUC_Y vs BIG_Y',120,-120., 120., 120,  -120., 120., 0.)
-         call HBOOK2(10131,'LUC TDCPOS cut',28,1., 29., 200, -3500., 0., 0.)
-         call HBOOK2(10132,'LUC TDCNEG cut',28,1., 29., 200, -3500., 0., 0.)
-         call HBOOK2(10135,'LUC ADCPOS cut',28,1., 29., 200,    0., 4000., 0.)
-         call HBOOK2(10136,'LUC ADCNEG cut',28,1., 29., 200,    0., 4000., 0.)
-      endif
-      call HBOOK2(10200,'BIGCAL' ,33,0., 33.,  56,    0.,   56., 0.)
-
-      call HBOOK2(10210,'SLOW RASTER ADC' ,90,5000., 8000.,  90,    5000.,   8000., 0.)
-      call HBOOK2(10211,'FAST RASTER ADC' ,90,2000., 5000.,  90,    2000.,   5000., 0.)
-      call HBOOK2(10212,'SLOW RASTER ADC Corrected' ,90,-3., 3.,  90,    -3.,   3., 0.)
-      call HBOOK2(10213,'FAST RASTER ADC Corrected' ,90,-3., 3.,  90,    -3.,   3., 0.)
-      call HBOOK2(10214,'SEM X Y' ,90,-3., 3.,  90,    -3.,   3., 0.)
-
-      call HBOOK2(10300,'X_HMS vs xclust' ,60,-60., 60.,  60,    -60.,   60., 0.)
-      call HBOOK2(10301,'Y_HMS vs yclust' ,120,-120., 120.,  120,    -120.,   120., 0.)
-      call HBOOK2(10302,'X_HMS vs Y_HMS' ,60,-60., 60.,  120,    -120.,   120., 0.)
-      call HBOOK2(10303,'Xclust vs Yclust' ,60,-60., 60.,  120,    -120.,   120., 0.)
-      call HBOOK2(10304,'DX vs DY' ,40,-40., 40.,  60,    -60.,   60., 0.)
-      call HBOOK2(10310,'hsdelta vs hsyptar' ,40,-20., 20.,  100, -0.1,   0.1, 0.)
-      call HBOOK2(10311,'hsdelta vs hsxptar' ,40,-20., 20.,  200, -0.1,   0.3, 0.)
-      call HBOOK2(10312,'dpel_hms vs hsyptar' ,40,-0.2, 0.2,  100, -0.1,   0.1, 0.)
-      call HBOOK2(10313,'dpel_hms vs hsxptar' ,40,-0.2, 0.2,  200, -0.1,   0.3, 0.)
-      call HBOOK2(10314,'dpel_hms vs hsxtar' ,40,-0.2, 0.2,  100, -3,   3, 0.)
-      call HBOOK2(10315,'dpel_hms vs hsytar' ,40,-0.2, 0.2,  100, -3,   3, 0.)
-      call HBOOK2(10316,'raster_x vs xtar' ,100,-3., 3.,  100, -3.,   3., 0.)
-      call HBOOK2(10317,'raster_y vs ytar' ,100,-3., 3.,  100, -3.,   3., 0.)
-
-
-
-
-      call HBOOK1(10321, 'hsdelta' , 100,-.1,.1,0.)
-      call HBOOK1(10322, 'W2', 100, -0.3, 0.6,0.)
-      call HBOOK2(10323,' W2 vs hsxtar' ,100,-0.3, 0.3,  100, -0.1,   0.1, 0.)
-      call HBOOK2(10324,' W2 vs hsxtar' ,100,-0.3, 0.3,  100, -3,   3, 0.)
-      
-
-      call HBOOK2(10550,'Ytracker-Yrec vs P' ,100, 0.7, 1.5,  100, -1.5,   1.5, 0.)
-      call HBOOK2(10551,'Xtracker-Xrec vs P' ,100, 0.7, 1.5,  100, -1.5,   1.5, 0.)
-
-      call HBOOK1(10601,'Xbj 2.5<Q2<3.5 helicity normalized' ,10, 0.2, 0.8 ,0.)
-      call HBOOK1(10611,'Xbj 2.5<Q2<3.5 no helicity normalized' ,10, 0.2, 0.8 ,0.)
-      call HBOOK1(10602,'Xbj 3.5<Q2<4.5 helicity normalized' ,10, 0.2, 0.8 ,0.)
-      call HBOOK1(10612,'Xbj 3.5<Q2<4.5 no helicity normalized' ,10, 0.2, 0.8 ,0.)
-      call HBOOK1(10603,'Xbj 4.5<Q2<5.5 helicity normalized' ,10, 0.2, 0.8 ,0.)
-      call HBOOK1(10613,'Xbj 4.5<Q2<5.5 no helicity normalized' ,10, 0.2, 0.8 ,0.)
-      call HBOOK1(10604,'Xbj 5.5<Q2<6.5 helicity normalized' ,10, 0.2, 0.8 ,0.)
-      call HBOOK1(10614,'Xbj 5.5<Q2<6.5 no helicity normalized' ,10, 0.2, 0.8 ,0.)
-
-      call HBOOK2(10620,'Xbj vs Q2' ,40, 0.1, 0.9,  100, 0.,  8., 0.)
-      call HBOOK2(10621,'W2 vs Q2' ,100, 0.5, 2.5,  100, 0.,  8., 0.)
+         
+         call HBOOK2(10121,'LUC TDCPOS',28,1., 29., 200, -3500., 0., 0.)
+         call HBOOK2(10122,'LUC TDCNEG',28,1., 29., 200, -3500., 0., 0.)
+         call HBOOK2(10125,'LUC ADCPOS',28,1., 29., 200,    0., 4000., 0.)
+         call HBOOK2(10126,'LUC ADCNEG',28,1., 29., 200,    0., 4000., 0.)
+         if(sane_ntuple_type.eq.1) then 
+            do ii=1,28
+c     call HBPROF(10150+ii,'LUC_X vs BIG_X',100,-60., 60., 100,  -60., 60., 0.)
+               call HBPROF(10150+ii,'LUC_X vs BIG_X',100,-60., 60., -60,  60., 'S')
+            enddo
+            call HBOOK2(10128,'LUC_Y vs BIG_Y',120,-120., 120., 120,  -120., 120., 0.)
+            call HBOOK2(10131,'LUC TDCPOS cut',28,1., 29., 200, -3500., 0., 0.)
+            call HBOOK2(10132,'LUC TDCNEG cut',28,1., 29., 200, -3500., 0., 0.)
+            call HBOOK2(10135,'LUC ADCPOS cut',28,1., 29., 200,    0., 4000., 0.)
+            call HBOOK2(10136,'LUC ADCNEG cut',28,1., 29., 200,    0., 4000., 0.)
+         endif
+         call HBOOK2(10200,'BIGCAL' ,33,0., 33.,  56,    0.,   56., 0.)
+         
+         call HBOOK2(10210,'SLOW RASTER ADC' ,90,5000., 8000.,  90,    5000.,   8000., 0.)
+         call HBOOK2(10211,'FAST RASTER ADC' ,90,2000., 5000.,  90,    2000.,   5000., 0.)
+         call HBOOK2(10212,'SLOW RASTER ADC Corrected' ,90,-3., 3.,  90,    -3.,   3., 0.)
+         call HBOOK2(10213,'FAST RASTER ADC Corrected' ,90,-3., 3.,  90,    -3.,   3., 0.)
+         call HBOOK2(10214,'SEM X Y' ,90,-3., 3.,  90,    -3.,   3., 0.)
+         
+         call HBOOK2(10300,'X_HMS vs xclust' ,60,-60., 60.,  60,    -60.,   60., 0.)
+         call HBOOK2(10301,'Y_HMS vs yclust' ,120,-120., 120.,  120,    -120.,   120., 0.)
+         call HBOOK2(10302,'X_HMS vs Y_HMS' ,60,-60., 60.,  120,    -120.,   120., 0.)
+         call HBOOK2(10303,'Xclust vs Yclust' ,60,-60., 60.,  120,    -120.,   120., 0.)
+         call HBOOK2(10304,'DX vs DY' ,40,-40., 40.,  60,    -60.,   60., 0.)
+         call HBOOK2(10310,'hsdelta vs hsyptar' ,40,-20., 20.,  100, -0.1,   0.1, 0.)
+         call HBOOK2(10311,'hsdelta vs hsxptar' ,40,-20., 20.,  200, -0.1,   0.3, 0.)
+         call HBOOK2(10312,'dpel_hms vs hsyptar' ,40,-0.2, 0.2,  100, -0.1,   0.1, 0.)
+         call HBOOK2(10313,'dpel_hms vs hsxptar' ,40,-0.2, 0.2,  200, -0.1,   0.3, 0.)
+         call HBOOK2(10314,'dpel_hms vs hsxtar' ,40,-0.2, 0.2,  100, -3,   3, 0.)
+         call HBOOK2(10315,'dpel_hms vs hsytar' ,40,-0.2, 0.2,  100, -3,   3, 0.)
+         call HBOOK2(10316,'raster_x vs xtar' ,100,-3., 3.,  100, -3.,   3., 0.)
+         call HBOOK2(10317,'raster_y vs ytar' ,100,-3., 3.,  100, -3.,   3., 0.)
+         
+         
+         
+         
+         call HBOOK1(10321, 'hsdelta' , 100,-.1,.1,0.)
+         call HBOOK1(10322, 'W2', 100, -0.3, 0.6,0.)
+         call HBOOK2(10323,' W2 vs hsxtar' ,100,-0.3, 0.3,  100, -0.1,   0.1, 0.)
+         call HBOOK2(10324,' W2 vs hsxtar' ,100,-0.3, 0.3,  100, -3,   3, 0.)
+         
+         
+         call HBOOK2(10550,'Ytracker-Yrec vs P' ,100, 0.7, 1.5,  100, -1.5,   1.5, 0.)
+         call HBOOK2(10551,'Xtracker-Xrec vs P' ,100, 0.7, 1.5,  100, -1.5,   1.5, 0.)
+         
+         call HBOOK1(10601,'Xbj 2.5<Q2<3.5 helicity normalized' ,30, 0.2, 2.0 ,0.)
+         call HBOOK1(10611,'Xbj 2.5<Q2<3.5 no helicity normalized' ,30, 0.2, 2.0 ,0.)
+         call HBOOK1(10602,'Xbj 3.5<Q2<4.5 helicity normalized' ,30, 0.2, 2.0 ,0.)
+         call HBOOK1(10612,'Xbj 3.5<Q2<4.5 no helicity normalized' ,30, 0.2, 2.0 ,0.)
+         call HBOOK1(10603,'Xbj 4.5<Q2<5.5 helicity normalized' ,30, 0.2, 2.0 ,0.)
+         call HBOOK1(10613,'Xbj 4.5<Q2<5.5 no helicity normalized' ,30, 0.2, 2.0 ,0.)
+         call HBOOK1(10604,'Xbj 5.5<Q2<6.5 helicity normalized' ,30, 0.2, 2.0 ,0.)
+         call HBOOK1(10614,'Xbj 5.5<Q2<6.5 no helicity normalized' ,30, 0.2, 2.0 ,0.)
+         
+         call HBOOK2(10620,'Xbj vs Q2' ,40, 0.1, 0.9,  100, 0.,  8., 0.)
+         call HBOOK2(10621,'W2 vs Q2' ,100, 0.5, 2.5,  100, 0.,  8., 0.)
 c
 c
 c     Physics Histograms
-c
+c     
       endif
 
       
@@ -300,21 +301,23 @@ c
      $        'Z_clust_r(n_clust):R*4,'//
      $        'luc_h(n_clust)[0,20]:I*4,'//
      $        'X_luc(20,n_clust), Y_luc(20,n_clust), Z_luc(20,n_clust),'//
-     $        'X_luc_r(20,n_clust),Y_luc_r(20,n_clust), Z_luc_r(20,n_clust),'//
+     $        'X_luc_r(20,n_clust),Y_luc_r(20,n_clust),'//
+     $        'Z_luc_r(20,n_clust),'//
      $        'trc_hx(n_clust)[0,20]:I*4,'//
-     $        'X_trc(20,n_clust),Z_trc(20,n_clust),'//
-     $        'X_trc_r(20,n_clust), Z_trc_r(20,n_clust),'//
+     $        'X_trc(20,n_clust),X_trc_r(20,n_clust),'//
+     $        'Z_trc_r(20,n_clust),'//
      $        'trc_hy1(n_clust)[0,20]:I*4,'//
-     $        'Y1_trc(20,n_clust),Z1_trc(20,n_clust),'//
-     $        'Y1_trc_r(20,n_clust), Z1_trc_r(20,n_clust),'//
+     $        'Y1_trc(20,n_clust),Y1_trc_r(20,n_clust),'//
+     $        'Z1_trc_r(20,n_clust),'//
      $        'trc_hy2(n_clust)[0,20]:I*4,'//
-     $        ' Y2_trc(20,n_clust), Z2_trc(20,n_clust),'//
-     $        'Y2_trc_r(20,n_clust), Z2_trc_r(20,n_clust),'//
+     $        'Y2_trc(20,n_clust), Y2_trc_r(20,n_clust),'//
+     $        'Z2_trc_r(20,n_clust),'//
      $        'Tr_Vertex(3,n_clust), Tr_Vertex_r(3,n_clust),'//
      $        'cer_h(n_clust)[0,20]:I*4,'//
      $        'Theta_e(n_clust):R*4,Phi_e(n_clust):R*4,'//
      $        'Delta_Y(n_clust):R*4,Delta_X(n_clust):R*4,'//
-     $        'X_Bjorken(n_clust):R*4, Q2(n_clust):R*4, W2(n_clust):R*4, ENue(n_clust):R*4')
+     $        'X_Bjorken(n_clust):R*4, Q2(n_clust):R*4,'//
+     $        ' W2(n_clust):R*4, ENue(n_clust):R*4')
       endif
      
       call HCDIR(sane_ntuple_directory,'R') ! record ntuple directory

@@ -14,20 +14,23 @@
       common/FAKEBIG/Eb,theta_big, phi_big
       esum(inum) = 0
       E(inum) =0
+c         write(*,*)5,8,BigCal_Calib_Gain(8,5)
+c        write(*,*)5,16,BigCal_Calib_Gain(16,5)
       do jj=1,ncellclust(inum)
-         if(BigCal_Calib_Gain(iycell(jj,inum),ixcell(jj,inum)).eq.0)
-     ,        BigCal_Calib_Gain(iycell(jj,inum),ixcell(jj,inum))=1. 
-
+         if(BigCal_Calib_Gain(ixcell(jj,inum),iycell(jj,inum)).eq.0)
+     ,        BigCal_Calib_Gain(ixcell(jj,inum),iycell(jj,inum))=1. 
          en =((eblock(jj,inum)))/
-     ,        BigCal_Calib_Gain(iycell(jj,inum),ixcell(jj,inum))
+     ,        BigCal_Calib_Gain(ixcell(jj,inum),iycell(jj,inum))
          ebj(jj)=en
          E(inum)=E(inum)+ebj(jj)
          esum(inum)=sqrt(ebj(jj))+esum(inum)
       enddo
       coorX =0
       coory =0
+c      write(*,*) 'COOR0',inum,coorX,coorY,Bigcal_SHIFT(3),e(inum)
       add_factor = 1!-Eb/1000./e(inum)
       E(inum) =0
+      
       do jj=1,ncellclust(inum)
 c         write(34,*)ixcell(jj,inum),iycell(jj,inum),add_factor
          if(iycell(jj,inum).le.55.and.ixcell(jj,inum).le.32)then
@@ -41,6 +44,21 @@ c         write(34,*)ixcell(jj,inum),iycell(jj,inum),add_factor
             endif
          endif
       enddo
+      if(e(inum).lt.0.6)return
+c      if(e(inum).gt.4.7)then
+c         do jj=1,ncellclust(inum)
+c            if(ebj(jj).gt.3)then
+c               write(iycell(jj,inum),*)ixcell(jj,inum),ebj(jj),eblock(jj,inum),BigCal_Calib_Gain(ixcell(jj,inum),iycell(jj,inum))
+c            endif
+c         enddo
+c      endif
+
+c     
+c     Correcting coordinate (calculated fro pi0 calib correct for gamma)
+c     
+c      write(*,*) 'COOR1',inum,coorX,coorY,Bigcal_SHIFT(3),e(inum)
+      call correct_coordinate(coorX,coorY,Bigcal_SHIFT(3),e(inum))
+c      write(*,*) 'COOR2',inum,coorX,coorY,Bigcal_SHIFT(3),e(inum)
       
       X_clust(inum) = coorX
       Y_clust(inum) = coorY
@@ -288,16 +306,21 @@ ccccccccccc
       include 'sane_data_structures.cmn'
       include 'b_ntuple.cmn'
       include 'sane_ntuple.cmn'
-      integer inum,i
+      integer inum,i,j
       cer_h(inum)=0
       
       do i=1, cer_hit
-         if(cer_tdc(i).gt.0)then
+         if(cer_num(i).lt.9)then
+c         write(*,*)cer_num(i),ncellclust(inum), CER_SANE_MEAN(cer_num(i)),CER_SANE_SIGMA(cer_num(i))
             if(
      ,           abs(cer_tdc(i)-CER_SANE_MEAN(cer_num(i))).lt.
      ,           CER_SANE_SIGMA(cer_num(i))
      ,           )then
+               
                cer_h(inum)=1
+               do j=1, ncellclust(inum)
+                  call HFILL(10510+cer_num(i),float(ixcell(j,inum)),float(iycell(j,inum)), 1.)
+               enddo
             endif
          endif
       enddo
@@ -602,30 +625,53 @@ c                  WRITE(*,*)'call 3',NCLUST
       
       thetar= theta*deg2rad
       phir= phi*deg2rad
+c      write(*,*) 'BEAM',gebeam,E_clust(inum),theta 
 c      write(*,*)GEBeam,E_clust(inum),theta
-      if(GEBeam - E_clust(inum).gt.0)then
+c      if(GEBeam - E_clust(inum).gt.0)then
          ENue(inum)      = GEBeam - E_clust(inum)
          Q2(inum)        = 2*GEBeam*E_clust(inum)*(1-cos(thetar))
          X_Bjorken(inum) = Q2(inum)/( 2*Mp*ENue(inum) )
          W2(inum)        = Mp**2 + 2*Mp*ENue(inum) -Q2(inum)
          ihistnum        = (Q2(inum)-2.5)+1
+c         write(*,*) 'PHYS', ENue(inum),Q2(inum),X_Bjorken(inum),W2(inum)
+c         if(ENue(inum).lt.0)write(*,*)'HELP',E_clust(inum)
          call NANcheckF(ENue(inum),5)
          call NANcheckF(Q2(inum),5)
          call NANcheckF(X_Bjorken(inum),5)
          call NANcheckF(W2(inum),5)
          shelicity       = i_helicity
+c         write(*,*)i_helicity,shelicity
          if(ihistnum.gt.0.and.ihistnum.lt.5)then
             call HF1(10600+ihistnum,X_Bjorken(inum),shelicity)
             call HF1(10610+ihistnum,X_Bjorken(inum),1.)
          endif
-         if(abs(X_HMS-X_clust(inum)-Bigcal_SHIFT(1)).lt.10.and.
-     ,        abs(Y_HMS-Y_clust(inum)-Bigcal_SHIFT(2)).lt.10)then
+c         if(abs(X_HMS-X_clust(inum)-Bigcal_SHIFT(1)).lt.10.and.
+c     ,        abs(Y_HMS-Y_clust(inum)-Bigcal_SHIFT(2)).lt.10)then
 c            write(*,*)2,E_clust(inum),thetar*57.3,phir*57.3
             
             call HFILL(10620,X_Bjorken(inum),Q2(inum),1.)
             call HFILL(10621,W2(inum),Q2(inum),1.)
-         endif
-      else
+c         endif
+c      else
 c         write(*,*)'BIG CAL CALIBRATION IS WRONG',E_clust(inum),X_clust(inum),Y_clust(inum)
-      endif
+c      endif
+      end
+      subroutine correct_coordinate(x,y,z,e)
+      IMPLICIT NONE 
+c
+c     Subroutine corrects coordinates 
+c     z- should be 345 when bigcal located at 335 (10 cm for shower)
+c
+c      
+c      cor1angle = 0.78-0.2/E-0.3/E**2-0.1/E**3
+      real*4 x,y,z,e,d,cor1angle,phi, th,dd1
+      d = sqrt(x**2+y**2+z**2)
+      cor1angle = 1.1178+1.1876/E-2.379/E**2+0.50396/E**3
+      phi = atan2(y/d,x/d)
+      th  = acos(z/d)*180/3.141
+c      write(*,*)'Angle Corr',th,cor1angle*sqrt(x**2+y**2)/61.
+      dd1 = z*tan((th-cor1angle*sqrt(x**2+y**2)/61.)*3.141/180)
+      x   = dd1*cos(phi)
+      y   = dd1*sin(phi)
+      d   = sqrt(x**2+y**2+z**2)
       end

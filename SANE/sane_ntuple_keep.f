@@ -141,8 +141,8 @@ c               write(*,*)'Tracker TDC', y1t_hit,TRACKER_SANE_RAW_TDC_Y(i)
                call CORRECT_RAW_TIME_SANE(TRACKER_SANE_RAW_TDC_Y(i),y2t_tdc(y2t_hit))
                y2t_y(y2t_hit)     =  -22.4+(y2t_row(y2t_hit)-1)*0.35
                call NANcheck(y2t_hit,TRACKER_SANE_Y_ID)
-               call NANcheck(y2t_row(y1t_hit),TRACKER_SANE_Y_ID)
-               call NANcheck(y2t_tdc(y1t_hit),TRACKER_SANE_Y_ID)
+               call NANcheck(y2t_row(y2t_hit),TRACKER_SANE_Y_ID)
+               call NANcheck(y2t_tdc(y2t_hit),TRACKER_SANE_Y_ID)
             endif
          endif
  20      CONTINUE
@@ -257,7 +257,8 @@ c         endif
       call NANcheckF(rast_x,3)
       rast_y       = gfrx_raw_adc
       call NANcheckF(rast_y,3)
-      i_helicity   = gbeam_helicity_ADC
+      i_helicity   = gbeam_helicity
+c      write(*,*)'Start ',i_helicity
       call NANcheck(i_helicity,3)
       slow_rast_x  = gsrx_calib
       call NANcheckF(gsrx_raw_adc,3)

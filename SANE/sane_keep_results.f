@@ -29,7 +29,6 @@ c$$$      endif
 
       if (gen_event_type .le. 4) return
       if(sane_ntuple_type.gt.0)then
-c         write(*,*)bigcal_all_nclstr
         if(bigcal_all_nclstr.gt.0) then
           call sane_ntuple_keep(ABORT,err)
           call SANE_DUMP_NTUP_VAR()
