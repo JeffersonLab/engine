@@ -89,10 +89,10 @@ c     $     sanetrigtype
       
       
       integer*4 luc_hit
-      integer*4 luc_row(50)
-      integer*4 ladc_pos(50),ladc_neg(50)
-      integer*4 ltdc_pos(50),ltdc_neg(50)
-      real*4    luc_y(50)
+      integer*4 luc_row(90)
+      integer*4 ladc_pos(90),ladc_neg(90)
+      integer*4 ltdc_pos(90),ltdc_neg(90)
+      real*4    luc_y(90)
       common/SANELUC/luc_hit, luc_row, ladc_pos, ladc_neg,
      ,     ltdc_pos, ltdc_neg, luc_y
       
@@ -178,7 +178,7 @@ c     $     sanetrigtype
      ,     trc_hy1, Y1_trc, Y1_trc_r, Z1_trc_r, 
      ,     trc_hy2, Y2_trc, Y2_trc_r, Z2_trc_r, 
      ,     Tr_Vertex, Tr_Vertex_r, cer_h,  
-     ,     Theta_e, Phi_e, Delta_X,
+     ,     Theta_e, Phi_e, Delta_Y, Delta_X,
      ,     X_Bjorken, Q2, W2, ENue
 
       real*4 X_luc_av(maxcl),Y_luc_av(maxcl),Z_luc_av(maxcl)

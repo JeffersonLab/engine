@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.15.2.4  2009/01/30 20:33:29  cdaq
+* *** empty log message ***
+*
 * Revision 1.32.20.15.2.3  2008/10/26 19:12:33  cdaq
 * SEM
 *
@@ -429,8 +432,10 @@ c     >      did,roc,slot
 
           maxwords = last_first - pointer + 1
           
-          SANE_TRUE = did.eq.LUCITE_SANE_ID.or.
+          SANE_TRUE = did.eq.LUCITE_SANE_ID.or.did.eq.LUCITE_SANE_ID2.or.
+     &         did.eq.LUCITE_SANE_ID3.or.
      &         did.eq.CERENKOV_SANE_ID.or.
+     &         did.eq.CERENKOV_SANE_ID2.or.
      &         did.eq.TRACKER_SANE_X_ID.or.
      &         did.eq.TRACKER_SANE_Y_ID
           F1TRIGGER_TRUE = did.eq.F1TRIGGER_ID

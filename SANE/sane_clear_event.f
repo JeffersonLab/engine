@@ -30,11 +30,15 @@
       integer*4 i
 
       LUCITE_SANE_RAW_TOT_HITS          = 0
+      LUCITE_SANE_RAW_TOT_HITS2          = 0
+      LUCITE_SANE_RAW_TOT_HITS3          = 0
 c      LUCITE_SANE_RAW_PLANE             = 0
 
       do i=1,LUCITE_SANE_MAX_HITS
 
          LUCITE_SANE_RAW_COUNTER_NUM(i) = 0
+         LUCITE_SANE_RAW_COUNTER_NUM2(i) = 0
+         LUCITE_SANE_RAW_COUNTER_NUM3(i) = 0
          LUCITE_SANE_RAW_ADC_POS(i)     = 0
          LUCITE_SANE_RAW_ADC_NEG(i)     = 0
          LUCITE_SANE_RAW_TDC_POS(i)     = 0
@@ -63,10 +67,12 @@ c      LUCITE_SANE_RAW_PLANE             = 0
       integer*4 i
 
       CERENKOV_SANE_RAW_TOT_HITS          = 0
+      CERENKOV_SANE_RAW_TOT_HITS2          = 0
 c      CERENKOV_SANE_RAW_PLANE             = 0
 
       do i=1,CERENKOV_SANE_MAX_HITS
          CERENKOV_SANE_RAW_COUNTER_NUM(i) = 0
+         CERENKOV_SANE_RAW_COUNTER_NUM2(i) = 0
          CERENKOV_SANE_RAW_ADC(i)         = 0
          CERENKOV_SANE_RAW_TDC(i)         = 0
          

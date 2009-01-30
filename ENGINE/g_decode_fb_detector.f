@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.13.2.5  2009/01/30 20:33:29  cdaq
+* *** empty log message ***
+*
 * Revision 1.23.20.13.2.4  2008/10/31 07:54:39  cdaq
 * comment out some warnings on detector limits
 *
@@ -296,8 +299,9 @@ cc For hi res mode, have to take in pairs
      >       write(6,'(''ERROR'',i6)') subadd
            subadd = (subadd - 1) / 2 + 1
            signal =jiand(evfrag(pointer),g_decode_slotmask(roc,slot))
-cc           write(6,'(''subadd,signal='',5i10)') roc,slot,
-cc     >       subadd,signal,gen_event_id_number
+c           if(roc.eq.13.and.slot.eq.18)
+c     >      write(6,'(''subadd,signal='',5i10)') roc,slot,did,
+c     >       subadd,signal,gen_event_id_number,counter
 
 	   if (signal.eq.65535) then   ! skip overflow entries
 	     pointer = pointer + 1

@@ -8,7 +8,7 @@
 
       logical abort
       character*(*) err
-      integer i,j
+      integer i,j,status(100,100)
 
       include 'b_ntuple.cmn'
       include 'bigcal_data_structures.cmn'
@@ -56,42 +56,66 @@ c      logical middlebest
 
 
       luc_hit = 0
-      do i=1,LUCITE_SANE_RAW_TOT_HITS
-         if(LUCITE_SANE_RAW_TDC_POS(i).gt.0.or.LUCITE_SANE_RAW_TDC_NEG(i).gt.0)then
-            luc_hit         =  luc_hit+1
-            luc_row(luc_hit)   =  LUCITE_SANE_RAW_COUNTER_NUM(i)
-            ladc_pos(luc_hit)  =  LUCITE_SANE_RAW_ADC_POS(i) - luc_ped_mean_pos(luc_row(luc_hit))
-            ladc_neg(luc_hit)  =  LUCITE_SANE_RAW_ADC_NEG(i) - luc_ped_mean_neg(luc_row(luc_hit))
-            call CORRECT_RAW_TIME_SANE(LUCITE_SANE_RAW_TDC_POS(i),ltdc_pos(luc_hit))
-            call CORRECT_RAW_TIME_SANE(LUCITE_SANE_RAW_TDC_NEG(i),ltdc_NEG(luc_hit))
-c            write(*,*)LUCITE_SANE_RAW_TDC_POS(i),ltdc_pos(luc_hit),LUCITE_SANE_RAW_TDC_NEG(i),ltdc_neg(luc_hit),luc_row(luc_hit)
-
-            luc_y(luc_hit)     =  -82.35 + (luc_row(luc_hit)-1)*6.1
-            call NANcheck(luc_hit,LUCITE_SANE_ID)
-            call NANcheck(luc_row(luc_hit),LUCITE_SANE_ID)
-            call NANcheck(ladc_neg(luc_hit),LUCITE_SANE_ID)
-            call NANcheck(ladc_pos(luc_hit),LUCITE_SANE_ID)
-            call NANcheck(ltdc_neg(luc_hit),LUCITE_SANE_ID)
-            call NANcheck(ltdc_pos(luc_hit),LUCITE_SANE_ID)
-            if(nclust.eq.1)then
-               if(abs(xclust(1)+30.).lt.2.and.abs(luc_y(luc_hit)-Lucite_SHIFT(2)-
-     ,              Lucite_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,              (yclust(1))-Bigcal_SHIFT(2)).lt.12)then
+c      write(*,*) LUCITE_SANE_RAW_TOT_HITS2,LUCITE_SANE_RAW_TOT_HITS3
+c      write(*,*)LUCITE_SANE_RAW_TDC_POS
+      do i=1,LUCITE_SANE_RAW_TOT_HITS2
+         if(LUCITE_SANE_RAW_TDC_POS(i).gt.0)then
+            do j=1,LUCITE_SANE_RAW_TOT_HITS3
+               if(LUCITE_SANE_RAW_TDC_NEG(j).gt.0.and.
+     ,              LUCITE_SANE_RAW_COUNTER_NUM2(i).eq.LUCITE_SANE_RAW_COUNTER_NUM3(j))then
+                  luc_hit            =  luc_hit+1
+                  luc_row(luc_hit)   =  LUCITE_SANE_RAW_COUNTER_NUM2(i)
+                  ladc_pos(luc_hit)  =  LUCITE_SANE_RAW_ADC_POS(luc_row(luc_hit)) - luc_ped_mean_pos(luc_row(luc_hit))
+                  ladc_neg(luc_hit)  =  LUCITE_SANE_RAW_ADC_NEG(i) - luc_ped_mean_neg(luc_row(luc_hit))
+                  call CORRECT_RAW_TIME_SANE(LUCITE_SANE_RAW_TDC_POS(i),ltdc_pos(luc_hit))
+                  call CORRECT_RAW_TIME_SANE(LUCITE_SANE_RAW_TDC_NEG(j),ltdc_NEG(luc_hit))
                   call HFILL(10121, float(luc_row(luc_hit)), float(ltdc_pos(luc_hit)), 1.)
                   call HFILL(10122, float(luc_row(luc_hit)), float(ltdc_neg(luc_hit)), 1.)
                   call HFILL(10125, float(luc_row(luc_hit)), float(ladc_pos(luc_hit)), 1.)
                   call HFILL(10126, float(luc_row(luc_hit)), float(ladc_neg(luc_hit)), 1.)
+                  LUCITE_SANE_RAW_TDC_NEG(j) = 0
                endif
-            endif
-          endif
+            enddo
+            LUCITE_SANE_RAW_TDC_POS(i) = 0
+
+         endif
       enddo
+c      do i=1,LUCITE_SANE_RAW_TOT_HITS2
+c         if(LUCITE_SANE_RAW_TDC_POS(i).gt.0)then
+c                  luc_hit            =  luc_hit+1
+c                  luc_row(luc_hit)   =  LUCITE_SANE_RAW_COUNTER_NUM2(i)
+c                  ladc_pos(luc_hit)  =  LUCITE_SANE_RAW_ADC_POS(luc_row(luc_hit)) - luc_ped_mean_pos(luc_row(luc_hit))
+c                  ladc_neg(luc_hit)  =  -100000
+c                  call CORRECT_RAW_TIME_SANE(LUCITE_SANE_RAW_TDC_POS(i),ltdc_pos(luc_hit))
+c                  ltdc_NEG(luc_hit)  =  -100000
+c                  LUCITE_SANE_RAW_TDC_POS(i) = 0
+c                  call HFILL(10121, float(luc_row(luc_hit)), float(ltdc_pos(luc_hit)), 1.)
+c                  call HFILL(10125, float(luc_row(luc_hit)), float(ladc_pos(luc_hit)), 1.)
+c            
+c         endif
+c      enddo
+c      do i=1,LUCITE_SANE_RAW_TOT_HITS3
+c         if(LUCITE_SANE_RAW_TDC_NEG(i).gt.0)then
+c                  luc_hit            =  luc_hit+1
+c                  luc_row(luc_hit)   =  LUCITE_SANE_RAW_COUNTER_NUM3(i)
+c                  ladc_neg(luc_hit)  =  LUCITE_SANE_RAW_ADC_NEG(luc_row(luc_hit)) - luc_ped_mean_pos(luc_row(luc_hit))
+c                  ladc_pos(luc_hit)  =  -100000
+c                  call CORRECT_RAW_TIME_SANE(LUCITE_SANE_RAW_TDC_NEG(i),ltdc_neg(luc_hit))
+c                  ltdc_POS(luc_hit)  =  -100000
+c                  LUCITE_SANE_RAW_TDC_NEG(i) = 0
+c                  call HFILL(10122, float(luc_row(luc_hit)), float(ltdc_neg(luc_hit)), 1.)
+c                  call HFILL(10126, float(luc_row(luc_hit)), float(ladc_neg(luc_hit)), 1.)
+c            
+c         endif
+c      enddo
+
       cer_hit = 0
-      do i=1,CERENKOV_SANE_RAW_TOT_HITS
+      do i=1,CERENKOV_SANE_RAW_TOT_HITS2
          if(CERENKOV_SANE_RAW_TDC(i).gt.0)then
             cer_hit         =  cer_hit+1
-            cer_num(cer_hit)   =  CERENKOV_SANE_RAW_COUNTER_NUM(i)
+            cer_num(cer_hit)   =  CERENKOV_SANE_RAW_COUNTER_NUM2(i)
             call CORRECT_RAW_TIME_SANE(CERENKOV_SANE_RAW_TDC(i),cer_tdc(cer_hit))
-            cer_adc(cer_hit)   =  CERENKOV_SANE_RAW_ADC(i)-cer_sane_ped_mean(cer_num(cer_hit))
+            cer_adc(cer_hit)   =  CERENKOV_SANE_RAW_ADC(cer_num(cer_hit))-cer_sane_ped_mean(cer_num(cer_hit))
             call NANcheck(cer_hit,CERENKOV_SANE_ID)
             call NANcheck(cer_num(cer_hit),CERENKOV_SANE_ID)
             call NANcheck(cer_tdc(cer_hit),CERENKOV_SANE_ID)
@@ -120,7 +144,10 @@ c            write(*,*)LUCITE_SANE_RAW_TDC_POS(i),ltdc_pos(luc_hit),LUCITE_SANE_
       enddo
       y1t_hit=0
       y2t_hit=0
+c      write(*,*)gen_event_ID_number,TRACKER_SANE_RAW_TOT_HITS_Y
+      
       do i=1,TRACKER_SANE_RAW_TOT_HITS_Y
+c      write(*,*)'TDC, ', TRACKER_SANE_RAW_TDC_Y(i),TRACKER_SANE_RAW_COUNTER_Y(i)
          if(TRACKER_SANE_RAW_TDC_Y(i).lt.67000.and.
      ,        TRACKER_SANE_RAW_TDC_Y(i).gt.0)then
             if(TRACKER_SANE_RAW_COUNTER_Y(i).lt.129)then

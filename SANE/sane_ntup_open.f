@@ -115,7 +115,7 @@ c
      $        'cer_tdc(cer_hit):I*4,'//
      $        'cer_adc(cer_hit):I*4')
          call HBNAME(id,'SANELUC',luc_hit,
-     $        'luc_hit[0,50]:I*4,luc_row(luc_hit):I*4,'//
+     $        'luc_hit[0,90]:I*4,luc_row(luc_hit):I*4,'//
      $        'ladc_pos(luc_hit):I*4,ladc_neg(luc_hit):I*4,'//
      $        'ltdc_pos(luc_hit):I*4,ltdc_neg(luc_hit):I*4,'//
      $        'luc_y(luc_hit):R*4')
@@ -191,7 +191,7 @@ c     ! For physics analysis  added on Jul 3 2008
          call HBOOK2(10101,'TRACK Y1',128,1., 129., 200,   -6500., -4000.,0.)
          call HBOOK2(10102,'TRACK Y2',128,1., 129., 200,   -6500., -4000.,0.)
          call HBOOK2(10111,'CER TDC',8, 1.,  9., 300,    -8000, 1000., 0.)
-         call HBOOK2(10112,'CER ADC',8, 1.,  9., 100,    10., 5000., 0.)
+         call HBOOK2(10112,'CER ADC',8, 1.,  9., 100,    0.1, 5000., 0.)
          do histnum=1,8
             call HBOOK2(10500+histnum,'CER ADC vs TDC ',100, 10.,  5000., 200,    -8000, 1000., 0.)
             call HBOOK2(10510+histnum,'BIGCAL' ,33,0., 33.,  56,    0.,   56., 0.)
@@ -199,8 +199,8 @@ c     ! For physics analysis  added on Jul 3 2008
          
          call HBOOK2(10121,'LUC TDCPOS',28,1., 29., 200, -3500., 0., 0.)
          call HBOOK2(10122,'LUC TDCNEG',28,1., 29., 200, -3500., 0., 0.)
-         call HBOOK2(10125,'LUC ADCPOS',28,1., 29., 200,    0., 4000., 0.)
-         call HBOOK2(10126,'LUC ADCNEG',28,1., 29., 200,    0., 4000., 0.)
+         call HBOOK2(10125,'LUC ADCPOS',28,1., 29., 200,    0.1, 4000., 0.)
+         call HBOOK2(10126,'LUC ADCNEG',28,1., 29., 200,    0.1, 4000., 0.)
          if(sane_ntuple_type.eq.1) then 
             do ii=1,28
 c     call HBPROF(10150+ii,'LUC_X vs BIG_X',100,-60., 60., 100,  -60., 60., 0.)
@@ -209,8 +209,8 @@ c     call HBPROF(10150+ii,'LUC_X vs BIG_X',100,-60., 60., 100,  -60., 60., 0.)
             call HBOOK2(10128,'LUC_Y vs BIG_Y',120,-120., 120., 120,  -120., 120., 0.)
             call HBOOK2(10131,'LUC TDCPOS cut',28,1., 29., 200, -3500., 0., 0.)
             call HBOOK2(10132,'LUC TDCNEG cut',28,1., 29., 200, -3500., 0., 0.)
-            call HBOOK2(10135,'LUC ADCPOS cut',28,1., 29., 200,    0., 4000., 0.)
-            call HBOOK2(10136,'LUC ADCNEG cut',28,1., 29., 200,    0., 4000., 0.)
+            call HBOOK2(10135,'LUC ADCPOS cut',28,1., 29., 200,    0.1, 4000., 0.)
+            call HBOOK2(10136,'LUC ADCNEG cut',28,1., 29., 200,    0.1, 4000., 0.)
          endif
          call HBOOK2(10200,'BIGCAL' ,33,0., 33.,  56,    0.,   56., 0.)
          

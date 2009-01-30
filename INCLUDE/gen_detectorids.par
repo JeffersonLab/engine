@@ -8,6 +8,9 @@
 *     Added new detector ids for BigCal
 *
 *     $Log$
+*     Revision 1.8.24.3.2.4  2009/01/30 20:33:28  cdaq
+*     *** empty log message ***
+*
 *     Revision 1.8.24.3.2.3  2008/10/25 12:45:30  cdaq
 *     *** empty log message ***
 *
@@ -59,10 +62,11 @@
      $     GMISC_ID, SDC_ID, SSCIN_ID, SCER_ID, SCAL_ID, SMISC_ID, SAER_ID,
      $     SLUC_ID, HAERO_ID, BIGCAL_PROT_ID, BIGCAL_RCS_ID,
      $     BIGCAL_TDC_ID, BIGCAL_ATRIG_ID, BIGCAL_TTRIG_ID, HFPP_ID,
-     $     LUCITE_SANE_ID,CERENKOV_SANE_ID,TRACKER_SANE_X_ID,
+     $     LUCITE_SANE_ID,LUCITE_SANE_ID2,LUCITE_SANE_ID3,
+     $     CERENKOV_SANE_ID,CERENKOV_SANE_ID2,TRACKER_SANE_X_ID,
      $     TRACKER_SANE_Y_ID, F1TRIGGER_ID, SEM_ID
 
-      parameter (MAXID=30)
+      parameter (MAXID=40)
       parameter (UNINST_ID=0)           ! Uninstrumented channels
       parameter (HDC_ID=1)
       parameter (HSCIN_ID=2)
@@ -76,7 +80,11 @@
       parameter (TRACKER_SANE_X_ID=21)		! SANE X Tracker DETECTOR
       parameter (TRACKER_SANE_Y_ID=22)		! SANE Y Tracker DETECTOR
       parameter (CERENKOV_SANE_ID=23)		! SANE CERENKOV DETECTOR
-      parameter (LUCITE_SANE_ID=24)		! SANE LUCITE DETECTOR
+      parameter (CERENKOV_SANE_ID2=32)		! SANE CERENKOV DETECTOR TDC
+      parameter (LUCITE_SANE_ID=24)		! SANE LUCITE DETECTOR ADC
+      parameter (LUCITE_SANE_ID2=30)		! SANE LUCITE DETECTOR TDCPOS
+      parameter (LUCITE_SANE_ID3=31)		! SANE LUCITE DETECTOR TDCNEG
+
       parameter (F1TRIGGER_ID=25)		! F1 TRIGGER
       parameter (SEM_ID=26)                     ! SEM Detector
 cajp 
