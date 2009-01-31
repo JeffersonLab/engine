@@ -112,8 +112,9 @@ c
      $        'x1t_x(x1t_hit):R*4')
          call HBNAME(id,'SANECER',cer_hit,
      $        'cer_hit[0,50]:I*4,cer_num(cer_hit):I*4,'//
-     $        'cer_tdc(cer_hit):I*4,'//
-     $        'ceradc_hit[0,15]:I*4,,ceradc_num(ceradc_hit):I*4,'//
+     $        'cer_tdc(cer_hit):I*4')
+         call HBNAME(id,'SANEADC',ceradc_hit,
+     $        'ceradc_hit[0,15]:I*4,ceradc_num(ceradc_hit):I*4,'//
      $        'cer_adc(ceradc_hit):I*4')
          call HBNAME(id,'SANELUC',luc_hit,
      $        'luc_hit[0,90]:I*4,luc_row(luc_hit):I*4,'//

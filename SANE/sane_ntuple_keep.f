@@ -137,15 +137,15 @@ c      write(*,*)'a, ' ,CERENKOV_SANE_RAW_ADC
       do i=1,CERENKOV_SANE_RAW_TOT_HITS
          if (ceradc_hit .le. 15) then
             ceradc_hit = ceradc_hit + 1
-            ceradc_num(cer_hit)   =  CERENKOV_SANE_RAW_COUNTER_NUM(i)
+            ceradc_num(ceradc_hit)   =  CERENKOV_SANE_RAW_COUNTER_NUM(i)
             cer_adc(ceradc_hit)   =  CERENKOV_SANE_RAW_ADC(ceradc_num(ceradc_hit))-cer_sane_ped_mean(ceradc_num(ceradc_hit))
-            call NANcheck(ceradc_hit,CERENKOV_SANE_ID)
-             call NANcheck(ceradc_num(cer_hit),CERENKOV_SANE_ID)
-             call NANcheck(cer_adc(cer_hit),CERENKOV_SANE_ID)
+            call NANcheck(ceradc_hit,CERENKOV_SANE_ID2)
+             call NANcheck(ceradc_num(cer_hit),CERENKOV_SANE_ID2)
+             call NANcheck(cer_adc(cer_hit),CERENKOV_SANE_ID2)
             call HFILL(10112,float(ceradc_num(ceradc_hit)),float(cer_adc(ceradc_hit)), 1.)
             do k=1,cer_hit
                if ( cer_num(k) .eq. ceradc_num(i)) then
-               call HFILL(10500+cer_num(k),float(cer_adc(ceradc_hit)),float(cer_tdc(k)),1.)
+               call HFILL(10500+ceradc_num(ceradc_hit),float(cer_adc(ceradc_hit)),float(cer_tdc(k)),1.)
                endif
             enddo
          endif
@@ -310,7 +310,6 @@ c         endif
       rast_y       = gfrx_raw_adc
       call NANcheckF(rast_y,3)
       i_helicity   = gbeam_helicity
-c      write(*,*)'Start ',i_helicity
       call NANcheck(i_helicity,3)
       slow_rast_x  = gsrx_calib
       call NANcheckF(gsrx_raw_adc,3)
@@ -340,7 +339,7 @@ c      write(*,*)'2 ',sem_x,sem_y
       T_trgCOIN2   = gmisc_dec_data(16,1)
       call NANcheckF(T_trgCOIN2,3)
 
-      do i =1,  nclust
+       do i =1,  nclust
 c         write(*,*)eclust(i)
 c         if(HSNUM_FPTRACK.gt.0)then
                call Bigcal_Betta(i)

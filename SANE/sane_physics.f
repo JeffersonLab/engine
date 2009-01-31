@@ -306,7 +306,7 @@ ccccccccccc
       include 'sane_data_structures.cmn'
       include 'b_ntuple.cmn'
       include 'sane_ntuple.cmn'
-      integer inum,i,j
+      integer inum,i,j,cer_n
       cer_h(inum)=0
       
       do i=1, cer_hit
@@ -317,13 +317,16 @@ c         write(*,*)cer_num(i),ncellclust(inum), CER_SANE_MEAN(cer_num(i)),CER_S
      ,           CER_SANE_SIGMA(cer_num(i))
      ,           )then
                
-               cer_h(inum)=1
-               do j=1, ncellclust(inum)
-                  call HFILL(10510+cer_num(i),float(ixcell(j,inum)),float(iycell(j,inum)), 1.)
-               enddo
+               cer_h(inum)=cer_h(inum)+1
+               cer_n = cer_num(i)
             endif
          endif
       enddo
+      if(nclust.eq.1.and.cer_h(inum).eq.1)then
+         do j=1, ncellclust(inum)
+            call HFILL(10510+cer_n,float(ixcell(j,inum)),float(iycell(j,inum)), 1.)
+         enddo
+      endif
       
       end
 c
