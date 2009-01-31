@@ -8,7 +8,7 @@
 
       logical abort
       character*(*) err
-      integer i,j,status(100,100)
+      integer i,j,status(100,100),k
 
       include 'b_ntuple.cmn'
       include 'bigcal_data_structures.cmn'
@@ -59,14 +59,23 @@ c      logical middlebest
 c      write(*,*) LUCITE_SANE_RAW_TOT_HITS2,LUCITE_SANE_RAW_TOT_HITS3
 c      write(*,*)LUCITE_SANE_RAW_TDC_POS
       do i=1,LUCITE_SANE_RAW_TOT_HITS2
+c         if(LUCITE_SANE_RAW_COUNTER_NUM2(i).eq.7)write(*,*)7
          if(LUCITE_SANE_RAW_TDC_POS(i).gt.0)then
             do j=1,LUCITE_SANE_RAW_TOT_HITS3
+c         if(LUCITE_SANE_RAW_COUNTER_NUM3(j).eq.7)write(*,*)72
                if(LUCITE_SANE_RAW_TDC_NEG(j).gt.0.and.
      ,              LUCITE_SANE_RAW_COUNTER_NUM2(i).eq.LUCITE_SANE_RAW_COUNTER_NUM3(j))then
                   luc_hit            =  luc_hit+1
                   luc_row(luc_hit)   =  LUCITE_SANE_RAW_COUNTER_NUM2(i)
                   ladc_pos(luc_hit)  =  LUCITE_SANE_RAW_ADC_POS(luc_row(luc_hit)) - luc_ped_mean_pos(luc_row(luc_hit))
                   ladc_neg(luc_hit)  =  LUCITE_SANE_RAW_ADC_NEG(i) - luc_ped_mean_neg(luc_row(luc_hit))
+                  luc_y(luc_hit)     =  -82.35 + (luc_row(luc_hit)-1)*6.1
+                  call NANcheck(luc_hit,LUCITE_SANE_ID)
+                  call NANcheck(luc_row(luc_hit),LUCITE_SANE_ID)
+                  call NANcheck(ladc_neg(luc_hit),LUCITE_SANE_ID)
+                  call NANcheck(ladc_pos(luc_hit),LUCITE_SANE_ID)
+                  call NANcheck(ltdc_neg(luc_hit),LUCITE_SANE_ID)
+                  call NANcheck(ltdc_pos(luc_hit),LUCITE_SANE_ID)
                   call CORRECT_RAW_TIME_SANE(LUCITE_SANE_RAW_TDC_POS(i),ltdc_pos(luc_hit))
                   call CORRECT_RAW_TIME_SANE(LUCITE_SANE_RAW_TDC_NEG(j),ltdc_NEG(luc_hit))
                   call HFILL(10121, float(luc_row(luc_hit)), float(ltdc_pos(luc_hit)), 1.)
@@ -110,25 +119,41 @@ c         endif
 c      enddo
 
       cer_hit = 0
+c      write(*,*)'c, ',CERENKOV_SANE_RAW_COUNTER_NUM
+c      write(*,*)'a, ' ,CERENKOV_SANE_RAW_ADC
       do i=1,CERENKOV_SANE_RAW_TOT_HITS2
          if(CERENKOV_SANE_RAW_TDC(i).gt.0)then
             cer_hit         =  cer_hit+1
             cer_num(cer_hit)   =  CERENKOV_SANE_RAW_COUNTER_NUM2(i)
             call CORRECT_RAW_TIME_SANE(CERENKOV_SANE_RAW_TDC(i),cer_tdc(cer_hit))
-            cer_adc(cer_hit)   =  CERENKOV_SANE_RAW_ADC(cer_num(cer_hit))-cer_sane_ped_mean(cer_num(cer_hit))
             call NANcheck(cer_hit,CERENKOV_SANE_ID)
             call NANcheck(cer_num(cer_hit),CERENKOV_SANE_ID)
             call NANcheck(cer_tdc(cer_hit),CERENKOV_SANE_ID)
-            call NANcheck(cer_adc(cer_hit),CERENKOV_SANE_ID)
-
             call HFILL(10111,float(cer_num(cer_hit)),float(cer_tdc(cer_hit)), 1.)
-            call HFILL(10112,float(cer_num(cer_hit)),float(cer_adc(cer_hit)), 1.)
-            call HFILL(10500+cer_num(cer_hit),float(cer_adc(cer_hit)),
-     ,           float(cer_tdc(cer_hit)),1.)
          endif
-
       enddo
- 
+
+       ceradc_hit = 0
+      do i=1,CERENKOV_SANE_RAW_TOT_HITS
+         if (ceradc_hit .le. 15) then
+            ceradc_hit = ceradc_hit + 1
+            ceradc_num(cer_hit)   =  CERENKOV_SANE_RAW_COUNTER_NUM(i)
+            cer_adc(ceradc_hit)   =  CERENKOV_SANE_RAW_ADC(ceradc_num(ceradc_hit))-cer_sane_ped_mean(ceradc_num(ceradc_hit))
+            call NANcheck(ceradc_hit,CERENKOV_SANE_ID)
+             call NANcheck(ceradc_num(cer_hit),CERENKOV_SANE_ID)
+             call NANcheck(cer_adc(cer_hit),CERENKOV_SANE_ID)
+            call HFILL(10112,float(ceradc_num(ceradc_hit)),float(cer_adc(ceradc_hit)), 1.)
+            do k=1,cer_hit
+               if ( cer_num(k) .eq. ceradc_num(i)) then
+               call HFILL(10500+cer_num(k),float(cer_adc(ceradc_hit)),float(cer_tdc(k)),1.)
+               endif
+            enddo
+         endif
+       enddo
+c
+       
+c
+
       x1t_hit         =  0
       if(x1t_hit.gt.300) go to 10
       do i=1,TRACKER_SANE_RAW_TOT_HITS_X

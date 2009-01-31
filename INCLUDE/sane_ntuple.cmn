@@ -81,11 +81,11 @@ c     $     sanetrigtype
       real*4    x1t_x(TRACKER_MAX_HITS)
       common/SANEX1/x1t_hit,  x1t_row,  x1t_tdc,  x1t_x
       
-      integer*4 cer_hit
+      integer*4 cer_hit,ceradc_hit
       integer*4 cer_num(50)
       integer*4 cer_tdc(50)
-      integer*4 cer_adc(50)
-      common/SANECER/cer_hit, cer_num, cer_tdc, cer_adc
+      integer*4 ceradc_num(15),cer_adc(15)
+      common/SANECER/cer_hit, cer_num, cer_tdc, ceradc_hit, ceradc_num,cer_adc
       
       
       integer*4 luc_hit
