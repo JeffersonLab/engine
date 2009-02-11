@@ -16,6 +16,9 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
+* Revision 1.16.24.2.2.6  2009/02/11 21:34:54  cdaq
+* *** empty log message ***
+*
 * Revision 1.16.24.2.2.5  2008/12/11 20:26:43  cdaq
 * *** empty log message ***
 *
@@ -137,6 +140,7 @@
       real   sum(4),hut(5),term
       real   bdl,dx
       real trg(6),hut_rot(5)
+      integer spect
       COMMON /hmsfocalplane/sum,hut_rot 
 *=============================Executable Code =============================
       ABORT= .FALSE.
@@ -272,9 +276,10 @@ c            write(*,*)'1 ',hx_tar(itrk),hy_tar(itrk),hxp_tar(itrk),hyp_tar(itrk
 c            write(*,*)'SANE OMEGA AND PHI ',SANE_HMS_OMEGA,SANE_HMS_PHI
             CALL trgInitFieldANGLES(SANE_HMS_OMEGA,SANE_HMS_PHI)
 c       write(*,*)dx,htheta_lab,hpcentral, hpartmass
-
+            spect = 1 ! assume it is proton
+            if ( hpartmass .lt. .01) spect = -1 ! set for electron
             CALL genRecon (hut_rot, x_coord, y_coord, trg, ok, dx, bdl,
-     >           htheta_lab, hpcentral, hpartmass, 1) ! set for protons
+     >           htheta_lab, hpcentral, hpartmass, spect) 
             
 *     CALL genRecon (hut_rot, x_coord, y_coord, trg, ok, dx, bdl,
 *     >           hpcentral, mass_electron, -1.)  ! set for electrons
