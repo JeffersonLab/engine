@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.21.2.6  2009/02/11 22:58:44  cdaq
+* *** empty log message ***
+*
 * Revision 1.42.8.21.2.5  2008/11/17 20:52:33  cdaq
 *  Added call to h_tofcal_endrun
 *
@@ -613,7 +616,7 @@ c
 c initial polarized target field
       if (SANE_TGTFIELD_B .gt. 0)  then
       SANE_BETA_OMEGA = SANE_BETA_ANGLE_THETA - SANE_FIELD_ANGLE_THETA
-      SANE_HMS_OMEGA  = SANE_HMS_ANGLE_THETA - SANE_FIELD_ANGLE_THETA
+      SANE_HMS_OMEGA  = SANE_FIELD_ANGLE_THETA - SANE_HMS_ANGLE_THETA  
       SANE_BETA_PHI   = SANE_BETA_ANGLE_PHI - SANE_FIELD_ANGLE_PHI 
       SANE_HMS_PHI    = SANE_HMS_ANGLE_PHI - SANE_FIELD_ANGLE_PHI 
       call trgInit('trg_field_map_extended.dat')
