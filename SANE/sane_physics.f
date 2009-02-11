@@ -64,6 +64,7 @@ c      write(*,*) 'COOR2',inum,coorX,coorY,Bigcal_SHIFT(3),e(inum)
       Y_clust(inum) = coorY
       Z_clust(inum) = Bigcal_SHIFT(3)
       E_clust(inum) = E(inum)
+      eclust(inum)  = E(inum)
       Vector(1)         = X_clust(inum)
       Vector(2)         = Y_clust(inum)
       Vector(3)         = Z_clust(inum)
@@ -105,7 +106,7 @@ c
       include 'b_ntuple.cmn'
       include 'sane_ntuple.cmn'
       integer x1t_stat,y1t_stat,y2t_stat
-      integer i,inum
+      integer i,inum,j
       x1t_stat = 0
       y1t_stat = 0
       y2t_stat = 0
@@ -121,7 +122,11 @@ c     Very wide geometrical cut
 c
          IF(abs(x1t_x(i)-TrackerX_SHIFT(1)-
      ,        TrackerX_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,        (xclust(inum))-Bigcal_SHIFT(1)).lt.0.6)then
+     ,        (x_clust(inum))-Bigcal_SHIFT(1)).lt.0.9)then
+c            if(cer_h(inum).gt.0)then
+c                  call HFILL(10100,float(x1t_row(i)),float(x1t_tdc(i)),1.)
+c            endif
+
 c
 c     TDC CUT
 c
@@ -145,7 +150,10 @@ c     Very wide geometrical cut
 c
          IF(abs(y1t_y(i)-TrackerY1_SHIFT(2)-
      ,        TrackerY1_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,        (yclust(inum))-Bigcal_SHIFT(2)).lt.0.6)then
+     ,        (y_clust(inum))-Bigcal_SHIFT(2)).lt.0.9)then
+c            if(cer_h(inum).gt.0)then
+c                  call HFILL(10101,float(y1t_row(i)),float(y1t_tdc(i)),1.)
+c            endif
 c
 c     TDC CUT
 c
@@ -168,7 +176,10 @@ c     Very wide geometrical cut
 c
          IF(abs(y2t_y(i)-TrackerY2_SHIFT(2)-
      ,        TrackerY2_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,        (yclust(inum))-Bigcal_SHIFT(2)).lt.0.6)then
+     ,        (y_clust(inum))-Bigcal_SHIFT(2)).lt.0.9)then
+c            if(cer_h(inum).gt.0)then
+c                  call HFILL(10102,float(y2t_row(i)),float(y2t_tdc(i)),1.) 
+c            endif
 c
 c     TDC CUT
 c
@@ -249,6 +260,9 @@ c                  if(luc_row(i).eq.10)then
                   call HFILL(10150+luc_row(i),xDelta1,
      ,                 sqrt(Lucite_SHIFT(3)**2+luc_y(i)**2)/sqrt(Bigcal_SHIFT(3)**2+
      ,                 Y_clust(inum)**2)*X_clust(inum),1.)
+                  call HFILL(20150+luc_row(i),xDelta1,
+     ,                 sqrt(Lucite_SHIFT(3)**2+luc_y(i)**2)/sqrt(Bigcal_SHIFT(3)**2+
+     ,                 Y_clust(inum)**2)*X_clust(inum),1.)
 c                   endif
                   call HFILL(10131, float(luc_row(i)), float(ltdc_pos(i)), 1.)
                   call HFILL(10132, float(luc_row(i)), float(ltdc_neg(i)), 1.)
@@ -306,27 +320,37 @@ ccccccccccc
       include 'sane_data_structures.cmn'
       include 'b_ntuple.cmn'
       include 'sane_ntuple.cmn'
+      include 'gen_data_structures.cmn'
       integer inum,i,j,cer_n
       cer_h(inum)=0
       
       do i=1, cer_hit
          if(cer_num(i).lt.9)then
-c         write(*,*)cer_num(i),ncellclust(inum), CER_SANE_MEAN(cer_num(i)),CER_SANE_SIGMA(cer_num(i))
+            cer_n = cer_num(i)
+            if(yclust(inum).gt.(CER_SANE_GEOM_CUT_LOW(cer_n)-1)*4-120..and.
+     ,           yclust(inum).gt.(CER_SANE_GEOM_CUT_HI(cer_n)+1)*4-120.and.
+     ,                    CER_SANE_GEOM_CUT_X(cer_n)*xclust(inum).gt.-20.and.
+     ,           eclust(inum).gt.0.8)then
+               call HFILL(10500+cer_num(i),float(cer_adcc(i)),float(cer_tdc(i)),1.)
+            endif
+               
             if(
      ,           abs(cer_tdc(i)-CER_SANE_MEAN(cer_num(i))).lt.
-     ,           CER_SANE_SIGMA(cer_num(i))
+     ,           CER_SANE_SIGMA(cer_n)
      ,           )then
-               
-               cer_h(inum)=cer_h(inum)+1
-               cer_n = cer_num(i)
+               if(cer_adcc(i).gt.CER_SANE_ADC_CUT(cer_n).and.T_trgBIG.ge.40)then
+                  do j=1, ncellclust(inum)
+                     if(yclust(inum).gt.(CER_SANE_GEOM_CUT_LOW(cer_n)*4-1)-120..and.
+     ,                    yclust(inum).lt.(CER_SANE_GEOM_CUT_HI(cer_n)*4+1)-120.and.
+     ,                    CER_SANE_GEOM_CUT_X(cer_n)*xclust(inum).gt.-20)then
+                        cer_h(inum)=cer_h(inum)+1
+                        call HFILL(10510+cer_n,float(ixcell(j,inum)),float(iycell(j,inum)), 1.)
+                     endif
+                  enddo
+               endif
             endif
          endif
       enddo
-      if(nclust.eq.1.and.cer_h(inum).eq.1)then
-         do j=1, ncellclust(inum)
-            call HFILL(10510+cer_n,float(ixcell(j,inum)),float(iycell(j,inum)), 1.)
-         enddo
-      endif
       
       end
 c
@@ -624,41 +648,35 @@ c     endif
       real*4 deg2rad, Mp,shelicity
       Mp = 0.938272309
       deg2rad = 3.1415926536/180.
-c                  WRITE(*,*)'call 3',NCLUST
-      
-      thetar= theta*deg2rad
-      phir= phi*deg2rad
-c      write(*,*) 'BEAM',gebeam,E_clust(inum),theta 
-c      write(*,*)GEBeam,E_clust(inum),theta
-c      if(GEBeam - E_clust(inum).gt.0)then
+      if(cer_h(inum).gt.0.and.
+     ,     E_clust(inum).gt.1.and.
+     ,     E_clust(inum).lt.GEBeam)then
+         thetar= theta*deg2rad
+         phir= phi*deg2rad
+         
          ENue(inum)      = GEBeam - E_clust(inum)
          Q2(inum)        = 2*GEBeam*E_clust(inum)*(1-cos(thetar))
          X_Bjorken(inum) = Q2(inum)/( 2*Mp*ENue(inum) )
          W2(inum)        = Mp**2 + 2*Mp*ENue(inum) -Q2(inum)
          ihistnum        = (Q2(inum)-2.5)+1
-c         write(*,*) 'PHYS', ENue(inum),Q2(inum),X_Bjorken(inum),W2(inum)
-c         if(ENue(inum).lt.0)write(*,*)'HELP',E_clust(inum)
+         
          call NANcheckF(ENue(inum),5)
          call NANcheckF(Q2(inum),5)
          call NANcheckF(X_Bjorken(inum),5)
          call NANcheckF(W2(inum),5)
          shelicity       = i_helicity
-c         write(*,*)i_helicity,shelicity
+         
          if(ihistnum.gt.0.and.ihistnum.lt.5)then
             call HF1(10600+ihistnum,X_Bjorken(inum),shelicity)
             call HF1(10610+ihistnum,X_Bjorken(inum),1.)
          endif
-c         if(abs(X_HMS-X_clust(inum)-Bigcal_SHIFT(1)).lt.10.and.
-c     ,        abs(Y_HMS-Y_clust(inum)-Bigcal_SHIFT(2)).lt.10)then
-c            write(*,*)2,E_clust(inum),thetar*57.3,phir*57.3
-            
-            call HFILL(10620,X_Bjorken(inum),Q2(inum),1.)
-            call HFILL(10621,W2(inum),Q2(inum),1.)
-c         endif
-c      else
-c         write(*,*)'BIG CAL CALIBRATION IS WRONG',E_clust(inum),X_clust(inum),Y_clust(inum)
-c      endif
+         
+         call HFILL(10620,X_Bjorken(inum),Q2(inum),1.)
+         call HFILL(10621,W2(inum),Q2(inum),1.)
+      endif
+
       end
+
       subroutine correct_coordinate(x,y,z,e)
       IMPLICIT NONE 
 c
@@ -669,7 +687,8 @@ c
 c      cor1angle = 0.78-0.2/E-0.3/E**2-0.1/E**3
       real*4 x,y,z,e,d,cor1angle,phi, th,dd1
       d = sqrt(x**2+y**2+z**2)
-      cor1angle = 1.1178+1.1876/E-2.379/E**2+0.50396/E**3
+c      cor1angle = 1.1178+1.1876/E-2.379/E**2+0.50396/E**3
+      cor1angle = (2.120-1.034/E-0.6468/E**2+0.109/E**3)/2.
       phi = atan2(y/d,x/d)
       th  = acos(z/d)*180/3.141
 c      write(*,*)'Angle Corr',th,cor1angle*sqrt(x**2+y**2)/61.

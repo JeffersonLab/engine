@@ -54,39 +54,51 @@ c      write(*,*) HEXIST(9502),sane_ntuple_directory
       call HROUT(10102,cycle,' ')
       call HROUT(10111,cycle,' ')
       call HROUT(10112,cycle,' ')
+      call HROUT(10121,cycle,' ')
+      call HROUT(10122,cycle,' ')
+      call HROUT(10125,cycle,' ')
+      call HROUT(10126,cycle,' ')
       do i =1,8
-         call HROUT(10120+i,cycle,' ')
          call HROUT(10500+i,cycle,' ')
          call HROUT(10510+i,cycle,' ')
-         call HROUT(10130+i,cycle,' ')
       enddo
-      do i =1,28
-        call HROUT(10150+i,cycle,' ')
-      enddo
+      if ( sane_ntuple_type .eq. 1) then
+         call HROUT(10131,cycle,' ')
+         call HROUT(10132,cycle,' ')
+         call HROUT(10135,cycle,' ')
+         call HROUT(10136,cycle,' ')
+         do i =1,8
+            call HROUT(10120+i,cycle,' ')
+            call HROUT(10130+i,cycle,' ')
+         enddo
+         do i =1,28
+            call HROUT(10150+i,cycle,' ')
+            call HROUT(20150+i,cycle,' ')
+         enddo
+      endif
       call HROUT(10200,cycle,' ')
-      call HROUT(10210,cycle,' ')
-      call HROUT(10211,cycle,' ')
-      call HROUT(10212,cycle,' ')
-      call HROUT(10213,cycle,' ')
-      call HROUT(10214,cycle,' ')
+      do i =0,6
+         call HROUT(10210+i,cycle,' ')
 
-      call HROUT(10300,cycle,' ')
-      call HROUT(10301,cycle,' ')
-      call HROUT(10302,cycle,' ')
-      call HROUT(10303,cycle,' ')
-      call HROUT(10304,cycle,' ')
-      call HROUT(10310,cycle,' ')
-      call HROUT(10311,cycle,' ')
-      call HROUT(10312,cycle,' ')
-      call HROUT(10313,cycle,' ')
-      call HROUT(10314,cycle,' ')
-      call HROUT(10315,cycle,' ')
-      call HROUT(10316,cycle,' ')
-      call HROUT(10317,cycle,' ')
-      call HROUT(10321,cycle,' ')
-      call HROUT(10322,cycle,' ')
-      call HROUT(10323,cycle,' ')
-      call HROUT(10324,cycle,' ')
+      enddo
+
+*      call HROUT(10300,cycle,' ')
+*      call HROUT(10301,cycle,' ')
+*      call HROUT(10302,cycle,' ')
+*      call HROUT(10303,cycle,' ')
+*      call HROUT(10304,cycle,' ')
+*      call HROUT(10310,cycle,' ')
+*      call HROUT(10311,cycle,' ')
+*      call HROUT(10312,cycle,' ')
+*      call HROUT(10313,cycle,' ')
+*      call HROUT(10314,cycle,' ')
+*      call HROUT(10315,cycle,' ')
+*      call HROUT(10316,cycle,' ')
+*      call HROUT(10317,cycle,' ')
+*      call HROUT(10321,cycle,' ')
+*      call HROUT(10322,cycle,' ')
+*      call HROUT(10323,cycle,' ')
+*      call HROUT(10324,cycle,' ')
 
 
 
@@ -109,8 +121,6 @@ c      call HPRINT(9502)
       call HREND(name)
       call G_IO_control(io,'FREE',ABORT,err)
       close(io)
-            call HROUT(10312,cycle,' ')
-      call HROUT(10313,cycle,' ')
 
       call HCDIR(directory,' ')     ! return to "current" directory
 

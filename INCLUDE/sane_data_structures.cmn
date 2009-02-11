@@ -5,6 +5,9 @@
 *     Author:   H. Baghdasaryan     18 Jan,2008
 *
 * $Log$
+* Revision 1.1.2.7  2009/02/11 21:42:33  cdaq
+* *** empty log message ***
+*
 * Revision 1.1.2.6  2009/01/30 20:33:28  cdaq
 * *** empty log message ***
 *
@@ -235,10 +238,19 @@ c      PARAMETER (TRACKER_SANE_RAW_COUNTER=448)  ! Should exceed # of paddles
       real CER_SANE_MEAN(8)
       real CER_SANE_SIGMA(8)
       real CER_SANE_TDC_TIMING(8)
+      real CER_SANE_ADC_CUT(8)
+      real CER_SANE_GEOM_CUT_LOW(8)
+      real CER_SANE_GEOM_CUT_HI(8)
+      integer CER_SANE_GEOM_CUT_X(8)
+
       COMMON/CER_CALIB/
      &     CER_SANE_MEAN,
      &     CER_SANE_SIGMA,
-     &     CER_SANE_TDC_TIMING
+     &     CER_SANE_TDC_TIMING,
+     & CER_SANE_ADC_CUT,
+     & CER_SANE_GEOM_CUT_LOW,
+     & CER_SANE_GEOM_CUT_HI,
+     & CER_SANE_GEOM_CUT_X
 
       real TrackerX_SHIFT(4) ! position in X,Y,Z Z-betta detector dirrection, 4- angleof betta detector
       real TrackerY1_SHIFT(4) !  position in Z-betta detector dirrection

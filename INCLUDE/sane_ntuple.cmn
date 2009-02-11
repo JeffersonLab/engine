@@ -83,9 +83,9 @@ c     $     sanetrigtype
       
       integer*4 cer_hit,ceradc_hit
       integer*4 cer_num(50)
-      integer*4 cer_tdc(50)
+      integer*4 cer_tdc(50),cer_adcc(50)
       integer*4 ceradc_num(15),cer_adc(15)
-      common/SANECER/cer_hit, cer_num, cer_tdc
+      common/SANECER/cer_hit, cer_num, cer_tdc,cer_adcc
       common/SANEADC/ceradc_hit, ceradc_num,cer_adc
       
       

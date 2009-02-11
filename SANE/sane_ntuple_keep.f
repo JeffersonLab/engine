@@ -8,7 +8,7 @@
 
       logical abort
       character*(*) err
-      integer i,j,status(100,100),k
+      integer i,j,status(100,100),k,m
 
       include 'b_ntuple.cmn'
       include 'bigcal_data_structures.cmn'
@@ -54,6 +54,18 @@ c      logical middlebest
 
     
 
+      T_trgHMS     = gmisc_dec_data(11,1)
+      call NANcheckF(T_trgHMS,3)
+      T_trgBIG     = gmisc_dec_data(12,1) 
+      call NANcheckF(T_trgBIG,3)
+      T_trgPI0     = gmisc_dec_data(13,1)
+      call NANcheckF(T_trgPI0,3)
+      T_trgBETA    = gmisc_dec_data(14,1)
+      call NANcheckF(T_trgBETA,3)
+      T_trgCOIN1   = gmisc_dec_data(15,1)
+      call NANcheckF(T_trgCOIN1,3)
+      T_trgCOIN2   = gmisc_dec_data(16,1)
+      call NANcheckF(T_trgCOIN2,3)
 
       luc_hit = 0
 c      write(*,*) LUCITE_SANE_RAW_TOT_HITS2,LUCITE_SANE_RAW_TOT_HITS3
@@ -63,6 +75,7 @@ c         if(LUCITE_SANE_RAW_COUNTER_NUM2(i).eq.7)write(*,*)7
          if(LUCITE_SANE_RAW_TDC_POS(i).gt.0)then
             do j=1,LUCITE_SANE_RAW_TOT_HITS3
 c         if(LUCITE_SANE_RAW_COUNTER_NUM3(j).eq.7)write(*,*)72
+               if ( luc_hit .lt. 90) then
                if(LUCITE_SANE_RAW_TDC_NEG(j).gt.0.and.
      ,              LUCITE_SANE_RAW_COUNTER_NUM2(i).eq.LUCITE_SANE_RAW_COUNTER_NUM3(j))then
                   luc_hit            =  luc_hit+1
@@ -83,6 +96,7 @@ c         if(LUCITE_SANE_RAW_COUNTER_NUM3(j).eq.7)write(*,*)72
                   call HFILL(10125, float(luc_row(luc_hit)), float(ladc_pos(luc_hit)), 1.)
                   call HFILL(10126, float(luc_row(luc_hit)), float(ladc_neg(luc_hit)), 1.)
                   LUCITE_SANE_RAW_TDC_NEG(j) = 0
+               endif
                endif
             enddo
             LUCITE_SANE_RAW_TDC_POS(i) = 0
@@ -126,10 +140,16 @@ c      write(*,*)'a, ' ,CERENKOV_SANE_RAW_ADC
             cer_hit         =  cer_hit+1
             cer_num(cer_hit)   =  CERENKOV_SANE_RAW_COUNTER_NUM2(i)
             call CORRECT_RAW_TIME_SANE(CERENKOV_SANE_RAW_TDC(i),cer_tdc(cer_hit))
+            cer_adcc(cer_hit) = CERENKOV_SANE_RAW_ADC(cer_num(cer_hit))-cer_sane_ped_mean(cer_num(cer_hit))
+            call HFILL(10111,float(cer_num(cer_hit)),float(cer_TDC(cer_hit)), 1.)
+
             call NANcheck(cer_hit,CERENKOV_SANE_ID)
             call NANcheck(cer_num(cer_hit),CERENKOV_SANE_ID)
+            call NANcheck(cer_adcc(cer_hit),CERENKOV_SANE_ID2)
             call NANcheck(cer_tdc(cer_hit),CERENKOV_SANE_ID)
-            call HFILL(10111,float(cer_num(cer_hit)),float(cer_tdc(cer_hit)), 1.)
+            if ( T_trgBIG.ge.40) then
+               call HFILL(10500+cer_num(cer_hit),float(cer_adcc(cer_hit)),float(cer_tdc(cer_hit)),1.)
+            endif
          endif
       enddo
 
@@ -140,14 +160,9 @@ c      write(*,*)'a, ' ,CERENKOV_SANE_RAW_ADC
             ceradc_num(ceradc_hit)   =  CERENKOV_SANE_RAW_COUNTER_NUM(i)
             cer_adc(ceradc_hit)   =  CERENKOV_SANE_RAW_ADC(ceradc_num(ceradc_hit))-cer_sane_ped_mean(ceradc_num(ceradc_hit))
             call NANcheck(ceradc_hit,CERENKOV_SANE_ID2)
-             call NANcheck(ceradc_num(cer_hit),CERENKOV_SANE_ID2)
-             call NANcheck(cer_adc(cer_hit),CERENKOV_SANE_ID2)
+            call NANcheck(ceradc_num(ceradc_hit),CERENKOV_SANE_ID2)
+            call NANcheck(cer_adc(ceradc_hit),CERENKOV_SANE_ID2)
             call HFILL(10112,float(ceradc_num(ceradc_hit)),float(cer_adc(ceradc_hit)), 1.)
-            do k=1,cer_hit
-               if ( cer_num(k) .eq. ceradc_num(i)) then
-               call HFILL(10500+ceradc_num(ceradc_hit),float(cer_adc(ceradc_hit)),float(cer_tdc(k)),1.)
-               endif
-            enddo
          endif
        enddo
 c
@@ -162,6 +177,8 @@ c
             x1t_row(x1t_hit)   =  TRACKER_SANE_RAW_COUNTER_X(i)
             call CORRECT_RAW_TIME_SANE(TRACKER_SANE_RAW_TDC_X(i),x1t_tdc(x1t_hit))
             x1t_x(x1t_hit)     =  -12.32+0.37422*(x1t_row(x1t_hit)-1)
+
+            call HFILL(10100,float(x1t_row(x1t_hit)),float(x1t_tdc(x1t_hit)),1.) 
             call NANcheck(x1t_hit,TRACKER_SANE_X_ID)
             call NANcheck(x1t_row(x1t_hit),TRACKER_SANE_X_ID)
             call NANcheck(x1t_tdc(x1t_hit),TRACKER_SANE_X_ID)
@@ -182,6 +199,7 @@ c               write(*,*)'Tracker TDC', y1t_hit,TRACKER_SANE_RAW_TDC_Y(i)
                y1t_row(y1t_hit)   =  TRACKER_SANE_RAW_COUNTER_Y(i)
                call CORRECT_RAW_TIME_SANE(TRACKER_SANE_RAW_TDC_Y(i),y1t_tdc(y1t_hit))
                y1t_y(y1t_hit)     =  -22.225+(y1t_row(y1t_hit)-1)*0.35
+               call HFILL(10101,float(y1t_row(y1t_hit)),float(y1t_tdc(y1t_hit)),1.) 
                call NANcheck(y1t_hit,TRACKER_SANE_Y_ID)
                call NANcheck(y1t_row(y1t_hit),TRACKER_SANE_Y_ID)
                call NANcheck(y1t_tdc(y1t_hit),TRACKER_SANE_Y_ID)
@@ -192,6 +210,7 @@ c               write(*,*)'Tracker TDC', y1t_hit,TRACKER_SANE_RAW_TDC_Y(i)
                y2t_row(y2t_hit)   =  TRACKER_SANE_RAW_COUNTER_Y(i)-128
                call CORRECT_RAW_TIME_SANE(TRACKER_SANE_RAW_TDC_Y(i),y2t_tdc(y2t_hit))
                y2t_y(y2t_hit)     =  -22.4+(y2t_row(y2t_hit)-1)*0.35
+               call HFILL(10102,float(y2t_row(y2t_hit)),float(y2t_tdc(y2t_hit)),1.) 
                call NANcheck(y2t_hit,TRACKER_SANE_Y_ID)
                call NANcheck(y2t_row(y2t_hit),TRACKER_SANE_Y_ID)
                call NANcheck(y2t_tdc(y2t_hit),TRACKER_SANE_Y_ID)
@@ -200,30 +219,10 @@ c               write(*,*)'Tracker TDC', y1t_hit,TRACKER_SANE_RAW_TDC_Y(i)
  20      CONTINUE
       enddo
 c          do inum=1,nclust
-             do ihit=1,x1t_hit
-c                IF(abs(x1t_x(ihit)-TrackerX_SHIFT(1)-
-c     ,               TrackerX_SHIFT(3)/Bigcal_SHIFT(3)*
-c     ,               (xclust(inum))-Bigcal_SHIFT(1)).lt.2.6)then
-                   call HFILL(10100,float(x1t_row(ihit)),float(x1t_tdc(ihit)),1.)
-c                ENDIF
-             enddo
-             do ihit=1,y1t_hit
-c                IF(abs(y1t_y(ihit)-TrackerY1_SHIFT(2)-
-c     ,               TrackerY1_SHIFT(3)/Bigcal_SHIFT(3)*
-c     ,               (yclust(inum))-Bigcal_SHIFT(2)).lt.2.6)then
-                   call HFILL(10101,float(y1t_row(ihit)),float(y1t_tdc(ihit)),1.)
-c                ENDIF
-             enddo
-             do ihit=1,y2t_hit
-c                IF(abs(y2t_y(ihit)-TrackerY2_SHIFT(2)-
-c     ,               TrackerY2_SHIFT(3)/Bigcal_SHIFT(3)*
-c     ,               (yclust(inum))-Bigcal_SHIFT(2)).lt.2.6)then
-                   call HFILL(10102,float(y2t_row(ihit)),float(y2t_tdc(ihit)),1.) ! 0.06 is ns convertion
-c                ENDIF
-             enddo
 c         enddo
              hms_p = 0
       if(HSNUM_FPTRACK.gt.0)then
+c         write(*,*)HSNUM_FPTRACK,hsp,hstheta
          hms_p        = hsp	
          call NANcheckF(hms_p,4)
          hms_e        = hsenergy
@@ -314,6 +313,10 @@ c         endif
       slow_rast_x  = gsrx_calib
       call NANcheckF(gsrx_raw_adc,3)
       slow_rast_y  = gsry_calib
+      call HFILL(10215,gsry_raw_adc,gsrx_raw_adc, 1.)
+
+      call HFILL(10216,gsrx_calib,gsry_calib, 1.)
+
       if(HSNUM_FPTRACK.gt.0)then
             
                   call HFILL(10316,slow_rast_y,-hms_xtar ,1.)
@@ -326,23 +329,12 @@ c         endif
       call NANcheckF(sem_y,3)
       call HFILL(10214,sem_x,sem_y, 1.)
 c      write(*,*)'2 ',sem_x,sem_y
-      T_trgHMS     = gmisc_dec_data(11,1)
-      call NANcheckF(T_trgHMS,3)
-      T_trgBIG     = gmisc_dec_data(12,1) 
-      call NANcheckF(T_trgBIG,3)
-      T_trgPI0     = gmisc_dec_data(13,1)
-      call NANcheckF(T_trgPI0,3)
-      T_trgBETA    = gmisc_dec_data(14,1)
-      call NANcheckF(T_trgBETA,3)
-      T_trgCOIN1   = gmisc_dec_data(15,1)
-      call NANcheckF(T_trgCOIN1,3)
-      T_trgCOIN2   = gmisc_dec_data(16,1)
-      call NANcheckF(T_trgCOIN2,3)
 
        do i =1,  nclust
 c         write(*,*)eclust(i)
 c         if(HSNUM_FPTRACK.gt.0)then
                call Bigcal_Betta(i)
+               call icer(i)
 c            if(abs(X_HMS-Xclust(i)-Bigcal_SHIFT(1)).lt.10.and.
 c     ,           abs(Y_HMS-Yclust(i)-Bigcal_SHIFT(2)).lt.10)then
 c                  WRITE(*,*)'call 2',NCLUST
@@ -354,7 +346,6 @@ c         endif
          enddo
          if(sane_ntuple_type.eq.1)then
             n_clust = nclust
-            call icer(i)
             call Lucite(i)
             call tracker(i)
             call TrackerCoordnate(i)

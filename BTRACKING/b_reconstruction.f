@@ -228,7 +228,7 @@ c     info.
          bbypass_calc_shower_coord = revert(4)
          bbypass_calc_physics = revert(5)
       endif
-      !write(*,*) 'done with reconstruction'      
+c      write(*,*) 'done with reconstruction nclust = ',nclust      
 *
       return
       end

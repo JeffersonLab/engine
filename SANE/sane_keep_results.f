@@ -8,6 +8,7 @@
       include 'b_ntuple.cmn'
       include 'sane_ntuple.cmn'
       include 'gen_event_info.cmn'
+      include 'hms_data_structures.cmn'
 
 
       character*14 here
@@ -29,7 +30,9 @@ c$$$      endif
 
       if (gen_event_type .le. 4) return
       if(sane_ntuple_type.gt.0)then
-        if(bigcal_all_nclstr.gt.0) then
+        if(bigcal_all_nclstr.gt.0.or.gen_event_type .eq. 8
+     ,        .or.HSNUM_FPTRACK.gt.0
+     ,        ) then
           call sane_ntuple_keep(ABORT,err)
           call SANE_DUMP_NTUP_VAR()
           bigcal_all_nclstr=0

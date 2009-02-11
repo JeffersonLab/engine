@@ -98,6 +98,7 @@
       edge_x_inv=n_tbpm_data(2)
       cent_x    =n_tbpm_data(3)
       cent_x_inv=n_tbpm_data(4)
+
       edge_y    =n_tbpm_data(5)
       edge_y_inv=n_tbpm_data(6)
       cent_y    =n_tbpm_data(7)
@@ -114,14 +115,15 @@
          edge=edge_x_inv
          inv=.true.
       end if
-
-      if(edge+cent.lt.n_tbpm_cutoff) then
+      if(edge+cent.lt.n_tbpm_cutoff.or.
+     , abs(edge-cent).eq.abs(edge+cent)) then
          ntbpmx=-20.
       elseif(edge+cent.gt.n_tbpm_adccut) then
          ntbpmx= 20.
       else
          ntbpmx=sem_coordinate(cent,edge)
       end if
+c      write(2,*)edge_x,edge_x_inv,cent_x,cent_x_inv,edge_y,edge_y_inv,cent_y,cent_y_inv
 
       if(inv) ntbpmx=-ntbpmx
 
@@ -138,7 +140,8 @@
       end if
 
 
-      if(edge+cent.lt.n_tbpm_cutoff) then
+      if(edge+cent.lt.n_tbpm_cutoff.or.
+     , abs(edge-cent).eq.abs(edge+cent)) then
          ntbpmy=-20.
       elseif(edge+cent.gt.n_tbpm_adccut) then
          ntbpmy= 20.
