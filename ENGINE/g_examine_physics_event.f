@@ -11,6 +11,9 @@
 *- 
 *-   Created  17-May-1994   Kevin B. Beard, Hampton U.
 * $Log$
+* Revision 1.4.24.2.2.1  2009/02/16 00:18:13  cdaq
+* *** empty log message ***
+*
 * Revision 1.4.24.2  2007/09/13 04:02:17  brash
 * Implement some minor changes to fix Mac OS X runtime errors ... ejb
 *
@@ -71,7 +74,7 @@ ccc      LOGICAL process
       EvType = jISHFT(buffer(2),-16)
 *
       gen_run_total_events= gen_run_total_events+1
-      gen_event_type= EvType
+*      gen_event_type= EvType
 *
       ABORT= EvType.LT.0 .or. EvType.GT.gen_MAX_trigger_types
       If(ABORT) Then
