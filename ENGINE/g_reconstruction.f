@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.9.2.3  2009/02/17 21:18:32  cdaq
+* Changed so b_reconstruction always called
+*
 * Revision 1.13.24.9.2.2  2008/10/26 19:12:33  cdaq
 * SEM
 *
@@ -226,7 +229,11 @@ c         write(*,*) 'calling HMS reconstruction, gen_event_type=',gen_event_typ
         ABORT= ABORT .or. FAIL
       ENDIF
 *-BIGCAL reconstruction
-      if(gen_event_type.ge.5 .and. gen_event_type.le.8) then !5.BIGCAL/6.HMS-BIGCAL COIN/7.COSMIC/8.LIGHT BOX
+c changed to always do pyb Feb. 17 2009
+c      if((gen_event_type.ge.5 .and. 
+c     >    gen_event_type.le.8).or.
+c     >    gen_event_type.eq.13) then !5.BIGCAL/6.HMS-BIGCAL COIN/7.COSMIC/8.LIGHT BOX
+      if(gen_event_type.ne.99999) then
          !write(*,*) 'calling b_reconstruction'
          
          call B_reconstruction(FAIL,why)
