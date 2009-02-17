@@ -46,7 +46,8 @@ c     to improve the efficiency of coincidence events.
          b_use_bad_chan_list = 0
 c         last_time = .true.
       endif
-      if(gen_event_type.gt.6) then
+      if(gen_event_type.gt.6.and.
+     >   gen_event_type.lt.9 ) then
          bbypass_find_clusters = 1
          bbypass_calc_cluster_time = 1
          bbypass_calc_shower_coord = 1
@@ -60,9 +61,9 @@ c         last_time = .true.
          return
       endif
 
-      !bigcal_max_adc = 0.
-      !bigcal_iymax_adc = 0
-      !bigcal_ixmax_adc = 0
+      bigcal_max_adc = 0.
+      bigcal_iymax_adc = 0
+      bigcal_ixmax_adc = 0
 ************  convert Protvino raw ADC to Protvino decoded ADC *******
       if(bbypass_prot.eq.0) then
          call b_trans_PROT(ABORT,err)
