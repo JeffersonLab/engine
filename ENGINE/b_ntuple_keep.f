@@ -220,7 +220,7 @@ c     $           eclust(iclust)
             ctime_clust(iclust) = bigcal_track_coin_time(iclust) - 
      $           (bigcal_end_time - gep_btime_elastic)
 
-            if(bgtype.eq.6.and.ibest>0) then
+            if((bgtype.eq.6 .or. bgtype.eq.1).and.ibest>0) then
 c               write(*,*) 'chi2=',bigcal_all_clstr_chi2(iclust) 
                chi2clust(iclust) = bigcal_all_clstr_chi2(iclust)
                do idiff=1,6
@@ -265,8 +265,7 @@ c$$$     $          bigcal_ixmax_adc,bigcal_max_adc
 
 c$$$         write(*,*) 'na,nt,nta,ntt,rowmax,colmax,maxadc=',ngooda,ngoodt,ngoodta,
 c$$$     $        ngoodtt,irowmax,icolmax,max_adc
-
-         if(bgtype.eq.6.and.ibest>0) then ! this always assumes elastic kinematics--won't always make sense!
+         if((bgtype.eq.6.or. bgtype.eq.1).and.ibest>0) then ! this always assumes elastic kinematics--won't always make sense!
 c            E_HMS = gebeam - gep_Q2_H/(2.*Mp)
             TH_HMS = gep_etheta_expect_h
             PH_HMS = gep_ephi_expect_h - PI/2. 

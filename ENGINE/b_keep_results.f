@@ -24,7 +24,7 @@ c$$$     $     BIGCAL_MID_NCLSTR.gt.0) then
 c$$$         call b_ntuple_keep(ABORT,err)
 c$$$      endif
 
-      if (gen_event_type .le. 2) return
+c      if (gen_event_type .le. 2) return
 
       if(bigcal_ntuple_type.eq.1)then
        if(bigcal_all_nclstr.gt.0!.or.bigcal_nmaxima.gt.0
