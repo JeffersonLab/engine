@@ -15,6 +15,9 @@
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 *
 * $Log$
+* Revision 1.5.22.1  2009/03/30 20:50:25  cdaq
+* *** empty log message ***
+*
 * Revision 1.5  2003/09/05 16:34:34  jones
 * Merge in online03 changes (mkj)
 *
@@ -72,6 +75,8 @@
       gbcm2_charge = 0.
       gbcm3_charge = 0.
       gunser_charge = 0.
+      g_hel_pos = 0
+      g_hel_neg = 0
 *
       g_run_time = 0.
       g_beam_on_run_time(1) = 0.    ! Have to do this, because I have to accumlate

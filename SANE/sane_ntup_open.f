@@ -24,6 +24,7 @@
       character*1000 pat,msg,chform
       integer status,size,io,id,bank,recL,iv(10),m
       real rv(10)
+      
 
       logical HEXIST        !CERNLIB function
 ccccccccccccccc
@@ -93,6 +94,10 @@ c
 c     
 c     
          
+         call HBNAME(id,'SANEEV',tcharge,'tcharge:R*8,charge2s:R*8,'//
+     $        'polarea:R*8,hel_p_scaler:I*4, hel_n_scaler:I*4,'//
+     $	    'hel_p_trig:I*4, hel_n_trig:I*4,'//
+     $	    'dtime_p:R*8,dtime_n:R*8')
          call HBNAME(id,'bevinfo',bgid,'bgid:I*4,bgtype:I*4,'//
      $        'btrigtype:I*4')
          call HBNAME(id,'bhits',ngooda,'ngooda:I*4,ngoodt:I*4,'//
@@ -193,6 +198,15 @@ c     ! For physics analysis  added on Jul 3 2008
          call HBOOK2(10100,'TRACK X1',64, 1.,  65., 200,   -7500., -4500.,0.)
          call HBOOK2(10101,'TRACK Y1',128,1., 129., 200,   -7500., -4500.,0.)
          call HBOOK2(10102,'TRACK Y2',128,1., 129., 200,   -7500., -4500.,0.)
+
+         call HBOOK2(10103,'TRACK X1 cer',64, 1.,  65., 200,   -7500., -4500.,0.)
+         call HBOOK2(10104,'TRACK Y1 cer',128,1., 129., 200,   -7500., -4500.,0.)
+         call HBOOK2(10105,'TRACK Y2 cer',128,1., 129., 200,   -7500., -4500.,0.)
+         call HBOOK2(10106,'TRACK X1 vs BIG',128,-22., 22., 128,   -22., 22.,0.)
+         call HBOOK2(10107,'TRACK Y1 vs BIG',128,-22., 22., 128,   -22., 22.,0.)
+         call HBOOK2(10108,'TRACK Y2 vs BIG',128,-22., 22., 128,   -22., 22.,0.)
+
+
          call HBOOK2(10111,'CER TDC',8, 1.,  9., 200,    -4000, 500., 0.)
          call HBOOK2(10112,'CER ADC',8, 1.,  9., 100,    0.1, 5000., 0.)
          do histnum=1,8
@@ -207,12 +221,20 @@ c     ! For physics analysis  added on Jul 3 2008
          if(sane_ntuple_type.eq.1) then 
             do ii=1,28
 c     call HBPROF(10150+ii,'LUC_X vs BIG_X',100,-60., 60., 100,  -60., 60., 0.)
-               call HBPROF(10150+ii,'LUC_X vs BIG_X',100,-60., 60., -60,  60., 'S')
-               call HBOOK2(20150+ii,'LUC_X vs BIG_X',100,-60., 100, 60., -60,  60., 0.)
+               call HBPROF(10150+ii,'LUC_X vs BIG_X',100,-65., 65., -60,  60., 'S')
+               call HBOOK2(20150+ii,'LUC_X vs BIG_X',100,-60., 160, 80., -60,  160., 0.)
             enddo
             call HBOOK2(10128,'LUC_Y vs BIG_Y',120,-120., 120., 120,  -120., 120., 0.)
-            call HBOOK2(10131,'LUC TDCPOS cut',28,1., 29., 200, -3500., 0., 0.)
-            call HBOOK2(10132,'LUC TDCNEG cut',28,1., 29., 200, -3500., 0., 0.)
+
+            call HBOOK2(10220,'LUC_Y vs BIG_Y', 60,  -120., 120., 45,-30., 30., 0.)
+            call HBOOK2(10221,'LUC_Y vs BIG_Yo',45,-30., 30., 60,  -120., 120., 0.)
+            call HBOOK2(10222,'dLUC_Y vs BIG_X', 50,-100., 100., 45,  -30., 30., 0.)
+            call HBOOK2(10223,'LUC_X vs BIG_Xo',50,-100., 100., 60,  -120., 120., 0.)
+           call HBOOK2(10225,'dLUC_Y vs e',120,-30., 30., 12,  0., 1.2, 0.)
+           call HBOOK2(10226,'dLUC_X vs e',120,-30., 30., 16,  0.4, 2., 0.)
+
+            call HBOOK2(10131,'LUC TDCPOS cut',28,1., 29., 1500, -2250., -850., 0.)
+            call HBOOK2(10132,'LUC TDCNEG cut',28,1., 29., 1500, -2250., -850., 0.)
             call HBOOK2(10135,'LUC ADCPOS cut',28,1., 29., 200,    0.1, 4000., 0.)
             call HBOOK2(10136,'LUC ADCNEG cut',28,1., 29., 200,    0.1, 4000., 0.)
          endif
@@ -310,14 +332,14 @@ c
      $        'X_luc_r(20,n_clust),Y_luc_r(20,n_clust),'//
      $        'Z_luc_r(20,n_clust),'//
      $        'trc_hx(n_clust)[0,20]:I*4,'//
-     $        'X_trc(20,n_clust),X_trc_r(20,n_clust),'//
-     $        'Z_trc_r(20,n_clust),'//
+     $        'X_trc(20,n_clust),'//
+     $        'Z_trc(20,n_clust),'//
      $        'trc_hy1(n_clust)[0,20]:I*4,'//
-     $        'Y1_trc(20,n_clust),Y1_trc_r(20,n_clust),'//
-     $        'Z1_trc_r(20,n_clust),'//
+     $        'Y1_trc(20,n_clust),'//
+     $        'Z1_trc(20,n_clust),'//
      $        'trc_hy2(n_clust)[0,20]:I*4,'//
-     $        'Y2_trc(20,n_clust), Y2_trc_r(20,n_clust),'//
-     $        'Z2_trc_r(20,n_clust),'//
+     $        'Y2_trc(20,n_clust),'//
+     $        'Z2_trc(20,n_clust),'//
      $        'Tr_Vertex(3,n_clust), Tr_Vertex_r(3,n_clust),'//
      $        'cer_h(n_clust)[0,20]:I*4,'//
      $        'Theta_e(n_clust):R*4,Phi_e(n_clust):R*4,'//

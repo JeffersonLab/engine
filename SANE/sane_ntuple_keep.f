@@ -25,6 +25,7 @@
       include 'f1trigger_data_structures.cmn'
       include 'hms_calorimeter.cmn'
       include 'gen_detectorids.par'
+      include 'gen_scalers.cmn'
       logical HEXIST ! CERNLIB function
       integer t_sane,l_sane,cer_sane
       integer icycle,inum,ihit
@@ -52,8 +53,26 @@ c      logical middlebest
 
       if(.not.sane_ntuple_exists) return
 
-    
-
+      if(gbcm1_charge.ne.tcharge)then
+         charge2s = gbcm1_charge-tcharge
+         tcharge = gbcm1_charge
+c         write(*,*)charge2s,tcharge,gbcm1_charge
+      endif
+      if(gscaler_change(538).ne.hel_p_scaler)then
+        hel_p_scaler= gscaler_change(538)
+        hel_p_trig= g_hel_pos
+        dtime_p = gscaler_change(538)/float(g_hel_pos)
+        g_hel_pos =0
+c        write(*,*)'POS',hel_p_scaler,hel_p_trig,dtime_p
+      endif
+      if(gscaler_change(546).ne.hel_n_scaler)then
+        hel_n_scaler= gscaler_change(546)
+        hel_n_trig= g_hel_neg
+        dtime_n = gscaler_change(546)/float(g_hel_neg)
+        g_hel_neg =0
+c        write(*,*)'NEG',hel_n_scaler,hel_n_trig,dtime_n
+      endif
+c      write(*,*)gbcm1_charge
       T_trgHMS     = gmisc_dec_data(11,1)
       call NANcheckF(T_trgHMS,3)
       T_trgBIG     = gmisc_dec_data(12,1) 
@@ -81,7 +100,7 @@ c         if(LUCITE_SANE_RAW_COUNTER_NUM3(j).eq.7)write(*,*)72
                   luc_hit            =  luc_hit+1
                   luc_row(luc_hit)   =  LUCITE_SANE_RAW_COUNTER_NUM2(i)
                   ladc_pos(luc_hit)  =  LUCITE_SANE_RAW_ADC_POS(luc_row(luc_hit)) - luc_ped_mean_pos(luc_row(luc_hit))
-                  ladc_neg(luc_hit)  =  LUCITE_SANE_RAW_ADC_NEG(i) - luc_ped_mean_neg(luc_row(luc_hit))
+                  ladc_neg(luc_hit)  =  LUCITE_SANE_RAW_ADC_NEG(luc_row(luc_hit)) - luc_ped_mean_neg(luc_row(luc_hit))
                   luc_y(luc_hit)     =  -82.35 + (luc_row(luc_hit)-1)*6.1
                   call NANcheck(luc_hit,LUCITE_SANE_ID)
                   call NANcheck(luc_row(luc_hit),LUCITE_SANE_ID)
@@ -91,10 +110,10 @@ c         if(LUCITE_SANE_RAW_COUNTER_NUM3(j).eq.7)write(*,*)72
                   call NANcheck(ltdc_pos(luc_hit),LUCITE_SANE_ID)
                   call CORRECT_RAW_TIME_SANE(LUCITE_SANE_RAW_TDC_POS(i),ltdc_pos(luc_hit))
                   call CORRECT_RAW_TIME_SANE(LUCITE_SANE_RAW_TDC_NEG(j),ltdc_NEG(luc_hit))
-                  call HFILL(10121, float(luc_row(luc_hit)), float(ltdc_pos(luc_hit)), 1.)
-                  call HFILL(10122, float(luc_row(luc_hit)), float(ltdc_neg(luc_hit)), 1.)
-                  call HFILL(10125, float(luc_row(luc_hit)), float(ladc_pos(luc_hit)), 1.)
-                  call HFILL(10126, float(luc_row(luc_hit)), float(ladc_neg(luc_hit)), 1.)
+c                  call HFILL(10121, float(luc_row(luc_hit)), float(ltdc_pos(luc_hit)), 1.)
+c                  call HFILL(10122, float(luc_row(luc_hit)), float(ltdc_neg(luc_hit)), 1.)
+c                  call HFILL(10125, float(luc_row(luc_hit)), float(ladc_pos(luc_hit)), 1.)
+c                  call HFILL(10126, float(luc_row(luc_hit)), float(ladc_neg(luc_hit)), 1.)
                   LUCITE_SANE_RAW_TDC_NEG(j) = 0
                endif
                endif
@@ -147,9 +166,9 @@ c      write(*,*)'a, ' ,CERENKOV_SANE_RAW_ADC
             call NANcheck(cer_num(cer_hit),CERENKOV_SANE_ID)
             call NANcheck(cer_adcc(cer_hit),CERENKOV_SANE_ID2)
             call NANcheck(cer_tdc(cer_hit),CERENKOV_SANE_ID)
-            if ( T_trgBIG.ge.40) then
-               call HFILL(10500+cer_num(cer_hit),float(cer_adcc(cer_hit)),float(cer_tdc(cer_hit)),1.)
-            endif
+c            if ( T_trgBIG.ge.40) then
+c               call HFILL(10500+cer_num(cer_hit),float(cer_adcc(cer_hit)),float(cer_tdc(cer_hit)),1.)
+c            endif
          endif
       enddo
 
@@ -333,8 +352,14 @@ c      write(*,*)'2 ',sem_x,sem_y
        do i =1,  nclust
 c         write(*,*)eclust(i)
 c         if(HSNUM_FPTRACK.gt.0)then
-               call Bigcal_Betta(i)
-               call icer(i)
+
+          n_clust = nclust
+          call Bigcal_Betta(i)
+          call icer(i)
+          call tracker(i)
+          call TrackerCoordnate(i)
+          call GeometryMatch(i)
+          call Lucite(i)
 c            if(abs(X_HMS-Xclust(i)-Bigcal_SHIFT(1)).lt.10.and.
 c     ,           abs(Y_HMS-Yclust(i)-Bigcal_SHIFT(2)).lt.10)then
 c                  WRITE(*,*)'call 2',NCLUST
@@ -346,10 +371,7 @@ c         endif
          enddo
          if(sane_ntuple_type.eq.1)then
             n_clust = nclust
-            call Lucite(i)
-            call tracker(i)
-            call TrackerCoordnate(i)
-            call GeometryMatch(i)
+c            call Lucite(i)
          endif
       enddo
       abort=.not.HEXIST(sane_ntuple_ID)

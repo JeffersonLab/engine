@@ -52,6 +52,13 @@ c      write(*,*) HEXIST(9502),sane_ntuple_directory
       call HROUT(10100,cycle,' ')
       call HROUT(10101,cycle,' ')
       call HROUT(10102,cycle,' ')
+      call HROUT(10103,cycle,' ')
+      call HROUT(10104,cycle,' ')
+      call HROUT(10105,cycle,' ')
+      call HROUT(10106,cycle,' ')
+      call HROUT(10107,cycle,' ')
+      call HROUT(10108,cycle,' ')
+
       call HROUT(10111,cycle,' ')
       call HROUT(10112,cycle,' ')
       call HROUT(10121,cycle,' ')
@@ -67,9 +74,10 @@ c      write(*,*) HEXIST(9502),sane_ntuple_directory
          call HROUT(10132,cycle,' ')
          call HROUT(10135,cycle,' ')
          call HROUT(10136,cycle,' ')
-         do i =1,8
+         do i =0,8
             call HROUT(10120+i,cycle,' ')
             call HROUT(10130+i,cycle,' ')
+            call HROUT(10220+i,cycle,' ')
          enddo
          do i =1,28
             call HROUT(10150+i,cycle,' ')

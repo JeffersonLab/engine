@@ -28,7 +28,7 @@ c$$$     $     BIGCAL_MID_NCLSTR.gt.0) then
 c$$$         call b_ntuple_keep(ABORT,err)
 c$$$      endif
 
-      if (gen_event_type .le. 4) return
+      if (gen_event_type .eq. 4) return
       if(sane_ntuple_type.gt.0)then
         if(bigcal_all_nclstr.gt.0.or.gen_event_type .eq. 8
      ,        .or.HSNUM_FPTRACK.gt.0
