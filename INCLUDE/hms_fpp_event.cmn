@@ -111,6 +111,7 @@
 
       integer*4 HFPP_track_Nlayers   ! # of layers with hits used on track
       integer*4 HFPP_track_Nhits     ! # of raw hits used on track
+      integer*4 HFPP_track_Nambig    ! # of "ambiguous" combos
 
       integer*4 HFPP_TrackCluster    ! Clusters used in track
       integer*4 HFPP_TrackHit        ! above cluster reduced to 1 wire
@@ -142,7 +143,6 @@
       logical*4 HFPP_track_uniq      ! track fitting result was un-ambiguous
       integer*4 HFPP_best_track      ! best track in each FPP
 
-
       common/HMS_FPP_track/
      &    HFPP_eventclass
      &  , HFPP_N_tracks(H_FPP_N_DCSETS)
@@ -150,6 +150,7 @@
      $  , hfpp_n_simple(h_fpp_n_dcsets)   
      &  , HFPP_track_Nlayers(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
      &  , HFPP_track_Nhits(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS)
+     $  , HFPP_track_Nambig(h_fpp_n_dcsets,h_fpp_max_tracks)   
      &  , HFPP_TrackCluster(H_FPP_N_DCSETS,H_FPP_N_DCINSET,
      >                      H_FPP_N_DCLAYERS,H_FPP_MAX_TRACKS)
      &  , HFPP_TrackHit(H_FPP_N_DCSETS,H_FPP_N_DCINSET,
@@ -175,6 +176,7 @@
      >                        H_FPP_N_DCLAYERS,H_FPP_MAX_TRACKS)
      &  , HFPP_track_uniq(H_FPP_N_DCSETS,H_FPP_MAX_TRACKS),
      $     HFPP_best_track(H_FPP_N_DCSETS)
+      
 
 *
 *     CTPTYPE=parm
@@ -191,6 +193,8 @@
       real*4 hfpp_prune_sclose(2) 
       real*4 hfpp_prune_zclose(4) ! FPP1 and FPP2 zlow and zhigh
       real*4 hfpp_prune_zslop(2) ! FPP1 and FPP2 theta-dependent additional tolerance on zclose
+      real*4 hfpp_sclose_weight(2) ! criterion for choosing tracks = chi2 + minchi2*(weight*sclose^2/minsclose^2)
+      real*4 hfpp_theta_weight(2) ! criterion for choosing tracks = chi2 + minchi2*(weight*prob(theta)/prob(mintheta)) 
       common/hfpp_prune_params/
      $     hfppuseajptracking,
      $     hfpp_prune_nplanes,
@@ -200,4 +204,28 @@
      $     hfpp_prune_thetamax,
      $     hfpp_prune_sclose,
      $     hfpp_prune_zclose,
-     $     hfpp_prune_zslop
+     $     hfpp_prune_zslop,
+     $     hfpp_sclose_weight,
+     $     hfpp_theta_weight
+
+c     at "large" theta, zclose should be inside the analyzer. If it isn't, then
+c     we have probably chosen an incorrect set of hits
+c     at "small" theta, if zclose reconstructs to the region of the chambers
+c     and sclose is "small"
+c     it is a very strong signature for a wrong LR assignment. 
+c     we look for "ambiguous" (similar chi2) combos with smaller theta
+c     it seems we should only re-visit the left-right combo AFTER considering
+c     all candidate sets of hits for a track during a given event.
+c     then we can look at sclose,zclose, and theta to decide what to do.
+
+c     always attempt to "fix" the left-right combination:
+      integer*4 hfppfixleftright 
+      real*4 hfpp_ambig_chi2cut(2)
+      real*4 hfpp_ambig_smallthetatest
+      real*4 hfpp_ambig_sclosetest
+
+      common/hfpp_fix_leftright_params/
+     $     hfppfixleftright,
+     $     hfpp_ambig_chi2cut,
+     $     hfpp_ambig_smallthetatest,
+     $     hfpp_ambig_sclosetest

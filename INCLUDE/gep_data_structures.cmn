@@ -57,6 +57,7 @@ c     coincidence timing window parameters (weed out background hits)
       integer*4 h_use_cointime_cut
       integer*4 b_use_cointime_cut
       integer*4 h_correct_start_time
+      integer*4 gep_use_ntuple_cuts
       real*4 gep_h1time_center
       real*4 gep_h2time_center
       real*4 gep_h1time_slop
@@ -71,6 +72,7 @@ c     coincidence timing window parameters (weed out background hits)
      $     h_use_cointime_cut,
      $     b_use_cointime_cut,
      $     h_correct_start_time,
+     $     gep_use_ntuple_cuts,
      $     gep_h1time_center,
      $     gep_h2time_center,
      $     gep_h1time_slop,
