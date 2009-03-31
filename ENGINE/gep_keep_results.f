@@ -6,6 +6,7 @@
 c      include 'gen_event_info.cmn'
       include 'gep_data_structures.cmn'
       include 'hms_data_structures.cmn'
+      include 'hms_physics_sing.cmn'
       include 'bigcal_data_structures.cmn'
       INCLUDE 'bigcal_bypass_switches.cmn'
 
@@ -21,7 +22,14 @@ c      include 'gen_event_info.cmn'
       if(HSNUM_FPTRACK.gt.0 .and. bigcal_all_nclust_good .gt. 0 .and. 
      $     b_passed_cointime_cut.and.h_passed_cointime_cut) then
 c         gep_evid = gen_event_id_number
-         call gep_ntuple_keep(abort,err)
+         if(gep_use_ntuple_cuts.eq.0.or.(
+     $        abs(hsxp_tar).lt.hprune_xp.and.
+     $        abs(hsyp_tar).lt.hprune_yp.and.
+     $        abs(hsdelta).lt.hprune_delta.and.
+     $        abs(hsy_tar).lt.hprune_ytar
+     $        )) then
+            call gep_ntuple_keep(abort,err)
+         endif
          call gep_fill_hist(abort,err)
       endif
       if(abort) then
