@@ -13,6 +13,8 @@
       IMPLICIT NONE
 
       INCLUDE 'hms_data_structures.cmn'
+      include 'hms_scin_parms.cmn'
+      include 'hms_scin_tof.cmn'
       INCLUDE 'hms_id_histid.cmn'
       include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
@@ -160,19 +162,30 @@
 	  hid2 = hidFPP_driftX(DCset,iChamber,iLayer)
           if (HFPP_nClusters(DCset,iChamber,iLayer).gt.0) then
             do iCluster=1,HFPP_nClusters(DCset,iChamber,iLayer)
-             do iHit=1,HFPP_nHitsinCluster(DCset,iChamber,iLayer,iCluster)
-               iRaw = HFPP_Clusters(DCset,iChamber,iLayer,iCluster,iHit)
-               iWire = HFPP_raw_wire(iRaw)
-               time = HFPP_drift_time(DCset,iChamber,iLayer,iWire)
-               dist = HFPP_drift_dist(DCset,iChamber,iLayer,iWire)
-               if(hid1.gt.0) call hf2(hid1,time,float(iWire),1.)
-               if(hid2.gt.0) call hf2(hid2,dist,float(iWire),1.)
-	     enddo !iHit
-	    enddo !iCluster
-	  endif
-	enddo !iLayer
-       enddo !iChamber
-      enddo !DCset
+               if(hfpp_clusterintrack(dcset,ichamber,ilayer,icluster).gt.0)
+     $              then
+                  if(hgood_start_time.and.abs(hstart_time-hstart_time_center).lt.hstart_time_slop) then
+                     do iHit=1,HFPP_nHitsinCluster(DCset,iChamber,iLayer,iCluster)
+                        iRaw = HFPP_Clusters(DCset,iChamber,iLayer,iCluster,iHit)
+                        iWire = HFPP_raw_wire(iRaw)
+                        time = HFPP_drift_time(DCset,iChamber,iLayer,iWire)
+                        dist = HFPP_drift_dist(DCset,iChamber,iLayer,iWire)
+                        
+                        if(hid1.gt.0) call hf2(hid1,time,float(iWire),1.)
+
+                        if(dist.ne.h_fpp_bad_drift) then
+                           
+                           if(hid2.gt.0) call hf2(hid2,dist,float(iWire),1.)
+                        endif                        
+
+                     enddo      !iHit
+                  endif         !cluster in track
+               endif
+            enddo               !iCluster
+         endif
+      enddo                     !iLayer
+      enddo                     !iChamber
+      enddo                     !DCset
 
 
 *     * for each DCset, histogram simple (Nick's) efficiency:
@@ -251,10 +264,18 @@
       else  ! fill residuals histogram:
          do dcset=1,h_fpp_n_dcsets
             hid = hidFPP_resid(dcset)
+            hid1 = hidFPP_resid6(dcset)
+            hid2 = hidFPP_resid5(dcset)
             do ichamber=1,h_fpp_n_dcinset
                do ilayer = 1,h_fpp_n_dclayers
                   ii = h_fpp_n_dclayers * (ichamber - 1) + ilayer
-                  if(hid.gt.0) call hf2(hid,float(ii),hfpp_track_residual(dcset,ichamber,ilayer,itrack),1.)
+                  do itrack=1,hfpp_n_tracks(dcset)
+                     if(hid.gt.0) call hf2(hid,float(ii),hfpp_track_residual(dcset,ichamber,ilayer,itrack),1.)
+                     if(hid1.gt.0.and.hfpp_track_nlayers(dcset,itrack).eq.6)
+     $                    call hf2(hid1,float(ii),hfpp_track_residual(dcset,ichamber,ilayer,itrack),1.)
+                     if(hid2.gt.0.and.hfpp_track_nlayers(dcset,itrack).eq.5)
+     $                    call hf2(hid2,float(ii),hfpp_track_residual(dcset,ichamber,ilayer,itrack),1.)
+                  enddo
                enddo
             enddo
          enddo
@@ -273,7 +294,9 @@
               
            endif
         endif
+       
         do iTrack=1,HFPP_N_tracks(DCset)
+           if((itrack.eq.hfpp_best_track(dcset)).or.hfppuseajptracking.eq.0) then
 	  if(hidFPP_Nhitontrk(DCset).gt.0) 
      $          call hf1(hidFPP_Nhitontrk(DCset),float(HFPP_track_Nlayers(DCset,iTrack)),1.)
 	  if(hidFPP_Nrawontrk(DCset).gt.0) 
@@ -296,6 +319,17 @@
      $         call hf1(hidFPP_fine_my(DCset),HFPP_track_fine(DCset,iTrack,3),1.)
 	  if(hidFPP_fine_by(DCset).gt.0) 
      $         call hf1(hidFPP_fine_by(DCset),HFPP_track_fine(DCset,iTrack,4),1.)
+          
+          if(dcset.eq.2.and.hfpp2_best_reference(itrack).gt.0) then
+             if(hidFPP_sclose(DCset).gt.0) 
+     $         call hf1(hidFPP_sclose(DCset),HFPP_track_sclose(DCset+1,iTrack),1.)
+	  if(hidFPP_zclose(DCset).gt.0) 
+     $         call hf1(hidFPP_zclose(DCset),HFPP_track_zclose(DCset+1,iTrack),1.)
+	  if(hidFPP_thetapol(DCset).gt.0) 
+     $         call hf1(hidFPP_thetapol(DCset),HFPP_track_theta(DCset+1,iTrack),1.)
+	  if(hidFPP_phipol(DCset).gt.0) 
+     $         call hf1(hidFPP_phipol(DCset),HFPP_track_phi(DCset+1,iTrack),1.)
+          else
 	  if(hidFPP_sclose(DCset).gt.0) 
      $         call hf1(hidFPP_sclose(DCset),HFPP_track_sclose(DCset,iTrack),1.)
 	  if(hidFPP_zclose(DCset).gt.0) 
@@ -304,6 +338,10 @@
      $         call hf1(hidFPP_thetapol(DCset),HFPP_track_theta(DCset,iTrack),1.)
 	  if(hidFPP_phipol(DCset).gt.0) 
      $         call hf1(hidFPP_phipol(DCset),HFPP_track_phi(DCset,iTrack),1.)
+          if(hidFPP_nambig(dcset).gt.0)
+     $         call hf1(hidFPP_nambig(dcset),float(hfpp_track_nambig(dcset,itrack)),1.)
+       endif
+       endif
 	enddo !iTrack
       enddo !DCset
 

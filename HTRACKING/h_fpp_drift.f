@@ -28,6 +28,9 @@
       real*4 drift_time         ! fully corrected drift time
       real*4 drift_time_orig    ! un-corrected drift time
       real*4 drift_distance     ! drift distance determ. from drift time
+      real*4 step               ! step size in time.
+      real*4 binmin,binmax,fracmin,fracmax,tmax,tmin,dmax,dmin
+      integer*4 nbins
 
       logical ABORT
       character*(*) err
@@ -46,7 +49,6 @@
       real*4 ejbtime			! really simple time to distance calc
       real*4 ejbdrift			! really simple time to distance calc
       common /HMS_FPP_ejbdrift/ ejbtime(120,4), ejbdrift(120,4)
-
 
       ABORT= .FALSE.
       err= ' '
@@ -360,8 +362,47 @@ c      write(*,*)'Drift type = ',hfpp_drift_type
             drift_distance = H_FPP_BAD_DRIFT
             RETURN
           endif
+       else if(hfpp_drift_type.eq.8) then ! ajp--one drift map per plane:
+          tmin = fppajpdriftmap_tmin(plane)
+          tmax = fppajpdriftmap_tmax(plane)
+          dmin = fppajpdriftmapdmin
+          dmax = fppajpdriftmapdmax
+          nbins = fppajpdriftmapnbins(plane)
 
-      else					! bad selector ****************
+c          write(*,*) 'tmin,tmax,dmin,dmax,nbins=',tmin,tmax,dmin,dmax,nbins
+          step = (tmax - tmin)/float(nbins)
+          binno = 1 + int( (drift_time-tmin)/step )
+          binmin = tmin + step*(binno-1)
+          binmax = tmin + step*binno
+c     throw out the bins at the periphery: bins that have less than 1/10,000th of the events:
+          if(binno.lt.1.or.binno.gt.nbins.or.
+     $         fppajpdriftmap_frac(plane,binno).lt.1.0e-4.or.
+     $         1.-fppajpdriftmap_frac(plane,binno).lt.1.0e-4) then
+             drift_distance = h_fpp_bad_drift
+          else
+             if(binno.eq.1) then
+                fracmin = 0.0
+             else 
+                fracmin = fppajpdriftmap_frac(plane,binno-1)
+             endif
+             fracmax = fppajpdriftmap_frac(plane,binno)
+*     linearly interpolate fraction within this bin:
+*     if fracmax = fracmin, find the next bin in which the integral increases:
+             do while(fracmax.le.fracmin.and.binno.lt.nbins)
+                binno=binno+1
+                fracmax = fppajpdriftmap_frac(plane,binno)
+                binmax = binmax + step
+             enddo
+
+             fraction = fracmin + 
+     $            (drift_time - binmin)*(fracmax-fracmin)/(binmax-binmin)
+             drift_distance = dmin + (dmax - dmin)*fraction
+c     ignore bins in which the integral doesn't change (near the endpoints)
+             if(fracmax.eq.fracmin) drift_distance = h_fpp_bad_drift
+c             write(*,*) 'time,bin,frac,driftdist=',drift_time,binno,fraction,drift_distance
+          endif
+
+       else                     ! bad selector ****************
           drift_distance = H_FPP_BAD_DRIFT
           write(err,*) 'unknown drift map type: ',hfpp_drift_type
           ABORT = .true.
@@ -484,6 +525,7 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
       read(LUN,*,err=901,end=900) rflag, hfpp_drift_Xmax
       hfpp_drift_type = int(rflag)
 
+      if(hfppuseajpdriftmap.ne.0) hfpp_drift_type = 8
 
       if (hfpp_drift_type.eq.1) then		! look-up table ***************
 
@@ -632,10 +674,63 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
           print *,' the drift in the focal plane polarimeter chambers, [47;34;1mone per card![49;0m'
           print *,' The selected map has ',hfpp_drift_Nbins,' time bins and a maximum.'
           print *,' drift distance of ',hfpp_drift_Xmax,' cm.\n'
+       else if(hfpp_drift_type.eq.8) then
+          fppajpdriftmapnbins(1) = min(fpp1v1ndriftbins,ajpdriftmaxbins)
+          fppajpdriftmapnbins(2) = min(fpp1x1ndriftbins,ajpdriftmaxbins)
+          fppajpdriftmapnbins(3) = min(fpp1u1ndriftbins,ajpdriftmaxbins)
+          fppajpdriftmapnbins(4) = min(fpp1v2ndriftbins,ajpdriftmaxbins)
+          fppajpdriftmapnbins(5) = min(fpp1x2ndriftbins,ajpdriftmaxbins)
+          fppajpdriftmapnbins(6) = min(fpp1u2ndriftbins,ajpdriftmaxbins)
+          fppajpdriftmapnbins(7) = min(fpp2v1ndriftbins,ajpdriftmaxbins)
+          fppajpdriftmapnbins(8) = min(fpp2x1ndriftbins,ajpdriftmaxbins)
+          fppajpdriftmapnbins(9) = min(fpp2u1ndriftbins,ajpdriftmaxbins)
+          fppajpdriftmapnbins(10) = min(fpp2v2ndriftbins,ajpdriftmaxbins)
+          fppajpdriftmapnbins(11) = min(fpp2x2ndriftbins,ajpdriftmaxbins)
+          fppajpdriftmapnbins(12) = min(fpp2u2ndriftbins,ajpdriftmaxbins)
 
-      else					! bad selector ****************
+          fppajpdriftmap_tmin(1) = fpp1v1tdriftmin
+          fppajpdriftmap_tmin(2) = fpp1x1tdriftmin
+          fppajpdriftmap_tmin(3) = fpp1u1tdriftmin
+          fppajpdriftmap_tmin(4) = fpp1v2tdriftmin
+          fppajpdriftmap_tmin(5) = fpp1x2tdriftmin
+          fppajpdriftmap_tmin(6) = fpp1u2tdriftmin
+          fppajpdriftmap_tmin(7) = fpp2v1tdriftmin
+          fppajpdriftmap_tmin(8) = fpp2x1tdriftmin
+          fppajpdriftmap_tmin(9) = fpp2u1tdriftmin
+          fppajpdriftmap_tmin(10) = fpp2v2tdriftmin
+          fppajpdriftmap_tmin(11) = fpp2x2tdriftmin
+          fppajpdriftmap_tmin(12) = fpp2u2tdriftmin
+
+          fppajpdriftmap_tmax(1) = fpp1v1tdriftmax
+          fppajpdriftmap_tmax(2) = fpp1x1tdriftmax
+          fppajpdriftmap_tmax(3) = fpp1u1tdriftmax
+          fppajpdriftmap_tmax(4) = fpp1v2tdriftmax
+          fppajpdriftmap_tmax(5) = fpp1x2tdriftmax
+          fppajpdriftmap_tmax(6) = fpp1u2tdriftmax
+          fppajpdriftmap_tmax(7) = fpp2v1tdriftmax
+          fppajpdriftmap_tmax(8) = fpp2x1tdriftmax
+          fppajpdriftmap_tmax(9) = fpp2u1tdriftmax
+          fppajpdriftmap_tmax(10) = fpp2v2tdriftmax
+          fppajpdriftmap_tmax(11) = fpp2x2tdriftmax
+          fppajpdriftmap_tmax(12) = fpp2u2tdriftmax
+          
+          do i=1,ajpdriftmaxbins
+             if(i.le.fpp1v1ndriftbins) fppajpdriftmap_frac(1,i) = fpp1v1_frac(i)
+             if(i.le.fpp1x1ndriftbins) fppajpdriftmap_frac(2,i) = fpp1x1_frac(i)
+             if(i.le.fpp1u1ndriftbins) fppajpdriftmap_frac(3,i) = fpp1u1_frac(i)
+             if(i.le.fpp1v2ndriftbins) fppajpdriftmap_frac(4,i) = fpp1v2_frac(i)
+             if(i.le.fpp1x2ndriftbins) fppajpdriftmap_frac(5,i) = fpp1x2_frac(i)
+             if(i.le.fpp1u2ndriftbins) fppajpdriftmap_frac(6,i) = fpp1u2_frac(i)
+             if(i.le.fpp2v1ndriftbins) fppajpdriftmap_frac(7,i) = fpp2v1_frac(i)
+             if(i.le.fpp2x1ndriftbins) fppajpdriftmap_frac(8,i) = fpp2x1_frac(i)
+             if(i.le.fpp2u1ndriftbins) fppajpdriftmap_frac(9,i) = fpp2u1_frac(i)
+             if(i.le.fpp2v2ndriftbins) fppajpdriftmap_frac(10,i) = fpp2v2_frac(i)
+             if(i.le.fpp2x2ndriftbins) fppajpdriftmap_frac(11,i) = fpp2x2_frac(i)
+             if(i.le.fpp2u2ndriftbins) fppajpdriftmap_frac(12,i) = fpp2u2_frac(i)
+          enddo
+       else                     ! bad selector ****************
           goto 904
-      endif
+       endif
 
       goto 990
 
