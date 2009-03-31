@@ -7,6 +7,9 @@
 *     Date:      9 April 1994
 *
 * $Log$
+* Revision 1.8.24.5  2009/03/31 20:33:27  puckett
+* added some misc. FPP histos
+*
 * Revision 1.8.24.4  2008/12/15 18:46:08  puckett
 * New and improved FPP tracking routines--(hopefully) thoroughly debugged. Documentation forthcoming (AJP)
 *
@@ -366,8 +369,18 @@ c
       hidFPP_Nsimp(1) = thgetid('hfpp_1nsimple')
       hidFPP_Nsimp(2) = thgetid('hfpp_2nsimple')
 
+      hidFPP_nambig(1) = thgetid('hfpp_1nambig')
+      hidfpp_nambig(2) = thgetid('hfpp_2nambig')
+
       hidFPP_resid(1) = thgetid('hfpp_1resid')
       hidFPP_resid(2) = thgetid('hfpp_2resid')
+      hidFPP_resid6(1) = thgetid('hfpp_1resid6')
+      hidFPP_resid6(2) = thgetid('hfpp_2resid6')
+      hidFPP_resid5(1) = thgetid('hfpp_1resid5')
+      hidFPP_resid5(2) = thgetid('hfpp_2resid5')
+
+      hidFPP_roughchi2vsnhit(1) = thgetid('hfpp_1roughchi2vsnhit')
+      hidFPP_roughchi2vsnhit(2) = thgetid('hfpp_2roughchi2vsnhit')
 
       do set=1,H_FPP_N_DCSETS
        do chamber=1,H_FPP_N_DCINSET
