@@ -11,6 +11,9 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
+* Revision 1.13.24.5  2009/03/31 18:19:39  puckett
+* added flag to turn on xtar-correction in HMS reconstruction
+*
 * Revision 1.13.24.4  2008/12/15 18:49:41  puckett
 * added some new variables for new FPP tracking routines + histogram id's for debugging
 *
@@ -171,6 +174,7 @@ c
       integer*4 hidFPP_trk_by(H_FPP_N_DCSETS)
       integer*4 hidFPP_Ntrk(H_FPP_N_DCSETS)
       integer*4 hidFPP_Nsimp(h_fpp_n_dcsets)
+      integer*4 hidFPP_Nambig(h_fpp_n_dcsets)
       integer*4 hidFPP_Nhitontrk(H_FPP_N_DCSETS)
       integer*4 hidFPP_Nrawontrk(H_FPP_N_DCSETS)
       integer*4 hidFPP_trkrough(H_FPP_N_DCSETS,6)
@@ -189,6 +193,9 @@ c
       integer*4 hidFPP_resol_lin(H_FPP_N_DCSETS)
       integer*4 hidFPP_resol_ang(H_FPP_N_DCSETS)
       integer*4 hidFPP_resid(h_fpp_n_dcsets)
+      integer*4 hidFPP_resid6(h_fpp_n_dcsets)
+      integer*4 hidFPP_resid5(h_fpp_n_dcsets)
+      integer*4 hidFPP_roughchi2vsnhit(h_fpp_n_dcsets)
 
       integer*4 hid_HMSwire(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
 
@@ -208,6 +215,7 @@ c
      &     hidFPP_trk_my, hidFPP_trk_by,
      &     hidFPP_Ntrk,
      $     hidFPP_Nsimp,
+     $     hidFPP_Nambig,
      &     hidFPP_Nhitontrk,
      &     hidFPP_Nrawontrk,
      &     hidFPP_trkrough,
@@ -215,6 +223,9 @@ c
      &     hidFPP_fine_bx, hidFPP_fine_by,
      &     hidFPP_resol_lin, hidFPP_resol_ang,
      $     hidFPP_resid,
+     $     hidFPP_resid6,
+     $     hidFPP_resid5,
+     $     hidFPP_roughchi2vsnhit,
      &     hidFPP_tdcROC,
      &     hidFPP_NickEff,
      &     hidFPP_sclose, hidFPP_zclose,

@@ -8,6 +8,9 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
+* Revision 1.27.20.6  2009/03/31 18:19:38  puckett
+* added flag to turn on xtar-correction in HMS reconstruction
+*
 * Revision 1.27.20.5  2008/09/16 17:07:25  puckett
 * added per-wire time offsets to be used optionally for the HMS chambers
 *
@@ -287,6 +290,7 @@ c     add some new variables to debug pattern recognition:
       integer hbypass_ajp_stublink
       integer hbypass_redo_leftright
       integer hbypass_track_t0
+      integer huse_xtar_corr_recon
       integer h_stub_prune_flags(7)
       real*4 h_stub_prune_x(2) ! 1=DC1,2=DC2
       real*4 h_stub_prune_y(2) ! 1=DC1,2=DC2
@@ -329,6 +333,7 @@ c     end ajp 05/16/08
      $     hbypass_ajp_stublink,
      $     hbypass_redo_leftright,
      $     hbypass_track_t0,
+     $     huse_xtar_corr_recon,
      $     h_stub_prune_flags,
      $     h_stub_prune_x,
      $     h_stub_prune_y,
