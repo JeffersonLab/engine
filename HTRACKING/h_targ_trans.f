@@ -16,6 +16,9 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
+* Revision 1.16.24.3  2009/03/31 20:32:57  puckett
+* added option to perform a second iteration of reconstruction using the xtar instead of ybeam as input
+*
 * Revision 1.16.24.2  2007/10/27 21:15:32  cdaq
 * fix erroneous submissions
 *
@@ -113,6 +116,9 @@
 * Misc. variables.
 
       integer*4        i,j,itrk
+      integer*4        niter
+
+      real*8           ztemp
 
       real*8           sum(4),hut(5),term,hut_rot(5)
 *=============================Executable Code =============================
@@ -132,6 +138,8 @@
       do itrk = 1,hntracks_fp
 *     set link between target and focal plane track. Currently 1 to 1
          hlink_tar_fp(itrk) = itrk
+
+         niter = 0
 
 * Reset COSY sums.
          do i = 1,4
@@ -176,6 +184,9 @@
          hut_rot(3) = hut(3)
          hut_rot(4) = hut(4) + hut(3)*h_ang_slope_y
          hut_rot(5) = hut(5)
+
+ 101     continue
+
 * Compute COSY sums.
          do i = 1,h_num_recon_terms
             term = 1.
@@ -194,7 +205,20 @@ c         if(sum(1).lt. -1.0) sum(1)= -.99
 c         if(sum(3).gt. 1.0) sum(3)=  0.99
 c         if(sum(3).lt. -1.0) sum(3)= -.99
 
-     
+         if(huse_xtar_corr_recon.gt.0.and.niter.eq.0) then ! do one more iteration of reconstruction, 
+c     this time correct for xtar:
+            ztemp = sum(2)*100. * ( coshthetas / tan(htheta_lab*degree - sum(3)) + sinhthetas)
+* Reset COSY sums.
+            do i=1,4
+               sum(i) = 0.
+            enddo
+c     set hut_rot(5) to corrected xtar:
+            hut_rot(5) = hut_rot(5) - sum(1)*ztemp*coshthetas/100.0
+      
+            niter = niter + 1
+            goto 101
+         endif
+
 * Load output values.
 
          hx_tar(itrk) = 0.              ! ** No beam raster yet **
