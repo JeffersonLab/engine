@@ -39,6 +39,10 @@
       real*4 theta,phi,sclose,zclose
       real*4 mydriftT,mydriftX,WirePropagation,wirepos,trackpos
 
+      real*4 combochi2(64),combosclose(64),combozclose(64),combotheta(64)
+      real*4 combophi(64)
+      integer*4 comboconetest(64)
+
       integer*4 chambers(h_fpp_max_fitpoints),trackchambers(h_fpp_max_fitpoints)
       integer*4 layers(h_fpp_max_fitpoints),tracklayers(h_fpp_max_fitpoints)
       integer*4 wires(h_fpp_max_fitpoints),trackwires(h_fpp_max_fitpoints)
@@ -58,6 +62,8 @@
       
       real*4 sclosweight,criterion,theta1,theta2,mintheta
 
+      real*4 zmin,zmax
+
       real*4 chi2_1,chi2_2,sclos1,sclos2,chi2_H
 
       real*4 x,y,z,u,v,roughu,roughv,u1,u2,rough_wprime,rough_trkthetaw
@@ -67,20 +73,23 @@
 
       integer*4 npoints,nclusters,npointsthislayer(h_fpp_n_dcinset,h_fpp_n_dclayers)
 
-      integer*4 ntrackpoints,bestcombo,worstpoint,ntrackplanes
+      integer*4 ntrackpoints,bestcombo,worstpoint,ntrackplanes,newbestcombo
       integer*4 bestref,jtrack
 
       logical plusminusfixed(h_fpp_max_fitpoints),notunique
 
-      logical firsttry
-
-      real minchi2,chi2
+      logical firsttry,anyambig
       
+      real test,mintest
+      real minchi2,chi2
+      real*4 fourbestchi2(4)
+      integer fourbestcombos(4)
+
       real*4 residual,maxresidual,minresidual
 
       integer ndf,icone
 
-      integer*4 ichamber,ilayer,ihit,hit,wire
+      integer*4 ichamber,ilayer,ihit,hit,wire,sign,bestsign
       integer*4 icluster,ipoint,icombo,point1,point2,j,k
       integer*4 ncombos
       integer*4 nfree,nfixed,ifree ! number of points w/ fixed and free left-right choice, respectively
@@ -314,6 +323,7 @@ c      write(*,*) 'logical plusminusfixed=',plusminusfixed
       endif
 
 *     NUMBER OF POSSIBLE LEFT-RIGHT COMBINATIONS EQUALS 2^NFREEHITS
+*     note that it is only possible to have ONE free hit per layer in this routine:
 
       ncombos = 2**nfree 
 
@@ -322,11 +332,20 @@ c      write(*,*) 'logical plusminusfixed=',plusminusfixed
 
 c      notunique = .false. variable not needed
 
+      bestcombo = -1
+
       do icombo=0,ncombos-1
 c     set the left right combination on all the "free" hits according to the bit value of the ihit-th bit of icombo:
          ifree = 0
 
 c         write(*,*) 'LR combo ',icombo+1,' of ',ncombos
+
+         combochi2(icombo+1) = 0.0
+         comboconetest(icombo+1) = 0
+         combosclose(icombo+1) = -9999.
+         combozclose(icombo+1) = -9999.
+         combotheta(icombo+1) = -9999.
+         combophi(icombo+1) = -9999.
 
          do ipoint=1,ntrackpoints
 *     for free hits only, set plusminustest
@@ -403,83 +422,143 @@ c     and correct this point for track angle as measured by the simple track:
          chi2 = TestTrack(5)
 *     first check for "ambiguity": is the chi2 of this track exactly 
 *     equal to minchi2?
-         if(.not.firsttry.and.chi2.eq.minchi2) then ! AMBIGUITY!!!
-*     choose the better of the two tracks using sclose if we have
-*     an HMS track to use:
-c            write(*,*) 'AMBIGUITY FOUND'
-            if(hsnum_fptrack.gt.0) then
-               hmstrack(1) = hsxp_fp
-               hmstrack(2) = hsx_fp
-               hmstrack(3) = hsyp_fp
-               hmstrack(4) = hsy_fp
-*     translate FPP test track into focal plane coordinates
-               dccoords(1) = testtrack(1)
-               dccoords(2) = testtrack(3)
-               dccoords(3) = 1.0
-*     first slopes:
-               call h_fpp_dc2fp(dcset,.true.,dccoords,fpcoords)
-               fpptrack(1) = fpcoords(1)
-               fpptrack(3) = fpcoords(2)
-*     then position offsets:
-               dccoords(1) = testtrack(2)
-               dccoords(2) = testtrack(4)
-               dccoords(3) = 0.0
-               call h_fpp_dc2fp(dcset,.false.,dccoords,fpcoords)
-               
-               fpptrack(2) = fpcoords(1) 
-     $              - fpcoords(3) * fpptrack(1)
-               fpptrack(4) = fpcoords(2)
-     $              - fpcoords(3) * fpptrack(3)
+c$$$         if(.not.firsttry.and.chi2.eq.minchi2) then ! AMBIGUITY!!!
+c$$$*     choose the better of the two tracks using sclose if we have
+c$$$*     an HMS track to use:
+c$$$c            write(*,*) 'AMBIGUITY FOUND'
+c$$$            if(hsnum_fptrack.gt.0) then
+c$$$               hmstrack(1) = hsxp_fp
+c$$$               hmstrack(2) = hsx_fp
+c$$$               hmstrack(3) = hsyp_fp
+c$$$               hmstrack(4) = hsy_fp
+c$$$*     translate FPP test track into focal plane coordinates
+c$$$               dccoords(1) = testtrack(1)
+c$$$               dccoords(2) = testtrack(3)
+c$$$               dccoords(3) = 1.0
+c$$$*     first slopes:
+c$$$               call h_fpp_dc2fp(dcset,.true.,dccoords,fpcoords)
+c$$$               fpptrack(1) = fpcoords(1)
+c$$$               fpptrack(3) = fpcoords(2)
+c$$$*     then position offsets:
+c$$$               dccoords(1) = testtrack(2)
+c$$$               dccoords(2) = testtrack(4)
+c$$$               dccoords(3) = 0.0
+c$$$               call h_fpp_dc2fp(dcset,.false.,dccoords,fpcoords)
+c$$$               
+c$$$               fpptrack(2) = fpcoords(1) 
+c$$$     $              - fpcoords(3) * fpptrack(1)
+c$$$               fpptrack(4) = fpcoords(2)
+c$$$     $              - fpcoords(3) * fpptrack(3)
+c$$$
+c$$$               call h_fpp_closest(hmstrack,fpptrack,sclos1,zclose)
+c$$$*     Now do the same for the (currently) best track:
+c$$$               dccoords(1) = besttrack(1)
+c$$$               dccoords(2) = besttrack(3)
+c$$$               dccoords(3) = 1.0
+c$$$               call h_fpp_dc2fp(dcset,.true.,dccoords,fpcoords)
+c$$$               fpptrack(1) = fpcoords(1)
+c$$$               fpptrack(3) = fpcoords(2)
+c$$$               
+c$$$               dccoords(1) = besttrack(2)
+c$$$               dccoords(2) = besttrack(4)
+c$$$               dccoords(3) = 0.0
+c$$$               call h_fpp_dc2fp(dcset,.false.,dccoords,fpcoords)
+c$$$
+c$$$               fpptrack(2) = fpcoords(1) - fpcoords(3) * fpptrack(1)
+c$$$               fpptrack(4) = fpcoords(2) - fpcoords(3) * fpptrack(3)
+c$$$
+c$$$               call h_fpp_closest(hmstrack,fpptrack,sclos2,zclose)
+c$$$*     only if sclos1 is smaller than sclos2, replace 
+c$$$*     the best track and the best left-right combo with the current
+c$$$*     one
+c$$$               if(sclos1.lt.sclos2) then
+c$$$                  do j=1,ntrackpoints
+c$$$                     plusminusbest(j) = plusminustest(j)
+c$$$                  enddo
+c$$$                  do j=1,5
+c$$$                     besttrack(j) = testtrack(j)
+c$$$                  enddo
+c$$$               endif
+c$$$*     otherwise, choose the track with the smallest 
+c$$$*     theta relative to the z axis, i.e., closest to normal
+c$$$*     incidence: this is arbitrary, but if no HMS track, we don't care anyway
+c$$$            else
+c$$$               theta1 = acos(1. / sqrt(1. + (testtrack(1) )**2 
+c$$$     $              + (testtrack(3) )**2))
+c$$$               theta2 = acos(1. / sqrt(1. + (besttrack(1) )**2 
+c$$$     $              + (besttrack(3) )**2))
+c$$$               if(theta1.lt.theta2) then
+c$$$                  do j=1,ntrackpoints
+c$$$                     plusminusbest(j) = plusminustest(j)
+c$$$                  enddo
+c$$$                  do j=1,5
+c$$$                     besttrack(j) = testtrack(j)
+c$$$                  enddo
+c$$$               endif
+c$$$            endif ! end if on existence of HMS track 
+c$$$         endif ! end test on ambiguity
 
-               call h_fpp_closest(hmstrack,fpptrack,sclos1,zclose)
-*     Now do the same for the (currently) best track:
-               dccoords(1) = besttrack(1)
-               dccoords(2) = besttrack(3)
-               dccoords(3) = 1.0
-               call h_fpp_dc2fp(dcset,.true.,dccoords,fpcoords)
-               fpptrack(1) = fpcoords(1)
-               fpptrack(3) = fpcoords(2)
-               
-               dccoords(1) = besttrack(2)
-               dccoords(2) = besttrack(4)
-               dccoords(3) = 0.0
-               call h_fpp_dc2fp(dcset,.false.,dccoords,fpcoords)
+c$$$c     calculate track quantities relative to reference track for each LR combo:
+c$$$         combochi2(icombo+1) = chi2
+c$$$c     first, transform to focal plane coordinate system, slopes first:
+c$$$         dccoords(1) = testtrack(1) ! dx/dz
+c$$$         dccoords(2) = testtrack(3) ! dy/dz
+c$$$         dccoords(3) = 1.0          ! dz/dz
+c$$$
+c$$$         call h_fpp_dc2fp(dcset,.true.,dccoords,fpcoords)
+c$$$
+c$$$         fpptrack(1) = fpcoords(1) ! dx/dz
+c$$$         fpptrack(3) = fpcoords(2) ! dy/dz
+c$$$
+c$$$         dccoords(1) = testtrack(2) ! x 
+c$$$         dccoords(2) = testtrack(4) ! y
+c$$$         dccoords(3) = 0.0          ! z
+c$$$         
+c$$$         call h_fpp_dc2fp(dcset,.false.,dccoords,fpcoords)
+c$$$
+c$$$c     project back to z=0:
+c$$$
+c$$$         fpptrack(2) = fpcoords(1) - fpcoords(3)*fpptrack(1)
+c$$$         fpptrack(4) = fpcoords(2) - fpcoords(3)*fpptrack(3)
+c$$$
+c$$$*     now we need to define reference track: if dcset==1, reference track = HMS track. Otherwise, reference track = 
+c$$$*     "BEST" FPP1 track
+c$$$
+c$$$         hmstrack(1) = hsxp_fp
+c$$$         hmstrack(2) = hsx_fp
+c$$$         hmstrack(3) = hsyp_fp
+c$$$         hmstrack(4) = hsy_fp
+c$$$         
+c$$$         if(dcset.eq.2.and.hfpp_best_track(1).gt.0) then
+c$$$            jtrack = hfpp_best_track(1)
+c$$$            hmstrack(1) = hfpp_track_dx(1,jtrack)
+c$$$            hmstrack(2) = hfpp_track_x(1,jtrack)
+c$$$            hmstrack(3) = hfpp_track_dy(1,jtrack)
+c$$$            hmstrack(4) = hfpp_track_y(1,jtrack)
+c$$$         endif
+c$$$
+c$$$         call h_fpp_relative_angles(hmstrack(1),hmstrack(3),fpptrack(1),fpptrack(3),theta,phi)
+c$$$
+c$$$         combotheta(icombo+1) = theta
+c$$$         combophi(icombo+1) = phi
+c$$$         
+c$$$         call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
+c$$$
+c$$$         combosclose(icombo+1) = sclose
+c$$$         combozclose(icombo+1) = zclose
+c$$$
+c$$$         icone = 1
+c$$$
+c$$$         call h_fpp_conetest(hmstrack,dcset,zclose,theta,icone)
+c$$$
+c$$$         comboconetest(icombo+1) = icone
 
-               fpptrack(2) = fpcoords(1) - fpcoords(3) * fpptrack(1)
-               fpptrack(4) = fpcoords(2) - fpcoords(3) * fpptrack(3)
-
-               call h_fpp_closest(hmstrack,fpptrack,sclos2,zclose)
-*     only if sclos1 is smaller than sclos2, replace 
-*     the best track and the best left-right combo with the current
-*     one
-               if(sclos1.lt.sclos2) then
-                  do j=1,ntrackpoints
-                     plusminusbest(j) = plusminustest(j)
-                  enddo
-                  do j=1,5
-                     besttrack(j) = testtrack(j)
-                  enddo
-               endif
-*     otherwise, choose the track with the smallest 
-*     theta relative to the z axis, i.e., closest to normal
-*     incidence: this is arbitrary, but if no HMS track, we don't care anyway
-            else
-               theta1 = acos(1. / sqrt(1. + (testtrack(1) )**2 
-     $              + (testtrack(3) )**2))
-               theta2 = acos(1. / sqrt(1. + (besttrack(1) )**2 
-     $              + (besttrack(3) )**2))
-               if(theta1.lt.theta2) then
-                  do j=1,ntrackpoints
-                     plusminusbest(j) = plusminustest(j)
-                  enddo
-                  do j=1,5
-                     besttrack(j) = testtrack(j)
-                  enddo
-               endif
-            endif ! end if on existence of HMS track 
-         endif ! end test on ambiguity
+c$$$         if(ntrackplanes.eq.6.and.ncombos.ge.4.and.ntrackpoints.eq.6) then
+c$$$            write(*,*) 'icombo, chi2=',icombo,chi2
+c$$$         endif
 *     if this is the first combination tried or the chi2 is better than the best chi2,
          if(firsttry.or.chi2.lt.minchi2) then
+            bestcombo = icombo
 *     set best chi2 to the chi2 of this track
             minchi2 = chi2
 *     no longer first try
@@ -495,7 +574,77 @@ c            write(*,*) 'found combo w/ better chi2 plusminus=',plusminusbest
             enddo
 c            write(*,*) 'current best track=',besttrack
          endif
-      enddo ! end loop over possible left-right combos
+      enddo                     ! end loop over possible left-right combos
+      
+c$$$      if(ncombos.ge.4.and.ntrackplanes.ge.6.and.ntrackpoints.eq.6) then 
+c$$$         write(*,*) 'chi2 of four best left-right combos=',fourbestchi2
+c$$$         write(*,*) 'four best left-right combos = ',fourbestcombos
+c$$$      endif
+c     now the question is whether to choose a left-right combo with worse chi2 based on sclose and so on:
+c     DO NOT attempt this if the track has ANY multi-hit clusters!!!!!!
+c$$$      if(hfppfixleftright.gt.0.and.ntrackpoints.eq.ntrackplanes.and.
+c$$$     $     nfree.eq.ntrackpoints) then
+c$$$
+c$$$         firsttry = .true.
+c$$$
+c$$$         newbestcombo = -1
+c$$$
+c$$$         do icombo=0,ncombos-1
+c$$$            zmin = hfpp_prune_zclose(2*(dcset-1)+1) - 
+c$$$     $           hfpp_prune_zslop(dcset) / tan(combotheta(icombo+1) )
+c$$$            zmax = hfpp_prune_zclose(2*(dcset-1)+2) + 
+c$$$     $           hfpp_prune_zslop(dcset) / tan(combotheta(icombo+1) )
+c$$$
+c$$$            if(combochi2(icombo+1)-minchi2.le.hfpp_leftright_chi2cut
+c$$$     $           .and.icombo.ne.bestcombo) then
+c$$$
+c$$$               anyambig = .false.
+c$$$
+c$$$               do ipoint=1,ntrackpoints
+c$$$                  sign = jbit(icombo,ipoint)
+c$$$                  bestsign = jbit(bestcombo,ipoint)
+c$$$                  if(sign.ne.bestsign.and.trackdrifts(ipoint).ge.
+c$$$     $                 5.*sqrt(tracksigma2s(ipoint)) ) then
+c$$$                     anyambig = .true.
+c$$$                  endif
+c$$$               enddo
+c$$$
+c$$$               if(anyambig) then
+c$$$                  if(combosclose(icombo+1).lt.combosclose(bestcombo+1)
+c$$$     $                 .and.combozclose(icombo+1).ge.zmin
+c$$$     $                 .and.combozclose(icombo+1).le.zmax) then
+c$$$                     test = (combosclose(icombo+1)/combosclose(bestcombo+1) )**2
+c$$$                     if(test.le.hfpp_leftright_stestmax.and.
+c$$$     $                    (firsttry.or.test.lt.mintest) ) then
+c$$$                        firsttry = .false.
+c$$$                        mintest = test
+c$$$                        newbestcombo = icombo
+c$$$                     endif
+c$$$                  endif
+c$$$               endif
+c$$$
+c$$$            endif
+c$$$         enddo
+c$$$
+c$$$         if(newbestcombo.ge.0) then
+c$$$            write(*,*) 'FPP=',dcset
+c$$$            write(*,*) 'old best combo chi2 = ',combochi2(bestcombo+1)
+c$$$            write(*,*) '(sclose,zclose,theta,phi)=',combosclose(bestcombo+1),
+c$$$     $        combozclose(bestcombo+1),combotheta(bestcombo+1),combophi(bestcombo+1)
+c$$$
+c$$$            write(*,*) 'new best combo chi2 = ',combochi2(newbestcombo+1)
+c$$$            write(*,*) '(sclose,zclose,theta,phi)=',combosclose(newbestcombo+1),
+c$$$     $        combozclose(newbestcombo+1),combotheta(newbestcombo+1),combophi(newbestcombo+1)
+c$$$
+c$$$            do ipoint=1,ntrackpoints
+c$$$               if(jbit(newbestcombo,ipoint).eq.1) then
+c$$$                  plusminusbest(ipoint) = 1.0
+c$$$               else 
+c$$$                  plusminusbest(ipoint) = -1.0
+c$$$               endif
+c$$$            enddo
+c$$$         endif
+c$$$      endif
 *     set "final" coordinate based on best left right combination:
 *     we still have to re-"initialize" all the "second" hits within three-hit clusters based on 
 *     whatever the best left-right combo is:
