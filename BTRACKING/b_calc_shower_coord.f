@@ -153,7 +153,7 @@ c     tmax = ln(E'/15 MeV) - 0.5
 c     BigCal measures the energy of the cluster. Large error, but smaller error on the logarithm:
 c     This is a small correction of at MOST 2 cm
 
-            tmax = X0 * max(0.,log(bigcal_all_clstr_etot(i) / Ecrit) - 0.5 ) ! tmax in cm.
+            tmax = X0 / sqrt(2.0) * max(0.,log(bigcal_all_clstr_etot(i) / Ecrit) - 0.5 ) ! tmax in cm.
 
             x = xcenter + xdiff
             y = ycenter + ydiff
