@@ -14,6 +14,7 @@
       include 'gen_decode_common.cmn'
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_fpp_params.cmn'
+      include 'hms_fpp_event.cmn'
       INCLUDE 'hms_geometry.cmn'
 
       INCLUDE 'hms_fpp_params.dte'
@@ -222,7 +223,22 @@ c
               enddo !iloc
             enddo !ilab
                
-      enddo !iset
+      enddo                  !iset
+*     AJP initialize track selection parameters:
+      do iset=1,2
+         hfpp_prune_thetamin(iset) = 0.0
+         hfpp_prune_thetamax(iset) = max(45.,hfpp_prune_thetamax(iset))
+         hfpp_prune_zslop(iset) = abs(hfpp_prune_zslop(iset))
+      enddo
+
+      hfpp_prune_sclose(1) = max(0.3,hfpp_prune_sclose(1))
+      hfpp_prune_sclose(2) = max(0.6,hfpp_prune_sclose(2))
+      hfpp_prune_zclose(1) = min(105.,hfpp_prune_zclose(1))
+      hfpp_prune_zclose(2) = max(171.,hfpp_prune_zclose(2))
+      hfpp_prune_zclose(3) = min(205.,hfpp_prune_zclose(3))
+      hfpp_prune_zclose(4) = max(271.,hfpp_prune_zclose(4))
+
+*     AJP 
 
 
 *     * initialize driftmap
