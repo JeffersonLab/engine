@@ -32,10 +32,18 @@ c     define arrays for candidate tracks:
       real*4 simpletracks(h_fpp_max_candidates,6)
       real*4 fulltracks(h_fpp_max_candidates,6)
       real*4 thetatracks(h_fpp_max_candidates) ! store track polar angle relative to HMS 
+      real*4 sclosetracks(h_fpp_max_candidates) ! store track distance of closest approach relative to HMS or FPP1 
+      real*4 zclosetracks(h_fpp_max_candidates) ! store track z of closest approach relative to HMS or FPP1
+      real*4 phitracks(h_fpp_max_candidates)
+      integer*4 conetesttracks(h_fpp_max_candidates) ! store cone test of tracks relative to HMS or FPP1
+      integer*4 bestreftracks(h_fpp_max_candidates)
       real*4 chi2, minchi2
 
+c      logical ambiguity(h_fpp_max_candidates)
+      logical firsttheta,firstsclose
       logical firsttry,any6,anytheta ! at this stage of the tracking, apply a maximum theta cut on all candidate tracks
       logical any6theta ! any tracks with six planes AND passing theta cut?
+      logical anyzclose,any6zclose ! any tracks with zclose passing prune tests?
 
       integer*4 hitcombos(h_fpp_max_candidates,h_fpp_n_dcinset,h_fpp_n_dclayers)
 
@@ -51,13 +59,19 @@ c     define arrays for candidate tracks:
 
       real*4 HMStrack(4)
       real*4 FPPtrack(4)
-      real*4 DCcoords(3), FPcoords(3)
+      real*4 DCslopes(3),DCcoords(3), FPcoords(3), FPslopes(3)
 
       real*4 PI
       parameter(PI=3.141592653)
 
-      real*4 theta,mintheta,phi,sclose,zclose
+      real*4 theta,mintheta,phi,sclose,minsclose,zclose
+      real*4 criterion,mincriterion
       integer*4 conetest,bestref,jtrack
+      integer*4 iteration
+
+      logical goodhms
+
+      real*4 prob
 
       ABORT= .FALSE.
       err= ' '
@@ -70,13 +84,25 @@ c     define arrays for candidate tracks:
 
       call h_fpp_tracking_freehitcount(dcset,sufficient_hits)
 
+      iteration = 1
+
+      goodhms = abs(hsxp_tar).le..08.and.abs(hsyp_tar).le..04.and.abs(hsy_tar)<5..and.
+     $     abs(hsdelta)<10.
+
       do while (sufficient_hits .and. (HFPP_N_tracks(DCset).lt.H_FPP_MAX_TRACKS))
+         
+c$$$         if(goodhms) then
+c$$$            write(*,*) 'FPP tracking: chamber = ',dcset,' iteration = ',iteration
+c$$$         endif
+         iteration = iteration + 1
 
          ncandidates = 0
          any6 = .false.
          anytheta = .false.
          any6theta = .false.
-         
+         anyzclose = .false.
+         any6zclose = .false.
+ 
 c     the kind of loop we want here goes until we either run out of hit combos for a simple track, or
 c     until we exceed the maximum number of candidate tracks:
 
@@ -101,11 +127,13 @@ c         write(*,*) 'Start of tracking, FPP,ntracks=',dcset,hfpp_n_tracks(dcset
             call g_add_path(here,err)
             return
          endif
-         
+
          if(ncandidates.gt.hfpp_n_simple(dcset))
      $        hfpp_n_simple(dcset) = ncandidates
-c     write(*,*) 'number of candidates after simple tracking=',ncandidates
          
+c$$$         if(goodhms) then
+c$$$            write(*,*) 'number of candidates after simple tracking=',ncandidates
+c$$$         endif
 c$$$  if (.true.) then
 c$$$               if (int(SimpleTrack(6)).le.0) then
 c$$$                  if(hidFPP_trkrough(DCset,6).gt.0) call hf1(hidFPP_trkrough(DCset,6),0.,1.) !Nraw
@@ -162,22 +190,112 @@ c            write(*,*) 'track_good = ',track_good
                return
             endif
             
-            if(track_good) then
+            if(track_good) then ! tracking with drift resulted in a reasonable track:
 
-               dccoords(1) = fulltrack(1)
-               dccoords(2) = fulltrack(3)
-               dccoords(3) = 1.0
+*     calculate everything so we can check its quality/value against quantities other than just chi2:
+*     transform from FPP to focal plane coordinate system: 
+*     slopes first:
+               dcslopes(1) = fulltrack(1)
+               dcslopes(2) = fulltrack(3)
+               dcslopes(3) = 1.0
+               
+               call h_fpp_dc2fp(dcset,.true.,dcslopes,fpslopes)
 
-               call h_fpp_dc2fp(dcset,.true.,dccoords,fpcoords)
+*     Next, transform coordinates from FPP to focal plane system:
+               dccoords(1) = fulltrack(2)
+               dccoords(2) = fulltrack(4)
+               dccoords(3) = 0.0
+               
+               call h_fpp_dc2fp(dcset,.false.,dccoords,fpcoords)
+               
+               fpcoords(1) = fpcoords(1) - fpslopes(1)*fpcoords(3)
+               fpcoords(2) = fpcoords(2) - fpslopes(2)*fpcoords(3)
+*     initialize bestref to zero:
+               bestref = 0
+*     initialize "hmstrack" to the actual hms track:
+               hmstrack(1) = hsxp_fp
+               hmstrack(2) = hsx_fp
+               hmstrack(3) = hsyp_fp
+               hmstrack(4) = hsy_fp
+*     initialize "fpptrack" to the current track:
+               fpptrack(1) = fpslopes(1)
+               fpptrack(2) = fpcoords(1)
+               fpptrack(3) = fpslopes(2)
+               fpptrack(4) = fpcoords(2)
+*     calculate closest approach parameters relative to hms track:
+               call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
+               call h_fpp_relative_angles(hmstrack(1),hmstrack(3),fpptrack(1),fpptrack(3),theta,phi)
+*     in FPP2, need to figure out which reference track to use:
+               if(dcset.eq.2) then ! find track in FPP1 or HMS wrt which this track has smallest sclose/theta:
+                  minsclose = sclose
+                  mintheta = theta
+                  do jtrack=1,hfpp_n_tracks(1)
+                     hmstrack(1) = hfpp_track_dx(1,jtrack)
+                     hmstrack(2) = hfpp_track_x(1,jtrack)
+                     hmstrack(3) = hfpp_track_dy(1,jtrack)
+                     hmstrack(4) = hfpp_track_y(1,jtrack)
+c     fpptrack variables haven't changed, so calculate zclose and zclose
+                     call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
+c     only if we find a track in FPP1 wrt which FPP2 has a smaller sclose than 
+c     wrt to the HMS track, then we designate that track as the reference track for 
+c     this FPP2 track:
+                     call h_fpp_relative_angles(hmstrack(1),hmstrack(3),fpptrack(1),fpptrack(3),theta,phi)
 
-               call h_fpp_relative_angles(hsxp_fp,hsyp_fp,
-     $              fpcoords(1),fpcoords(2),theta,phi)
+                     if(sclose.lt.minsclose) then
+                        minsclose = sclose
+                        if(hselectfpptrackprune.eq.4) bestref = jtrack
+                     endif
+                     if(theta.lt.mintheta) then
+                        mintheta = theta
+                        if(hselectfpptrackprune.ne.4) bestref = jtrack
+                     endif
+
+                  enddo
+
+               endif     
+
+               bestreftracks(i) = bestref
+          
+*    re-calculate theta,phi,sclose,zclose wrt to HMS track or best reference track:
+               if(dcset.eq.2.and.bestref.gt.0) then
+                  call h_fpp_relative_angles(hfpp_track_dx(1,bestref),
+     $                 hfpp_track_dy(1,bestref),fpslopes(1),fpslopes(2),
+     $                 theta,phi)
+                  hmstrack(1) = hfpp_track_dx(1,bestref)
+                  hmstrack(2) = hfpp_track_x(1,bestref)
+                  hmstrack(3) = hfpp_track_dy(1,bestref)
+                  hmstrack(4) = hfpp_track_y(1,bestref)
+                  
+                  call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
+
+               else
+                  call h_fpp_relative_angles(hsxp_fp,hsyp_fp,fpslopes(1),
+     $                 fpslopes(2),theta,phi)
+                  
+                  hmstrack(1) = hsxp_fp
+                  hmstrack(2) = hsx_fp
+                  hmstrack(3) = hsyp_fp
+                  hmstrack(4) = hsy_fp
+
+                  call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
+                  
+               endif
+
+               conetest = 1
+               
+               call h_fpp_conetest(hmstrack,dcset,zclose,theta,conetest)
+
+               thetatracks(i) = theta
+               phitracks(i) = phi
+               
+               sclosetracks(i) = sclose
+               zclosetracks(i) = zclose
+
+               conetesttracks(i) = conetest
 
                if(theta.le.hfpp_prune_thetamax(dcset)*PI/180.0) 
      $              anytheta = .true.
-               
-               thetatracks(i) = theta
-               
+
                do j=1,6
                   fulltracks(i,j) = fulltrack(j)
                enddo
@@ -193,6 +311,15 @@ c            write(*,*) 'track_good = ',track_good
                if(nplanestemp.eq.h_fpp_n_dcinset*h_fpp_n_dclayers) 
      $              any6 = .true.
 
+               if(zclose.ge.hfpp_prune_zclose(2*(dcset-1)+1).and.
+     $              zclose.le.hfpp_prune_zclose(2*(dcset-1)+2)) then
+                  anyzclose = .true.
+                  if(nplanestemp.eq.h_fpp_n_dcinset*h_fpp_n_dclayers)
+     $                 then
+                     any6zclose = .true.
+                  endif
+               endif
+
                if(theta.le.hfpp_prune_thetamax(dcset)*PI/180.0
      $              .and.nplanestemp.eq.h_fpp_n_dcinset*h_fpp_n_dclayers)
      $              any6theta = .true.
@@ -207,53 +334,106 @@ c            write(*,*) 'track_good = ',track_good
             endif
          enddo
 
-c         write(*,*) 'number of good tracks after tracking with drift=',ngoodtracks
+c     if the left-right fixing routine is turned on and we don't prune on the number of planes 
+c     on the track, then don't require six planes:
 
+         if(hfpp_prune_nplanes.eq.0.and.hfppfixleftright.gt.0) then
+            any6 = .false.
+         endif
+            
+c$$$         if(goodhms) then
+c$$$            write(*,*) 
+c$$$     $           'number of good tracks after tracking with drift=',ngoodtracks
+c$$$         endif
          if(ngoodtracks.eq.0) exit
          
          bestcandidate = 0
          firsttry = .true.
-         
-         do i=1,ngoodtracks
+         firsttheta = .true.
+         firstsclose = .true.
+*     get minimum chi2, sclose, and theta, always checking for existence of six-hit tracks first:
+c$$$         do i=1,ngoodtracks
+c$$$            track=goodtracks(i)
+c$$$            chi2 = fulltracks(track,5)
+c$$$            sclose = sclosetracks(track)
+c$$$            theta = thetatracks(track)
+c$$$            if(candidate_nplanes(track).eq.6.or..not.any6) then
+c$$$               if(firsttry) then
+c$$$                  firsttry = .false.
+c$$$                  mintheta = theta 
+c$$$                  minchi2 = chi2
+c$$$                  minsclose = sclose
+c$$$               else
+c$$$                  if(theta.lt.mintheta) mintheta = theta
+c$$$                  if(chi2.lt.minchi2) minchi2 = chi2
+c$$$                  if(sclose.lt.minsclose) minsclose = sclose               
+c$$$               endif
+c$$$            endif
+c$$$         enddo
+         firsttry = .true.
+         do i=1,ngoodtracks     ! here is where we try to pick the best track:
+            
             track = goodtracks(i)
             
             chi2 = fulltracks(track,5)
+            sclose = sclosetracks(track)
+            theta = thetatracks(track)
+            zclose = zclosetracks(track)
+            conetest = conetesttracks(track)
+            bestref = bestreftracks(track)
+            phi = phitracks(track)
 
-c     prioritize: tracks passing theta cut take precedence over six-plane tracks.
-c     we want tracks with six planes passing theta cut, but we will take a five-plane track 
-c     passing theta over a six-plane track failing theta:
-            if(firsttry.or.chi2.lt.minchi2) then
-c$$$               if(any6theta) then ! there is at least one track passing six planes AND theta cut. Require both
-c$$$                  if(candidate_nplanes(track).eq.h_fpp_n_dcinset*h_fpp_n_dclayers
-c$$$     $                 .and.thetatracks(track).le.hfpp_prune_thetamax(dcset)*PI/180.0)
-c$$$     $                 then
-c$$$                     firsttry = .false.
-c$$$                     minchi2 = chi2
-c$$$                     bestcandidate = track
-c$$$                  endif
-c$$$               else if(anytheta) then ! there is no track passing six planes AND theta, require theta cut
-c$$$                  if(thetatracks(track).le.hfpp_prune_thetamax(dcset)*PI/180.0)
-c$$$     $                 then
-c$$$                     firsttry = .false.
-c$$$                     minchi2 = chi2
-c$$$                     bestcandidate = track
-c$$$                  endif
-c$$$               else if(any6) then ! there is no track passing theta cut. Require six planes
-               if(any6) then
-                  if(candidate_nplanes(track).eq.h_fpp_n_dcinset*h_fpp_n_dclayers)
-     $                 then
-                     firsttry = .false.
-                     minchi2 = chi2
-                     bestcandidate = track
-                  endif
-               else             ! there is no track passing theta cut OR six planes. take best chi2
+c            if(ngoodtracks.gt.1) then
+c            if(.not.any6.or.candidate_nplanes(track).eq.6) then
+c$$$               if(goodhms) then
+c$$$                  write(*,*) 'track ',track,' theta=',theta*180.0/PI,
+c$$$     $                 ' chi2=',chi2,
+c$$$     $                 ' sclose=',sclose,' zclose=',zclose,' phi=',phi*180.0/PI,
+c$$$     $                 ' nplanes=',candidate_nplanes(track),
+c$$$     $                 ' nhits=',candidate_nhits(track),
+c$$$     $                 ' conetest=',conetest
+c$$$                  if(dcset.eq.2) write(*,*) 'bestref=',bestref
+c$$$               endif
+c            endif
+          
+c     try chi2 + sclose^2/sigmasclose^2
+c            criterion = chi2 + (sclose*hfpp_sclose_weight(dcset))**2
+
+c            criterion = chi2 + minchi2*(hfpp_sclose_weight(dcset)*(sclose/minsclose)**2 + 
+c     $           hfpp_theta_weight(dcset)*prob(dcset,mintheta)/prob(dcset,theta))
+            
+c            if(dcset.eq.2.and.bestref.gt.0) then
+c               criterion = chi2 + minchi2*(hfpp_sclose_weight(1)*(sclose/minsclose)**2 + 
+c     $              hfpp_theta_weight(1)*prob(1,mintheta)/prob(1,theta))
+c            endif
+
+c     try picking smallest theta HERE instead:
+            criterion = theta
+
+            if(candidate_nplanes(track).eq.h_fpp_n_dcinset*
+     $           h_fpp_n_dclayers.or..not.any6) then
+               if(firsttry.or.criterion.lt.mincriterion) then
+                  mincriterion = criterion
                   firsttry = .false.
-                  minchi2 = chi2
                   bestcandidate = track
                endif
             endif
+            
          enddo
         
+c$$$         if(goodhms) then
+c$$$            write(*,*) 'chosen track=',bestcandidate
+c$$$         endif
+         if(hidFPP_trkrough(DCset,1).gt.0) call hf1(hidFPP_trkrough(DCset,1),SimpleTracks(bestcandidate,1),1.) !mx  
+         if(hidFPP_trkrough(DCset,2).gt.0) call hf1(hidFPP_trkrough(DCset,2),SimpleTracks(bestcandidate,2),1.) !bx  
+         if(hidFPP_trkrough(DCset,3).gt.0) call hf1(hidFPP_trkrough(DCset,3),SimpleTracks(bestcandidate,3),1.) !my  
+         if(hidFPP_trkrough(DCset,4).gt.0) call hf1(hidFPP_trkrough(DCset,4),SimpleTracks(bestcandidate,4),1.) !by  
+         if(hidFPP_trkrough(DCset,5).gt.0) call hf1(hidFPP_trkrough(DCset,5),SimpleTracks(bestcandidate,5),1.) !chi2
+         if(hidFPP_trkrough(DCset,6).gt.0) call hf1(hidFPP_trkrough(DCset,6),SimpleTracks(bestcandidate,6),1.) !Nraw
+
+         if(hidFPP_roughchi2vsnhit(dcset).gt.0) call hf2(hidFPP_roughchi2vsnhit(dcset),simpletracks(bestcandidate,6),
+     $        simpletracks(bestcandidate,5),1.)
+
          do i=1,ncandidates
             do ichamber=1,h_fpp_n_dcinset
                do ilayer=1,h_fpp_n_dclayers
@@ -264,14 +444,14 @@ c$$$               else if(any6) then ! there is no track passing theta cut. Req
                enddo
             enddo
          enddo
-       
+         
 c         write(*,*) 'best candidate track, chi2=',bestcandidate,fulltracks(bestcandidate,5)
-c         write(*,*) 'nplanes,nhits=',candidate_nplanes(bestcandidate),
+c     write(*,*) 'nplanes,nhits=',candidate_nplanes(bestcandidate),
 c     $        candidate_nhits(bestcandidate)
          
-c$$$         do i=1,4
-c$$$            write(*,*) 'i,besttrack(i)=',i,fulltracks(bestcandidate,i)
-c$$$         enddo
+c$$$  do i=1,4
+c$$$  write(*,*) 'i,besttrack(i)=',i,fulltracks(bestcandidate,i)
+c$$$  enddo
 
          if(bestcandidate.eq.0) exit
          
@@ -280,7 +460,7 @@ c     Now that we have found the best candidate track, add it to the good track 
          itrack = hfpp_n_tracks(dcset) + 1
          
          if(itrack.le.h_fpp_max_tracks) then
-
+            
             hfpp_n_tracks(dcset) = itrack
 
             hfpp_track_nlayers(dcset,itrack) = candidate_nplanes(bestcandidate)
@@ -412,7 +592,11 @@ c     Mark the hits in the best candidate track as used!
                   hfpp_track_conetest(dcset+1,itrack) = conetest
                endif
             endif
-         endif ! end filling track common block variables
+
+            if(hfppfixleftright.gt.0) 
+     $           call h_fpp_check_leftright(dcset,itrack)
+
+         endif                  ! end filling track common block variables
 c     NOW we need to call freehitcount and start over with the remaining free hits:
          
          call h_fpp_tracking_freehitcount(dcset,sufficient_hits)
@@ -447,6 +631,7 @@ c     NOW we need to call freehitcount and start over with the remaining free hi
       integer*4 ncandidates,npoints
       integer*4 nhitsrequired,iterations,ichamber,ilayer,i,j
       integer*4 nhitsintrack
+      integer*4 n3hit,n2hit ! tabulate number of three-hit and two hit clusters.
 
       logical abort
       character*(*) err
@@ -479,6 +664,12 @@ c     NOW we need to call freehitcount and start over with the remaining free hi
 *     number of hits available
          ncandidates = 0
 
+c$$$         do ichamber=1,h_fpp_n_dcinset
+c$$$            do ilayer=1,h_fpp_n_dclayers
+c$$$               hitcluster(ichamber,ilayer) = 0
+c$$$            enddo
+c$$$         enddo
+
          call h_fpp_tracking_nexthitcombo(dcset,nhitsrequired,nhitsintrack,hitcluster)
 
 *     keep comparing permutations until all possibilities are tried:
@@ -487,7 +678,12 @@ c     NOW we need to call freehitcount and start over with the remaining free hi
 
             iterations = iterations + 1
 
-            if(iterations.gt.hfpp_maxcombos) exit
+            if(iterations.gt.hfpp_maxcombos) then
+               write(*,*) 'WARNING: max FPP hit combos reached.'
+               write(*,*) 'consider raising the limit or using '
+               write(*,*) 'tighter raw timing cuts'
+               exit
+            endif
 
             call h_fpp_fit_simple(dcset,hitcluster,npoints,temptrack,abort,err)
 
@@ -495,11 +691,28 @@ c     NOW we need to call freehitcount and start over with the remaining free hi
                call g_add_path(here,err)
                return
             endif
-*     in contrast to Frank's algorithm, here we keep track of any hit combos which pass the "reasonable chi2"
-*     criterion:
 
+            n2hit = 0
+            n3hit = 0
+
+            do ichamber=1,h_fpp_n_dcinset
+               do ilayer=1,h_fpp_n_dclayers
+                  if(hitcluster(ichamber,ilayer).gt.0) then
+                     if(hfpp_nhitsincluster(dcset,ichamber,ilayer,
+     $                    hitcluster(ichamber,ilayer)).eq.2) n2hit = n2hit + 1
+                     if(hfpp_nhitsincluster(dcset,ichamber,ilayer,hitcluster(ichamber,ilayer))
+     $                    .eq.3) n3hit = n3hit + 1
+                  endif
+               enddo
+            enddo
+*     in contrast to Frank's algorithm, here we keep track of any hit combos which pass the "reasonable chi2"
+*     criterion, and we don't choose a track until we look at the drift based tracking.
+            
             if(temptrack(5).ge.0.0.and.
-     $           temptrack(5).le.hfpp_aok_chi2) then ! add a new candidate track to the array:
+     $           temptrack(5).le.hfpp_aok_chi2+
+     $           (12.*float(n2hit)+48.*float(n3hit))/float(nhitsrequired-4)/
+     $           float(nhitsrequired-4 + n2hit + 2*n3hit)
+     $           ) then           ! add a new candidate track to the array:
                ncandidates = ncandidates + 1
                do ichamber=1,h_fpp_n_dcinset
                   do ilayer=1,h_fpp_n_dclayers
@@ -531,5 +744,444 @@ c     NOW we need to call freehitcount and start over with the remaining free hi
 
       return
       end
+
+      real*4 function prob(chbr,angle)
+      
+      integer*4 chbr
+      real*4 angle
+c     approximate cumulative probability that a track scatters in fpp with 
+c     an angle theta < angle
+c      prob = min(1.0e-9,1.0 - .1662*angle**(-0.2202)*exp(-4.031*angle**0.981))
+
+      if(chbr.eq.1) prob = exp(-2.946*angle)
+      else prob = exp(-3.485*angle)
+
+      return
+      end
+      
+      subroutine h_fpp_check_leftright(ifpp,itrack)
+
+      implicit none
+      save
+
+      include 'gen_detectorids.par'
+      include 'gen_decode_common.cmn'
+      include 'gen_event_info.cmn'
+      INCLUDE 'hms_data_structures.cmn'
+      INCLUDE 'hms_geometry.cmn'
+      INCLUDE 'hms_fpp_event.cmn'
+      INCLUDE 'hms_fpp_params.cmn'
+      INCLUDE 'hms_id_histid.cmn'
+
+c     fortunately, this is made easier by the fact that we know which clusters are on a track and 
+c     we know which hits within a cluster are on a track from their drift distance variable, so 
+c     we can revisit the left-right combo here:
+
+      integer*4 nambig,ambigcombos(64)
+      integer*4 sign,oldsign,j
+      integer*4 npoints,ncombos,point,ipoint,icombo,combo
+      integer*4 ifpp,itrack,track,jtrack
+      integer*4 ichamber,ilayer,iwire,wire
+      integer*4 icluster,cluster,ihit,hit
+      integer*4 oldbestcombo,newbestcombo
+      real*4 combochi2(64)
+      real*4 combotheta(64)
+      real*4 combophi(64)
+      real*4 combosclose(64)
+      real*4 combozclose(64)
+      integer*4 comboconetest(64)
+      logical ambig(64),anyambig,first
+
+      real*4 chi2,theta,phi,sclose,zclose
+      real*4 oldchi2,oldtheta,oldphi,oldsclose,oldzclose
+   
+      integer*4 oldconetest,conetest
+
+      real*4 plusminustest(h_fpp_max_fitpoints)
+      real*4 plusminusbest(h_fpp_max_fitpoints)
+
+      integer*4 chambers(h_fpp_max_fitpoints)
+      integer*4 layers(h_fpp_max_fitpoints)
+      integer*4 wires(h_fpp_max_fitpoints)
+
+      real*4 points(h_fpp_max_fitpoints,2) ! w and z
+      real*4 drifts(h_fpp_max_fitpoints) ! drift distance
+      real*4 projects(h_fpp_max_fitpoints,2) ! Px and Py coefficients
+      real*4 sigma2s(h_fpp_max_fitpoints)  ! sigma^2 for chi2 calc.
+      real*4 hitpos(h_fpp_max_fitpoints,2) ! arrays for track fitting routine
+
+      real*4 dccoords(3),fpcoords(3)
+      real*4 reftrack(4),fpptrack(4),hmstrack(4)
+
+      real*4 testtrack(5)
+
+      real*4 minsclose,mintheta
+      real*4 minstest,minthetatest,maxambig,maxdtheta,maxthetadiff
+      real*4 wtrack,xtrack,ytrack,xptrack,yptrack,Px,Py,z
+      real*4 zmin,zmax
+
+      external jbit             ! cernlib bit routine
+      external jibset
+      integer*4 jbit
+      integer*4 jibset          ! Declare to help f2c
+
+      hfpp_track_nambig(ifpp,itrack) = 0
+
+      if(itrack.le.0.or.itrack.gt.hfpp_n_tracks(ifpp).or.
+     $     hfpp_track_nhits(ifpp,itrack).ne.
+     $     hfpp_track_nlayers(ifpp,itrack)) return
+      
+*     initialize points on the track:
+
+c      write(*,*) 'event = ',gen_event_id_number
+
+      npoints = 0
+
+      oldbestcombo = 0
+
+      xptrack = hfpp_track_fine(ifpp,itrack,1)
+      xtrack = hfpp_track_fine(ifpp,itrack,2)
+      yptrack = hfpp_track_fine(ifpp,itrack,3)
+      ytrack = hfpp_track_fine(ifpp,itrack,4)
+
+      do ichamber=1,h_fpp_n_dcinset
+         do ilayer=1,h_fpp_n_dclayers
+            icluster = hfpp_trackcluster(ifpp,ichamber,ilayer,itrack)
+
+            if(icluster.gt.0) then
+               do ihit=1,hfpp_nhitsincluster(ifpp,ichamber,ilayer,icluster)
+                  hit = hfpp_clusters(ifpp,ichamber,ilayer,icluster,ihit)
+                  
+                  wire = hfpp_raw_wire(hit)
+               
+                  if(hfpp_drift_dist(ifpp,ichamber,ilayer,wire).ne.h_fpp_bad_drift) 
+     $                 then     ! this hit is on the track:
+                     npoints = npoints + 1
+                     if(npoints.le.h_fpp_max_fitpoints) then
+                        points(npoints,1) = hfpp_layeroffset(ifpp,ichamber,ilayer)
+     $                       + hfpp_spacing(ifpp,ichamber,ilayer)*float(wire)
+                        points(npoints,2) = hfpp_layerz(ifpp,ichamber,ilayer)
+                        sigma2s(npoints) = hfpp_resolution(ifpp,ichamber,ilayer)
+                        projects(npoints,1) = hfpp_direction(ifpp,ichamber,ilayer,1)
+                        projects(npoints,2) = hfpp_direction(ifpp,ichamber,ilayer,2)
+                        drifts(npoints) = abs(hfpp_drift_dist(ifpp,ichamber,ilayer,wire))
+                        
+                        chambers(npoints) = ichamber
+                        layers(npoints) = ilayer
+                        wires(npoints) = wire
+
+                        Px = projects(npoints,1)
+                        Py = projects(npoints,2)
+
+                        z = points(npoints,2)
+
+                        wtrack = Px*(xtrack + xptrack*z) + Py*(ytrack + yptrack*z)
+
+                        if(abs(wtrack - points(npoints,1) - drifts(npoints)) 
+     $                       .le.abs(wtrack - points(npoints,1) + drifts(npoints)) )
+     $                       then ! track crosses on + side of wire-->assume hit originally had a + sign!
+                           oldbestcombo = oldbestcombo + 2**(npoints-1)
+                        endif
+
+                     endif
+                  endif
+               enddo
+            endif
+         enddo
+      enddo
+         
+      if(npoints.ne.hfpp_track_nhits(ifpp,itrack)) return
+
+      oldchi2 = hfpp_track_chi2(ifpp,itrack)
+      oldtheta = hfpp_track_theta(ifpp,itrack)
+      oldphi = hfpp_track_phi(ifpp,itrack)
+      oldsclose = hfpp_track_sclose(ifpp,itrack)
+      oldzclose = hfpp_track_zclose(ifpp,itrack)
+      oldconetest = hfpp_track_conetest(ifpp,itrack)
+
+      reftrack(1) = hsxp_fp
+      reftrack(2) = hsx_fp
+      reftrack(3) = hsyp_fp
+      reftrack(4) = hsy_fp
+
+      if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) then
+         track = hfpp2_best_reference(itrack)
+
+         oldtheta = hfpp_track_theta(ifpp+1,itrack)
+         oldphi = hfpp_track_phi(ifpp+1,itrack)
+         oldsclose = hfpp_track_sclose(ifpp+1,itrack)
+         oldzclose = hfpp_track_zclose(ifpp+1,itrack)
+         oldconetest = hfpp_track_conetest(ifpp+1,itrack)
+
+         reftrack(1) = hfpp_track_dx(1,track)
+         reftrack(2) = hfpp_track_x(1,track)
+         reftrack(3) = hfpp_track_dy(1,track)
+         reftrack(4) = hfpp_track_y(1,track)
+         
+      endif
+
+c     now we have baseline against which to compare other left-right combos. 
+c     don't need separate loops for calculation and selection. Just one loop:
+
+      zmin = hfpp_prune_zclose(2*(ifpp-1)+1)
+      zmax = hfpp_prune_zclose(2*(ifpp-1)+2)
+
+      ncombos = 2**npoints
+
+      first = .true.
+
+      newbestcombo = -1
+
+      maxthetadiff = 0.0
+
+      minsclose = oldsclose
+      mintheta = oldtheta
+
+      nambig = 0
+
+      do icombo=0,ncombos-1
+         
+         ambig(icombo+1) = .false.
+
+         if(icombo.ne.oldbestcombo) then
+            do ipoint=1,npoints
+               if(jbit(icombo,ipoint).eq.1) then
+                  plusminustest(ipoint) = 1.0
+               else 
+                  plusminustest(ipoint) = -1.0
+               endif
+               
+               hitpos(ipoint,1) = points(ipoint,1) + 
+     $              drifts(ipoint)*plusminustest(ipoint)
+               hitpos(ipoint,2) = points(ipoint,2)
+
+            enddo
+
+            call h_fpp_fit3d_ajp(npoints,hitpos,sigma2s,projects,testtrack)
+
+            chi2 = testtrack(5)
+
+            combochi2(icombo+1) = chi2
+
+            if(chi2.le.hfpp_min_chi2.and.chi2-oldchi2.le.hfpp_ambig_chi2cut(1)
+     $           .and.chi2/oldchi2.le.hfpp_ambig_chi2cut(2)) then ! "ambiguity"
+
+c     first check whether any hits on this combo which disagree with the best chi2 combo have 
+c     "large" drift distances, i.e., big enough that changing the sign makes a non-trivial difference in track
+c     reconstruction:
+
+               anyambig = .false.
+               
+               maxambig = 0.0
+
+               do ipoint=1,npoints
+                  sign = jbit(icombo,ipoint)
+                  oldsign = jbit(oldbestcombo,ipoint)
+                  if(sign.ne.oldsign.and.
+     $                 abs(drifts(ipoint)).ge.1.25*sqrt(sigma2s(ipoint)))
+     $                 then
+                     anyambig = .true.
+
+                     if(2.0*drifts(ipoint).gt.maxambig) then
+                        maxambig = 2.0*drifts(ipoint)
+                     endif
+
+                  endif
+               enddo
+
+c     maximum angular displacement of new track from old track is approximately equal to atan(maxambig/dz)
+               
+               maxdtheta = atan(maxambig/abs(points(npoints,2)-points(1,2)) )
+c$$$               write(*,*) 
+c$$$     $              'max. possible angular displacement this track=',maxdtheta
+               
+               if(maxdtheta.gt.maxthetadiff) maxthetadiff = maxdtheta
+
+               if(anyambig) then
+                  ambig(icombo+1) = .true.
+c     this combo is "ambiguous": similar chi2 to the best combo and differs in sign from the best
+c     combo in at least one "large" drift distance hit. Calculate theta,phi,sclose,and zclose:
+                  
+c     first, transform from dc to fp coords:
+
+                  nambig = nambig + 1
+                  ambigcombos(nambig) = icombo
+
+                  dccoords(1) = testtrack(1) ! dx/dz
+                  dccoords(2) = testtrack(3) ! dy/dz
+                  dccoords(3) = 1.0          ! dz/dz
+
+                  call h_fpp_dc2fp(ifpp,.true.,dccoords,fpcoords)
+
+                  fpptrack(1) = fpcoords(1) ! dx/dz
+                  fpptrack(3) = fpcoords(2) ! dy/dz
+                  
+                  dccoords(1) = testtrack(2) ! x
+                  dccoords(2) = testtrack(4) ! y
+                  dccoords(3) = 0.0          ! z
+                  
+                  call h_fpp_dc2fp(ifpp,.false.,dccoords,fpcoords)
+
+                  fpptrack(2) = fpcoords(1) - fpcoords(3)*fpptrack(1) ! x - x'z
+                  fpptrack(4) = fpcoords(2) - fpcoords(3)*fpptrack(3) ! y - y'z
+
+                  call h_fpp_relative_angles(reftrack(1),reftrack(3),fpptrack(1),fpptrack(3),theta,phi)
+                  call h_fpp_closest(reftrack,fpptrack,sclose,zclose)
+                  conetest = 1
+                  call h_fpp_conetest(reftrack,ifpp,zclose,theta,conetest)
+
+                  if(theta.lt.mintheta) mintheta = theta
+                  if(sclose.lt.minsclose) minsclose = sclose
+
+                  combotheta(icombo+1) = theta
+                  combophi(icombo+1) = phi
+                  combosclose(icombo+1) = sclose
+                  combozclose(icombo+1) = zclose
+                  comboconetest(icombo+1) = conetest
+             
+               endif
+            endif
+         endif
+      enddo
+
+      if(nambig.gt.0.and.(mintheta.lt.oldtheta.or.minsclose.lt.oldsclose)) 
+     $     then
+
+c         hfpp_track_nambig(ifpp,itrack) = nambig
+         
+c     reset minsclose and oldsclose:
+         if(mintheta.le.hfpp_ambig_smallthetatest) then ! track consistent with theta=0: 
+c     use smallest theta regardless of chi2,sclose,zclose:
+            minthetatest = mintheta
+            mintheta = oldtheta
+            do icombo=1,nambig
+               combo = ambigcombos(icombo)+1
+               if(combotheta(combo).lt.mintheta) then
+                  newbestcombo = combo-1
+                  mintheta = combotheta(combo)
+               endif
+            enddo
+         else ! track not consistent with theta=0: use sclose instead:
+            minstest = hfpp_ambig_sclosetest
+            do icombo=1,nambig
+               combo = ambigcombos(icombo)+1
+               if( (combosclose(combo)/oldsclose)**2.lt.minstest .and.
+     $              zmin.lt.combozclose(combo).and.
+     $              zmax.gt.combozclose(combo) ) then
+                  minstest = (combosclose(combo)/oldsclose)**2
+                  newbestcombo = combo-1
+               endif
+            enddo
+         endif
+      endif
+
+      if(newbestcombo.ge.0) then
+
+         hfpp_track_nambig(ifpp,itrack) = nambig
+c     refit the track using the "new best combo"
+
+c$$$         write(*,*) 'found new best combo FPP,itrack=',ifpp,itrack
+c$$$         write(*,*) 'nhits=',npoints
+c$$$         write(*,*) 'old combo, nambig = ',oldbestcombo,nambig
+c$$$         write(*,*) 'old chi2,sclose,zclose,theta,phi,conetest=',oldchi2,oldsclose,
+c$$$     $        oldzclose,oldtheta,oldphi,oldconetest
+
+         do ipoint=1,npoints
+            if(jbit(newbestcombo,ipoint).eq.1) then
+               plusminusbest(ipoint) = 1.0
+            else
+               plusminusbest(ipoint) = -1.0
+            endif
+
+            ichamber = chambers(ipoint)
+            ilayer = layers(ipoint)
+            iwire = wires(ipoint)
+
+            hfpp_drift_dist(ifpp,ichamber,ilayer,iwire) = 
+     $           plusminusbest(ipoint)*drifts(ipoint)
+
+            hitpos(ipoint,1) = points(ipoint,1) + 
+     $           plusminusbest(ipoint)*drifts(ipoint)
+            hitpos(ipoint,2) = points(ipoint,2)
+         enddo
+
+         call h_fpp_fit3d_ajp(npoints,hitpos,sigma2s,projects,testtrack)
+c     copy the chi2 of the new track to common block variables:
+         hfpp_track_chi2(ifpp,itrack) = testtrack(5)
+
+         do j=1,4
+            hfpp_track_fine(ifpp,itrack,j) = testtrack(j)
+         enddo
+
+c     re-calculate everything that was modified by this routine:
+
+         dccoords(1) = testtrack(1) ! dx/dz
+         dccoords(2) = testtrack(3) ! dy/dz
+         dccoords(3) = 1.0          ! dz/dz
+
+         call h_fpp_dc2fp(ifpp,.true.,dccoords,fpcoords)
+         
+         fpptrack(1) = fpcoords(1)
+         fpptrack(3) = fpcoords(2)
+         
+         dccoords(1) = testtrack(2) ! x
+         dccoords(2) = testtrack(4) ! y
+         dccoords(3) = 0.0          ! z
+         
+         call h_fpp_dc2fp(ifpp,.false.,dccoords,fpcoords)
+
+         fpptrack(2) = fpcoords(1) - fpcoords(3)*fpptrack(1) ! x - x'z
+         fpptrack(4) = fpcoords(2) - fpcoords(3)*fpptrack(3) ! y - y'z
+
+         hfpp_track_dx(ifpp,itrack) = fpptrack(1)
+         hfpp_track_x(ifpp,itrack) = fpptrack(2)
+         hfpp_track_dy(ifpp,itrack) = fpptrack(3)
+         hfpp_track_y(ifpp,itrack) = fpptrack(4)
+
+         hmstrack(1) = hsxp_fp
+         hmstrack(2) = hsx_fp
+         hmstrack(3) = hsyp_fp
+         hmstrack(4) = hsy_fp
+
+         call h_fpp_relative_angles(hmstrack(1),hmstrack(3),fpptrack(1),
+     $        fpptrack(3),theta,phi)
+
+         hfpp_track_theta(ifpp,itrack) = theta
+         hfpp_track_phi(ifpp,itrack) = phi
+         
+         call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
+         
+         hfpp_track_sclose(ifpp,itrack) = sclose
+         hfpp_track_zclose(ifpp,itrack) = zclose
+
+         conetest = 1 
+         call h_fpp_conetest(hmstrack,ifpp,zclose,theta,conetest)
+
+         hfpp_track_conetest(ifpp,itrack) = conetest
+
+         if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) then
+c     reftrack has already been initialized to the best track chosen from
+c     FPP1:
+            call h_fpp_relative_angles(reftrack(1),reftrack(3),fpptrack(1),
+     $           fpptrack(3),theta,phi)
+            hfpp_track_theta(ifpp+1,itrack) = theta
+            hfpp_track_phi(ifpp+1,itrack) = phi
+           
+            call h_fpp_closest(reftrack,fpptrack,sclose,zclose)
             
-            
+            hfpp_track_sclose(ifpp+1,itrack) = sclose
+            hfpp_track_zclose(ifpp+1,itrack) = zclose
+
+            conetest = 1
+            call h_fpp_conetest(reftrack,ifpp,zclose,theta,conetest)
+
+            hfpp_track_conetest(ifpp+1,itrack) = conetest
+
+         endif    
+c$$$         write(*,*) 'new combo=',newbestcombo
+c$$$         write(*,*) 'new chi2,sclose,zclose,theta,phi,conetest=',testtrack(5),sclose,zclose,theta,phi,conetest
+        
+      endif
+
+      return
+      end
