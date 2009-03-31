@@ -297,53 +297,54 @@
        
         do iTrack=1,HFPP_N_tracks(DCset)
            if((itrack.eq.hfpp_best_track(dcset)).or.hfppuseajptracking.eq.0) then
-	  if(hidFPP_Nhitontrk(DCset).gt.0) 
-     $          call hf1(hidFPP_Nhitontrk(DCset),float(HFPP_track_Nlayers(DCset,iTrack)),1.)
-	  if(hidFPP_Nrawontrk(DCset).gt.0) 
-     $         call hf1(hidFPP_Nrawontrk(DCset),float(HFPP_track_Nhits(DCset,iTrack)),1.)
-	  if(hidFPP_trk_chi2(DCset).gt.0) 
-     $         call hf1(hidFPP_trk_chi2(DCset),HFPP_track_chi2(DCset,iTrack),1.)
-	  if(hidFPP_trk_mx(DCset).gt.0) 
-     $         call hf1(hidFPP_trk_mx(DCset),HFPP_track_dx(DCset,iTrack),1.) !fp coords
-	  if(hidFPP_trk_bx(DCset).gt.0) 
-     $         call hf1(hidFPP_trk_bx(DCset),HFPP_track_x(DCset,iTrack),1.)
-	  if(hidFPP_trk_my(DCset).gt.0) 
-     $         call hf1(hidFPP_trk_my(DCset),HFPP_track_dy(DCset,iTrack),1.)
-	  if(hidFPP_trk_by(DCset).gt.0) 
-     $         call hf1(hidFPP_trk_by(DCset),HFPP_track_y(DCset,iTrack),1.)
-	  if(hidFPP_fine_mx(DCset).gt.0) 
-     $         call hf1(hidFPP_fine_mx(DCset),HFPP_track_fine(DCset,iTrack,1),1.) !chamber coords
-	  if(hidFPP_fine_bx(DCset).gt.0) 
-     $         call hf1(hidFPP_fine_bx(DCset),HFPP_track_fine(DCset,iTrack,2),1.)
-	  if(hidFPP_fine_my(DCset).gt.0) 
-     $         call hf1(hidFPP_fine_my(DCset),HFPP_track_fine(DCset,iTrack,3),1.)
-	  if(hidFPP_fine_by(DCset).gt.0) 
-     $         call hf1(hidFPP_fine_by(DCset),HFPP_track_fine(DCset,iTrack,4),1.)
-          
-          if(dcset.eq.2.and.hfpp2_best_reference(itrack).gt.0) then
-             if(hidFPP_sclose(DCset).gt.0) 
-     $         call hf1(hidFPP_sclose(DCset),HFPP_track_sclose(DCset+1,iTrack),1.)
-	  if(hidFPP_zclose(DCset).gt.0) 
-     $         call hf1(hidFPP_zclose(DCset),HFPP_track_zclose(DCset+1,iTrack),1.)
-	  if(hidFPP_thetapol(DCset).gt.0) 
-     $         call hf1(hidFPP_thetapol(DCset),HFPP_track_theta(DCset+1,iTrack),1.)
-	  if(hidFPP_phipol(DCset).gt.0) 
-     $         call hf1(hidFPP_phipol(DCset),HFPP_track_phi(DCset+1,iTrack),1.)
-          else
-	  if(hidFPP_sclose(DCset).gt.0) 
-     $         call hf1(hidFPP_sclose(DCset),HFPP_track_sclose(DCset,iTrack),1.)
-	  if(hidFPP_zclose(DCset).gt.0) 
-     $         call hf1(hidFPP_zclose(DCset),HFPP_track_zclose(DCset,iTrack),1.)
-	  if(hidFPP_thetapol(DCset).gt.0) 
-     $         call hf1(hidFPP_thetapol(DCset),HFPP_track_theta(DCset,iTrack),1.)
-	  if(hidFPP_phipol(DCset).gt.0) 
-     $         call hf1(hidFPP_phipol(DCset),HFPP_track_phi(DCset,iTrack),1.)
-          if(hidFPP_nambig(dcset).gt.0)
-     $         call hf1(hidFPP_nambig(dcset),float(hfpp_track_nambig(dcset,itrack)),1.)
-       endif
-       endif
-	enddo !iTrack
-      enddo !DCset
+              if(hidFPP_Nhitontrk(DCset).gt.0) 
+     $             call hf1(hidFPP_Nhitontrk(DCset),float(HFPP_track_Nlayers(DCset,iTrack)),1.)
+              if(hidFPP_Nrawontrk(DCset).gt.0) 
+     $             call hf1(hidFPP_Nrawontrk(DCset),float(HFPP_track_Nhits(DCset,iTrack)),1.)
+              if(hidFPP_trk_chi2(DCset).gt.0) 
+     $             call hf1(hidFPP_trk_chi2(DCset),HFPP_track_chi2(DCset,iTrack),1.)
+              if(hidFPP_trk_mx(DCset).gt.0) 
+     $             call hf1(hidFPP_trk_mx(DCset),HFPP_track_dx(DCset,iTrack),1.) !fp coords
+              if(hidFPP_trk_bx(DCset).gt.0) 
+     $             call hf1(hidFPP_trk_bx(DCset),HFPP_track_x(DCset,iTrack),1.)
+              if(hidFPP_trk_my(DCset).gt.0) 
+     $             call hf1(hidFPP_trk_my(DCset),HFPP_track_dy(DCset,iTrack),1.)
+              if(hidFPP_trk_by(DCset).gt.0) 
+     $             call hf1(hidFPP_trk_by(DCset),HFPP_track_y(DCset,iTrack),1.)
+              if(hidFPP_fine_mx(DCset).gt.0) 
+     $             call hf1(hidFPP_fine_mx(DCset),HFPP_track_fine(DCset,iTrack,1),1.) !chamber coords
+              if(hidFPP_fine_bx(DCset).gt.0) 
+     $             call hf1(hidFPP_fine_bx(DCset),HFPP_track_fine(DCset,iTrack,2),1.)
+              if(hidFPP_fine_my(DCset).gt.0) 
+     $             call hf1(hidFPP_fine_my(DCset),HFPP_track_fine(DCset,iTrack,3),1.)
+              if(hidFPP_fine_by(DCset).gt.0) 
+     $             call hf1(hidFPP_fine_by(DCset),HFPP_track_fine(DCset,iTrack,4),1.)
+              
+              if(dcset.eq.2.and.hfpp2_best_reference(itrack).gt.0) then
+                 if(hidFPP_sclose(DCset).gt.0) 
+     $                call hf1(hidFPP_sclose(DCset),HFPP_track_sclose(DCset+1,iTrack),1.)
+                 if(hidFPP_zclose(DCset).gt.0) 
+     $                call hf1(hidFPP_zclose(DCset),HFPP_track_zclose(DCset+1,iTrack),1.)
+                 if(hidFPP_thetapol(DCset).gt.0) 
+     $                call hf1(hidFPP_thetapol(DCset),HFPP_track_theta(DCset+1,iTrack),1.)
+                 if(hidFPP_phipol(DCset).gt.0) 
+     $                call hf1(hidFPP_phipol(DCset),HFPP_track_phi(DCset+1,iTrack),1.)
+              else
+                 if(hidFPP_sclose(DCset).gt.0) 
+     $                call hf1(hidFPP_sclose(DCset),HFPP_track_sclose(DCset,iTrack),1.)
+                 if(hidFPP_zclose(DCset).gt.0) 
+     $                call hf1(hidFPP_zclose(DCset),HFPP_track_zclose(DCset,iTrack),1.)
+                 if(hidFPP_thetapol(DCset).gt.0) 
+     $                call hf1(hidFPP_thetapol(DCset),HFPP_track_theta(DCset,iTrack),1.)
+                 if(hidFPP_phipol(DCset).gt.0) 
+     $                call hf1(hidFPP_phipol(DCset),HFPP_track_phi(DCset,iTrack),1.)
+                 
+              endif
+              if(hidFPP_nambig(dcset).gt.0)
+     $             call hf1(hidFPP_nambig(dcset),float(hfpp_track_nambig(dcset,itrack)),1.)
+           endif
+	enddo                   !iTrack
+      enddo                     !DCset
 
 
       RETURN

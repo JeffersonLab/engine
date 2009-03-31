@@ -895,166 +895,167 @@ c               ontrack(ichamber,ilayer) = .true.
          track_good = .false.
       endif
 
-      if(track_good.and.mode.eq.0) then
-c         if(mode.eq.0) then     ! store global tracking results in common blocks
-         itrack = hfpp_n_tracks(dcset) + 1
-         
-         if(itrack.le.h_fpp_max_tracks) then
-            hfpp_n_tracks(dcset) = itrack
+      if(track_good) then
+         if(mode.eq.0) then     ! store global tracking results in common blocks
+            itrack = hfpp_n_tracks(dcset) + 1
             
-            nlayershit = 0
-            
-            do ichamber=1,h_fpp_n_dcinset
-               do ilayer=1,h_fpp_n_dclayers
-                  if(npointsthislayer(ichamber,ilayer).gt.0) then
-                     nlayershit = nlayershit + 1
-                     icluster = hitclusters(ichamber,ilayer)
-                     
-                     if(icluster.gt.0) then
-                        hfpp_clusterintrack(dcset,ichamber,ilayer,icluster) = itrack
+            if(itrack.le.h_fpp_max_tracks) then
+               hfpp_n_tracks(dcset) = itrack
+               
+               nlayershit = 0
+               
+               do ichamber=1,h_fpp_n_dcinset
+                  do ilayer=1,h_fpp_n_dclayers
+                     if(npointsthislayer(ichamber,ilayer).gt.0) then
+                        nlayershit = nlayershit + 1
+                        icluster = hitclusters(ichamber,ilayer)
+                        
+                        if(icluster.gt.0) then
+                           hfpp_clusterintrack(dcset,ichamber,ilayer,icluster) = itrack
+                        endif
                      endif
-                  endif
+                  enddo
                enddo
-            enddo
-            
-            hfpp_track_nlayers(dcset,itrack) = nlayershit
-            
-            do j=1,4
-               hfpp_track_fine(dcset,itrack,j) = drifttrack(j)
-            enddo
-            hfpp_track_chi2(dcset,itrack) = drifttrack(5)
-            hfpp_track_nhits(dcset,itrack) = int(drifttrack(6))
-            do j=1,6
-               hfpp_track_rough(dcset,itrack,j) = simpletrack(j)
-            enddo
-            hfpp_track_uniq(dcset,itrack) = .true.
-            
-            DCcoords(1) = drifttrack(1)
-            DCcoords(2) = drifttrack(3)
-            DCcoords(3) = 1.0
-            
-            call h_fpp_dc2fp(dcset,.true.,dccoords,fpcoords)
-            hfpp_track_dx(dcset,itrack) = fpcoords(1)
-            hfpp_track_dy(dcset,itrack) = fpcoords(2)
-            
-            dccoords(1) = drifttrack(2)
-            dccoords(2) = drifttrack(4)
-            dccoords(3) = 0.0
-            call h_fpp_dc2fp(dcset,.false.,dccoords,fpcoords)
-            
-            hfpp_track_x(dcset,itrack) = fpcoords(1)
-     $           - fpcoords(3) * hfpp_track_dx(dcset,itrack)
-            hfpp_track_y(dcset,itrack) = fpcoords(2)
-     $           - fpcoords(3) * hfpp_track_dy(dcset,itrack)
-            
+               
+               hfpp_track_nlayers(dcset,itrack) = nlayershit
+               
+               do j=1,4
+                  hfpp_track_fine(dcset,itrack,j) = drifttrack(j)
+               enddo
+               hfpp_track_chi2(dcset,itrack) = drifttrack(5)
+               hfpp_track_nhits(dcset,itrack) = int(drifttrack(6))
+               do j=1,6
+                  hfpp_track_rough(dcset,itrack,j) = simpletrack(j)
+               enddo
+               hfpp_track_uniq(dcset,itrack) = .true.
+               
+               DCcoords(1) = drifttrack(1)
+               DCcoords(2) = drifttrack(3)
+               DCcoords(3) = 1.0
+               
+               call h_fpp_dc2fp(dcset,.true.,dccoords,fpcoords)
+               hfpp_track_dx(dcset,itrack) = fpcoords(1)
+               hfpp_track_dy(dcset,itrack) = fpcoords(2)
+               
+               dccoords(1) = drifttrack(2)
+               dccoords(2) = drifttrack(4)
+               dccoords(3) = 0.0
+               call h_fpp_dc2fp(dcset,.false.,dccoords,fpcoords)
+               
+               hfpp_track_x(dcset,itrack) = fpcoords(1)
+     $              - fpcoords(3) * hfpp_track_dx(dcset,itrack)
+               hfpp_track_y(dcset,itrack) = fpcoords(2)
+     $              - fpcoords(3) * hfpp_track_dy(dcset,itrack)
+               
 *     calculate relative angle between incident and scattered track in the FP:
-            call h_fpp_relative_angles(hsxp_fp,hsyp_fp,hfpp_track_dx(dcset,itrack),
-     $           hfpp_track_dy(dcset,itrack),theta,phi)
-            if(hsnum_fptrack.gt.0) then
-               hfpp_track_theta(dcset,itrack) = theta
-               hfpp_track_phi(dcset,itrack) = phi
-            else                ! take theta and phi relative to normal incidence if there is no HMS track
-               hfpp_track_theta(dcset,itrack) = acos(1.0 / 
-     $              sqrt(1.0 + (hfpp_track_dx(dcset,itrack) )**2 + 
-     $              (hfpp_track_dy(dcset,itrack) )**2) )
-               hfpp_track_phi(dcset,itrack) = atan2(hfpp_track_dy(dcset,itrack),
-     $              hfpp_track_dx(dcset,itrack) )
-            endif
+               call h_fpp_relative_angles(hsxp_fp,hsyp_fp,hfpp_track_dx(dcset,itrack),
+     $              hfpp_track_dy(dcset,itrack),theta,phi)
+               if(hsnum_fptrack.gt.0) then
+                  hfpp_track_theta(dcset,itrack) = theta
+                  hfpp_track_phi(dcset,itrack) = phi
+               else             ! take theta and phi relative to normal incidence if there is no HMS track
+                  hfpp_track_theta(dcset,itrack) = acos(1.0 / 
+     $                 sqrt(1.0 + (hfpp_track_dx(dcset,itrack) )**2 + 
+     $                 (hfpp_track_dy(dcset,itrack) )**2) )
+                  hfpp_track_phi(dcset,itrack) = atan2(hfpp_track_dy(dcset,itrack),
+     $                 hfpp_track_dx(dcset,itrack) )
+               endif
             
-            if(hsnum_fptrack.gt.0) then
-               hmstrack(1) = hsxp_fp
-               hmstrack(2) = hsx_fp
-               hmstrack(3) = hsyp_fp
-               hmstrack(4) = hsy_fp
-            else
-               hmstrack(1) = 0.0
-               hmstrack(2) = 0.0
-               hmstrack(3) = 0.0
-               hmstrack(4) = 0.0
-            endif
-            fpptrack(1) = hfpp_track_dx(dcset,itrack)
-            fpptrack(2) = hfpp_track_x(dcset,itrack)
-            fpptrack(3) = hfpp_track_dy(dcset,itrack)
-            fpptrack(4) = hfpp_track_y(dcset,itrack)
+               if(hsnum_fptrack.gt.0) then
+                  hmstrack(1) = hsxp_fp
+                  hmstrack(2) = hsx_fp
+                  hmstrack(3) = hsyp_fp
+                  hmstrack(4) = hsy_fp
+               else
+                  hmstrack(1) = 0.0
+                  hmstrack(2) = 0.0
+                  hmstrack(3) = 0.0
+                  hmstrack(4) = 0.0
+               endif
+               fpptrack(1) = hfpp_track_dx(dcset,itrack)
+               fpptrack(2) = hfpp_track_x(dcset,itrack)
+               fpptrack(3) = hfpp_track_dy(dcset,itrack)
+               fpptrack(4) = hfpp_track_y(dcset,itrack)
+
+               call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
             
-            call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
-            
-            hfpp_track_sclose(dcset,itrack) = sclose
-            hfpp_track_zclose(dcset,itrack) = zclose
-            
-            icone = 1
-            
-            call h_fpp_conetest(hmstrack,dcset,zclose,theta,icone)
-            
-            hfpp_track_conetest(dcset,itrack) = icone
-            
-            if(dcset.eq.2) then ! figure out theta,phi,sclose,zclose of fpp2 track relative to fpp1 track. 
+               hfpp_track_sclose(dcset,itrack) = sclose
+               hfpp_track_zclose(dcset,itrack) = zclose
+               
+               icone = 1
+
+               call h_fpp_conetest(hmstrack,dcset,zclose,theta,icone)
+
+               hfpp_track_conetest(dcset,itrack) = icone
+ 
+               if(dcset.eq.2) then ! figure out theta,phi,sclose,zclose of fpp2 track relative to fpp1 track. 
 c     if multiple FPP1 tracks, store relative angles and closest approach to the track in FPP1 for which theta of 
 c     the track in FPP2 is minimimum
-               firsttry=.true.
-               bestref = 0
+                  firsttry=.true.
+                  bestref = 0
                
-               do jtrack=1,hfpp_n_tracks(1)
-                  call h_fpp_relative_angles(hfpp_track_dx(1,jtrack),
-     $                 hfpp_track_dy(1,jtrack),hfpp_track_dx(dcset,itrack),
-     $                 hfpp_track_dy(dcset,itrack),theta,phi)
-                  if(firsttry.or.theta.lt.mintheta) then
-                     firsttry=.false.
-                     mintheta = theta
-                     bestref = jtrack
-                  endif
-               enddo
-               
-               hfpp2_best_reference(itrack) = bestref
+                  do jtrack=1,hfpp_n_tracks(1)
+                     call h_fpp_relative_angles(hfpp_track_dx(1,jtrack),
+     $                    hfpp_track_dy(1,jtrack),hfpp_track_dx(dcset,itrack),
+     $                    hfpp_track_dy(dcset,itrack),theta,phi)
+                     if(firsttry.or.theta.lt.mintheta) then
+                        firsttry=.false.
+                        mintheta = theta
+                        bestref = jtrack
+                     endif
+                  enddo
+                  
+                  hfpp2_best_reference(itrack) = bestref
 c     calculate values to store in common block:
-               if(bestref.gt.0) then
-                  call h_fpp_relative_angles(hfpp_track_dx(1,bestref),
-     $                 hfpp_track_dy(1,bestref),
-     $                 hfpp_track_dx(dcset,itrack),
-     $                 hfpp_track_dy(dcset,itrack),theta,phi)
-                  hfpp_track_theta(dcset+1,itrack) = theta
-                  hfpp_track_phi(dcset+1,itrack) = phi
+                  if(bestref.gt.0) then
+                     call h_fpp_relative_angles(hfpp_track_dx(1,bestref),
+     $                    hfpp_track_dy(1,bestref),
+     $                    hfpp_track_dx(dcset,itrack),
+     $                    hfpp_track_dy(dcset,itrack),theta,phi)
+                     hfpp_track_theta(dcset+1,itrack) = theta
+                     hfpp_track_phi(dcset+1,itrack) = phi
 c     calculate closest approach variables relative to "best" reference track:
-                  hmstrack(1) = hfpp_track_dx(1,bestref)
-                  hmstrack(2) = hfpp_track_x(1,bestref)
-                  hmstrack(3) = hfpp_track_dy(1,bestref)
-                  hmstrack(4) = hfpp_track_y(1,bestref)
+                     hmstrack(1) = hfpp_track_dx(1,bestref)
+                     hmstrack(2) = hfpp_track_x(1,bestref)
+                     hmstrack(3) = hfpp_track_dy(1,bestref)
+                     hmstrack(4) = hfpp_track_y(1,bestref)
+                     
+                     fpptrack(1) = hfpp_track_dx(dcset,itrack)
+                     fpptrack(2) = hfpp_track_x(dcset,itrack)
+                     fpptrack(3) = hfpp_track_dy(dcset,itrack)
+                     fpptrack(4) = hfpp_track_y(dcset,itrack)
+                     
+                     call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
+                     
+                     hfpp_track_sclose(dcset+1,itrack) = sclose
+                     hfpp_track_zclose(dcset+1,itrack) = zclose
+                     
+                     icone = 1
+                     
+                     call h_fpp_conetest(hmstrack,dcset,zclose,theta,icone)
                   
-                  fpptrack(1) = hfpp_track_dx(dcset,itrack)
-                  fpptrack(2) = hfpp_track_x(dcset,itrack)
-                  fpptrack(3) = hfpp_track_dy(dcset,itrack)
-                  fpptrack(4) = hfpp_track_y(dcset,itrack)
-                  
-                  call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
-                  
-                  hfpp_track_sclose(dcset+1,itrack) = sclose
-                  hfpp_track_zclose(dcset+1,itrack) = zclose
-                  
-                  icone = 1
-                  
-                  call h_fpp_conetest(hmstrack,dcset,zclose,theta,icone)
-                  
-                  hfpp_track_conetest(dcset+1,itrack) = icone
-               endif
-            endif   
-         endif
-c$$$  else                   ! don't fill track common blocks, just mark the hits as used. 
-c$$$  c     we will fill the common blocks in a different routine:
-c$$$  c            nlayershit = 0
-c$$$  
-c$$$  do ichamber=1,h_fpp_n_dcinset
-c$$$  do ilayer=1,h_fpp_n_dclayers
-c$$$  c     only mark the cluster as used if at least one hit from the cluster made it on to the 
-c$$$  c     good track!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-c$$$  if(ontrack(ichamber,ilayer)) then
-c$$$  c                     nlayershit = nlayershit + 1
-c$$$  icluster = hitclusters(ichamber,ilayer)
-c$$$  if(icluster.gt.0) then
-c$$$  hfpp_clusterintrack(dcset,ichamber,ilayer,icluster) = 1
+                     hfpp_track_conetest(dcset+1,itrack) = icone
+                  endif
+               endif   
+            endif
+c$$$         else                   ! don't fill track common blocks, just mark the hits as used. 
+c$$$c     we will fill the common blocks in a different routine:
+c$$$c            nlayershit = 0
+c$$$            
+c$$$            do ichamber=1,h_fpp_n_dcinset
+c$$$               do ilayer=1,h_fpp_n_dclayers
+c$$$c     only mark the cluster as used if at least one hit from the cluster made it on to the 
+c$$$c     good track!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+c$$$                  if(ontrack(ichamber,ilayer)) then
+c$$$c                     nlayershit = nlayershit + 1
+c$$$                     icluster = hitclusters(ichamber,ilayer)
+c$$$                     if(icluster.gt.0) then
+c$$$                        hfpp_clusterintrack(dcset,ichamber,ilayer,icluster) = 1
 c$$$                     endif
-c$$$  endif
-c$$$  enddo
-c$$$  enddo
+c$$$                  endif
+c$$$               enddo
+c$$$            enddo
+         endif
       endif
 
       return
