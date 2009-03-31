@@ -926,7 +926,7 @@ c==============================================================================
                      trynextlayer = (nHitsInTrack.lt.nHitsRequired) 
                    endif
 
-               endif  !(HFPP_Nfreehits(DCset,iChamber,iLayer).le.0)
+                endif           !(HFPP_Nfreehits(DCset,iChamber,iLayer).le.0)
           enddo               !trynextlayer
 	 
 *         * change hit count to none if we exited due to layer count exceeded
