@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.18.8  2009/03/31 18:08:38  puckett
+* added xtar and fry variables to hms ntuple
+*
 * Revision 1.10.18.7  2008/07/29 16:06:35  puckett
 * added option to store all track hit info in HMS ntuple (huge files)
 *
@@ -80,11 +83,14 @@
       INCLUDE 'hms_scin_parms.cmn'
       INCLUDE 'h_ntuple.cmn'
       INCLUDE 'gen_data_structures.cmn'
+      include 'gep_data_structures.cmn'
+      include 'bigcal_data_structures.cmn'
       INCLUDE 'gen_event_info.cmn'
       INCLUDE 'hms_tracking.cmn'
       INCLUDE 'hms_physics_sing.cmn'
       INCLUDE 'hms_scin_tof.cmn'
       INCLUDE 'gen_scalers.cmn'
+      include 'gen_constants.par'
       INCLUDE 'hms_track_histid.cmn'  !temp junk.
 *
       logical HEXIST	!CERNLIB function
@@ -132,9 +138,9 @@ c     don't know how good of statistics we can get per run this way.
 *
 ************************************************
       m= 0
-*  
-c      m= m+1
-c      h_Ntuple_contents(m)= HCER_NPE_SUM ! cerenkov photoelectron spectrum
+*     
+      m= m+1
+      h_Ntuple_contents(m)= HCER_NPE_SUM ! cerenkov photoelectron spectrum
       m= m+1
       h_Ntuple_contents(m)= HSP	        ! Lab momentum of chosen track in GeV/c
       m= m+1
@@ -154,12 +160,12 @@ c      h_Ntuple_contents(m)= HCER_NPE_SUM ! cerenkov photoelectron spectrum
 c                                ! track with spectrometer ray
       m= m+1
       h_Ntuple_contents(m)= HSDEDX(1)	! DEDX of chosen track in 1st scin plane
-c      m= m+1
-c      h_Ntuple_contents(m)= HSBETA	! BETA of chosen track
-c      m= m+1
-c      h_Ntuple_contents(m)= HSTRACK_ET	! Total shower energy of chosen track
-c      m= m+1
-c      h_Ntuple_contents(m)= HSTRACK_PRESHOWER_E	! preshower of chosen track
+      m= m+1
+      h_Ntuple_contents(m)= HSBETA	! BETA of chosen track
+      m= m+1
+      h_Ntuple_contents(m)= HSTRACK_ET	! Total shower energy of chosen track
+      m= m+1
+      h_Ntuple_contents(m)= HSTRACK_PRESHOWER_E	! preshower of chosen track
       m= m+1
       h_Ntuple_contents(m)= HSX_FP		! X focal plane position 
       m= m+1
@@ -250,6 +256,11 @@ c
       h_ntuple_contents(m) = hntrack_hits(hsnum_fptrack,1)
       m=m+1
       h_ntuple_contents(m) = hschi2perdeg
+      m=m+1
+      h_ntuple_contents(m) = gfry
+      m=m+1
+      h_ntuple_contents(m) = -gfry - hsy_tar * (coshthetas / tan(htheta_lab*degree - atan(hsyp_tar)) + sinhthetas) * 
+     $     coshthetas * hsxp_tar
 
 c     get wire number of hit on track at each plane choose only one per plane
 c     if more than one per plane, last will be chosen!!!

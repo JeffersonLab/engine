@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.11.18.8  2009/03/31 18:08:38  puckett
+* added xtar and fry variables to hms ntuple
+*
 * Revision 1.11.18.7  2008/07/29 16:07:09  puckett
 * added option to keep all track hit info (for best track) in HMS ntuple
 *
@@ -143,8 +146,8 @@ c
       endif
 *
       m= 0
-c      m= m+1
-c      h_Ntuple_tag(m)= 'hcer_npe' ! cerenkov photoelectron spectrum
+      m= m+1
+      h_Ntuple_tag(m)= 'hcer_npe' ! cerenkov photoelectron spectrum
       m= m+1
       h_Ntuple_tag(m)= 'hsp'     ! Lab momentum of chosen track in GeV/c
       m= m+1
@@ -164,12 +167,12 @@ c      h_Ntuple_tag(m)= 'hcer_npe' ! cerenkov photoelectron spectrum
                                 ! track with spectrometer ray
       m= m+1
       h_Ntuple_tag(m)= 'hsdedx1'       ! DEDX of chosen track in 1st scin plane
-c      m= m+1
-c      h_Ntuple_tag(m)= 'hsbeta'        ! BETA of chosen track
-c      m= m+1
-c      h_Ntuple_tag(m)= 'hsshtrk'  ! 'HSTRACK_ET'       ! Total shower energy of chosen track
-c      m= m+1
-c      h_Ntuple_tag(m)= 'hsprtrk'   !'HSTRACK_PRESHOWER_E' ! preshower of chosen track
+      m= m+1
+      h_Ntuple_tag(m)= 'hsbeta'        ! BETA of chosen track
+      m= m+1
+      h_Ntuple_tag(m)= 'hsshtrk'  ! 'HSTRACK_ET'       ! Total shower energy of chosen track
+      m= m+1
+      h_Ntuple_tag(m)= 'hsprtrk'   !'HSTRACK_PRESHOWER_E' ! preshower of chosen track
       m= m+1
       h_Ntuple_tag(m)= 'hsxfp'		! X focal plane position 
       m= m+1
@@ -227,6 +230,10 @@ c
       h_ntuple_tag(m) = 'ntrkhits'
       m= m+1
       h_ntuple_tag(m) = 'chi2ndf'
+      m= m+1
+      h_ntuple_tag(m) = 'fry_cm'
+      m= m+1
+      h_ntuple_tag(m) = 'xtar'
       if(h_ntup_include_trackhits.ne.0) then
          m= m+1
          h_ntuple_tag(m) = 't0'
