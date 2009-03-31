@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.21.2.8  2009/03/31 19:33:00  cdaq
+* *** empty log message ***
+*
 * Revision 1.42.8.21.2.7  2009/02/16 00:16:10  cdaq
 * *** empty log message ***
 *
@@ -537,6 +540,7 @@ c
             gtarg_num=ntarg
           else if (gen_event_type.eq.131 .or. gen_event_type.eq.132) then! EPICS event
             call g_examine_epics_event
+
           else if (gen_event_type.eq.133) then  !SAW's new go_info events
              call g_examine_go_info(CRAW,ABORT,err)
           else if (gen_event_type.eq.141 .or. gen_event_type.eq.142 .or.
@@ -825,7 +829,8 @@ c
              endif            
 c
                if (syncfilter_on) then 
-                 if (  insync .eq. 1 .or.  skip_events ) write(*,*) ' Skipping out-of-sync events'
+                 if (  insync .eq. 1 .or.  skip_events ) 
+     ,                 write(*,*) ' Skipping out-of-sync events'
                  if ( ave_current_bcm(bcm_for_threshold_cut)  .le. g_beam_on_thresh_cur(bcm_for_threshold_cut)
      >  .or. insync .eq. 1 .or. skip_events ) then
                   do ii=1,MAX_NUM_SCALERS
@@ -840,7 +845,7 @@ c
 c
                if (analyzed_events(0) .le. 1 ) then
                   write(*,*) '************'
-                  write(*,*) ' Will not analyze events until after first scaler read'
+c                  write(*,*)' Will not analyze events until after first scaler read'
                   write(*,*) '************'
                endif
 *
@@ -857,7 +862,8 @@ c
                 lastdump=physics_events   ! Wait for next interval of dump_int.
                 !write(*,*) 'about to call g_proper_shutdown. Is this where the seg. fault occurs?'
                 call g_proper_shutdown(ABORT,err)
-                print 112,"Finished dumping histograms/scalers for first",
+                print 112,
+     &               "Finished dumping histograms/scalers for first",
      &             physics_events," events"
  112            format (a,i8,a)
              endif
@@ -866,7 +872,7 @@ c        may need to change some of this stuff to look at the testlab data.
                if (analyzed_events(0) .le. 1 .and. gen_event_type .le. 3) then
                   if (skipped_events_scal .eq. 0 ) then
                   write(*,*) '************'
-                  write(*,*) ' Will not analyze SOS,HMS or coin events until after first scaler read'
+c                  write(*,*) ' Will not analyze SOS,HMS or coin events until after first scaler read'
                   write(*,*) ' Analyzed events :',(analyzed_events(mkj),mkj=1,4)
                   write(*,*) '************'
                   endif
@@ -952,7 +958,8 @@ c     $                      gen_event_type
                   else if (gen_event_type.eq.6) then
                     groupname = 'gep'
                   else
-                    write(6,*) 'gen_event_type= ',gen_event_type,' for call to g_keep_results'
+                    write(6,*) 'gen_event_type= ',gen_event_type,
+     ,                    ' for call to g_keep_results'
                   endif
 
                   If(.NOT.problems .and. groupname.ne.' ') Then
@@ -1001,6 +1008,7 @@ c     $                      gen_event_type
              endif
              else if (gen_event_type.eq.131 .or. gen_event_type.eq.132) then ! EPICS event
                 call g_examine_epics_event
+
               endif
 
            endif                !if REAL physics event as opposed to scaler (evtype=0)
@@ -1184,14 +1192,16 @@ c...
       call G_log_message(mss)
       DO i=1,gen_MAX_trigger_types
         If(recorded_events(i).GT.0) Then
-          write(mss,'(" events of type:",i3," # skipped for bad sync:",i12)')
+          write(mss,'(" events of type:",i3,
+     ,   " # skipped for bad sync:",i12)')
      &             i,skipped_badsync_events(i)
           call G_log_message(mss)
         ENDIF
       ENDDO
       DO i=1,gen_MAX_trigger_types
         If(recorded_events(i).GT.0) Then
-          write(mss,'("  events of type:",i3," # skipped for low current:",i12)')
+          write(mss,'("  events of type:",i3,
+     &    " # skipped for low current:",i12)')
      &             i,skipped_lowbcm_events(i)
           call G_log_message(mss)
         ENDIF
@@ -1209,6 +1219,7 @@ c...
 * Comment out the following two lines if they cause trouble
       call system
      &  ("kill `ps | grep runstats | awk '{ print $1}'` > /dev/null")
+
 
       END
 

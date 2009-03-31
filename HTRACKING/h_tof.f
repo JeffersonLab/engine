@@ -23,6 +23,9 @@
 * the correction parameters.
 *
 * $Log$
+* Revision 1.19.6.2.2.7  2009/03/31 19:33:00  cdaq
+* *** empty log message ***
+*
 * Revision 1.19.6.2.2.6  2008/12/11 17:11:43  cdaq
 * For gfortran compiler the arguements generic functions
 * must be the same type.
@@ -296,11 +299,11 @@ cc        if(hdumptof.eq.1) time_tolerance=25.0
             maxhit = timehist(j)
           endif
         enddo
-c        if(hdumptof.eq.1) then
-c          write(37,'(''trk='',2i3,8f8.3)') trk,jmax,
-c     >      hx_fp(trk),hxp_fp(trk),hy_fp(trk),hyp_fp(trk),
-c     >      hp_tar(trk)
-c        endif
+c$$$        if(hdumptof.eq.1) then
+c$$$          write(37,'(''trk='',2i3,8f8.3)') trk,jmax,
+c$$$     >      hx_fp(trk),hxp_fp(trk),hy_fp(trk),hyp_fp(trk),
+c$$$     >      hp_tar(trk)
+c$$$        endif
         if(jmax.gt.0) then
           tmin = 0.5*float(jmax) 
           do hit = 1 , hscin_tot_hits
@@ -371,12 +374,12 @@ c        endif
               zcor =  (hscin_zpos(hit)/(29.979*betap) * sqrt(1.+
      >               hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
               if(hdumptof.eq.1) then
-c                write(37,'(1x,''1'',2i3,5f10.3)') 
-c     >             hscin_plane_num(hit),
-c     >             hscin_counter_num(hit),
-c     >             hscin_tdc_pos(hit) * hscin_tdc_to_time,
-c     >             path,zcor,
-c     >             hscin_pos_time(hit)-zcor,adc_ph
+c$$$                write(37,'(1x,''1'',2i3,5f10.3)') 
+c$$$     >             hscin_plane_num(hit),
+c$$$     >             hscin_counter_num(hit),
+c$$$     >             hscin_tdc_pos(hit) * hscin_tdc_to_time,
+c$$$     >             path,zcor,
+c$$$     >             hscin_pos_time(hit)-zcor,adc_ph
                 nsv = min(100, nsv + 1)
                 idetsv(nsv) = 20 * (hscin_plane_num(hit)-1) +
      >            hscin_counter_num(hit)
@@ -404,13 +407,15 @@ c     >             hscin_pos_time(hit)-zcor,adc_ph
      >            hscin_neg_invadc_adc(hit)/sqrt(max(20.,adc_ph))
               zcor =  (hscin_zpos(hit)/(29.979*betap) * sqrt(1.+
      >               hxp_fp(trk)*hxp_fp(trk)+hyp_fp(trk)*hyp_fp(trk)))
+c$$$              if(hdumptof.eq.1.and.hntracks_fp.eq.1.and.
+c$$$     $             timehist(max(1,jmax)).gt.6) then
                if(hdumptof.eq.1) then
-c                write(37,'(1x,''2'',2i3,5f10.3)') 
-c     >             hscin_plane_num(hit),
-c     >             hscin_counter_num(hit),
-c     >             hscin_tdc_neg(hit) * hscin_tdc_to_time,
-c     >             path,zcor,
-c     >             hscin_neg_time(hit)-zcor,adc_ph
+c$$$                write(37,'(1x,''2'',2i3,5f10.3)') 
+c$$$     >             hscin_plane_num(hit),
+c$$$     >             hscin_counter_num(hit),
+c$$$     >             hscin_tdc_neg(hit) * hscin_tdc_to_time,
+c$$$     >             path,zcor,
+c$$$     >             hscin_neg_time(hit)-zcor,adc_ph
                 nsv = min(100, nsv + 1)
                 idetsv(nsv) = 20 * (hscin_plane_num(hit)-1) +
      >            hscin_counter_num(hit) + 100
@@ -535,12 +540,12 @@ c     Get time at focal plane
      >      htime_at_fp(trk),hbeta(trk),hbeta_chisq(trk),
      >      hdelta_tar(trk),hy_tar(trk),hxp_tar(trk),hyp_tar(trk)
         endif
-c        if(hntracks_fp.eq.1.and.
-c     >    hdumptof.eq.1.and.
-c     >     timehist(max(1,jmax)).gt.6) then
-        if(hdumptof.eq.1) then
-c           write(37,'(1x,''0'',2i3,5f10.3)') trk,hntracks_fp,
-c     >      p, betap
+        if(hntracks_fp.eq.1.and.
+     >    hdumptof.eq.1.and.
+     >     timehist(max(1,jmax)).gt.6) then
+c        if(hdumptof.eq.1) then
+           write(37,'(1x,''0'',2i3,5f10.3)') trk,hntracks_fp,
+     >      p, betap
           call h_tofcal_fill(nsv,idetsv,tr0sv,psv,zcsv,
      >       tc1sv,adcsv)
         endif

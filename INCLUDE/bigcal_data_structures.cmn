@@ -92,13 +92,22 @@ c$$$      parameter(BIGCAL_CLSTR_NCELL_MIN=2)
       real*4 BIGCAL_COSTHETA ! cos of bigcal angle
       real*4 BIGCAL_R_TGT ! distance from target in cm
       real*4 BIGCAL_HEIGHT ! height relative to pivot height = 0
+*     yaw, pitch, and roll angles: only nonzero if a survey was done in place--these angles are used to correct the measured cluster position
+      real*4 BIGCAL_YAW_DEG ! rotation angle viewed from above
+      real*4 BIGCAL_PITCH_DEG ! rotation angle viewed from beam right
+      real*4 BIGCAL_ROLL_DEG ! rotation angle viewed from upstream
+      real*4 BIGCAL_ROT_MATRIX(3,3) ! 3D rotation matrix from "real" to "ideal" BigCal coordinates
       common/BIGCAL_KIN_SETTINGS/
      $     BIGCAL_THETA_DEG,
      $     BIGCAL_THETA_RAD,
      $     BIGCAL_SINTHETA,
      $     BIGCAL_COSTHETA,
      $     BIGCAL_R_TGT,
-     $     BIGCAL_HEIGHT
+     $     BIGCAL_HEIGHT,
+     $     BIGCAL_YAW_DEG,
+     $     BIGCAL_PITCH_DEG,
+     $     BIGCAL_ROLL_DEG,
+     $     BIGCAL_ROT_MATRIX
 
       
 * ALL TDCs:
@@ -420,6 +429,10 @@ c$$$     $     BIGCAL_MID_YHIT
       integer*4 BIGCAL_CLSTR_NCELL_MIN
       integer*4 BIGCAL_CLSTR_NCELLX_MAX
       integer*4 BIGCAL_CLSTR_NCELLY_MAX
+      integer*4 BIGCAL_CLSTR_NXMOM_MAX ! number of blocks away from maximum to include in moment calculation
+      integer*4 BIGCAL_CLSTR_NYMOM_MAX ! number of blocks away from maximum to include in moment calculation
+      integer*4 BIGCAL_CLSTR_NXECL_MAX ! number of blocks away from maximum to include in energy sum
+      integer*4 BIGCAL_CLSTR_NYECL_MAX ! number of blocks away from maximum to include in energy sum
       real*4 B_CLUSTER_CUT ! min. cluster energy
       real*4 B_CLUSTER_MAX ! max. cluster energy
       real*4 B_CELL_CUT_RCS ! min cell energy, RCS
@@ -427,17 +440,23 @@ c$$$     $     BIGCAL_MID_YHIT
       real*4 B_MIN_EMAX ! minimum energy of maximum cell
       real*4 b_min_2max(2) !1 = min. fraction to reject cluster for 2nd max.
                            !2 = min. energy to reject cluster for 2nd max.
+      real*4 b_prune_eclust(2)
       real*4 b_trig_cut         ! for monte carlo analysis only: trig threshold
       common/BIGCAL_CLSTR_CUTS/
      $     BIGCAL_CLSTR_NCELL_MIN,
      $     BIGCAL_CLSTR_NCELLX_MAX,
      $     BIGCAL_CLSTR_NCELLY_MAX,
+     $     BIGCAL_CLSTR_NXMOM_MAX,
+     $     BIGCAL_CLSTR_NYMOM_MAX,
+     $     BIGCAL_CLSTR_NXECL_MAX,
+     $     BIGCAL_CLSTR_NYECL_MAX,
      $     B_CLUSTER_CUT,
      $     B_CLUSTER_MAX,
      $     B_CELL_CUT_PROT,
      $     B_CELL_CUT_RCS,
      $     B_MIN_EMAX,
      $     b_min_2max,
+     $     b_prune_eclust,
      $     b_trig_cut
 *     arrays of closest column number in row 33 to column number in row 32 
 *     and vice versa
@@ -451,6 +470,7 @@ c$$$     $     BIGCAL_MID_YHIT
 *     CTPTYPE=event
 *
 *     cluster arrays and checks
+      integer*4 BIGCAL_ALL_NCLUST_GOOD
       integer*4 BIGCAL_ALL_NCLSTR 
       integer*4 BIGCAL_ALL_CLSTR_NCELL(BIGCAL_ALL_NCLSTR_MAX) 
       integer*4 BIGCAL_ALL_CLSTR_NCELLX(BIGCAL_ALL_NCLSTR_MAX)
@@ -498,8 +518,10 @@ c$$$     $     BIGCAL_MID_YHIT
       real*4 BIGCAL_ALL_CLSTR_CHI2(BIGCAL_ALL_NCLSTR_MAX)
       real*4 BIGCAL_ALL_CLSTR_CHI2CONTR(BIGCAL_ALL_NCLSTR_MAX,6)
       logical bigcal_clstr_bad_chan(bigcal_all_nclstr_max,bigcal_clstr_ncell_max) ! is channel in the bad list?
+      logical bigcal_clstr_keep(bigcal_all_nclstr_max) ! did this cluster pass prune checks?
 
       common/BIGCAL_CLUSTERS/
+     $     bigcal_all_nclust_good,
      $     BIGCAL_ALL_NCLSTR,
      $     BIGCAL_ALL_CLSTR_NCELL,
      $     BIGCAL_ALL_CLSTR_NCELLX,
@@ -546,7 +568,8 @@ c$$$     $     BIGCAL_MID_YHIT
      $     bigcal_all_clstr_t64cut_cor,
      $     BIGCAL_ALL_CLSTR_CHI2,
      $     BIGCAL_ALL_CLSTR_CHI2CONTR,
-     $     bigcal_clstr_bad_chan
+     $     bigcal_clstr_bad_chan,
+     $     bigcal_clstr_keep
 
       integer BIGCAL_NMAXIMA ! number of maxima found
       logical BIGCAL_EDGE_MAX(BIGCAL_ALL_NCLSTR_MAX) ! maximum is at edge

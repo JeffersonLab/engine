@@ -4,6 +4,9 @@
 *     quantities calculated from the scaler events (time, current, etc...)
 *
 * $Log$
+* Revision 1.13.14.1.2.1  2009/03/31 19:32:59  cdaq
+* *** empty log message ***
+*
 * Revision 1.13.14.1  2007/11/09 17:16:33  cdaq
 *  increased gscaler array to 1000
 *
@@ -144,3 +147,7 @@ c themselves.  The following is to
      &    gscaler_event_num,skip_events
       common/ WRITESCALERS/
      & NUM_WRITEOUT_SCALERS,INDEX_WRITEOUT_SCALERS
+
+      integer*4 g_hel_pos 
+      integer*4 g_hel_neg 
+      common/HelScaler/g_hel_pos,g_hel_neg

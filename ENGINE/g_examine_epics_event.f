@@ -1,5 +1,8 @@
       subroutine g_examine_epics_event
 * $Log$
+* Revision 1.5.20.1.2.1  2009/03/31 19:33:00  cdaq
+* *** empty log message ***
+*
 * Revision 1.5.20.1  2007/09/10 20:33:37  pcarter
 * Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *
@@ -39,6 +42,7 @@
       include 'gen_craw.cmn'
       include 'gen_run_info.cmn'
       include 'gen_filenames.cmn'
+      include 'sane_ntuple.cmn'
 *
 * event type =131 30 second epics read 
 * event type =132  2 second epics read
@@ -77,8 +81,22 @@ cccc      write (6,*) 'epics,evlen',evlen,numevent,craw(3)
         j = find_char (buffer, i, 10)   ! 10 = NewLine character
         if (i.eq.j) goto 20
         if(i.lt.j-1 .and. dump_event) write(G_LUN_EPICS_OUTPUT,'(4x,a)') buffer(i:j-1)
+        if (i+11.le.j-1) then   !text line.
+c     ********** read out the BPMs (POS values first...) **********
+           if (buffer(i:i+11).eq.'hcptNMR_Area') then
+              read(buffer(i+13:j-1),*) polarea
+c              write(*,*)"HERE IS POLARIZATION",polarea
+           ENDIF
+        ENDIF
  20     i = j + 1
       enddo
+c      call system("rm fort.21")
+c      call system
+c     &     ("tail -n 361 scalers/epics72252.txt | 
+c     & grep NMR_A | awk '{ print $2}'>fort.21")
+c      read(21,*)polarea
+c      write(*,*)'HERE IS EPIC EVENT',polarea
+c      close(21)
 
       return
       end

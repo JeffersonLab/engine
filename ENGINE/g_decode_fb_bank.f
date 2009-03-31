@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.15.2.5  2009/03/31 19:33:00  cdaq
+* *** empty log message ***
+*
 * Revision 1.32.20.15.2.4  2009/01/30 20:33:29  cdaq
 * *** empty log message ***
 *
@@ -204,6 +207,7 @@
       include 'gen_decode_common.cmn'
       include 'mc_structures.cmn'
       include 'gen_event_info.cmn'
+      include 'gen_scalers.cmn'
 cajp
       include 'bigcal_data_structures.cmn'
 cajp
@@ -541,6 +545,10 @@ c     SANE DECODER
 c
 
           else if(SANE_TRUE)then
+            if(gen_event_trigtype(4).eq.1)then
+              if(gbeam_helicity_TS.eq.1)g_hel_pos = g_hel_pos+1
+              if(gbeam_helicity_TS.eq.-1)g_hel_neg = g_hel_neg+1
+            endif
             call sane_decode(pointer,lastslot, roc, bank, 
      &           maxwords, did)
 ***************************************

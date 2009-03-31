@@ -44,14 +44,25 @@ c      character*256 b_tree_filename
      $     sane_Ntuple_contents,sane_ntuple_type,
      $	   sane_ntuple_auxsegments,isane_plots
 
+      real*8 tcharge 
+      real*8 charge2s 
+      real*8 polarea
+      integer*4 hel_p_scaler
+      integer*4 hel_n_scaler
+      integer*4 hel_p_trig
+      integer*4 hel_n_trig
+      real*8 dtime_p,dtime_n
 
-c      integer*4 sanegid 
-c      integer*4 sanegtype 
-c      integer*4 sanetrigtype
-c      common/SANEEV/
-c     $     sanegid,
-c     $     sanegtype,
-c     $     sanetrigtype
+      common/SANEEV/
+     $     tcharge,
+     $     charge2s,
+     $     polarea,
+     $ 	   hel_p_scaler,
+     $	    hel_n_scaler,
+     $	    hel_p_trig,
+     $	    hel_n_trig,
+     $	    dtime_p,dtime_n
+
 
       integer TRACKER_MAX_HITS
       parameter (TRACKER_MAX_HITS=900)
@@ -168,19 +179,44 @@ c     $     sanetrigtype
       real*4 Delta_Y(maxcl),Delta_X(maxcl)
       real*4 X_Bjorken(maxcl), Q2(maxcl), W2(maxcl), ENue(maxcl)
       integer*4 cer_h(maxcl)
-      COMMON/SANEPHYS/n_clust, 
-     ,     E_clust, 
-     ,     X_clust, Y_clust, Z_clust, 
-     ,     X_clust_r, Y_clust_r, Z_clust_r,
-     ,     luc_h, 
-     ,     X_luc, Y_luc, Z_luc, 
-     ,     X_luc_r, Y_luc_r, Z_luc_r,
-     ,     trc_hx, X_trc, X_trc_r, Z_trc_r, 
-     ,     trc_hy1, Y1_trc, Y1_trc_r, Z1_trc_r, 
-     ,     trc_hy2, Y2_trc, Y2_trc_r, Z2_trc_r, 
-     ,     Tr_Vertex, Tr_Vertex_r, cer_h,  
-     ,     Theta_e, Phi_e, Delta_Y, Delta_X,
-     ,     X_Bjorken, Q2, W2, ENue
+      COMMON/SANEPHYS/n_clust,
+     $        E_clust,
+     $        X_clust, Y_clust,
+     $        Z_clust,
+     $        X_clust_r, Y_clust_r,
+     $        Z_clust_r,
+     $        luc_h,
+     $        X_luc, Y_luc, Z_luc,
+     $        X_luc_r,Y_luc_r,
+     $        Z_luc_r,
+     $        trc_hx,
+     $        X_trc,
+     $        Z_trc,
+     $        trc_hy1,
+     $        Y1_trc,
+     $        Z1_trc,
+     $        trc_hy2,
+     $        Y2_trc,
+     $        Z2_trc,
+     $        Tr_Vertex, Tr_Vertex_r,
+     $        cer_h,
+     $        Theta_e,Phi_e,
+     $        Delta_Y,Delta_X,
+     $        X_Bjorken, Q2,
+     $         W2, ENue
+c      COMMON/SANEPHYS/n_clust, 
+c     ,     E_clust, 
+c     ,     X_clust, Y_clust, Z_clust, 
+c     ,     X_clust_r, Y_clust_r, Z_clust_r,
+c     ,     luc_h, 
+c     ,     X_luc, Y_luc, Z_luc, 
+c     ,     X_luc_r, Y_luc_r, Z_luc_r,
+c     ,     trc_hx, X_trc, 
+c     ,     trc_hy1, Y1_trc, 
+c     ,     trc_hy2, Y2_trc, 
+c     ,     Tr_Vertex, Tr_Vertex_r, cer_h,  
+c     ,     Theta_e, Phi_e, Delta_Y, Delta_X,
+c     ,     X_Bjorken, Q2, W2, ENue
 
       real*4 X_luc_av(maxcl),Y_luc_av(maxcl),Z_luc_av(maxcl)
       real*4 X_tr_av(maxcl),Y_tr_av(maxcl),Z_tr_av(maxcl)

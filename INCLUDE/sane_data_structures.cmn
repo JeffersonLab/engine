@@ -5,6 +5,9 @@
 *     Author:   H. Baghdasaryan     18 Jan,2008
 *
 * $Log$
+* Revision 1.1.2.8  2009/03/31 19:32:59  cdaq
+* *** empty log message ***
+*
 * Revision 1.1.2.7  2009/02/11 21:42:33  cdaq
 * *** empty log message ***
 *
@@ -228,12 +231,15 @@ c      PARAMETER (TRACKER_SANE_RAW_COUNTER=448)  ! Should exceed # of paddles
       real LUCITE_SANE_MEAN_NEG(28)
       real LUCITE_SANE_SIGMA_POS(28)
       real LUCITE_SANE_SIGMA_NEG(28)
+      real LUCITE_SANE_COEF(28)
+      real LUCITE_SANE_SHIFT(28)
       COMMON/LUCITE_CALIB/
      &     LUCITE_SANE_TDC_TIMING,
      &     LUCITE_SANE_MEAN_POS,
      &     LUCITE_SANE_MEAN_NEG,
      &     LUCITE_SANE_SIGMA_POS,
-     &     LUCITE_SANE_SIGMA_NEG
+     &     LUCITE_SANE_SIGMA_NEG,
+     &	   LUCITE_SANE_COEF,LUCITE_SANE_SHIFT
 
       real CER_SANE_MEAN(8)
       real CER_SANE_SIGMA(8)
@@ -251,6 +257,12 @@ c      PARAMETER (TRACKER_SANE_RAW_COUNTER=448)  ! Should exceed # of paddles
      & CER_SANE_GEOM_CUT_LOW,
      & CER_SANE_GEOM_CUT_HI,
      & CER_SANE_GEOM_CUT_X
+c
+c
+c	Time calibration constants for Bigcal 4 quarters
+c
+      real BIG_TIME_SHIFT_CH(4)
+      COMMON/BIG_CALIB/BIG_TIME_SHIFT_CH
 
       real TrackerX_SHIFT(4) ! position in X,Y,Z Z-betta detector dirrection, 4- angleof betta detector
       real TrackerY1_SHIFT(4) !  position in Z-betta detector dirrection
