@@ -1,4 +1,4 @@
-      subroutine b_ntuple_keep(ABORT,err)
+      subroutine b_ntuple_keep(ABORT,err,hflag)
 
       implicit none
       save
@@ -22,6 +22,7 @@ c      include 'gen_scalers.cmn'
       parameter(PI=3.14159265359)
 
       logical HEXIST ! CERNLIB function
+      logical hflag
 
 c      logical middlebest
 
@@ -49,6 +50,8 @@ c      integer itype
       err=' '
       ABORT=.false.
 
+      if ( .not. hflag) bigcal_ntuple_type = 1
+      if ( hflag) then
       if(.not.b_ntuple_exists) return
 c      write(*,*)'Filling ntuple data'
       if(b_ntuple_max_segmentevents.gt.0) then
@@ -58,6 +61,7 @@ c      write(*,*)'Filling ntuple data'
          else 
             b_ntuple_segmentevents = b_ntuple_segmentevents + 1
          endif
+      endif
       endif
 c
 c      if (gen_event_type .ne. 6) return
@@ -372,7 +376,7 @@ c$$$  $             yt(nthit),hn(nthit),tt(nthit)
          endif 
       endif
       
-      
+      if ( hflag) then
       abort=.not.HEXIST(b_ntuple_ID)
       if(abort) then
          call G_build_note(':Ntuple ID#$ does not exist',
@@ -382,6 +386,7 @@ c$$$  $             yt(nthit),hn(nthit),tt(nthit)
 c         
          call HFNT(b_ntuple_ID)
 c         
+      endif
       endif
 
       return 

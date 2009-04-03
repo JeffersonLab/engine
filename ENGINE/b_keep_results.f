@@ -21,7 +21,7 @@ c     if there is a cluster, then keep the ntuple
 
 c$$$      if(BIGCAL_PROT_NCLSTR.gt.0.or.BIGCAL_RCS_NCLSTR.gt.0.or.
 c$$$     $     BIGCAL_MID_NCLSTR.gt.0) then
-c$$$         call b_ntuple_keep(ABORT,err)
+c$$$         call b_ntuple_keep(ABORT,err,.true.)
 c$$$      endif
 
 c      if (gen_event_type .le. 2) return
@@ -29,10 +29,10 @@ c      if (gen_event_type .le. 2) return
       if(bigcal_ntuple_type.eq.1)then
        if(bigcal_all_nclstr.gt.0!.or.bigcal_nmaxima.gt.0
      &        ) then
-          call b_ntuple_keep(ABORT,err)
+          call b_ntuple_keep(ABORT,err,.true.)
         endif
       else if(bigcal_ntuple_type.eq.2)then 
-         call b_ntuple_keep(ABORT,err)
+         call b_ntuple_keep(ABORT,err,.true.)
       endif
 
       if(abort) then

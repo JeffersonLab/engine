@@ -33,6 +33,7 @@ c$$$      endif
         if(bigcal_all_nclstr.gt.0.or.gen_event_type .eq. 8
      ,        .or.HSNUM_FPTRACK.gt.0
      ,        ) then
+          call b_ntuple_keep(ABORT,err,.false.)
           call sane_ntuple_keep(ABORT,err)
           call SANE_DUMP_NTUP_VAR()
           bigcal_all_nclstr=0
