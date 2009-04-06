@@ -1,5 +1,8 @@
       subroutine g_examine_epics_event
 * $Log$
+* Revision 1.5.20.1.2.2  2009/04/06 23:00:09  cdaq
+* fix problem with polarea
+*
 * Revision 1.5.20.1.2.1  2009/03/31 19:33:00  cdaq
 * *** empty log message ***
 *
@@ -38,6 +41,7 @@
       integer numevent
       logical dump_event
       integer*4 jishft
+      character*20 junk
 
       include 'gen_craw.cmn'
       include 'gen_run_info.cmn'
@@ -82,10 +86,13 @@ cccc      write (6,*) 'epics,evlen',evlen,numevent,craw(3)
         if (i.eq.j) goto 20
         if(i.lt.j-1 .and. dump_event) write(G_LUN_EPICS_OUTPUT,'(4x,a)') buffer(i:j-1)
         if (i+11.le.j-1) then   !text line.
-c     ********** read out the BPMs (POS values first...) **********
            if (buffer(i:i+11).eq.'hcptNMR_Area') then
-              read(buffer(i+13:j-1),*) polarea
-c              write(*,*)"HERE IS POLARIZATION",polarea
+              read(buffer(i+13:j-1),*) junk
+              polarea = -200.
+c    find_char(junk, 1, 43) returns the position of '+' symbol in the EPICs line
+c   if it finds the '+'symbol then find_char = g_important_length
+c   if it does not find the '+'symbol then find_char = 22 which is "junk" length + 2
+              if (find_char(junk, 1, 43) .ne. g_important_length(junk)) read(buffer(i+13:j-1),*) polarea
            ENDIF
         ENDIF
  20     i = j + 1
