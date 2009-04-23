@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.21.2.9  2009/04/23 19:24:11  jones
+* For runs  72532-72583 set event type 1 equal to event type 6.
+*
 * Revision 1.42.8.21.2.8  2009/03/31 19:33:00  cdaq
 * *** empty log message ***
 *
@@ -769,6 +772,10 @@ c     !!!!!!!!!!!!!!!!!!!!!!!!!!!END BIGCAL MONTE CARLO EVENT REPLAY!!!!!!!!!!!!
            gen_event_type = jishft(craw(2),-16)
            if (gen_event_type .eq. 13) then
                    gen_event_type = 6
+          endif
+         if(grun .ge. 72532 .and. 
+     >       grun .le. 72583) then
+           if (gen_event_type .eq. 1) gen_event_type = 6
           endif
            !write(*,*) 'gen_event_type = ',gen_event_type
 
