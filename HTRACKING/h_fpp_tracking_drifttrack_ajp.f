@@ -1,9 +1,10 @@
       subroutine h_fpp_tracking_drifttrack_ajp(DCset,SimpleTrack,
-     $     HitClusters,OnTrack,track_good,DriftTrack,mode,ABORT,err)
+     $     HitClusters,OnTrack,track_good,DriftTrack,nhitsrequired,mode,ABORT,err)
 *     ALTERNATIVE LEFT-RIGHT DETERMINATION ROUTINE BY AJP
       implicit none
       save
       
+      include 'gen_event_info.cmn'
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_geometry.cmn'
       include 'gen_detectorids.par'
@@ -20,6 +21,7 @@
       integer*4 jibset          ! Declare to help f2c
 
       integer*4 mode            ! indicates whether to fill the final track common block
+      integer*4 nhitsrequired   ! indicates whether to allow tracks to go below 6 planes
       integer*4 DCset
       real*4 SimpleTrack(6)
       integer*4 HitClusters(h_fpp_n_dcinset,h_fpp_n_dclayers)
@@ -89,7 +91,7 @@
 
       integer ndf,icone
 
-      integer*4 ichamber,ilayer,ihit,hit,wire,sign,bestsign
+      integer*4 ichamber,ilayer,ihit,hit,wire,sign,bestsign,iplane
       integer*4 icluster,ipoint,icombo,point1,point2,j,k
       integer*4 ncombos
       integer*4 nfree,nfixed,ifree ! number of points w/ fixed and free left-right choice, respectively
@@ -124,6 +126,10 @@ c     always initialize to zero
             npointsthislayer(ichamber,ilayer) = 0
             OnTrack(ichamber,ilayer) = .false.
 
+            iplane = 6 * (dcset - 1) 
+     $           + 3 * (ichamber - 1)
+     $           + ilayer
+
             if(icluster.gt.0) then
                nclusters = nclusters + 1
 
@@ -150,6 +156,25 @@ c     for optional correction to drift distance and z of the hit:
                   wirepropagation = roughv * float(hfpp_cardpos(dcset,ichamber,ilayer,wire))
 
                   call h_fpp_drift(hit,simpletrack,wirepropagation,mydriftT,mydriftX,abort,err)
+c     if the first hit had a bad drift distance because it was too early, then if the wire has a second hit which gives a "good"
+c     drift distance,
+c     then let us attempt to use it:
+                  if( mydriftX.eq.h_fpp_bad_drift .and. 
+     $                 hfpp_hit2idx(iplane,wire) .gt. 0 .and.
+     $                 hfpp_use_multihit_wire.ne.0 ) then
+c                     write(*,*) 'event=',gen_event_id_number
+                     hit = hfpp_hit2idx(iplane,wire)
+c                     write(*,*) 'old drift time = ',mydriftT
+                     call h_fpp_drift(hit,simpletrack,wirepropagation,mydriftT,mydriftX,abort,err)
+c     if the hit now has a "GOOD" drift distance, then we are golden!
+c$$$                     if(mydriftX.ne.h_fpp_bad_drift) then
+c$$$                   
+c$$$c$$$                   write(*,*) 'found good drift distance for 2nd hit'
+c$$$c$$$                   write(*,*) 'plane,wire=',iplane,wire
+c$$$c$$$                   write(*,*) 'new drift time, dist=',mydriftT,mydriftX
+c$$$                   
+c$$$                     endif
+                  endif
 
                   hfpp_drift_time(dcset,ichamber,ilayer,wire) = mydriftT
                   hfpp_drift_dist(dcset,ichamber,ilayer,wire) = h_fpp_bad_drift
@@ -317,7 +342,8 @@ c      write(*,*) 'logical plusminusfixed=',plusminusfixed
       endif
 
       if(ntrackpoints.lt.hfpp_minsethits.or.
-     $     ntrackplanes.lt.hfpp_minsethits) then
+     $     ntrackplanes.lt.hfpp_minsethits.or.
+     $     ntrackplanes.lt.nhitsrequired) then
          track_good = .false.
          return
       endif
@@ -802,13 +828,15 @@ c      write(*,*) 'best LR combo=',plusminusbest
             drifttrack(7) = float(ntrackplanes)
          endif
 *     Otherwise, go back and drop the hit with the worst contribution to the chi2:
-      else if(ntrackpoints.gt.hfpp_minsethits) then
+      else if(ntrackpoints.gt.hfpp_minsethits.and.ntrackplanes.ge.
+     $        nhitsrequired) then
 *     here we will drop the hit with the worst contribution to the 
 *     chi2, re-determine the number of free vs fixed left-right hits
 *     and re-determine the best left-right combo, and rinse, repeat 
 *     until we either arrive at a track with an acceptable chi2 or 
 *     the number of hits on the track falls below the minimum:
 *     on a second pass, it should be impossible to end up with any three-hit clusters:
+*     also note that only if we have made it to the point where 5 plane tracks are allowed do we consider this option
 *     start with multiple-hit clusters:
          firsttry = .true.
  
@@ -888,7 +916,8 @@ c               ontrack(ichamber,ilayer) = .true.
          enddo
 
          if(ntrackpoints.ge.hfpp_minsethits.and.
-     $        ntrackplanes.ge.hfpp_minsethits) goto 101 ! repeat track fitting/LR determination
+     $        ntrackplanes.ge.hfpp_minsethits.and.
+     $        ntrackplanes.ge.nhitsrequired) goto 101 ! repeat track fitting/LR determination
          
          track_good = .false.
       else

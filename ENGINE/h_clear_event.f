@@ -12,6 +12,9 @@
 *-   Created  29-Oct-1993   Kevin B. Beard
 *
 * $Log$
+* Revision 1.15.24.7  2009/04/27 21:10:53  puckett
+* latest updates
+*
 * Revision 1.15.24.6  2008/12/17 22:29:41  puckett
 * minor diagnostic addition
 *
@@ -194,7 +197,8 @@ cfrw       enddo
         hfpp_N_tracks(iSet) = 0
         hfpp_n_goodtracks(iset) = 0
         hfpp_best_track(iSet) = 0
-        hfpp_n_simple(iset) = 0
+        hfpp_n_simple(iset,1) = 0
+        hfpp_n_simple(iset,2) = 0
       enddo !iSet
       
       do i=1,h_fpp_max_tracks

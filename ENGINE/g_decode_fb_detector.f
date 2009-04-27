@@ -5,6 +5,9 @@
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.23.20.17  2009/04/27 21:10:52  puckett
+* latest updates
+*
 * Revision 1.23.20.16  2008/09/29 15:11:42  puckett
 * added checking for existence of FPP histograms
 *
@@ -173,10 +176,10 @@
           goto 987
 ! Check for extra events in FB modules on sync events
         else if(jieor(jiand(evfrag(pointer),'FFFF0000'x),'DCFE0000'x).eq.0) then
-          write(6,'(a,i2,a,i3,a,i3,a,i10)') 'ROC',roc,': Slot'
-     $         ,jiand(jishft(evfrag(pointer),-11),'1F'x),': '
-     $         ,jiand(evfrag(pointer),'7FF'x),' extra events, event=',
-     &         gen_event_id_number
+c$$$          write(6,'(a,i2,a,i3,a,i3,a,i10)') 'ROC',roc,': Slot'
+c$$$     $         ,jiand(jishft(evfrag(pointer),-11),'1F'x),': '
+c$$$     $         ,jiand(evfrag(pointer),'7FF'x),' extra events, event=',
+c$$$     &         gen_event_id_number
           pointer = pointer + 1
           goto 987
         else if(jieor(jiand(evfrag(pointer),'FF000000'x),'DC000000'x).eq.0) then ! Catch arrington's headers

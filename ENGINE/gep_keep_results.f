@@ -9,6 +9,8 @@ c      include 'gen_event_info.cmn'
       include 'hms_physics_sing.cmn'
       include 'bigcal_data_structures.cmn'
       INCLUDE 'bigcal_bypass_switches.cmn'
+      include 'gen_constants.par'
+      include 'gen_data_structures.cmn'
 
       character*14 here
       parameter(here='b_keep_results')
@@ -23,10 +25,11 @@ c      include 'gen_event_info.cmn'
      $     b_passed_cointime_cut.and.h_passed_cointime_cut) then
 c         gep_evid = gen_event_id_number
          if(gep_use_ntuple_cuts.eq.0.or.(
-     $        abs(hsxp_tar).lt.hprune_xp.and.
-     $        abs(hsyp_tar).lt.hprune_yp.and.
-     $        abs(hsdelta).lt.hprune_delta.and.
-     $        abs(hsy_tar).lt.hprune_ytar
+     $        abs(hsxp_tar).lt.0.1.and.
+     $        abs(hsyp_tar).lt.0.05.and.
+     $        abs(hsdelta).lt.15..and.
+     $        abs(hsy_tar*(coshthetas/tan(htheta_lab*degree-hsyp_tar)+sinhthetas)-gtarg_z_offset)
+     $        .lt.20.0
      $        )) then
             call gep_ntuple_keep(abort,err)
          endif

@@ -20,6 +20,9 @@
 *-                           Dummy Shell routine
 *
 * $Log$
+* Revision 1.23.20.6  2009/04/27 21:11:34  puckett
+* latest updates
+*
 * Revision 1.23.20.5  2008/07/29 16:39:31  puckett
 * added calculation of new variable hdc_sing_leftright and other misc stuff
 *
@@ -352,27 +355,34 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
                                                         ! angle
       hsinplane = htheta_lab*TT/180. - atan(hsyp_tar) ! rough scat angle
 
-      if (hpartmass .lt. 2.*mass_electron) then ! for electron
-        if (gtarg_z(gtarg_num).gt.0.) then
-          call total_eloss(1,.true.,hstheta_1st,1.0,hseloss)
-         else
-           hseloss=0.
-        endif
-      else   ! not an electron
-        if (gtarg_z(gtarg_num).gt.0.) then
-          call total_eloss(1,.false.,hstheta_1st,hsbeta_p,hseloss)
-        else
-          hseloss=0.
-        endif
-      endif           ! particle specific stuff
+      if(guse_zbeam_eloss.eq.0) then
+         if (hpartmass .lt. 2.*mass_electron) then ! for electron
+            if (gtarg_z(gtarg_num).gt.0.) then
+               call total_eloss(1,.true.,hstheta_1st,1.0,hseloss)
+            else
+               hseloss=0.
+            endif
+         else                   ! not an electron
+            if (gtarg_z(gtarg_num).gt.0.) then
+               call total_eloss(1,.false.,hstheta_1st,hsbeta_p,hseloss)
+            else
+               hseloss=0.
+            endif
+         endif
+                           ! particle specific stuff
 
 *     Correct hsenergy and hsp for eloss at the target
 * csa 4/12/99 -- changed hscorre/p back to hsenergy and hsp so
 * I could keep those names in c_physics.f
 
-      hsenergy = hsenergy + hseloss
-      hsp = sqrt(hsenergy**2-hpartmass**2)
+c         write(*,*) 'hsp before eloss=',hsp
+         
+         hsenergy = hsenergy + hseloss
+         hsp = sqrt(hsenergy**2-hpartmass**2)
 
+c         write(*,*) 'hsp after eloss = ',hsp
+
+      endif
 *     Begin Kinematic stuff
 
 *     coordinate system :
@@ -426,6 +436,41 @@ c      if (hsphi .gt. 0.) hsphi = hsphi - tt
 
         hszbeam = coshthetas*hsy_tar
      >       /tan(htheta_lab*degree-hsyp_tar)+hsy_tar*sinhthetas
+
+        if(guse_zbeam_eloss.ne.0) then ! calculate zbeam-dependent eloss:
+c           write(*,*) 'calling eloss, (p,theta,phi,z)=',hsp,hstheta,hsphi,hszbeam
+c     don't call total_eloss if the reconstruction is totally screwy:
+           if(abs(hsdelta).lt.30.0 .and.
+     $          abs(hsxp_tar).lt.0.3 .and. 
+     $          abs(hsyp_tar).lt.0.3 .and.
+     $          abs(hsy_tar).lt.50.0 ) then
+              if (hpartmass .lt. 2.*mass_electron) then ! for electron
+                 if (gtarg_z(gtarg_num).gt.0.) then
+                    call total_eloss(1,.true.,hstheta,1.0,hseloss)
+                 else
+                    hseloss=0.
+                 endif
+              else              ! not an electron
+                 if (gtarg_z(gtarg_num).gt.0.) then
+                    call total_eloss(1,.false.,hstheta,hsbeta_p,hseloss)
+                 else
+                    hseloss=0.
+                 endif
+              endif
+           endif                ! particle specific stuff
+           
+*     Correct hsenergy and hsp for eloss at the target
+*     csa 4/12/99 -- changed hscorre/p back to hsenergy and hsp so
+*     I could keep those names in c_physics.f
+           
+c     write(*,*) 'hsp before eloss=',hsp
+           
+           hsenergy = hsenergy + hseloss
+           hsp = sqrt(hsenergy**2-hpartmass**2)
+           
+c     write(*,*) 'hsp after eloss = ',hsp
+        endif
+*
 
 *     Target particle 4-momentum
 

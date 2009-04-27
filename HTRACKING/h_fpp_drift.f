@@ -336,8 +336,19 @@ c      write(*,*)'Drift type = ',hfpp_drift_type
 
 *         * interpolate between two relevant time bins
           fraction = (drift_time-hfpp_drift_Tmin) / hfpp_drift_dT
+
+c          write(*,*) 't,tmin,dt,f=',drift_time,hfpp_drift_tmin,hfpp_drift_dt,fraction
+
           binno = 1 + int(fraction)
-          fraction = fraction - float(binno) - 1.5  ! range -0.5 to 0.5
+c          write(*,*) 'bin=',binno
+          
+c          fraction = fraction - float(binno) - 1.5  ! range -0.5 to 0.5 this comment is wrong! 
+c     we want fraction to be between -0.5 and +0.5.
+c     as it stands now, fraction is actually between -1.0 and 0.0
+
+          fraction = fraction - float(binno) + 0.5 ! range -0.5 to 0.5
+
+c          write(*,*) 'f=',fraction
 
           if (fraction.lt.0.0) then !below midpoint
             fraction = -1.0*fraction
@@ -347,8 +358,13 @@ c      write(*,*)'Drift type = ',hfpp_drift_type
               drift_distance =      fraction  * hfpp_driftmap7(Layer,Card,binno-1)
      >    		     + (1.0-fraction) * hfpp_driftmap7(Layer,Card,binno)
             endif
+            
+c$$$            write(*,*) 'd(j-2),d(j-1),d(j)=',hfpp_driftmap7(layer,card,binno-2),hfpp_driftmap7(layer,card,binno-1),
+c$$$     $           hfpp_driftmap7(layer,card,binno)
+c$$$            write(*,*) 'f<0,f,d=',fraction,drift_distance
 
           else  		    !above midpoint
+             
             if (binno.eq.hfpp_drift_Nbins) then  !already at top bin
               drift_distance = H_FPP_BAD_DRIFT
               RETURN
@@ -356,6 +372,12 @@ c      write(*,*)'Drift type = ',hfpp_drift_type
               drift_distance =      fraction  * hfpp_driftmap7(Layer,Card,binno+1)
      >    		     + (1.0-fraction) * hfpp_driftmap7(Layer,Card,binno)
             endif
+
+c$$$            write(*,*) 'd(j-1),d(j),d(j+1)=',hfpp_driftmap7(layer,card,binno-1),hfpp_driftmap7(layer,card,binno),
+c$$$     $           hfpp_driftmap7(layer,card,binno+1)
+c$$$
+c$$$            write(*,*) 'f>0,f,d=',fraction,drift_distance
+
           endif
 
           if (drift_distance.lt.0.0) then

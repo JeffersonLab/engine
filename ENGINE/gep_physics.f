@@ -103,8 +103,8 @@ c     if the user has not defined something reasonable, then set by hand here:
 
 c     if the user hasn't defined something reasonable, set defaults here:
       
-      gep_zbeam_low = min(-10.,gep_zbeam_low)
-      gep_zbeam_high = max(15.,gep_zbeam_high)
+      gep_zbeam_low = min(-15.,gep_zbeam_low)
+      gep_zbeam_high = max(25.,gep_zbeam_high)
 
       if(gen_bigcal_mc.eq.3) then ! fill HMS info from Monte Carlo:
          hsnum_fptrack = 1
@@ -180,12 +180,17 @@ c$$$      write(*,*) 'htrigt=',htrigt
 
       Me = mass_electron ! convenient shorthand
 
+      if(guse_zbeam_eloss.ne.0) then ! calculate zbeam-dependent beam eloss:
+         call total_eloss(0,.true.,0.0,1.0,geloss)
+c     write(*,*) 'zbeam, eloss=',hszbeam,geloss
+      endif
+      
 c     calculate nu for elastic-ep:
 
       nu = sqrt(Mp**2 + hsp**2) - Mp
 
 c     expected electron energy:
-      Eprime = gebeam - nu
+      Eprime = (gebeam - geloss) - nu
 
       pthetarad = hstheta
 cajp051408      pphirad = hsphi - 3.*PI/2. ! ~-PI/2.
@@ -200,8 +205,8 @@ c$$$      nu_htheta = Q2_htheta / (2.*Mp)
 c$$$
 c$$$      pp_htheta = sqrt(nu_htheta**2 + 2.*Mp*nu_htheta)
 
-      pp_htheta = 2.*Mp*gebeam*(Mp+gebeam)*cos(hstheta) / 
-     $     (Mp**2 + 2.*Mp*gebeam + (gebeam*sin(hstheta))**2)
+      pp_htheta = 2.*Mp*(gebeam - geloss)*(Mp+(gebeam - geloss))*cos(hstheta) / 
+     $     (Mp**2 + 2.*Mp*(gebeam - geloss) + ((gebeam - geloss)*sin(hstheta))**2)
 
 c     calculate electron angle from gebeam and hsp only, since the resolution of these quantities is better than 
 c     you can get using hstheta, the reason being the large Jacobian of the reaction. The error on etheta is
@@ -209,7 +214,7 @@ c     magnified roughly by a factor hsp/Eprime compared to the error on hstheta,
 c     large error on xcal,ycal
 
       
-      etheta_expect = acos(max(-1.,min(1.,1. - Mp/gebeam * nu / Eprime)))
+      etheta_expect = acos(max(-1.,min(1.,1. - Mp/(gebeam - geloss) * nu / Eprime)))
          
       ! in BigCal coordinates, phi is centered at 0 for BigCal. In target coordinates, BigCal is 
       ! centered at +PI/2, while HMS is centered at -PI/2. However, since BigCal y means -target x
@@ -241,7 +246,7 @@ c     now rotate to BigCal coordinates:
       !write(*,*) 'exhat,eyhat,ezhat=',exhat,eyhat,ezhat
 
 c     vertex coordinates expressed in BigCal coordinate system
-c     turns out that beam x and y coordinates are the same as BigCal coordinates
+c     turns out that beam x and y coordinates are the same as BigCal coordinates except for the sign of x
 c     also correct the z vertex position for raster x:
 
       vx = -gbeam_x
@@ -398,14 +403,14 @@ c     could get a "NaN" error here: check:
          gep_ctime_cal = 0.
       endif
 
-      Ee_btheta = gebeam / (1. + gebeam/Mp * (1. - cos(bigcal_thetarad)))
+      Ee_btheta = (gebeam - geloss) / (1. + (gebeam - geloss)/Mp * (1. - cos(bigcal_thetarad)))
 
-      nu_btheta = gebeam - Ee_btheta
+      nu_btheta = (gebeam - geloss) - Ee_btheta
       pp_btheta = sqrt(nu_btheta**2 + 2.*Mp*nu_btheta)
 c     compute Q2 three different ways:
 c     Q2_Cal uses only BigCal information except for hms vertex info
 c     Q2_hms uses only HMS information, period.
-      Q2_cal = 2.*gebeam*Ee_btheta*(1.-cos(bigcal_thetarad))
+      Q2_cal = 2.*(gebeam - geloss)*Ee_btheta*(1.-cos(bigcal_thetarad))
       Q2_hms = 2.*Mp*nu ! HMS only
 
       E0_2body = .5* (nu + sqrt(max(0.,nu**2 + 2.*Q2_hms / (1. - cos(bigcal_thetarad)))))
@@ -415,11 +420,12 @@ c     Q2_hms uses only HMS information, period.
 c     what is the average Q2? Both measurements are very good, except for bigcal_energy
 c     best is probably to use Eprime calculated from hsp, but use BigCal angle measurement
 c     corrected for HMS vertex info. Q2 from Ebeam, hsp alone (Q2_hms) may be even better than this. 
-      GEP_Q2 = 2.*gebeam*Eprime*(1.-cos(bigcal_thetarad))
+      GEP_Q2 = 2.*(gebeam - geloss)*Eprime*(1.-cos(bigcal_thetarad))
 c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       GEP_Q2_H = Q2_hms
       GEP_Q2_B = Q2_cal
       GEP_E_electron = Eprime ! electron energy from HMS
+      
       GEP_P_proton = hsp
       GEP_Pel_htheta = pp_htheta
       GEP_Pel_btheta = pp_btheta
@@ -443,7 +449,7 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       GEP_ephi_deg = bigcal_phirad * 180./PI + 90. !~+90 deg
       GEP_pphi_deg = pphirad * 180./PI !~-90 deg
 
-      GEP_Emiss = gebeam + Mp - hsenergy - bigcal_energy
+      GEP_Emiss = (gebeam - geloss) + Mp - hsenergy - bigcal_energy
       GEP_Pmissx = -bigcal_py + hsp*sin(hstheta)*cos(pphirad)
       GEP_Pmissy = bigcal_px + hsp*sin(hstheta)*sin(pphirad)
       GEP_Pmissz = gpbeam - bigcal_pz - hsp*cos(hstheta)

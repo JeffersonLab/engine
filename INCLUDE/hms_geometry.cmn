@@ -17,6 +17,9 @@
 *                add     hdc_xcenter
 *                        hdc_ycenter
 * $Log$
+* Revision 1.11.24.5  2009/04/27 21:12:11  puckett
+* latest updates
+*
 * Revision 1.11.24.4  2008/12/03 17:35:34  puckett
 * updated common blocks to include new variables
 *
@@ -228,6 +231,8 @@
 
       real*4 HFPP_direction     ! direction of unit vector along layer''s measure
                                 ! based on parameter file variable  HFPP_layerangle
+      real*4 HFPP_align_corr
+      real*4 HFPP_align_coeff
 
       integer*4 HFPP_cardpos    ! is readout card on +v or -v side of chamber?
                                 ! where u is measuring coord, v is along wires and z is beam
@@ -257,4 +262,6 @@
      &   , HFPP_resolution(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
      &   , HFPP_layerZ(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
      &   , HFPP_layeroffset(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
+     $   , hfpp_align_corr(h_fpp_n_dcsets*24)
+     $   , hfpp_align_coeff(h_fpp_n_dcsets,4,6)
      &   , HFPP_cardpos(H_FPP_N_DCSETS,H_FPP_N_DCINSET,H_FPP_N_DCLAYERS,H_FPP_MAX_WIRES)

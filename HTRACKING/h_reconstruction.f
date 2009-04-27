@@ -11,6 +11,9 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 * $Log$
+* Revision 1.13.24.9  2009/04/27 21:11:34  puckett
+* latest updates
+*
 * Revision 1.13.24.8  2008/10/09 15:53:29  puckett
 * added best track selection method for FPP1 and FPP2
 *
@@ -103,6 +106,7 @@
       include 'hms_scin_parms.cmn'
       include 'hms_bypass_switches.cmn'
       include 'hms_statistics.cmn'
+      include 'gep_data_structures.cmn'
 *
 *     Local variables
       integer*4 istat
@@ -315,16 +319,20 @@ c         write(*,*) 'All HMS reconstruction successful'
             endif                          ! end test on FPP ABORT
          endif                             ! end test on hbypass_trans_fpp
 c         write(*,*) 'h_trans_fpp_hms successful'
+
+         
+
          if(hbypass_fpp.eq.0) then
             call h_fpp(ABORT,err) ! now includes "best track" selection for each FPP (AJP)
             if(ABORT) then
                call G_add_path(here,err)
-*               return
-            endif                       ! end test of h_fpp ABORT
-         endif                          ! end test on hbypass_fpp
+*     return
+            endif               ! end test of h_fpp ABORT
+         endif                  ! end test on hbypass_fpp
 c         write(*,*) 'h_fpp successful'
 *     
-      endif                             ! end test no tracks found       
+         
+      endif                     ! end test no tracks found       
 
 
 *     * fill FPP histogramms even if no HMS track

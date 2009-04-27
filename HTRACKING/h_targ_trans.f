@@ -16,6 +16,9 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
+* Revision 1.16.24.4  2009/04/27 21:11:34  puckett
+* latest updates
+*
 * Revision 1.16.24.3  2009/03/31 20:32:57  puckett
 * added option to perform a second iteration of reconstruction using the xtar instead of ybeam as input
 *
@@ -115,7 +118,7 @@
 *
 * Misc. variables.
 
-      integer*4        i,j,itrk
+      integer*4        i,j,itrk,k
       integer*4        niter
 
       real*8           ztemp
@@ -185,7 +188,7 @@
          hut_rot(4) = hut(4) + hut(3)*h_ang_slope_y
          hut_rot(5) = hut(5)
 
- 101     continue
+* 101     continue
 
 * Compute COSY sums.
          do i = 1,h_num_recon_terms
@@ -194,10 +197,11 @@
                if (h_recon_expon(j,i).ne.0.)
      $             term = term*hut_rot(j)**h_recon_expon(j,i)
             enddo
+*      
             sum(1) = sum(1) + term*h_recon_coeff(1,i)
             sum(2) = sum(2) + term*h_recon_coeff(2,i)
             sum(3) = sum(3) + term*h_recon_coeff(3,i)
-            sum(4) = sum(4) + term*h_recon_coeff(4,i)
+            sum(4) = sum(4) + term*h_recon_coeff(4,i)        
          enddo
 * Protext against asin argument > 1.
 c         if(sum(1).gt. 1.0) sum(1)=  0.99
@@ -205,18 +209,38 @@ c         if(sum(1).lt. -1.0) sum(1)= -.99
 c         if(sum(3).gt. 1.0) sum(3)=  0.99
 c         if(sum(3).lt. -1.0) sum(3)= -.99
 
-         if(huse_xtar_corr_recon.gt.0.and.niter.eq.0) then ! do one more iteration of reconstruction, 
+c     don't do a second iteration of reconstruction if the initial reconstruction is
+c     totally screwy:
+         if(  abs(sum(4)*100.0).lt.30.0 .and.
+     $        abs(sum(1)).lt.0.5 .and.
+     $        abs(sum(3)).lt.0.5 .and.
+     $        abs(sum(2)*100.0).lt.100.0 ) then ! do one more iteration of reconstruction, 
 c     this time correct for xtar:
             ztemp = sum(2)*100. * ( coshthetas / tan(htheta_lab*degree - sum(3)) + sinhthetas)
-* Reset COSY sums.
-            do i=1,4
-               sum(i) = 0.
-            enddo
 c     set hut_rot(5) to corrected xtar:
             hut_rot(5) = hut_rot(5) - sum(1)*ztemp*coshthetas/100.0
-      
-            niter = niter + 1
-            goto 101
+
+c            write(*,*) 'xtar,deltai=',100.0*hut_rot(5),100.*sum(4)
+* Reset COSY sums.
+            do i=1,4
+               if(huse_xtar_corr_recon(i).gt.0) then
+                  sum(i) = 0.0
+               endif
+            enddo
+
+            do i = 1,h_num_recon_terms
+               term = 1.
+               do j = 1,5
+                  if (h_recon_expon(j,i).ne.0.)
+     $                 term = term*hut_rot(j)**h_recon_expon(j,i)
+               enddo
+*     
+               do k=1,4
+                  if(huse_xtar_corr_recon(k).gt.0) then
+                     sum(k) = sum(k) + term*h_recon_coeff(k,i)
+                  endif
+               enddo  
+            enddo
          endif
 
 * Load output values.
@@ -228,6 +252,8 @@ c     set hut_rot(5) to corrected xtar:
 
          hz_tar(itrk) = 0.0             !Track is at origin
          hdelta_tar(itrk) = sum(4)*100. !percent.
+
+c         write(*,*) 'xtar, deltaf=',hut_rot(5),hdelta_tar(itrk)
 
 * Apply offsets to reconstruction.
          hdelta_tar(itrk) = hdelta_tar(itrk) + hdelta_offset

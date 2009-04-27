@@ -126,8 +126,10 @@
 	  enddo !iCluster
 	enddo !iLayer
        enddo !iChamber
-       if(hidfpp_nsimp(dcset).gt.0.and.hfpp_n_tracks(dcset).gt.0)
-     $      call hf1(hidFPP_Nsimp(dcset),float(hfpp_n_simple(dcset)),1.0)
+       if(hidfpp_nsimp(dcset,1).gt.0.and.hfpp_n_tracks(dcset).gt.0)
+     $      call hf1(hidFPP_Nsimp(dcset,1),float(hfpp_n_simple(dcset,1)),1.0)
+       if(hidfpp_nsimp(dcset,2).gt.0.and.hfpp_n_tracks(dcset).gt.0)
+     $      call hf1(hidFPP_Nsimp(dcset,2),float(hfpp_n_simple(dcset,2)),1.0)
       enddo !DCset
 
 
@@ -270,11 +272,14 @@
                do ilayer = 1,h_fpp_n_dclayers
                   ii = h_fpp_n_dclayers * (ichamber - 1) + ilayer
                   do itrack=1,hfpp_n_tracks(dcset)
-                     if(hid.gt.0) call hf2(hid,float(ii),hfpp_track_residual(dcset,ichamber,ilayer,itrack),1.)
-                     if(hid1.gt.0.and.hfpp_track_nlayers(dcset,itrack).eq.6)
-     $                    call hf2(hid1,float(ii),hfpp_track_residual(dcset,ichamber,ilayer,itrack),1.)
-                     if(hid2.gt.0.and.hfpp_track_nlayers(dcset,itrack).eq.5)
-     $                    call hf2(hid2,float(ii),hfpp_track_residual(dcset,ichamber,ilayer,itrack),1.)
+                     if(itrack.eq.hfpp_best_track(dcset)) then
+                        if(hid.gt.0) call hf2(hid,float(ii),hfpp_track_residual(dcset,ichamber,ilayer,itrack),1.)
+                        if(hid1.gt.0.and.hfpp_track_nlayers(dcset,itrack).eq.6)
+     $                       call hf2(hid1,float(ii),hfpp_track_residual(dcset,ichamber,ilayer,itrack),1.)
+                        if(hid2.gt.0.and.hfpp_track_nlayers(dcset,itrack).eq.5)
+     $                       call hf2(hid2,float(ii),hfpp_track_residual(dcset,ichamber,ilayer,itrack),1.)
+
+                     endif
                   enddo
                enddo
             enddo
@@ -297,6 +302,7 @@
        
         do iTrack=1,HFPP_N_tracks(DCset)
            if((itrack.eq.hfpp_best_track(dcset)).or.hfppuseajptracking.eq.0) then
+c     if(hfpp_track_nlayers(dcset,itrack).eq.6) then
               if(hidFPP_Nhitontrk(DCset).gt.0) 
      $             call hf1(hidFPP_Nhitontrk(DCset),float(HFPP_track_Nlayers(DCset,iTrack)),1.)
               if(hidFPP_Nrawontrk(DCset).gt.0) 
@@ -343,6 +349,7 @@
               if(hidFPP_nambig(dcset).gt.0)
      $             call hf1(hidFPP_nambig(dcset),float(hfpp_track_nambig(dcset,itrack)),1.)
            endif
+c        endif
 	enddo                   !iTrack
       enddo                     !DCset
 

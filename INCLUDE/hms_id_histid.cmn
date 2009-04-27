@@ -11,6 +11,9 @@
 *      Created 9 April 1994	D. F. Geesaman
 *
 * $Log$
+* Revision 1.13.24.6  2009/04/27 21:12:11  puckett
+* latest updates
+*
 * Revision 1.13.24.5  2009/03/31 18:19:39  puckett
 * added flag to turn on xtar-correction in HMS reconstruction
 *
@@ -173,7 +176,7 @@ c
       integer*4 hidFPP_trk_my(H_FPP_N_DCSETS)
       integer*4 hidFPP_trk_by(H_FPP_N_DCSETS)
       integer*4 hidFPP_Ntrk(H_FPP_N_DCSETS)
-      integer*4 hidFPP_Nsimp(h_fpp_n_dcsets)
+      integer*4 hidFPP_Nsimp(h_fpp_n_dcsets,2)
       integer*4 hidFPP_Nambig(h_fpp_n_dcsets)
       integer*4 hidFPP_Nhitontrk(H_FPP_N_DCSETS)
       integer*4 hidFPP_Nrawontrk(H_FPP_N_DCSETS)

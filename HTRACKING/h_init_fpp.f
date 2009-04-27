@@ -29,6 +29,7 @@
       parameter (pi=3.1415926535)
 
       integer*4 iSet, iChamber, iLayer, iPlane, iWire
+      integer*4 ivar, ipar
       integer*4 ilab, iloc, ii, wlo, whi, wstep, sign
       real*4 sinalpha, sinbeta, singamma
       real*4 cosalpha, cosbeta, cosgamma
@@ -225,10 +226,19 @@ c
                
       enddo                  !iset
 *     AJP initialize track selection parameters:
+*      write(*,*) 'fpp align coeffs:',hfpp_align_corr
+      
       do iset=1,2
          hfpp_prune_thetamin(iset) = 0.0
          hfpp_prune_thetamax(iset) = max(45.,hfpp_prune_thetamax(iset))
          hfpp_prune_zslop(iset) = abs(hfpp_prune_zslop(iset))
+         do ivar=1,4
+            do ipar=1,6
+               hfpp_align_coeff(iset,ivar,ipar) = hfpp_align_corr(ipar + 
+     $              6*(ivar-1) + 24*(iset-1) )
+*               write(*,*) 'iset,ivar,ipar,value=',iset,ivar,ipar,hfpp_align_coeff(iset,ivar,ipar)
+            enddo
+         enddo
       enddo
 
       hfpp_prune_sclose(1) = max(0.3,hfpp_prune_sclose(1))

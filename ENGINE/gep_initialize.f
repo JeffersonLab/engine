@@ -22,7 +22,11 @@
 
       gebeam = sqrt(gpbeam**2 + mass_electron**2)
       if(gtarg_z(gtarg_num).gt.0.)then
-        call total_eloss(0,.true.,0.0,1.0,geloss)
+         if(guse_zbeam_eloss.eq.0) then ! if using zbeam-dependent eloss calculation, don't calculate eloss here
+            call total_eloss(0,.true.,0.0,1.0,geloss)
+         else 
+            geloss = 0.
+         endif
       else
         geloss=0.
       endif

@@ -21,6 +21,8 @@
       integer besttrack(2)
       integer icone
 
+      integer jfpp
+
       integer trksmallesttheta,trksmallestchi2,trksmallestsclose
 
       integer nplanesprune,bestreferencetrack
@@ -67,11 +69,14 @@ c     if(firsttry.or.chi2.lt.minchi2(ifpp)) then
 c     minchi2(ifpp) = chi2
 c     firsttry = .false.
 c     endif
-         if(ifpp.eq.2) keep(3,itrack) = .false.
-         if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) 
-     $        keep(3,itrack) = .true.
+c$$$         if(ifpp.eq.2) keep(3,itrack) = .false.
+c$$$         if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) 
+c$$$     $        keep(3,itrack) = .true.
       enddo
 c      enddo
+
+      jfpp = ifpp
+      if(ifpp.eq.2.and.hfpp_n_tracks(1).gt.0) jfpp = ifpp+1
 
 c     first, prune the number of planes on the track: tracks with only five hits are not
 c     nearly as useful as six-hit tracks:
@@ -102,34 +107,35 @@ c     second prune test = conetest
 c     for FPP2, check conetest using either HMS or FPP1 as reference track
 c      do ifpp=1,2
       ngood(ifpp) = 0
-      ngood(3) = 0
+c      ngood(3) = 0
       do itrack=1,hfpp_n_tracks(ifpp)
-         if(hfpp_track_conetest(ifpp,itrack).eq.1.and.
+
+         if(hfpp_track_conetest(jfpp,itrack).eq.1.and.
      $        keep(ifpp,itrack)) then
             ngood(ifpp) = ngood(ifpp) + 1
          endif
          
-         if(ifpp.eq.2.and.keep(3,itrack).and.
-     $        hfpp_track_conetest(3,itrack).eq.1) then
-            ngood(3) = ngood(3) + 1
-         endif
+c$$$         if(ifpp.eq.2.and.keep(3,itrack).and.
+c$$$     $        hfpp_track_conetest(3,itrack).eq.1) then
+c$$$            ngood(3) = ngood(3) + 1
+c$$$         endif
       enddo
       
       if(ngood(ifpp).gt.0) then
          do itrack=1,hfpp_n_tracks(ifpp)
-            if(hfpp_track_conetest(ifpp,itrack).eq.0) then 
+            if(hfpp_track_conetest(jfpp,itrack).eq.0) then 
                keep(ifpp,itrack) = .false.
             endif
          enddo
       endif
       
-      if(ngood(3).gt.0) then
-         do itrack=1,hfpp_n_tracks(2)
-            if(hfpp_track_conetest(3,itrack).eq.0) then
-               keep(3,itrack) = .false.
-            endif
-         enddo
-      endif
+c$$$      if(ngood(3).gt.0) then
+c$$$         do itrack=1,hfpp_n_tracks(2)
+c$$$            if(hfpp_track_conetest(3,itrack).eq.0) then
+c$$$               keep(3,itrack) = .false.
+c$$$            endif
+c$$$         enddo
+c$$$      endif
 c     enddo
 
 c     third prune tests: prune separately on minimum and maximum 
@@ -137,107 +143,108 @@ c     polar scattering angle theta>thetamin:
 c     for FPP2, check using either FPP1 or HMS as reference track:
 c      do ifpp=1,2
       ngood(ifpp) = 0
-      ngood(3) = 0
+c      ngood(3) = 0
       do itrack=1,hfpp_n_tracks(ifpp)
-         if(hfpp_track_theta(ifpp,itrack).ge.hfpp_prune_thetamin(ifpp)*PI/180.0
+
+         if(hfpp_track_theta(jfpp,itrack).ge.hfpp_prune_thetamin(ifpp)*PI/180.0
      $        .and.keep(ifpp,itrack))then
             ngood(ifpp) = ngood(ifpp) + 1
          endif
          
-         if(ifpp.eq.2.and.keep(3,itrack).and.
-     $        hfpp_track_theta(3,itrack).ge.hfpp_prune_thetamin(1)*PI/180.0)
-     $        then
-            ngood(3) = ngood(3) + 1
-         endif
+c$$$         if(ifpp.eq.2.and.keep(3,itrack).and.
+c$$$     $        hfpp_track_theta(3,itrack).ge.hfpp_prune_thetamin(1)*PI/180.0)
+c$$$     $        then
+c$$$            ngood(3) = ngood(3) + 1
+c$$$         endif
       enddo
 
       if(ngood(ifpp).gt.0) then
          do itrack=1,hfpp_n_tracks(ifpp)
-            if(hfpp_track_theta(ifpp,itrack).lt.hfpp_prune_thetamin(ifpp)*PI/180.0) 
+            if(hfpp_track_theta(jfpp,itrack).lt.hfpp_prune_thetamin(ifpp)*PI/180.0) 
      $           then
                keep(ifpp,itrack) = .false.
             endif
          enddo
       endif
       
-      if(ngood(3).gt.0) then
-         do itrack=1,hfpp_n_tracks(2)
-            if(hfpp_track_theta(3,itrack).lt.hfpp_prune_thetamin(2)*PI/180.0)
-     $           then
-               keep(3,itrack) = .false.
-            endif
-         enddo
-      endif
+c$$$      if(ngood(3).gt.0) then
+c$$$         do itrack=1,hfpp_n_tracks(2)
+c$$$            if(hfpp_track_theta(3,itrack).lt.hfpp_prune_thetamin(2)*PI/180.0)
+c$$$     $           then
+c$$$               keep(3,itrack) = .false.
+c$$$            endif
+c$$$         enddo
+c$$$      endif
 c      enddo
 
 c     fourth test: polar scattering angle theta<thetamax:
 c     for FPP2, check using either FPP1 or HMS as reference track:      
 c      do ifpp=1,2
       ngood(ifpp) = 0
-      ngood(3) = 0
+c      ngood(3) = 0
       do itrack=1,hfpp_n_tracks(ifpp)
-         if(keep(ifpp,itrack).and.hfpp_track_theta(ifpp,itrack).le.
+         if(keep(ifpp,itrack).and.hfpp_track_theta(jfpp,itrack).le.
      $        hfpp_prune_thetamax(ifpp)*PI/180.0) then
             ngood(ifpp) = ngood(ifpp) + 1
          endif
-         if(ifpp.eq.2.and.keep(3,itrack).and.hfpp_track_theta(3,itrack)
-     $        .le.hfpp_prune_thetamax(1)*PI/180.0) then
-            ngood(3) = ngood(3) + 1
-         endif
+c$$$         if(ifpp.eq.2.and.keep(3,itrack).and.hfpp_track_theta(3,itrack)
+c$$$     $        .le.hfpp_prune_thetamax(1)*PI/180.0) then
+c$$$            ngood(3) = ngood(3) + 1
+c$$$         endif
       enddo
       
       if(ngood(ifpp).gt.0) then
          do itrack=1,hfpp_n_tracks(ifpp)
-            if(hfpp_track_theta(ifpp,itrack).gt.hfpp_prune_thetamax(ifpp)*PI/180.0)
+            if(hfpp_track_theta(jfpp,itrack).gt.hfpp_prune_thetamax(ifpp)*PI/180.0)
      $           then
                keep(ifpp,itrack) = .false.
             endif
          enddo
       endif
       
-      if(ngood(3).gt.0) then
-         do itrack=1,hfpp_n_tracks(2)
-            if(hfpp_track_theta(3,itrack).gt.hfpp_prune_thetamax(1)*PI/180.0)
-     $           then
-               keep(3,itrack) = .false.
-            endif
-         enddo
-      endif
+c$$$      if(ngood(3).gt.0) then
+c$$$         do itrack=1,hfpp_n_tracks(2)
+c$$$            if(hfpp_track_theta(3,itrack).gt.hfpp_prune_thetamax(1)*PI/180.0)
+c$$$     $           then
+c$$$               keep(3,itrack) = .false.
+c$$$            endif
+c$$$         enddo
+c$$$      endif
 c      enddo
       
 c     fifth prune test: sclose = distance of closest approach between two tracks:
       
 c      do ifpp=1,2
       ngood(ifpp) = 0
-      ngood(3) = 0
+c      ngood(3) = 0
       do itrack=1,hfpp_n_tracks(ifpp)
-         if(keep(ifpp,itrack).and.hfpp_track_sclose(ifpp,itrack).le.
+         if(keep(ifpp,itrack).and.hfpp_track_sclose(jfpp,itrack).le.
      $        hfpp_prune_sclose(ifpp)) then
             ngood(ifpp) = ngood(ifpp) + 1
          endif
-         if(ifpp.eq.2.and.keep(3,itrack).and.hfpp_track_sclose(3,itrack)
-     $        .le.hfpp_prune_sclose(1)) then
-            ngood(3) = ngood(3) + 1
-         endif
+c$$$         if(ifpp.eq.2.and.keep(3,itrack).and.hfpp_track_sclose(3,itrack)
+c$$$     $        .le.hfpp_prune_sclose(1)) then
+c$$$            ngood(3) = ngood(3) + 1
+c$$$         endif
       enddo
       
       if(ngood(ifpp).gt.0) then
          do itrack=1,hfpp_n_tracks(ifpp)
-            if(hfpp_track_sclose(ifpp,itrack).gt.
+            if(hfpp_track_sclose(jfpp,itrack).gt.
      $           hfpp_prune_sclose(ifpp)) then
                keep(ifpp,itrack) = .false.
             endif
          enddo
       endif
       
-      if(ngood(3).gt.0) then
-         do itrack=1,hfpp_n_tracks(2)
-            if(hfpp_track_sclose(3,itrack).gt.
-     $           hfpp_prune_sclose(1)) then
-               keep(3,itrack) = .false.
-            endif
-         enddo
-      endif
+c$$$      if(ngood(3).gt.0) then
+c$$$         do itrack=1,hfpp_n_tracks(2)
+c$$$            if(hfpp_track_sclose(3,itrack).gt.
+c$$$     $           hfpp_prune_sclose(1)) then
+c$$$               keep(3,itrack) = .false.
+c$$$            endif
+c$$$         enddo
+c$$$      endif
 c      enddo
 
 c     sixth prune test: zclose = z of point of closest approach between the two tracks:
@@ -254,54 +261,54 @@ c     do ifpp=1,2
 c     write(*,*) 'FPP,zlow,zhigh=',ifpp,ztest(ifpp,1),ztest(ifpp,2)
       
       ngood(ifpp) = 0
-      ngood(3) = 0
+c      ngood(3) = 0
       do itrack=1,hfpp_n_tracks(ifpp)
          zslop = hfpp_prune_zslop(ifpp) * 
      $        max(1.0,min(1000.0,1.0/tan(hfpp_track_theta(ifpp,itrack))))
 c     write(*,*) 'FPP,zslop=',ifpp,zslop
          
-         if(keep(ifpp,itrack).and.hfpp_track_zclose(ifpp,itrack).ge.
+         if(keep(ifpp,itrack).and.hfpp_track_zclose(jfpp,itrack).ge.
      $        ztest(ifpp,1)-zslop.and.
-     $        hfpp_track_zclose(ifpp,itrack).le.
+     $        hfpp_track_zclose(jfpp,itrack).le.
      $        ztest(ifpp,2)+zslop) then
             ngood(ifpp) = ngood(ifpp) + 1
          endif
          
-         if(ifpp.eq.2) zslop = hfpp_prune_zslop(ifpp) * 
-     $        max(1.0,min(1000.0,1.0/tan(hfpp_track_theta(3,itrack))))
-         
-         if(ifpp.eq.2.and.keep(3,itrack).and.
-     $        hfpp_track_zclose(3,itrack).ge.ztest(2,1)-zslop.and.
-     $        hfpp_track_zclose(3,itrack).le.ztest(2,2)+zslop) then
-            ngood(3) = ngood(3) + 1
-         endif
+c$$$         if(ifpp.eq.2) zslop = hfpp_prune_zslop(ifpp) * 
+c$$$     $        max(1.0,min(1000.0,1.0/tan(hfpp_track_theta(3,itrack))))
+c$$$         
+c$$$         if(ifpp.eq.2.and.keep(3,itrack).and.
+c$$$     $        hfpp_track_zclose(3,itrack).ge.ztest(2,1)-zslop.and.
+c$$$     $        hfpp_track_zclose(3,itrack).le.ztest(2,2)+zslop) then
+c$$$            ngood(3) = ngood(3) + 1
+c$$$         endif
       enddo
       
       if(ngood(ifpp).gt.0) then
          do itrack=1,hfpp_n_tracks(ifpp)
             zslop = hfpp_prune_zslop(ifpp) * 
      $           max(1.0,min(1000.0,1.0/tan(hfpp_track_theta(ifpp,itrack))))
-            if(hfpp_track_zclose(ifpp,itrack).lt.
+            if(hfpp_track_zclose(jfpp,itrack).lt.
      $           ztest(ifpp,1)-zslop.or.
-     $           hfpp_track_zclose(ifpp,itrack).gt.
+     $           hfpp_track_zclose(jfpp,itrack).gt.
      $           ztest(ifpp,2)+zslop) then
                keep(ifpp,itrack) = .false.
             endif
          enddo
       endif
       
-      if(ngood(3).gt.0) then
-         do itrack=1,hfpp_n_tracks(2)
-            zslop = hfpp_prune_zslop(2) * 
-     $           max(1.0,min(1000.0,1.0/tan(hfpp_track_theta(3,itrack))))
-            if(hfpp_track_zclose(3,itrack).lt.
-     $           ztest(2,1)-zslop.or.
-     $           hfpp_track_zclose(3,itrack).gt.
-     $           ztest(2,2)+zslop) then
-               keep(3,itrack) = .false.
-            endif
-         enddo
-      endif
+c$$$      if(ngood(3).gt.0) then
+c$$$         do itrack=1,hfpp_n_tracks(2)
+c$$$            zslop = hfpp_prune_zslop(2) * 
+c$$$     $           max(1.0,min(1000.0,1.0/tan(hfpp_track_theta(3,itrack))))
+c$$$            if(hfpp_track_zclose(3,itrack).lt.
+c$$$     $           ztest(2,1)-zslop.or.
+c$$$     $           hfpp_track_zclose(3,itrack).gt.
+c$$$     $           ztest(2,2)+zslop) then
+c$$$               keep(3,itrack) = .false.
+c$$$            endif
+c$$$         enddo
+c$$$      endif
 c     enddo
 
 c     NOW find the minimum chi2 of tracks with keep==true
@@ -316,14 +323,14 @@ c         do ifpp=1,2
             endif
          enddo
 c     enddo
-         firsttry=.true.
-         do itrack=1,hfpp_n_tracks(2)
-            if(keep(3,itrack).and.(hfpp_track_chi2(2,itrack).lt.
-     $           minchi2(3).or.firsttry) ) then
-               firsttry = .false.
-               minchi2(3) = hfpp_track_chi2(2,itrack)
-            endif
-         enddo
+c$$$         firsttry=.true.
+c$$$         do itrack=1,hfpp_n_tracks(2)
+c$$$            if(keep(3,itrack).and.(hfpp_track_chi2(2,itrack).lt.
+c$$$     $           minchi2(3).or.firsttry) ) then
+c$$$               firsttry = .false.
+c$$$               minchi2(3) = hfpp_track_chi2(2,itrack)
+c$$$            endif
+c$$$         enddo
       endif
 c     now we choose the best track based on smallest polar scattering angle theta
 c     need to treat FPP1 and FPP2 differently:
@@ -336,124 +343,129 @@ c     for FPP1, the selection method is simply smallest theta wrt the incident H
       ngood(ifpp) = 0
       
 c     write(*,*) 'Entering final FPP1 track selection'
-      if(ifpp.eq.1) then
-         do itrack=1,hfpp_n_tracks(1)
-            if(hselectfpptrackprune.eq.2) then ! use "Sitnik method"
-               scloseweight = hschi2perdeg + minchi2(1)
-               criterion = hfpp_track_chi2(1,itrack) + hschi2perdeg + 
-     $              scloseweight * (hfpp_track_sclose(1,itrack))**2
-            else if(hselectfpptrackprune.eq.3) then ! use smallest chi2 track selection
-               criterion = hfpp_track_chi2(1,itrack)
-            else if(hselectfpptrackprune.eq.4) then ! use smallest sclose track selection
-               criterion = hfpp_track_sclose(1,itrack)
-            else                ! use smallest theta track selection
-               criterion = hfpp_track_theta(1,itrack)
-            endif
-            
+c      if(ifpp.eq.1) then
+      do itrack=1,hfpp_n_tracks(ifpp)
+         if(hselectfpptrackprune.eq.2) then ! use "Sitnik method"
+            scloseweight = hschi2perdeg + minchi2(ifpp)
+            criterion = hfpp_track_chi2(ifpp,itrack) + hschi2perdeg + 
+     $           scloseweight * (hfpp_track_sclose(jfpp,itrack))**2
+         else if(hselectfpptrackprune.eq.3) then ! use smallest chi2 track selection
+            criterion = hfpp_track_chi2(ifpp,itrack)
+         else if(hselectfpptrackprune.eq.4) then ! use smallest sclose track selection
+            criterion = hfpp_track_sclose(jfpp,itrack)
+         else                   ! use smallest theta track selection
+            criterion = hfpp_track_theta(jfpp,itrack)
+         endif
+         
 c$$$  if(hfpp_n_tracks(1).gt.1) then
 c$$$  write(*,*) 'FPP1 track ',itrack,' theta=',hfpp_track_theta(1,itrack)*180./PI,
 c$$$  $           ' chi2=',hfpp_track_chi2(1,itrack),' sclose=',hfpp_track_sclose(1,itrack),
 c$$$  $           ' zclose=',hfpp_track_zclose(1,itrack),' phi=',hfpp_track_phi(1,itrack)*180./PI,
 c$$$  $           ' nplanes=',hfpp_track_nlayers(1,itrack),' nhits=',hfpp_track_nhits(1,itrack)
 c$$$  endif
-            
-            if(keep(1,itrack).and.
-     $           (firsttry.or.criterion.lt.mincriterion(1)) ) then
-               firsttry = .false.
-               besttrack(1) = itrack
-               mincriterion(1) = criterion
-            endif
-            if(keep(1,itrack)) ngood(1) = ngood(1) + 1
-         enddo
-         hfpp_n_goodtracks(1) = ngood(1)
+         
+         if(keep(ifpp,itrack).and.
+     $        (firsttry.or.criterion.lt.mincriterion(ifpp)) ) then
+            firsttry = .false.
+            besttrack(ifpp) = itrack
+            mincriterion(ifpp) = criterion
+         endif
+         if(keep(ifpp,itrack)) ngood(ifpp) = ngood(ifpp) + 1
+      enddo
+      hfpp_n_goodtracks(ifpp) = ngood(ifpp)
       
-      else
-
-c         besttrack(2) = 0
-         
-c         firsttry = .true.
-         
-c         ngood(2) = 0
-         
-         do itrack=1,hfpp_n_tracks(2)
-            if(keep(2,itrack).and.keep(3,itrack)) then ! either HMS or FPP1 could be the best reference track
-               if(hselectfpptrackprune.eq.2) then ! use "Sitnik method"
-                  scloseweight = hschi2perdeg + minchi2(2)
-                  scloseweight3 = hfpp_track_chi2(1,hfpp2_best_reference(itrack)) + 
-     $                 minchi2(3)
-                  criterion = min( hfpp_track_chi2(2,itrack)+hschi2perdeg + 
-     $                 scloseweight * (hfpp_track_sclose(2,itrack))**2, 
-     $                 hfpp_track_chi2(2,itrack)+hfpp_track_chi2(1,hfpp2_best_reference(itrack))
-     $                 + scloseweight3 * (hfpp_track_sclose(3,itrack))**2 )
-                  if(hfpp_track_chi2(2,itrack)+hschi2perdeg + scloseweight * 
-     $                 (hfpp_track_sclose(2,itrack))**2.lt.hfpp_track_chi2(2,itrack) + 
-     $                 hfpp_track_chi2(1,hfpp2_best_reference(itrack)) + scloseweight3 * 
-     $                 (hfpp_track_sclose(3,itrack))**2 ) then
-                     hfpp2_best_reference(itrack) = 0
-                  endif
-               else if(hselectfpptrackprune.eq.3) then ! use smallest chi2 track selection
-                  criterion = hfpp_track_chi2(2,itrack)               
-                  if(hfpp_track_theta(2,itrack).lt.
-     $                 hfpp_track_theta(3,itrack)) then ! if thetaHMS < thetaFPP1, use HMS as reference
-                     hfpp2_best_reference(itrack) = 0
-                  endif
-               else if(hselectfpptrackprune.eq.4) then ! use smallest sclose track selection
-                  criterion = min(hfpp_track_sclose(2,itrack),
-     $                 hfpp_track_sclose(3,itrack))
-                  if(hfpp_track_sclose(2,itrack).lt.
-     $                 hfpp_track_sclose(3,itrack)) then
-                     hfpp2_best_reference(itrack) = 0
-                  endif
-               else             ! use smallest theta track selection
-                  criterion = min(hfpp_track_theta(2,itrack),
-     $                 hfpp_track_theta(3,itrack) )
-                  if(hfpp_track_theta(2,itrack).lt.
-     $                 hfpp_track_theta(3,itrack)) then ! if thetaHMS < thetaFPP1, use HMS as reference
-                     hfpp2_best_reference(itrack) = 0
-                  endif
-               endif
-            else if(keep(2,itrack)) then ! HMS track is unambiguously the best reference track for this track
-               if(hselectfpptrackprune.eq.2) then
-                  scloseweight = hschi2perdeg + minchi2(2)
-                  criterion = hschi2perdeg + hfpp_track_chi2(2,itrack) +
-     $                 scloseweight * (hfpp_track_sclose(2,itrack))**2
-               else if(hselectfpptrackprune.eq.3) then ! use smallest chi2 track
-                  criterion = hfpp_track_chi2(2,itrack)
-               else if(hselectfpptrackprune.eq.4) then ! use smallest sclose track
-                  criterion = hfpp_track_sclose(2,itrack)
-               else             ! use smallest theta track
-                  criterion = hfpp_track_theta(2,itrack)
-               endif
-               hfpp2_best_reference(itrack) = 0
-            else if(keep(3,itrack)) then ! FPP1 is unambiguously the best reference track for this track
-               if(hselectfpptrackprune.eq.2) then
-                  scloseweight = hfpp_track_chi2(1,hfpp2_best_reference(itrack)) + 
-     $                 minchi2(3)
-                  criterion = hfpp_track_chi2(1,hfpp2_best_reference(itrack)) + 
-     $                 hfpp_track_chi2(2,itrack) + scloseweight * 
-     $                 (hfpp_track_sclose(3,itrack))**2
-               else if(hselectfpptrackprune.eq.3) then ! use smallest chi2 track
-                  criterion = hfpp_track_chi2(2,itrack)
-               else if(hselectfpptrackprune.eq.4) then ! use smallest sclose track
-                  criterion = hfpp_track_sclose(3,itrack)
-               else
-                  criterion = hfpp_track_theta(3,itrack)
-               endif
-            endif
-            if( (keep(2,itrack).or.keep(3,itrack) ).and.
-     $           (firsttry.or.criterion.lt.mincriterion(2)) ) then
-               mincriterion(2) = criterion
-               firsttry = .false.
-               besttrack(2) = itrack
-            endif
-            
-            if(keep(2,itrack).or.keep(3,itrack) ) ngood(2) = ngood(2) + 1
-            
-         enddo
-         
-         hfpp_n_goodtracks(2) = ngood(2)
-         
-      endif
+c$$$      else
+c$$$
+c$$$c         besttrack(2) = 0
+c$$$         
+c$$$c         firsttry = .true.
+c$$$         
+c$$$c         ngood(2) = 0
+c$$$         
+c$$$         do itrack=1,hfpp_n_tracks(2)
+c$$$            if(keep(2,itrack).and.keep(3,itrack)) then ! either HMS or FPP1 could be the best reference track
+c$$$               if(hselectfpptrackprune.eq.2) then ! use "Sitnik method"
+c$$$                  scloseweight = hschi2perdeg + minchi2(2)
+c$$$                  scloseweight3 = hfpp_track_chi2(1,hfpp2_best_reference(itrack)) + 
+c$$$     $                 minchi2(3)
+c$$$                  criterion = min( hfpp_track_chi2(2,itrack)+hschi2perdeg + 
+c$$$     $                 scloseweight * (hfpp_track_sclose(2,itrack))**2, 
+c$$$     $                 hfpp_track_chi2(2,itrack)+hfpp_track_chi2(1,hfpp2_best_reference(itrack))
+c$$$     $                 + scloseweight3 * (hfpp_track_sclose(3,itrack))**2 )
+c$$$                  if(hfpp_track_chi2(2,itrack)+hschi2perdeg + scloseweight * 
+c$$$     $                 (hfpp_track_sclose(2,itrack))**2.lt.hfpp_track_chi2(2,itrack) + 
+c$$$     $                 hfpp_track_chi2(1,hfpp2_best_reference(itrack)) + scloseweight3 * 
+c$$$     $                 (hfpp_track_sclose(3,itrack))**2 ) then
+c$$$                     hfpp2_best_reference(itrack) = 0
+c$$$                  endif
+c$$$               else if(hselectfpptrackprune.eq.3) then ! use smallest chi2 track selection
+c$$$                  criterion = hfpp_track_chi2(2,itrack)               
+c$$$                  if(hfpp_track_theta(2,itrack).lt.
+c$$$     $                 hfpp_track_theta(3,itrack)) then ! if thetaHMS < thetaFPP1, use HMS as reference
+c$$$                     hfpp2_best_reference(itrack) = 0
+c$$$                  endif
+c$$$               else if(hselectfpptrackprune.eq.4) then ! use smallest sclose track selection
+c$$$                  criterion = min(hfpp_track_sclose(2,itrack),
+c$$$     $                 hfpp_track_sclose(3,itrack))
+c$$$                  if(hfpp_track_sclose(2,itrack).lt.
+c$$$     $                 hfpp_track_sclose(3,itrack)) then
+c$$$                     hfpp2_best_reference(itrack) = 0
+c$$$                  endif
+c$$$c                  criterion = hfpp_track_sclose(2,itrack)
+c$$$
+c$$$               else             ! use smallest theta track selection
+c$$$                  criterion = min(hfpp_track_theta(2,itrack),
+c$$$     $                 hfpp_track_theta(3,itrack) )
+c$$$                  if(hfpp_track_theta(2,itrack).lt.
+c$$$     $                 hfpp_track_theta(3,itrack)) then ! if thetaHMS < thetaFPP1, use HMS as reference
+c$$$                     hfpp2_best_reference(itrack) = 0
+c$$$                  endif
+c$$$
+c$$$c                  criterion = hfpp_track_theta(2,itrack)
+c$$$
+c$$$               endif
+c$$$            else if(keep(2,itrack)) then ! HMS track is unambiguously the best reference track for this track
+c$$$               if(hselectfpptrackprune.eq.2) then
+c$$$                  scloseweight = hschi2perdeg + minchi2(2)
+c$$$                  criterion = hschi2perdeg + hfpp_track_chi2(2,itrack) +
+c$$$     $                 scloseweight * (hfpp_track_sclose(2,itrack))**2
+c$$$               else if(hselectfpptrackprune.eq.3) then ! use smallest chi2 track
+c$$$                  criterion = hfpp_track_chi2(2,itrack)
+c$$$               else if(hselectfpptrackprune.eq.4) then ! use smallest sclose track
+c$$$                  criterion = hfpp_track_sclose(2,itrack)
+c$$$               else             ! use smallest theta track
+c$$$                  criterion = hfpp_track_theta(2,itrack)
+c$$$               endif
+c$$$               hfpp2_best_reference(itrack) = 0
+c$$$            else if(keep(3,itrack)) then ! FPP1 is unambiguously the best reference track for this track
+c$$$               if(hselectfpptrackprune.eq.2) then
+c$$$                  scloseweight = hfpp_track_chi2(1,hfpp2_best_reference(itrack)) + 
+c$$$     $                 minchi2(3)
+c$$$                  criterion = hfpp_track_chi2(1,hfpp2_best_reference(itrack)) + 
+c$$$     $                 hfpp_track_chi2(2,itrack) + scloseweight * 
+c$$$     $                 (hfpp_track_sclose(3,itrack))**2
+c$$$               else if(hselectfpptrackprune.eq.3) then ! use smallest chi2 track
+c$$$                  criterion = hfpp_track_chi2(2,itrack)
+c$$$               else if(hselectfpptrackprune.eq.4) then ! use smallest sclose track
+c$$$                  criterion = hfpp_track_sclose(3,itrack)
+c$$$               else
+c$$$                  criterion = hfpp_track_theta(3,itrack)
+c$$$               endif
+c$$$            endif
+c$$$            if( (keep(2,itrack).or.keep(3,itrack) ).and.
+c$$$     $           (firsttry.or.criterion.lt.mincriterion(2)) ) then
+c$$$               mincriterion(2) = criterion
+c$$$               firsttry = .false.
+c$$$               besttrack(2) = itrack
+c$$$            endif
+c$$$            
+c$$$            if(keep(2,itrack).or.keep(3,itrack) ) ngood(2) = ngood(2) + 1
+c$$$            
+c$$$         enddo
+c$$$         
+c$$$         hfpp_n_goodtracks(2) = ngood(2)
+c$$$         
+c$$$      endif
 
 c      do ifpp=1,2
       hfpp_best_track(ifpp) = besttrack(ifpp)

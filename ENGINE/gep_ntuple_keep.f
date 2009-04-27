@@ -90,7 +90,8 @@
       m=m+1
       gep_ntuple_contents(m) = GEP_Q2_B
       m=m+1
-      gep_ntuple_contents(m) = GEP_E_electron
+c      gep_ntuple_contents(m) = GEP_E_electron
+      gep_ntuple_contents(m) = gebeam - geloss
       m=m+1
       gep_ntuple_contents(m) = GEP_P_proton
       m=m+1

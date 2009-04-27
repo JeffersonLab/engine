@@ -7,6 +7,9 @@
 *     Date:      9 April 1994
 *
 * $Log$
+* Revision 1.8.24.6  2009/04/27 21:11:34  puckett
+* latest updates
+*
 * Revision 1.8.24.5  2009/03/31 20:33:27  puckett
 * added some misc. FPP histos
 *
@@ -366,8 +369,11 @@ c
 	hidFPP_resol_ang(set) = thgetid(histname)
       enddo
 
-      hidFPP_Nsimp(1) = thgetid('hfpp_1nsimple')
-      hidFPP_Nsimp(2) = thgetid('hfpp_2nsimple')
+      hidFPP_Nsimp(1,1) = thgetid('hfpp_1nsimple')
+      hidFPP_Nsimp(2,1) = thgetid('hfpp_2nsimple')
+
+      hidFPP_Nsimp(1,2) = thgetid('hfpp_1ngooddrift')
+      hidFPP_Nsimp(2,2) = thgetid('hfpp_2ngooddrift')
 
       hidFPP_nambig(1) = thgetid('hfpp_1nambig')
       hidfpp_nambig(2) = thgetid('hfpp_2nambig')

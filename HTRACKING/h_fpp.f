@@ -13,9 +13,14 @@
       include 'gen_detectorids.par'
       include 'gen_decode_common.cmn'
       include 'gen_event_info.cmn'
+      include 'gen_data_structures.cmn'
+      include 'gen_constants.par'
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_fpp_params.cmn'
       INCLUDE 'hms_fpp_event.cmn'
+      include 'hms_tracking.cmn'
+      include 'hms_physics_sing.cmn'
+      include 'gep_data_structures.cmn'
 
       character*13 here
       parameter (here= 'h_fpp')
@@ -31,6 +36,15 @@
 
 c      write(*,*)'In h_fpp.f with hsnum_fptrack =',hsnum_fptrack
       if (hsnum_fptrack.le.0) return    ! No good HMS track
+
+      if(gep_use_ntuple_cuts.ne.0.and. .not.(
+     $        abs(hsxp_tar).lt.0.1.and.
+     $        abs(hsyp_tar).lt.0.05.and.
+     $        abs(hsdelta).lt.15..and.
+     $        abs(hsy_tar*(coshthetas/tan(htheta_lab*degree-hsyp_tar)+sinhthetas)-gtarg_z_offset)
+     $        .lt.20.0
+     $        )) return
+
 *     * note that the above value is determined in h_select_best_track
 *     * so we have to wait until after it is called before we do the FPP!
 

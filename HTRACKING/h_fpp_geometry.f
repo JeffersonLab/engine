@@ -198,6 +198,77 @@ c      INCLUDE 'hms_fpp_event.cmn'
       RETURN
       END
 
+      subroutine h_fpp_align(ifpp,oldtrack,newtrack)
+
+      implicit none
+      save
+      
+      include 'hms_data_structures.cmn'
+      include 'gen_detectorids.par'
+      include 'gen_decode_common.cmn'
+      include 'hms_fpp_event.cmn'
+      include 'hms_fpp_params.cmn'
+      include 'hms_geometry.cmn'
+
+      integer*4 itrack,i,j
+      integer*4 ifpp
+
+      real*4 oldtrack(4)
+      real*4 newtrack(4)
+      
+      real*4 thetax,thetay
+      real*4 xcorr,ycorr,thetaxcorr,thetaycorr
+      real*4 xtemp,ytemp
+
+      real*4 PI 
+      parameter(PI=3.14159265359)
+
+c      oldtrack(1) = hfpp_track_x(ifpp,itrack) + hfpp_track_dx(ifpp,itrack)*hfpp_zoff(ifpp)
+c      oldtrack(2) = hfpp_track_y(ifpp,itrack) + hfpp_track_dy(ifpp,itrack)*hfpp_zoff(ifpp)
+c      oldtrack(3) = atan(hfpp_track_dx(ifpp,itrack))*180./PI
+c      oldtrack(4) = atan(hfpp_track_dy(ifpp,itrack))*180./PI
+      
+c     convert to degrees:
+
+c      write(*,*) 'oldtrack at fp=',oldtrack
+
+c     project to zfpp and convert to degrees:
+
+      oldtrack(1) = oldtrack(1) + oldtrack(3) * hfpp_zoff(ifpp)
+      oldtrack(2) = oldtrack(2) + oldtrack(4) * hfpp_zoff(ifpp)
+      oldtrack(3) = atan(oldtrack(3))*180./PI
+      oldtrack(4) = atan(oldtrack(4))*180./PI
+
+      do i=1,4
+         newtrack(i) = oldtrack(i) 
+     $        + hfpp_align_coeff(ifpp,i,1) 
+     $        + hfpp_align_coeff(ifpp,i,2) * oldtrack(1)
+     $        + hfpp_align_coeff(ifpp,i,3) * oldtrack(2)
+     $        + hfpp_align_coeff(ifpp,i,4) * (oldtrack(1))**2
+     $        + hfpp_align_coeff(ifpp,i,5) * (oldtrack(2))**2
+     $        + hfpp_align_coeff(ifpp,i,6) * oldtrack(1)*oldtrack(2)
+      enddo
+
+c      write(*,*) 'oldtrack at FPP =',oldtrack
+c      write(*,*) 'newtrack at FPP =',newtrack
+c     convert angles in degrees to slopes:
+      newtrack(3) = tan(newtrack(3)*PI/180.)
+      newtrack(4) = tan(newtrack(4)*PI/180.)
+c     convert coordinates at zfpp to coordinates at z=0:
+      newtrack(1) = newtrack(1) - hfpp_zoff(ifpp)*newtrack(3)
+      newtrack(2) = newtrack(2) - hfpp_zoff(ifpp)*newtrack(4)
+
+c      write(*,*) 'newtrack at fp=',newtrack
+      
+c$$$      hfpp_track_dx(ifpp,itrack) = tan(newtrack(3)*PI/180.0)
+c$$$      hfpp_track_dy(ifpp,itrack) = tan(newtrack(4)*PI/180.0)
+c$$$      hfpp_track_x(ifpp,itrack) = newtrack(1) 
+c$$$     $     - hfpp_zoff(ifpp)*hfpp_track_dx(ifpp,itrack)
+c$$$      hfpp_track_y(ifpp,itrack) = newtrack(2)
+c$$$     $     - hfpp_zoff(ifpp)*hfpp_track_dy(ifpp,itrack)
+
+      return
+      end
 
 c==============================================================================
 c==============================================================================

@@ -16,6 +16,9 @@
 *-    Created   1-Dec-1995  Rolf Ent
 *
 * $Log$
+* Revision 1.8.20.7  2009/04/27 21:12:47  puckett
+* latest updates
+*
 * Revision 1.8.20.6  2008/09/30 13:42:44  puckett
 * added option to use zero thickness on BigCal side--effectively neglecting eloss calculation for BigCal
 *
@@ -163,6 +166,7 @@
       liquid =.FALSE.
 *********************ENABLE SWITCH***********************************
       if (gen_eloss_enable.eq.0.) goto 100  !if 0 don't do eloss correction.
+      if (arm.eq.3) goto 100
 ***********************SETUP OF PARAMETERS****************************
 * Parameters should be accessed via the various common blocks
 * No more hardwired #s in the code!!! (I.N. 2001)
@@ -233,6 +237,7 @@
       endif
       if((arm.ne.0).and.(abs(angle-3.14159/2.).lt.0.0001)) then
          write(6,*) 'total_eloss: angle = 90 degrees, using centr spectr angle(VT)'
+         write(*,*) 'arm=',arm
          if (arm.eq.1) angle=htheta_lab*3.14159/180.
          if (arm.eq.2) angle=stheta_lab*3.14159/180.
          if (arm.eq.3) angle=bigcal_theta_rad
@@ -305,6 +310,10 @@
 
        if ((type.eq.2).and.(tgthick.ne.0.).and.(dens.ne.0.)) then
           crit_angle= atan(gcell_radius/(tgthick/dens/2.))
+          if(guse_zbeam_eloss.ne.0) then
+             crit_angle = atan(gcell_radius/(max(.001,min(tgthick/dens,tgthick/dens/2.+gtarg_z_offset-hszbeam))))
+c             write(*,*) 'hszbeam, crit. angle=',hszbeam,crit_angle
+          endif
        else
           crit_angle= 0.45
        endif
@@ -347,6 +356,11 @@
                write(6,*)'Unknown liquid target specified ',type
                stop
             endif
+
+            if(guse_zbeam_eloss.ne.0) then ! use-zbeam dependent eloss correction:
+               thick = max(0.001*tgthick,min(tgthick,tgthick/2.+dens*(hszbeam-gtarg_z_offset)))
+            endif
+
             call loss(.true.,z,a,thick,dens,velocity,front_loss) !liquid
             total_loss = total_loss + front_loss
          else
@@ -366,7 +380,7 @@
          if(gelossdebug.ne.0)then
             write(6,60) 'Ebeam loss:','window','front','total'
             write(6,50) targ_win_loss,front_loss,total_loss
-            write(6,*) ' '
+            write(6,*) ' zbeam=',hszbeam
          endif
          e_loss = total_loss
          goto 100
@@ -398,9 +412,17 @@
                if (cos(angle).ge.0.01) then
                   thick = abs(gend_thk/cos(angle))
                   thick_front= abs(tgthick/2./cos(angle))
+                  if(guse_zbeam_eloss.ne.0) then
+                     thick_front = abs(max(0.001*tgthick,min(tgthick,tgthick/2.+dens*(gtarg_z_offset - hszbeam)))/cos(angle))
+c                     write(*,*) 'hszbeam, thick_front=',hszbeam,thick_front
+                  endif
                else
                   thick = abs(gend_thk/0.01)
                   thick_front= abs(tgthick/2./0.01)
+                  if(guse_zbeam_eloss.ne.0) then
+                     thick_front = abs(max(0.001*tgthick,min(tgthick,tgthick/2.+dens*(gtarg_z_offset - hszbeam)))/.01)
+c                     write(*,*) 'hszbeam, thick_front=',hszbeam,thick_front
+                  endif
                endif
                call loss(prt,z,a,thick_front,dens,velocity,back_loss) !liquid
                total_loss = total_loss + back_loss
