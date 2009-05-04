@@ -36,7 +36,6 @@
 c      LUCITE_SANE_RAW_PLANE             = 0
 
       do i=1,LUCITE_SANE_MAX_HITS
-
          LUCITE_SANE_RAW_COUNTER_NUM(i) = 0
          LUCITE_SANE_RAW_COUNTER_NUM2(i) = 0
          LUCITE_SANE_RAW_COUNTER_NUM3(i) = 0
@@ -44,11 +43,13 @@ c      LUCITE_SANE_RAW_PLANE             = 0
          LUCITE_SANE_RAW_ADC_NEG(i)     = 0
          LUCITE_SANE_RAW_TDC_POS(i)     = 0
          LUCITE_SANE_RAW_TDC_NEG(i)     = 0
+         enddo
+         do i=1,LUCITE_SANE_NTUPLE_MAX_HITS
          ltdc_pos(i) = 0
          ltdc_neg(i) = 0
          ladc_pos(i) = 0
          ladc_neg(i) = 0
-         
+         luc_y(i)=-100
       enddo
        luc_hit = 0
 
