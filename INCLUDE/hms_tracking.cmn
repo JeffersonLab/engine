@@ -8,6 +8,9 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
+* Revision 1.27.20.3.2.1  2009/05/04 14:37:31  jones
+* Increased hmax_space_points from 50 to 100
+*
 * Revision 1.27.20.3  2007/10/24 20:48:03  cdaq
 * *** empty log message ***
 *
@@ -159,7 +162,7 @@
       integer*4 hmax_chamber_hits
       parameter (hmax_chamber_hits=544)
       integer*4 hmax_space_points   ! maximum number of space points
-      parameter (hmax_space_points=50)
+      parameter (hmax_space_points=100)
       integer*4 hmax_hits_per_point ! maximum number of hits per point
       parameter (hmax_hits_per_point=1000)
       integer*4 hnum_fpray_param    ! number of ray parameters in focal plane
