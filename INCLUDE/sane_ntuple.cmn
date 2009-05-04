@@ -99,12 +99,13 @@ c      character*256 b_tree_filename
       common/SANECER/cer_hit, cer_num, cer_tdc,cer_adcc
       common/SANEADC/ceradc_hit, ceradc_num,cer_adc
       
-      
+      integer LUCITE_SANE_NTUPLE_MAX_HITS
+      parameter (LUCITE_SANE_NTUPLE_MAX_HITS=90)
       integer*4 luc_hit
-      integer*4 luc_row(90)
-      integer*4 ladc_pos(90),ladc_neg(90)
-      integer*4 ltdc_pos(90),ltdc_neg(90)
-      real*4    luc_y(90)
+      integer*4 luc_row(LUCITE_SANE_NTUPLE_MAX_HITS)
+      integer*4 ladc_pos(LUCITE_SANE_NTUPLE_MAX_HITS),ladc_neg(LUCITE_SANE_NTUPLE_MAX_HITS)
+      integer*4 ltdc_pos(LUCITE_SANE_NTUPLE_MAX_HITS),ltdc_neg(LUCITE_SANE_NTUPLE_MAX_HITS)
+      real*4    luc_y(LUCITE_SANE_NTUPLE_MAX_HITS)
       common/SANELUC/luc_hit, luc_row, ladc_pos, ladc_neg,
      ,     ltdc_pos, ltdc_neg, luc_y
       
