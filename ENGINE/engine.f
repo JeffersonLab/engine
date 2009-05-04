@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.21.2.10  2009/05/04 20:54:24  jones
+* Modified so that syncfilter will work
+*
 * Revision 1.42.8.21.2.9  2009/04/23 19:24:11  jones
 * For runs  72532-72583 set event type 1 equal to event type 6.
 *
@@ -891,22 +894,22 @@ c
               if(gen_event_type.le.gen_MAX_trigger_types) then
                if(gen_run_enable(gen_event_type-1).ne.0) then
 c
-               if ( insync .eq. 1 .and. gen_event_type .le. 3 .and. syncfilter_on ) then
+               if ( insync .eq. 1 .and. gen_event_type .ne. 4 .and. syncfilter_on ) then
                   skipped_badsync_events(gen_event_type)=skipped_badsync_events(gen_event_type) + 1
                   sum_analyzed_skipped = sum_analyzed_skipped + 1
                   goto 868
                endif
-               if ( skip_events .and. gen_event_type .le. 3 .and. syncfilter_on ) then
+               if ( skip_events .and. gen_event_type .ne. 4 .and. syncfilter_on ) then
                   skipped_badsync_events(gen_event_type)=skipped_badsync_events(gen_event_type) + 1
                   sum_analyzed_skipped = sum_analyzed_skipped + 1
                   goto 868
                endif
-c$$$               if ( ave_current_bcm(bcm_for_threshold_cut)  .lt. g_beam_on_thresh_cur(bcm_for_threshold_cut)
-c$$$     >               .and. gen_event_type .le. 3 .and. syncfilter_on) then
-c$$$                  skipped_lowbcm_events(gen_event_type)=skipped_lowbcm_events(gen_event_type) + 1
-c$$$                  sum_analyzed_skipped = sum_analyzed_skipped + 1
-c$$$                  goto 868
-c$$$               endif
+               if ( ave_current_bcm(bcm_for_threshold_cut)  .lt. g_beam_on_thresh_cur(bcm_for_threshold_cut)
+     >               .and. gen_event_type .ne. 4 .and. syncfilter_on) then
+                  skipped_lowbcm_events(gen_event_type)=skipped_lowbcm_events(gen_event_type) + 1
+                  sum_analyzed_skipped = sum_analyzed_skipped + 1
+                  goto 868
+               endif
 c
                 call g_examine_physics_event(CRAW,ABORT,err)
                 problems = problems .or.ABORT
