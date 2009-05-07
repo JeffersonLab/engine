@@ -180,6 +180,8 @@ c$$$      write(*,*) 'htrigt=',htrigt
 
       Me = mass_electron ! convenient shorthand
 
+      geloss = 0.0
+
       if(guse_zbeam_eloss.ne.0) then ! calculate zbeam-dependent beam eloss:
          call total_eloss(0,.true.,0.0,1.0,geloss)
 c     write(*,*) 'zbeam, eloss=',hszbeam,geloss
@@ -343,8 +345,11 @@ c     this routine should only get called once per event!!!!!!!!!!!!!!!!
          else
             isecond_cal = 1
          endif                    
-         GEP_xclust2 = bigcal_all_clstr_x(isecond_cal) ! second best ADC cluster raw xclust in BigCal coordinates
-         GEP_yclust2 = bigcal_all_clstr_y(isecond_cal) ! second best ADC cluster raw yclust in BigCal coordinates
+c         GEP_xclust2 = bigcal_all_clstr_x(isecond_cal) ! second best ADC cluster raw xclust in BigCal coordinates
+c         GEP_yclust2 = bigcal_all_clstr_y(isecond_cal) ! second best ADC cluster raw yclust in BigCal coordinates
+         GEP_xclust2 = bigcal_track_xface(isecond_cal) * bigcal_costheta - 
+     $        bigcal_track_zface(isecond_cal) * bigcal_sintheta
+         GEP_yclust2 = bigcal_track_yface(isecond_cal)
          GEP_eclust2 = bigcal_track_energy(isecond_cal)
          GEP_aclust2 = bigcal_all_clstr_atot(isecond_cal) ! second best ADC sum for best cluster
       else
@@ -439,8 +444,11 @@ c     GEP_Q2 = .5*(Q2_cal + Q2_hms)
       GEP_ytar_p = HSY_TAR
       GEP_xbeam = -gbeam_x ! always use this formula for the ntuple, whether or not we use raster in reconstruction
       GEP_ybeam = gbeam_y ! always use this formula for the ntuple, whether or not we use raster in reconstruction
-      GEP_xclust = bigcal_all_clstr_x(ibest_cal) ! raw xclust in BigCal coordinates
-      GEP_yclust = bigcal_all_clstr_y(ibest_cal) ! raw yclust in BigCal coordinates
+c      GEP_xclust = bigcal_all_clstr_x(ibest_cal) ! raw xclust in BigCal coordinates
+c      GEP_yclust = bigcal_all_clstr_y(ibest_cal) ! raw yclust in BigCal coordinates
+      GEP_xclust = bigcal_track_xface(ibest_cal) * bigcal_costheta - 
+     $     bigcal_track_zface(ibest_cal) * bigcal_sintheta
+      GEP_yclust = bigcal_track_yface(ibest_cal)
       GEP_eclust = bigcal_energy
       GEP_aclust = bigcal_all_clstr_atot(ibest_cal) ! ADC sum for best cluster
       GEP_epsilon = 1./(1.+2.*(1.+GEP_Q2/(4.*Mp**2))*(tan(bigcal_thetarad/2.))**2)

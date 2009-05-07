@@ -58,11 +58,13 @@
       c = speed_of_light
 
       p0 = hpcentral
-      E0 = gebeam
+      E0 = gebeam - geloss
       bR = bigcal_r_tgt
       btheta = bigcal_theta_deg
       dxptar0 = h_oopcentral_offset
       dycal = bigcal_height
+
+      gep_select_apply_offsets=.false.
 
       if(gep_select_apply_offsets) then
          p0 = hpcentral * (1. + gep_select_dp0/100.)
@@ -78,8 +80,10 @@
       cosBth = cos(btheta * PI / 180.)
       sinBth = sin(btheta * PI / 180.)
 
-      pp = p0 * (1. + hsdelta / 100.)
-      
+c      pp = p0 * (1. + hsdelta / 100.)
+
+      pp = hsp
+     
       pz = pp / sqrt(1. + xptar_temp**2 + hsyp_tar**2)
 
       pxlab = pz * xptar_temp

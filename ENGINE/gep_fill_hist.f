@@ -39,8 +39,12 @@ c$$$      if(gepid_gep_ntrig_bigcal.gt.0) call hf1(gepid_gep_ntrig_bigcal,float(
       if(hsnum_fptrack.gt.0.and.bigcal_itrack_best.gt.0.and.
      $     (bigcal_do_calibration.eq.0.or.gep_good_calib_event)) then
 
-         xdiff = bigcal_all_clstr_x(bigcal_itrack_best) - gep_bx_expect_h
-         ydiff = bigcal_all_clstr_y(bigcal_itrack_best) - gep_by_expect_h
+c         xdiff = bigcal_all_clstr_x(bigcal_itrack_best) - gep_bx_expect_h
+c         ydiff = bigcal_all_clstr_y(bigcal_itrack_best) - gep_by_expect_h
+
+         xdiff = gep_xclust - gep_bx_expect_h
+         ydiff = gep_yclust - gep_by_expect_h
+
          ediff = gep_e_electron - bigcal_energy
          
          
