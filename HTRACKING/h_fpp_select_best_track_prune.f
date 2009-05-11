@@ -264,7 +264,7 @@ c     write(*,*) 'FPP,zlow,zhigh=',ifpp,ztest(ifpp,1),ztest(ifpp,2)
 c      ngood(3) = 0
       do itrack=1,hfpp_n_tracks(ifpp)
          zslop = hfpp_prune_zslop(ifpp) * 
-     $        max(1.0,min(1000.0,1.0/tan(hfpp_track_theta(ifpp,itrack))))
+     $        max(1.0,min(1000.0,1.0/tan(hfpp_track_theta(jfpp,itrack))))
 c     write(*,*) 'FPP,zslop=',ifpp,zslop
          
          if(keep(ifpp,itrack).and.hfpp_track_zclose(jfpp,itrack).ge.
@@ -287,7 +287,7 @@ c$$$         endif
       if(ngood(ifpp).gt.0) then
          do itrack=1,hfpp_n_tracks(ifpp)
             zslop = hfpp_prune_zslop(ifpp) * 
-     $           max(1.0,min(1000.0,1.0/tan(hfpp_track_theta(ifpp,itrack))))
+     $           max(1.0,min(1000.0,1.0/tan(hfpp_track_theta(jfpp,itrack))))
             if(hfpp_track_zclose(jfpp,itrack).lt.
      $           ztest(ifpp,1)-zslop.or.
      $           hfpp_track_zclose(jfpp,itrack).gt.
