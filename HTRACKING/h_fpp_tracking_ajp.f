@@ -71,6 +71,7 @@ c      logical ambiguity(h_fpp_max_candidates)
       integer*4 conetest,bestref,jtrack
       integer*4 iteration
 
+      logical zgood
       logical goodhms
 
       real*4 prob
@@ -292,8 +293,10 @@ c$$$               fpptrack(4) = fpcoords(2)
                if(nplanestemp.eq.h_fpp_n_dcinset*h_fpp_n_dclayers) 
      $              any6 = .true.
 
-               if(zclose.ge.hfpp_prune_zclose(2*(dcset-1)+1).and.
-     $              zclose.le.hfpp_prune_zclose(2*(dcset-1)+2)) then
+               if(zclose.ge.hfpp_prune_zclose(2*(dcset-1)+1) -
+     $              hfpp_prune_zslop(dcset)/tan(theta).and.
+     $              zclose.le.hfpp_prune_zclose(2*(dcset-1)+2) + 
+     $              hfpp_prune_zslop(dcset)/tan(theta)) then
                   anyzclose = .true.
                   if(nplanestemp.eq.h_fpp_n_dcinset*h_fpp_n_dclayers)
      $                 then
@@ -406,6 +409,11 @@ c               criterion = chi2 + minchi2*(hfpp_sclose_weight(1)*(sclose/minscl
 c     $              hfpp_theta_weight(1)*prob(1,mintheta)/prob(1,theta))
 c            endif
 
+            zgood = zclose.ge.hfpp_prune_zclose(2*(dcset-1)+1) - 
+     $           hfpp_prune_zslop(dcset)/tan(theta) .and.
+     $           zclose.le.hfpp_prune_zclose(2*(dcset-1)+2) + 
+     $           hfpp_prune_zslop(dcset)/tan(theta)
+
 c     try picking smallest theta HERE instead:
             if(hselectfpptrackprune.eq.1) then
                criterion = theta
@@ -421,13 +429,16 @@ c     try picking smallest theta HERE instead:
 
             if(candidate_nplanes(track).eq.h_fpp_n_dcinset*
      $           h_fpp_n_dclayers.or..not.any6) then
-               if(firsttry.or.criterion.lt.mincriterion) then
-                  mincriterion = criterion
-                  firsttry = .false.
-                  bestcandidate = track
+               if( (any6 .and. (zgood.or..not.any6zclose) ) .or.
+     $              (.not.any6.and.(zgood.or..not.anyzclose) ) ) then
+
+                  if(firsttry.or.criterion.lt.mincriterion) then
+                     mincriterion = criterion
+                     firsttry = .false.
+                     bestcandidate = track
+                  endif
                endif
             endif
-            
          enddo
         
 c$$$         if(goodhms) then
