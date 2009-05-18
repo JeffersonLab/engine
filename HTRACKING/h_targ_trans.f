@@ -16,6 +16,9 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
+* Revision 1.16.24.5  2009/05/18 14:54:19  puckett
+* mkj's change which adds hphioffset to xptar in xtar calculation
+*
 * Revision 1.16.24.4  2009/04/27 21:11:34  puckett
 * latest updates
 *
@@ -218,7 +221,7 @@ c     totally screwy:
 c     this time correct for xtar:
             ztemp = sum(2)*100. * ( coshthetas / tan(htheta_lab*degree - sum(3)) + sinhthetas)
 c     set hut_rot(5) to corrected xtar:
-            hut_rot(5) = hut_rot(5) - sum(1)*ztemp*coshthetas/100.0
+            hut_rot(5) = hut_rot(5) - (sum(1)+hphi_offset)*ztemp*coshthetas/100.0
 
 c            write(*,*) 'xtar,deltai=',100.0*hut_rot(5),100.*sum(4)
 * Reset COSY sums.
@@ -243,6 +246,8 @@ c            write(*,*) 'xtar,deltai=',100.0*hut_rot(5),100.*sum(4)
             enddo
          endif
 
+c
+c
 * Load output values.
 
          hx_tar(itrk) = 0.              ! ** No beam raster yet **
