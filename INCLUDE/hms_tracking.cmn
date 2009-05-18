@@ -8,6 +8,10 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
+* Revision 1.27.20.3.2.2  2009/05/18 14:19:07  jones
+* Add parameters h_iwslop,h_max_hits_per_plane used in updated
+* h_trans_dc.f to prune raw DC hits.
+*
 * Revision 1.27.20.3.2.1  2009/05/04 14:37:31  jones
 * Increased hmax_space_points from 50 to 100
 *
@@ -201,6 +205,12 @@
       real*4 hspace_point_criterion ! maximum distance**2 to join pairs/combos.
       INTEGER*4 HNTRACKS_MAX_FP       ! NUMBER OF TRACKS ALLOWED IN FOCAL PLANE
       integer*4 h_remove_sppt_if_one_y_plane ! flag used in h_pattern_recognition.f
+* parameter used in purging bad wire from DC in h_trans_dc.f
+* recommended value is 0
+      real h_iwslop
+* parameter used in purging excess wires in h_trans_dc.f
+* recommended value is 6
+      integer h_max_hits_per_plane
 *
 *     CTPTYPE=event
 *
@@ -252,6 +262,7 @@
      &     hdc_card_no(hdc_max_wires_per_plane,hmax_num_dc_planes),
      &     hdc_sing_cardid(hmax_num_dc_planes),
      &     HNTRACKS_MAX_FP,h_remove_sppt_if_one_y_plane
+     >     ,h_iwslop,h_max_hits_per_plane
 
 
 
