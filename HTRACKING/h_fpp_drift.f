@@ -353,14 +353,15 @@ c          write(*,*) 'f=',fraction
           if (fraction.lt.0.0) then !below midpoint
             fraction = -1.0*fraction
             if (binno.eq.1) then  !already at bottom bin
-              drift_distance = 2.0 * (1.0-fraction) * hfpp_driftmap7(Layer,Card,binno)  !assume bottom edge of bin is 0 drift
+              drift_distance = 2.0 * (1.0-fraction) * hfpp_driftmap7(plane,Card,binno)  !assume bottom edge of bin is 0 drift
             else
-              drift_distance =      fraction  * hfpp_driftmap7(Layer,Card,binno-1)
-     >    		     + (1.0-fraction) * hfpp_driftmap7(Layer,Card,binno)
+              drift_distance =      fraction  * hfpp_driftmap7(plane,Card,binno-1)
+     >    		     + (1.0-fraction) * hfpp_driftmap7(plane,Card,binno)
             endif
             
-c$$$            write(*,*) 'd(j-2),d(j-1),d(j)=',hfpp_driftmap7(layer,card,binno-2),hfpp_driftmap7(layer,card,binno-1),
-c$$$     $           hfpp_driftmap7(layer,card,binno)
+c$$$            write(*,*) 'set,chamber,layer=',set,chamber,layer
+c$$$            write(*,*) 'd(j-2),d(j-1),d(j)=',hfpp_driftmap7(plane,card,binno-2),hfpp_driftmap7(plane,card,binno-1),
+c$$$     $           hfpp_driftmap7(plane,card,binno)
 c$$$            write(*,*) 'f<0,f,d=',fraction,drift_distance
 
           else  		    !above midpoint
@@ -369,12 +370,13 @@ c$$$            write(*,*) 'f<0,f,d=',fraction,drift_distance
               drift_distance = H_FPP_BAD_DRIFT
               RETURN
             else
-              drift_distance =      fraction  * hfpp_driftmap7(Layer,Card,binno+1)
-     >    		     + (1.0-fraction) * hfpp_driftmap7(Layer,Card,binno)
+              drift_distance =      fraction  * hfpp_driftmap7(plane,Card,binno+1)
+     >    		     + (1.0-fraction) * hfpp_driftmap7(plane,Card,binno)
             endif
 
-c$$$            write(*,*) 'd(j-1),d(j),d(j+1)=',hfpp_driftmap7(layer,card,binno-1),hfpp_driftmap7(layer,card,binno),
-c$$$     $           hfpp_driftmap7(layer,card,binno+1)
+c$$$            write(*,*) 'set,chamber,layer=',set,chamber,layer
+c$$$            write(*,*) 'd(j-1),d(j),d(j+1)=',hfpp_driftmap7(plane,card,binno-1),hfpp_driftmap7(plane,card,binno),
+c$$$     $           hfpp_driftmap7(plane,card,binno+1)
 c$$$
 c$$$            write(*,*) 'f>0,f,d=',fraction,drift_distance
 
