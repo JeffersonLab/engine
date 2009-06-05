@@ -81,9 +81,11 @@ c      include 'n_id_histid.cmn'
 *
       else if (slow_raster_correction.eq.2) then       ! use raster data
 c         write(*,*)n_sr_size,n_sr_slopex,n_sr_adcx_zero
-         gsry_calib = n_sr_size/n_sr_slopex*(gsrx_raw_adc-n_sr_adcx_zero)!-
+         gsry_calib = n_sr_size/n_sr_slopey*(gsry_raw_adc-n_sr_adcy_zero)!-
 c     ,     n_fr_size/n_fr_slopex*(gfrx_raw_adc-n_fr_adcx_zero)   
-         gsrx_calib = n_sr_size/n_sr_slopey*(gsry_raw_adc-n_sr_adcy_zero)!+
+         gsrx_calib = n_sr_size/n_sr_slopex*(gsrx_raw_adc-n_sr_adcx_zero)!+
+         gsry_calib = gsry_calib + n_sr_offsety
+         gsrx_calib = gsrx_calib + n_sr_offsetx
 c     ,        n_fr_size/n_fr_slopey*(gfry_raw_adc-n_fr_adcy_zero)
 c         write(*,*)n_fr_slopey,n_fr_slopex
          x_coord = gsrx_calib
