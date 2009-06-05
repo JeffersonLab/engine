@@ -166,11 +166,11 @@ c            write(*,*) 'trig numped=',numped
 
             bigcal_trig_new_threshold(igr64)=bigcal_trig_new_ped(igr64)
      $           + bigcal_trig_nsparse
-            if(bigcal_trig_new_threshold(icell).lt.0) then
-               bigcal_trig_new_threshold(icell) = 0
+            if(bigcal_trig_new_threshold(igr64).lt.0) then
+               bigcal_trig_new_threshold(igr64) = 0
             endif
-            if(bigcal_trig_new_threshold(icell).gt.4000) then
-               bigcal_trig_new_threshold(icell) = 4000
+            if(bigcal_trig_new_threshold(igr64).gt.4000) then
+               bigcal_trig_new_threshold(igr64) = 4000
             endif
             if(abs(bigcal_trig_ped_mean(igr64) - 
      $           bigcal_trig_new_ped(igr64)).gt. 2.0 *
