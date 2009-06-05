@@ -21,7 +21,7 @@
       else
         geloss=0.
       endif
-      gebeam = gebeam - geloss
+c      gebeam = gebeam - geloss ! for SANE no energy loss correction
       gpbeam = sqrt(gebeam**2 - mass_electron**2)
       g_beam_target_s = (gtarg_mass(gtarg_num) + gebeam)**2 - gpbeam**2
 
