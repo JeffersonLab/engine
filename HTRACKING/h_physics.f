@@ -20,6 +20,10 @@
 *-                           Dummy Shell routine
 *
 * $Log$
+* Revision 1.23.20.2.2.2  2009/06/05 17:59:29  jones
+* Add horizontal raster correction to hszbeam calculation.
+* Remove energy loss hsenergy calculation.
+*
 * Revision 1.23.20.2.2.1  2008/11/17 01:17:55  cdaq
 * *** empty log message ***
 *
@@ -329,7 +333,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 * csa 4/12/99 -- changed hscorre/p back to hsenergy and hsp so
 * I could keep those names in c_physics.f
 
-      hsenergy = hsenergy + hseloss
+c      hsenergy = hsenergy + hseloss  ! for SANE decide not to correct for energy loss
       hsp = sqrt(hsenergy**2-hpartmass**2)
 
 *     Begin Kinematic stuff
@@ -382,7 +386,7 @@ c      if (hsphi .gt. 0.) hsphi = hsphi - tt
 *     hszbeam is the intersection of the beam ray with the
 *     spectrometer as measured along the z axis.
 
-        hszbeam = coshthetas*hsy_tar
+        hszbeam = (coshthetas*hsy_tar+gsrx_calib/100.)
      >       /tan(htheta_lab*degree-hsyp_tar)+hsy_tar*sinhthetas
 
 *     Target particle 4-momentum
