@@ -7,6 +7,10 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.9.20.4.2.7  2009/06/05 17:47:35  jones
+*  Changed gsrx_raw_adc = gmisc_dec_data(3,2) to   gmisc_dec_data(4,2)
+*       gsry_raw_adc = gmisc_dec_data(4,2) to   gmisc_dec_data(3,2)
+*
 * Revision 1.9.20.4.2.6  2009/01/16 18:47:12  cdaq
 * *** empty log message ***
 *
@@ -359,8 +363,8 @@ c      write(*,*) 'h- signal = ',gmisc_dec_data(2,2)
 
 *     Slow Raster Signals:  !!!!!! SLOTS NEED TO BE DETERMINED
 *     ===================
-      gsrx_raw_adc = gmisc_dec_data(3,2)   ! raw info matching MAP (reversed order)!
-      gsry_raw_adc = gmisc_dec_data(4,2)
+      gsrx_raw_adc = gmisc_dec_data(4,2)   ! raw info matching MAP (reversed order)!
+      gsry_raw_adc = gmisc_dec_data(3,2)
 
 ! 2nd copy of slow raster read out in Hall C (for use
 ! when HMS and BETA re  running stand-alone)
