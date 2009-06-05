@@ -16,6 +16,9 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
+* Revision 1.16.24.2.2.7  2009/06/05 17:57:29  jones
+* Set y_coord = -gsrx_calib/100. since +gsrx_calib points beam right.
+*
 * Revision 1.16.24.2.2.6  2009/02/11 21:34:54  cdaq
 * *** empty log message ***
 *
@@ -154,7 +157,7 @@
       istat = 1
 
       x_coord = -gsry_calib/100.  ! SLOW RASTER BEAM X coordinate obtained from the ADCs, in meters 
-      y_coord = gsrx_calib/100.       ! SLOW RASTER BEAM Y coordinate obtained from the ADCs, in meters 
+      y_coord = -gsrx_calib/100.       ! SLOW RASTER BEAM Y coordinate obtained from the ADCs, in meters 
 c      write(*,*)x_coord,y_coord
 
 * Loop over tracks.
