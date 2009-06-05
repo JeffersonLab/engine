@@ -11,6 +11,9 @@
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *
 * $Log$
+* Revision 1.6.24.3.2.2  2009/06/05 17:53:25  jones
+* Include call to fill bigcal ntuple. Needed for coincidence runs.
+*
 * Revision 1.6.24.3.2.1  2009/01/16 18:47:11  cdaq
 * *** empty log message ***
 *
@@ -58,6 +61,7 @@
       include 'hms_data_structures.cmn'
       INCLUDE 'hms_fpp_params.cmn'
       INCLUDE 'hms_fpp_event.cmn'
+      include 'bigcal_data_structures.cmn'
 *
       character*50 here
       parameter (here= 'H_keep_results')
@@ -72,6 +76,7 @@
       ABORT= .FALSE.
       err= ' '
 *
+      if(bigcal_all_nclstr.gt.0) call b_ntuple_keep(ABORT,err,.false.)
       if(HSNUM_FPTRACK.gt.0)         call h_ntuple_keep(ABORT,err)! check for good tracks
 *
       IF(ABORT) THEN
