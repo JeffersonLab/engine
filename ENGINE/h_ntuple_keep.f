@@ -8,6 +8,10 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.18.5.2.4  2009/06/29 20:00:16  jones
+* add hsxtar
+* set units for hszbeam,hsytar and hsxtar to cm
+*
 * Revision 1.10.18.5.2.3  2008/11/06 14:35:38  cdaq
 * Removed S0, added helicte
 *
@@ -129,7 +133,7 @@ c
       m= m+1
       h_Ntuple_contents(m)= HINVMASS ! Invariant Mass of remaing hadronic system
       m= m+1
-      h_Ntuple_contents(m)= HSZBEAM ! Lab Z coordinate of intersection of beam
+      h_Ntuple_contents(m)= HSZBEAM*100 ! Lab Z coordinate of intersection of beam
 c                                ! track with spectrometer ray
       m= m+1
       h_Ntuple_contents(m)= HSDEDX(1) ! DEDX of chosen track in 1st scin plane
@@ -147,8 +151,10 @@ c                                ! track with spectrometer ray
       h_Ntuple_contents(m)= HSXP_FP
       m= m+1
       h_Ntuple_contents(m)= HSYP_FP
+      m= m+1	
+      h_Ntuple_contents(m)= HSX_TAR*100	
       m= m+1
-      h_Ntuple_contents(m)= HSY_TAR
+      h_Ntuple_contents(m)= HSY_TAR*100
       m= m+1
       h_Ntuple_contents(m)= HSXP_TAR
       m= m+1

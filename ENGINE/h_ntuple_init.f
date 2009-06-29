@@ -10,6 +10,10 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.11.18.5.2.3  2009/06/29 20:00:16  jones
+* add hsxtar
+* set units for hszbeam,hsytar and hsxtar to cm
+*
 * Revision 1.11.18.5.2.2  2008/11/06 14:35:46  cdaq
 * Removed S0, added helicte
 *
@@ -175,6 +179,8 @@ c
       h_Ntuple_tag(m)= 'hsxpfp'
       m= m+1
       h_Ntuple_tag(m)= 'hsypfp'
+      m= m+1
+      h_Ntuple_tag(m)= 'hsxtar'
       m= m+1
       h_Ntuple_tag(m)= 'hsytar'
       m= m+1
