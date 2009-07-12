@@ -229,7 +229,14 @@
       gep_ntuple_tag(m) = 'theta3' ! theta of FPP2 relative to FPP1
       m=m+1
       gep_ntuple_tag(m) = 'phi3' ! phi of FPP2 relative to FPP1
-
+      m=m+1
+      gep_ntuple_tag(m) = 'xref' ! xfp of reference track for FPP2
+      m=m+1
+      gep_ntuple_tag(m) = 'yref' ! yfp of reference track for FPP2
+      m=m+1
+      gep_ntuple_tag(m) = 'dxref' ! xpfp of reference track for FPP2
+      m=m+1
+      gep_ntuple_tag(m) = 'dyref' ! ypfp of reference track for FPP2
 c     now all tags are set, initialize the ntuple:
 
       gep_ntuple_size = m

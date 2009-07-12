@@ -279,6 +279,29 @@ c     HMS track as reference
       gep_ntuple_contents(m) = theta_store
       m=m+1
       gep_ntuple_contents(m) = phi_store
+c     store track parameters of chosen reference track for FPP2:
+      if( track_store .gt. 0 .and. hfpp2_best_reference(track_store).gt.0) 
+     $     then
+         ref_store = hfpp2_best_reference(track_store)
+         m=m+1 
+         gep_ntuple_contents(m) = hfpp_track_x(1,ref_store)
+         m=m+1
+         gep_ntuple_contents(m) = hfpp_track_y(1,ref_store)
+         m=m+1
+         gep_ntuple_contents(m) = hfpp_track_dx(1,ref_store)
+         m=m+1
+         gep_ntuple_contents(m) = hfpp_track_dy(1,ref_store)
+      else ! revert to HMS track
+         m=m+1
+         gep_ntuple_contents(m) = gep_xfp_p
+         m=m+1
+         gep_ntuple_contents(m) = gep_yfp_p
+         m=m+1
+         gep_ntuple_contents(m) = gep_xpfp_p
+         m=m+1
+         gep_ntuple_contents(m) = gep_ypfp_p
+      endif
+      
 
 c      write(*,*) 'gep_ntuple, number of variables filled = ',m
 
