@@ -39,6 +39,7 @@ c     define arrays for candidate tracks:
       real*4 phitracks(h_fpp_max_candidates)
       integer*4 conetesttracks(h_fpp_max_candidates) ! store cone test of tracks relative to HMS or FPP1
       integer*4 bestreftracks(h_fpp_max_candidates)
+      logical greattrack(h_fpp_max_candidates)
       real*4 chi2, minchi2
 
 c      logical ambiguity(h_fpp_max_candidates)
@@ -46,6 +47,7 @@ c      logical ambiguity(h_fpp_max_candidates)
       logical firsttry,any6,anytheta ! at this stage of the tracking, apply a maximum theta cut on all candidate tracks
       logical any6theta ! any tracks with six planes AND passing theta cut?
       logical anyzclose,any6zclose ! any tracks with zclose passing prune tests?
+      logical anyconetest,any6conetest
 
       integer*4 hitcombos(h_fpp_max_candidates,h_fpp_n_dcinset,h_fpp_n_dclayers)
 
@@ -105,7 +107,11 @@ c$$$         endif
          any6theta = .false.
          anyzclose = .false.
          any6zclose = .false.
+         anyconetest = .false.
+         any6conetest = .false.
  
+         any_great = .false.
+
 c     the kind of loop we want here goes until we either run out of hit combos for a simple track, or
 c     until we exceed the maximum number of candidate tracks:
 
@@ -248,20 +254,41 @@ c$$$               fpptrack(4) = fpcoords(2)
                call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
                call h_fpp_relative_angles(hmstrack(1),hmstrack(3),fpptrack(1),fpptrack(3),theta,phi)
 *     in FPP2, we use the "best" track from FPP1 as a reference track:
+               mintheta = theta
+               bestref = 0
                if(dcset.eq.2.and.hfpp_n_tracks(1).gt.0) then
-                  
-                  jtrack = hfpp_best_track(1)
-                  hmstrack(1) = hfpp_track_dx(1,jtrack)
-                  hmstrack(2) = hfpp_track_x(1,jtrack)
-                  hmstrack(3) = hfpp_track_dy(1,jtrack)
-                  hmstrack(4) = hfpp_track_y(1,jtrack)
+                  do jtrack = 1, hfpp_n_tracks(1)
+                     hmstrack(1) = hfpp_track_dx(1,jtrack)
+                     hmstrack(2) = hfpp_track_x(1,jtrack)
+                     hmstrack(3) = hfpp_track_dy(1,jtrack)
+                     hmstrack(4) = hfpp_track_y(1,jtrack)
+                     call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
+                     call h_fpp_relative_angles(hmstrack(1),hmstrack(3),fpptrack(1),fpptrack(3),theta,phi)
+                     if(theta.lt.mintheta) then
+                        bestref = jtrack
+                        bestreftracks(i) = bestref
+                        mintheta = theta
+                     endif
+                  enddo
+c     now, calculate everything one more time using bestref:
+                  if(bestref.gt.0) then
+                     hmstrack(1) = hfpp_track_dx(1,bestref)
+                     hmstrack(2) = hfpp_track_x(1,bestref)
+                     hmstrack(3) = hfpp_track_dy(1,bestref)
+                     hmstrack(4) = hfpp_track_y(1,bestref)
+                  else ! revert to HMS track:
+                     hmstrack(1) = hsxp_fp
+                     hmstrack(2) = hsx_fp
+                     hmstrack(3) = hsyp_fp
+                     hmstrack(4) = hsy_fp
+                  endif
+
                   call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
                   call h_fpp_relative_angles(hmstrack(1),hmstrack(3),fpptrack(1),fpptrack(3),theta,phi)
-                  bestref = jtrack
-                  
-                  bestreftracks(i) = bestref
-                  
+
                endif
+
+               bestreftracks(i) = bestref
 
                conetest = 1
                
@@ -290,8 +317,26 @@ c$$$               fpptrack(4) = fpcoords(2)
                ngoodtracks = ngoodtracks + 1
                goodtracks(ngoodtracks) = i
                
+               greattrack(i) = ( conetest.eq.1.and.
+     $              sclose.le.hfpp_prune_sclose(dcset)
+     $              .and.zclose.ge.hfpp_prune_zclose(2*(dcset-1)+1)-
+     $              hfpp_prune_zslop(dcset)/tan(theta).and.zclose.le.
+     $              hfpp_prune_zclose(2*(dcset-1)+2) +
+     $              hfpp_prune_zslop(dcset)/tan(theta) .and. 
+     $              nplanestemp.eq.6 )
+
+               if(greattrack(i)) any_great = .true.
+
                if(nplanestemp.eq.h_fpp_n_dcinset*h_fpp_n_dclayers) 
      $              any6 = .true.
+
+               if(conetest.eq.1) then 
+                  anyconetest = .true.
+                  if(nplanestemp.eq.h_fpp_n_dcinset*h_fpp_n_dclayers) 
+     $                 then
+                     any6conetest = .true.
+                  endif
+               endif
 
                if(zclose.ge.hfpp_prune_zclose(2*(dcset-1)+1) -
      $              hfpp_prune_zslop(dcset)/tan(theta).and.
@@ -317,18 +362,18 @@ c$$$               fpptrack(4) = fpcoords(2)
                
             endif
          enddo
-
-c$$$         if(ngoodtracks.gt.hfpp_n_simple(dcset,2)) then
+         
+c$$$  if(ngoodtracks.gt.hfpp_n_simple(dcset,2)) then
 c$$$            hfpp_n_simple(dcset,2) = ngoodtracks
 c$$$         endif
 
          if(iteration.eq.1) then
             hfpp_n_simple(dcset,2) = ngoodtracks
          endif
-
+         
 c     if the left-right fixing routine is turned on and we don't prune on the number of planes 
 c     on the track, then don't require six planes:
-
+         
          if(hfpp_prune_nplanes.eq.0.and.hfppfixleftright.gt.0) then
             any6 = .false.
          endif
@@ -427,11 +472,10 @@ c     try picking smallest theta HERE instead:
                criterion = chi2
             endif
 
-            if(candidate_nplanes(track).eq.h_fpp_n_dcinset*
-     $           h_fpp_n_dclayers.or..not.any6) then
-               if( (any6 .and. (zgood.or..not.any6zclose) ) .or.
-     $              (.not.any6.and.(zgood.or..not.anyzclose) ) ) then
-
+c            if(candidate_nplanes(track).eq.h_fpp_n_dcinset*
+c     $           h_fpp_n_dclayers.or..not.any6) then
+            if( greattrack(track).or. .not. any_great) then
+               if(candidate_nplanes(track).eq.6.or..not.any6) then
                   if(firsttry.or.criterion.lt.mincriterion) then
                      mincriterion = criterion
                      firsttry = .false.
@@ -580,18 +624,24 @@ c$$$     $           hfpp_track_dy(dcset,itrack)
 c               firsttry=.true.
                bestref = 0
 
+c               mintheta = hfpp_track_theta(dcset,itrack)
 c               do jtrack=1,hfpp_n_tracks(1)
+c     how this works: always figure out the "best reference" track for this FPP2 track in FPP1: 
+c     after that, make a subjective judgement, based on theta, of whether or not to compare this track 
+c     to FPP1 or the HMS:
                if(hfpp_n_tracks(1).gt.0) then
-                  jtrack = hfpp_best_track(1)
-                  call h_fpp_relative_angles(hfpp_track_dx(1,jtrack),
-     $                 hfpp_track_dy(1,jtrack),
-     $                 hfpp_track_dx(dcset,itrack),
-     $                 hfpp_track_dy(dcset,itrack),
-     $                 theta,phi)
-                  bestref = jtrack
+                  do jtrack = 1, hfpp_n_tracks(1)
+                     call h_fpp_relative_angles(hfpp_track_dx(1,jtrack),
+     $                    hfpp_track_dy(1,jtrack),
+     $                    hfpp_track_dx(dcset,itrack),
+     $                    hfpp_track_dy(dcset,itrack),
+     $                    theta,phi)
+                     if(jtrack.eq.1.or.theta.lt.mintheta) then
+                        bestref = jtrack
+                        mintheta = theta
+                     endif
+                  enddo
                endif
-
-               hfpp2_best_reference(itrack) = bestref
 
                if(bestref.gt.0) then
                   call h_fpp_relative_angles(hfpp_track_dx(1,bestref),
@@ -622,6 +672,12 @@ c               do jtrack=1,hfpp_n_tracks(1)
                   
                   hfpp_track_conetest(dcset+1,itrack) = conetest
                endif
+
+               hfpp2_best_reference(itrack) = bestref
+
+               if(bestref.gt.0.and.hfpp_track_theta(dcset,itrack).lt.
+     $              hfpp_track_theta(dcset+1,itrack)) hfpp2_best_reference(itrack) = 0
+
             endif
             
             if(hfppfixleftright.gt.0) 

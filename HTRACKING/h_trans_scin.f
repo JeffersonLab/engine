@@ -9,6 +9,9 @@
 *
 * modifications:
 * $Log$
+* Revision 1.21.6.4  2009/07/12 22:22:22  puckett
+* restored FPP track selection to previous behavior--gives best analyzing power in FPP2
+*
 * Revision 1.21.6.3  2008/07/29 16:24:52  puckett
 * added correction of start time for trig. time upon failure to get start time from scint hits
 *
@@ -240,6 +243,13 @@ c corrections for ADC and offsets
 * Find hit position.  If postime larger, then hit was nearer negative side.
           dist_from_center = 0.5*(negtime(ihit) - postime(ihit))
      1         * hscin_vel_light(ihit)
+
+          if(htofusinginvadc.eq.1) then
+             dist_from_center = 0.5*(negtime(ihit)-postime(ihit)) * 
+     $            0.5 * ( hscin_pos_invadc_linear(ihit) + hscin_neg_invadc_linear(ihit) )
+c             write(*,*) 'dist_from_center using hscin_invadc_linear=',dist_from_center
+          endif
+
           scint_center = (hscin_pos_coord(ihit)+hscin_neg_coord(ihit))/2.
           hit_position = scint_center + dist_from_center
           hit_position = min(hscin_pos_coord(ihit),hit_position)
@@ -361,6 +371,15 @@ c 1/23/08 pyb added these checks
 * Find hit position.  If postime larger, then hit was nearer negative side.
           dist_from_center = 0.5*(negtime(ihit) - postime(ihit))
      1         * hscin_vel_light(ihit)
+c          write(*,*) 'dist from center using hscin_vel_light=',dist_from_center
+          
+
+          if(htofusinginvadc.eq.1) then
+             dist_from_center = 0.5*(negtime(ihit)-postime(ihit)) * 
+     $            0.5 * ( hscin_pos_invadc_linear(ihit) + hscin_neg_invadc_linear(ihit) )
+c             write(*,*) 'dist_from_center using hscin_invadc_linear=',dist_from_center
+          endif
+
           scint_center = (hscin_pos_coord(ihit)+hscin_neg_coord(ihit))/2.
           hit_position = scint_center + dist_from_center
           hit_position = min(hscin_pos_coord(ihit),hit_position)

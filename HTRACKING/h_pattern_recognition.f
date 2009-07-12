@@ -14,6 +14,9 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
+* Revision 1.14.20.2  2009/07/12 22:22:21  puckett
+* restored FPP track selection to previous behavior--gives best analyzing power in FPP2
+*
 * Revision 1.14.20.1  2008/09/16 17:06:44  puckett
 * added per-wire time offsets to be used optionally for the HMS chambers
 *
@@ -165,19 +168,19 @@
 *    If two hits in same plane, choose one with minimum drift time
 
              if ( h_remove_sppt_if_one_y_plane .eq. 1) then
-             call h_sp_destroy(ABORT,err,hnspace_points(ich),
-     &           space_point_hits,space_points,ich)
+                call h_sp_destroy(ABORT,err,hnspace_points(ich),
+     &               space_point_hits,space_points,ich)
              endif
 c
              call h_sp_multiwire(ABORT,err,hnspace_points(ich),
      &           space_point_hits,space_points)
 c
-            call h_choose_single_hit(ABORT,err,hnspace_points(ich),
-     &           space_point_hits)
+             call h_choose_single_hit(ABORT,err,hnspace_points(ich),
+     &            space_point_hits)
 * Select on minimum number of combinations and hits
-            call select_space_points(hmax_space_points,hnspace_points(ich),
-     &           space_points,space_point_hits,hmin_hit(ich),hmin_combos(ich),
-     $           easy_space_point)
+             call select_space_points(hmax_space_points,hnspace_points(ich),
+     &            space_points,space_point_hits,hmin_hit(ich),hmin_combos(ich),
+     $            easy_space_point)
           endif
 
 
