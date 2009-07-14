@@ -326,12 +326,21 @@ c      write(*,*)'Drift type = ',hfpp_drift_type
 
 *         * determine amplifier card No corresponding to wire No
           Card = 1 + int((Wire-1)/8)
-          
+
           if (Card.lt.1.or.Card.gt.13.or.(Layer.eq.2.and.Card.gt.11)) then
             print *,'\n Bad Drift Calculation:  Set=',Set,' Chamber=',Chamber,' Layer=',Layer
             print *,'                         Plane=',Plane,' Wire=',Wire,' Card=',Card
             drift_distance = H_FPP_BAD_DRIFT
             RETURN
+          endif
+
+          if (hfpp_use_tight_tdrift_cuts.gt.0) then
+             if(drift_time.lt.hfpp_drift_tgood_cuts(plane,Card,1).or. 
+     $            drift_time.gt.hfpp_drift_tgood_cuts(plane,Card,2) ) 
+     $            then
+                drift_distance = H_FPP_BAD_DRIFT
+                return
+             endif
           endif
 
 *         * interpolate between two relevant time bins
@@ -502,7 +511,7 @@ c==============================================================================
       character*(*) err
 
       integer LUN
-      integer*4 i,Plane,Card
+      integer*4 i,Plane,Card,bin
       real*4 rflag
       real*4 timebins(H_FPP_DRIFT_MAX_BINS)
 
@@ -513,6 +522,7 @@ c==============================================================================
       real*4 ejbdrift			! really simple time to distance calc
       common /HMS_FPP_ejbdrift/ ejbtime(120,4), ejbdrift(120,4)
 
+      real*4 locut,hicut
 
       write(6,'(''\n[47;34;1m FPP  Drift  Map: [49;0m'')')
 
@@ -686,6 +696,33 @@ c      write(*,*)'FPP Drift Map File:',hfpp_driftmap_filename
      >      		    - 0.5*hfpp_drift_dT
             hfpp_drift_Tmax = timebins(hfpp_drift_Nbins)
      >                      + 0.5*hfpp_drift_dT
+
+            do Plane=1,h_fpp_n_planes
+               do Card=1,13
+                  locut=-9999.
+                  hicut=9999.
+                  do i=1,hfpp_drift_nbins
+                     if( hfpp_driftmap7(Plane,Card,i) .lt. 1.e-3*hfpp_driftmap7(Plane,Card,hfpp_drift_Nbins) 
+     $                    .and. timebins(i)-20.0.gt.locut)
+     $                    then
+                        locut = timebins(i) - 20.0
+                     endif
+                     if( hfpp_driftmap7(Plane,Card,i) .gt. 0.999*hfpp_driftmap7(Plane,Card,hfpp_drift_Nbins)
+     $                    .and. timebins(i)+20.0.lt.hicut) then
+                        hicut = timebins(i) + 20.0
+                     endif
+                  enddo
+                  
+                  hfpp_drift_tgood_cuts(Plane,Card,1) = locut
+                  hfpp_drift_tgood_cuts(Plane,Card,2) = hicut
+
+                  if( hfpp_use_tight_tdrift_cuts.gt.0 ) then
+                     write(*,*) 'Using extra tight time cuts for tdrift'
+                     write(*,*) 'Plane, Card, tlow, thigh = ',Plane,Card,locut,hicut
+                  endif
+               enddo
+            enddo
+
           else
             write(err,*) 'Only ',hfpp_drift_Nbins,' entries for FPP drift map ',hfpp_driftmap_filename
             call g_rep_err(ABORT,err)
