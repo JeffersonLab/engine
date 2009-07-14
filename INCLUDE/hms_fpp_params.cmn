@@ -118,6 +118,8 @@
       real*4 hfpp_ch3_tcut_high		! high time cut on ch3 corrected time
       real*4 hfpp_ch4_tcut_low		! low time cut on ch4 corrected time 
       real*4 hfpp_ch4_tcut_high		! high time cut on ch4 corrected time
+      real*4 hfpp_drift_tgood_cuts       ! tight drift time cut based on drift map
+      integer*4 hfpp_use_tight_tdrift_cuts ! flag to turn on use of automatic drift time cuts
       character*80 hfpp_driftmap_filename
 
       common/HMS_FPP_drift/
@@ -137,6 +139,8 @@
      &  , hfpp_ch3_tcut_high
      &  , hfpp_ch4_tcut_low
      &  , hfpp_ch4_tcut_high
+     $  , hfpp_drift_tgood_cuts(h_fpp_n_planes,13,2) ! go by plane, card here
+     $  , hfpp_use_tight_tdrift_cuts
 
 *
 *     CTPTYPE=parm
