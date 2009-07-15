@@ -795,11 +795,13 @@ c$$$         enddo
 *     in contrast to Frank's algorithm, here we keep track of any hit combos which pass the "reasonable chi2"
 *     criterion, and we don't choose a track until we look at the drift based tracking.
             
-            if(temptrack(5).ge.0.0.and.
-     $           temptrack(5).le.hfpp_aok_chi2+
-     $           (12.*float(n2hit)+48.*float(n3hit))/float(nhitsrequired-4)/
-     $           float(nhitsrequired-4 + n2hit + 2*n3hit)
-     $           ) then           ! add a new candidate track to the array:
+c$$$            if(temptrack(5).ge.0.0.and.
+c$$$     $           temptrack(5).le.hfpp_aok_chi2+
+c$$$     $           (12.*float(n2hit)+48.*float(n3hit))/float(nhitsrequired-4)/
+c$$$     $           float(nhitsrequired-4 + n2hit + 2*n3hit)
+c$$$     $           ) then           ! add a new candidate track to the array:
+            if(temptrack(5).ge.0.0.and.temptrack(5).le.hfpp_aok_chi2) 
+     $           then
                ncandidates = ncandidates + 1
                do ichamber=1,h_fpp_n_dcinset
                   do ilayer=1,h_fpp_n_dclayers

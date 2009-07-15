@@ -35,6 +35,12 @@
 
       integer*4 iChamber, iLayer, iCluster, iRaw, iHit, ii
 
+      real*4 tempcoords(h_fpp_max_fitpoints,2), tempsigmas(h_fpp_max_fitpoints)
+      real*4 tempprojects(h_fpp_max_fitpoints,2)
+      integer nhitslayer(h_fpp_n_dcinset, h_fpp_n_dclayers), npointstemp
+      integer bestpoint
+
+      real*4 residual, minresidual, trackpos, trackx, tracky
 
 *     * init result to bad
       Track(1) = H_FPP_BAD_COORD   !mx
@@ -43,17 +49,20 @@
       Track(4) = H_FPP_BAD_COORD   !by
       Track(5) = H_FPP_BAD_CHI2
 
-
 *     * transfer abstract Clusters into linear array of hit coords
       nPoints = 0
 
       do iChamber=1,H_FPP_N_DCINSET
        do iLayer=1,H_FPP_N_DCLAYERS
 
+          nhitslayer(ichamber,ilayer) = 0
+
          iCluster = Clusters(iChamber,iLayer)
          if (iCluster.gt.0) then
            do iRaw=1,HFPP_nHitsinCluster(DCset,iChamber,iLayer,iCluster)
-
+              
+              nhitslayer(ichamber,ilayer) = nhitslayer(ichamber,ilayer) + 1
+              
              nPoints = nPoints + 1
              iHit = HFPP_Clusters(DCset,iChamber,iLayer,iCluster,iRaw)
 
@@ -81,14 +90,79 @@
       if (nPoints.gt.0) then
          if(hfppuseajptracking.ne.0) then
             call h_fpp_fit3d_ajp(nPoints, Coords, Sigmas, Project, FitParm)
+
+*     now that we know the rough track:
+*     remove the worst hit from two-hit clusters, remove the two worst hits from three-hit clusters 
+*     re-fit using only the closest hit to the simple track:
+            nPointstemp = 0
+            
+            do iChamber=1,H_FPP_N_DCINSET
+               do iLayer=1,H_FPP_N_DCLAYERS
+                  
+c                  nhitslayer(ichamber,ilayer) = 0
+                  
+                  iCluster = Clusters(iChamber,iLayer)
+                  if (iCluster.gt.0) then
+                     bestpoint = 0
+                     do iRaw=1,HFPP_nHitsinCluster(DCset,iChamber,iLayer,iCluster)
+                        
+c                        nhitslayer(ichamber,ilayer) = nhitslayer(ichamber,ilayer) + 1
+                        
+                        trackx = fitparm(1)*hfpp_layerz(dcset,ichamber,ilayer) + fitparm(2)
+                        tracky = fitparm(3)*hfpp_layerz(dcset,ichamber,ilayer) + fitparm(4)
+
+                        trackpos = trackx * hfpp_direction(dcset,ichamber,ilayer,1) + 
+     $                       tracky * hfpp_direction(dcset,ichamber,ilayer,2)
+
+c                        nPoints = nPoints + 1
+                        iHit = HFPP_Clusters(DCset,iChamber,iLayer,iCluster,iRaw)
+                        
+                        wirepos = HFPP_layeroffset(DCset,iChamber,iLayer)
+     >                       + HFPP_spacing(DCset,iChamber,iLayer)*HFPP_raw_wire(iHit)
+                        
+                        residual = wirepos - trackpos
+                        
+                        if(iraw.eq.1.or.residual.lt.minresidual) then
+                           bestpoint = iraw
+                           minresidual = residual
+*     * tracking works in u-z coordinate system
+c$$$                           Coords(nPoints,1) = wirepos
+c$$$                           Coords(nPoints,2) = HFPP_layerZ(DCset,iChamber,iLayer)
+c$$$                           
+c$$$                           Project(nPoints,1) = HFPP_direction(DCset,iChamber,iLayer,1)
+c$$$                           Project(nPoints,2) = HFPP_direction(DCset,iChamber,iLayer,2)
+                        
+*     * we dont use drift here so use wire spacing over sqrt(12) as sigma!
+c                           Sigmas(nPoints) = (HFPP_spacing(DCset,iChamber,iLayer)/sqrt(12.0))**2
+                        endif
+                     enddo      !iRaw
+c     add one point per layer:
+                     npointstemp = npointstemp + 1
+                     ihit = hfpp_clusters(dcset,ichamber,ilayer,icluster,bestpoint)
+                     wirepos = hfpp_layeroffset(dcset,ichamber,ilayer) + 
+     $                    hfpp_spacing(dcset,ichamber,ilayer)*hfpp_raw_wire(ihit)
+                     coords(npointstemp,1) = wirepos
+                     coords(npointstemp,2) = hfpp_layerz(dcset,ichamber,ilayer)
+
+                     Project(npointstemp,1) = HFPP_direction(DCset,iChamber,iLayer,1)
+                     Project(npointstemp,2) = HFPP_direction(DCset,iChamber,iLayer,2)
+
+                     sigmas(npointstemp) = (hfpp_spacing(dcset,ichamber,ilayer)/sqrt(12.0))**2
+                     
+                  endif         ! cluster > 0                  
+               enddo            !iLayer
+            enddo               !iChamber
+*     fit one more time, including only one wire per plane:
+            call h_fpp_fit3d_ajp(npointstemp, Coords, Sigmas, Project, FitParm)
+
          else
             call h_fpp_fit3d(nPoints, Coords, Sigmas, Project, FitParm)
          endif
-*       * transfer results
+*     * transfer results
         do ii=1,5
-          Track(ii) = FitParm(ii)
-        enddo !ii
-
+           Track(ii) = FitParm(ii)
+        enddo                   !ii
+        
       endif
 
 
