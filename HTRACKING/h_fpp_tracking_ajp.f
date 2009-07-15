@@ -57,6 +57,9 @@ c      logical ambiguity(h_fpp_max_candidates)
       integer*4 candidate_nplanes(h_fpp_max_candidates)
       integer*4 candidate_nhits(h_fpp_max_candidates)
 
+c      integer*4 candidate_wires(h_fpp_max_candidates,h_fpp_max_fitpoints)
+c      real*4 candidate_drifts(h_fpp_max_candidates,h_fpp_max_fitpoints)
+
       real*4 SimpleTrack(6), FullTrack(7)
 
       integer*4 BestClusters(H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
@@ -518,6 +521,29 @@ c$$$  write(*,*) 'i,besttrack(i)=',i,fulltracks(bestcandidate,i)
 c$$$  enddo
 
          if(bestcandidate.eq.0) exit
+
+c     fit the track one more time to get the correct drift distance, as it may have changed:
+c     also, improve drift time/dist calculation using the full track:
+         do j=1,6
+            simpletrack(j) = fulltracks(bestcandidate,j)
+c     write(*,*) 'i,simpletrack(i)=',j,simpletrack(j)
+         enddo
+         
+         do ichamber=1,h_fpp_n_dcinset
+            do ilayer=1,h_fpp_n_dclayers
+               bestclusters(ichamber,ilayer) = hitcombos(bestcandidate,ichamber,ilayer)
+c     write(*,*) 'chbr,pln,clstr=',ichamber,ilayer,bestclusters(ichamber,ilayer)
+            enddo
+         enddo
+         
+         call h_fpp_tracking_drifttrack_ajp(dcset,simpletrack,bestclusters,
+     $        ontrack,track_good,fulltrack,nhitsrequired,1,abort,err)
+
+         if(.not. track_good) exit
+         
+         do j=1,6
+            fulltracks(bestcandidate,j) = fulltrack(j)
+         enddo
          
 c     Now that we have found the best candidate track, add it to the good track array:
 
@@ -528,6 +554,12 @@ c     Now that we have found the best candidate track, add it to the good track 
             hfpp_n_tracks(dcset) = itrack
 
             hfpp_track_nlayers(dcset,itrack) = candidate_nplanes(bestcandidate)
+c            hfpp_track_nlayers(dcset,itrack) = 
+
+            do j=1,4
+               hfpp_track_fine(dcset,itrack,j) = fulltracks(bestcandidate,j)
+            enddo
+
 c     Mark the hits in the best candidate track as used!
             do ichamber = 1,h_fpp_n_dcinset
                do ilayer = 1,h_fpp_n_dclayers
@@ -538,10 +570,6 @@ c     Mark the hits in the best candidate track as used!
                   endif
                   hfpp_trackcluster(dcset,ichamber,ilayer,itrack) = icluster
                enddo
-            enddo
-
-            do j=1,4
-               hfpp_track_fine(dcset,itrack,j) = fulltracks(bestcandidate,j)
             enddo
             
             hfpp_track_chi2(dcset,itrack) = fulltracks(bestcandidate,5)

@@ -193,8 +193,13 @@
               uWire = HFPP_layeroffset(iSet,iCham,iLay)
      >              + HFPP_spacing(iSet,iCham,iLay)*iWire
               drift = HFPP_drift_dist(iSet,iCham,iLay,iWire)
-              call h_fpp_uTrack(iSet,iCham,iLay,iTrk,uTrack)
-              residual = uTrack - (uWire + drift)
+
+              if(drift.ne.h_fpp_bad_drift) then
+
+                 call h_fpp_uTrack(iSet,iCham,iLay,iTrk,uTrack)
+                 residual = uTrack - (uWire + drift)
+
+              endif
 
 	    endif !iClust
 	    HFPP_TrackHit(iSet,iCham,iLay,iTrk) = ii
