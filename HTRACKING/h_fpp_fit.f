@@ -53,39 +53,39 @@
       nPoints = 0
 
       do iChamber=1,H_FPP_N_DCINSET
-       do iLayer=1,H_FPP_N_DCLAYERS
-
-          nhitslayer(ichamber,ilayer) = 0
-
-         iCluster = Clusters(iChamber,iLayer)
-         if (iCluster.gt.0) then
-           do iRaw=1,HFPP_nHitsinCluster(DCset,iChamber,iLayer,iCluster)
-              
-              nhitslayer(ichamber,ilayer) = nhitslayer(ichamber,ilayer) + 1
-              
-             nPoints = nPoints + 1
-             iHit = HFPP_Clusters(DCset,iChamber,iLayer,iCluster,iRaw)
-
-             wirepos = HFPP_layeroffset(DCset,iChamber,iLayer)
-     >               + HFPP_spacing(DCset,iChamber,iLayer)*HFPP_raw_wire(iHit)
-
-*            * tracking works in u-z coordinate system
-             Coords(nPoints,1) = wirepos
-             Coords(nPoints,2) = HFPP_layerZ(DCset,iChamber,iLayer)
-
-             Project(nPoints,1) = HFPP_direction(DCset,iChamber,iLayer,1)
-             Project(nPoints,2) = HFPP_direction(DCset,iChamber,iLayer,2)
-
-*            * we dont use drift here so use wire spacing over sqrt(12) as sigma!
-             Sigmas(nPoints) = (HFPP_spacing(DCset,iChamber,iLayer)/sqrt(12.0))**2
-
-           enddo !iRaw
-         endif
-
-       enddo !iLayer
-      enddo !iChamber
-
-
+         do iLayer=1,H_FPP_N_DCLAYERS
+            
+            nhitslayer(ichamber,ilayer) = 0
+            
+            iCluster = Clusters(iChamber,iLayer)
+            if (iCluster.gt.0) then
+               do iRaw=1,HFPP_nHitsinCluster(DCset,iChamber,iLayer,iCluster)
+                  
+                  nhitslayer(ichamber,ilayer) = nhitslayer(ichamber,ilayer) + 1
+                  
+                  nPoints = nPoints + 1
+                  iHit = HFPP_Clusters(DCset,iChamber,iLayer,iCluster,iRaw)
+                  
+                  wirepos = HFPP_layeroffset(DCset,iChamber,iLayer)
+     >                 + HFPP_spacing(DCset,iChamber,iLayer)*HFPP_raw_wire(iHit)
+                  
+*     * tracking works in u-z coordinate system
+                  Coords(nPoints,1) = wirepos
+                  Coords(nPoints,2) = HFPP_layerZ(DCset,iChamber,iLayer)
+                  
+                  Project(nPoints,1) = HFPP_direction(DCset,iChamber,iLayer,1)
+                  Project(nPoints,2) = HFPP_direction(DCset,iChamber,iLayer,2)
+                  
+*     * we dont use drift here so use wire spacing over sqrt(12) as sigma!
+                  Sigmas(nPoints) = (HFPP_spacing(DCset,iChamber,iLayer)/sqrt(12.0))**2
+                  
+               enddo            !iRaw
+            endif
+            
+         enddo                  !iLayer
+      enddo                     !iChamber
+      
+      
 *     * then we feed these coords to our fitting routine to get track
       if (nPoints.gt.0) then
          if(hfppuseajptracking.ne.0) then
@@ -99,22 +99,22 @@
             do iChamber=1,H_FPP_N_DCINSET
                do iLayer=1,H_FPP_N_DCLAYERS
                   
-c                  nhitslayer(ichamber,ilayer) = 0
+c     nhitslayer(ichamber,ilayer) = 0
                   
                   iCluster = Clusters(iChamber,iLayer)
                   if (iCluster.gt.0) then
                      bestpoint = 0
                      do iRaw=1,HFPP_nHitsinCluster(DCset,iChamber,iLayer,iCluster)
                         
-c                        nhitslayer(ichamber,ilayer) = nhitslayer(ichamber,ilayer) + 1
+c     nhitslayer(ichamber,ilayer) = nhitslayer(ichamber,ilayer) + 1
                         
                         trackx = fitparm(1)*hfpp_layerz(dcset,ichamber,ilayer) + fitparm(2)
                         tracky = fitparm(3)*hfpp_layerz(dcset,ichamber,ilayer) + fitparm(4)
-
+                        
                         trackpos = trackx * hfpp_direction(dcset,ichamber,ilayer,1) + 
      $                       tracky * hfpp_direction(dcset,ichamber,ilayer,2)
-
-c                        nPoints = nPoints + 1
+                        
+c     nPoints = nPoints + 1
                         iHit = HFPP_Clusters(DCset,iChamber,iLayer,iCluster,iRaw)
                         
                         wirepos = HFPP_layeroffset(DCset,iChamber,iLayer)
@@ -126,14 +126,14 @@ c                        nPoints = nPoints + 1
                            bestpoint = iraw
                            minresidual = residual
 *     * tracking works in u-z coordinate system
-c$$$                           Coords(nPoints,1) = wirepos
-c$$$                           Coords(nPoints,2) = HFPP_layerZ(DCset,iChamber,iLayer)
-c$$$                           
-c$$$                           Project(nPoints,1) = HFPP_direction(DCset,iChamber,iLayer,1)
-c$$$                           Project(nPoints,2) = HFPP_direction(DCset,iChamber,iLayer,2)
-                        
+c$$$  Coords(nPoints,1) = wirepos
+c$$$  Coords(nPoints,2) = HFPP_layerZ(DCset,iChamber,iLayer)
+c$$$  
+c$$$  Project(nPoints,1) = HFPP_direction(DCset,iChamber,iLayer,1)
+c$$$  Project(nPoints,2) = HFPP_direction(DCset,iChamber,iLayer,2)
+                           
 *     * we dont use drift here so use wire spacing over sqrt(12) as sigma!
-c                           Sigmas(nPoints) = (HFPP_spacing(DCset,iChamber,iLayer)/sqrt(12.0))**2
+c     Sigmas(nPoints) = (HFPP_spacing(DCset,iChamber,iLayer)/sqrt(12.0))**2
                         endif
                      enddo      !iRaw
 c     add one point per layer:
@@ -143,10 +143,10 @@ c     add one point per layer:
      $                    hfpp_spacing(dcset,ichamber,ilayer)*hfpp_raw_wire(ihit)
                      coords(npointstemp,1) = wirepos
                      coords(npointstemp,2) = hfpp_layerz(dcset,ichamber,ilayer)
-
+                     
                      Project(npointstemp,1) = HFPP_direction(DCset,iChamber,iLayer,1)
                      Project(npointstemp,2) = HFPP_direction(DCset,iChamber,iLayer,2)
-
+                     
                      sigmas(npointstemp) = (hfpp_spacing(dcset,ichamber,ilayer)/sqrt(12.0))**2
                      
                   endif         ! cluster > 0                  
@@ -154,7 +154,7 @@ c     add one point per layer:
             enddo               !iChamber
 *     fit one more time, including only one wire per plane:
             call h_fpp_fit3d_ajp(npointstemp, Coords, Sigmas, Project, FitParm)
-
+            
          else
             call h_fpp_fit3d(nPoints, Coords, Sigmas, Project, FitParm)
          endif

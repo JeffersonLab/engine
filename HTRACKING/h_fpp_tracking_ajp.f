@@ -28,7 +28,7 @@ c     define arrays for candidate tracks:
       integer*4 ngoodtracks
       integer*4 ncandidates,i,j,k,ichamber,ilayer
       integer*4 nplanestemp,icluster,bestcandidate,best6,best5
-      integer*4 itrack,track
+      integer*4 itrack,track,hit,ihit,wire
 
       integer*4 goodtracks(h_fpp_max_candidates)
       real*4 simpletracks(h_fpp_max_candidates,6)
@@ -507,6 +507,14 @@ c$$$         endif
                   icluster = hitcombos(i,ichamber,ilayer)
                   if(icluster.gt.0) then ! mark all candidate hits as unused
                      hfpp_clusterintrack(dcset,ichamber,ilayer,icluster) = 0
+c     reset drift time and drift distance for all wire hits in the cluster:
+c     If they are not used in a track, do not store their drift time and distance:
+                     do ihit=1,hfpp_nhitsincluster(dcset,ichamber,ilayer,icluster)
+                        hit = hfpp_clusters(dcset,ichamber,ilayer,icluster,ihit)
+                        wire = hfpp_raw_wire(hit)
+                        hfpp_drift_time(dcset,ichamber,ilayer,wire) = h_fpp_bad_time
+                        hfpp_drift_dist(dcset,ichamber,ilayer,wire) = h_fpp_bad_drift
+                     enddo
                   endif
                enddo
             enddo
@@ -525,7 +533,7 @@ c$$$  enddo
 c     fit the track one more time to get the correct drift distance, as it may have changed:
 c     also, improve drift time/dist calculation using the full track:
          do j=1,6
-            simpletrack(j) = fulltracks(bestcandidate,j)
+            simpletrack(j) = simpletracks(bestcandidate,j)
 c     write(*,*) 'i,simpletrack(i)=',j,simpletrack(j)
          enddo
          
@@ -536,6 +544,8 @@ c     write(*,*) 'chbr,pln,clstr=',ichamber,ilayer,bestclusters(ichamber,ilayer)
             enddo
          enddo
          
+c         write(*,*) 'before refitting, track=',(fulltracks(bestcandidate,j),j=1,6)
+
          call h_fpp_tracking_drifttrack_ajp(dcset,simpletrack,bestclusters,
      $        ontrack,track_good,fulltrack,nhitsrequired,1,abort,err)
 
@@ -544,6 +554,8 @@ c     write(*,*) 'chbr,pln,clstr=',ichamber,ilayer,bestclusters(ichamber,ilayer)
          do j=1,6
             fulltracks(bestcandidate,j) = fulltrack(j)
          enddo
+
+c         write(*,*) 'after refitting, track=',(fulltracks(bestcandidate,j),j=1,6)
          
 c     Now that we have found the best candidate track, add it to the good track array:
 

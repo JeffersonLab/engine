@@ -179,14 +179,17 @@
 
               rtime = H_FPP_BAD_TIME
 	      if (HFPP_nHitsinCluster(iSet,iCham,iLay,iClust).gt.0) then
-	       do iHit = 1,HFPP_nHitsinCluster(iSet,iCham,iLay,iClust)
-	         iRaw = HFPP_Clusters(iSet,iCham,iLay,iClust,iHit)
-	         if (HFPP_HitTime(iRaw).lt.rtime) then
-	           ii = iRaw
-		   rtime = HFPP_HitTime(iRaw)
-	         endif
-	       enddo !iHit
-	      endif
+                 do iHit = 1,HFPP_nHitsinCluster(iSet,iCham,iLay,iClust)
+                    iRaw = HFPP_Clusters(iSet,iCham,iLay,iClust,iHit)
+                    iWire = hfpp_raw_wire(iRaw)
+                    if ( HFPP_HitTime(iRaw).lt.rtime .and. 
+     $                   hfpp_drift_dist(iSet,iCham,iLay,iWire).ne.
+     $                   h_fpp_bad_drift ) then
+                       ii = iRaw
+                       rtime = HFPP_HitTime(iRaw)
+                    endif
+                 enddo          !iHit
+              endif
 
 *             * now also figure the residual of this hit
               iWire = HFPP_raw_wire(ii)
