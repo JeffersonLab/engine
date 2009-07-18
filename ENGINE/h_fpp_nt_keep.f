@@ -106,7 +106,8 @@ c      WRITE(*,*)HFPP_RAW_TOT_HITS
               cwnFPP_Hit1_layer(n)  = HFPP_raw_plane(iRaw)
               cwnFPP_Hit1_wire(n)   = iWire
               cwnFPP_Hit1_d_HMS(n)  = HFPP_dHMS(iSet,iCham,iLay,cluster,iHit)
-	      if (iTrk.le.0) then
+	      if (iTrk.le.0 .or. hfpp_drift_dist(iSet,iCham,iLay,iWire).eq.
+     $             H_FPP_BAD_DRIFT) then
                 cwnFPP_Hit1_itrack(n) = 0
                 cwnFPP_Hit1_time(n)   = H_FPP_BAD_TIME
 	        cwnFPP_Hit1_drift(n)  = H_FPP_BAD_DRIFT
