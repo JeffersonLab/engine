@@ -327,6 +327,16 @@ c     now, calculate everything one more time using bestref:
      $              hfpp_prune_zclose(2*(dcset-1)+2) +
      $              hfpp_prune_zslop(dcset)/tan(theta) .and. 
      $              nplanestemp.eq.6 )
+               if(dcset.eq.2.and.bestref.gt.0) then
+                  greattrack(i) = ( conetest.eq.1.and.
+     $              sclose.le.hfpp_prune_sclose(1)
+     $              .and.zclose.ge.hfpp_prune_zclose(2*(dcset-1)+1)-
+     $              hfpp_prune_zslop(dcset)/tan(theta).and.zclose.le.
+     $              hfpp_prune_zclose(2*(dcset-1)+2) +
+     $              hfpp_prune_zslop(dcset)/tan(theta) .and. 
+     $              nplanestemp.eq.6 )
+               endif
+
 
                if(greattrack(i)) any_great = .true.
 
