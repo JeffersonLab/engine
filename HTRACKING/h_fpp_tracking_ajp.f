@@ -475,6 +475,7 @@ c            endif
 c     try picking smallest theta HERE instead:
             if(hselectfpptrackprune.eq.1) then
                criterion = theta
+               any_great = .false.
             else if(hselectfpptrackprune.eq.2) then
                criterion = chi2 + minchi2 * sclose**2
             else if(hselectfpptrackprune.eq.3) then
@@ -484,6 +485,8 @@ c     try picking smallest theta HERE instead:
             else
                criterion = chi2
             endif
+
+            any_great = .false.
 
 c            if(candidate_nplanes(track).eq.h_fpp_n_dcinset*
 c     $           h_fpp_n_dclayers.or..not.any6) then
@@ -1030,6 +1033,7 @@ c      write(*,*) 'event = ',gen_event_id_number
       enddo
          
       if(npoints.ne.hfpp_track_nhits(ifpp,itrack)) return
+      if(npoints.lt.6) return
 
       oldchi2 = hfpp_track_chi2(ifpp,itrack)
       oldtheta = hfpp_track_theta(ifpp,itrack)
