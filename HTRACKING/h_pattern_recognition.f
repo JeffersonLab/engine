@@ -14,6 +14,9 @@
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
 * $Log$
+* Revision 1.14.20.3  2009/08/24 01:07:08  puckett
+* added optional calls to alternate space point finding routine
+*
 * Revision 1.14.20.2  2009/07/12 22:22:21  puckett
 * restored FPP track selection to previous behavior--gives best analyzing power in FPP2
 *
@@ -151,48 +154,78 @@
      &           hspace_point_criterion(ich),hmax_space_points,yy-ihit,
      &           yyprime-ihit,easy_space_point,hnspace_points(ich),
      &           space_points,space_point_hits)
-            if (.not.easy_space_point) call find_space_points(hncham_hits(ich)
-     $           ,hit_number(ihit+1),hdc_wire_center(ihit+1)
-     $           ,hdc_plane_num(ihit+1),hspace_point_criterion(ich),hxsp(1)
-     $           ,hysp(1),hmax_space_points,hnspace_points(ich), space_points,
-     $           space_point_hits)
+            if (.not.easy_space_point) then
+               if(huseajpspacepoints.eq.0) then
+                  call find_space_points(hncham_hits(ich)
+     $                 ,hit_number(ihit+1),hdc_wire_center(ihit+1)
+     $                 ,hdc_plane_num(ihit+1),hspace_point_criterion(ich),hxsp(1)
+     $                 ,hysp(1),hmax_space_points,hnspace_points(ich), space_points,
+     $              space_point_hits)
+               else ! call new AJP pattern recognition routine:
+c                  write(*,*) 'Calling find_space_points_ajp'
+                  call h_find_space_points_ajp(ich,hnspace_points(ich),space_points,space_point_hits)
+c                  write(*,*) 'found space points n=',hnspace_points(ich)
+               endif
+c            else 
+c               write(*,*) 'Found EASY space point'
+            endif
           else
-            call find_space_points(hncham_hits(ich),hit_number(ihit+1),
-     &           hdc_wire_center(ihit+1),
-     &           hdc_plane_num(ihit+1),hspace_point_criterion(ich),
-     &           hxsp(1),hysp(1),hmax_space_points,
-     &           hnspace_points(ich), space_points, space_point_hits)
+             if(huseajpspacepoints.eq.0) then
+                call find_space_points(hncham_hits(ich),hit_number(ihit+1),
+     &               hdc_wire_center(ihit+1),
+     &               hdc_plane_num(ihit+1),hspace_point_criterion(ich),
+     &               hxsp(1),hysp(1),hmax_space_points,
+     &               hnspace_points(ich), space_points, space_point_hits)
+             else 
+c                write(*,*) 'Calling find_space_points_ajp'
+                call h_find_space_points_ajp(ich,hnspace_points(ich),space_points,space_point_hits)
+c                write(*,*) 'found space points n=',hnspace_points(ich)
+             endif
           endif
 *
           if (hnspace_points(ich).gt.0) then
 *    If two hits in same plane, choose one with minimum drift time
 
-             if ( h_remove_sppt_if_one_y_plane .eq. 1) then
-                call h_sp_destroy(ABORT,err,hnspace_points(ich),
-     &               space_point_hits,space_points,ich)
-             endif
+c             write(*,*) 'chamber = ',ich
+
+             if(huseajpspacepoints.eq.0.or.easy_space_point) then
+c                write(*,*) 'entering clone/etc for easy point'
+                if ( h_remove_sppt_if_one_y_plane .eq. 1) then
+                   call h_sp_destroy(ABORT,err,hnspace_points(ich),
+     &                  space_point_hits,space_points,ich)
+                endif
 c
-             call h_sp_multiwire(ABORT,err,hnspace_points(ich),
-     &           space_point_hits,space_points)
+c             if(hnspace_points(ich).le.2) 
+c             write(*,*) 'N space points before cloning=',hnspace_points(ich)
+                call h_sp_multiwire(ABORT,err,hnspace_points(ich),
+     &               space_point_hits,space_points)
 c
-             call h_choose_single_hit(ABORT,err,hnspace_points(ich),
-     &            space_point_hits)
+c             write(*,*) 'N space points after cloning=',hnspace_points(ich)
+                call h_choose_single_hit(ABORT,err,hnspace_points(ich),
+     &               space_point_hits)
 * Select on minimum number of combinations and hits
-             call select_space_points(hmax_space_points,hnspace_points(ich),
-     &            space_points,space_point_hits,hmin_hit(ich),hmin_combos(ich),
-     $            easy_space_point)
+c                write(*,*) 'N space points before min hits/combos=',hnspace_points(ich)
+
+                call select_space_points(hmax_space_points,hnspace_points(ich),
+     &               space_points,space_point_hits,hmin_hit(ich),hmin_combos(ich),
+     $               easy_space_point)
+c                write(*,*) 'N space points after min hits/combos=',hnspace_points(ich)
+c             else 
+c                write(*,*) 'Using AJP pattern recognition'
+c                write(*,*) 'skipping cloning and min hits/combos test'
+             endif
           endif
-
-
+c          write(*,*) 'ich,nspacepoints=',ich,hnspace_points(ich)
           do i=1,hnspace_points(ich)
             k=hnspace_points_tot+i
+
             hspace_points(k,1)=space_points(i,1)
             hspace_points(k,2)=space_points(i,2)
             hspace_point_hits(k,1)=space_point_hits(i,1)
             hspace_point_hits(k,2)=space_point_hits(i,2)
             do j=1,space_point_hits(i,1)
-              hspace_point_hits(k,j+2)=space_point_hits(i,j+2)
-            enddo
+               hspace_point_hits(k,j+2)=space_point_hits(i,j+2)
+            enddo            
           enddo
         endif      
         hnspace_points_tot = hnspace_points_tot+ hnspace_points(ich)
@@ -238,6 +271,9 @@ c
           enddo
         enddo
       endif
+
+c      write(*,*) 'h_pattern_recognition success!'
+
 *     
 *     Histogram hdc_DECODED_DC
       call h_fill_dc_dec_hist(ABORT,err)
