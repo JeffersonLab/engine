@@ -8,6 +8,9 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
+* Revision 1.27.20.8  2009/08/24 01:10:18  puckett
+* added flag to choose HMS pattern recognition option
+*
 * Revision 1.27.20.7  2009/04/27 21:12:11  puckett
 * latest updates
 *
@@ -171,7 +174,7 @@
       integer*4 hmax_chamber_hits
       parameter (hmax_chamber_hits=544)
       integer*4 hmax_space_points   ! maximum number of space points
-      parameter (hmax_space_points=50)
+      parameter (hmax_space_points=5000)
       integer*4 hmax_hits_per_point ! maximum number of hits per point
       parameter (hmax_hits_per_point=1000)
       integer*4 hnum_fpray_param    ! number of ray parameters in focal plane
@@ -214,6 +217,7 @@ cajp051708      parameter(hnum_fpray_param=5) ! added t0 for each stub
       real*4 hspace_point_criterion ! maximum distance**2 to join pairs/combos.
       INTEGER*4 HNTRACKS_MAX_FP       ! NUMBER OF TRACKS ALLOWED IN FOCAL PLANE
       integer*4 h_remove_sppt_if_one_y_plane ! flag used in h_pattern_recognition.f
+      integer*4 huseajpspacepoints
 *
 *     CTPTYPE=event
 *
@@ -227,6 +231,7 @@ cajp051708      parameter(hnum_fpray_param=5) ! added t0 for each stub
                                    ! (n,1) = number of hits
                                    ! (n,2) = number of valid combinations
                                    ! (n,3...) hit numbers for space point
+*      integer*4 huseajpspacepoints ! flag to use alternate space point search algorithm by AJP
       real*4 hspace_point_leftright
       real*4 hspace_points         ! array of x, y of space points
       real*4 hbeststub             ! array of stubs fit to each space point
@@ -236,7 +241,7 @@ cajp051708      parameter(hnum_fpray_param=5) ! added t0 for each stub
 
 *
       common/HMS_TRACKING/
-     &     hdc_num_chambers,hdc_num_planes,
+     &     huseajpspacepoints,hdc_num_chambers,hdc_num_planes,
      &     hdc_planes_per_chamber,
      &     hdc_hits_per_plane(hmax_num_dc_planes),
      &     gplanehdc1(hmax_space_points),
