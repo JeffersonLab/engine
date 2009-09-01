@@ -12,6 +12,9 @@
 * for F1 TDCs (should still work if go back to FASTBUS)
 * 2008/09/30 P. Bosted
 * $Log$
+* Revision 1.21.8.6  2009/09/01 19:23:24  jones
+* Initialize hbeta_notrk and hbeta(1) = -100 for every event.
+*
 * Revision 1.21.8.5  2008/11/17 15:59:18  cdaq
 * Changed from old to new tof varaibles
 *
@@ -131,6 +134,8 @@
       save
       
       abort = .false.
+        hbeta_notrk = -100.
+        hbeta(1) = -100.
 
 
 ! Correct for trigger time.
