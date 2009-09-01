@@ -46,8 +46,7 @@ c     to improve the efficiency of coincidence events.
          b_use_bad_chan_list = 0
 c         last_time = .true.
       endif
-      if(gen_event_type.gt.6.and.
-     >   gen_event_type.lt.9 ) then
+      if(gen_event_type.gt.6) then
          bbypass_find_clusters = 1
          bbypass_calc_cluster_time = 1
          bbypass_calc_shower_coord = 1
@@ -61,9 +60,9 @@ c         last_time = .true.
          return
       endif
 
-      bigcal_max_adc = 0.
-      bigcal_iymax_adc = 0
-      bigcal_ixmax_adc = 0
+      !bigcal_max_adc = 0.
+      !bigcal_iymax_adc = 0
+      !bigcal_ixmax_adc = 0
 ************  convert Protvino raw ADC to Protvino decoded ADC *******
       if(bbypass_prot.eq.0) then
          call b_trans_PROT(ABORT,err)
@@ -197,6 +196,16 @@ c         write(*,*) 'entering b_find_clusters'
             return
          endif
       endif
+*
+      bigcal_all_nclust_good = bigcal_all_nclstr
+
+      if(bbypass_prune_clusters.eq.0.and.bbypass_find_clusters.eq.0)then
+         call b_prune_clusters(ABORT,err)
+         if(abort) then
+            call g_add_path(here,err)
+            return
+         endif
+      endif
 *     
       if(bbypass_calc_physics.eq.0.and.bbypass_find_clusters.eq.0) then
          
@@ -207,6 +216,7 @@ c         write(*,*) 'entering b_find_clusters'
             return
          endif
       endif
+
 c     if dealing with real data and not monte carlo, then the appropriate
 c     place to do the calibration matrix is in gep_reconstruction, because
 c     we need to know the incident electron energy, hence we need the hms
@@ -229,7 +239,7 @@ c     info.
          bbypass_calc_shower_coord = revert(4)
          bbypass_calc_physics = revert(5)
       endif
-c      write(*,*) 'done with reconstruction nclust = ',nclust      
+      !write(*,*) 'done with reconstruction'      
 *
       return
       end
