@@ -26,7 +26,7 @@ c      include 'gen_scalers.cmn'
 
 c      logical middlebest
 
-      integer m,np,nr,nm,irow,icol,ihit,jhit,itdc,itrig
+      integer m,np,nr,nm,irow,icol,ihit,jhit,itdc,itrig,ngood
 c      real ep,er,em
 c      integer iybest,ixbest,xclst,yclst,Eclst,xmom,ymom,t8avg,t64avg
       integer L8sum,L64sum,iydiff,ixdiff,icell,jcell,iarray
@@ -50,11 +50,11 @@ c      integer itype
       err=' '
       ABORT=.false.
 
-      if ( .not. hflag) bigcal_ntuple_type = 1
-      if ( hflag) then
       if(.not.b_ntuple_exists) return
-c      write(*,*)'Filling ntuple data'
-      if(b_ntuple_max_segmentevents.gt.0) then
+
+       if ( .not. hflag) bigcal_ntuple_type = 1
+      if ( hflag) then
+     if(b_ntuple_max_segmentevents.gt.0) then
          if(b_ntuple_segmentevents.gt.b_ntuple_max_segmentevents) then
             call b_ntuple_change(ABORT,err)
             b_ntuple_segmentevents=0
@@ -63,9 +63,7 @@ c      write(*,*)'Filling ntuple data'
          endif
       endif
       endif
-c
-c      if (gen_event_type .ne. 6) return
-c
+
       if(bigcal_ntuple_type.eq.1) then
          bgid = gen_event_ID_number
          bgtype = gen_event_type
@@ -78,7 +76,7 @@ c
 c$$$         write(*,*) 'filling BigCal ntuple'
 c$$$         write(*,*) 'event,type,trigtype=',bgid,bgtype,btrigtype
 
-         nclust = bigcal_all_nclstr
+         nclust = bigcal_all_nclust_good
          nclust8 = nclust
          nclust64 = nclust
          ntrack = nclust
@@ -93,110 +91,117 @@ c$$$         write(*,*) 'event,type,trigtype=',bgid,bgtype,btrigtype
 c$$$         write(*,*) 'nclust,ncl8,ncl64,ntrk,best=',nclust,nclust8,
 c$$$     $        nclust64,ntrack,ibest
 
-        do iclust = 1,nclust
-            ncellclust(iclust) = bigcal_all_clstr_ncell(iclust)
-            ncellbad(iclust) = bigcal_all_clstr_nbadlist(iclust)
-            ncellx(iclust) = bigcal_all_clstr_ncellx(iclust)
-            ncelly(iclust) = bigcal_all_clstr_ncelly(iclust)
-            ncell8clust(iclust) = bigcal_all_clstr_ncell8(iclust)
-            ncell64clust(iclust) = bigcal_all_clstr_ncell64(iclust)
+         ngood = 0
+
+         do iclust = 1,bigcal_all_nclstr
+            if(bigcal_clstr_keep(iclust)) then
+               ngood = ngood + 1
+               
+               if(iclust.eq.ibest) ibest = ngood
+               
+               ncellclust(ngood) = bigcal_all_clstr_ncell(iclust)
+               ncellbad(ngood) = bigcal_all_clstr_nbadlist(iclust)
+               ncellx(ngood) = bigcal_all_clstr_ncellx(iclust)
+               ncelly(ngood) = bigcal_all_clstr_ncelly(iclust)
+               ncell8clust(ngood) = bigcal_all_clstr_ncell8(iclust)
+               ncell64clust(ngood) = bigcal_all_clstr_ncell64(iclust)
 
 c$$$            write(*,*) 'iclust,ncell,nbad,nx,ny,n8,n64=',iclust,ncellclust(iclust),
 c$$$     $           ncellbad(iclust),ncellx(iclust),ncelly(iclust),ncell8clust(iclust),
 c$$$     $           ncell64clust(iclust)
 
-            do icell=1,ncellclust(iclust)
-               iycell(icell,iclust) = bigcal_all_clstr_iycell(iclust,icell)
-               ixcell(icell,iclust) = bigcal_all_clstr_ixcell(iclust,icell)
-               xcell(icell,iclust) = bigcal_all_clstr_xcell(iclust,icell)
-               ycell(icell,iclust) = bigcal_all_clstr_ycell(iclust,icell)
-               eblock(icell,iclust) = bigcal_all_clstr_ecell(iclust,icell)
-               ablock(icell,iclust) = bigcal_all_clstr_acell(iclust,icell)
-               cellbad(icell,iclust) = bigcal_clstr_bad_chan(iclust,icell)
-c$$$               write(*,*) 'cell,row,col,x,y,e,bad?=',icell,iycell(icell,iclust),
-c$$$     $              ixcell(icell,iclust),xcell(icell,iclust),ycell(icell,iclust),
-c$$$     $              eblock(icell,iclust),cellbad(icell,iclust)
-            enddo
+               do icell=1,ncellclust(ngood)
+                  iycell(icell,ngood) = bigcal_all_clstr_iycell(iclust,icell)
+                  ixcell(icell,ngood) = bigcal_all_clstr_ixcell(iclust,icell)
+                  xcell(icell,ngood) = bigcal_all_clstr_xcell(iclust,icell)
+                  ycell(icell,ngood) = bigcal_all_clstr_ycell(iclust,icell)
+                  eblock(icell,ngood) = bigcal_all_clstr_ecell(iclust,icell)
+                  ablock(icell,ngood) = bigcal_all_clstr_acell(iclust,icell)
+                  cellbad(icell,ngood) = bigcal_clstr_bad_chan(iclust,icell)
+c$$$  write(*,*) 'cell,row,col,x,y,e,bad?=',icell,iycell(icell,iclust),
+c$$$  $              ixcell(icell,iclust),xcell(icell,iclust),ycell(icell,iclust),
+c$$$  $              eblock(icell,iclust),cellbad(icell,iclust)
+               enddo
 c     zero all cells above ncellclust
-            do icell=ncellclust(iclust)+1,bigcal_clstr_ncell_max
-               iycell(icell,iclust) = 0
-               ixcell(icell,iclust) = 0
-               xcell(icell,iclust) = 0.
-               ycell(icell,iclust) = 0.
-               eblock(icell,iclust) = 0.
-               ablock(icell,iclust) = 0.
-               cellbad(icell,iclust) = .false.
-            enddo
-            
-            do icell=1,ncell8clust(iclust)
-               irow8hit(icell,iclust) = bigcal_all_clstr_irow8(iclust,icell)
-               icol8hit(icell,iclust) = bigcal_all_clstr_icol8(iclust,icell)
-               nhit8clust(icell,iclust) = bigcal_all_clstr_nhit8(iclust,icell)
-
-               s8(icell,iclust) = bigcal_all_clstr_s8(iclust,icell)
-
-c$$$               write(*,*) 'cell8,row8,col8,nh=',icell,irow8hit(icell,iclust),
-c$$$     $              icol8hit(icell,iclust),nhit8clust(icell,iclust)
-
-               do ihit=1,nhit8clust(icell,iclust)
-c$$$                  write(*,*) 'hit,time=',ihit,tcell8(icell,ihit,iclust)
-                  tcell8(icell,ihit,iclust) = bigcal_all_clstr_tcell8(iclust,icell,ihit)
+               do icell=ncellclust(ngood)+1,bigcal_clstr_ncell_max
+                  iycell(icell,ngood) = 0
+                  ixcell(icell,ngood) = 0
+                  xcell(icell,ngood) = 0.
+                  ycell(icell,ngood) = 0.
+                  eblock(icell,ngood) = 0.
+                  ablock(icell,ngood) = 0.
+                  cellbad(icell,ngood) = .false.
                enddo
+               
+               do icell=1,ncell8clust(ngood)
+                  irow8hit(icell,ngood) = bigcal_all_clstr_irow8(iclust,icell)
+                  icol8hit(icell,ngood) = bigcal_all_clstr_icol8(iclust,icell)
+                  nhit8clust(icell,ngood) = bigcal_all_clstr_nhit8(iclust,icell)
+                  
+                  s8(icell,ngood) = bigcal_all_clstr_s8(iclust,icell)
+                  
+c$$$  write(*,*) 'cell8,row8,col8,nh=',icell,irow8hit(icell,iclust),
+c$$$  $              icol8hit(icell,iclust),nhit8clust(icell,iclust)
+                  
+                  do ihit=1,nhit8clust(icell,ngood)
+c$$$  write(*,*) 'hit,time=',ihit,tcell8(icell,ihit,iclust)
+                     tcell8(icell,ihit,ngood) = bigcal_all_clstr_tcell8(iclust,icell,ihit)
+                  enddo
 c     zero all hits above nhit8clust(icell,iclust)
-               do ihit=nhit8clust(icell,iclust)+1,8
-                  tcell8(icell,ihit,iclust) = 0.
+                  do ihit=nhit8clust(icell,ngood)+1,8
+                     tcell8(icell,ihit,ngood) = 0.
+                  enddo
                enddo
-            enddo
 c     zero all cells and all hits of all cells above ncell8clust
-            do icell=ncell8clust(iclust)+1,10
-               irow8hit(icell,iclust) = 0
-               icol8hit(icell,iclust) = 0
-               nhit8clust(icell,iclust) = 0
-               s8(icell,iclust) = 0.
-               do ihit=1,8
-                  tcell8(icell,ihit,iclust) = 0.
+               do icell=ncell8clust(ngood)+1,10
+                  irow8hit(icell,ngood) = 0
+                  icol8hit(icell,ngood) = 0
+                  nhit8clust(icell,ngood) = 0
+                  s8(icell,ngood) = 0.
+                  do ihit=1,8
+                     tcell8(icell,ihit,ngood) = 0.
+                  enddo
                enddo
-            enddo
-
-            do icell=1,ncell64clust(iclust)
-               irow64hit(icell,iclust) = bigcal_all_clstr_irow64(iclust,icell)
-               icol64hit(icell,iclust) = bigcal_all_clstr_icol64(iclust,icell)
-               nhit64clust(icell,iclust) = bigcal_all_clstr_nhit64(iclust,icell)
-               a64(icell,iclust) = bigcal_all_clstr_a64(iclust,icell)
-               s64(icell,iclust) = bigcal_all_clstr_sum64(iclust,icell)
-c$$$               write(*,*) 'cell64,row64,col64,nh,a64,s64=',icell,irow64hit(icell,iclust),
-c$$$     $              icol64hit(icell,iclust),nhit64clust(icell,iclust),a64(icell,iclust),
-c$$$     $              s64(icell,iclust)
-               do ihit=1,nhit64clust(icell,iclust)
-                  !write(*,*) 'hit,time=',ihit,tcell64(icell,ihit,iclust)
-                  tcell64(icell,ihit,iclust) = bigcal_all_clstr_tcell64(iclust,icell,ihit)
-               enddo
+               
+               do icell=1,ncell64clust(ngood)
+                  irow64hit(icell,ngood) = bigcal_all_clstr_irow64(iclust,icell)
+                  icol64hit(icell,ngood) = bigcal_all_clstr_icol64(iclust,icell)
+                  nhit64clust(icell,ngood) = bigcal_all_clstr_nhit64(iclust,icell)
+                  a64(icell,ngood) = bigcal_all_clstr_a64(iclust,icell)
+                  s64(icell,ngood) = bigcal_all_clstr_sum64(iclust,icell)
+c$$$  write(*,*) 'cell64,row64,col64,nh,a64,s64=',icell,irow64hit(icell,iclust),
+c$$$  $              icol64hit(icell,iclust),nhit64clust(icell,iclust),a64(icell,iclust),
+c$$$  $              s64(icell,iclust)
+                  do ihit=1,nhit64clust(icell,ngood)
+                                !write(*,*) 'hit,time=',ihit,tcell64(icell,ihit,iclust)
+                     tcell64(icell,ihit,ngood) = bigcal_all_clstr_tcell64(iclust,icell,ihit)
+                  enddo
 c     zero all hits above nhit64clust(icell,iclust)
-               do ihit=nhit64clust(icell,iclust)+1,8
-                  tcell64(icell,ihit,iclust) = 0.
+                  do ihit=nhit64clust(icell,ngood)+1,8
+                     tcell64(icell,ihit,ngood) = 0.
+                  enddo
                enddo
-            enddo
 c     zero all cells and all hits of all cells above ncell64clust
-            do icell=ncell64clust(iclust)+1,6
-               irow64hit(icell,iclust) = 0
-               icol64hit(icell,iclust) = 0
-               nhit64clust(icell,iclust) = 0
-               do ihit=1,8
-                  tcell64(icell,ihit,iclust) = 0.
+               do icell=ncell64clust(ngood)+1,6
+                  irow64hit(icell,ngood) = 0
+                  icol64hit(icell,ngood) = 0
+                  nhit64clust(icell,ngood) = 0
+                  do ihit=1,8
+                     tcell64(icell,ihit,ngood) = 0.
+                  enddo
                enddo
-            enddo
-
-            xmoment(iclust) = bigcal_all_clstr_xmom(iclust)
-            ymoment(iclust) = bigcal_all_clstr_ymom(iclust)
-            tclust8(iclust) = bigcal_all_clstr_t8mean(iclust)
-            tclust64(iclust) = bigcal_all_clstr_t64mean(iclust)
-            tcut8(iclust) = bigcal_all_clstr_t8cut(iclust)
-            tcut8cor(iclust) = bigcal_all_clstr_t8cut_cor(iclust)
-            tcut64(iclust) = bigcal_all_clstr_t64cut(iclust)
-            tcut64cor(iclust) = bigcal_all_clstr_t64cut_cor(iclust)
-            trms8(iclust) = bigcal_all_clstr_t8rms(iclust)
-            trms64(iclust) = bigcal_all_clstr_t64rms(iclust)
-
+               
+               xmoment(ngood) = bigcal_all_clstr_xmom(iclust)
+               ymoment(ngood) = bigcal_all_clstr_ymom(iclust)
+               tclust8(ngood) = bigcal_all_clstr_t8mean(iclust)
+               tclust64(ngood) = bigcal_all_clstr_t64mean(iclust)
+               tcut8(ngood) = bigcal_all_clstr_t8cut(iclust)
+c               tofcor8(ngood) = bigcal_all_clstr_t8cut_cor(iclust)
+               tcut64(ngood) = bigcal_all_clstr_t64cut(iclust)
+c               tofcor64(ngood) = bigcal_all_clstr_t64cut_cor(iclust)
+               trms8(ngood) = bigcal_all_clstr_t8rms(iclust)
+               trms64(ngood) = bigcal_all_clstr_t64rms(iclust)
+               
 c            write(*,*) 'tcut8 = ',tcut8(iclust)
 c            write(*,*) 'tcut64=',tcut64(iclust)
 
@@ -204,47 +209,56 @@ c$$$            write(*,*) 'xmom,ymom,t8,t64,trms8,trms64=',xmoment(iclust),
 c$$$     $           ymoment(iclust),tclust8(iclust),tclust64(iclust),trms8(iclust),
 c$$$     $           trms64(iclust)
 
-            xclust(iclust) = bigcal_all_clstr_x(iclust)
-            yclust(iclust) = bigcal_all_clstr_y(iclust)
-            eclust(iclust) = bigcal_all_clstr_etot(iclust)
-            aclust(iclust) = bigcal_all_clstr_atot(iclust)
+               xclust(ngood) = bigcal_all_clstr_x(iclust)
+               yclust(ngood) = bigcal_all_clstr_y(iclust)
+               eclust(ngood) = bigcal_all_clstr_etot(iclust)
+               aclust(ngood) = bigcal_all_clstr_atot(iclust)
+               
+c               keepclst(ngood) = bigcal_clstr_keep(iclust)
 
-            !write(*,*) 'xclust,yclust,eclust=',xclust(iclust),yclust(iclust),
+cwrite(*,*) 'xclust,yclust,eclust=',xclust(iclust),yclust(iclust),
 c     $           eclust(iclust)
+               
+               thetarad(ngood) = bigcal_track_thetarad(iclust)
+               phirad(ngood) = bigcal_track_phirad(iclust)
+               energy(ngood) = bigcal_track_energy(iclust)
+               xface(ngood) = bigcal_track_xface(iclust)
+               yface(ngood) = bigcal_track_yface(iclust)
+               zface(ngood) = bigcal_track_zface(iclust)
+               px(ngood) = bigcal_track_px(iclust)
+               py(ngood) = bigcal_track_py(iclust)
+               pz(ngood) = bigcal_track_pz(iclust)
+               ctime_clust(ngood) = bigcal_track_coin_time(iclust) - 
+     $              (bigcal_end_time - bigcal_window_center)
 
-            thetarad(iclust) = bigcal_track_thetarad(iclust)
-            phirad(iclust) = bigcal_track_phirad(iclust)
-            energy(iclust) = bigcal_track_energy(iclust)
-            xface(iclust) = bigcal_track_xface(iclust)
-            yface(iclust) = bigcal_track_yface(iclust)
-            zface(iclust) = bigcal_track_zface(iclust)
-            px(iclust) = bigcal_track_px(iclust)
-            py(iclust) = bigcal_track_py(iclust)
-            pz(iclust) = bigcal_track_pz(iclust)
-            ctime_clust(iclust) = bigcal_track_coin_time(iclust) - 
-     $           (bigcal_end_time - gep_btime_elastic)
-
-            if((bgtype.eq.6 .or. bgtype.eq.1).and.ibest>0) then
-c               write(*,*) 'chi2=',bigcal_all_clstr_chi2(iclust) 
-               chi2clust(iclust) = bigcal_all_clstr_chi2(iclust)
-               do idiff=1,6
+               if(bgtype.eq.6.and.ibest>0) then
+c     write(*,*) 'chi2=',bigcal_all_clstr_chi2(iclust)
+                  chi2clust(ngood) = bigcal_all_clstr_chi2(iclust)
+                  do idiff=1,6
 c                  write(*,*) 'chi2_',idiff,'=',bigcal_all_clstr_chi2contr(iclust,idiff)
-                  chi2contr(idiff,iclust) = bigcal_all_clstr_chi2contr(iclust,idiff)
-               enddo
-            else
-               chi2clust(iclust) = -9999.
-               do idiff=1,6
-                  chi2contr(idiff,iclust) = -9999.
-               enddo
+                     chi2contr(idiff,ngood) = bigcal_all_clstr_chi2contr(iclust,idiff)
+                  enddo
+               else
+                  chi2clust(ngood) = -9999.
+                  do idiff=1,6
+                     chi2contr(idiff,ngood) = -9999.
+                  enddo
+               endif
+c$$$  write(*,*) 'theta,phi,E,xf,yf,zf,px,py,pz,t=',thetarad(iclust),phirad(iclust),
+c$$$  $           energy(iclust),xface(iclust),yface(iclust),zface(iclust),px(iclust),py(iclust),
+c$$$  $           pz(iclust),ctime_clust(iclust)
             endif
-c$$$            write(*,*) 'theta,phi,E,xf,yf,zf,px,py,pz,t=',thetarad(iclust),phirad(iclust),
-c$$$     $           energy(iclust),xface(iclust),yface(iclust),zface(iclust),px(iclust),py(iclust),
-c$$$     $           pz(iclust),ctime_clust(iclust)
-
          enddo
 
+         if(ngood.ne.nclust) then
+            nclust = ngood
+            ntrack = ngood 
+            nclust8 = ngood
+            nclust64 = ngood
+         endif
+
          nmax = bigcal_nmaxima
-         !write(*,*) 'nmax=',nmax
+c     write(*,*) 'nmax=',nmax
          do imax=1,nmax
             edge_max(imax) = bigcal_edge_max(imax)
             not_enough(imax) = bigcal_not_enough(imax)
@@ -253,7 +267,7 @@ c$$$     $           pz(iclust),ctime_clust(iclust)
             below_thresh(imax) = bigcal_below_cut(imax)
             above_max(imax) = bigcal_above_max(imax)
             second_max(imax) = bigcal_second_max(imax)
-            !write(*,*) 'max,edge,small,bigx,bigy,cutlo,cuthi,twomax=',
+c     write(*,*) 'max,edge,small,bigx,bigy,cutlo,cuthi,twomax=',
 c     $           edge_max(imax),not_enough(imax),too_long_x(imax),too_long_y(imax),
 c     $           below_thresh(imax),above_max(imax),second_max(imax)
          enddo
@@ -261,26 +275,29 @@ c     $           below_thresh(imax),above_max(imax),second_max(imax)
          ngoodt = bigcal_time_ngood
          ngoodta = bigcal_atrig_ngood
          ngoodtt = bigcal_ttrig_ngood
-c$$$         write(*,*) '(rowmax,colmax,adcmax)=',bigcal_iymax_adc,
-c$$$     $          bigcal_ixmax_adc,bigcal_max_adc
+c$$$  write(*,*) '(rowmax,colmax,adcmax)=',bigcal_iymax_adc,
+c$$$  $          bigcal_ixmax_adc,bigcal_max_adc
          irowmax = bigcal_iymax_adc
          icolmax = bigcal_ixmax_adc
          max_adc = bigcal_max_adc
-
-c$$$         write(*,*) 'na,nt,nta,ntt,rowmax,colmax,maxadc=',ngooda,ngoodt,ngoodta,
-c$$$     $        ngoodtt,irowmax,icolmax,max_adc
-         if((bgtype.eq.6.or. bgtype.eq.1).and.ibest>0) then ! this always assumes elastic kinematics--won't always make sense!
-c            E_HMS = gebeam - gep_Q2_H/(2.*Mp)
+         
+c$$$  write(*,*) 'na,nt,nta,ntt,rowmax,colmax,maxadc=',ngooda,ngoodt,ngoodta,
+c$$$  $        ngoodtt,irowmax,icolmax,max_adc
+         
+         if(bgtype.eq.6.and.ibest>0) then ! this always assumes elastic kinematics--won't always make sense!
+c     E_HMS = gebeam - gep_Q2_H/(2.*Mp)
+c            T_HMS = gep_ctime_hms
             TH_HMS = gep_etheta_expect_h
             PH_HMS = gep_ephi_expect_h - PI/2. 
-
-c            write(*,*) 'thetaH,phiH,dpel=',th_hms,ph_hms
+            
+c     write(*,*) 'thetaH,phiH,dpel=',th_hms,ph_hms
             E_HMS = gep_E_electron
             X_HMS = gep_bx_expect_H
             Y_HMS = gep_by_expect_H
             dPel_HMS = (gep_p_proton - gep_pel_htheta) / hpcentral ! useful to isolate elastics
-c            write(*,*) 'e_hms,x_hms,y_hms,dpel=',e_hms,x_hms,y_hms,dpel_hms
+c     write(*,*) 'e_hms,x_hms,y_hms,dpel=',e_hms,x_hms,y_hms,dpel_hms
          else
+c            T_HMS = -9999.
             TH_HMS = -9999.
             PH_HMS = -9999.
             E_HMS = -9999.
@@ -373,19 +390,191 @@ c$$$  $             yt(nthit),hn(nthit),tt(nthit)
                   ttt(ntthit) = bigcal_ttrig_tdc_raw(ihit)
                endif
             enddo
-         endif 
+         endif
+      else if(bigcal_ntuple_type.eq.3) then
+         m=0
+         m=m+1
+         b_ntuple_contents(m) = float(gen_event_id_number)
+         m=m+1
+         b_ntuple_contents(m) = float(gen_event_type)
+         m=m+1
+         if(ntrigB.gt.0) then
+            b_ntuple_contents(m) = bigcal_end_time - gep_btime(1)
+         else
+            b_ntuple_contents(m) = bigcal_end_time - bigcal_window_center
+         endif
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_all_ngood)
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_time_ngood)
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_atrig_ngood)
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_ttrig_ngood)
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_iymax_adc)
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_ixmax_adc)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_max_adc
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_all_nclstr)
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_nmaxima)
+         m=m+1
+         if(bigcal_itrack_best.gt.0) then
+            ibest = bigcal_itrack_best
+         else 
+            ibest = 1
+         endif
+         b_ntuple_contents(m) = float(bigcal_all_clstr_ncell(ibest))
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_all_clstr_ncellx(ibest))
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_all_clstr_ncelly(ibest))
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_all_clstr_ncell8(ibest))
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_all_clstr_ncell64(ibest))
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_all_clstr_iycell(ibest,1))
+         m=m+1
+         b_ntuple_contents(m) = float(bigcal_all_clstr_ixcell(ibest,1))
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_xcell(ibest,1)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_ycell(ibest,1)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_xmom(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_ymom(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_x(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_y(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_atot(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_etot(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_t8cut(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_t8rms(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_t64cut(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_all_clstr_t64rms(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_track_thetarad(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_track_phirad(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_track_energy(ibest)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_track_coin_time(ibest) - 
+     $        (bigcal_end_time - bigcal_window_center)
+         m=m+1
+         b_ntuple_contents(m) = bigcal_track_tof_cor(ibest)
+         m=m+1
+         b_ntuple_contents(m) = float(hsnum_fptrack)
+         m=m+1
+         if(bigcal_itrack_best.gt.0) then
+
+            b_ntuple_contents(m) = bigcal_all_clstr_chi2(ibest)
+            m=m+1
+            b_ntuple_contents(m) = bigcal_all_clstr_chi2contr(ibest,4)
+            m=m+1
+            b_ntuple_contents(m) = bigcal_all_clstr_chi2contr(ibest,5)
+            m=m+1
+            b_ntuple_contents(m) = bigcal_all_clstr_chi2contr(ibest,2)
+            m=m+1
+            b_ntuple_contents(m) = bigcal_all_clstr_chi2contr(ibest,3)
+            m=m+1
+            b_ntuple_contents(m) = bigcal_all_clstr_chi2contr(ibest,1)
+            m=m+1
+            b_ntuple_contents(m) = bigcal_all_clstr_chi2contr(ibest,6)
+            m=m+1
+            b_ntuple_contents(m) = gep_E_electron
+            m=m+1
+            b_ntuple_contents(m) = gep_etheta_expect_h
+            m=m+1
+            b_ntuple_contents(m) = gep_ephi_expect_h - PI/2.
+            m=m+1
+            b_ntuple_contents(m) = gep_bx_expect_h
+            m=m+1
+            b_ntuple_contents(m) = gep_by_expect_h
+            m=m+1
+            b_ntuple_contents(m) = gep_ctime_hms
+            m=m+1
+            b_ntuple_contents(m) = (gep_p_proton - gep_pel_htheta) / hpcentral
+            m=m+1
+            b_ntuple_contents(m) = (gep_p_proton - gep_pel_btheta) / hpcentral
+            m=m+1
+            b_ntuple_contents(m) = gbeam_x
+            m=m+1
+            b_ntuple_contents(m) = gbeam_y
+            m=m+1
+            b_ntuple_contents(m) = hszbeam
+            m=m+1
+            b_ntuple_contents(m) = hsxp_tar
+            m=m+1 
+            b_ntuple_contents(m) = hsyp_tar
+         else
+            b_ntuple_contents(m) = -1.
+            m=m+1
+            b_ntuple_contents(m) = -1.
+            m=m+1
+            b_ntuple_contents(m) = -1.
+            m=m+1
+            b_ntuple_contents(m) = -1.
+            m=m+1
+            b_ntuple_contents(m) = -1.
+            m=m+1
+            b_ntuple_contents(m) = -1.
+            m=m+1
+            b_ntuple_contents(m) = -1.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = gbeam_x
+            m=m+1
+            b_ntuple_contents(m) = gbeam_y
+            m=m+1
+            b_ntuple_contents(m) = 0.
+            m=m+1 
+            b_ntuple_contents(m) = -999.
+            m=m+1
+            b_ntuple_contents(m) = -999.
+         endif
       endif
       
-      if ( hflag) then
-      abort=.not.HEXIST(b_ntuple_ID)
+      
+       if ( hflag) then
+     abort=.not.HEXIST(b_ntuple_ID)
       if(abort) then
          call G_build_note(':Ntuple ID#$ does not exist',
      $        '$',b_ntuple_ID,' ',0.,' ',err)
          call G_add_path(here,err)
-      else 
-c         
+      else if(bigcal_ntuple_type.lt.3) then
+         
          call HFNT(b_ntuple_ID)
-c         
+      else if(bigcal_ntuple_type.eq.3) then
+         call HFN(b_ntuple_ID,b_ntuple_contents)
+         
       endif
       endif
 
