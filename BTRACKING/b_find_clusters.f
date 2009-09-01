@@ -16,12 +16,10 @@
       include 'bigcal_geometry.cmn'
 
       integer i
-      integer ihit,jhit,khit
-      integer irow,jrow,krow
-      integer icol,jcol,kcol
-      integer icell,jcell,kcell
-      integer i8,j8,k8
-      integer i64,j64,k64
+      integer ihit
+      integer irow
+      integer icol
+      integer icell,jcell
       integer ixmax,iymax,ihitmax,nmaximum
       integer ncluster,ncellclst,icellclst,nbadlist
       integer ixlo(0:2),ixhi(0:2),iylo,iyhi,lengthx,lengthy
@@ -43,8 +41,7 @@
       real copyreal
       integer copyint
       logical copybool
-c      real  big_en(32,56),big_x(32),big_y(56)
-c     in_cluster,iik,iij
+
       abort=.false.
       err=' '
 
@@ -52,42 +49,30 @@ c     Strategy: Find Maximum, then build cluster around it using "add_neighbors"
 
 c      nmaximum = 0
 c      ncluster = 0
-ccccccccccc
-c      do ihit=1,bigcal_all_ngood
-c         irow = bigcal_all_iygood(ihit)
-c         icol = bigcal_all_ixgood(ihit)
-c         ecell = bigcal_all_ecell(ihit)
-c         big_en(icol,irow) =  0
-c         big_x(icol)       =  0
-c         big_y(irow)       =  0
-c         if(irow.ne.0.and.icol.ne.0)then
-c            big_en(icol,irow) =  ecell
-c            big_x(icol)       =  bigcal_all_xgood(ihit)
-c            big_y(irow)       =  bigcal_all_ygood(ihit)
-c         endif
-c        if(ecell.gt.emax) then
-c            emax = ecell
-c            ixmax = icol
-c            iymax = irow
-c            ihitmax = ihit
-c         endif
-c      enddo
-c 199  CONTINUE
-c      
-c      i_ncell_x1 = abs(30*tan(atan(big_x(ixmax)/320.)+6.))/4.+1 
-c      i_ncell_x2 = abs(30*tan(atan(big_x(ixmax)/320.)-6.))/4.+1 
-c      i_ncell_y1 = abs(30*tan(atan(big_y(ixmax)/320.)+6.))/4.+1 
-c      i_ncell_y2 = abs(30*tan(atan(big_y(ixmax)/320.)-6.))/4.+1 
-c      in_cluster = 0
-c      do iik = ixmax-i_ncell_x2 , ixmax+i_ncell_x1
-c         do iij = iymax-i_ncell_y2, iymax+i_ncell_y1
-c            if(iik.lt.32.and.iij.lt.56.and.iik.gt.0.and.iij.gt.0)then
-c               if(big_en(iik,iij).gt.0)then
-c                  in_cluster = in_cluster+1
-c               endif
-c            endif
-c         enddo
-c      enddo
+
+c     initialize cluster trimming parameters if user hasn't defined something reasonable:
+
+      if(bigcal_clstr_nxmom_max.lt.1.or.bigcal_clstr_nxmom_max.gt.
+     $     max(bigcal_clstr_ncellx_max,7)) then
+         bigcal_clstr_nxmom_max = 2
+      endif
+      
+      if(bigcal_clstr_nymom_max.lt.1.or.bigcal_clstr_nymom_max.gt.
+     $     max(bigcal_clstr_ncelly_max,7)) then
+         bigcal_clstr_nymom_max = 2
+      endif
+
+      if(bigcal_clstr_nxecl_max.lt.bigcal_clstr_nxmom_max
+     $     .or.bigcal_clstr_nxecl_max.gt.max(bigcal_clstr_ncellx_max,7)) 
+     $     then
+         bigcal_clstr_nxecl_max = max(2,bigcal_clstr_nxmom_max)
+      endif
+      
+      if(bigcal_clstr_nyecl_max.lt.bigcal_clstr_nymom_max
+     $     .or.bigcal_clstr_nyecl_max.gt.max(bigcal_clstr_ncelly_max,7)) 
+     $     then
+         bigcal_clstr_nyecl_max = max(2,bigcal_clstr_nymom_max)
+      endif
 
  102  continue
       found_cluster = .false.
@@ -117,7 +102,7 @@ c     so regardless of the adc value, the "ecell" value should be zero!
          irow = bigcal_all_iygood(ihit)
          icol = bigcal_all_ixgood(ihit)
          ecell = bigcal_all_ecell(ihit)
-        if(ecell.gt.emax) then
+         if(ecell.gt.emax) then
             emax = ecell
             ixmax = icol
             iymax = irow
@@ -126,8 +111,8 @@ c     so regardless of the adc value, the "ecell" value should be zero!
       enddo
 
 c     check that max is at least one block away from the edge
-      if(ixmax.ge.2.and.iymax.ge.2.and.ixmax.le.31.and.iymax.le.55.and.
-     $     .not. (iymax.gt.32.and.ixmax.gt.29) ) then
+      if(ixmax.ge.1.and.iymax.ge.1.and.ixmax.le.32.and.iymax.le.56.and.
+     $     .not. (iymax.gt.32.and.ixmax.gt.30) ) then
 
          nmaximum = nmaximum + 1
          icellclst = icellclst + 1
@@ -141,6 +126,13 @@ c     initialize all "bad cluster" flags to false
          bigcal_above_max(nmaximum) = .false.
          bigcal_second_max(nmaximum) = .false.
      
+c     check for maximum at edge condition:
+         
+         if(iymax.eq.1.or.ixmax.eq.1.or.iymax.eq.56.or.(iymax.gt.32.and.
+     $        ixmax.eq.30).or.ixmax.eq.32) then
+            bigcal_edge_max(nmaximum) = .true.
+         endif
+
          cluster_temp_irow(icellclst) = iymax
          cluster_temp_icol(icellclst) = ixmax
          cluster_temp_xcell(icellclst) = bigcal_all_xgood(ihitmax)
@@ -271,8 +263,34 @@ c     cluster has section overlap. Also accumulate esum
                if(icol.lt.ixlo(2)) ixlo(2) = icol
             endif
 
-            esum = esum + cluster_temp_ecell(icell)
-            asum = asum + cluster_temp_acell(icell)
+c     intelligently calculate the cluster energy sum: 
+c     restrict how far away from the maximum we can be to include
+c     a block in the sum:
+            if(abs(irow-cluster_temp_irow(1)).le.bigcal_clstr_nyecl_max) 
+     $           then
+c     1. max in Prot and current block in RCS
+               if(cluster_temp_irow(1).le.32.and.irow.gt.32) then
+                  if(abs(icol-bigcal_ixclose_prot(cluster_temp_icol(1)))
+     $                 .le.bigcal_clstr_nxecl_max) then
+                     esum = esum + cluster_temp_ecell(icell)
+                     asum = asum + cluster_temp_acell(icell)
+                  endif
+c     2. max in RCS and current block in Prot
+               else if(cluster_temp_irow(1).gt.32.and.irow.le.32) then
+                  if(abs(icol-bigcal_ixclose_rcs(cluster_temp_icol(1)))
+     $                 .le.bigcal_clstr_nxecl_max) then
+                     esum = esum + cluster_temp_ecell(icell)
+                     asum = asum + cluster_temp_acell(icell)
+                  endif
+c     3. both blocks in same section
+               else
+                  if(abs(icol-cluster_temp_icol(1)).le.bigcal_clstr_nxecl_max)
+     $                 then
+                     esum = esum + cluster_temp_ecell(icell)
+                     asum = asum + cluster_temp_acell(icell)
+                  endif
+               endif
+            endif
          enddo
 
          if(nbadlist.gt.0) then
@@ -310,10 +328,8 @@ c$$$         write(*,253) 'length x = ',lengthx
 
          if(bigcal_too_long_x(nmaximum).or.bigcal_too_long_y(nmaximum))
      $        then
-            goto 104
+c            goto 104
          endif
-c$$$         write(*,254) 'esum = ',esum
- 254     format(A7,F8.5)
          if(esum.lt.b_cluster_cut) then
             bigcal_below_cut(nmaximum) = .true.
             goto 104
@@ -333,7 +349,7 @@ c$$$         write(*,254) 'esum = ',esum
             if(cluster_temp_ecell(2)/cluster_temp_ecell(1).gt.b_min_2max(1).and.
      $           cluster_temp_ecell(2).gt.b_min_2max(2)) then
                bigcal_second_max(nmaximum) = .true.
-               goto 104
+c               goto 104
             endif
          else if(ncellclst.gt.1) then
             if(cluster_temp_irow(1).eq.32.and.iy2max.eq.33) then
@@ -350,7 +366,7 @@ c$$$         write(*,254) 'esum = ',esum
                if(cluster_temp_ecell(2)/cluster_temp_ecell(1).gt.b_min_2max(1).and.
      $              cluster_temp_ecell(2).gt.b_min_2max(2)) then
                   bigcal_second_max(nmaximum) = .true.
-                  goto 104
+c                  goto 104
                endif
             endif
          endif
@@ -364,6 +380,8 @@ c     ONLY A SMALL CHANCE OF FINDING A MAXIMUM NEXT TO IT, DEPENDING ON B_MIN_EM
          
  106     found_cluster = .true.
          ncluster = ncluster + 1
+
+         bigcal_clstr_keep(ncluster) = .true.
 
          bigcal_all_clstr_ncell(ncluster) = ncellclst
          bigcal_all_clstr_ncellx(ncluster) = lengthx
@@ -407,9 +425,38 @@ c     ONLY A SMALL CHANCE OF FINDING A MAXIMUM NEXT TO IT, DEPENDING ON B_MIN_EM
             ecell = cluster_temp_ecell(icell)
 c            acell = cluster_temp_acell(icell)
 
-            xmom_clst = xmom_clst + ecell*(xcell-xcenter)/esum
-            ymom_clst = ymom_clst + ecell*(ycell-ycenter)/esum
-           
+c     intelligent cluster moment calculation: restrict how far away from the maximum
+c     we allow blocks to be in order to include them in the calculation
+c     i.e., "trim" the clusters down to size
+
+            if(abs(cluster_temp_irow(icell)-cluster_temp_irow(1)).le.
+     $           bigcal_clstr_nymom_max) then
+
+               if(cluster_temp_irow(1).le.32.and.cluster_temp_irow(icell)
+     $              .gt.32) then
+                  if(abs(cluster_temp_icol(icell)-
+     $                 bigcal_ixclose_prot(cluster_temp_icol(1))).le.
+     $                 bigcal_clstr_nxmom_max) then
+                     xmom_clst = xmom_clst + ecell*(xcell-xcenter)/esum
+                     ymom_clst = ymom_clst + ecell*(ycell-ycenter)/esum
+                  endif
+               else if(cluster_temp_irow(1).gt.32.and.cluster_temp_irow(icell)
+     $                 .le.32) then
+                  if(abs(cluster_temp_icol(icell)-
+     $                 bigcal_ixclose_rcs(cluster_temp_icol(1))).le.
+     $                 bigcal_clstr_nxmom_max) then
+                     xmom_clst = xmom_clst + ecell*(xcell-xcenter)/esum
+                     ymom_clst = ymom_clst + ecell*(ycell-ycenter)/esum
+                  endif
+               else 
+                  if(abs(cluster_temp_icol(icell)-cluster_temp_icol(1)).le.
+     $                 bigcal_clstr_nxmom_max) then
+                     xmom_clst = xmom_clst + ecell*(xcell-xcenter)/esum
+                     ymom_clst = ymom_clst + ecell*(ycell-ycenter)/esum
+                  endif
+               endif
+            endif
+
             do ihit=1,bigcal_all_ngood
                if(bigcal_all_iygood(ihit).eq.cluster_temp_irow(icell)
      $              .and.bigcal_all_ixgood(ihit).eq.cluster_temp_icol(icell)) 
@@ -450,34 +497,34 @@ c$$$         endif
             endif
          endif
 
-      else 
-         if(ixmax.eq.1.or.iymax.eq.1.or.iymax.eq.56.or.ixmax.eq.32.or.
-     $        (iymax.gt.32.and.ixmax.eq.30)) then
-            nmaximum = nmaximum + 1
-            bigcal_edge_max(nmaximum) = .true.
-            bigcal_not_enough(nmaximum) = .false.
-            bigcal_too_long_x(nmaximum) = .false.
-            bigcal_too_long_y(nmaximum) = .false.
-            bigcal_below_cut(nmaximum) = .false.
-            bigcal_above_max(nmaximum) = .false.
-            bigcal_second_max(nmaximum) = .false.
-
-c     zero ecell and adc good for hit array, but leave detector array untouched
-
-            bigcal_all_ecell(ihitmax) = 0.
-            bigcal_all_adc_good(ihitmax) = 0.
-
-            goto 102
-
-         endif
+c$$$      else 
+c$$$         if(ixmax.eq.1.or.iymax.eq.1.or.iymax.eq.56.or.ixmax.eq.32.or.
+c$$$     $        (iymax.gt.32.and.ixmax.eq.30)) then
+c$$$            nmaximum = nmaximum + 1
+c$$$            bigcal_edge_max(nmaximum) = .true.
+c$$$            bigcal_not_enough(nmaximum) = .false.
+c$$$            bigcal_too_long_x(nmaximum) = .false.
+c$$$            bigcal_too_long_y(nmaximum) = .false.
+c$$$            bigcal_below_cut(nmaximum) = .false.
+c$$$            bigcal_above_max(nmaximum) = .false.
+c$$$            bigcal_second_max(nmaximum) = .false.
+c$$$
+c$$$c     zero ecell and adc good for hit array, but leave detector array untouched
+c$$$
+c$$$            bigcal_all_ecell(ihitmax) = 0.
+c$$$            bigcal_all_adc_good(ihitmax) = 0.
+c$$$
+c$$$            goto 102
+c$$$
+c$$$         endif
       endif
       
  104  continue
 
       if(found_cluster.and.ncluster.lt.bigcal_all_nclstr_max) goto 102
-
+      
       bigcal_all_nclstr = ncluster
       bigcal_nmaxima = nmaximum
-
+      
       return
       end
