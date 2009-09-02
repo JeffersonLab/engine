@@ -26,14 +26,32 @@
       include 'hms_calorimeter.cmn'
       include 'gen_detectorids.par'
       include 'gen_scalers.cmn'
+      include 'gen_run_info.cmn'
       logical HEXIST ! CERNLIB function
       integer t_sane,l_sane,cer_sane
       integer icycle,inum,ihit
       real*8 Eb,theta_big, phi_big!,ccx,ccy,ccz
       real P_el(4),p_e,WW2
       common/FAKEBIG/Eb,theta_big, phi_big
+      real*8 tcharge_old 
+      real*8 charge2s_old  
+      real*8 polarea_old ,polarization_old
+      integer*4 hel_p_scaler_old 
+      integer*4 hel_n_scaler_old 
+      integer*4 hel_p_trig_old 
+      integer*4 hel_n_trig_old 
+      real*8 dtime_p_old ,dtime_n_old 
+      real*4 half_plate_old 
+      common/SANEEV_old /
+     $     tcharge_old ,
+     $     charge2s_old ,
+     $     polarea_old ,polarization_old,
+     $ 	   hel_p_scaler_old ,
+     $	    hel_n_scaler_old ,
+     $	    hel_p_trig_old ,
+     $	    hel_n_trig_old ,
+     $	    dtime_p_old ,dtime_n_old,half_plate_old 
 
-c      logical middlebest
 
       real Mp
       parameter(Mp=.938272)
@@ -41,7 +59,9 @@ c      logical middlebest
 
       err=' '
       ABORT=.false.
-
+c      write(*,*)'Starting sane'
+c     INQUIRE(FILE="input.txt",EXIST=file_exist)
+c     write(*,*)file_exist
       if(sane_ntuple_max_segmentevents.gt.0) then
          if(sane_ntuple_segmentevents.gt.sane_ntuple_max_segmentevents) then
             call sane_ntup_change(ABORT,err)
@@ -52,26 +72,91 @@ c      logical middlebest
       endif
 
       if(.not.sane_ntuple_exists) return
-
-      if(gbcm1_charge.ne.tcharge)then
+      if(.not.charge_data_open.and.charge_ch)then
          charge2s = gbcm1_charge-tcharge
          tcharge = gbcm1_charge
-c         write(*,*)charge2s,tcharge,gbcm1_charge
-      endif
-      if(gscaler_change(538).ne.hel_p_scaler)then
+c         write(*,*)'MMM'
+c      endif
+c      if(.not.charge_data_open.and.gscaler_change(538).ne.hel_p_scaler)then
         hel_p_scaler= gscaler_change(538)
         hel_p_trig= g_hel_pos
-        dtime_p = gscaler_change(538)/float(g_hel_pos)
+        dtime_p =1.
+        if(abs(g_hel_pos).gt.0)then
+           dtime_p = gscaler_change(538)/float(g_hel_pos)
+        endif
+        call NANcheckF(dtime_p,0)
         g_hel_pos =0
-c        write(*,*)'POS',hel_p_scaler,hel_p_trig,dtime_p
-      endif
-      if(gscaler_change(546).ne.hel_n_scaler)then
+c        write(*,*)'MMM P'
+c      endif
+c      if(.not.charge_data_open.and.gscaler_change(546).ne.hel_n_scaler)then
         hel_n_scaler= gscaler_change(546)
         hel_n_trig= g_hel_neg
-        dtime_n = gscaler_change(546)/float(g_hel_neg)
+        dtime_n=1
+        if(abs(g_hel_neg).gt.0.0)then
+           dtime_n = gscaler_change(546)/float(g_hel_neg)
+        endif
+        call NANcheckF(dtime_n,0)
         g_hel_neg =0
-c        write(*,*)'NEG',hel_n_scaler,hel_n_trig,dtime_n
+c        write(*,*)'MMM N'
       endif
+      if(polarization_data_open)then
+         polarea = polarea_old
+         polarization =polarization_old
+      endif
+      if(charge_data_open)then
+         charge2s = charge2s_old 
+         tcharge = tcharge_old
+         hel_p_scaler = hel_p_scaler_old
+         hel_p_trig = hel_p_trig_old
+         dtime_p = dtime_p 
+         hel_n_scaler = hel_n_scaler_old
+         hel_n_trig = hel_n_trig_old
+         dtime_n = dtime_n_old
+         half_plate = half_plate_old 
+c         if(abs(gbcm1_charge-tcharge).lt.0.001)charge_ch = .TRUE.
+      endif
+      if(polarization_data_open.and.gen_event_ID_number.eq.pol_id_change)then
+         read(polarization_data_unit,*,end=19)pol_id_change,polarea_old,polarization_old,half_plate_old 
+c          write(*,*)'HELP ',polarea_old 
+         polarea = polarea_old
+         polarization=polarization_old
+         polarization_ch = .FALSE.
+      else if(.not.polarization_data_open.and.polarization_ch)then
+          write(polarization_data_unit,*)gen_event_ID_number,polarea ,polarization ,half_plate
+          polarization_ch = .FALSE.
+      endif
+
+      if(charge_data_open.and.gen_event_ID_number.eq.charge_id_change)then
+c         write(*,*)'HELP charge Had',tcharge,gbcm1_charge
+         read(charge_data_unit,*,end=18)charge_id_change,charge2s_old,tcharge_old,hel_p_scaler_old,
+     ,        hel_p_trig_old,dtime_p_old,
+     ,        hel_n_scaler_old,hel_n_trig_old,dtime_n_old
+c         write(*,*)'HELP charge NOW',tcharge_old,gbcm1_charge
+         charge2s = charge2s_old 
+         tcharge = tcharge_old
+         hel_p_scaler = hel_p_scaler_old
+         hel_p_trig = hel_p_trig_old
+         dtime_p = dtime_p_old 
+         hel_n_scaler = hel_n_scaler_old
+         hel_n_trig = hel_n_trig_old
+         dtime_n = dtime_n_old
+         half_plate =half_plate_old 
+         charge_ch = .FALSE.
+         
+c        write(*,*)gbcm1_charge,tcharge
+      else if(.not.charge_data_open.and.charge_ch)then
+         write(charge_data_unit,*)gen_event_ID_number,charge2s,tcharge,hel_p_scaler,
+     ,        hel_p_trig,dtime_p,hel_n_scaler,hel_n_trig,dtime_n
+         charge_ch = .FALSE.
+      endif
+c      write(*,*)'HALF PLATE ',half_plate
+      
+c      if(charge_ch)then
+c         write(*,*)polarea,charge2s,tcharge,hel_n_trig,hel_p_trig,hel_p_scaler
+c      endif
+c      if(polarization_ch)then
+c         write(*,*)polarea,charge2s,tcharge,hel_n_trig,hel_p_trig,hel_p_scaler
+c      endif
 c      write(*,*)gbcm1_charge
       T_trgHMS     = gmisc_dec_data(11,1)
       call NANcheckF(T_trgHMS,3)
@@ -122,6 +207,7 @@ c                  call HFILL(10126, float(luc_row(luc_hit)), float(ladc_neg(luc
 
          endif
       enddo
+c      write(*,*)'LUC sane done'
 c      do i=1,LUCITE_SANE_RAW_TOT_HITS2
 c         if(LUCITE_SANE_RAW_TDC_POS(i).gt.0)then
 c                  luc_hit            =  luc_hit+1
@@ -187,6 +273,7 @@ c            endif
 c
        
 c
+c      write(*,*)'Cer sane done'
 
       x1t_hit         =  0
       if(x1t_hit.gt.300) go to 10
@@ -237,6 +324,7 @@ c               write(*,*)'Tracker TDC', y1t_hit,TRACKER_SANE_RAW_TDC_Y(i)
          endif
  20      CONTINUE
       enddo
+c      write(*,*)'TRACK sane done'
 c          do inum=1,nclust
 c         enddo
              hms_p = 0
@@ -329,9 +417,18 @@ c         endif
       call NANcheckF(rast_y,3)
       i_helicity   = gbeam_helicity
       call NANcheck(i_helicity,3)
-      slow_rast_x  = gsrx_calib
-      call NANcheckF(gsrx_raw_adc,3)
-      slow_rast_y  = gsry_calib
+c      if(sane_ntuple_type.eq.1)then
+         slow_rast_x  = gsrx_calib
+         call NANcheckF(gsrx_raw_adc,3)
+         slow_rast_y  = gsry_calib
+         call NANcheckF(gsry_raw_adc,3)
+c      else 
+c         slow_rast_x  = gsrx_raw_adc
+c         call NANcheckF(gsrx_raw_adc,3)
+c         slow_rast_y  = gsry_raw_adc
+c         call NANcheckF(gsry_raw_adc,3)
+            
+c      endif
       call HFILL(10215,gsry_raw_adc,gsrx_raw_adc, 1.)
 
       call HFILL(10216,gsrx_calib,gsry_calib, 1.)
@@ -347,33 +444,25 @@ c         endif
       sem_y        = ntbpmy/10.
       call NANcheckF(sem_y,3)
       call HFILL(10214,sem_x,sem_y, 1.)
-c      write(*,*)'2 ',sem_x,sem_y
+      
+      n_clust = nclust
+      do i =1,  n_clust
 
-       do i =1,  nclust
-c         write(*,*)eclust(i)
-c         if(HSNUM_FPTRACK.gt.0)then
-
-          n_clust = nclust
-          call Bigcal_Betta(i)
           call icer(i)
+          call Bigcal_Betta(i)
           call tracker(i)
           call TrackerCoordnate(i)
           call GeometryMatch(i)
           call Lucite(i)
-c            if(abs(X_HMS-Xclust(i)-Bigcal_SHIFT(1)).lt.10.and.
-c     ,           abs(Y_HMS-Yclust(i)-Bigcal_SHIFT(2)).lt.10)then
-c                  WRITE(*,*)'call 2',NCLUST
-c               call Bigcal_Betta(i)
-c            endif
-c         endif
          do j=1, ncellclust(i)
             call HFILL(10200,float(ixcell(j,i)),float(iycell(j,i)), 1.)
          enddo
-         if(sane_ntuple_type.eq.1)then
-            n_clust = nclust
+c         if(sane_ntuple_type.eq.1)then
+c            n_clust = nclust
 c            call Lucite(i)
-         endif
+c         endif
       enddo
+c      write(*,*)'Sane is Done'
       abort=.not.HEXIST(sane_ntuple_ID)
       if(abort) then
          call G_build_note(':Ntuple ID#$ does not exist',
@@ -385,7 +474,12 @@ c            call Lucite(i)
          
       endif
  10   CONTINUE
+  
       return 
+  18   write(*,*)'HELP charge error',charge2s,gbcm1_charge
+       return
+ 19    write(*,*)'HELP Polarization error'
+       return
       end
 
       SUBROUTINE CORRECT_RAW_TIME_SANE(RAW_TDC,CORRECTED_TDC)
