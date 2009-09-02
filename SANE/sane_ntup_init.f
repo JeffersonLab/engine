@@ -16,12 +16,31 @@
       logical ABORT
       character*(*) err
 
-      character*80 file
+      character*80 file,file_pol,file_charge
       character*80 name
       character*1000 pat,msg
-      integer ilo,fn_len,m,i,j,k
+      integer ilo,fn_len,m,i,j,k,unit
       character*1 ifile
       character*1 iifile
+      real*8 tcharge_old 
+      real*8 charge2s_old  
+      real*8 polarea_old, polarization_old
+      integer*4 hel_p_scaler_old 
+      integer*4 hel_n_scaler_old 
+      integer*4 hel_p_trig_old 
+      integer*4 hel_n_trig_old 
+      real*8 dtime_p_old ,dtime_n_old
+      real*4 half_plate_old 
+
+      common/SANEEV_old /
+     $     tcharge_old ,
+     $     charge2s_old ,
+     $     polarea_old ,polarization_old,
+     $ 	   hel_p_scaler_old ,
+     $	    hel_n_scaler_old ,
+     $	    hel_p_trig_old ,
+     $	    hel_n_trig_old ,
+     $	    dtime_p_old ,dtime_n_old, half_plate_old 
       err=' '
       abort=.false.
 
@@ -35,6 +54,45 @@ c      write(*,*)'SANE',sane_ntuple_file,sane_ntuple_exists,sane_ntuple_id
             return
          endif
       endif
+      if(polarization_data_table.eq.' ')then
+         polarization_data_table = "poltemp.dat"
+      else
+         file_pol=polarization_data_table 
+         call g_sub_run_number(file_pol,gen_run_number)
+         unit=22
+         if(polarization_data_unit.gt.0)unit = polarization_data_unit
+         polarization_data_unit = unit
+         INQUIRE(FILE= file_pol, EXIST=polarization_data_open)
+         if(polarization_data_open)then
+         OPEN(unit=unit,file=file_pol)
+            read(polarization_data_unit,*)pol_id_change,polarea_old,polarization_old, half_plate_old 
+c          write(*,*)'HELP 11',polarea_old  
+         endif
+
+      endif
+
+      if(charge_data_table.eq.' ')then
+         charge_data_table = "chargetemp.dat"
+      else
+         file_charge=charge_data_table 
+         call g_sub_run_number(file_charge,gen_run_number)
+         unit=23
+         if(charge_data_unit.gt.0)unit = charge_data_unit
+         charge_data_unit = unit
+         INQUIRE(FILE= file_charge, EXIST=charge_data_open)
+         if(charge_data_open)then
+         OPEN(unit=unit,file=file_charge)
+            read(charge_data_unit,*)
+            read(charge_data_unit,*)charge_id_change,charge2s_old,tcharge_old,hel_p_scaler_old,
+     ,        hel_p_trig_old,dtime_p_old,hel_n_scaler_old,hel_n_trig_old,dtime_n_old
+         endif
+
+      endif
+
+
+c       if(charge_data_table.eq.' ')
+c     ,     polarization_data_table = 'poltemp.dat'
+
 
       call no_nulls(sane_ntuple_file) ! replace null characters with blanks
 
