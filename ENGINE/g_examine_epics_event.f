@@ -1,7 +1,7 @@
       subroutine g_examine_epics_event
 * $Log$
-* Revision 1.5.20.1.2.2  2009/04/06 23:00:09  cdaq
-* fix problem with polarea
+* Revision 1.5.20.1.2.3  2009/09/02 13:38:35  jones
+* add readout of halfwave plate status
 *
 * Revision 1.5.20.1.2.1  2009/03/31 19:33:00  cdaq
 * *** empty log message ***
@@ -41,8 +41,7 @@
       integer numevent
       logical dump_event
       integer*4 jishft
-      character*20 junk
-
+      integer HALFWAVE
       include 'gen_craw.cmn'
       include 'gen_run_info.cmn'
       include 'gen_filenames.cmn'
@@ -81,19 +80,30 @@ cccc      write (6,*) 'epics,evlen',evlen,numevent,craw(3)
       evlen=g_important_length(buffer(1:4*(craw(3)-1)))
       i = 1
 cccc      write (6,*) 'epics,evlen',evlen,numevent,craw(3)
+c      polarea=-1000.
+      polarization_ch = .FALSE.
       do while (i.le.evlen)
         j = find_char (buffer, i, 10)   ! 10 = NewLine character
         if (i.eq.j) goto 20
         if(i.lt.j-1 .and. dump_event) write(G_LUN_EPICS_OUTPUT,'(4x,a)') buffer(i:j-1)
         if (i+11.le.j-1) then   !text line.
+c     ********** read out the BPMs (POS values first...) **********
            if (buffer(i:i+11).eq.'hcptNMR_Area') then
-              read(buffer(i+13:j-1),*) junk
-              polarea = -200.
-c    find_char(junk, 1, 43) returns the position of '+' symbol in the EPICs line
-c   if it finds the '+'symbol then find_char = g_important_length
-c   if it does not find the '+'symbol then find_char = 22 which is "junk" length + 2
-              if (find_char(junk, 1, 43) .ne. g_important_length(junk)) read(buffer(i+13:j-1),*) polarea
-           ENDIF
+              read(buffer(i+13:j-1),*,err=20) polarea
+c              write(*,*)"HERE IS POLARIZATION",polarea
+              polarization_ch = .TRUE.
+           ENDIF             !    hcptNMR_Area   
+           if (buffer(i:i+15).eq.'hcptPolarization')then
+              read(buffer(i+16:j-1),*,err=20)polarization
+              
+           endif
+           if (buffer(i:i+14).eq.'IGL1I00DI24_24M') then
+              read(buffer(i+16:j-1),*,err=20)HALFWAVE
+c     write(*,*)'WAVE PLATE ',HALFWAVE
+              half_plate=0.
+              if(HALFWAVE.eq.0)half_plate=-1.
+              if(HALFWAVE.eq.1)half_plate=1.
+           endif
         ENDIF
  20     i = j + 1
       enddo
