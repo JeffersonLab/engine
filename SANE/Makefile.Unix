@@ -9,7 +9,7 @@ osources = sane_analyze_pedestal.f  sane_ntup_close.f    sane_ntup_register.f \
            sane_keep_results.f      sane_ntup_open.f     sane_reset_event.f \
 	   sane_decode.f            sane_ntup_register.f sane_dump_ntup_var.f \
 	   sane_ntup_change.f       sane_physics.f       sane_trgtrack.f \
-	   sane_geometry_suplement.f
+	   sane_geometry_suplement.f sane_close_scalers.f
 	
 makeregstuff = r_sane_data_structures.f r_sane_filenames.f r_sane_ntuple.f 
                
