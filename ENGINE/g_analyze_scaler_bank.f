@@ -1,6 +1,9 @@
       subroutine g_analyze_scaler_bank(event,roc,ABORT,err)
 *     
 *     $Log$
+*     Revision 1.4.14.2.2.1  2009/09/02 13:34:35  jones
+*     add variable charge_ch
+*
 *     Revision 1.4.14.2  2007/11/09 17:17:09  cdaq
 *      added ability to read roc21 scalers
 *
@@ -46,6 +49,7 @@
       INCLUDE 'gen_scalers.cmn'
       INCLUDE 'gen_run_info.cmn'
       INCLUDE 'gen_filenames.cmn'
+      INCLUDE 'sane_ntuple.cmn'
 *     
       integer ind
       integer*4 cratenum        ! 1=hms,2=sos
@@ -252,7 +256,10 @@ c
      &        /delta_time) - gunser_offset)
 
 
+          charge_ch=.FALSE.
          if (delta_time.gt.0.0001) then
+          charge_ch=.TRUE.
+
             gbcm1_charge = gbcm1_charge + ave_current_bcm(1)*delta_time
             gbcm2_charge = gbcm2_charge + ave_current_bcm(2)*delta_time
             gbcm3_charge = gbcm3_charge + ave_current_bcm(3)*delta_time

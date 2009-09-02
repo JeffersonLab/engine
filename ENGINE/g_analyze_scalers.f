@@ -1,6 +1,9 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
 * $Log$
+* Revision 1.15.20.1.2.1  2009/09/02 13:36:59  jones
+* add variable charge_ch
+*
 * Revision 1.15.20.1  2007/09/10 20:33:37  pcarter
 * Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *
@@ -71,6 +74,7 @@ c
       INCLUDE 'gen_scalers.cmn'
       INCLUDE 'gen_run_info.cmn'
       INCLUDE 'gen_filenames.cmn'
+      INCLUDE 'sane_ntuple.cmn'
 *
       integer ind
       integer*4 cratenum                ! 1=hms,2=sos
@@ -223,8 +227,9 @@ c
 *          ave_current_bcm2 = gbcm2_gain*((gscaler_change(gbcm2_index)
 *     &         /delta_time) - gbcm2_offset)
 *        endif
-
+          charge_ch=.FALSE.
         if (delta_time.gt.0.0001) then
+           charge_ch = .TRUE.
           gbcm1_charge = gbcm1_charge + ave_current_bcm1*delta_time
           gbcm2_charge = gbcm2_charge + ave_current_bcm2*delta_time
           gbcm3_charge = gbcm3_charge + ave_current_bcm3*delta_time
