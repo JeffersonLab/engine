@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.21.2.11  2009/09/02 13:30:57  jones
+* eliminate definition of variables that are not used
+*
 * Revision 1.42.8.21.2.10  2009/05/04 20:54:24  jones
 * Modified so that syncfilter will work
 *
@@ -325,10 +328,10 @@ c
       integer*4 evclose
       character*132 file
       character*20 groupname
-      character*132 system_string
+c      character*132 system_string
 
       real*4 ebeam,phms,thms,psos,tsos,ntarg
-      real*4 calangledeg,rcal,ycal
+c      real*4 calangledeg,rcal,ycal
       real*4 instrate,avrate
 
       integer start_time,lasttime
@@ -339,7 +342,7 @@ c
 c
       integer*4 skipped_events_scal,tindex
       real*8 delta_time
-      real*8 omega
+c      real*8 omega
 *
 *
 *--------------------------------------------------------
@@ -756,7 +759,6 @@ c     !!!!!!!!!!!!!!!!!!!!!!!!!!!END BIGCAL MONTE CARLO EVENT REPLAY!!!!!!!!!!!!
         elseif(err.NE.' ') then
           mss= err
         endif
-
         If(.NOT.problems) Then
           call G_get_next_event(ABORT,err) !get and store 1 event
           problems= problems .OR. ABORT
@@ -780,7 +782,6 @@ c     !!!!!!!!!!!!!!!!!!!!!!!!!!!END BIGCAL MONTE CARLO EVENT REPLAY!!!!!!!!!!!!
      >       grun .le. 72583) then
            if (gen_event_type .eq. 1) gen_event_type = 6
           endif
-           !write(*,*) 'gen_event_type = ',gen_event_type
 
 c           write(*,*) 'gen_event_type=',gen_event_type
 c           write(*,*) 'gepid_gep_ev_type=',gepid_gep_evtype
@@ -911,7 +912,9 @@ c
                   goto 868
                endif
 c
+
                 call g_examine_physics_event(CRAW,ABORT,err)
+
                 problems = problems .or.ABORT
 
                 if(mss.NE.' ' .and. err.NE.' ') then
@@ -932,9 +935,8 @@ c
 c                       write(*,*) 'calling g_reconstruction, gen_event_type=',
 c     $                      gen_event_type
 
-                       
+
                        call G_reconstruction(CRAW,ABORT,err) !COMMONs
-                                !write(*,*) 'g_reconstruction finished successfully, no segfault'
                        physics_events = physics_events + 1
                        if (gen_event_type .le. gen_max_trigger_types) then
                           analyzed_events(gen_event_type)=analyzed_events(gen_event_type)+1
