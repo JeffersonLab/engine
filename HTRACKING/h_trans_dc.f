@@ -13,6 +13,9 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log$
+* Revision 1.15.26.2  2009/09/02 13:40:39  jones
+* eliminate commented emacs definitions
+*
 * Revision 1.15.26.1  2009/05/18 14:08:00  jones
 * 1) add code to remove all DC hits for one plane if that plane
 *    has more than h_max_hits_per_plane..
@@ -346,9 +349,3 @@ c 6 is optimum value
 *     
       RETURN
       END
-*********
-*     Local Variables:
-*     mode: fortran
-*     fortran-if-indent: 2
-*     fortran-do-indent: 2
-*     End:
