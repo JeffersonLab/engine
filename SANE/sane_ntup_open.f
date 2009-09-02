@@ -86,6 +86,11 @@ c      call HLIMIT(NWPAWC)
 
       call hbset('BSIZE',8176,status)
       call HBNT(id,title,' ')
+      call HBNAME(id,'SANEEV',tcharge,'tcharge:R*8,charge2s:R*8,'//
+     $     'polarea:R*8,polarization:R*8,'//
+     $     'hel_p_scaler:I*4, hel_n_scaler:I*4,'//
+     $     'hel_p_trig:I*4, hel_n_trig:I*4,'//
+     $     'dtime_p:R*8,dtime_n:R*8,half_plate:R*4')
       
       if(sane_ntuple_type.eq.2) then ! col-wise ntuple for cluster analysis
                                 ! for calibration purposses
@@ -94,10 +99,6 @@ c
 c     
 c     
          
-         call HBNAME(id,'SANEEV',tcharge,'tcharge:R*8,charge2s:R*8,'//
-     $        'polarea:R*8,hel_p_scaler:I*4, hel_n_scaler:I*4,'//
-     $	    'hel_p_trig:I*4, hel_n_trig:I*4,'//
-     $	    'dtime_p:R*8,dtime_n:R*8')
          call HBNAME(id,'bevinfo',bgid,'bgid:I*4,bgtype:I*4,'//
      $        'btrigtype:I*4')
          call HBNAME(id,'bhits',ngooda,'ngooda:I*4,ngoodt:I*4,'//
@@ -205,6 +206,7 @@ c     ! For physics analysis  added on Jul 3 2008
          call HBOOK2(10106,'TRACK X1 vs BIG',128,-22., 22., 128,   -22., 22.,0.)
          call HBOOK2(10107,'TRACK Y1 vs BIG',128,-22., 22., 128,   -22., 22.,0.)
          call HBOOK2(10108,'TRACK Y2 vs BIG',128,-22., 22., 128,   -22., 22.,0.)
+         call HBOOK2(10109,'TRACK Y2 vs BIG',128,1., 129., 128,   -22., 22.,0.)
 
 
          call HBOOK2(10111,'CER TDC',8, 1.,  9., 200,    -4000, 500., 0.)
@@ -218,25 +220,29 @@ c     ! For physics analysis  added on Jul 3 2008
          call HBOOK2(10122,'LUC TDCNEG',28,1., 29., 200, -3500., 0., 0.)
          call HBOOK2(10125,'LUC ADCPOS',28,1., 29., 200,    0.1, 4000., 0.)
          call HBOOK2(10126,'LUC ADCNEG',28,1., 29., 200,    0.1, 4000., 0.)
+         call HBOOK2(10131,'LUC TDCPOS cut',28,1., 29., 1500, -2250., -850., 0.)
+         call HBOOK2(10132,'LUC TDCNEG cut',28,1., 29., 1500, -2250., -850., 0.)
+         call HBOOK2(10135,'LUC ADCPOS cut',28,1., 29., 200,    0.1, 4000., 0.)
+         call HBOOK2(10136,'LUC ADCNEG cut',28,1., 29., 200,    0.1, 4000., 0.)
          if(sane_ntuple_type.eq.1) then 
             do ii=1,28
 c     call HBPROF(10150+ii,'LUC_X vs BIG_X',100,-60., 60., 100,  -60., 60., 0.)
                call HBPROF(10150+ii,'LUC_X vs BIG_X',100,-65., 65., -60,  60., 'S')
-               call HBOOK2(20150+ii,'LUC_X vs BIG_X',100,-60., 160, 80., -60,  160., 0.)
+               call HBOOK2(20150+ii,'LUC_X vs BIG_X',100,-100., 300, 80., -60,  100., 0.)
+               call HBOOK2(20250+ii,'Big_Y vs BIG_X',100,-100., 100, 120., -120,  120., 0.)
             enddo
             call HBOOK2(10128,'LUC_Y vs BIG_Y',120,-120., 120., 120,  -120., 120., 0.)
 
-            call HBOOK2(10220,'LUC_Y vs BIG_Y', 60,  -120., 120., 45,-30., 30., 0.)
-            call HBOOK2(10221,'LUC_Y vs BIG_Yo',45,-30., 30., 60,  -120., 120., 0.)
-            call HBOOK2(10222,'dLUC_Y vs BIG_X', 50,-100., 100., 45,  -30., 30., 0.)
-            call HBOOK2(10223,'LUC_X vs BIG_Xo',50,-100., 100., 60,  -120., 120., 0.)
-           call HBOOK2(10225,'dLUC_Y vs e',120,-30., 30., 12,  0., 1.2, 0.)
+            call HBOOK2(10220,'LUC_Y vs BIG_Y', 60,  -120., 120., 120,-20., 20., 0.)
+            call HBOOK2(10221,'LUC_Y vs BIG_Y', 60,  -120., 120., 120,-20., 20., 0.)
+c            call HBOOK2(10221,'LUC_Y vs BIG_Yo',120,-20., 20., 60,  -120., 120., 0.)
+            call HBOOK2(10222,'dLUC_Y vs BIG_X', 80,-80., 80., 60,  -20., 20., 0.)
+            call HBOOK2(10223,'LUC_X vs BIG_Xo',60,-20., 20., 60,  -120., 120., 0.)
+c           call HBOOK2(10225,'dLUC_Y vs e',120,-30., 30., 40,  0., 2.4, 0.)
+           call HBPROF(10225,'dLUC_Y vs e',40, 0., 2.6, -20,  20., 'S')
            call HBOOK2(10226,'dLUC_X vs e',120,-30., 30., 16,  0.4, 2., 0.)
+           call HBOOK2(10227,'Big_Y vs BIG_Yo', 120,  -120., 120.,120,-10., 10., 0.)
 
-            call HBOOK2(10131,'LUC TDCPOS cut',28,1., 29., 1500, -2250., -850., 0.)
-            call HBOOK2(10132,'LUC TDCNEG cut',28,1., 29., 1500, -2250., -850., 0.)
-            call HBOOK2(10135,'LUC ADCPOS cut',28,1., 29., 200,    0.1, 4000., 0.)
-            call HBOOK2(10136,'LUC ADCNEG cut',28,1., 29., 200,    0.1, 4000., 0.)
          endif
          call HBOOK2(10200,'BIGCAL' ,33,0., 33.,  56,    0.,   56., 0.)
          
@@ -321,7 +327,7 @@ c
          
          
          call HBNAME(id,'SANEPHYS',n_clust,
-     $        'n_clust[0,50]:I*4,'//
+     $        'n_clust[0,15]:I*4,'//
      $        'E_clust(n_clust):R*4,'//
      $        'X_clust(n_clust):R*4, Y_clust(n_clust):R*4,'//
      $        'Z_clust(n_clust):R*4,'//
@@ -346,6 +352,13 @@ c
      $        'Delta_Y(n_clust):R*4,Delta_X(n_clust):R*4,'//
      $        'X_Bjorken(n_clust):R*4, Q2(n_clust):R*4,'//
      $        ' W2(n_clust):R*4, ENue(n_clust):R*4')
+         call HBNAME(id,'SANECER',cer_hit,
+     $        'cer_hit[0,50]:I*4,cer_num(cer_hit):I*4,'//
+     $        'cer_tdc(cer_hit):I*4,cer_adcc(cer_hit):I*4')
+         call HBNAME(id,'SANEADC',ceradc_hit,
+     $        'ceradc_hit[0,15]:I*4,ceradc_num(ceradc_hit):I*4,'//
+     $        'cer_adc(ceradc_hit):I*4')
+
       endif
      
       call HCDIR(sane_ntuple_directory,'R') ! record ntuple directory
