@@ -27,6 +27,9 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.15.2.6  2009/09/02 13:38:01  jones
+* eliminate commented write statements
+*
 * Revision 1.32.20.15.2.5  2009/03/31 19:33:00  cdaq
 * *** empty log message ***
 *
@@ -242,9 +245,7 @@ c        write(*,*)'END'
       endif
 
       ntrig = 0
-
       if(roc.eq.21) then
-c        write(*,*) 'event = ',(bank(i),i=1,banklength)
         do i=1,9
           ntest = 2**(i-1)
           ts_input(i) = 0
@@ -432,7 +433,6 @@ c          if(roc.eq.12.and.slot.eq.5) write(6,
 c     >      '(''found did with roc,slot'',3i6)') 
 c     >      did,roc,slot
 
-          !write(*,*) 'detector id this bank = ',did
 
           maxwords = last_first - pointer + 1
           

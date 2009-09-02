@@ -15,6 +15,9 @@
 *-
 *-     Created   3-Dec-1993   Kevin Beard, Hampton U.
 *-    $Log$
+*-    Revision 1.6.24.2.2.1  2009/09/02 13:37:42  jones
+*-    eliminate commented write statements
+*-
 *-    Revision 1.6.24.2  2007/09/10 20:33:37  pcarter
 *-    Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
 *-
@@ -93,10 +96,8 @@
       ENDIF
 
       do while(bankpointer.lt.evlength)
-         !write(*,*) 'about to call g_decode_fb_bank'
          call g_decode_fb_bank(event(bankpointer), ABORT, err)
 
-         !write(*,*) 'g_decode_fb_bank successful'
          bankpointer = bankpointer + event(bankpointer) + 1
 
       enddo

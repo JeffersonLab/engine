@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.9.2.4  2009/09/02 13:39:35  jones
+* eliminate commented write statements
+*
 * Revision 1.13.24.9.2.3  2009/02/17 21:18:32  cdaq
 * Changed so b_reconstruction always called
 *
@@ -120,8 +123,8 @@
 *
 
       !write(*,*) 'segfault occurs somewhere in g_reconstruction.'
-      !write(*,*) 'about to call g_decode_event_by_banks'
       call G_decode_event_by_banks(event,ABORT,err)
+
       IF(ABORT) THEN
          call G_add_path(here,err)
          RETURN
@@ -139,10 +142,8 @@ C
 *
 *
       IF(gen_event_type .eq. 4) then            !pedestal event
-         !write(*,*) 'calling g_analyze_pedestal'
          call g_analyze_pedestal(ABORT,err)
 
-         !write(*,*) 'g_analyze_pedestal successful'
         update_peds = .true.                    !need to recalculate pedestals
         RETURN
       ENDIF
