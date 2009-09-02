@@ -8,10 +8,11 @@
       integer inum
       real*4 Vector(3),Vector_r(3)
       INTEGER jj
-      real*4 en,add_factor
-      real*4 ebj(25), coorX, coorY, coorX4, coorY4,ener
+      real*4 en,add_factor,num_clust,coor_cor_parX,coor_cor_parY
+      real*4 ebj(25), coorX, coorY,ener
       real*4 coorX1,coorX2,coorX3,coorY1,coorY2,coorY3,E(10),esum(10),w,wX,wY
-      real*8 Eb,theta_big, phi_big,shift!,ccx,ccy,ccz, emax,jmax
+      real*8 Eb,theta_big, phi_big!,shift,ccx,ccy,ccz, emax,jmax
+      real*4 ang_maxX,ang_maxY,signX,signY,XXJ,YYJ
       common/FAKEBIG/Eb,theta_big, phi_big
       integer jmax(20)
       real emax(20)
@@ -21,28 +22,41 @@
       w=0
       wX=0
       wY=0
+      num_clust = 0
 c         write(*,*)5,8,BigCal_Calib_Gain(8,5)
 c        write(*,*)5,16,BigCal_Calib_Gain(16,5)
       emax(inum)=0
       jmax(inum)=0
+      ang_maxX = 0 
+      ang_maxY =0
       do jj=1,ncellclust(inum)
          if(BigCal_Calib_Gain(ixcell(jj,inum),iycell(jj,inum)).eq.0)
      ,        BigCal_Calib_Gain(ixcell(jj,inum),iycell(jj,inum))=1. 
-         en =((eblock(jj,inum)))/
-     ,        BigCal_Calib_Gain(ixcell(jj,inum),iycell(jj,inum))
+         en =eblock(jj,inum)!((eblock(jj,inum)))/
+c     ,        BigCal_Calib_Gain(ixcell(jj,inum),iycell(jj,inum))
          ebj(jj)=en
+         E(inum)=E(inum)+ebj(jj)
+         esum(inum)=sqrt(ebj(jj))+esum(inum)
+c         ycell(jj,inum) = ycell(jj,inum)-0.00027*(ycell(jj,inum)-100)**2+2.2
          if(en.gt.emax(inum))then
             emax(inum) = en
             jmax(inum) = jj
+            signX = xcell(jj,inum)/abs(xcell(jj,inum))
+            signY = ycell(jj,inum)/abs(ycell(jj,inum))
+            ang_maxX = (xcell(jj,inum)+signX*2.)-4.*sqrt(ebj(jj))/esum(inum)*signX
+            ang_maxY = (ycell(jj,inum)+signY*2.)-4.*sqrt(ebj(jj))/esum(inum)*signY
          endif
-         E(inum)=E(inum)+ebj(jj)
-         esum(inum)=sqrt(ebj(jj))+esum(inum)
+c         write(*,*)ixcell(jj,inum),iycell(jj,inum),en
       enddo
+c         write(*,*)'Done'
       ener = e(inum)
       do jj=1,ncellclust(inum)
          w =  w+log(sqrt(ebj(jj))/esum(inum))
          wX = wX+ebj(jj)
-         wY = wY+log(ebj(jj)/ener)
+         if(ebj(jj)/emax(inum).gt.0.15)then
+            num_clust= num_clust+1 
+            wY = wY+ebj(jj)
+         endif
       enddo
 
       coorX =0
@@ -62,81 +76,64 @@ c         write(34,*)ixcell(jj,inum),iycell(jj,inum),add_factor
          if(iycell(jj,inum).le.56.and.ixcell(jj,inum).le.32)then
             if(iycell(jj,inum).gt.0.and.ixcell(jj,inum).gt.0)then
                E(inum)=E(inum)+ebj(jj)*add_factor
-               coorX1 = coorX1 +
-     ,              (xcell(jj,inum)-xcell(jmax(inum),inum))*sqrt(ebj(jj))/esum(inum)!*cos(atan(xcell(jj,inum)/Bigcal_SHIFT(3)))
-               coorY1 = coorY1 +
-     ,              (ycell(jj,inum)-ycell(jmax(inum),inum))*sqrt(ebj(jj))/esum(inum)!*cos(atan(ycell(jj,inum)/Bigcal_SHIFT(3)))
-               coorX2 = coorX2 +
-     ,              (xcell(jj,inum)-xcell(jmax(inum),inum))*(log(sqrt(ebj(jj))/esum(inum))/w)**2
-               coorY2 = coorY2 +
-     ,              (ycell(jj,inum)-ycell(jmax(inum),inum))*(log(sqrt(ebj(jj))/esum(inum))/w)**2
-               coorY = coorY2
-               if(abs(coorY1).gt.abs(coorY2))coorY =(coorY1+coorY2)/2. 
-               call NANcheckF(coorX2,33)
-               call NANcheckF(coorY2,33)
-               coorX3 = coorX3 +
-     ,              (xcell(jj,inum)-xcell(jmax(inum),inum))*ebj(jj)/wX !*cos(atan(xcell(jj,inum)/Bigcal_SHIFT(3)))
-               coorY3 = coorY3 +
-     ,              (ycell(jj,inum)-ycell(jmax(inum),inum))*ebj(jj)/wX !*cos(atan(ycell(jj,inum)/Bigcal_SHIFT(3)))
+               signX = xcell(jj,inum)/abs(xcell(jj,inum))
+               signY = ycell(jj,inum)/abs(ycell(jj,inum))
+               coor_cor_parX = 4.4/100.*xcell(jj,inum)
+               coor_cor_parY = 4.4/100.*ycell(jj,inum)
+               if(xcell(jj,inum).le.xcell(jmax(inum),inum))then
+                  
+                  XXJ = (xcell(jj,inum)+signX*coor_cor_parX/4.)-coor_cor_parX*sqrt(ebj(jj))/esum(inum)*signX
+               else
+                  XXJ = (xcell(jj,inum)-signX*coor_cor_parX/4.)+coor_cor_parX*sqrt(ebj(jj))/esum(inum)*signX
+               endif
+               if(ycell(jj,inum).le.ycell(jmax(inum),inum))then
+                  YYJ = (ycell(jj,inum)+signY*coor_cor_parY/4.)-coor_cor_parY*sqrt(ebj(jj))/esum(inum)*signY
+               else
+                  YYJ = (ycell(jj,inum)-signY*coor_cor_parY/4.)+coor_cor_parY*sqrt(ebj(jj))/esum(inum)*signY
+               endif
 
-               if(abs(coorY3).gt.abs(coorY))coorY =(coorY3+coorY)/2. 
+               coorX2 = coorX2 +XXJ*sqrt(ebj(jj))/esum(inum)
+                   
+               coorY2 = coorY2 +YYJ*sqrt(ebj(jj))/esum(inum)
 
-               coorX4 = coorX +
-     ,              (xcell(jj,inum)-xcell(jmax(inum),inum))*(log(ebj(jj)/wx)/wy)**2
-               coorY4 = coorY +
-     ,              (ycell(jj,inum)-ycell(jmax(inum),inum))*(log(ebj(jj)/wx)/wy)**2
-               if(abs(coorY4).gt.abs(coorY))coorY =(coorY4+coorY)/2. 
-
-               call NANcheckF(coorX,33)
-               call NANcheckF(coorY,33)
-c     write(*,*)log(ebj(jj)/esum(inum)),w
                
             endif
          endif
       enddo
-      if(e(inum).lt.0.6)return
-c      if(e(inum).gt.4.7)then
-c         do jj=1,ncellclust(inum)
-c            if(ebj(jj).gt.3)then
-c               write(iycell(jj,inum),*)ixcell(jj,inum),ebj(jj),eblock(jj,inum),BigCal_Calib_Gain(ixcell(jj,inum),iycell(jj,inum))
-c            endif
-c         enddo
-c      endif
+
+
+      if(yclust(inum).gt.0)then
+         yclust(inum)=yclust(inum)+(4*sin(yclust(inum)*3.141/180.)+1.-4.)
+      else if(yclust(inum).le.0.and.yclust(inum).gt.-48)then
+         yclust(inum)=yclust(inum)+(5*sin(yclust(inum)*3.141/180.)+1.)
+      else if(yclust(inum).le.-48)then
+         yclust(inum)=yclust(inum)+(5*sin(yclust(inum)*3.141/180.)+1.+2.8)
+
+
+      endif
 
 c     
 c     Correcting coordinate (calculated fro pi0 calib correct for gamma)
 c     
+c      coorX2 = coorX2-1/60.*xclust(inum)+tan(xclust(inum)/2.3*3.1415/180.)**7   
+c      coorY2 = coorY2-1/60.*yclust(inum)+tan(yclust(inum)/2.3*3.1415/180.)**7    
+c      call correct_coordinate(coorX2,coorY2,Bigcal_SHIFT(3),e(inum))
 
-cc       call correct_coordinate(coorX,coorY,Bigcal_SHIFT(3),e(inum))
 
-c      write(*,*)'X ',coorX1,coorX2,coorX3,(coorX1+coorX2+coorX3)/3.,ncellclust(inum)
-c      coorY = coorY2
-c      if(ncellclust(inum).gt.4.and.abs(coorY1).gt.abs(coorY2))then
-c         write(*,*)'Y ',coorY1,coorY2,coorY3,coorY,(coory3+coory)/2.,(coorY1+coorY2+coorY3+coorY)/4.
-c         coorY =coorY1 
-c         write(*,*)jmax(inum),ncellclust(inum)
-c      endif
+      x_clust(inum) = coorX2
+      Y_clust(inum) = coorY2
+c      if(coorY2.gt.25)Y_clust(inum) = coorY2-1.2!-1.8*sin(coorY2*3.14157/180.)-0.3+0.45
 
-c      X_clust(inum) = (coorX1+coorX2+coorX3+coorX)/4.+xcell(1,inum)
-c      Y_clust(inum) = (coorY1+coorY2+coorY3+coorY)/4.+ycell(1,inum)
-      
-      if(ycell(jmax(inum),inum).lt.-50)then
-         shift =7.5 
-      elseif(ycell(jmax(inum),inum).gt.-50.and.ycell(jmax(inum),inum).lt.20)then
-         shift=2.5
-      else
-         shift = -2.5
+      if(ncellclust(inum).gt.6)then
+         call HFILL(10227,yclust(inum),Y_clust(inum)-yclust(inum),1.)
       endif
-      
-      X_clust(inum) = xcell(jmax(inum),inum)+coorX3!+(coorX1+coorX1)/2.
-      Y_clust(inum) = ycell(jmax(inum),inum)+coorY3!+0.07*(ycell(jmax(inum),inum)-25)+shift +(coorY3)
       Z_clust(inum) = Bigcal_SHIFT(3)
       E_clust(inum) = E(inum)
-      eclust(inum)  = E(inum)
+c      eclust(inum)  = E(inum)
 c      xclust(inum)  = coorX
 c      yclust(inum)  = coorY
-      Vector(1)         = X_clust(inum)
-      Vector(2)         = Y_clust(inum)
+      Vector(1)         = x_clust(inum)
+      Vector(2)         = y_clust(inum)
       Vector(3)         = Z_clust(inum)
       call ROTATE(Vector,0.,-Bigcal_SHIFT(4)*3.1415926536/180.,0.,Vector_r)
 
@@ -144,8 +141,8 @@ c      yclust(inum)  = coorY
       Y_clust_r(inum) =  Vector_r(2)
       Z_clust_r(inum) =  Vector_r(3)
            call NANcheckF(E_clust(inum),33)
-           call NANcheckF(X_clust(inum),33)
-           call NANcheckF(Y_clust(inum),33)
+           call NANcheckF(x_clust(inum),33)
+           call NANcheckF(y_clust(inum),33)
            call NANcheckF(Z_clust(inum),33)
            call NANcheckF(X_clust_r(inum),33)
            call NANcheckF(Y_clust_r(inum),33)
@@ -153,20 +150,20 @@ c      yclust(inum)  = coorY
 cc
 cc     OBTAIN Angles THeta and Phi Assuming the particle was Electron
 c     Angles are in degree
-c      write(*,*)E_clust(inum),X_clust(inum),Y_clust(inum),Z_clust(inum) 
+c      write(*,*)E_clust(inum),xclust(inum),yclust(inum),Z_clust(inum) 
       call CORRECT_ANGLES(
-     ,     X_clust_r(inum)-slow_rast_x,
-     ,     Y_clust_r(inum)-slow_rast_y-Bigcal_SHIFT(2),
-     ,     Z_clust_r(inum),E_clust(inum)*1000,
-     ,     SANE_IF_ELECTRON_ANGLE_THETA,
-     ,     SANE_IF_ELECTRON_ANGLE_PHI)
+     ,          X_clust_r(inum)-slow_rast_x,
+     ,          Y_clust_r(inum)-slow_rast_y-Bigcal_SHIFT(2),
+     ,          Z_clust_r(inum),E_clust(inum)*1000,
+     ,          SANE_IF_ELECTRON_ANGLE_THETA,
+     ,          SANE_IF_ELECTRON_ANGLE_PHI)
       Theta_e(inum) = SANE_IF_ELECTRON_ANGLE_THETA
       Phi_e(inum) = SANE_IF_ELECTRON_ANGLE_PHI
-           call NANcheckF(Theta_e(inum),33)
-           call NANcheckF(Phi_e(inum),33)
-
+      call NANcheckF(Theta_e(inum),33)
+      call NANcheckF(Phi_e(inum),33)
+      
       call PHYSICS_VARIABLES(inum,SANE_IF_ELECTRON_ANGLE_THETA,SANE_IF_ELECTRON_ANGLE_PHI)
-
+      
       end
 cccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
@@ -186,8 +183,14 @@ c
       include 'sane_data_structures.cmn'
       include 'b_ntuple.cmn'
       include 'sane_ntuple.cmn'
+      real*4 X_trc_r(20,maxcl)
+      real*4 Y1_trc_r(20,maxcl)
+      real*4 Y2_trc_r(20,maxcl)
+      real*4 Z_trc_r(20,maxcl)
+      real*4 Z1_trc_r(20,maxcl)
+      real*4 Z2_trc_r(20,maxcl)
       integer x1t_stat,y1t_stat,y2t_stat
-      integer i,inum,j
+      integer i,inum
       integer i4,itrig
       logical cut1,cut2
       common /B_TIME_SHIFT/i4,itrig
@@ -200,6 +203,8 @@ c
 c     Geometrical matching
 c
 ccccc
+c      write(*,*)'Tracker Start X',nclust
+c      write(*,*)ixcell(1,inum),iycell(1,inum),ncellclust(inum)
       if(cer_h(inum).ge.0)then
          do i=1,x1t_hit
             x1t_tdc(i)=x1t_tdc(i)-BIG_TIME_SHIFT_CH(i4)
@@ -210,21 +215,22 @@ c
             cut1 = abs(x1t_tdc(i)-TRACKER_SANE_XCALIBRATION(x1t_row(i))).lt.
      ,           TRACKER_SANE_XSIGMA(x1t_row(i))
             cut2 = .FALSE.
-            if(BIG_TIME_SHIFT_CH(3).ne.0)then
-               cut2 = abs(x1t_tdc(i)-670-TRACKER_SANE_XCALIBRATION(x1t_row(i))).lt.
+c            write(*,*)BIG_TIME_SHIFT_CH
+            if(BIG_TIME_SHIFT_CH(9).ne.0)then
+               cut2 = abs(x1t_tdc(i)-BIG_TIME_SHIFT_CH(9)-TRACKER_SANE_XCALIBRATION(x1t_row(i))).lt.
      ,           TRACKER_SANE_XSIGMA(x1t_row(i))
             endif
 c                  call HFILL(10103,float(x1t_row(i)),float(x1t_tdc(i)),1.)
             if(cut1.or.cut2)then
                call HFILL(10106,x1t_x(i)-TrackerX_SHIFT(1),TrackerX_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,              (x_clust(inum))-Bigcal_SHIFT(1),1.)
+     ,              (xclust(inum))-Bigcal_SHIFT(1),1.)
+               if(cer_h(inum).gt.0)then
                   call HFILL(10103,float(x1t_row(i)),float(x1t_tdc(i)),1.)
+               endif
             endif
             IF(abs(x1t_x(i)-TrackerX_SHIFT(1)-
      ,           TrackerX_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,           (x_clust(inum))-Bigcal_SHIFT(1)).lt.1.5)then
-c               if(cer_h(inum).gt.0)then
-c               endif
+     ,           (x_clust(inum))-Bigcal_SHIFT(1)).lt.2.)then
                
 c     
 c     TDC CUT
@@ -244,6 +250,7 @@ c
                endif
             ENDIF
          enddo
+c      write(*,*)'Tracker Start Y1'
          trc_hy1(inum) =0
          do i=1,y1t_hit
             y1t_tdc(i)=y1t_tdc(i)-BIG_TIME_SHIFT_CH(i4)
@@ -254,22 +261,22 @@ c
             cut1 = abs(y1t_tdc(i)-TRACKER_SANE_Y1CALIBRATION(y1t_row(i))).lt.
      ,           TRACKER_SANE_Y1SIGMA(y1t_row(i))
             cut2 = .FALSE.
-            if(BIG_TIME_SHIFT_CH(3).ne.0)then
-               cut2 = abs(y1t_tdc(i)-670-TRACKER_SANE_Y1CALIBRATION(y1t_row(i))).lt.
+            if(BIG_TIME_SHIFT_CH(9).ne.0)then
+               cut2 = abs(y1t_tdc(i)-BIG_TIME_SHIFT_CH(9)-TRACKER_SANE_Y1CALIBRATION(y1t_row(i))).lt.
      ,              TRACKER_SANE_Y1SIGMA(y1t_row(i))
             endif
             
             if(cut1.or.cut2)then
                call HFILL(10107,y1t_y(i)-TrackerY1_SHIFT(2),TrackerY1_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,              (y_clust(inum))-Bigcal_SHIFT(2),1.)
+     ,              (yclust(inum))-Bigcal_SHIFT(2),1.)
+               if(cer_h(inum).gt.0)then
+                  call HFILL(10104,float(y1t_row(i)),float(y1t_tdc(i)),1.)
+               endif
             endif
 
             IF(abs(y1t_y(i)-TrackerY1_SHIFT(2)-
      ,           TrackerY1_SHIFT(3)/Bigcal_SHIFT(3)*
      ,           (y_clust(inum))-Bigcal_SHIFT(2)).lt.2.)then
-               if(cer_h(inum).gt.0)then
-                  call HFILL(10104,float(y1t_row(i)),float(y1t_tdc(i)),1.)
-               endif
 c     
 c     TDC CUT
 c     
@@ -288,8 +295,9 @@ c
             ENDIF
          enddo
          trc_hy2(inum) =0
+c      write(*,*)'Tracker Start Y2'
          do i=1,y2t_hit
-            y2t_tdc(i)=y2t_tdc(i)-BIG_TIME_SHIFT_CH(i4)-BIG_TIME_SHIFT_CH(itrig)
+            y2t_tdc(i)=y2t_tdc(i)-BIG_TIME_SHIFT_CH(i4)
 c     
 c     Very wide geometrical cut
 c     
@@ -297,22 +305,24 @@ c
             cut1 = abs(y2t_tdc(i)-TRACKER_SANE_Y2CALIBRATION(y2t_row(i))).lt.
      ,           TRACKER_SANE_Y2SIGMA(y2t_row(i))
             cut2 = .FALSE.
-            if(BIG_TIME_SHIFT_CH(3).ne.0)then
-               cut2 = abs(y2t_tdc(i)-670-TRACKER_SANE_Y2CALIBRATION(y2t_row(i))).lt.
+            if(BIG_TIME_SHIFT_CH(9).ne.0)then
+               cut2 = abs(y2t_tdc(i)-BIG_TIME_SHIFT_CH(9)-TRACKER_SANE_Y2CALIBRATION(y2t_row(i))).lt.
      ,              TRACKER_SANE_Y2SIGMA(y2t_row(i))
             endif
             
             if(cut1.or.cut2)then
                call HFILL(10108,y2t_y(i)-TrackerY2_SHIFT(2),TrackerY2_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,              (y_clust(inum))-Bigcal_SHIFT(2),1.)
+     ,              (yclust(inum))-Bigcal_SHIFT(2),1.)
+               call HFILL(10109,float(y2t_row(i)),TrackerY2_SHIFT(3)/Bigcal_SHIFT(3)*
+     ,              (yclust(inum))-Bigcal_SHIFT(2),1.)
+               if(cer_h(inum).gt.0)then
+                  call HFILL(10105,float(y2t_row(i)),float(y2t_tdc(i)),1.) 
+               endif
             endif
 c            write(*,*)y2t_tdc(i),TRACKER_SANE_Y2CALIBRATION(y2t_row(i)),TRACKER_SANE_Y1SIGMA(y1t_row(i))
             IF(abs(y2t_y(i)-TrackerY2_SHIFT(2)-
      ,           TrackerY2_SHIFT(3)/Bigcal_SHIFT(3)*
      ,           (y_clust(inum))-Bigcal_SHIFT(2)).lt.2.)then
-               if(cer_h(inum).gt.0)then
-                  call HFILL(10105,float(y2t_row(i)),float(y2t_tdc(i)),1.) 
-               endif
 c     
 c     TDC CUT
 c     
@@ -354,17 +364,17 @@ ccccccccccccccccccccccccccccccccccccc
       real emax(20)
       common/EBL/jmax,emax
 
-      integer inum,i
-      integer luc
-      real*4 tdc_dif, xDelta1,fluc,koef,yfake,ytracker,ztracker,ip,ipi(10)
-      real*4 Vector(3),Vector_r(3),meanshift,Zbigclust
+      integer inum,i,ibar
+      integer luc,ip
+      real*4 tdc_dif, xDelta1,koef,yfake,ytracker,ztracker,ipi(10)
+      real*4 Vector(3),Vector_r(3),Zbigclust,xattrack,yattrack
       integer i4,itrig
       logical cut,cut1,cut2
       common /B_TIME_SHIFT/i4,itrig
       luc=0
       ip=0
       if(luc_hit.gt.0
-c     ,     .and.cer_h(inum).ge.0
+     ,     .and.cer_h(inum).ge.0
      ,     )then
          do i=1,luc_hit
             ltdc_pos(i) = ltdc_pos(i) -BIG_TIME_SHIFT_CH(i4)!-BIG_TIME_SHIFT_CH(itrig)
@@ -372,7 +382,7 @@ c     ,     .and.cer_h(inum).ge.0
             
 c            IF(abs(luc_y(i)-Lucite_SHIFT(2)-
 c     ,           Lucite_SHIFT(3)/Bigcal_SHIFT(3)*
-c     ,           (y_clust(inum))-Bigcal_SHIFT(2)).lt.8.and.
+c     ,           (yclust(inum))-Bigcal_SHIFT(2)).lt.8.and.
 c     ,           abs(xclust(inum)).lt.90)then
 c               call HFILL(10121, float(luc_row(i)), float(ltdc_pos(i)), 1.)
 c               call HFILL(10122, float(luc_row(i)), float(ltdc_neg(i)), 1.)
@@ -391,27 +401,27 @@ c     ,           LUCITE_SANE_SIGMA_NEG(luc_row(i))
      ,           LUCITE_SANE_SIGMA_NEG(luc_row(i))
             cut1 = .FALSE.
             cut2 = .FALSE.
-            if(BIG_TIME_SHIFT_CH(3).ne.0)then
+            if(BIG_TIME_SHIFT_CH(5).ne.0)then
                cut =(abs(ltdc_pos(i)-LUCITE_SANE_MEAN_POS(luc_row(i))).lt.
      ,              1.2*LUCITE_SANE_SIGMA_POS(luc_row(i)).and.
      ,              abs(ltdc_neg(i)-LUCITE_SANE_MEAN_NEG(luc_row(i))).lt.
      ,              1.2*LUCITE_SANE_SIGMA_NEG(luc_row(i))).or.
-     ,              (abs(ltdc_pos(i)-BIG_TIME_SHIFT_CH(itrig)-LUCITE_SANE_MEAN_POS(luc_row(i))).lt.
+     ,              (abs(ltdc_pos(i)-BIG_TIME_SHIFT_CH(5)-LUCITE_SANE_MEAN_POS(luc_row(i))).lt.
      ,              1.2*LUCITE_SANE_SIGMA_POS(luc_row(i)).and.
-     ,              abs(ltdc_neg(i)-BIG_TIME_SHIFT_CH(itrig)-LUCITE_SANE_MEAN_NEG(luc_row(i))).lt.
+     ,              abs(ltdc_neg(i)-BIG_TIME_SHIFT_CH(5)-LUCITE_SANE_MEAN_NEG(luc_row(i))).lt.
      ,              1.2*LUCITE_SANE_SIGMA_NEG(luc_row(i)))
 
                cut1 =             (abs(ltdc_pos(i)-LUCITE_SANE_MEAN_POS(luc_row(i))).lt.
      ,              1.2*LUCITE_SANE_SIGMA_POS(luc_row(i)).and.
-     ,              abs(ltdc_neg(i)-BIG_TIME_SHIFT_CH(itrig)-LUCITE_SANE_MEAN_NEG(luc_row(i))).lt.
+     ,              abs(ltdc_neg(i)-BIG_TIME_SHIFT_CH(5)-LUCITE_SANE_MEAN_NEG(luc_row(i))).lt.
      ,              1.2*LUCITE_SANE_SIGMA_NEG(luc_row(i)))
-               if(cut1)ltdc_neg(i)=ltdc_neg(i)-BIG_TIME_SHIFT_CH(itrig)
+c               if(cut1)ltdc_neg(i)=ltdc_neg(i)-BIG_TIME_SHIFT_CH(5)
                cut2 =
-     ,              (abs(ltdc_pos(i)-BIG_TIME_SHIFT_CH(itrig)-LUCITE_SANE_MEAN_POS(luc_row(i))).lt.
+     ,              (abs(ltdc_pos(i)-BIG_TIME_SHIFT_CH(5)-LUCITE_SANE_MEAN_POS(luc_row(i))).lt.
      ,              1.2*LUCITE_SANE_SIGMA_POS(luc_row(i)).and.
      ,              abs(ltdc_neg(i)-LUCITE_SANE_MEAN_NEG(luc_row(i))).lt.
      ,              1.2*LUCITE_SANE_SIGMA_NEG(luc_row(i)))
-               if(cut2)ltdc_pos(i)=ltdc_pos(i)-BIG_TIME_SHIFT_CH(itrig)
+c               if(cut2)ltdc_pos(i)=ltdc_pos(i)-BIG_TIME_SHIFT_CH(5)
 c               if(cut)
 c     ,          write(*,*)(float(ltdc_pos(i))-
 c     ,              float(ltdc_neg(i))
@@ -419,14 +429,19 @@ c     ,              +LUCITE_SANE_MEAN_NEG(luc_row(i))
 c     ,              -LUCITE_SANE_MEAN_POS(luc_row(i)))*LUCITE_SANE_TDC_TIMING(luc_row(i))*
 c     ,              29.979/1.49*0.7313-Lucite_SHIFT(1)
             endif
+c            cut = .TRUE.
+c            cut1 = .TRUE.
+c            cut2 = .TRUE.
             IF(abs(luc_y(i)-Lucite_SHIFT(2)-
      ,           Lucite_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,           (y_clust(inum))-Bigcal_SHIFT(2)).lt.8.and.
-     ,           yclust(inum).gt.0.and.xclust(inum).lt.0)then
-               call HFILL(10121, float(luc_row(i)), float(ltdc_pos(i)), 1.)
-               call HFILL(10122, float(luc_row(i)), float(ltdc_neg(i)), 1.)
-               call HFILL(10125, float(luc_row(i)), float(ladc_pos(i)), 1.)
-               call HFILL(10126, float(luc_row(i)), float(ladc_neg(i)), 1.)
+     ,           (yclust(inum))-Bigcal_SHIFT(2)).lt.8.)then
+               if(abs(xclust(inum)).lt.5)then
+
+                  call HFILL(10121, float(luc_row(i)), float(ltdc_pos(i)), 1.)
+                  call HFILL(10122, float(luc_row(i)), float(ltdc_neg(i)), 1.)
+                  call HFILL(10125, float(luc_row(i)), float(ladc_pos(i)), 1.)
+                  call HFILL(10126, float(luc_row(i)), float(ladc_neg(i)), 1.)
+            endif
             endif
 
             If(cut.or.cut1.or.cut2
@@ -443,11 +458,10 @@ c
                xDelta1    = 
      ,              -(tdc_dif)*LUCITE_SANE_TDC_TIMING(luc_row(i))*
      ,              29.979/1.49*0.7313*LUCITE_SANE_COEF(luc_row(i))-LUCITE_SANE_SHIFT(luc_row(i))*Lucite_SHIFT(3)/Bigcal_SHIFT(3)
+
                
-c               if(xclust(inum).lt.0.and.luc_row(i).gt.18)then
-c               write(*,*)xDelta1-Lucite_SHIFT(1),abs(luc_y(i)-Lucite_SHIFT(2)-
-c     ,              Lucite_SHIFT(3)/Bigcal_SHIFT(3)*
-c     ,              (y_clust(inum))-Bigcal_SHIFT(2))
+c               if(luc_row(i).gt.18)then
+c               write(*,*)xDelta1
 c                  call HFILL(10128,luc_y(i),Yclust(inum),1.)
 c                  endif
 C     
@@ -457,32 +471,36 @@ C
                
                IF(abs(luc_y(i)-Lucite_SHIFT(2)-
      ,              Lucite_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,              (y_clust(inum))-Bigcal_SHIFT(2)).lt.18)then
-                  call HFILL(10128,luc_y(i),Y_clust(inum),1.)
-c     if(luc_row(i).eq.10)then
+     ,              (yclust(inum))-Bigcal_SHIFT(2)).lt.10)then
+                  call HFILL(10128,luc_y(i),yclust(inum),1.)
+
+c                  if(luc_row(i).eq.18)write(*,*)xDelta1-Lucite_SHIFT(1)
+
                   call HFILL(10150+luc_row(i),xDelta1-Lucite_SHIFT(1),
      ,                 sqrt(Lucite_SHIFT(3)**2+luc_y(i)**2)/sqrt(Bigcal_SHIFT(3)**2+
-     ,                 Y_clust(inum)**2)*X_clust(inum),1.)
+     ,                 yclust(inum)**2)*xclust(inum),1.)
                   call HFILL(20150+luc_row(i),(xDelta1-Lucite_SHIFT(1))*
      ,                 Bigcal_SHIFT(3)/Lucite_SHIFT(3),
      ,                 Xclust(inum),1.)
 c     endif
-c     if(abs(X_clust(inum)).lt.5)then
+      if(abs(xclust(inum)).lt.5)then
                   call HFILL(10131, float(luc_row(i)), float(ltdc_pos(i)), 1.)
                   call HFILL(10132, float(luc_row(i)), float(ltdc_neg(i)), 1.)
                   call HFILL(10135, float(luc_row(i)), float(ladc_pos(i)), 1.)
                   call HFILL(10136, float(luc_row(i)), float(ladc_neg(i)), 1.)
-c     endif
+      endif
                   ip=ip+1
                   ipi(ip) = i
 C     
 C     X Geometrical CUT
 C     
 ***********
+c                  write(*,*)luc_row(i)
                   If(abs(xDelta1-Lucite_SHIFT(1)-
      ,                 Lucite_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,                 (x_clust(inum))-Bigcal_SHIFT(1)).lt.20)then
+     ,                 (xclust(inum))-Bigcal_SHIFT(1)).lt.7)then
                      
+c                  write(*,*)luc_row(i)
                      luc = luc+1
                      X_luc(luc,inum)   = xDelta1-Lucite_SHIFT(1)
                      Y_luc(luc,inum)   = luc_y(i)-Lucite_SHIFT(2)
@@ -516,8 +534,9 @@ c         write(*,*)luc
          Y_luc_av(inum) = 0
          Z_luc_av(inum) = 0
          if(luc_h(inum).eq.2)then
+c            write(*,*)X_luc(1,inum),X_luc(2,inum)
              if(abs(Y_luc(1,inum)-Y_luc(2,inum)).lt.7.and.eclust(inum).gt.0.7.and.
-     ,           abs(X_luc(1,inum)-X_luc(2,inum)).lt.15.and.ncellclust(inum).gt.6)then
+     ,           abs(X_luc(1,inum)-X_luc(2,inum)).lt.5.and.ncellclust(inum).gt.6)then
 c               write(32,*)X_luc(1,inum),X_luc(2,inum),luc_row(ipi(1)),luc_row(ipi(2))
 c           write(*,*)luc_h(inum)
             
@@ -527,40 +546,62 @@ c
                X_luc_av(inum) =  (X_luc(1,inum)+X_luc(2,inum))/2.
                Z_luc_av(inum) =  (Z_luc(1,inum)+Z_luc(2,inum))/2.
                Y_luc_av(inum) =  (Y_luc(1,inum)+Y_luc(2,inum))/2.
-c               write(*,*)Y_luc_av(inum)
+               ibar = (Y_luc_av(inum)+82.35)/6.1+1
+               
+c               write(*,*)ibar
                Y_luc_av(inum) =  Y_luc_av(inum)-3.5/2.*Y_luc_av(inum)/Z_luc_av(inum)
-c                write(*,*)'   ',Y_luc_av(inum)
+c                write(*,*)'   ',Y_luc_av(inum)S
               
-               if(abs(X_clust(inum)).lt.103)then
-                  if((trc_hy1(inum).gt.0.or.trc_hy2(inum).gt.0))then
-                     ytracker = Y2_trc(trc_hy2(inum),inum)
-                     if(trc_hy2(inum).gt.0)then
+               if(abs(xclust(inum)).lt.103)then
+                  if((trc_hy1(inum).eq.1.or.trc_hy2(inum).eq.1))then
+c                  write(*,*)trc_hy1(inum),trc_hy2(inum)
+                     ytracker = 0
+                     
+                     if(trc_hy2(inum).eq.1.and.trc_hy1(inum).eq.0)then
                         ytracker = Y2_trc(trc_hy2(inum),inum)
                         ztracker = TrackerY2_SHIFT(3)
                      endif
-                     if(trc_hy1(inum).gt.0)then
+                     if(trc_hy1(inum).eq.1.and.trc_hy2(inum).eq.0)then
                         ytracker = Y1_trc(trc_hy1(inum),inum)
                         ztracker = TrackerY1_SHIFT(3)
                      endif
+                     if(trc_hy2(inum).eq.1.and.trc_hy1(inum).eq.1.and.
+     ,                    abs(Y2_trc(trc_hy2(inum),inum)-Y1_trc(trc_hy1(inum),inum)).lt.0.4)then
+                        ytracker = 0.5*(Y2_trc(trc_hy2(inum),inum)+Y1_trc(trc_hy1(inum),inum))
+                        ztracker = 0.5*(TrackerY2_SHIFT(3)+TrackerY1_SHIFT(3))
 
-                     koef = (Y_luc_av(inum)-ytracker)/(Z_luc_av(inum)-ztracker)
-                     yfake = koef*(Bigcal_SHIFT(3)-ztracker)+ytracker
-                     Zbigclust = (Y_clust(inum)-ytracker)/koef+ztracker-Bigcal_SHIFT(3)
-c                     write(*,*)Zbigclust
-c                     write(*,*)Y_clust(inum),yfake,Y_luc_av(inum)*Bigcal_SHIFT(3)/Z_luc_av(inum)
-c                     write(*,*)cer_h(inum)
-                     call HFILL(10220,Yfake,yfake-Y_clust(inum),1.)
-                     call HFILL(10221,Y_luc_av(inum)*Bigcal_SHIFT(3)/Z_luc_av(inum)-Yclust(inum),Yclust(inum),1.)
-c                     if()then
-                        call HFILL(10225,yfake-Y_clust(inum),emax(inum)/eclust(inum),1.)
+                     endif
+                     if(ytracker.ne.0)then
+                        
+                        xattrack = X_luc_av(inum)*TrackerX_SHIFT(3)/Z_luc_av(inum)
+                        yattrack = y_luc_av(inum)*ztracker/Z_luc_av(inum)
+                        
+c     write(25,*) xattrack-x_trc(trc_hx(inum),inum),yattrack-ytracker,eclust(inum)
+                        
+                        koef = (Y_luc_av(inum)-ytracker)/(Z_luc_av(inum)-ztracker)
+                        yfake = koef*(Bigcal_SHIFT(3)-ztracker)+ytracker
+c     write(23,*)koef,yfake-yclust(inum)
+                        Zbigclust = (yclust(inum)-ytracker)/koef+ztracker-Bigcal_SHIFT(3)
+c     write(*,*)Zbigclust
+c     write(*,*)yclust(inum),yfake,Y_luc_av(inum)*Bigcal_SHIFT(3)/Z_luc_av(inum)
+c     write(*,*)cer_h(inum)
+                        call HFILL(10220,Yfake,yfake-y_clust(inum),1.)
+                        call HFILL(10221,yfake,Y_luc_av(inum)*Bigcal_SHIFT(3)/Z_luc_av(inum)-yclust(inum),1.)
+c     if()then
+                        call HFILL(10225,eclust(inum),yfake-y_clust(inum),1.)
+c     write(*,*)xcell(jmax(inum),inum),ycell(jmax(inum),inum)
+                        call HFILL(20250+ibar,xcell(jmax(inum),inum),ycell(jmax(inum),inum),1.)
+c     call HFILL(20250+ibar,xcell(jmax(inum),inum)-xmoment(inum),ycell(jmax(inum),inum),1.)
+c     call HFILL(20250+ibar,xcell(jmax(inum),inum),ycell(jmax(inum),inum)-ymoment(inum),1.)
                         if(yfake.gt.50)then
-                           call HFILL(10222,x_clust(inum),(yfake-Y_clust(inum)),1.)
+                           call HFILL(10222,xclust(inum),(yfake-y_clust(inum)),1.)
                         endif
+                     endif
                   endif
                endif
                if(abs(Yclust(inum)).lt.10)then
                   call HFILL(10223,X_luc_av(inum)*Bigcal_SHIFT(3)/Z_luc_av(inum)-Xclust(inum),Xclust(inum),1.)
-                  call HFILL(10226,X_luc_av(inum)*Bigcal_SHIFT(3)/Z_luc_av(inum)-X_clust(inum),eclust(inum),1.)
+                  call HFILL(10226,X_luc_av(inum)*Bigcal_SHIFT(3)/Z_luc_av(inum)-xclust(inum),eclust(inum),1.)
                endif
             endif
          endif
@@ -585,7 +626,7 @@ ccccccccccc
       include 'b_ntuple.cmn'
       include 'sane_ntuple.cmn'
       include 'gen_data_structures.cmn'
-      integer inum,i,j,cer_n,k
+      integer inum,i,j,cer_n
       integer i4,itrig
       common /B_TIME_SHIFT/i4,itrig
       real amax
@@ -617,6 +658,11 @@ c     enddo
          do i=1, cer_hit
             if(cer_num(i).lt.9)then
                cer_n = cer_num(i)
+c               write(*,*)tclust8(inum)
+c               write(*,*)cer_num(i),CER_SANE_TIME_WALK(cer_num(i))
+               cer_tdc(i) = cer_tdc(i) +
+     ,              CER_SANE_TIME_WALK(cer_num(i))/float(cer_adcc(i))
+
 c     write(*,*)cer_n,CER_SANE_GEOM_CUT_LOW(cer_n),CER_SANE_GEOM_CUT_HI(cer_n)
                if(yclust(inum).gt.(CER_SANE_GEOM_CUT_LOW(cer_n)-1)*4-120..and.
      ,              yclust(inum).lt.(CER_SANE_GEOM_CUT_HI(cer_n)+1)*4-120.and.
@@ -641,7 +687,7 @@ c                  endif
      ,              abs(cer_tdc(i)-CER_SANE_MEAN(cer_num(i))).lt.
      ,              CER_SANE_SIGMA(cer_n)
      ,              )then
-                  if(cer_adcc(i).gt.CER_SANE_ADC_CUT(cer_n)/40..and.T_trgBIG.ge.30.and.T_trgBIG.lt.41)then
+                  if(cer_adcc(i).gt.CER_SANE_ADC_CUT(cer_n)/4.and.T_trgBIG.ge.30.and.T_trgBIG.lt.41)then
                      if(yclust(inum).gt.(CER_SANE_GEOM_CUT_LOW(cer_n)*4-1)-120..and.
      ,                    yclust(inum).lt.(CER_SANE_GEOM_CUT_HI(cer_n)*4+1)-120.and.
      ,                    CER_SANE_GEOM_CUT_X(cer_n)*xclust(inum).gt.-20)then
@@ -767,7 +813,7 @@ c     RETURNS THeta and PHI In Degree.
 c
 cccccccccccc      
       include 'sane_data_structures.cmn'
-      real*4 omega,X,Y,Z,TH,Phi,thr,phr,EE 
+      real*4 X,Y,Z,TH,Phi,thr,phr,EE 
       real*4 DIST
       DIST = sqrt(X**2+Y**2+Z**2)
       thr  = acos(Z/Dist)
@@ -786,7 +832,7 @@ c     input thr and phr angles from CALORIMETER ,THr and PHr in radians
 c     EE Energy in GEV
 c     Output :TH and Phi Correctes in degrees
 cc      
-      real*4 X,Y,TH,Phi,thr,phr,EE
+      real*4 TH,Phi,thr,phr,EE
       REAL*8 OMEGA
       real*4 P_th(14),P_phi(39),COSOM,SINOM
       cosom = cos(omega*3.1415926/180.)
@@ -834,12 +880,12 @@ ccccccccccccccccccccccccccccccccccccc
       include 'sane_data_structures.cmn'
       include 'b_ntuple.cmn'
       include 'sane_ntuple.cmn'
-      integer i,j,inum
-      real*8 U, U_pos, U_neg
+      integer inum
+c      real*8 U, U_pos, U_neg
       real*8 dl
       real*4 P_tr(3),P_big(3),P_tar(3)
-      real*4 Vector(3),Vector_r(3)
-      LOGICAL ok1
+c      real*4 Vector(3),Vector_r(3)
+c      LOGICAL ok1
       logical TRAKER_STATUS
       data P1_track /0.,0.,66./
       data P2_track /0.,1.,66./
@@ -905,8 +951,8 @@ c            write(*,*) 'TRACK MATCH 1',Delta_X(inum)
             P_tar(1) = 0
             P_tar(2) = 0
             P_tar(3) = 0
-            P_big(1) = X_clust(inum)
-            P_big(2) = Y_clust(inum)
+            P_big(1) = x_clust(inum)
+            P_big(2) = y_clust(inum)
             P_big(3) = Z_clust(inum)
             call PlaneLineIntersection(a_bigcal,b_bigcal,c_bigcal,
      ,           d_bigcal,P_tar,P_big,P_tr)
@@ -976,12 +1022,19 @@ c     endif
          X_Bjorken(inum) = Q2(inum)/( 2*Mp*ENue(inum) )
          W2(inum)        = Mp**2 + 2*Mp*ENue(inum) -Q2(inum)
          ihistnum        = (Q2(inum)-2.5)+1
+c      WRITE(*,*)cer_h(inum),E_clust(inum),X_Bjorken(inum),theta,(1-cos(thetar))
          
          call NANcheckF(ENue(inum),5)
          call NANcheckF(Q2(inum),5)
          call NANcheckF(X_Bjorken(inum),5)
          call NANcheckF(W2(inum),5)
-         shelicity       = i_helicity
+c         shelicity       = i_helicity
+         if(i_helicity.gt.0)then
+            shelicity=1.
+         else if(i_helicity.lt.0)then
+            shelicity=-1.
+         endif
+c         write(18,'(4I13,2F10.5)')bgid,i_helicity,inum,cer_h(inum),Q2(inum),X_Bjorken(inum)
          call NANcheckF(shelicity,5)
          
          if(ihistnum.gt.0.and.ihistnum.lt.5)then
@@ -1005,7 +1058,8 @@ c
 c      cor1angle = 0.78-0.2/E-0.3/E**2-0.1/E**3
       real*4 x,y,z,e,d,cor1angle,phi, th,dd1
       d = sqrt(x**2+y**2+z**2)
-      cor1angle = 1.1178+1.1876/E-2.379/E**2+0.50396/E**3
+      cor1angle = 0.78-0.2/E-0.3/E**2-0.1/E**3
+c      cor1angle = 1.1178+1.1876/E-2.379/E**2+0.50396/E**3
 c      cor1angle = (2.120-1.034/E-0.6468/E**2+0.109/E**3)/2.
       phi = atan2(y/d,x/d)
       th  = acos(z/d)*180/3.141
