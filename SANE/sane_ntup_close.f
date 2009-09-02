@@ -4,7 +4,7 @@
       save
       
       character*14 here
-      parameter(here='sane_ntuple_close')
+      parameter(here='sane_ntup_close')
       
       logical ABORT
       character*(*) err
@@ -58,6 +58,7 @@ c      write(*,*) HEXIST(9502),sane_ntuple_directory
       call HROUT(10106,cycle,' ')
       call HROUT(10107,cycle,' ')
       call HROUT(10108,cycle,' ')
+      call HROUT(10109,cycle,' ')
 
       call HROUT(10111,cycle,' ')
       call HROUT(10112,cycle,' ')
@@ -68,21 +69,16 @@ c      write(*,*) HEXIST(9502),sane_ntuple_directory
       do i =1,8
          call HROUT(10500+i,cycle,' ')
          call HROUT(10510+i,cycle,' ')
+         call HROUT(10120+i,cycle,' ')
+         call HROUT(10130+i,cycle,' ')
+         call HROUT(10219+i,cycle,' ')
       enddo
       if ( sane_ntuple_type .eq. 1) then
-         call HROUT(10131,cycle,' ')
-         call HROUT(10132,cycle,' ')
-         call HROUT(10135,cycle,' ')
-         call HROUT(10136,cycle,' ')
-         do i =0,8
-            call HROUT(10120+i,cycle,' ')
-            call HROUT(10130+i,cycle,' ')
-            call HROUT(10220+i,cycle,' ')
-         enddo
          do i =1,28
             call HROUT(10150+i,cycle,' ')
             call HROUT(20150+i,cycle,' ')
-         enddo
+            call HROUT(20250+i,cycle,' ')
+        enddo
       endif
       call HROUT(10200,cycle,' ')
       do i =0,6
