@@ -5,6 +5,11 @@
 *     Author:   H. Baghdasaryan     18 Jan,2008
 *
 * $Log$
+* Revision 1.1.2.9  2009/09/02 13:42:29  jones
+* increase BIG_TIME_SHIFT_CH(4) to BIG_TIME_SHIFT_CH(12)
+* add CER_SANE_TIME_WALK(8)
+* add CERENKOV_SANE_RAW_PLANE2 to ERENKOV_SANE_RAW_SCIN common block
+*
 * Revision 1.1.2.8  2009/03/31 19:32:59  cdaq
 * *** empty log message ***
 *
@@ -147,7 +152,8 @@ cc
      &	CERENKOV_SANE_RAW_TDC,
      &	CERENKOV_SANE_RAW_TOT_HITS, 
      &	CERENKOV_SANE_RAW_TOT_HITS2, 
-     & 	CERENKOV_SANE_RAW_PLANE 
+     & 	CERENKOV_SANE_RAW_PLANE,
+     & 	CERENKOV_SANE_RAW_PLANE2
 
 ccc    END of the RAW DATA
 
@@ -248,6 +254,7 @@ c      PARAMETER (TRACKER_SANE_RAW_COUNTER=448)  ! Should exceed # of paddles
       real CER_SANE_GEOM_CUT_LOW(8)
       real CER_SANE_GEOM_CUT_HI(8)
       integer CER_SANE_GEOM_CUT_X(8)
+      real CER_SANE_TIME_WALK(8)
 
       COMMON/CER_CALIB/
      &     CER_SANE_MEAN,
@@ -256,12 +263,16 @@ c      PARAMETER (TRACKER_SANE_RAW_COUNTER=448)  ! Should exceed # of paddles
      & CER_SANE_ADC_CUT,
      & CER_SANE_GEOM_CUT_LOW,
      & CER_SANE_GEOM_CUT_HI,
-     & CER_SANE_GEOM_CUT_X
+     & CER_SANE_GEOM_CUT_X,CER_SANE_TIME_WALK
 c
 c
 c	Time calibration constants for Bigcal 4 quarters
 c
-      real BIG_TIME_SHIFT_CH(4)
+c 
+c BIG_TIME_SHIFT_CH(12) 1,2,3,4 -reserved for Cerenkov 5,6,7,8 For Lucite ,9,10,11,12 for tracker	
+cc
+
+      real BIG_TIME_SHIFT_CH(12)
       COMMON/BIG_CALIB/BIG_TIME_SHIFT_CH
 
       real TrackerX_SHIFT(4) ! position in X,Y,Z Z-betta detector dirrection, 4- angleof betta detector
