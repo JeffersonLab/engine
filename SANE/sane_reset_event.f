@@ -44,12 +44,15 @@ c      LUCITE_SANE_RAW_PLANE             = 0
          LUCITE_SANE_RAW_ADC_NEG(i)     = 0
          LUCITE_SANE_RAW_TDC_POS(i)     = 0
          LUCITE_SANE_RAW_TDC_NEG(i)     = 0
+         
+      enddo
+      do i=1,luc_hit
          ltdc_pos(i) = 0
          ltdc_neg(i) = 0
          ladc_pos(i) = 0
          ladc_neg(i) = 0
-         
       enddo
+
        luc_hit = 0
 
       ABORT= .FALSE.
@@ -82,8 +85,10 @@ c      CERENKOV_SANE_RAW_PLANE             = 0
          CERENKOV_SANE_RAW_COUNTER_NUM2(i) = 0
          CERENKOV_SANE_RAW_ADC(i)         = 0
          CERENKOV_SANE_RAW_TDC(i)         = 0
-         cer_tdc(i) = 0
-         cer_adcc(i) = 0
+         if(i.le.cer_hit)then
+            cer_tdc(i) = 0
+            cer_adcc(i) = 0
+         endif
          
          
       enddo
