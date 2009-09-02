@@ -54,7 +54,7 @@ c      integer itype
 
        if ( .not. hflag) bigcal_ntuple_type = 1
       if ( hflag) then
-     if(b_ntuple_max_segmentevents.gt.0) then
+      if(b_ntuple_max_segmentevents.gt.0) then
          if(b_ntuple_segmentevents.gt.b_ntuple_max_segmentevents) then
             call b_ntuple_change(ABORT,err)
             b_ntuple_segmentevents=0
@@ -564,7 +564,7 @@ c$$$  $             yt(nthit),hn(nthit),tt(nthit)
       
       
        if ( hflag) then
-     abort=.not.HEXIST(b_ntuple_ID)
+        abort=.not.HEXIST(b_ntuple_ID)
       if(abort) then
          call G_build_note(':Ntuple ID#$ does not exist',
      $        '$',b_ntuple_ID,' ',0.,' ',err)
