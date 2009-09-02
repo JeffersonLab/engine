@@ -1,13 +1,17 @@
 *
 *     CTPTYPE=parm
 *
+c
+c     EPIC Memory parameters
+c
+c
 
-      integer sane_bigcal_time_include
-      integer sane_bigcal_clust8_include
-      integer sane_bigcal_clust64_include
-      integer sane_bigcal_ntrack_include
-      integer sane_bigcal_badclust_include
-      integer sane_bigcal_hms_include
+c      integer sane_bigcal_time_include
+c      integer sane_bigcal_clust8_include
+c      integer sane_bigcal_clust64_include
+c      integer sane_bigcal_ntrack_include
+c      integer sane_bigcal_badclust_include
+c      integer sane_bigcal_hms_include
 
       integer SANEMAX_Ntuple_size
       parameter (SANEMAX_Ntuple_size=200)
@@ -27,6 +31,13 @@
 c      character*256 b_tree_filename
       character*8 sane_Ntuple_tag(SANEMAX_Ntuple_size)
       integer sane_ntuple_max_segmentevents
+
+      character*80 polarization_data_table,charge_data_table
+      logical polarization_data_open,charge_data_open
+      INTEGER polarization_data_unit,charge_data_unit
+      logical charge_ch,polarization_ch
+      common/CHECK/ charge_ch,polarization_ch
+
 *
 *     CTPTYPE=event
 *
@@ -42,26 +53,33 @@ c      character*256 b_tree_filename
      $     sane_Ntuple_max_segmentevents,
      $     sane_Ntuple_segmentevents,sane_Ntuple_filesegments,
      $     sane_Ntuple_contents,sane_ntuple_type,
-     $	   sane_ntuple_auxsegments,isane_plots
+     $	   sane_ntuple_auxsegments,isane_plots,
+     $     polarization_data_table,charge_data_table,
+     $     polarization_data_open,charge_data_open,
+     $     polarization_data_unit,charge_data_unit
 
       real*8 tcharge 
       real*8 charge2s 
-      real*8 polarea
+      real*8 polarea,polarization
       integer*4 hel_p_scaler
       integer*4 hel_n_scaler
       integer*4 hel_p_trig
       integer*4 hel_n_trig
       real*8 dtime_p,dtime_n
+      real*4  half_plate
 
       common/SANEEV/
      $     tcharge,
      $     charge2s,
-     $     polarea,
+     $     polarea,polarization,
      $ 	   hel_p_scaler,
      $	    hel_n_scaler,
      $	    hel_p_trig,
      $	    hel_n_trig,
-     $	    dtime_p,dtime_n
+     $	    dtime_p,dtime_n,half_plate
+      integer*4 pol_id_change,charge_id_change
+      common/SANEEVI/pol_id_change,charge_id_change
+
 
 
       integer TRACKER_MAX_HITS
@@ -99,13 +117,12 @@ c      character*256 b_tree_filename
       common/SANECER/cer_hit, cer_num, cer_tdc,cer_adcc
       common/SANEADC/ceradc_hit, ceradc_num,cer_adc
       
-      integer LUCITE_SANE_NTUPLE_MAX_HITS
-      parameter (LUCITE_SANE_NTUPLE_MAX_HITS=90)
+      
       integer*4 luc_hit
-      integer*4 luc_row(LUCITE_SANE_NTUPLE_MAX_HITS)
-      integer*4 ladc_pos(LUCITE_SANE_NTUPLE_MAX_HITS),ladc_neg(LUCITE_SANE_NTUPLE_MAX_HITS)
-      integer*4 ltdc_pos(LUCITE_SANE_NTUPLE_MAX_HITS),ltdc_neg(LUCITE_SANE_NTUPLE_MAX_HITS)
-      real*4    luc_y(LUCITE_SANE_NTUPLE_MAX_HITS)
+      integer*4 luc_row(90)
+      integer*4 ladc_pos(90),ladc_neg(90)
+      integer*4 ltdc_pos(90),ltdc_neg(90)
+      real*4    luc_y(90)
       common/SANELUC/luc_hit, luc_row, ladc_pos, ladc_neg,
      ,     ltdc_pos, ltdc_neg, luc_y
       
@@ -139,7 +156,7 @@ c      character*256 b_tree_filename
      ,     hms_cer_npe1,hms_cer_npe2, hms_cer_adc1,hms_cer_adc2
       
       integer*4 maxcl
-      parameter (maxcl=50)
+      parameter (maxcl=15)
       integer*4 n_clust
       integer*4 luc_h(maxcl)
       integer*4 trc_hx(maxcl)
@@ -165,15 +182,9 @@ c      character*256 b_tree_filename
       real*4 X_trc(20,maxcl)
       real*4 Y1_trc(20,maxcl)
       real*4 Y2_trc(20,maxcl)
-      real*4 X_trc_r(20,maxcl)
-      real*4 Y1_trc_r(20,maxcl)
-      real*4 Y2_trc_r(20,maxcl)
       real*4 Z_trc(20,maxcl)
       real*4 Z1_trc(20,maxcl)
       real*4 Z2_trc(20,maxcl)
-      real*4 Z_trc_r(20,maxcl)
-      real*4 Z1_trc_r(20,maxcl)
-      real*4 Z2_trc_r(20,maxcl)
       real*4 Tr_Vertex(3,maxcl)
       real*4 Tr_Vertex_r(3,maxcl)
       real*4 Theta_e(maxcl),Phi_e(maxcl)
@@ -252,3 +263,4 @@ c
       COMMON /ANGLE_TRACK/SANE_IF_ELECTRON_ANGLE_THETA,
      ,     SANE_IF_ELECTRON_ANGLE_PHI,
      ,     SANE_DISTANCE_FROM_ELECTRON_TRACK
+
