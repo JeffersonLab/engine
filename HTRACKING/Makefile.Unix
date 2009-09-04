@@ -1,5 +1,8 @@
 #
 # $Log$
+# Revision 1.29.6.9  2009/09/04 22:07:33  puckett
+# added alternate HMS pattern recognition code
+#
 # Revision 1.29.6.8  2008/12/15 18:46:07  puckett
 # New and improved FPP tracking routines--(hopefully) thoroughly debugged. Documentation forthcoming (AJP)
 #
@@ -155,7 +158,7 @@ newerstuff = h_fill_dc_target_hist.f h_targ_trans_init.f \
         h_sp_multiwire.f h_sp_destroy.f \
 	h_select_best_track_prune.f h_stub_t0_calc.f h_prune_stubs.f \
 	h_print_space_points_ajp.f h_join_stubs_ajp.f \
-        h_redo_track_left_right.f h_find_track_t0.f
+        h_redo_track_left_right.f h_find_track_t0.f h_find_space_points_ajp.f
 fppstuff = h_fill_fpp.f  h_fpp_drift.f  h_fpp.f \
         h_fpp_fit.f  h_fpp_statistics.f  \
         h_fpp_tracking.f  h_init_fpp.f  \
