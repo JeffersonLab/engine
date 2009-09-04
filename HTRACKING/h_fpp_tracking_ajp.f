@@ -1065,7 +1065,7 @@ c      write(*,*) 'event = ',gen_event_id_number
 
 c     now we have baseline against which to compare other left-right combos. 
 
-      zmin = hfpp_prune_zclose(2*(ifpp-1)+1)
+      zmin = hfpp_prune_zclose(2*(ifpp-1)+1) 
       zmax = hfpp_prune_zclose(2*(ifpp-1)+2)
 
       ncombos = 2**npoints
@@ -1214,6 +1214,10 @@ c     use smallest theta regardless of chi2,sclose,zclose:
             minstest = hfpp_ambig_sclosetest
             do icombo=1,nambig
                combo = ambigcombos(icombo)+1
+
+               zmin = hfpp_prune_zclose(2*(ifpp-1)+1) - hfpp_prune_zslop(ifpp)/tan(combotheta(combo))
+               zmax = hfpp_prune_zclose(2*(ifpp-1)+2) + hfpp_prune_zslop(ifpp)/tan(combotheta(combo))
+
                if( (combosclose(combo)/oldsclose)**2.lt.minstest .and.
      $              zmin.lt.combozclose(combo).and.
      $              zmax.gt.combozclose(combo) ) then

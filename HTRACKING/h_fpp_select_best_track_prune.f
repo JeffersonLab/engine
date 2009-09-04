@@ -367,12 +367,16 @@ c      if(ifpp.eq.1) then
          jfpp = ifpp
          if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) jfpp = ifpp+1
          if(hselectfpptrackprune.eq.2) then ! use "Sitnik method"
-            scloseweight = hschi2perdeg + minchi2(ifpp)
-            criterion = hfpp_track_chi2(ifpp,itrack) + hschi2perdeg + 
+c            scloseweight = hschi2perdeg + minchi2(ifpp)
+            scloseweight = minchi2(ifpp)
+c            criterion = hfpp_track_chi2(ifpp,itrack) + hschi2perdeg + 
+c     $           scloseweight * (hfpp_track_sclose(jfpp,itrack))**2
+            criterion = hfpp_track_chi2(ifpp,itrack) +
      $           scloseweight * (hfpp_track_sclose(jfpp,itrack))**2
          else if(hselectfpptrackprune.eq.3) then ! use smallest chi2 track selection
             criterion = hfpp_track_chi2(ifpp,itrack)
-         else if(hselectfpptrackprune.eq.4) then ! use smallest sclose track selection
+         else if(hselectfpptrackprune.eq.4.or.
+     $           hselectfpptrackprune.eq.6) then         ! use smallest sclose track selection
             criterion = hfpp_track_sclose(jfpp,itrack)
          else                   ! use smallest theta track selection
             criterion = hfpp_track_theta(jfpp,itrack)
