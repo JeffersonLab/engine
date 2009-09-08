@@ -22,7 +22,6 @@ c      include 'gen_scalers.cmn'
       parameter(PI=3.14159265359)
 
       logical HEXIST ! CERNLIB function
-      logical hflag
 
 c      logical middlebest
 
@@ -37,7 +36,7 @@ c      integer itype
       integer nhit_tdc(224)
       integer nhit_ttdc(42)
       integer nhit_tadc(38)
-
+      logical hflag
       real Mp
       parameter(Mp=.938272)
 
@@ -50,10 +49,9 @@ c      integer itype
       err=' '
       ABORT=.false.
 
+      if (hflag) then
       if(.not.b_ntuple_exists) return
 
-       if ( .not. hflag) bigcal_ntuple_type = 1
-      if ( hflag) then
       if(b_ntuple_max_segmentevents.gt.0) then
          if(b_ntuple_segmentevents.gt.b_ntuple_max_segmentevents) then
             call b_ntuple_change(ABORT,err)
@@ -63,7 +61,7 @@ c      integer itype
          endif
       endif
       endif
-
+      if ( .not. hflag) bigcal_ntuple_type = 1
       if(bigcal_ntuple_type.eq.1) then
          bgid = gen_event_ID_number
          bgtype = gen_event_type
@@ -563,8 +561,8 @@ c$$$  $             yt(nthit),hn(nthit),tt(nthit)
       endif
       
       
-       if ( hflag) then
-        abort=.not.HEXIST(b_ntuple_ID)
+      if ( hflag) then
+      abort=.not.HEXIST(b_ntuple_ID)
       if(abort) then
          call G_build_note(':Ntuple ID#$ does not exist',
      $        '$',b_ntuple_ID,' ',0.,' ',err)
@@ -577,6 +575,5 @@ c$$$  $             yt(nthit),hn(nthit),tt(nthit)
          
       endif
       endif
-
       return 
       end
