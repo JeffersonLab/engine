@@ -106,32 +106,33 @@ c     enddo
 c     second prune test = conetest
 c     for FPP2, check conetest using either HMS or FPP1 as reference track
 c      do ifpp=1,2
-      ngood(ifpp) = 0
-c      ngood(3) = 0
-      do itrack=1,hfpp_n_tracks(ifpp)
-         jfpp = ifpp
-         if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) jfpp = ifpp+1
-         if(hfpp_track_conetest(jfpp,itrack).eq.1.and.
-     $        keep(ifpp,itrack)) then
-            ngood(ifpp) = ngood(ifpp) + 1
-         endif
-         
-c$$$         if(ifpp.eq.2.and.keep(3,itrack).and.
-c$$$     $        hfpp_track_conetest(3,itrack).eq.1) then
-c$$$            ngood(3) = ngood(3) + 1
-c$$$         endif
-      enddo
-      
-      if(ngood(ifpp).gt.0) then
+      if(hfpp_prune_conetest.ne.0) then
+         ngood(ifpp) = 0
+c     ngood(3) = 0
          do itrack=1,hfpp_n_tracks(ifpp)
             jfpp = ifpp
             if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) jfpp = ifpp+1
-            if(hfpp_track_conetest(jfpp,itrack).eq.0) then 
-               keep(ifpp,itrack) = .false.
+            if(hfpp_track_conetest(jfpp,itrack).eq.1.and.
+     $           keep(ifpp,itrack)) then
+               ngood(ifpp) = ngood(ifpp) + 1
             endif
+            
+c$$$  if(ifpp.eq.2.and.keep(3,itrack).and.
+c$$$     $        hfpp_track_conetest(3,itrack).eq.1) then
+c$$$  ngood(3) = ngood(3) + 1
+c$$$  endif
          enddo
+         
+         if(ngood(ifpp).gt.0) then
+            do itrack=1,hfpp_n_tracks(ifpp)
+               jfpp = ifpp
+               if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) jfpp = ifpp+1
+               if(hfpp_track_conetest(jfpp,itrack).eq.0) then 
+                  keep(ifpp,itrack) = .false.
+               endif
+            enddo
+         endif
       endif
-      
 c$$$      if(ngood(3).gt.0) then
 c$$$         do itrack=1,hfpp_n_tracks(2)
 c$$$            if(hfpp_track_conetest(3,itrack).eq.0) then
