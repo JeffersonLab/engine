@@ -189,6 +189,7 @@
       integer*4 hselectfpptrackprune ! flag to turn on FPP track selection using pruning
       integer*4 hfppcorrectdriftforangle ! flag to turn on correction of the drift distance and z coordinate of hits for track angles:
       integer*4 hfpp_prune_nplanes ! flag to turn on pruning of the number of layers on a track
+      integer*4 hfpp_prune_conetest ! flag to turn on pruning based on passing the cone test
       real*4 hfpp_prune_thetamin(2) ! FPP1 and FPP2
       real*4 hfpp_prune_thetamax(2) 
       real*4 hfpp_prune_sclose(2) 
@@ -200,6 +201,7 @@
      $     hfppuseajptracking,
      $     hfpp_use_multihit_wire,
      $     hfpp_prune_nplanes,
+     $     hfpp_prune_conetest,
      $     hselectfpptrackprune,
      $     hfppcorrectdriftforangle,
      $     hfpp_prune_thetamin,
