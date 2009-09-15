@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.11.18.5.2.4  2009/09/15 20:52:47  jones
+* add variables for coin data
+*
 * Revision 1.11.18.5.2.3  2009/06/29 20:00:16  jones
 * add hsxtar
 * set units for hszbeam,hsytar and hsxtar to cm
@@ -203,16 +206,68 @@ c
       m= m+1
       h_Ntuple_tag(m)= 'frast_x'
       m= m+1
-      h_Ntuple_tag(m)= 'hdchits1'
+      h_Ntuple_tag(m)= 'raw_srx'
       m= m+1
-      h_Ntuple_tag(m)= 'hdchits2'
+      h_Ntuple_tag(m)= 'raw_sry'
       m= m+1
       h_Ntuple_tag(m)= 'srast_y'
       m= m+1
       h_Ntuple_tag(m)= 'srast_x'
       m=m+1
       h_ntuple_tag(m)= 'helicite'
-
+      m=m+1
+      h_ntuple_tag(m)= 'hsxtar'
+      m=m+1
+      h_ntuple_tag(m)= 'betantrk'
+      m=m+1
+      h_ntuple_tag(m)= 'dctothit'
+      m=m+1
+      h_ntuple_tag(m)= 'dcntrk'
+      m=m+1
+      h_ntuple_tag(m)= 'sctothit'
+      m=m+1
+      h_ntuple_tag(m)= 'scallhit'
+      m=m+1
+      h_ntuple_tag(m)= 'scshould'
+      m=m+1
+      h_ntuple_tag(m)= 'ch1hit'
+      m=m+1
+      h_ntuple_tag(m)= 'ch2hit'
+      m=m+1
+      h_ntuple_tag(m)= 'caletot'
+c      m=m+1
+c      h_ntuple_tag(m)= 'hztar'
+      m=m+1
+      h_ntuple_tag(m)= 'dPel_HMS'
+      m=m+1
+      h_ntuple_tag(m)= 'X_HMS'
+      m=m+1
+      h_ntuple_tag(m)= 'Y_HMS'
+      m=m+1
+      h_ntuple_tag(m)= 'E_HMS'
+      m=m+1
+      h_ntuple_tag(m)= 'xclust'
+      m=m+1
+      h_ntuple_tag(m)= 'yclust'
+      m=m+1
+      h_ntuple_tag(m)= 'eclust'
+      m=m+1
+      h_ntuple_tag(m)= 'xcal_B0'
+      m=m+1
+      h_ntuple_tag(m)= 'ycal_B0'
+      m=m+1
+      h_ntuple_tag(m)= 'xdiff_shift'
+      m=m+1
+      h_ntuple_tag(m)= 'ydiff_shift'
+      m=m+1
+      h_ntuple_tag(m)= 'Eprime'
+      m=m+1
+      h_ntuple_tag(m)= 'nclust'
+      m=m+1
+      h_ntuple_tag(m)= 'rawnclus'
+      m=m+1
+      h_ntuple_tag(m)= 'hstubs'
+c
       h_Ntuple_size= m     !total size
 * Open ntuple
 

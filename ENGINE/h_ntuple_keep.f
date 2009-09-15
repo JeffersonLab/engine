@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.18.5.2.5  2009/09/15 20:53:10  jones
+* add variables for coin data
+*
 * Revision 1.10.18.5.2.4  2009/06/29 20:00:16  jones
 * add hsxtar
 * set units for hszbeam,hsytar and hsxtar to cm
@@ -87,12 +90,16 @@
       INCLUDE 'hms_scin_tof.cmn'
       INCLUDE 'gen_scalers.cmn'
       INCLUDE 'hms_track_histid.cmn'  !temp junk.
+      INCLUDE 'gep_data_structures.cmn'
+      include 'sane_ntuple.cmn'
+      include 'b_ntuple.cmn'
+      INCLUDE 'bigcal_data_structures.cmn'
 *
       logical HEXIST	!CERNLIB function
 *
       integer m
 c
-      integer pln,cnt,ihit
+      integer pln,cnt,ihit,nch1,nch2
       real s0x1padc,s0x1nadc,s0x2nadc,s0x2padc
       real s0x1ptdc,s0x1ntdc,s0x2ntdc,s0x2ptdc
 c
@@ -172,15 +179,75 @@ c                                ! track with spectrometer ray
       m= m+1
       h_Ntuple_contents(m)= gfrx_raw_adc
       m= m+1
-      h_Ntuple_contents(m)= hncham_hits(1)
-      m= m+1
-      h_Ntuple_contents(m)= hncham_hits(2)
+      h_Ntuple_contents(m)= gsrx_raw_adc
       m= m+1
       h_Ntuple_contents(m)= gsry_raw_adc
       m= m+1
-      h_Ntuple_contents(m)= gsrx_raw_adc
+      h_Ntuple_contents(m)= gsry_calib  ! +Y vertical up in beam coordinate system
+      m= m+1
+      h_Ntuple_contents(m)= gsrx_calib  ! X horizontal in beam coordinate system
       m=m+1
       h_ntuple_contents(m) = float(gbeam_helicity)
+      m=m+1
+      h_ntuple_contents(m) = hsx_tar*100
+      m=m+1
+      h_ntuple_contents(m) = hbeta_notrk
+      m=m+1
+      h_ntuple_contents(m) = float(HDC_TOT_HITS)
+      m=m+1
+      h_ntuple_contents(m) = float(HSNUM_FPTRACK)
+      m=m+1
+      h_ntuple_contents(m) = float(hscin_tot_hits)
+      m=m+1
+      h_ntuple_contents(m) = float(hscin_all_tot_hits)
+      m=m+1
+      h_ntuple_contents(m) = float(hgoodscinhits)
+      nch1 = 0
+      nch2 = 0
+      if ( HDC_TOT_HITS .gt. 0) then
+         do  ihit=1, HDC_TOT_HITS
+            if ( hdc_plane_num(ihit) .le. 6) nch1 = nch1 + 1 
+            if ( hdc_plane_num(ihit) .gt. 6) nch2 = nch2 + 1 
+            enddo
+      endif
+      m=m+1
+      h_ntuple_contents(m) = float(nch1)
+      m=m+1
+      h_ntuple_contents(m) = float(nch2)
+      m=m+1
+      h_ntuple_contents(m) = hcal_et
+      m=m+1
+      h_ntuple_contents(m) = dPel_HMS
+      m=m+1
+      h_ntuple_contents(m) = X_HMS
+      m=m+1
+      h_ntuple_contents(m) = Y_HMS
+      m=m+1
+      h_ntuple_contents(m) = E_HMS
+      m=m+1
+      h_ntuple_contents(m) = xclust(bigcal_itrack_best)
+      m=m+1
+      h_ntuple_contents(m) = yclust(bigcal_itrack_best)
+      m=m+1
+      h_ntuple_contents(m) = eclust(bigcal_itrack_best)
+      m=m+1
+      h_ntuple_contents(m) = xcal_hexpect_B0
+      m=m+1
+      h_ntuple_contents(m) = ycal_hexpect_B0
+      m=m+1
+      h_ntuple_contents(m) = xdiff_shift
+      m=m+1
+      h_ntuple_contents(m) = ydiff_shift
+      m=m+1
+      h_ntuple_contents(m) = EprimeMeV
+      m=m+1
+      h_ntuple_contents(m) = nclust
+      m=m+1
+      h_ntuple_contents(m) = bigcal_all_nclstr
+      m=m+1
+      h_ntuple_contents(m) = hstubs
+c      m=m+1
+c      h_ntuple_contents(m) = hz_tar*100
 c      write(6,'(i8,3f8.1)')gbeam_helicity,
 c     >  h_ntuple_contents(m),float(gbeam_helicity),
 c     >  h_ntuple_contents(m-1)
