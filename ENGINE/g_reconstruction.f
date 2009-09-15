@@ -14,6 +14,9 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.9.2.5  2009/09/15 20:39:59  jones
+* Call gep_hysics for event_type = 1 and 6 instead of just 6
+*
 * Revision 1.13.24.9.2.4  2009/09/02 13:39:35  jones
 * eliminate commented write statements
 *
@@ -248,7 +251,7 @@ c     >    gen_event_type.eq.13) then !5.BIGCAL/6.HMS-BIGCAL COIN/7.COSMIC/8.LIG
          ABORT= ABORT .or. FAIL
       endif
 *-GEP-COIN reconstruction
-      if(gen_event_type.eq.6) then !GEp-coin. trig
+      if(gen_event_type.eq.6 .or. gen_event_type.eq.1) then !GEp-coin. trig
 *         write(*,*) 'calling gep_reconstruction'
          call GEp_reconstruction(FAIL,why)
 *         write(*,*) 'gep_reconstruction successful'
