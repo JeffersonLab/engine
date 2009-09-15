@@ -143,7 +143,7 @@ c	scale=10000
 	PARAMETER (pi180 = 3.141592653/180.) 
 c	write(*,*) 'target theta = ',theta
 	B_theta  = theta
-	B_stheta = SIN(theta*pi180) 
+	B_stheta = SIN(theta*pi180)*cos(phi*pi180) 
 	B_ctheta = COS(theta*pi180)
 	
 	! Note: for performance reasons B_phi is always treated 0 in trgField
