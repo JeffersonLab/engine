@@ -5,6 +5,9 @@
 *     Author:   D. F. Geesaman          1 September 1993
 *
 * $Log$
+* Revision 1.12.20.1.2.3  2009/09/15 20:33:31  jones
+* New variables used in h_track.f
+*
 * Revision 1.12.20.1.2.2  2008/10/25 12:38:14  cdaq
 * *** empty log message ***
 *
@@ -428,6 +431,7 @@
       INTEGER*4 HNTRACKHITS_MAX    ! MAXIMUM NUMBER OF HITS IN EACH TRACK
       PARAMETER (HNTRACKHITS_MAX=16) ! SET MAXIMUM TO 15
       INTEGER*4 HNTRACKS_FP         ! NUMBER OF FOCAL PLANE TRACKS FOUND
+      INTEGER*4 HSTUBS         ! NUMBER OF STUBS
 *     ALL THE FOLLOWING VARIABLES ARE ARRAYS
 *
       REAL*4  HX_FP                ! X POSITION OF TRACK IN FOCAL PLANE
@@ -464,7 +468,7 @@
      7     HDEL_FP(4,4,HNTRACKS_MAX),
      8     HNTRACK_HITS(HNTRACKS_MAX,HNTRACKHITS_MAX+1),
      9     HNFREE_FP(HNTRACKS_MAX),
-     A     HNTRACKS_FP,HCHI2PERDOF_FP(HNTRACKS_MAX),
+     A     HNTRACKS_FP,HSTUBS,HCHI2PERDOF_FP(HNTRACKS_MAX),
      >     HX_FP_rot(HNTRACKS_MAX),
      >     HY_FP_rot(HNTRACKS_MAX), 
      >     HXP_FP_rot(HNTRACKS_MAX),
