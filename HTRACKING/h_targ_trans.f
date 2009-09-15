@@ -16,8 +16,8 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
-* Revision 1.16.24.2.2.7  2009/06/05 17:57:29  jones
-* Set y_coord = -gsrx_calib/100. since +gsrx_calib points beam right.
+* Revision 1.16.24.2.2.8  2009/09/15 20:36:53  jones
+* New variables theta_angle_diff,phi_angle_diff used in CALL trgInitFieldANGLES
 *
 * Revision 1.16.24.2.2.6  2009/02/11 21:34:54  cdaq
 * *** empty log message ***
@@ -145,6 +145,11 @@
       real trg(6),hut_rot(5)
       integer spect
       COMMON /hmsfocalplane/sum,hut_rot 
+c
+      real*8 theta_angle_diff,phi_angle_diff
+      logical first
+      data first /.true./
+c
 *=============================Executable Code =============================
       ABORT= .FALSE.
       err= ' '
@@ -276,8 +281,9 @@ c            write(*,*)'1 ',hx_tar(itrk),hy_tar(itrk),hxp_tar(itrk),hyp_tar(itrk
             
             
             ok = .TRUE.
-c            write(*,*)'SANE OMEGA AND PHI ',SANE_HMS_OMEGA,SANE_HMS_PHI
-            CALL trgInitFieldANGLES(SANE_HMS_OMEGA,SANE_HMS_PHI)
+      theta_angle_diff=abs(SANE_HMS_ANGLE_THETA+SANE_FIELD_ANGLE_THETA)
+      phi_angle_diff = 180.0d00
+      CALL trgInitFieldANGLES(theta_angle_diff,phi_angle_diff)
 c       write(*,*)dx,htheta_lab,hpcentral, hpartmass
             spect = 1 ! assume it is proton
             if ( hpartmass .lt. .01) spect = -1 ! set for electron
