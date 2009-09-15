@@ -161,8 +161,14 @@ c     expected hit positions in the calorimeter from the HMS:
       real*4 GEP_ephi_expect_H ! in radians
       real*4 GEP_bx_expect_H 
       real*4 GEP_by_expect_H
+
+      real*4 xdiff_shift,ydiff_shift,EprimeMeV
+      real*4 xcal_hexpect_B0,ycal_hexpect_B0	
+	
       common/gep_bcoord_expect/
      $     GEP_etheta_expect_H,
      $     GEP_ephi_expect_H,
      $     GEP_bx_expect_H,
-     $     GEP_by_expect_H
+     $     GEP_by_expect_H,
+     $     xdiff_shift,ydiff_shift,EprimeMeV,
+     $     xcal_hexpect_B0,ycal_hexpect_B0
