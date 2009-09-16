@@ -5,6 +5,9 @@
 *     Author:   D. F. Geesaman          1 September 1993
 *
 * $Log$
+* Revision 1.12.20.1.2.4  2009/09/16 19:00:45  jones
+* Move SANE_HMS_ANGLE_THETA, SANE_HMS_ANGLE_PHI to sane_data_structures.cmn
+*
 * Revision 1.12.20.1.2.3  2009/09/15 20:33:31  jones
 * New variables used in h_track.f
 *
@@ -693,8 +696,6 @@
 *     constants definitions for Foacl Plane Polarimeter   (frw 2006/06/22)
 *     these are used for array limits etc.
 *                                          
-      real*8 SANE_HMS_ANGLE_THETA, SANE_HMS_ANGLE_PHI
-      COMMON /HMSFIELDANGLES/SANE_HMS_ANGLE_THETA, SANE_HMS_ANGLE_PHI
 
 
       integer HMS_TRIGGER_COUNTER,HMS_TRIGGER_WINDOW
