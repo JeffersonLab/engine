@@ -375,9 +375,9 @@ c      endif
       theta_angle_diff=40.0d00
       phi_angle_diff=180.0d00
 c use +x vertical down, +y large angle, +z towards beta for tracking thru field
-      SANE_FIELD_THETA =theta_angle_diff 
-      SANE_FIELD_PHI =phi_angle_diff
-      CALL trgInitFieldANGLES(theta_angle_diff,phi_angle_diff)
+c      SANE_FIELD_THETA =theta_angle_diff 
+c      SANE_FIELD_PHI =phi_angle_diff
+      CALL trgInitFieldANGLES(SANE_BETA_FIELD_THETA ,SANE_BETA_FIELD_PHI)
          
       Eb   =  -Eprime*1000.
       U(1) =  0 ! vertical position (-y_beta)  cm 
