@@ -8,6 +8,13 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.21.2.12  2009/09/16 21:47:37  jones
+* Define SANE_FIELD_ANGLE_PHI , ANE_BETA_ANGLE_PHI , SANE_HMS_ANGLE_PHI
+* Set SANE_BETA_ANGLE_THETA = bigcal_theta_deg
+* Set ANE_HMS_ANGLE_THETA = htheta_lab
+* Create new varaibles SANE_HMS_FIELD_THETA,SANE_HMS_FIELD_PHI
+* Create new variables SANE_BETA_FIELD_THETA,SANE_BETA_FIELD_PHI
+*
 * Revision 1.42.8.21.2.11  2009/09/02 13:30:57  jones
 * eliminate definition of variables that are not used
 *
@@ -630,12 +637,24 @@ c
 c
 c initial polarized target field
       if (SANE_TGTFIELD_B .gt. 0)  then
-      SANE_BETA_OMEGA = SANE_BETA_ANGLE_THETA - SANE_FIELD_ANGLE_THETA
-      SANE_HMS_OMEGA  = SANE_FIELD_ANGLE_THETA - SANE_HMS_ANGLE_THETA  
-      SANE_BETA_PHI   = SANE_BETA_ANGLE_PHI - SANE_FIELD_ANGLE_PHI 
-      SANE_HMS_PHI    = SANE_HMS_ANGLE_PHI - SANE_FIELD_ANGLE_PHI 
+c BETA and HMS angle relative to beam direction, need SANE_FIELD_ANGLE_THETA
+      SANE_FIELD_ANGLE_PHI = 180.0d00
+      SANE_BETA_ANGLE_THETA = bigcal_theta_deg
+      SANE_BETA_ANGLE_PHI = 0.0d00  ! pointing beam left is phi =0
+      SANE_HMS_ANGLE_THETA = htheta_lab
+      SANE_HMS_ANGLE_PHI = 180.0d00  ! pointing beam left is phi =180
+      SANE_BETA_OMEGA = abs(SANE_BETA_ANGLE_THETA - SANE_FIELD_ANGLE_THETA) ! used in sane_physics.f
+c detemine angle of HMS and BETA relative to FIELD direction
+      SANE_HMS_FIELD_THETA  = SANE_FIELD_ANGLE_THETA + SANE_HMS_ANGLE_THETA  ! used h_targ_trans.f
+      SANE_HMS_FIELD_PHI    = 180.d00   ! used h_targ_trans.f
+      if (SANE_HMS_FIELD_THETA .gt. 180.0d00) then
+         SANE_HMS_FIELD_THETA = 360.0d00 - SANE_HMS_FIELD_THETA
+         SANE_HMS_FIELD_PHI    = 0.0d00
+      endif
+      SANE_BETA_FIELD_THETA  = abs(SANE_FIELD_ANGLE_THETA - SANE_BETA_ANGLE_THETA)  ! used gep_physics.f
+      SANE_BETA_FIELD_PHI    = 180.d00   ! used gep_physics.f
+      if (SANE_FIELD_ANGLE_THETA .le. SANE_BETA_ANGLE_THETA) SANE_BETA_FIELD_PHI    = 0.d00
       call trgInit('trg_field_map_extended.dat')
-      call trgInitFieldANGLES(SANE_BETA_OMEGA,SANE_BETA_PHI)
       endif
 c      
 c
