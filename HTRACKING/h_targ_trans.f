@@ -16,6 +16,10 @@
 *-           = 2      Matrix elements not initted correctly.
 *-    
 * $Log$
+* Revision 1.16.24.2.2.9  2009/09/16 21:49:20  jones
+* Use SANE_HMS_FIELD_THETA,SANE_HMS_FIELD_PHI defined in engine.f
+* in CALL trgInitFieldANGLES
+*
 * Revision 1.16.24.2.2.8  2009/09/15 20:36:53  jones
 * New variables theta_angle_diff,phi_angle_diff used in CALL trgInitFieldANGLES
 *
@@ -283,7 +287,7 @@ c            write(*,*)'1 ',hx_tar(itrk),hy_tar(itrk),hxp_tar(itrk),hyp_tar(itrk
             ok = .TRUE.
       theta_angle_diff=abs(SANE_HMS_ANGLE_THETA+SANE_FIELD_ANGLE_THETA)
       phi_angle_diff = 180.0d00
-      CALL trgInitFieldANGLES(theta_angle_diff,phi_angle_diff)
+      CALL trgInitFieldANGLES(SANE_HMS_FIELD_THETA,SANE_HMS_FIELD_PHI)
 c       write(*,*)dx,htheta_lab,hpcentral, hpartmass
             spect = 1 ! assume it is proton
             if ( hpartmass .lt. .01) spect = -1 ! set for electron
