@@ -8,6 +8,9 @@
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
 * $Log$
+* Revision 1.42.8.21.2.13  2009/09/17 20:24:14  jones
+* call sane_close_scalers()
+*
 * Revision 1.42.8.21.2.12  2009/09/16 21:47:37  jones
 * Define SANE_FIELD_ANGLE_PHI , ANE_BETA_ANGLE_PHI , SANE_HMS_ANGLE_PHI
 * Set SANE_BETA_ANGLE_THETA = bigcal_theta_deg
@@ -1202,6 +1205,7 @@ c...
         if (status.ne.0) write(6,*) 'status for evclose=',status
       endif
 
+      call sane_close_scalers()
       call g_dump_peds
       call h_dump_peds
       call s_dump_peds
