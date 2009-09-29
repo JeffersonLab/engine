@@ -33,8 +33,8 @@
       real*8 Eb,theta_big, phi_big!,ccx,ccy,ccz
       real P_el(4),p_e,WW2
       common/FAKEBIG/Eb,theta_big, phi_big
-      real*8 tcharge_old 
-      real*8 charge2s_old  
+      real*8 tcharge_old,tcharge_help_old,tcharge_helm_old 
+      real*8 charge2s_old,charge2s_help_old,charge2s_helm_old  
       real*8 polarea_old ,polarization_old
       integer*4 hel_p_scaler_old 
       integer*4 hel_n_scaler_old 
@@ -75,25 +75,29 @@ c     write(*,*)file_exist
       if(.not.charge_data_open.and.charge_ch)then
          charge2s = gbcm1_charge-tcharge
          tcharge = gbcm1_charge
+         charge2s_help = gbcm1_charge_help -tcharge_help 
+         tcharge_help  = gbcm1_charge_help 
+         charge2s_helm = gbcm1_charge_helm -tcharge_helm 
+         tcharge_helm  = gbcm1_charge_helm 
 c         write(*,*)'MMM'
 c      endif
 c      if(.not.charge_data_open.and.gscaler_change(538).ne.hel_p_scaler)then
-        hel_p_scaler= gscaler_change(538)
+        hel_p_scaler= 0.985*gscaler_change(510)-gscaler_change(538)
         hel_p_trig= g_hel_pos
         dtime_p =1.
-        if(abs(g_hel_pos).gt.0)then
-           dtime_p = gscaler_change(538)/float(g_hel_pos)
+        if(abs(hel_p_scaler).gt.0)then
+           dtime_p =float(g_hel_pos)/float(hel_p_scaler)
         endif
         call NANcheckF(dtime_p,0)
         g_hel_pos =0
 c        write(*,*)'MMM P'
 c      endif
 c      if(.not.charge_data_open.and.gscaler_change(546).ne.hel_n_scaler)then
-        hel_n_scaler= gscaler_change(546)
+        hel_n_scaler=gscaler_change(538)
         hel_n_trig= g_hel_neg
         dtime_n=1
-        if(abs(g_hel_neg).gt.0.0)then
-           dtime_n = gscaler_change(546)/float(g_hel_neg)
+        if(abs(hel_n_scaler).gt.0.0)then
+           dtime_n = float(g_hel_neg)/float(hel_n_scaler)
         endif
         call NANcheckF(dtime_n,0)
         g_hel_neg =0
@@ -106,6 +110,10 @@ c        write(*,*)'MMM N'
       if(charge_data_open)then
          charge2s = charge2s_old 
          tcharge = tcharge_old
+         charge2s_help = charge2s_help_old 
+         tcharge_help = tcharge_help_old
+         charge2s_helm = charge2s_helm_old 
+         tcharge_helm = tcharge_helm_old
          hel_p_scaler = hel_p_scaler_old
          hel_p_trig = hel_p_trig_old
          dtime_p = dtime_p 
@@ -128,12 +136,17 @@ c          write(*,*)'HELP ',polarea_old
 
       if(charge_data_open.and.gen_event_ID_number.eq.charge_id_change)then
 c         write(*,*)'HELP charge Had',tcharge,gbcm1_charge
-         read(charge_data_unit,*,end=18)charge_id_change,charge2s_old,tcharge_old,hel_p_scaler_old,
+         read(charge_data_unit,*,end=18)charge_id_change,charge2s_old,tcharge_old
+     >       ,charge2s_help_old,tcharge_help_old,charge2s_helm_old,tcharge_helm_old,hel_p_scaler_old,
      ,        hel_p_trig_old,dtime_p_old,
      ,        hel_n_scaler_old,hel_n_trig_old,dtime_n_old
 c         write(*,*)'HELP charge NOW',tcharge_old,gbcm1_charge
          charge2s = charge2s_old 
          tcharge = tcharge_old
+         charge2s_help = charge2s_help_old 
+         tcharge_help = tcharge_help_old
+         charge2s_helm = charge2s_helm_old 
+         tcharge_helm = tcharge_helm_old
          hel_p_scaler = hel_p_scaler_old
          hel_p_trig = hel_p_trig_old
          dtime_p = dtime_p_old 
@@ -145,7 +158,8 @@ c         write(*,*)'HELP charge NOW',tcharge_old,gbcm1_charge
          
 c        write(*,*)gbcm1_charge,tcharge
       else if(.not.charge_data_open.and.charge_ch)then
-         write(charge_data_unit,*)gen_event_ID_number,charge2s,tcharge,hel_p_scaler,
+         write(charge_data_unit,*)gen_event_ID_number,charge2s,tcharge,
+     >        charge2s_help,tcharge_help,charge2s_helm,tcharge_helm,hel_p_scaler,
      ,        hel_p_trig,dtime_p,hel_n_scaler,hel_n_trig,dtime_n
          charge_ch = .FALSE.
       endif
