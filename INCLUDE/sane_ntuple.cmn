@@ -58,8 +58,8 @@ c      character*256 b_tree_filename
      $     polarization_data_open,charge_data_open,
      $     polarization_data_unit,charge_data_unit
 
-      real*8 tcharge 
-      real*8 charge2s 
+      real*8 tcharge,tcharge_help,tcharge_helm
+      real*8 charge2s,charge2s_help,charge2s_helm
       real*8 polarea,polarization
       integer*4 hel_p_scaler
       integer*4 hel_n_scaler
@@ -69,8 +69,8 @@ c      character*256 b_tree_filename
       real*4  half_plate
 
       common/SANEEV/
-     $     tcharge,
-     $     charge2s,
+     $     tcharge,tcharge_help,tcharge_helm,
+     $     charge2s,charge2s_help,charge2s_helm,
      $     polarea,polarization,
      $ 	   hel_p_scaler,
      $	    hel_n_scaler,

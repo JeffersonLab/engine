@@ -21,6 +21,10 @@
       if(.not.charge_data_open)then
          charge2s = gbcm1_charge-tcharge
          tcharge = gbcm1_charge
+         charge2s_help = gbcm1_charge_help -tcharge_help 
+         tcharge_help  = gbcm1_charge_help 
+         charge2s_helm = gbcm1_charge_helm -tcharge_helm 
+         tcharge_helm  = gbcm1_charge_helm 
 c         write(*,*)'MMM'
 c      endif
 c      if(.not.charge_data_open.and.gscaler_change(538).ne.hel_p_scaler)then
@@ -52,10 +56,14 @@ c        write(*,*)'MMM N'
       endif
 
       if(.not.charge_data_open)then
-         write(charge_data_unit,*)gen_event_ID_number,charge2s,tcharge,hel_p_scaler,
+         write(charge_data_unit,*)gen_event_ID_number,charge2s,tcharge
+     >        ,charge2s_help,tcharge_help,charge2s_helm,tcharge_helm,hel_p_scaler,
      ,        hel_p_trig,dtime_p,hel_n_scaler,hel_n_trig,dtime_n
          charge_ch = .FALSE.
       endif
+         write(*,*)gen_event_ID_number,charge2s,tcharge,
+     >        charge2s_help,tcharge_help,charge2s_helm,tcharge_helm,hel_p_scaler,
+     ,        hel_p_trig,dtime_p,hel_n_scaler,hel_n_trig,dtime_n
 
       close(polarization_data_unit)
       close(charge_data_unit)
