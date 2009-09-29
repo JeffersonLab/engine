@@ -87,6 +87,8 @@ c      call HLIMIT(NWPAWC)
       call hbset('BSIZE',8176,status)
       call HBNT(id,title,' ')
       call HBNAME(id,'SANEEV',tcharge,'tcharge:R*8,charge2s:R*8,'//
+     $     'tcharge_help:R*8,charge2s_help:R*8,'//
+     $     'tcharge_helm:R*8,charge2s_helm:R*8,'//
      $     'polarea:R*8,polarization:R*8,'//
      $     'hel_p_scaler:I*4, hel_n_scaler:I*4,'//
      $     'hel_p_trig:I*4, hel_n_trig:I*4,'//
