@@ -27,6 +27,16 @@
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
 * $Log$
+* Revision 1.32.20.15.2.7  2009/09/29 13:58:51  jones
+* Remove lines:
+*             if(gen_event_trigtype(4).eq.1)then
+*               if(gbeam_helicity_TS.eq.1)g_hel_pos = g_hel_pos+1
+*               if(gbeam_helicity_TS.eq.-1)g_hel_neg = g_hel_neg+1
+*             endif
+* this was overcount the number of T4 helicity plus and minus triggers
+* since the routine is called multiple times per event.
+* Moved to g_reconstruction.f
+*
 * Revision 1.32.20.15.2.6  2009/09/02 13:38:01  jones
 * eliminate commented write statements
 *
@@ -545,10 +555,6 @@ c     SANE DECODER
 c
 
           else if(SANE_TRUE)then
-            if(gen_event_trigtype(4).eq.1)then
-              if(gbeam_helicity_TS.eq.1)g_hel_pos = g_hel_pos+1
-              if(gbeam_helicity_TS.eq.-1)g_hel_neg = g_hel_neg+1
-            endif
             call sane_decode(pointer,lastslot, roc, bank, 
      &           maxwords, did)
 ***************************************
