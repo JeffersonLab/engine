@@ -1,6 +1,10 @@
       subroutine g_analyze_scaler_bank(event,roc,ABORT,err)
 *     
 *     $Log$
+*     Revision 1.4.14.2.2.2  2009/09/29 13:57:19  jones
+*     1) Add variables for calculating charge asymmetry
+*     2) For runs between 72476 to 72588 calculate the time for each helicity using 0.4926*(total time) instead of direct scaler measurement since there was a problem with the clock signal going to downstairs scalers.
+*
 *     Revision 1.4.14.2.2.1  2009/09/02 13:34:35  jones
 *     add variable charge_ch
 *
@@ -79,7 +83,8 @@
 *     Temporary variables for beam current and charge calculations
 *     
       real*8 ave_current_unser
-      real*8 delta_time
+      real*8 delta_time,delta_time_help,delta_time_helm
+
 *     
 *     Find if hms or sos scaler event (assumes first HMS scaler is DA01).
 *     write(6,'("Scaler event: event(3)=",9z)') event(3)
@@ -239,6 +244,12 @@ c
 c
        g_run_time = g_run_time + max(0.001D00,gscaler_change(gclock_index)/gclock_rate)
       delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001D00)
+      delta_time_help = max(gscaler_change(515)/gclock_rate,.0001D00)
+      delta_time_helm = max(gscaler_change(516)/gclock_rate,.0001D00)
+       if ( gen_run_number .ge. 72476 .and. gen_run_number .le. 72588) then ! period when problem with clock signal
+          delta_time_help = 0.4926*delta_time
+          delta_time_helm = 0.4926*delta_time
+       endif
 c
                skip_events = .false.
                if (syncfilter_on .and. delta_time .gt. 2.5 ) then
@@ -250,6 +261,14 @@ c
      &        /delta_time) - gbcm1_offset)
          ave_current_bcm(2) = gbcm2_gain*((gscaler_change(gbcm2_index)
      &        /delta_time) - gbcm2_offset)
+         ave_current_bcm_help(1) = gbcm1_gain*((gscaler_change(513)
+     &        /delta_time_help) - gbcm1_offset)
+         ave_current_bcm_help(2) = gbcm2_gain*((gscaler_change(517)
+     &        /delta_time_help) - gbcm2_offset)
+         ave_current_bcm_helm(1) = gbcm1_gain*((gscaler_change(514)
+     &        /delta_time_helm) - gbcm1_offset)
+         ave_current_bcm_helm(2) = gbcm2_gain*((gscaler_change(518)
+     &        /delta_time_helm) - gbcm2_offset)
          ave_current_bcm(3) = gbcm3_gain*((gscaler_change(gbcm3_index)
      &        /delta_time) - gbcm3_offset)
          ave_current_unser = gunser_gain*((gscaler_change(gunser_index)
@@ -262,25 +281,41 @@ c
 
             gbcm1_charge = gbcm1_charge + ave_current_bcm(1)*delta_time
             gbcm2_charge = gbcm2_charge + ave_current_bcm(2)*delta_time
+            gbcm1_charge_help = gbcm1_charge_help + ave_current_bcm_help(1)*delta_time_help
+            gbcm2_charge_help = gbcm2_charge_help + ave_current_bcm_help(2)*delta_time_help
+            gbcm1_charge_helm = gbcm1_charge_helm + ave_current_bcm_helm(1)*delta_time_helm
+            gbcm2_charge_helm = gbcm2_charge_helm + ave_current_bcm_helm(2)*delta_time_helm
             gbcm3_charge = gbcm3_charge + ave_current_bcm(3)*delta_time
             gunser_charge = gunser_charge + ave_current_unser*delta_time
 
 *     
-*     Check for the "beam on" condition, and update "beam on" variables if needed.
+*     Check for the beam on condition, and update beam on variables if needed.
 *     
-*     We'll use bcm1 for now as it's zero seems more stable.  This could change.
+*     We will use bcm1 for now as it is zero seems more stable.  This could change.
 *     
 *     write(6,*) "Checking threshold..."
             if (ave_current_bcm(1) .ge. g_beam_on_thresh_cur(1) .and. insync .eq. 0 .and. .not. skip_events) then
                g_beam_on_run_time(1) = g_beam_on_run_time(1) + delta_time
                g_beam_on_bcm_charge(1) = g_beam_on_bcm_charge(1)
      $              + ave_current_bcm(1)*delta_time
+               g_beam_on_run_time_help(1) = g_beam_on_run_time_help(1) + delta_time_help
+               g_beam_on_bcm_charge_help(1) = g_beam_on_bcm_charge_help(1)
+     $              + ave_current_bcm_help(1)*delta_time_help
+               g_beam_on_run_time_helm(1) = g_beam_on_run_time_helm(1) + delta_time_helm
+               g_beam_on_bcm_charge_helm(1) = g_beam_on_bcm_charge_helm(1)
+     $              + ave_current_bcm_helm(1)*delta_time_helm
 *     write(6,*) "above threshold (",ave_current_bcm1,")"
             endif
             if (ave_current_bcm(2) .ge. g_beam_on_thresh_cur(2) .and. insync .eq. 0 .and. .not. skip_events) then
                g_beam_on_run_time(2) = g_beam_on_run_time(2) + delta_time
                g_beam_on_bcm_charge(2) = g_beam_on_bcm_charge(2)
      $              + ave_current_bcm(2)*delta_time
+               g_beam_on_run_time_help(2) = g_beam_on_run_time_help(2) + delta_time_help
+               g_beam_on_bcm_charge_help(2) = g_beam_on_bcm_charge_help(2)
+     $              + ave_current_bcm_help(2)*delta_time_help
+               g_beam_on_run_time_helm(2) = g_beam_on_run_time_helm(2) + delta_time_helm
+               g_beam_on_bcm_charge_helm(2) = g_beam_on_bcm_charge_helm(2)
+     $              + ave_current_bcm_helm(2)*delta_time_helm
             endif
 *     
             gscaler_event_num = gscaler_event_num + 1
