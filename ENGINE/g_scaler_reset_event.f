@@ -15,6 +15,9 @@
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 *
 * $Log$
+* Revision 1.5.22.2  2009/09/29 14:00:32  jones
+* Set variables used for charge asymmetry to zero
+*
 * Revision 1.5.22.1  2009/03/30 20:50:25  cdaq
 * *** empty log message ***
 *
@@ -73,6 +76,8 @@
 *     
       gbcm1_charge = 0.
       gbcm2_charge = 0.
+      gbcm1_charge_help = 0.
+      gbcm2_charge_helm = 0.
       gbcm3_charge = 0.
       gunser_charge = 0.
       g_hel_pos = 0
@@ -83,6 +88,14 @@
       g_beam_on_bcm_charge(1) = 0.
       g_beam_on_run_time(2) = 0.    ! Have to do this, because I have to accumlate
       g_beam_on_bcm_charge(2) = 0.
+      g_beam_on_run_time_help(1) = 0.    ! Have to do this, because I have to accumlate
+      g_beam_on_bcm_charge_help(1) = 0.
+      g_beam_on_run_time_help(2) = 0.    ! Have to do this, because I have to accumlate
+      g_beam_on_bcm_charge_help(2) = 0.
+      g_beam_on_run_time_helm(1) = 0.    ! Have to do this, because I have to accumlate
+      g_beam_on_bcm_charge_helm(1) = 0.
+      g_beam_on_run_time_helm(2) = 0.    ! Have to do this, because I have to accumlate
+      g_beam_on_bcm_charge_helm(2) = 0.
 *
       ABORT= .FALSE.
       err= ' '
