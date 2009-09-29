@@ -69,8 +69,9 @@ c      character*256 b_tree_filename
       real*4  half_plate
 
       common/SANEEV/
-     $     tcharge,tcharge_help,tcharge_helm,
-     $     charge2s,charge2s_help,charge2s_helm,
+     $     tcharge,
+     $     charge2s,
+     $	tcharge_help,charge2s_help,tcharge_helm,charge2s_helm,
      $     polarea,polarization,
      $ 	   hel_p_scaler,
      $	    hel_n_scaler,
