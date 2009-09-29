@@ -14,6 +14,15 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.9.2.6  2009/09/29 13:59:53  jones
+* Add lines:
+*             if(gen_event_trigtype(4).eq.1)then
+*               if(gbeam_helicity_TS.eq.1)g_hel_pos = g_hel_pos+1
+*               if(gbeam_helicity_TS.eq.-1)g_hel_neg = g_hel_neg+1
+*             endif
+* This is the number of T4 helicity plus and minus triggers
+* Used to calculate the computer lifetime
+*
 * Revision 1.13.24.9.2.5  2009/09/15 20:39:59  jones
 * Call gep_hysics for event_type = 1 and 6 instead of just 6
 *
@@ -114,6 +123,7 @@
       INCLUDE 'hack_.cmn'
       include 'bigcal_data_structures.cmn'
       include 'bigcal_bypass_switches.cmn'
+      include 'gen_scalers.cmn'
 *     
       logical FAIL
       character*1024 why
@@ -125,7 +135,6 @@
       err= ' '                                  !erase any old errors
 *
 
-      !write(*,*) 'segfault occurs somewhere in g_reconstruction.'
       call G_decode_event_by_banks(event,ABORT,err)
 
       IF(ABORT) THEN
@@ -137,7 +146,10 @@ C     SORTING F1 TRIGGERS BY COUNTERS
 C
       CALL f1trigger_sort_by_counter()
 
-      !write(*,*) 'g_decode_event_by_banks finished successfully'
+            if(gen_event_trigtype(4).eq.1)then
+              if(gbeam_helicity_TS.eq.1)g_hel_pos = g_hel_pos+1
+              if(gbeam_helicity_TS.eq.-1)g_hel_neg = g_hel_neg+1
+            endif
 
 *
 *
