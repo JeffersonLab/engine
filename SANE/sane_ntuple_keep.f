@@ -45,6 +45,8 @@
       common/SANEEV_old /
      $     tcharge_old ,
      $     charge2s_old ,
+     $     tcharge_help_old,charge2s_help_old,
+     $     tcharge_helm_old,charge2s_helm_old ,
      $     polarea_old ,polarization_old,
      $ 	   hel_p_scaler_old ,
      $	    hel_n_scaler_old ,
@@ -136,10 +138,13 @@ c          write(*,*)'HELP ',polarea_old
 
       if(charge_data_open.and.gen_event_ID_number.eq.charge_id_change)then
 c         write(*,*)'HELP charge Had',tcharge,gbcm1_charge
-         read(charge_data_unit,*,end=18)charge_id_change,charge2s_old,tcharge_old
-     >       ,charge2s_help_old,tcharge_help_old,charge2s_helm_old,tcharge_helm_old,hel_p_scaler_old,
-     ,        hel_p_trig_old,dtime_p_old,
-     ,        hel_n_scaler_old,hel_n_trig_old,dtime_n_old
+         read(charge_data_unit,*,end=18)
+     ,           charge_id_change,charge2s_old,tcharge_old,
+     ,           tcharge_help_old,charge2s_help_old,
+     ,           tcharge_helm_old,charge2s_helm_old ,
+     ,           hel_p_scaler_old,hel_p_trig_old,dtime_p_old,
+     ,           hel_n_scaler_old,hel_n_trig_old,dtime_n_old
+
 c         write(*,*)'HELP charge NOW',tcharge_old,gbcm1_charge
          charge2s = charge2s_old 
          tcharge = tcharge_old
@@ -158,9 +163,12 @@ c         write(*,*)'HELP charge NOW',tcharge_old,gbcm1_charge
          
 c        write(*,*)gbcm1_charge,tcharge
       else if(.not.charge_data_open.and.charge_ch)then
-         write(charge_data_unit,*)gen_event_ID_number,charge2s,tcharge,
-     >        charge2s_help,tcharge_help,charge2s_helm,tcharge_helm,hel_p_scaler,
-     ,        hel_p_trig,dtime_p,hel_n_scaler,hel_n_trig,dtime_n
+         write(charge_data_unit,*)
+     ,        gen_event_ID_number,charge2s,tcharge,
+     ,        tcharge_help,charge2s_help,
+     ,        tcharge_helm,charge2s_helm ,
+     >        hel_p_scaler,hel_p_trig,dtime_p,
+     ,        hel_n_scaler,hel_n_trig,dtime_n
          charge_ch = .FALSE.
       endif
 c      write(*,*)'HALF PLATE ',half_plate

@@ -56,14 +56,20 @@ c        write(*,*)'MMM N'
       endif
 
       if(.not.charge_data_open)then
-         write(charge_data_unit,*)gen_event_ID_number,charge2s,tcharge
-     >        ,charge2s_help,tcharge_help,charge2s_helm,tcharge_helm,hel_p_scaler,
-     ,        hel_p_trig,dtime_p,hel_n_scaler,hel_n_trig,dtime_n
+         write(charge_data_unit,*)
+     ,        gen_event_ID_number,charge2s,tcharge,
+     ,        tcharge_help,charge2s_help,
+     ,        tcharge_helm,charge2s_helm ,
+     ,        hel_p_scaler,hel_p_trig,dtime_p,
+     ,        hel_n_scaler,hel_n_trig,dtime_n
+
          charge_ch = .FALSE.
       endif
          write(*,*)gen_event_ID_number,charge2s,tcharge,
-     >        charge2s_help,tcharge_help,charge2s_helm,tcharge_helm,hel_p_scaler,
-     ,        hel_p_trig,dtime_p,hel_n_scaler,hel_n_trig,dtime_n
+     ,        tcharge_help,charge2s_help,
+     ,        tcharge_helm,charge2s_helm ,
+     ,     hel_p_scaler,hel_p_trig,dtime_p,
+     ,     hel_n_scaler,hel_n_trig,dtime_n
 
       close(polarization_data_unit)
       close(charge_data_unit)
