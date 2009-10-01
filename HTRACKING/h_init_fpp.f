@@ -53,7 +53,7 @@ c
            iPlane = H_FPP_N_DCLAYERS * (iChamber-1) + ilayer
 
            HFPP_spacing(iset,ichamber,ilayer)	  = inplanespacing(iPlane)
-	   HFPP_layeroffset(iset,ichamber,ilayer) = planeoffset(iPlane)
+	   HFPP_layeroffset(iset,ichamber,ilayer) = planeoffset(iPlane) + HFPP_Uoff_fine(iPlane+6*(iset-1))
 	   HFPP_layerZ(iset,ichamber,ilayer)	  = planeZ(iPlane)
 
            HFPP_direction(iset,ichamber,ilayer,1) = cos( planeangle(iPlane) *pi/180.)
