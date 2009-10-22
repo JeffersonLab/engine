@@ -64,6 +64,7 @@
 c      write(*,*)'Starting sane'
 c     INQUIRE(FILE="input.txt",EXIST=file_exist)
 c     write(*,*)file_exist
+      
       if(sane_ntuple_max_segmentevents.gt.0) then
          if(sane_ntuple_segmentevents.gt.sane_ntuple_max_segmentevents) then
             call sane_ntup_change(ABORT,err)
@@ -84,7 +85,8 @@ c     write(*,*)file_exist
 c         write(*,*)'MMM'
 c      endif
 c      if(.not.charge_data_open.and.gscaler_change(538).ne.hel_p_scaler)then
-        hel_p_scaler= 0.985*gscaler_change(510)-gscaler_change(538)
+        hel_p_scaler=gscaler_change(538)
+c        hel_p_scaler= 0.985*gscaler_change(510)-gscaler_change(538)
         hel_p_trig= g_hel_pos
         dtime_p =1.
         if(abs(hel_p_scaler).gt.0)then
@@ -95,7 +97,8 @@ c      if(.not.charge_data_open.and.gscaler_change(538).ne.hel_p_scaler)then
 c        write(*,*)'MMM P'
 c      endif
 c      if(.not.charge_data_open.and.gscaler_change(546).ne.hel_n_scaler)then
-        hel_n_scaler=gscaler_change(538)
+
+        hel_n_scaler= 0.985*gscaler_change(510)-gscaler_change(538)
         hel_n_trig= g_hel_neg
         dtime_n=1
         if(abs(hel_n_scaler).gt.0.0)then
@@ -108,6 +111,7 @@ c        write(*,*)'MMM N'
       if(polarization_data_open)then
          polarea = polarea_old
          polarization =polarization_old
+         half_plate =half_plate_old 
       endif
       if(charge_data_open)then
          charge2s = charge2s_old 
@@ -122,7 +126,6 @@ c        write(*,*)'MMM N'
          hel_n_scaler = hel_n_scaler_old
          hel_n_trig = hel_n_trig_old
          dtime_n = dtime_n_old
-         half_plate = half_plate_old 
 c         if(abs(gbcm1_charge-tcharge).lt.0.001)charge_ch = .TRUE.
       endif
       if(polarization_data_open.and.gen_event_ID_number.eq.pol_id_change)then
@@ -130,6 +133,7 @@ c         if(abs(gbcm1_charge-tcharge).lt.0.001)charge_ch = .TRUE.
 c          write(*,*)'HELP ',polarea_old 
          polarea = polarea_old
          polarization=polarization_old
+         half_plate =half_plate_old 
          polarization_ch = .FALSE.
       else if(.not.polarization_data_open.and.polarization_ch)then
           write(polarization_data_unit,*)gen_event_ID_number,polarea ,polarization ,half_plate
@@ -158,7 +162,6 @@ c         write(*,*)'HELP charge NOW',tcharge_old,gbcm1_charge
          hel_n_scaler = hel_n_scaler_old
          hel_n_trig = hel_n_trig_old
          dtime_n = dtime_n_old
-         half_plate =half_plate_old 
          charge_ch = .FALSE.
          
 c        write(*,*)gbcm1_charge,tcharge
@@ -470,8 +473,9 @@ c      endif
       n_clust = nclust
       do i =1,  n_clust
 
-          call icer(i)
           call Bigcal_Betta(i)
+          call icer(i)
+c          call Bigcal_Betta(i)
           call tracker(i)
           call TrackerCoordnate(i)
           call GeometryMatch(i)
