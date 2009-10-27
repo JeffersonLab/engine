@@ -47,9 +47,7 @@
       abort=.false.
 
 
-c      write(*,*)'SANE',sane_ntuple_file,sane_ntuple_exists,sane_ntuple_id
       if(sane_ntuple_exists) then 
-         !write(*,*) 'calling sane_ntuple_shutdown'
          call sane_ntup_shutdown(ABORT,err)
          if(abort) then 
             call G_add_path(here,err)
@@ -58,6 +56,9 @@ c      write(*,*)'SANE',sane_ntuple_file,sane_ntuple_exists,sane_ntuple_id
       endif
       if(polarization_data_table.eq.' ')then
          polarization_data_table = "poltemp.dat"
+         file_pol=polarization_data_table 
+            OPEN(unit=22,file=file_pol)
+         polarization_data_unit = 22
       else
          file_pol=polarization_data_table 
          call g_sub_run_number(file_pol,gen_run_number)
@@ -77,6 +78,9 @@ c     write(*,*)'HELP 11',polarea_old
       endif
       if(charge_data_table.eq.' ')then
          charge_data_table = "chargetemp.dat"
+         file_charge=charge_data_table 
+            OPEN(unit=23,file=file_charge)
+            charge_data_unit = 23
       else
          file_charge=charge_data_table 
          call g_sub_run_number(file_charge,gen_run_number)
@@ -110,7 +114,6 @@ c     ,     polarization_data_table = 'poltemp.dat'
       sane_ntuple_name = default_name
       if(sane_ntuple_title.eq.' ') then
          msg = sane_ntuple_name//' '//sane_ntuple_file
-         !write(*,*) 'bigcal ntuple title = ',msg
          call only_one_blank(msg)
          sane_ntuple_title= msg
 c         sane_ntuple_title= sane_ntuple_file
