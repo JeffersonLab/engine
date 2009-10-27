@@ -49,7 +49,7 @@ c      if(.not.charge_data_open.and.gscaler_change(546).ne.hel_n_scaler)then
         g_hel_neg =0
 c        write(*,*)'MMM N'
       endif
-      write(*,*)'Writing Last SCALER'
+c      write(*,*)'Writing Last SCALER'
       if(.not.polarization_data_open)then
           write(polarization_data_unit,*)gen_event_ID_number,polarea, polarization,half_plate
           polarization_ch = .FALSE.
@@ -65,11 +65,11 @@ c        write(*,*)'MMM N'
 
          charge_ch = .FALSE.
       endif
-         write(*,*)gen_event_ID_number,charge2s,tcharge,
-     ,        tcharge_help,charge2s_help,
-     ,        tcharge_helm,charge2s_helm ,
-     ,     hel_p_scaler,hel_p_trig,dtime_p,
-     ,     hel_n_scaler,hel_n_trig,dtime_n
+c         write(*,*)gen_event_ID_number,charge2s,tcharge,
+c     ,        tcharge_help,charge2s_help,
+c     ,        tcharge_helm,charge2s_helm ,
+c     ,     hel_p_scaler,hel_p_trig,dtime_p,
+c     ,     hel_n_scaler,hel_n_trig,dtime_n
 
       close(polarization_data_unit)
       close(charge_data_unit)
