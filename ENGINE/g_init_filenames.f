@@ -23,6 +23,9 @@
 *-    Modified   3-Dec-1993 Kevin Beard, Hampton U.
 *-    Modified   8-Dec-1993 Kevin Beard; rewrote parsing,added 'data' type
 * $Log$
+* Revision 1.19.6.9.2.1  2009/10/27 15:11:46  jones
+* Initialize pol_table and charge_table filenames
+*
 * Revision 1.19.6.9  2007/11/29 19:06:13  puckett
 * *** empty log message ***
 *
@@ -130,6 +133,7 @@
       include 'gep_filenames.cmn'
       include 'gen_routines.dec'
       include 'gen_run_info.cmn'
+      include 'sane_ntuple.cmn'
 *
       integer ierr
       character*132 file
@@ -202,7 +206,8 @@ c      b_angle_output_filename = ' ' ! add BigCal
       h_tree_filename = ' '
       b_tree_filename = ' '
       gep_tree_filename = ' '
-
+c
+      
 c     the following is the name of the binary data file containing 
 c     the augmented matrix and vector of constants for the system of 
 c     linear equations to be solved for the BigCal calibration coefficients,
@@ -214,7 +219,8 @@ c     is reached (bigcal_min_calib_events)
       b_debug_output_filename = ' '
       b_bad_chan_list_filename = ' '
 c      b_calib_report_filename = ' ' ! not used
-      
+      polarization_data_table = ' ' 
+      charge_data_table = ' '
 *
       g_label = ' '                     ! Label for reports etc.
 *
