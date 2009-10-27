@@ -10,6 +10,9 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log$
+* Revision 1.11.18.5.2.5  2009/10/27 15:48:29  jones
+* eliminate duplicate xtar entry
+*
 * Revision 1.11.18.5.2.4  2009/09/15 20:52:47  jones
 * add variables for coin data
 *
@@ -215,8 +218,6 @@ c
       h_Ntuple_tag(m)= 'srast_x'
       m=m+1
       h_ntuple_tag(m)= 'helicite'
-      m=m+1
-      h_ntuple_tag(m)= 'hsxtar'
       m=m+1
       h_ntuple_tag(m)= 'betantrk'
       m=m+1

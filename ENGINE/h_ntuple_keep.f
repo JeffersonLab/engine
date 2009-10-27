@@ -8,6 +8,9 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log$
+* Revision 1.10.18.5.2.6  2009/10/27 15:48:41  jones
+* eliminate duplicate xtar entry
+*
 * Revision 1.10.18.5.2.5  2009/09/15 20:53:10  jones
 * add variables for coin data
 *
@@ -188,8 +191,6 @@ c                                ! track with spectrometer ray
       h_Ntuple_contents(m)= gsrx_calib  ! X horizontal in beam coordinate system
       m=m+1
       h_ntuple_contents(m) = float(gbeam_helicity)
-      m=m+1
-      h_ntuple_contents(m) = hsx_tar*100
       m=m+1
       h_ntuple_contents(m) = hbeta_notrk
       m=m+1
