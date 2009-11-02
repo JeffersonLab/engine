@@ -17,6 +17,9 @@
 *                add     hdc_xcenter
 *                        hdc_ycenter
 * $Log$
+* Revision 1.11.24.7  2009/11/02 15:48:05  puckett
+* allow for relative rotation of FPP chambers within a pair about the z axis and an offset of relative position along z of FPP chambers within a pair
+*
 * Revision 1.11.24.6  2009/10/01 21:12:56  puckett
 * added user-adjustable plane position offsets to center track residuals at zero
 *
@@ -209,6 +212,8 @@
       real*4 HFPP_alpha_x       ! rotation angle about the x axis
       real*4 HFPP_alpha_y       ! rotation angle about the y axis
       real*4 HFPP_alpha_z       ! rotation angle about the z axis
+      real*4 hfpp_rot_rel       ! relative rotation of chambers within a pair (about z axis--this is a rotation of the wire orientations)
+      real*4 hfpp_z_rel         ! offset in z separation between FPP drift chambers
       integer*4 hfppuseajprotation ! flag to turn on usage of these angles
 
       real*4 HFPP_Xoff	        ! x offset in lab of each chamber set (cm)
@@ -252,6 +257,8 @@
      $   , HFPP_alpha_x(H_FPP_N_DCSETS)
      $   , HFPP_alpha_y(H_FPP_N_DCSETS)
      $   , HFPP_alpha_z(H_FPP_N_DCSETS)
+     $   , HFPP_rot_rel(h_fpp_n_dcsets)
+     $   , HFPP_z_rel(h_fpp_n_dcsets)
      $   , hfppuseajprotation
      &   , HFPP_Xoff(H_FPP_N_DCSETS)
      &   , HFPP_Yoff(H_FPP_N_DCSETS)
