@@ -292,7 +292,18 @@ c     >               iPlane,iWire,HFPP_raw_TDC(rawhitidx)
                   HFPP_nHitsinCluster(iSet,iChamber,iLayer,iCluster) = Ccount
                   HFPP_Clusters(iSet,iChamber,iLayer,iCluster,Ccount)
      >          				 = HFPP_hit1idx(iPlane,iWire)
-                endif
+               else ! why ignore hits? Let us start a new cluster instead:
+c                  write(*,*) 'WARNING: more than 3 adjacent hits'
+c                  write(*,*) 'ignoring subsequent hits'
+                  active_cluster = (hfpp_use_clusters.gt.0)
+                  iCluster = min(iCluster+1,H_FPP_MAX_CLUSTERS)
+                  hfpp_clusterintrack(iset,ichamber,ilayer,icluster) = 0
+                  ccount = 1
+                  hfpp_nhitsincluster(iset,ichamber,ilayer,icluster) = ccount
+                  hfpp_clusters(iset,ichamber,ilayer,icluster,ccount) = 
+     $                 hfpp_hit1idx(iplane,iwire)
+               endif
+
 	     endif !HFPP_hit1idx.eq.0
 
              HFPP_drift_time(iSet,iChamber,iLayer,iWire) = H_FPP_BAD_TIME
