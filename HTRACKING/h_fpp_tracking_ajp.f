@@ -1,3 +1,292 @@
+      subroutine h_fpp_tracking_ajp_alt(dcset,abort,err)
+      
+      implicit none
+      save
+      
+      include 'gen_detectorids.par'
+      include 'gen_decode_common.cmn'
+      INCLUDE 'hms_data_structures.cmn'
+      INCLUDE 'hms_geometry.cmn'
+      INCLUDE 'hms_fpp_event.cmn'
+      INCLUDE 'hms_fpp_params.cmn'
+      INCLUDE 'hms_id_histid.cmn'
+
+      logical abort
+      character*(*) err
+      integer*4 dcset
+
+      character*14 here
+      parameter (here= 'h_fpp_tracking')
+c     this routine is simply going to find the best combination of
+c     one hit per plane, with "best" defined by chi2:
+
+      logical sufficient_hits
+
+      integer i,j,k,l,m,n
+      integer itrack
+
+      integer*4 bestcombo(h_fpp_n_dcinset,h_fpp_n_dclayers)
+      real*4 HMStrack(4)
+      real*4 FPPtrack(4),newFPPtrack(4)
+      real*4 DCslopes(3),DCcoords(3), FPcoords(3), FPslopes(3)
+
+      real*4 PI
+      parameter(PI=3.141592653)
+
+      real*4 theta,mintheta,phi,sclose,minsclose,zclose
+      real*4 criterion,mincriterion
+      real*4 chi2,minchi2
+      integer*4 conetest,bestref,jtrack,iterations,nhitsrequired
+      integer*4 nhitsintrack,npoints
+      integer*4 ichamber,ilayer,icluster
+
+      integer*4 ntracksnew
+c      integer*4 nhitsrequired_firsttrack
+
+      real*4 SimpleTrack(6), FullTrack(7), temptrack(5)
+
+      logical ontrack(h_fpp_n_dcinset,h_fpp_n_dclayers) ! keep track of whether a cluster ends up on a track
+      integer*4 BestClusters(H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
+      integer*4 hitcluster(h_fpp_n_dcinset,h_fpp_n_dclayers)
+
+      logical firsttry,track_good
+
+      ABORT= .FALSE.
+      err= ' '
+
+c      write(*,*) 'new event'
+
+c     initialize ntracks to zero:
+      hfpp_n_tracks(dcset) = 0
+c     determine whether enough hits for tracking:
+      call h_fpp_tracking_freehitcount(dcset,sufficient_hits)
+c     find the individual combination of one hit per plane which gives the smallest chi2 of drift tracking:
+      do while (sufficient_hits .and. (HFPP_N_tracks(DCset).lt.H_FPP_MAX_TRACKS)) 
+         
+         ntracksnew = 0
+
+         nhitsrequired = h_fpp_n_planes + 1
+c         iterations = 0
+         do while(nhitsrequired.ge.hfpp_minsethits)
+            iterations = 0
+            nhitsintrack = 0
+            call h_fpp_tracking_nexthitcombo(dcset,nhitsrequired,nhitsintrack,hitcluster)
+            
+            firsttry = .true.
+
+            if(hfpp_n_tracks(dcset).gt.0.and.
+     $           nhitsrequired.lt.
+     $           hfpp_track_nlayers(dcset,hfpp_n_tracks(dcset))) exit
+
+            do while(nhitsintrack.gt.0)
+               
+c               if(iterations.gt.hfpp_maxcombos+1) then
+c                  write(*,*) 'WARNING: max FPP hit combos reached.'
+c                  write(*,*) 'consider raising the limit or using '
+c                  write(*,*) 'tighter raw timing cuts'
+c                  exit
+c               endif
+
+               iterations = iterations + 1
+
+               call h_fpp_fit_simple(dcset,hitcluster,npoints,temptrack,abort,err)
+               if (ABORT) then
+                  call g_add_path(here,err)
+                  return
+               endif
+               
+               if(temptrack(5).ge.0.0.and.temptrack(5).le.hfpp_aok_chi2) 
+     $              then ! passed simple chi2 cut
+c     call drift tracking:
+                  do j=1,5
+                     simpletrack(j) = temptrack(j)
+                  enddo
+                  simpletrack(6) = npoints
+
+                  call h_fpp_tracking_drifttrack_ajp(dcset,simpletrack,hitcluster,
+     $                 ontrack,track_good,fulltrack,nhitsrequired,1,abort,err)
+                  
+                  if (ABORT) then
+                     call g_add_path(here,err)
+                     return
+                  endif
+
+                  if(track_good) then ! track passes chi2 cut:
+                     if(firsttry.or.fulltrack(5).lt.minchi2) then
+                        firsttry = .false.
+                        minchi2 = fulltrack(5)
+                        do ichamber=1,h_fpp_n_dcinset
+                           do ilayer=1,h_fpp_n_dclayers
+                              bestclusters(ichamber,ilayer) = hitcluster(ichamber,ilayer)
+                           enddo
+                        enddo
+                     endif
+                  endif
+               endif
+c     get the next free hit combo:
+               call h_fpp_tracking_nexthitcombo(dcset,nhitsrequired,nhitsintrack,hitcluster)
+            enddo               ! end loop while hitsintrack>0
+c            write(*,*) 'finished loop over hit combos'
+c     at this point bestclusters contains the combination of one hit per plane with the best chi2:
+            if(.not. firsttry) then ! at least one track was found: add the best track to the track array:
+c     fit the simple and full tracks using the best clusters:
+               call h_fpp_fit_simple(dcset,bestclusters,npoints,temptrack,abort,err)
+               do j=1,5
+                  simpletrack(j) = temptrack(j)
+               enddo
+               simpletrack(6) = npoints
+               call h_fpp_tracking_drifttrack_ajp(dcset,simpletrack,bestclusters,
+     $              ontrack,track_good,fulltrack,nhitsrequired,1,abort,err)
+               
+               itrack = hfpp_n_tracks(dcset)+1
+               if(itrack.le.h_fpp_max_tracks) then
+
+c                  if(itrack.eq.1) nhitsrequired_firsttrack = int(fulltrack(7))
+
+                  ntracksnew = ntracksnew + 1
+
+                  hfpp_n_tracks(dcset) = itrack
+                  hfpp_track_nlayers(dcset,itrack) = int(fulltrack(7))
+                  
+                  do j=1,4
+                     hfpp_track_fine(dcset,itrack,j) = fulltrack(j)
+                  enddo
+
+c     Mark the hits in the best candidate track as used!
+                  do ichamber = 1,h_fpp_n_dcinset
+                     do ilayer = 1,h_fpp_n_dclayers
+                        icluster = bestclusters(ichamber,ilayer)
+                        if(icluster.gt.0.and.
+     $                       ontrack(ichamber,ilayer)) then
+                           hfpp_clusterintrack(dcset,ichamber,ilayer,icluster) = itrack
+                           hfpp_trackcluster(dcset,ichamber,ilayer,itrack) = icluster
+                        endif
+                     enddo
+                  enddo 
+c     
+                  hfpp_track_chi2(dcset,itrack) = fulltrack(5)
+                  hfpp_track_nhits(dcset,itrack) = int(fulltrack(6))
+
+                  do j=1,6
+                     hfpp_track_rough(dcset,itrack,j) = simpletrack(j)
+                  enddo
+                  
+                  hfpp_track_uniq(dcset,itrack) = .true.
+c     convert from local to fp coords:
+                  dccoords(1) = fulltrack(1)
+                  dccoords(2) = fulltrack(3)
+                  dccoords(3) = 1.
+                  call h_fpp_dc2fp(dcset,.true.,dccoords,fpcoords)
+                  
+                  fpptrack(3) = fpcoords(1) ! x' in fp coords
+                  fpptrack(4) = fpcoords(2) ! y' in fp coords
+                  
+*     now transform coordinates from local FPP system to HMS fp coords:
+
+                  dccoords(1) = fulltrack(2) ! x
+                  dccoords(2) = fulltrack(4) ! y
+                  dccoords(3) = 0.0                  
+                  call h_fpp_dc2fp(dcset,.false.,dccoords,fpcoords)
+                  
+                  fpptrack(1) = fpcoords(1) - fpcoords(3) * fpptrack(3)
+                  fpptrack(2) = fpcoords(2) - fpcoords(3) * fpptrack(4)
+
+                  call h_fpp_align(dcset,fpptrack,newfpptrack)
+
+                  hfpp_track_x(dcset,itrack) = newfpptrack(1)
+                  hfpp_track_y(dcset,itrack) = newfpptrack(2)
+                  hfpp_track_dx(dcset,itrack) = newfpptrack(3)
+                  hfpp_track_dy(dcset,itrack) = newfpptrack(4)
+
+c     calculate relative angles:
+                  call h_fpp_relative_angles(hsxp_fp,hsyp_fp,hfpp_track_dx(dcset,itrack),
+     $                 hfpp_track_dy(dcset,itrack),theta,phi)
+                  hfpp_track_theta(dcset,itrack) = theta
+                  hfpp_track_phi(dcset,itrack) = phi
+
+*     calculate closest approach parameters with respect to HMS, REGARDLESS of which FPP!
+                  
+                  hmstrack(1) = hsxp_fp
+                  hmstrack(2) = hsx_fp
+                  hmstrack(3) = hsyp_fp
+                  hmstrack(4) = hsy_fp
+                  
+                  fpptrack(1) = hfpp_track_dx(dcset,itrack)
+                  fpptrack(2) = hfpp_track_x(dcset,itrack)
+                  fpptrack(3) = hfpp_track_dy(dcset,itrack)
+                  fpptrack(4) = hfpp_track_y(dcset,itrack)                  
+                  call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
+                  hfpp_track_sclose(dcset,itrack) = sclose
+                  hfpp_track_zclose(dcset,itrack) = zclose
+                  
+                  conetest = 1
+                  call h_fpp_conetest(hmstrack,dcset,zclose,theta,conetest)
+                  hfpp_track_conetest(dcset,itrack) = conetest
+
+                  if(dcset.eq.2.and.hfpp_n_tracks(1).gt.0) then
+                     jtrack = hfpp_best_track(1)
+                     
+                     call h_fpp_relative_angles(hfpp_track_dx(1,jtrack),
+     $                    hfpp_track_dy(1,jtrack),
+     $                    hfpp_track_dx(dcset,itrack),
+     $                    hfpp_track_dy(dcset,itrack),
+     $                    theta,phi)
+                     hfpp_track_theta(dcset+1,itrack) = theta
+                     hfpp_track_phi(dcset+1,itrack) = phi
+                     
+                     hmstrack(1) = hfpp_track_dx(1,jtrack)
+                     hmstrack(2) = hfpp_track_x(1,jtrack)
+                     hmstrack(3) = hfpp_track_dy(1,jtrack)
+                     hmstrack(4) = hfpp_track_y(1,jtrack)
+
+                     fpptrack(1) = hfpp_track_dx(dcset,itrack)
+                     fpptrack(2) = hfpp_track_x(dcset,itrack)
+                     fpptrack(3) = hfpp_track_dy(dcset,itrack)
+                     fpptrack(4) = hfpp_track_y(dcset,itrack)
+
+                     call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
+
+                     hfpp_track_sclose(dcset+1,itrack) = sclose
+                     hfpp_track_zclose(dcset+1,itrack) = zclose
+                     
+                     conetest = 1
+                     
+                     call h_fpp_conetest(hmstrack,dcset,zclose,theta,conetest)
+                     
+                     hfpp_track_conetest(dcset+1,itrack) = conetest
+
+                     hfpp2_best_reference(itrack) = jtrack
+                     
+                     if(hfpp_track_theta(dcset,itrack).lt.
+     $                    hfpp_track_theta(dcset+1,itrack)) hfpp2_best_reference(itrack) = 0
+                  endif
+               endif
+               
+               exit             ! break out of the loop and update the "free hit" count:               
+            endif
+
+c            if(ntracksnew.eq.0 .and. hfpp_n_tracks(dcset).le.0 ) then
+c               nhitsrequired = nhitsrequired - 1
+c            endif
+            nhitsrequired = nhitsrequired - 1
+
+         enddo                  ! end loop while enough hits to do tracking 
+c         write(*,*) 'finished loop while nhitsrequired'
+c     once the "nhits required"
+c     if enough free hits remain for a track, repeat:
+c     if no new tracks were found on this iteration, we are done:
+         if(ntracksnew.eq.0) exit
+         
+c         write(*,*) 'ntracks=',hfpp_n_tracks(dcset)
+
+         call h_fpp_tracking_freehitcount(dcset,sufficient_hits)
+      enddo                     ! end loop while sufficient hits and tracks < max
+
+c      write(*,*) 'finished loop while suff. hits and tracks < max'
+
+      return 
+      end
+
       subroutine h_fpp_tracking_ajp(dcset,abort,err)
 
       implicit none 
@@ -177,7 +466,11 @@ c            any_track = .true.
 
          ngoodtracks = 0
 
+c         write(*,*) 'NEW EVENT'
+
  134     do i=1,ncandidates
+c            write(*,*) 'icandidate,simple chi2=',i,simpletracks(i,5)
+c            write(*,*) 'simple track (dx,x,dy,y)=(',(simpletracks(i,j),j=1,4),')'
             FullTrack(1) = H_FPP_BAD_COORD ! mx
             FullTrack(2) = H_FPP_BAD_COORD ! bx
             FullTrack(3) = H_FPP_BAD_COORD ! my
@@ -593,8 +886,8 @@ c     Mark the hits in the best candidate track as used!
                   if(icluster.gt.0.and.
      $                 hitsintrack(bestcandidate,ichamber,ilayer) ) then
                      hfpp_clusterintrack(dcset,ichamber,ilayer,icluster) = itrack
+                     hfpp_trackcluster(dcset,ichamber,ilayer,itrack) = icluster
                   endif
-                  hfpp_trackcluster(dcset,ichamber,ilayer,itrack) = icluster
                enddo
             enddo
             
@@ -771,10 +1064,13 @@ c     NOW we need to call freehitcount and start over with the remaining free hi
       integer*4 hitcombos(h_fpp_max_candidates,h_fpp_n_dcinset,h_fpp_n_dclayers)
       real*4 simpletracks(h_fpp_max_candidates,6)
 
+      integer*4 temphitcombo(h_fpp_n_dcinset,h_fpp_n_dclayers)
+      integer*4 tempsimpletrack(6)
+
       integer*4 HitCluster(H_FPP_N_DCINSET,H_FPP_N_DCLAYERS)
 
       integer*4 ncandidates,npoints
-      integer*4 nhitsrequired,iterations,ichamber,ilayer,i,j
+      integer*4 nhitsrequired,iterations,ichamber,ilayer,i,j,k,l,m,n
       integer*4 nhitsintrack
       integer*4 n3hit,n2hit ! tabulate number of three-hit and two hit clusters.
 
@@ -801,8 +1097,9 @@ c     NOW we need to call freehitcount and start over with the remaining free hi
       nhitsrequired = h_fpp_n_planes + 1
       iterations = 0
 
-      do while(nhitsrequired .ge. hfpp_minsethits.and.ncandidates.lt.
-     $     h_fpp_max_candidates)
+c      do while(nhitsrequired .ge. hfpp_minsethits.and.ncandidates.lt.
+c     $     h_fpp_max_candidates)
+      do while(nhitsrequired.ge.hfpp_minsethits)
 
          nhitsintrack = 0
 *     call next combo with large nhitsrequired to get the first useful combo as well as the max
@@ -819,7 +1116,8 @@ c$$$         enddo
 
 *     keep comparing permutations until all possibilities are tried:
 
-         do while(nhitsintrack.gt.0.and.ncandidates.lt.h_fpp_max_candidates)
+c         do while(nhitsintrack.gt.0.and.ncandidates.lt.h_fpp_max_candidates)
+         do while(nhitsintrack.gt.0)
 
             iterations = iterations + 1
 
@@ -861,22 +1159,61 @@ c$$$     $           ) then           ! add a new candidate track to the array:
             if(temptrack(5).ge.0.0.and.temptrack(5).le.hfpp_aok_chi2) 
      $           then
                ncandidates = ncandidates + 1
-               do ichamber=1,h_fpp_n_dcinset
-                  do ilayer=1,h_fpp_n_dclayers
-                     hitcombos(ncandidates,ichamber,ilayer) = 
-     $                    hitcluster(ichamber,ilayer)
-                  enddo
+
+               do k=1,min(h_fpp_max_candidates,ncandidates)
+*     make this array sorted by simple track chi2, so if there is overflow, 
+*     we will take the h_fpp_max_candidates combos with the smallest simple chi2:
+                  if(temptrack(5).lt.simpletracks(k,5).or.
+     $                 k.eq.min(h_fpp_max_candidates,ncandidates)) then
+c     this hit combo either has a smaller chi2 than the kth combo or is the first 
+c     combo found or has a larger chis than all previous hit combos:
+c     put this combo at position k, move kth combo to k+1, etc...
+c     first, shift all combos from k to ncandidates-1 up by 1:
+                     do m=min(h_fpp_max_candidates-1,ncandidates-1),k,-1
+c     start with last (mth) combo, work our way down to k:
+c     copy mth combo into (m+1)th combo:
+                        do n=1,6
+                           simpletracks(m+1,n) = simpletracks(m,n)
+                        enddo
+                        do ichamber=1,h_fpp_n_dcinset
+                           do ilayer=1,h_fpp_n_dclayers
+                              hitcombos(m+1,ichamber,ilayer) = hitcombos(m,ichamber,ilayer)
+                           enddo
+                        enddo
+                     enddo
+c     next, insert the new combo at position k:
+                     do ichamber=1,h_fpp_n_dcinset
+                        do ilayer=1,h_fpp_n_dclayers
+                           hitcombos(k,ichamber,ilayer) = hitcluster(ichamber,ilayer)
+                        enddo
+                     enddo
+                     do n=1,5
+                        simpletracks(k,n) = temptrack(n)
+                     enddo
+                     simpletracks(k,6) = npoints
+c     break out of the loop when this condition is met!
+                     exit
+                  endif
                enddo
-               
-               do j=1,5
-                  simpletracks(ncandidates,j) = temptrack(j)
-               enddo
-               simpletracks(ncandidates,6) = float(npoints)
+
+c$$$               do ichamber=1,h_fpp_n_dcinset
+c$$$                  do ilayer=1,h_fpp_n_dclayers
+c$$$                     hitcombos(ncandidates,ichamber,ilayer) = 
+c$$$     $                    hitcluster(ichamber,ilayer)
+c$$$                  enddo
+c$$$               enddo
+c$$$               
+c$$$               do j=1,5
+c$$$                  simpletracks(ncandidates,j) = temptrack(j)
+c$$$               enddo
+c$$$               simpletracks(ncandidates,6) = float(npoints)
             endif
 
             call h_fpp_tracking_nexthitcombo(dcset,nhitsrequired,nhitsintrack,hitcluster)
             
          enddo
+
+         ncandidates = min(h_fpp_max_candidates,ncandidates)
 
          if(iterations.gt.hfpp_maxcombos) then
             ncandidates = 0
