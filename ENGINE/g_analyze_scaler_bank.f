@@ -1,6 +1,9 @@
       subroutine g_analyze_scaler_bank(event,roc,ABORT,err)
 *     
 *     $Log$
+*     Revision 1.4.14.2.2.3  2009/11/04 15:10:38  jones
+*     Fill new variable g_run_time_beam_on
+*
 *     Revision 1.4.14.2.2.2  2009/09/29 13:57:19  jones
 *     1) Add variables for calculating charge asymmetry
 *     2) For runs between 72476 to 72588 calculate the time for each helicity using 0.4926*(total time) instead of direct scaler measurement since there was a problem with the clock signal going to downstairs scalers.
@@ -317,6 +320,7 @@ c
                g_beam_on_bcm_charge_helm(2) = g_beam_on_bcm_charge_helm(2)
      $              + ave_current_bcm_helm(2)*delta_time_helm
             endif
+            g_run_time_beam_on = g_beam_on_run_time(bcm_for_threshold_cut)
 *     
             gscaler_event_num = gscaler_event_num + 1
 
