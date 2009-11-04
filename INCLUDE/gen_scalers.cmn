@@ -4,6 +4,9 @@
 *     quantities calculated from the scaler events (time, current, etc...)
 *
 * $Log$
+* Revision 1.13.14.1.2.3  2009/11/04 15:09:42  jones
+* Add vairable g_run_time_beam_on
+*
 * Revision 1.13.14.1.2.2  2009/09/29 14:02:17  jones
 * Add variables for charge asymmetry calcualtion
 *
@@ -80,7 +83,7 @@
       real*8 gscaler_change(MAX_NUM_SCALERS)  ! prev_scalers - scalers
       real*8 gscaler_skipped(MAX_NUM_SCALERS)  ! prev_scalers - scalers
       real*8 gscaler_saved(MAX_NUM_SCALERS)  ! prev_scalers - scalers
-      real*8 g_run_time                       !time of run at most recent scaler event
+      real*8 g_run_time,g_run_time_beam_on                       !time of run at most recent scaler event
       real*8 g_beam_on_run_time(2)               ! accumulated time of run for which
       real*8 g_beam_on_run_time_help(2)               ! accumulated time of run for which
       real*8 g_beam_on_run_time_helm(2)               ! accumulated time of run for which
@@ -94,7 +97,7 @@
 *
       common /SCALERS/ gscaler, gscaler_old, gscaler_change,
      $     ave_current_bcm,ave_current_bcm_help,ave_current_bcm_helm,gscaler_skipped,gscaler_saved,
-     $     gclock_rate, g_run_time, gclock_index, g_replay_time,
+     $     gclock_rate, g_run_time,g_run_time_beam_on, gclock_index, g_replay_time,
      $     gscaler_nroll, g_beam_on_run_time, g_beam_on_run_time_help, g_beam_on_run_time_helm,syncfilter_on,insync 
 
 c For Gen it is noticed that some scaler channels are randomly clearing
