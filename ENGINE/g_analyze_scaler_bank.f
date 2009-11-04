@@ -1,6 +1,9 @@
       subroutine g_analyze_scaler_bank(event,roc,ABORT,err)
 *     
 *     $Log$
+*     Revision 1.4.14.2.2.4  2009/11/04 15:34:05  jones
+*     Call scalers 514 and 518 helicity plus and 513 and 517 helicity minus
+*
 *     Revision 1.4.14.2.2.3  2009/11/04 15:10:38  jones
 *     Fill new variable g_run_time_beam_on
 *
@@ -264,13 +267,13 @@ c
      &        /delta_time) - gbcm1_offset)
          ave_current_bcm(2) = gbcm2_gain*((gscaler_change(gbcm2_index)
      &        /delta_time) - gbcm2_offset)
-         ave_current_bcm_help(1) = gbcm1_gain*((gscaler_change(513)
+         ave_current_bcm_help(1) = gbcm1_gain*((gscaler_change(514)
      &        /delta_time_help) - gbcm1_offset)
-         ave_current_bcm_help(2) = gbcm2_gain*((gscaler_change(517)
+         ave_current_bcm_help(2) = gbcm2_gain*((gscaler_change(518)
      &        /delta_time_help) - gbcm2_offset)
-         ave_current_bcm_helm(1) = gbcm1_gain*((gscaler_change(514)
+         ave_current_bcm_helm(1) = gbcm1_gain*((gscaler_change(513)
      &        /delta_time_helm) - gbcm1_offset)
-         ave_current_bcm_helm(2) = gbcm2_gain*((gscaler_change(518)
+         ave_current_bcm_helm(2) = gbcm2_gain*((gscaler_change(517)
      &        /delta_time_helm) - gbcm2_offset)
          ave_current_bcm(3) = gbcm3_gain*((gscaler_change(gbcm3_index)
      &        /delta_time) - gbcm3_offset)
