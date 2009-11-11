@@ -1,6 +1,11 @@
       subroutine g_analyze_scaler_bank(event,roc,ABORT,err)
 *     
 *     $Log$
+*     Revision 1.4.14.2.2.5  2009/11/11 16:22:00  jones
+*     Switch to
+*     delta_time_help = max(gscaler_change(516)/gclock_rate,.0001D00)
+*     delta_time_helm = max(gscaler_change(515)/gclock_rate,.0001D00)
+*
 *     Revision 1.4.14.2.2.4  2009/11/04 15:34:05  jones
 *     Call scalers 514 and 518 helicity plus and 513 and 517 helicity minus
 *
@@ -250,8 +255,8 @@ c
 c
        g_run_time = g_run_time + max(0.001D00,gscaler_change(gclock_index)/gclock_rate)
       delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001D00)
-      delta_time_help = max(gscaler_change(515)/gclock_rate,.0001D00)
-      delta_time_helm = max(gscaler_change(516)/gclock_rate,.0001D00)
+      delta_time_help = max(gscaler_change(516)/gclock_rate,.0001D00)
+      delta_time_helm = max(gscaler_change(515)/gclock_rate,.0001D00)
        if ( gen_run_number .ge. 72476 .and. gen_run_number .le. 72588) then ! period when problem with clock signal
           delta_time_help = 0.4926*delta_time
           delta_time_helm = 0.4926*delta_time
