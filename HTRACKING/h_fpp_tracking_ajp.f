@@ -137,7 +137,7 @@ c     fit the simple and full tracks using the best clusters:
                simpletrack(6) = npoints
                call h_fpp_tracking_drifttrack_ajp(dcset,simpletrack,bestclusters,
      $              ontrack,track_good,fulltrack,nhitsrequired,1,abort,err)
-               
+
                itrack = hfpp_n_tracks(dcset)+1
                if(itrack.le.h_fpp_max_tracks) then
 
@@ -162,7 +162,7 @@ c     Mark the hits in the best candidate track as used!
                            hfpp_trackcluster(dcset,ichamber,ilayer,itrack) = icluster
                         endif
                      enddo
-                  enddo 
+                  enddo                   
 c     
                   hfpp_track_chi2(dcset,itrack) = fulltrack(5)
                   hfpp_track_nhits(dcset,itrack) = int(fulltrack(6))
