@@ -111,7 +111,8 @@ c      do ifpp=1,2
 c     ngood(3) = 0
          do itrack=1,hfpp_n_tracks(ifpp)
             jfpp = ifpp
-            if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) jfpp = ifpp+1
+            if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0
+     $           .and.hselectfpptrackprune.ne.1) jfpp = ifpp+1
             if(hfpp_track_conetest(jfpp,itrack).eq.1.and.
      $           keep(ifpp,itrack)) then
                ngood(ifpp) = ngood(ifpp) + 1
@@ -126,7 +127,8 @@ c$$$  endif
          if(ngood(ifpp).gt.0) then
             do itrack=1,hfpp_n_tracks(ifpp)
                jfpp = ifpp
-               if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) jfpp = ifpp+1
+               if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0
+     $              .and.hselectfpptrackprune.ne.1) jfpp = ifpp+1
                if(hfpp_track_conetest(jfpp,itrack).eq.0) then 
                   keep(ifpp,itrack) = .false.
                endif
@@ -150,7 +152,8 @@ c      do ifpp=1,2
 c      ngood(3) = 0
       do itrack=1,hfpp_n_tracks(ifpp)
          jfpp = ifpp
-         if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) jfpp = ifpp+1
+         if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0
+     $        .and.hselectfpptrackprune.ne.1) jfpp = ifpp+1
          if(hfpp_track_theta(jfpp,itrack).ge.hfpp_prune_thetamin(ifpp)*PI/180.0
      $        .and.keep(ifpp,itrack))then
             ngood(ifpp) = ngood(ifpp) + 1
@@ -166,7 +169,8 @@ c$$$         endif
       if(ngood(ifpp).gt.0) then
          do itrack=1,hfpp_n_tracks(ifpp)
             jfpp = ifpp
-            if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) jfpp = ifpp+1
+            if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0
+     $           .and.hselectfpptrackprune.ne.1) jfpp = ifpp+1
             if(hfpp_track_theta(jfpp,itrack).lt.hfpp_prune_thetamin(ifpp)*PI/180.0) 
      $           then
                keep(ifpp,itrack) = .false.
@@ -191,7 +195,8 @@ c      do ifpp=1,2
 c      ngood(3) = 0
       do itrack=1,hfpp_n_tracks(ifpp)
          jfpp = ifpp
-         if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) jfpp = ifpp+1
+         if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0.and.
+     $        hselectfpptrackprune.ne.1) jfpp = ifpp+1
          if(keep(ifpp,itrack).and.hfpp_track_theta(jfpp,itrack).le.
      $        hfpp_prune_thetamax(ifpp)*PI/180.0) then
             ngood(ifpp) = ngood(ifpp) + 1
@@ -205,7 +210,8 @@ c$$$         endif
       if(ngood(ifpp).gt.0) then
          do itrack=1,hfpp_n_tracks(ifpp)
             jfpp = ifpp
-            if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) jfpp = ifpp+1
+            if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0
+     $           .and.hselectfpptrackprune.ne.1) jfpp = ifpp+1
             if(hfpp_track_theta(jfpp,itrack).gt.hfpp_prune_thetamax(ifpp)*PI/180.0)
      $           then
                keep(ifpp,itrack) = .false.
@@ -230,7 +236,8 @@ c      do ifpp=1,2
 c      ngood(3) = 0
       do itrack=1,hfpp_n_tracks(ifpp)
          jfpp = ifpp
-         if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) jfpp = ifpp+1
+         if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0
+     $        .and.hselectfpptrackprune.ne.1) jfpp = ifpp+1
          if(keep(ifpp,itrack).and.hfpp_track_sclose(jfpp,itrack).le.
      $        hfpp_prune_sclose(ifpp)) then
             ngood(ifpp) = ngood(ifpp) + 1
@@ -244,7 +251,8 @@ c$$$         endif
       if(ngood(ifpp).gt.0) then
          do itrack=1,hfpp_n_tracks(ifpp)
             jfpp = ifpp
-            if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) jfpp = ifpp+1
+            if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0.and.
+     $           hselectfpptrackprune.ne.1) jfpp = ifpp+1
             if(hfpp_track_sclose(jfpp,itrack).gt.
      $           hfpp_prune_sclose(ifpp)) then
                keep(ifpp,itrack) = .false.
@@ -256,7 +264,7 @@ c$$$      if(ngood(3).gt.0) then
 c$$$         do itrack=1,hfpp_n_tracks(2)
 c$$$            if(hfpp_track_sclose(3,itrack).gt.
 c$$$     $           hfpp_prune_sclose(1)) then
-c$$$               keep(3,itrack) = .false.
+c$$$  keep(3,itrack) = .false.
 c$$$            endif
 c$$$         enddo
 c$$$      endif
@@ -279,7 +287,8 @@ c     write(*,*) 'FPP,zlow,zhigh=',ifpp,ztest(ifpp,1),ztest(ifpp,2)
 c      ngood(3) = 0
       do itrack=1,hfpp_n_tracks(ifpp)
          jfpp = ifpp
-         if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) jfpp = ifpp+1
+         if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0
+     $        .and.hselectfpptrackprune.ne.1) jfpp = ifpp+1
 
          zslop = hfpp_prune_zslop(ifpp) * 
      $        max(1.0,min(1000.0,1.0/tan(hfpp_track_theta(jfpp,itrack))))
@@ -305,7 +314,8 @@ c$$$         endif
       if(ngood(ifpp).gt.0) then
          do itrack=1,hfpp_n_tracks(ifpp)
             jfpp = ifpp
-            if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) jfpp = ifpp+1
+            if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0.and.
+     $           hselectfpptrackprune.ne.1) jfpp = ifpp+1
             zslop = hfpp_prune_zslop(ifpp) * 
      $           max(1.0,min(1000.0,1.0/tan(hfpp_track_theta(jfpp,itrack))))
             if(hfpp_track_zclose(jfpp,itrack).lt.
@@ -366,7 +376,8 @@ c     write(*,*) 'Entering final FPP1 track selection'
 c      if(ifpp.eq.1) then
       do itrack=1,hfpp_n_tracks(ifpp)
          jfpp = ifpp
-         if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0) jfpp = ifpp+1
+         if(ifpp.eq.2.and.hfpp2_best_reference(itrack).gt.0
+     $        .and.hselectfpptrackprune.ne.1) jfpp = ifpp+1
          if(hselectfpptrackprune.eq.2) then ! use "Sitnik method"
 c            scloseweight = hschi2perdeg + minchi2(ifpp)
             scloseweight = minchi2(ifpp)

@@ -105,16 +105,51 @@ c     call drift tracking:
 
                   call h_fpp_tracking_drifttrack_ajp(dcset,simpletrack,hitcluster,
      $                 ontrack,track_good,fulltrack,nhitsrequired,1,abort,err)
-                  
+
                   if (ABORT) then
                      call g_add_path(here,err)
                      return
                   endif
 
                   if(track_good) then ! track passes chi2 cut:
-                     if(firsttry.or.fulltrack(5).lt.minchi2) then
+c     calculate polar theta of this track in order to have the option to use theta instead of chi2 as track selection criterion:
+c     first transform to focal plane coordinates:
+c     slopes:
+                     dcslopes(1) = fulltrack(1)
+                     dcslopes(2) = fulltrack(3)
+                     dcslopes(3) = 1.0
+
+                     call h_fpp_dc2fp(dcset,.true.,dcslopes,fpslopes)
+                     
+                     fpptrack(3) = fpslopes(1) ! x'
+                     fpptrack(4) = fpslopes(2) ! y'
+c     coords:
+                     dccoords(1) = fulltrack(2)
+                     dccoords(2) = fulltrack(4)
+                     dccoords(3) = 0.0
+                     
+                     call h_fpp_dc2fp(dcset,.false.,dccoords,fpcoords)
+
+                     fpptrack(1) = fpcoords(1) - fpcoords(3) * fpptrack(3)
+                     fpptrack(2) = fpcoords(2) - fpcoords(3) * fpptrack(4)
+c     quadratic alignment correction, if any:
+                     call h_fpp_align(dcset,fpptrack,newfpptrack)
+                     
+                     fpptrack(1) = newfpptrack(3) ! x'
+                     fpptrack(2) = newfpptrack(1) ! x
+                     fpptrack(3) = newfpptrack(4) ! y'
+                     fpptrack(4) = newfpptrack(2) ! y
+                     
+                     call h_fpp_relative_angles(hsxp_fp,hsyp_fp,fpptrack(1),fpptrack(3),theta,phi)
+
+                     criterion = fulltrack(5)
+                     if( hselectfpptrackprune.eq.1) then
+                        criterion = theta
+                     endif
+
+                     if(firsttry.or.criterion.lt.mincriterion) then
                         firsttry = .false.
-                        minchi2 = fulltrack(5)
+                        mincriterion = criterion
                         do ichamber=1,h_fpp_n_dcinset
                            do ilayer=1,h_fpp_n_dclayers
                               bestclusters(ichamber,ilayer) = hitcluster(ichamber,ilayer)
@@ -552,7 +587,8 @@ c$$$               fpptrack(4) = fpcoords(2)
 *     in FPP2, we use the "best" track from FPP1 as a reference track:
                mintheta = theta
                bestref = 0
-               if(dcset.eq.2.and.hfpp_n_tracks(1).gt.0) then
+               if(dcset.eq.2.and.hfpp_n_tracks(1).gt.0.and.
+     $              hselectfpptrackprune.ne.7) then
 c                  do jtrack = 1, hfpp_n_tracks(1)
                   jtrack = hfpp_best_track(1)
                   hmstrack(1) = hfpp_track_dx(1,jtrack)
@@ -767,7 +803,8 @@ c            endif
      $           hfpp_prune_zslop(dcset)/tan(theta)
 
 c     try picking smallest theta HERE instead:
-            if(hselectfpptrackprune.eq.1) then
+            if(hselectfpptrackprune.eq.1.or.
+     $           hselectfpptrackprune.eq.7) then
                criterion = theta
                any_great = .false.
             else if(hselectfpptrackprune.eq.2) then
@@ -1026,7 +1063,8 @@ c     endif
                   hfpp2_best_reference(itrack) = jtrack
 
                   if(hfpp_track_theta(dcset,itrack).lt.
-     $                 hfpp_track_theta(dcset+1,itrack)) hfpp2_best_reference(itrack) = 0
+     $                 hfpp_track_theta(dcset+1,itrack).or.
+     $                 hselectfpptrackprune.eq.7) hfpp2_best_reference(itrack) = 0
                   
                endif
             
