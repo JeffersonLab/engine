@@ -17,6 +17,9 @@
 *                add     hdc_xcenter
 *                        hdc_ycenter
 * $Log$
+* Revision 1.11.24.8  2009/11/19 15:23:39  puckett
+* added wire orientation angle offsets for FPP drift chambers
+*
 * Revision 1.11.24.7  2009/11/02 15:48:05  puckett
 * allow for relative rotation of FPP chambers within a pair about the z axis and an offset of relative position along z of FPP chambers within a pair
 *
@@ -224,6 +227,7 @@
       real*4 HFPP_Yoff_fine     ! fine y offset in lab of each plane (cm)
       
       real*4 HFPP_Uoff_fine     ! fine u offset of FPP chamber planes in coordinate measured by plane
+      real*4 HFPP_alphaoff_fine ! fine rotation angle of wire orientation about the z axis in degrees
 
       real*4 HFPP_Xsize	        ! useful size (x) of each chamber set (cm)
       real*4 HFPP_Ysize	        ! useful size (y) of each chamber set (cm)
@@ -265,6 +269,7 @@
      &   , HFPP_Xoff_fine(H_FPP_N_PLANES)
      &   , HFPP_Yoff_fine(H_FPP_N_PLANES)
      &   , HFPP_Uoff_fine(H_FPP_N_PLANES)
+     &   , HFPP_alphaoff_fine(h_fpp_n_planes)
      &   , HFPP_Zoff(H_FPP_N_DCSETS)
      &   , HFPP_Xsize(H_FPP_N_DCSETS)
      &   , HFPP_Ysize(H_FPP_N_DCSETS)
