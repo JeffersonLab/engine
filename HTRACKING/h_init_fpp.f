@@ -56,8 +56,10 @@ c
 	   HFPP_layeroffset(iset,ichamber,ilayer) = planeoffset(iPlane) + HFPP_Uoff_fine(iPlane+6*(iset-1))
 	   HFPP_layerZ(iset,ichamber,ilayer)	  = planeZ(iPlane) + hfpp_z_rel(iset)*0.5*(-1.)**ichamber
 
-           HFPP_direction(iset,ichamber,ilayer,1) = cos( (planeangle(iPlane) + 0.5*(-1.)**ichamber*hfpp_rot_rel(iset))*pi/180.)
-           HFPP_direction(iset,ichamber,ilayer,2) = sin( (planeangle(iPlane) + 0.5*(-1.)**ichamber*hfpp_rot_rel(iset))*pi/180.)
+           HFPP_direction(iset,ichamber,ilayer,1) = cos( (planeangle(iPlane) + 
+     $          hfpp_alphaoff_fine(iPlane) + 0.5*(-1.)**ichamber*hfpp_rot_rel(iset))*pi/180.)
+           HFPP_direction(iset,ichamber,ilayer,2) = sin( (planeangle(iPlane) + 
+     $          hfpp_alphaoff_fine(iPlane) + 0.5*(-1.)**ichamber*hfpp_rot_rel(iset))*pi/180.)
 
            write(*,*) 'set,dc,layer,Px=',hfpp_direction(iset,ichamber,ilayer,1)
            write(*,*) 'set,dc,layer,Py=',hfpp_direction(iset,ichamber,ilayer,2)

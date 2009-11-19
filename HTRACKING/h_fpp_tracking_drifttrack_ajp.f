@@ -56,13 +56,17 @@
 
       integer*4 track2chambers(h_fpp_max_fitpoints)
       integer*4 track2layers(h_fpp_max_fitpoints)
-      integer*4 track2wires(h_fpp_max_fitpoints)
+      integer*4 track2wires(h_fpp_max_fitpoints) 
 
       real*4 points(h_fpp_max_fitpoints,2),trackpoints(h_fpp_max_fitpoints,2) ! u and z
       real*4 sigma2s(h_fpp_max_fitpoints), tracksigma2s(h_fpp_max_fitpoints)
       real*4 trackcorrsigma2s(h_fpp_max_fitpoints)
       real*4 projects(h_fpp_max_fitpoints,2), trackprojects(h_fpp_max_fitpoints,2)
       real*4 drifts(h_fpp_max_fitpoints), trackdrifts(h_fpp_max_fitpoints)
+
+c     arrays for fitting four-hit tracks:
+      real*4 points_4hit(4,2), sigma2_4hit(4), projects_4hit(4,2)
+      real*4 drifts_4hit(4), coords_4hit(4,2), track_4hit(5)
 
       real*4 plusminusbest(h_fpp_max_fitpoints)
       real*4 plusminustest(h_fpp_max_fitpoints)
@@ -114,6 +118,8 @@
 
       integer pointleft(h_fpp_n_dcinset,h_fpp_n_dclayers) ! pointer to the hit to the left of middle hit in a 3-hit cluster
       integer pointright(h_fpp_n_dcinset,h_fpp_n_dclayers) ! pointer to the hit to the right of middle hit in a 3-hit cluster
+
+      real*4 v1,v2,dudz,dvdz,u0,v0
 
       abort = .false. 
       err = ' '
@@ -729,6 +735,17 @@ c      write(*,*) 'best LR combo=',plusminusbest
                wire = trackwires(ihit)
                hfpp_drift_dist(dcset,ichamber,ilayer,wire) = 
      $              trackdrifts(ihit) * plusminusbest(ihit)
+c     
+               if(ilayer.eq.1.or.ilayer.eq.3) then
+                  points_4hit( (ilayer)/2+1 + 2*(ichamber-1), 1) = trackpoints(ihit,1)
+                  points_4hit( (ilayer)/2+1 + 2*(ichamber-1), 2) = trackpoints(ihit,2)
+                  projects_4hit( (ilayer)/2+1 + 2*(ichamber-1), 1) = trackprojects(ihit,1)
+                  projects_4hit( (ilayer)/2+1 + 2*(ichamber-1), 2) = trackprojects(ihit,2)
+                  sigma2_4hit( (ilayer)/2+1 + 2*(ichamber-1) ) = tracksigma2s(ihit)
+                  drifts_4hit( (ilayer)/2+1 + 2*(ichamber-1) ) = trackdrifts(ihit)
+                  coords_4hit( (ilayer)/2+1 + 2*(ichamber-1), 1) = trackpoints(ihit,1) + plusminusbest(ihit) * trackdrifts(ihit)
+                  coords_4hit( (ilayer)/2+1 + 2*(ichamber-1), 2) = trackpoints(ihit,2)
+               endif
 
                if(hfppcorrectdriftforangle.ne.0) then
                   fine_wprime = trackprojects(ihit,1)*besttrack(1) + 
@@ -746,6 +763,33 @@ c      write(*,*) 'best LR combo=',plusminusbest
             enddo
             drifttrack(6) = float(ntrackpoints)
             drifttrack(7) = float(ntrackplanes)
+c     special code to re-fit the track, omitting x hits:
+            if( ntrackpoints.eq.6 .and. ntrackplanes.eq.6 .and. 
+     $           hfpp_omit_xhits.ne.0 ) then 
+c     refit the track using only the u and v layers:
+c               call h_fpp_fit3d_ajp(4,coords_4hit,sigma2_4hit,projects_4hit,track_4hit)
+c     "fitting" does not work for only four points: instead compute the straight line going exactly through the 
+c     two points: assume that layers 1(2) and 3(4) measure the v(u) direction:
+               v1 = coords_4hit(1,1)
+               u1 = coords_4hit(2,1)
+               v2 = coords_4hit(3,1)
+               u2 = coords_4hit(4,1)
+               
+               dudz = (u2 - u1)/(coords_4hit(4,2)-coords_4hit(2,2) )
+               dvdz = (v2 - v1)/(coords_4hit(3,2)-coords_4hit(1,2) )
+
+               u0 = u1 - dudz * coords_4hit(2,2)
+               v0 = v1 - dvdz * coords_4hit(1,2)
+
+               track_4hit(1) = projects_4hit(1,1) * dvdz + projects_4hit(2,1) * dudz ! x'
+               track_4hit(2) = v0 * projects_4hit(1,1) + u0 * projects_4hit(2,1)     ! x
+               track_4hit(3) = projects_4hit(1,2) * dvdz + projects_4hit(2,2) * dudz ! y'
+               track_4hit(4) = v0 * projects_4hit(1,2) + u0 * projects_4hit(2,2)     ! y
+
+               do j=1,4
+                  drifttrack(j) = track_4hit(j)
+               enddo
+            endif
          endif
 *     Otherwise, go back and drop the hit with the worst contribution to the chi2:
       else if(ntrackpoints.gt.hfpp_minsethits.and.ntrackplanes.ge.
