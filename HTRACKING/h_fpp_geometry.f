@@ -373,8 +373,9 @@ c==============================================================================
       integer*4 DCset 		   ! which chamber set we are in
       real*4 zclose 	           ! previously calculated z of closest approach
       real*4 theta                 ! polar scattering angle
-      integer*4 icone              ! Cone-test variable (1=pass, 0=fail)
+      integer*4 icone,altcone              ! Cone-test variable (1=pass, 0=fail)
 
+      real*8 zmax
       real*8 mx1,my1,bx1,by1
       real*4 ztrack2               ! central z-position of FPP set
       real*4 zback_off             ! offset from cntrl. pos. of last layer
@@ -394,6 +395,9 @@ c==============================================================================
       ymax=HFPP_Yoff(DCset)+HFPP_Ysize(DCset)/2.0 
 
       icone=1
+      altcone=1
+
+      zmax = hfpp_layerZ(dcset,1,1) + hfpp_zoff(dcset)
 
       iSet=DCset
 	do iChamber=1, H_FPP_N_DCINSET
@@ -428,11 +432,44 @@ c==============================================================================
               xpt4=xfront
               ypt4=yfront+abs(r2y)
 
-             if(xpt1.lt.xmin)icone=0
-             if(xpt2.gt.xmax)icone=0
-             if(ypt3.lt.ymin)icone=0
-             if(ypt4.gt.ymax)icone=0
+              if(xpt1.lt.xmin)icone=0
+              if(xpt2.gt.xmax)icone=0
+              if(ypt3.lt.ymin)icone=0
+              if(ypt4.gt.ymax)icone=0
               
+c              if(ichamber.eq.2.and.ilayer.eq.3) then
+c$$$                 write(*,*) 'old method'
+c$$$                 write(*,*) 'mx1,my1,x1,y1=',mx1,my1,bx1+mx1*zback,by1+my1*zback
+c$$$                 write(*,*) 'dcset,theta,zclose=',dcset,theta,zclose
+c$$$                 write(*,*) 'xmax,xmin=',xpt2,xpt1
+c$$$                 write(*,*) 'ymax,ymin=',ypt4,ypt3
+c              endif
+
+              xfront = bx1 + mx1 * zclose 
+              yfront = by1 + my1 * zclose
+              
+c     track can scatter in the same direction as mx1 or the opposite direction 
+c     we always want to keep the sign of mx1. Angles are additive, but ttheta 
+c     is always positive: maximum x' should be mx1 + ttheta
+c     minimum should be mx1 - ttheta, regardless of sign of mx1.
+              xpt1 = xfront + (zback-zclose)*(mx1 + ttheta) / (1. - mx1*ttheta)
+              ypt1 = yfront + (zback-zclose)* my1
+              xpt2 = xfront + (zback-zclose)*(mx1 - ttheta) / (1. + mx1*ttheta)
+              ypt2 = yfront + (zback-zclose)* my1
+              xpt3 = xfront + (zback-zclose)*mx1
+              ypt3 = yfront + (zback-zclose)*(my1 + ttheta) / (1. - my1*ttheta)
+              xpt4 = xfront + (zback-zclose)*mx1
+              ypt4 = yfront + (zback-zclose)*(my1 - ttheta) / (1. + my1*ttheta)
+
+              if(  xpt1.lt.xmin.or.xpt1.gt.xmax.or.
+     $             xpt2.lt.xmin.or.xpt2.gt.xmax.or.
+     $             xpt3.lt.xmin.or.xpt3.gt.xmax.or.
+     $             xpt4.lt.xmin.or.xpt4.gt.xmax.or.
+     $             ypt1.lt.ymin.or.ypt1.gt.ymax.or.
+     $             ypt2.lt.ymin.or.ypt2.gt.ymax.or.
+     $             ypt3.lt.ymin.or.ypt3.gt.ymax.or.
+     $             ypt4.lt.ymin.or.ypt4.gt.ymax ) altcone = 0
+
 c              if(icone.eq.0) then
 c                write(*,*)'chamber limits ',xmin,xmax,ymin,ymax
 c                write(*,*)'(',xpt1,',',ypt1,')'
@@ -441,9 +478,29 @@ c                write(*,*)'(',xpt3,',',ypt3,')'
 c                write(*,*)'(',xpt4,',',ypt4,')'
 c              endif
               
-	  enddo ! iLayer
-	enddo ! iChamber
+
+c              if(ichamber.eq.2.and.ilayer.eq.3) then
+c$$$                 write(*,*) 'new method'
+c$$$                 write(*,*) 'mx1,my1,x1,y1=',mx1,my1,bx1+mx1*zback,by1+my1*zback
+c$$$                 write(*,*) 'dcset,theta,zclose=',dcset,theta,zclose
+c$$$                 write(*,*) 'xmax,xmin=',xpt1,xpt2
+c$$$                 write(*,*) 'ymax,ymin=',ypt3,ypt4
+c              endif
+
+           enddo                ! iLayer
+       enddo                    ! iChamber
       
+c        icone = altcone
+
+c        if( icone.ne.altcone ) then
+
+c           write(*,*) 'cone test, old calc=',icone
+c           write(*,*) 'cone test, new calc=',altcone
+
+c        endif
+
+c$$$        if( zclose .gt. zmax ) icone = 0
+
       RETURN
       END
 
