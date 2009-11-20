@@ -8,6 +8,9 @@
 *                            separate dimensioning and number of planes
 *                           and chambers
 * $Log$
+* Revision 1.27.20.9  2009/11/20 00:39:17  puckett
+* reduced max space points to 100
+*
 * Revision 1.27.20.8  2009/08/24 01:10:18  puckett
 * added flag to choose HMS pattern recognition option
 *
@@ -174,7 +177,7 @@
       integer*4 hmax_chamber_hits
       parameter (hmax_chamber_hits=544)
       integer*4 hmax_space_points   ! maximum number of space points
-      parameter (hmax_space_points=5000)
+      parameter (hmax_space_points=100)
       integer*4 hmax_hits_per_point ! maximum number of hits per point
       parameter (hmax_hits_per_point=1000)
       integer*4 hnum_fpray_param    ! number of ray parameters in focal plane
