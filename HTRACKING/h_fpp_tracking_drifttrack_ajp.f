@@ -440,21 +440,41 @@ c         write(*,*) 'LR combo ',icombo+1,' of ',ncombos
 *     initialize hitpos arrays
             if(hfppcorrectdriftforangle.ne.0) then ! assume drift distance represents closest approach distance
 c     and correct this point for track angle as measured by the simple track:
-               hitpos(ipoint,1) = trackpoints(ipoint,1) + 
-     $              plusminustest(ipoint) * trackdrifts(ipoint) / cos(rough_trkthetaw)
-               hitpos(ipoint,2) = trackpoints(ipoint,2)
+c               hitpos(ipoint,1) = trackpoints(ipoint,1) + 
+c     $              plusminustest(ipoint) * trackdrifts(ipoint) / cos(rough_trkthetaw)
+c               hitpos(ipoint,2) = trackpoints(ipoint,2)
 
-               trackcorrsigma2s(ipoint) = tracksigma2s(ipoint) / ( (cos(rough_trkthetaw))**2 )
+               hitpos(ipoint,1) = trackpoints(ipoint,1) + 
+     $              plusminustest(ipoint) * trackdrifts(ipoint) * cos(rough_trkthetaw)
+               hitpos(ipoint,2) = trackpoints(ipoint,2) -  
+     $              plusminustest(ipoint) * trackdrifts(ipoint) * sin(rough_trkthetaw)
+
+c               trackcorrsigma2s(ipoint) = tracksigma2s(ipoint) / ( (cos(rough_trkthetaw))**2 )
+               trackcorrsigma2s(ipoint) = tracksigma2s(ipoint)
             else
                hitpos(ipoint,1) = trackpoints(ipoint,1) + 
      $              plusminustest(ipoint) * trackdrifts(ipoint)
                hitpos(ipoint,2) = trackpoints(ipoint,2)
             endif
-         enddo ! end loop over points on the track/plusminustest initialization
+         enddo                  ! end loop over points on the track/plusminustest initialization
 *     fit the test track
          if(hfppcorrectdriftforangle.ne.0) then
             call h_fpp_fit3d_ajp(ntrackpoints,hitpos,trackcorrsigma2s,trackprojects,
      $           testtrack)
+c     fit this track again using the fitted angles: re-initialize hitpos arrays:
+c            if(hfppcorrectdriftforangle.ne.0) then
+            do ipoint=1,ntrackpoints 
+               fine_wprime = testtrack(1) * trackprojects(ipoint,1) + 
+     $              testtrack(3) * trackprojects(ipoint,2)
+               fine_trkthetaw = atan2( fine_wprime, 1.0 )
+               hitpos(ipoint,1) = trackpoints(ipoint,1) + 
+     $              plusminustest(ipoint) * trackdrifts(ipoint) * cos(fine_trkthetaw)
+               hitpos(ipoint,2) = trackpoints(ipoint,2) -
+     $              plusminustest(ipoint) * trackdrifts(ipoint) * sin(fine_trkthetaw)
+            enddo
+            
+            call h_fpp_fit3d_ajp(ntrackpoints,hitpos,trackcorrsigma2s,trackprojects,testtrack)
+c            endif
          else
             call h_fpp_fit3d_ajp(ntrackpoints,hitpos,tracksigma2s,trackprojects,
      $           TestTrack)
@@ -630,11 +650,16 @@ c     do final initialization of hitpos arrays using fitted track angles:
          fine_trkthetaw = atan2(fine_wprime,1.0)
 
          if(hfppcorrectdriftforangle.ne.0) then
-            hitpos(ipoint,1) = trackpoints(ipoint,1) + 
-     $           plusminusbest(ipoint) * trackdrifts(ipoint) / cos(fine_trkthetaw)
-            hitpos(ipoint,2) = trackpoints(ipoint,2)
+c$$$            hitpos(ipoint,1) = trackpoints(ipoint,1) + 
+c$$$     $           plusminusbest(ipoint) * trackdrifts(ipoint) / cos(fine_trkthetaw)
+c$$$            hitpos(ipoint,2) = trackpoints(ipoint,2)
 
-            trackcorrsigma2s(ipoint) = tracksigma2s(ipoint) / ((cos(fine_trkthetaw))**2)
+            hitpos(ipoint,1) = trackpoints(ipoint,1) + 
+     $           plusminusbest(ipoint) * trackdrifts(ipoint) * cos(fine_trkthetaw)
+            hitpos(ipoint,2) = trackpoints(ipoint,2) -  
+     $           plusminusbest(ipoint) * trackdrifts(ipoint) * sin(fine_trkthetaw)
+
+            trackcorrsigma2s(ipoint) = tracksigma2s(ipoint)
          else
             hitpos(ipoint,1) = trackpoints(ipoint,1) + 
      $           plusminusbest(ipoint) * trackdrifts(ipoint)
@@ -753,8 +778,8 @@ c
 
                   fine_trkthetaw = atan2(fine_wprime,1.0)
                   
-                  hfpp_drift_dist(dcset,ichamber,ilayer,wire) = 
-     $                 trackdrifts(ihit) * plusminusbest(ihit) / cos(fine_trkthetaw)
+c                  hfpp_drift_dist(dcset,ichamber,ilayer,wire) = 
+c     $                 trackdrifts(ihit) * plusminusbest(ihit) / cos(fine_trkthetaw)
                endif
             enddo
 *     Fill output track variables: 

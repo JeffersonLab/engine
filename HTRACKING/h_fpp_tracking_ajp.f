@@ -50,6 +50,10 @@ c      integer*4 nhitsrequired_firsttrack
       integer*4 hitcluster(h_fpp_n_dcinset,h_fpp_n_dclayers)
 
       logical firsttry,track_good
+      logical greattrack,any_good_zclose_theta
+      logical badtrack
+
+      integer ngoodfpp1
 
       ABORT= .FALSE.
       err= ' '
@@ -66,6 +70,9 @@ c     find the individual combination of one hit per plane which gives the small
          ntracksnew = 0
 
          nhitsrequired = h_fpp_n_planes + 1
+
+c         any_great = .false.
+
 c         iterations = 0
          do while(nhitsrequired.ge.hfpp_minsethits)
             iterations = 0
@@ -73,6 +80,8 @@ c         iterations = 0
             call h_fpp_tracking_nexthitcombo(dcset,nhitsrequired,nhitsintrack,hitcluster)
             
             firsttry = .true.
+
+            any_good_zclose_theta = .false.
 
             if(hfpp_n_tracks(dcset).gt.0.and.
      $           nhitsrequired.lt.
@@ -139,15 +148,68 @@ c     quadratic alignment correction, if any:
                      fpptrack(2) = newfpptrack(1) ! x
                      fpptrack(3) = newfpptrack(4) ! y'
                      fpptrack(4) = newfpptrack(2) ! y
+
+                     hmstrack(1) = hsxp_fp
+                     hmstrack(2) = hsx_fp
+                     hmstrack(3) = hsyp_fp
+                     hmstrack(4) = hsy_fp
                      
                      call h_fpp_relative_angles(hsxp_fp,hsyp_fp,fpptrack(1),fpptrack(3),theta,phi)
 
+c     for FPP2 candidate tracks, calc. angles relative to all possible tracks in FPP1, choose minimum:
+c     if none of the FPP1 tracks are "good", then compare to HMS track:
+                     if( dcset.eq.2.and.hfpp_n_tracks(1).gt.0) then
+                        bestref = 0
+
+                        mintheta = theta
+
+                        do jtrack = 1, hfpp_n_tracks(1)
+                           call h_fpp_relative_angles(hfpp_track_dx(1,jtrack),
+     $                          hfpp_track_dy(1,jtrack),
+     $                          fpptrack(1),fpptrack(3),theta,phi)
+                           if( theta.lt.mintheta ) then
+                              mintheta = theta
+                              bestref = jtrack
+                           endif
+                        enddo
+
+                        if ( bestref.gt.0 ) then
+                           hmstrack(1) = hfpp_track_dx(1,bestref)
+                           hmstrack(2) = hfpp_track_x(1,bestref)
+                           hmstrack(3) = hfpp_track_dy(1,bestref)
+                           hmstrack(4) = hfpp_track_y(1,bestref)
+                        endif
+                     endif
+                     
+                     call h_fpp_relative_angles(hmstrack(1),hmstrack(3),fpptrack(1),fpptrack(3),theta,phi)
+                     
+                     call h_fpp_closest(hmstrack,fpptrack,sclose,zclose)
+
+                     conetest = 1
+                     call h_fpp_conetest(hmstrack,dcset,zclose,theta,conetest)
+c     here is our "great track" test: zclose inside the relevant analyzer and/or theta inside Coulomb peak 
+c     (and conetest):
+               
+                     greattrack = ( conetest .eq. 1 .and. 
+     $                    ((zclose .ge. hfpp_prune_zclose(2*(dcset-1)+1)
+     $                    .and. zclose .le. hfpp_prune_zclose(2*(dcset-1)+2))
+     $                    .or.hpcentral*sin(theta).lt.0.1) )
+
+                     if( greattrack ) any_good_zclose_theta = .true.
+
                      criterion = fulltrack(5)
-                     if( hselectfpptrackprune.eq.1) then
-                        criterion = theta
+c$$$                     if( hselectfpptrackprune.eq.1 ) then
+c$$$                        criterion = theta
+c$$$                     endif
+                     if ( hselectfpptrackprune .eq. 1 ) then
+                        any_good_zclose_theta = .false.
                      endif
 
-                     if(firsttry.or.criterion.lt.mincriterion) then
+                     any_good_zclose_theta = .false.
+
+                     if((firsttry.or.criterion.lt.mincriterion).and.
+     $                    (greattrack.or..not.any_good_zclose_theta))
+     $                    then
                         firsttry = .false.
                         mincriterion = criterion
                         do ichamber=1,h_fpp_n_dcinset
@@ -259,16 +321,32 @@ c     calculate relative angles:
                   hfpp_track_conetest(dcset,itrack) = conetest
 
                   if(dcset.eq.2.and.hfpp_n_tracks(1).gt.0) then
-                     jtrack = hfpp_best_track(1)
-                     
-                     call h_fpp_relative_angles(hfpp_track_dx(1,jtrack),
-     $                    hfpp_track_dy(1,jtrack),
+c                     jtrack = hfpp_best_track(1)
+                     hfpp2_best_reference(itrack) = 0
+                     bestref = 0
+                     do jtrack = 1, hfpp_n_tracks(1)
+                        call h_fpp_relative_angles(hfpp_track_dx(1,jtrack),
+     $                       hfpp_track_dy(1,jtrack),
+     $                       hfpp_track_dx(dcset,itrack),
+     $                       hfpp_track_dy(dcset,itrack),
+     $                       theta,phi)
+                        if( jtrack .eq. 1 .or. theta.lt.mintheta ) then
+                           mintheta = theta
+                           bestref = jtrack
+                        endif
+                     enddo
+
+                     call h_fpp_relative_angles(hfpp_track_dx(1,bestref),
+     $                    hfpp_track_dy(1,bestref),
      $                    hfpp_track_dx(dcset,itrack),
      $                    hfpp_track_dy(dcset,itrack),
-     $                    theta,phi)
+     $                    theta, phi )
+
                      hfpp_track_theta(dcset+1,itrack) = theta
                      hfpp_track_phi(dcset+1,itrack) = phi
                      
+                     jtrack = bestref
+
                      hmstrack(1) = hfpp_track_dx(1,jtrack)
                      hmstrack(2) = hfpp_track_x(1,jtrack)
                      hmstrack(3) = hfpp_track_dy(1,jtrack)
@@ -291,9 +369,14 @@ c     calculate relative angles:
                      hfpp_track_conetest(dcset+1,itrack) = conetest
 
                      hfpp2_best_reference(itrack) = jtrack
-                     
-                     if(hfpp_track_theta(dcset,itrack).lt.
-     $                    hfpp_track_theta(dcset+1,itrack)) hfpp2_best_reference(itrack) = 0
+c     if FPP1 track is in the "bad" region (zclose inside the drift chambers, theta outside Coulomb peak)
+c     revert to the HMS track as reference:
+                     if( hpcentral * sin(hfpp_track_theta(1,jtrack)) .ge. 0.1
+     $                    .and. hfpp_track_zclose(1,jtrack).gt.
+     $                    hfpp_zoff(1)-16. ) hfpp2_best_reference(itrack) = 0
+
+c                     if(hfpp_track_theta(dcset,itrack).lt.
+c     $                    hfpp_track_theta(dcset+1,itrack)) hfpp2_best_reference(itrack) = 0
                   endif
                endif
                

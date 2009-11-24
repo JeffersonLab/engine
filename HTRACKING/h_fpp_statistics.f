@@ -29,6 +29,7 @@
       real*4 mindist, rdist, rtime, residual, drift
       real*4 DC_coords(3), FP_coords(3)
       real*4 x,y,z,mx,my,bx,by,z0,u, wirepos
+      real*4 trkthetaw,tantrkthetaw
 
       integer*4 iPlane, iSet, iCham, iLay, iClust, iTrk, iHit, iRaw, iWire, ii
 
@@ -202,6 +203,13 @@
                  call h_fpp_uTrack(iSet,iCham,iLay,iTrk,uTrack)
                  residual = uTrack - (uWire + drift)
 
+                 if( hfppcorrectdriftforangle.ne.0 ) then
+                    tantrkthetaw = hfpp_direction(iset,icham,ilay,1) * hfpp_track_fine(iset,itrk,1) + 
+     $                   hfpp_direction(iset,icham,ilay,2) * hfpp_track_fine(iset,itrk,3)
+                    trkthetaw = atan2(tantrkthetaw,1.0)
+                    
+                    residual = uTrack - (uWire + drift / cos(trkthetaw) )
+                 endif
               endif
 
 	    endif !iClust
