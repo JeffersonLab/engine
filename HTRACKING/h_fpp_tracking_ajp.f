@@ -83,9 +83,9 @@ c         iterations = 0
 
             any_good_zclose_theta = .false.
 
-            if(hfpp_n_tracks(dcset).gt.0.and.
-     $           nhitsrequired.lt.
-     $           hfpp_track_nlayers(dcset,hfpp_n_tracks(dcset))) exit
+c            if(hfpp_n_tracks(dcset).gt.0.and.
+c     $           nhitsrequired.lt.
+c     $           hfpp_track_nlayers(dcset,hfpp_n_tracks(dcset))) exit
 
             do while(nhitsintrack.gt.0)
                
@@ -375,8 +375,8 @@ c     revert to the HMS track as reference:
      $                    .and. hfpp_track_zclose(1,jtrack).gt.
      $                    hfpp_zoff(1)-16. ) hfpp2_best_reference(itrack) = 0
 
-c                     if(hfpp_track_theta(dcset,itrack).lt.
-c     $                    hfpp_track_theta(dcset+1,itrack)) hfpp2_best_reference(itrack) = 0
+                     if(hfpp_track_theta(dcset,itrack).lt.
+     $                    hfpp_track_theta(dcset+1,itrack)) hfpp2_best_reference(itrack) = 0
                   endif
                endif
                
