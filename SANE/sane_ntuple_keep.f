@@ -57,6 +57,9 @@
 
       real Mp
       parameter(Mp=.938272)
+c
+      real*8 cer_adc_save(12)
+c
 
 
       err=' '
@@ -75,7 +78,7 @@ c     write(*,*)file_exist
       endif
 
       if(.not.sane_ntuple_exists) return
-      if(.not.charge_data_open.and.charge_ch)then
+       if(.not.charge_data_open.and.charge_ch)then
          charge2s = gbcm1_charge-tcharge
          tcharge = gbcm1_charge
          charge2s_help = gbcm1_charge_help -tcharge_help 
@@ -262,15 +265,30 @@ c
 c         endif
 c      enddo
 
+       ceradc_hit = 0
+       do i=1,12
+          cer_adc_save(i) = -10000.
+          enddo
+      do i=1,CERENKOV_SANE_RAW_TOT_HITS
+         if (ceradc_hit .le. 15) then
+            ceradc_hit = ceradc_hit + 1
+            ceradc_num(ceradc_hit)   =  CERENKOV_SANE_RAW_COUNTER_NUM(i)
+            cer_adc(ceradc_hit)   =  CERENKOV_SANE_RAW_ADC(ceradc_num(ceradc_hit))-cer_sane_ped_mean(ceradc_num(ceradc_hit))
+            if (ceradc_num(ceradc_hit) .le. 12) cer_adc_save(ceradc_num(ceradc_hit))= cer_adc(ceradc_hit)
+            call NANcheck(ceradc_hit,CERENKOV_SANE_ID2)
+            call NANcheck(ceradc_num(ceradc_hit),CERENKOV_SANE_ID2)
+            call NANcheck(cer_adc(ceradc_hit),CERENKOV_SANE_ID2)
+            call HFILL(10112,float(ceradc_num(ceradc_hit)),float(cer_adc(ceradc_hit)), 1.)
+         endif
+       enddo
+c
       cer_hit = 0
-c      write(*,*)'c, ',CERENKOV_SANE_RAW_COUNTER_NUM
-c      write(*,*)'a, ' ,CERENKOV_SANE_RAW_ADC
       do i=1,CERENKOV_SANE_RAW_TOT_HITS2
          if(CERENKOV_SANE_RAW_TDC(i).gt.0)then
             cer_hit         =  cer_hit+1
             cer_num(cer_hit)   =  CERENKOV_SANE_RAW_COUNTER_NUM2(i)
             call CORRECT_RAW_TIME_SANE(CERENKOV_SANE_RAW_TDC(i),cer_tdc(cer_hit))
-            cer_adcc(cer_hit) = CERENKOV_SANE_RAW_ADC(cer_num(cer_hit))-cer_sane_ped_mean(cer_num(cer_hit))
+            cer_adcc(cer_hit) = cer_adc_save(cer_num(cer_hit))
             call HFILL(10111,float(cer_num(cer_hit)),float(cer_TDC(cer_hit)), 1.)
 
             call NANcheck(cer_hit,CERENKOV_SANE_ID)
@@ -282,19 +300,6 @@ c               call HFILL(10500+cer_num(cer_hit),float(cer_adcc(cer_hit)),float
 c            endif
          endif
       enddo
-
-       ceradc_hit = 0
-      do i=1,CERENKOV_SANE_RAW_TOT_HITS
-         if (ceradc_hit .le. 15) then
-            ceradc_hit = ceradc_hit + 1
-            ceradc_num(ceradc_hit)   =  CERENKOV_SANE_RAW_COUNTER_NUM(i)
-            cer_adc(ceradc_hit)   =  CERENKOV_SANE_RAW_ADC(ceradc_num(ceradc_hit))-cer_sane_ped_mean(ceradc_num(ceradc_hit))
-            call NANcheck(ceradc_hit,CERENKOV_SANE_ID2)
-            call NANcheck(ceradc_num(ceradc_hit),CERENKOV_SANE_ID2)
-            call NANcheck(cer_adc(ceradc_hit),CERENKOV_SANE_ID2)
-            call HFILL(10112,float(ceradc_num(ceradc_hit)),float(cer_adc(ceradc_hit)), 1.)
-         endif
-       enddo
 c
        
 c
