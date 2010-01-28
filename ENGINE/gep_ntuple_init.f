@@ -237,6 +237,14 @@
       gep_ntuple_tag(m) = 'dxref' ! xpfp of reference track for FPP2
       m=m+1
       gep_ntuple_tag(m) = 'dyref' ! ypfp of reference track for FPP2
+      m=m+1
+      gep_ntuple_tag(m) = 'nsimp11' ! number of simple tracks found for FPP1
+      m=m+1
+      gep_ntuple_tag(m) = 'nsimp21' ! number of simple tracks found for FPP2
+      m=m+1
+      gep_ntuple_tag(m) = 'nsimp12' ! number of good drift combos found for FPP1
+      m=m+1
+      gep_ntuple_tag(m) = 'nsimp22' ! number of good drift combos found for FPP2
 c     now all tags are set, initialize the ntuple:
 
       gep_ntuple_size = m

@@ -301,7 +301,14 @@ c     store track parameters of chosen reference track for FPP2:
          m=m+1
          gep_ntuple_contents(m) = gep_ypfp_p
       endif
-      
+      m=m+1
+      gep_ntuple_contents(m) = hfpp_n_simple(1,1)
+      m=m+1
+      gep_ntuple_contents(m) = hfpp_n_simple(2,1)
+      m=m+1
+      gep_ntuple_contents(m) = hfpp_n_simple(1,2)
+      m=m+1
+      gep_ntuple_contents(m) = hfpp_n_simple(2,2)
 
 c      write(*,*) 'gep_ntuple, number of variables filled = ',m
 
