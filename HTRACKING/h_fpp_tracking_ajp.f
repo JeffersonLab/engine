@@ -55,6 +55,8 @@ c      integer*4 nhitsrequired_firsttrack
 
       integer ngoodfpp1
 
+      integer*4 nsimpletracks,ngooddrifttracks,trackingiterations,freehitcountiterations
+
       ABORT= .FALSE.
       err= ' '
 
@@ -65,6 +67,8 @@ c     initialize ntracks to zero:
 c     determine whether enough hits for tracking:
       call h_fpp_tracking_freehitcount(dcset,sufficient_hits)
 c     find the individual combination of one hit per plane which gives the smallest chi2 of drift tracking:
+      trackingiterations = 0
+      freehitcountiterations = 0
       do while (sufficient_hits .and. (HFPP_N_tracks(DCset).lt.H_FPP_MAX_TRACKS)) 
          
          ntracksnew = 0
@@ -74,6 +78,9 @@ c     find the individual combination of one hit per plane which gives the small
 c         any_great = .false.
 
 c         iterations = 0
+c         trackingiterations = trackingiterations + 1
+         freehitcountiterations = freehitcountiterations + 1
+
          do while(nhitsrequired.ge.hfpp_minsethits)
             iterations = 0
             nhitsintrack = 0
@@ -87,6 +94,9 @@ c            if(hfpp_n_tracks(dcset).gt.0.and.
 c     $           nhitsrequired.lt.
 c     $           hfpp_track_nlayers(dcset,hfpp_n_tracks(dcset))) exit
 
+            nsimpletracks = 0
+            ngooddrifttracks = 0
+            trackingiterations = trackingiterations + 1
             do while(nhitsintrack.gt.0)
                
 c               if(iterations.gt.hfpp_maxcombos+1) then
@@ -120,7 +130,10 @@ c     call drift tracking:
                      return
                   endif
 
+                  nsimpletracks = nsimpletracks+1
+
                   if(track_good) then ! track passes chi2 cut:
+                     ngooddrifttracks = ngooddrifttracks + 1
 c     calculate polar theta of this track in order to have the option to use theta instead of chi2 as track selection criterion:
 c     first transform to focal plane coordinates:
 c     slopes:
@@ -223,6 +236,12 @@ c$$$                     endif
 c     get the next free hit combo:
                call h_fpp_tracking_nexthitcombo(dcset,nhitsrequired,nhitsintrack,hitcluster)
             enddo               ! end loop while hitsintrack>0
+            
+            if( hfpp_n_tracks(dcset) .eq. 0 ) then
+               hfpp_n_simple(dcset,1) = nsimpletracks
+               hfpp_n_simple(dcset,2) = ngooddrifttracks
+            endif
+
 c            write(*,*) 'finished loop over hit combos'
 c     at this point bestclusters contains the combination of one hit per plane with the best chi2:
             if(.not. firsttry) then ! at least one track was found: add the best track to the track array:
