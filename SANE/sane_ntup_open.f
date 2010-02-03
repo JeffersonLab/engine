@@ -22,7 +22,7 @@
       character*80 title,file
       character*80 directory,name
       character*1000 pat,msg,chform
-      integer status,size,io,id,bank,recL,iv(10),m
+      integer status,size,io,id,bank,recL,iv(10),m,itcol,itrow,icc
       real rv(10)
       
 
@@ -86,6 +86,7 @@ c      call HLIMIT(NWPAWC)
 
       call hbset('BSIZE',8176,status)
       call HBNT(id,title,' ')
+      if(sane_ntuple_type.lt.3)then
       call HBNAME(id,'SANEEV',tcharge,'tcharge:R*8,charge2s:R*8,'//
      $     'tcharge_help:R*8,charge2s_help:R*8,'//
      $     'tcharge_helm:R*8,charge2s_helm:R*8,'//
@@ -93,13 +94,14 @@ c      call HLIMIT(NWPAWC)
      $     'hel_p_scaler:I*4, hel_n_scaler:I*4,'//
      $     'hel_p_trig:I*4, hel_n_trig:I*4,'//
      $     'dtime_p:R*8,dtime_n:R*8,half_plate:R*4')
-      
-      if(sane_ntuple_type.eq.2) then ! col-wise ntuple for cluster analysis
+      endif
+      if(sane_ntuple_type.ge.2) then ! col-wise ntuple for cluster analysis
                                 ! for calibration purposses
          
 c     
 c     
 c     
+         if(sane_ntuple_type.eq.2)then
          
          call HBNAME(id,'bevinfo',bgid,'bgid:I*4,bgtype:I*4,'//
      $        'btrigtype:I*4')
@@ -131,7 +133,8 @@ c
      $        'luc_y(luc_hit):R*4')
          
          
-         
+         endif
+
          if(bbypass_find_clusters.eq.0) then
             call HBNAME(id,'clustblock',nclust,
      $           'nclust[0,50]:I*4,ncellclust(nclust)[0,50]:I*4,'//
@@ -155,6 +158,7 @@ c
      $                 'tcell8(10,8,nclust8),tclust8(nclust8),'//
      $                 'tcut8(nclust8),tcut8cor(nclust8),'//
      $                 'trms8(nclust8)')
+ 
                endif
                
                if(bbypass_sum64.eq.0) then
@@ -168,7 +172,7 @@ c
      $                 's64(6,nclust64),tclust64(nclust64),'//
      $                 'tcut64(nclust64),tcut64cor(nclust64),'//
      $                 'trms64(nclust64)')
-               endif
+                endif
             endif
             
             
@@ -181,13 +185,15 @@ c
      $              'zface(ntrack),px(ntrack),py(ntrack),pz(ntrack),'//
      $              'ctime_clust(ntrack)')
             endif
-            call HBNAME(id,'bad_clust',nmax,'nmax[0,50]:I*4,'//
-     $           'edge_max(nmax):L,not_enough(nmax):L,'//
-     $           'too_long_x(nmax):L,too_long_y(nmax):L,'//
-     $           'below_thresh(nmax):L,above_max(nmax):L,'//
-     $           'second_max(nmax):L')
-           call HBNAME(id,'hmsblk',TH_HMS,'TH_HMS,PH_HMS,E_HMS,'//
-     $          'X_HMS,Y_HMS,dPel_HMS')
+            if(sane_ntuple_type.eq.2)then
+               call HBNAME(id,'bad_clust',nmax,'nmax[0,50]:I*4,'//
+     $              'edge_max(nmax):L,not_enough(nmax):L,'//
+     $              'too_long_x(nmax):L,too_long_y(nmax):L,'//
+     $              'below_thresh(nmax):L,above_max(nmax):L,'//
+     $              'second_max(nmax):L')
+               call HBNAME(id,'hmsblk',TH_HMS,'TH_HMS,PH_HMS,E_HMS,'//
+     $              'X_HMS,Y_HMS,dPel_HMS')
+            endif
          endif
          
 c     
@@ -214,10 +220,15 @@ c     ! For physics analysis  added on Jul 3 2008
          call HBOOK2(10111,'CER TDC',8, 1.,  9., 200,    -4000, 500., 0.)
          call HBOOK2(10112,'CER ADC',8, 1.,  9., 100,    0.1, 5000., 0.)
          do histnum=1,8
-            call HBOOK2(10500+histnum,'CER ADC vs TDC ',100, 10.,  5000., 200,    -4000, 500., 0.)
+            call HBOOK2(10500+histnum,'CER ADC vs TDC ',100, 10.,  2000., 200,    -3000, -1000., 0.)
+            call HBOOK2(10520+histnum,'Aclust vs cer TDC ',100, 0.,  2000., 200,    -3000, -1000., 0.)
+            call HBOOK2(10530+histnum,'Aclust vs cer TDC cor ',100, 0.,  2000., 200,    -3000, -1000., 0.)
             call HBOOK2(10510+histnum,'BIGCAL' ,33,0., 33.,  56,    0.,   56., 0.)
+            call HBOOK2(10540+histnum,'CER ADC vs TDC ',100, 10.,  2000., 200,    -3000, -1000., 0.)
+            call HBOOK2(10560+histnum,'TRIGBIG vs Cer TDC ',30, 25.,  55., 200,    -3000, -1000., 0.)
+            call HBOOK2(10570+histnum,'TRIGBETA vs Cer TDC ',30, 45.,  75., 200,    -3000, -1000., 0.)
+            call HBOOK2(10580+histnum,'TRIGBIG C vs Cer TDC ',30, 25.,  55., 200,    -3000, -1000., 0.)
          enddo
-         
          call HBOOK2(10121,'LUC TDCPOS',28,1., 29., 200, -3500., 0., 0.)
          call HBOOK2(10122,'LUC TDCNEG',28,1., 29., 200, -3500., 0., 0.)
          call HBOOK2(10125,'LUC ADCPOS',28,1., 29., 200,    0.1, 4000., 0.)
@@ -293,29 +304,35 @@ c         call HBOOK2(10324,' W2 vs hsxtar' ,100,-0.3, 0.3,  100, -3,   3, 0.)
          
          call HBOOK2(10620,'Xbj vs Q2' ,140, 0.1, 1.5,  100, 0.,  8., 0.)
          call HBOOK2(10621,'W2 vs Q2' ,100, 0.5, 2.5,  100, 0.,  8., 0.)
+         call HBOOK1(10622,'Mpi0' ,200, 0.05, 0.25, 0.)
 c
 c
 c     Physics Histograms
 c     
       endif
 
-      
-      call HBNAME(id,'HMSINFO',hms_p,
-     $     'hms_p:R*4,hms_e:R*4,hms_theta:R*4,hms_phi:R*4,'//
-     $     'hsxfp_s:R*4,hsyfp_s:R*4,hsxpfp_s:R*4,hsypfp_s:R*4,'//
-     $     'hms_xtar:R*4,hms_ytar:R*4,hms_yptar:R*4,'//
-     $     'hms_xptar:R*4,hms_delta:R*4,hms_start:R*4,'//
-     $     'hsshtrk_s:R*4, hsshsum_s:R*4, hsbeta_s:R*4,'//
-     $     'rast_x:R*4,rast_y:R*4,'//
-     $     'slow_rast_x:R*4,slow_rast_y:R*4,'//
-     $     'sem_x:R*4,sem_y:R*4,'//
-     $     'i_helicity:I*4,'//
-     $     'hms_cer_npe1:R*4,hms_cer_npe2:R*4,'//
-     $     ' hms_cer_adc1:R*4,hms_cer_adc2:R*4')
-      call HBNAME(id,'TRIGGERTIME',T_trgHMS,
-     $     'T_trgHMS:R*4, T_trgBIG:R*4, T_trgPI0:R*4,'//
-     $     'T_trgBETA:R*4, T_trgCOIN1:R*4,T_trgCOIN2:R*4')
-
+      if(sane_ntuple_type.lt.4)then
+          call HBNAME(id,'TRIGGERTIME',T_trgHMS,
+     $        'T_trgHMS:R*4, T_trgBIG:R*4, T_trgPI0:R*4,'//
+     $        'T_trgBETA:R*4, T_trgCOIN1:R*4,T_trgCOIN2:R*4')
+         call HBNAME(id,'SANECER',cer_hit,
+     $        'cer_hit[0,50]:I*4,cer_num(cer_hit):I*4,'//
+     $        'cer_tdc(cer_hit):I*4,cer_adcc(cer_hit):I*4')
+      endif
+      if(sane_ntuple_type.lt.3) then ! col-wise ntuple
+         call HBNAME(id,'HMSINFO',hms_p,
+     $        'hms_p:R*4,hms_e:R*4,hms_theta:R*4,hms_phi:R*4,'//
+     $        'hsxfp_s:R*4,hsyfp_s:R*4,hsxpfp_s:R*4,hsypfp_s:R*4,'//
+     $        'hms_xtar:R*4,hms_ytar:R*4,hms_yptar:R*4,'//
+     $        'hms_xptar:R*4,hms_delta:R*4,hms_start:R*4,'//
+     $        'hsshtrk_s:R*4, hsshsum_s:R*4, hsbeta_s:R*4,'//
+     $        'rast_x:R*4,rast_y:R*4,'//
+     $        'slow_rast_x:R*4,slow_rast_y:R*4,'//
+     $        'sem_x:R*4,sem_y:R*4,'//
+     $        'i_helicity:I*4,'//
+     $        'hms_cer_npe1:R*4,hms_cer_npe2:R*4,'//
+     $        ' hms_cer_adc1:R*4,hms_cer_adc2:R*4')
+      endif
       
       if(sane_ntuple_type.eq.1) then ! col-wise ntuple
                                  ! for Physics purposses
@@ -354,9 +371,6 @@ c
      $        'Delta_Y(n_clust):R*4,Delta_X(n_clust):R*4,'//
      $        'X_Bjorken(n_clust):R*4, Q2(n_clust):R*4,'//
      $        ' W2(n_clust):R*4, ENue(n_clust):R*4')
-         call HBNAME(id,'SANECER',cer_hit,
-     $        'cer_hit[0,50]:I*4,cer_num(cer_hit):I*4,'//
-     $        'cer_tdc(cer_hit):I*4,cer_adcc(cer_hit):I*4')
          call HBNAME(id,'SANEADC',ceradc_hit,
      $        'ceradc_hit[0,15]:I*4,ceradc_num(ceradc_hit):I*4,'//
      $        'cer_adc(ceradc_hit):I*4')
