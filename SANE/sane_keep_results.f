@@ -36,6 +36,7 @@ c$$$      endif
           call b_ntuple_keep(ABORT,err,.false.)
           call sane_ntuple_keep(ABORT,err)
           call SANE_DUMP_NTUP_VAR()
+          call  B_reset_event(ABORT,err)
           bigcal_all_nclstr=0
           bigcal_nmaxima=0
         endif
