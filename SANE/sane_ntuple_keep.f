@@ -57,9 +57,8 @@
 
       real Mp
       parameter(Mp=.938272)
-c
       real*8 cer_adc_save(12)
-c
+      real Pi0Mass,dist,cosg1g2,Pg1(4),Pg2(4)
 
 
       err=' '
@@ -67,15 +66,6 @@ c
 c      write(*,*)'Starting sane'
 c     INQUIRE(FILE="input.txt",EXIST=file_exist)
 c     write(*,*)file_exist
-      
-      if(sane_ntuple_max_segmentevents.gt.0) then
-         if(sane_ntuple_segmentevents.gt.sane_ntuple_max_segmentevents) then
-            call sane_ntup_change(ABORT,err)
-            sane_ntuple_segmentevents=0
-         else 
-            sane_ntuple_segmentevents = sane_ntuple_segmentevents + 1
-         endif
-      endif
 
       if(.not.sane_ntuple_exists) return
        if(.not.charge_data_open.and.charge_ch)then
@@ -494,16 +484,67 @@ c            call Lucite(i)
 c         endif
       enddo
 c      write(*,*)'Sane is Done'
-      abort=.not.HEXIST(sane_ntuple_ID)
-      if(abort) then
-         call G_build_note(':Ntuple ID#$ does not exist',
-     $        '$',sane_ntuple_ID,' ',0.,' ',err)
-         call G_add_path(here,err)
-      else 
-         icycle=999999
-         call HFNT(sane_ntuple_ID)
+c      
+         abort=.not.HEXIST(sane_ntuple_ID)
+         if(abort) then
+            call G_build_note(':Ntuple ID#$ does not exist',
+     $           '$',sane_ntuple_ID,' ',0.,' ',err)
+            call G_add_path(here,err)
+         else 
+            
+c     Gamma1E,Gamma2E,dist,cosg1g2,Pg1(4),Pg2(4)  
+            if(n_clust.eq.2.and.cer_h(1).eq.0.and.cer_h(2).eq.0.and.
+     ,           E_clust(1).gt.0.6.and.E_clust(2).gt.0.6.and.
+     ,           ncellclust(1).ge.6.and.ncellclust(2).ge.6)then
+               Pg1(4) = E_clust(1)
+               Pg2(4) = E_clust(2)
+               Pg1(1) = X_clust(1)/sqrt(X_clust(1)**2+(Y_clust(1)-slow_rast_y)**2+Z_clust(1)**2)
+               Pg1(2) = (Y_clust(1)-slow_rast_y)/sqrt(X_clust(1)**2+(Y_clust(1)-slow_rast_y)**2+Z_clust(1)**2)
+               Pg1(3) = Z_clust(1)/sqrt(X_clust(1)**2+(Y_clust(1)-slow_rast_y)**2+Z_clust(1)**2)
+               
+               Pg2(1) = X_clust(2)/sqrt(X_clust(2)**2+(Y_clust(2)-slow_rast_y)**2+Z_clust(2)**2)
+               Pg2(2) = Y_clust(2)/sqrt(X_clust(2)**2+(Y_clust(2)-slow_rast_y)**2+Z_clust(2)**2)
+               Pg2(3) = Z_clust(2)/sqrt(X_clust(2)**2+(Y_clust(2)-slow_rast_y)**2+Z_clust(2)**2)
+               
+               cosg1g2= (pg1(1)*pg2(1)+pg1(2)*pg2(2)+pg1(3)*pg2(3))/
+     ,              sqrt(pg1(1)**2+pg1(2)**2+pg1(3)**2)/
+     ,              sqrt(pg2(1)**2+pg2(2)**2+pg2(3)**2)
+               Pi0Mass = 2*pg1(4)*pg2(4)*(1-cosg1g2)
+               dist =sqrt((X_clust(1)-X_clust(2))**2+(Y_clust(1)-Y_clust(2))**2)
+
+               
+               if(dist.gt.20.and.dist.lt.80)
+     ,              call HF1(10622,sqrt(Pi0Mass),1.)
+            endif
+c            icycle=999999
+c               write(*,*)sane_ntuple_segmentevents,gen_event_ID_number
+            if(sane_ntuple_type.lt.3)then
+               if(sane_ntuple_max_segmentevents.gt.0) then
+                  if(sane_ntuple_segmentevents.gt.sane_ntuple_max_segmentevents)then
+                     call sane_ntup_change(ABORT,err)
+                     sane_ntuple_segmentevents=0
+                  else 
+                     sane_ntuple_segmentevents = sane_ntuple_segmentevents + 1
+                  endif
+               endif
+               call HFNT(sane_ntuple_ID)
+            elseif (sane_ntuple_type.eq.3.and.nclust.eq.2.and.
+     ,              cer_h(1).eq.0.and.cer_h(2).eq.0)then
+               if(sane_ntuple_max_segmentevents.gt.0) then
+                  if(sane_ntuple_segmentevents.gt.sane_ntuple_max_segmentevents)then
+                     call sane_ntup_change(ABORT,err)
+                     sane_ntuple_segmentevents=0
+                  else 
+                     sane_ntuple_segmentevents = sane_ntuple_segmentevents + 1
+                  endif
+               endif
+               call HFNT(sane_ntuple_ID)
+
+            endif
+            
+         endif
          
-      endif
+c      endif
  10   CONTINUE
   
       return 
