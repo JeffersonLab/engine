@@ -18,7 +18,7 @@
       logical FAIL
       character*80 why,directory,name
       character*1000 msg
-      integer io,id,cycle,m,i
+      integer io,id,cycle,m,i,itcol,itrow,icc
 
       err=' '
       abort=.false.
@@ -69,9 +69,12 @@ c      write(*,*) HEXIST(9502),sane_ntuple_directory
       do i =1,8
          call HROUT(10500+i,cycle,' ')
          call HROUT(10510+i,cycle,' ')
-         call HROUT(10120+i,cycle,' ')
-         call HROUT(10130+i,cycle,' ')
-         call HROUT(10219+i,cycle,' ')
+         call HROUT(10520+i,cycle,' ')
+         call HROUT(10530+i,cycle,' ')
+         call HROUT(10540+i,cycle,' ')
+         call HROUT(10560+i,cycle,' ')
+         call HROUT(10570+i,cycle,' ')
+         call HROUT(10580+i,cycle,' ')
       enddo
       if ( sane_ntuple_type .eq. 1) then
          do i =1,28
@@ -106,19 +109,20 @@ c      write(*,*) HEXIST(9502),sane_ntuple_directory
 
 
 
-      call HROUT(10550,cycle,' ')
-      call HROUT(10551,cycle,' ')
+c      call HROUT(10550,cycle,' ')
+c      call HROUT(10551,cycle,' ')
 
-      call HROUT(10601,cycle,' ')
-      call HROUT(10611,cycle,' ')
-      call HROUT(10602,cycle,' ')
-      call HROUT(10612,cycle,' ')
-      call HROUT(10603,cycle,' ')
-      call HROUT(10613,cycle,' ')
-      call HROUT(10604,cycle,' ')
-      call HROUT(10614,cycle,' ')
-      call HROUT(10620,cycle,' ')
-      call HROUT(10621,cycle,' ')
+c      call HROUT(10601,cycle,' ')
+c      call HROUT(10611,cycle,' ')
+c      call HROUT(10602,cycle,' ')
+c      call HROUT(10612,cycle,' ')
+c      call HROUT(10603,cycle,' ')
+c      call HROUT(10613,cycle,' ')
+c      call HROUT(10604,cycle,' ')
+c      call HROUT(10614,cycle,' ')
+c      call HROUT(10620,cycle,' ')
+c      call HROUT(10621,cycle,' ')
+      call HROUT(10622,cycle,' ')
 c      call HPRINT(9502)
  
       write(*,*)name
