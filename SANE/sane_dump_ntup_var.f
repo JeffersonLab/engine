@@ -39,8 +39,8 @@
          yclust(i) = 0
 
 	 cer_num(i) = 0
-	 cer_tdc(i) = 0
-	 cer_adc(i) = 0
+	 if (i .le. 15) cer_tdc(i) = 0
+	 if (i .le. 15) cer_adc(i) = 0
 
 	 luc_row(i) = 0
 	 ladc_pos(i) = 0
