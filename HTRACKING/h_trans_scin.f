@@ -12,6 +12,9 @@
 * for F1 TDCs (should still work if go back to FASTBUS)
 * 2008/09/30 P. Bosted
 * $Log$
+* Revision 1.21.8.7  2010/02/23 14:50:40  jones
+* Remove "HMS trigger time max" write statements
+*
 * Revision 1.21.8.6  2009/09/01 19:23:24  jones
 * Initialize hbeta_notrk and hbeta(1) = -100 for every event.
 *
@@ -444,7 +447,7 @@ c     MAKE SURE TO Include correct parameter files
 c
 c
       integer*4 RAW_TDC, CORRECTED_TDC,tdc_offset
-      integer*4 f1trigmax,nprint
+      integer*4 nprint
       logical roll
       save
 
@@ -468,15 +471,6 @@ c set to useful default
       endif
 
 c find largest value of trigger time, to check rollover
-      if(TRIGGER_F1_START_TDC_COUNTER(
-     >        HMS_TRIGGER_COUNTER) .gt.f1trigmax) then
-        write(6,'('' HMS trigger time max='',i8)')
-     >  TRIGGER_F1_START_TDC_COUNTER(
-     >        HMS_TRIGGER_COUNTER)
-        f1trigmax = 
-     >  TRIGGER_F1_START_TDC_COUNTER(
-     >        HMS_TRIGGER_COUNTER)
-      endif
 
 c subtract trigger time
 c and add a constant so generally in range
