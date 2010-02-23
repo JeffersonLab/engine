@@ -44,7 +44,7 @@
       call HCDIR(sane_ntuple_directory,' ') ! go to ntuple directory
 
       call G_add_path(here,msg)
-      call G_log_message('INFO: '//msg)
+c      call G_log_message('INFO: '//msg)
 
 c      write(*,*) HEXIST(9502),sane_ntuple_directory
       cycle= 0
@@ -125,7 +125,7 @@ c      call HROUT(10621,cycle,' ')
       call HROUT(10622,cycle,' ')
 c      call HPRINT(9502)
  
-      write(*,*)name
+c      write(*,*)name
       call HREND(name)
       call G_IO_control(io,'FREE',ABORT,err)
       close(io)
