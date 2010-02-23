@@ -596,15 +596,6 @@ c
       save
 
 c find largest value of trigger time, to check rollover
-      if(TRIGGER_F1_START_TDC_COUNTER(
-     >        SANE_TRIGGER_COUNTER) .gt.f1trigmax) then
-        write(6,'('' SANE trigger time max='',i8)')
-     >  TRIGGER_F1_START_TDC_COUNTER(
-     >        SANE_TRIGGER_COUNTER)
-        f1trigmax = 
-     >  TRIGGER_F1_START_TDC_COUNTER(
-     >        SANE_TRIGGER_COUNTER)
-      endif
       if(RAW_TDC.gt.0)then
          CORRECTED_TDC =  RAW_TDC - 
      ,        TRIGGER_F1_START_TDC_COUNTER(SANE_TRIGGER_COUNTER)
