@@ -698,7 +698,7 @@ c     write(*,*)"i4=",i4,k,iycell(k,inum)
 c     endif
 c     enddo
          
-         do i=1, cer_hit
+         do i=1, min(cer_hit,50)
             if(cer_num(i).lt.9)then
                cer_n = cer_num(i)
 c               write(*,*)tclust8(inum)
@@ -724,7 +724,7 @@ c
 c     Trigger SHIFT COrrections
 c
 c
-               if(int(T_trgBETA-45).gt.0)then
+               if(int(T_trgBETA-45).gt.0 .and. int(T_trgBETA-45) .le. 30)then
                   cer_tdc(i) = cer_tdc(i) -T_TRGBETA_SHIFT(int(T_trgBETA-45))
 c                  write(*,*)T_trgBETA,int(T_trgBETA-45),T_TRGBETA_SHIFT(int(T_trgBETA-45))
                
