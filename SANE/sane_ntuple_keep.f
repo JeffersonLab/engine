@@ -274,7 +274,7 @@ c      enddo
 c
       cer_hit = 0
       do i=1,CERENKOV_SANE_RAW_TOT_HITS2
-         if(CERENKOV_SANE_RAW_TDC(i).gt.0)then
+         if(CERENKOV_SANE_RAW_TDC(i).gt.0 .and. cer_hit .le. 50)then
             cer_hit         =  cer_hit+1
             cer_num(cer_hit)   =  CERENKOV_SANE_RAW_COUNTER_NUM2(i)
             call CORRECT_RAW_TIME_SANE(CERENKOV_SANE_RAW_TDC(i),cer_tdc(cer_hit))
@@ -527,6 +527,32 @@ c               write(*,*)sane_ntuple_segmentevents,gen_event_ID_number
                      sane_ntuple_segmentevents = sane_ntuple_segmentevents + 1
                   endif
                endif
+               call NANcheck(nclust,40)
+c               WRITE(*,*) 'NCLUST =',NCLUST
+               do i=1,nclust
+c                   WRITE(*,*) ncellclust(I),ncellbad(i),ncellx(i),ncelly(i)
+c                   write(*,*) xmoment(i),ymoment(i),eclust(i),aclust(i),xclust(i),yclust(i)
+                   call NANcheck(ncellclust(i),40+i)
+                   call NANcheck(ncellbad(i),50+i)
+                   call NANcheck(ncellx(i),60+i)
+                   call NANcheck(ncelly(i),60+i)
+                   call NANcheckF(xmoment(i),90+i)
+                   call NANcheckF(ymoment(i),90+i)
+                   call NANcheckF(eclust(i),90+i)
+                   call NANcheckF(aclust(i),90+i)
+                   call NANcheckF(xclust(i),90+i)
+                   call NANcheckF(yclust(i),90+i)
+                   do j=1,ncellclust(i)
+c                     write(*,*) iycell(j,i),ixcell(j,i),cellbad(j,i),xcell(j,i),ycell(j,i),eblock(j,i),ablock(j,i)
+                   call NANcheck(iycell(j,i),70+i)
+                   call NANcheck(ixcell(j,i),80+i)
+                   call NANcheck(cellbad(j,i),90+i)
+                   call NANcheckF(xcell(j,i),90+i)
+                   call NANcheckF(ycell(j,i),90+i)
+                   call NANcheckF(eblock(j,i),90+i)
+                   call NANcheckF(ablock(j,i),90+i)
+                    enddo
+                  enddo
                call HFNT(sane_ntuple_ID)
             elseif (sane_ntuple_type.eq.3.and.nclust.eq.2.and.
      ,              cer_h(1).eq.0.and.cer_h(2).eq.0)then
@@ -538,7 +564,9 @@ c               write(*,*)sane_ntuple_segmentevents,gen_event_ID_number
                      sane_ntuple_segmentevents = sane_ntuple_segmentevents + 1
                   endif
                endif
-               call HFNT(sane_ntuple_ID)
+c
+c
+              call HFNT(sane_ntuple_ID)
 
             endif
             
@@ -599,7 +627,7 @@ c
       integer did
       if(l.ne.l)then
          l=0
-c         write(*,*)did
+        write(*,*)did
       endif
       end
       subroutine NANcheckF(l,did)
