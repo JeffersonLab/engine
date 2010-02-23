@@ -7,6 +7,9 @@
 *   generates decoded bpm/raster information.
 *
 * $Log$
+* Revision 1.9.20.4.2.8  2010/02/23 14:51:30  jones
+* Remove "dbg slow raster=" write statements
+*
 * Revision 1.9.20.4.2.7  2009/06/05 17:47:35  jones
 *  Changed gsrx_raw_adc = gmisc_dec_data(3,2) to   gmisc_dec_data(4,2)
 *       gsry_raw_adc = gmisc_dec_data(4,2) to   gmisc_dec_data(3,2)
@@ -89,7 +92,7 @@
       character*20 here
       parameter (here = 'g_analyze_misc')
 
-      integer*4 ibpm,ibpm_sample,n_use_bpms,nprt
+      integer*4 ibpm,ibpm_sample,n_use_bpms
       real*8 normfrx,frxphase,frxdphase
       real*8 normfry,fryphase,frydphase
 
@@ -382,13 +385,6 @@ c histrogram
       if(gepid_slowrastxy2.gt.0)
      >   call hf2(gepid_slowrastxy2,
      >   gsrx_raw_adc2,gsry_raw_adc2,1.)
-c for debuging
-      if(nprt.lt.20) then
-        nprt = nprt + 1
-        write(6,'(''dbg slow raster='',4f8.1)') 
-     >   gsrx_raw_adc,  gsry_raw_adc,
-     >   gsrx_raw_adc2, gsry_raw_adc2
-      endif
 
       gsrx_adc = gsrx_raw_adc    ! we do not want peds subtracted
       gsry_adc = gsry_raw_adc   
