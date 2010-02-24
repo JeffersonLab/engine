@@ -470,6 +470,7 @@ c      endif
 
           call Bigcal_Betta(i)
           call icer(i)
+      call PHYSICS_VARIABLES(inum,SANE_IF_ELECTRON_ANGLE_THETA,SANE_IF_ELECTRON_ANGLE_PHI)
 c          call Bigcal_Betta(i)
           call tracker(i)
           call TrackerCoordnate(i)

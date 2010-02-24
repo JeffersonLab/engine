@@ -205,7 +205,6 @@ c      write(*,*)E_clust(inum),xclust(inum),yclust(inum),Z_clust(inum)
       call NANcheckF(Phi_e(inum),33)
 c                           write(*,*)inum,x_clust(inum),xclust(inum),ixcell(jmax,inum),xcell(jmax,inum)
       
-      call PHYSICS_VARIABLES(inum,SANE_IF_ELECTRON_ANGLE_THETA,SANE_IF_ELECTRON_ANGLE_PHI)
       
       end
 cccccccccccccccccccccccccccccccccccccccccccccccccccc
