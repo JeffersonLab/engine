@@ -346,7 +346,7 @@ c
          
          
          call HBNAME(id,'SANEPHYS',n_clust,
-     $        'n_clust[0,15]:I*4,'//
+     $        'n_clust[0,50]:I*4,'//
      $        'E_clust(n_clust):R*4,'//
      $        'X_clust(n_clust):R*4, Y_clust(n_clust):R*4,'//
      $        'Z_clust(n_clust):R*4,'//
