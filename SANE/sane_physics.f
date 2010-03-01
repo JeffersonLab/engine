@@ -669,6 +669,7 @@ ccccccccccc
       real amax,dtime
       
       cer_h(inum)=0
+      i4=1
       if(ncellclust(inum).gt.4)then
          i4=1
          itrig = 1
