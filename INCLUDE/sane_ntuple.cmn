@@ -157,7 +157,7 @@ c      character*256 b_tree_filename
      ,     hms_cer_npe1,hms_cer_npe2, hms_cer_adc1,hms_cer_adc2
       
       integer*4 maxcl
-      parameter (maxcl=15)
+      parameter (maxcl=50)  ! needs to match maxnclust in b_ntuple.cmn
       integer*4 n_clust
       integer*4 luc_h(maxcl)
       integer*4 trc_hx(maxcl)
