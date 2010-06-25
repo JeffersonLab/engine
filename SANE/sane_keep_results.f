@@ -1,3 +1,4 @@
+
       subroutine sane_keep_results(ABORT,err)
 
       implicit none
@@ -27,21 +28,22 @@ c$$$      if(BIGCAL_PROT_NCLSTR.gt.0.or.BIGCAL_RCS_NCLSTR.gt.0.or.
 c$$$     $     BIGCAL_MID_NCLSTR.gt.0) then
 c$$$         call b_ntuple_keep(ABORT,err)
 c$$$      endif
-
+c      write(*,*)nclust
       if (gen_event_type .eq. 4) return
       if(sane_ntuple_type.gt.0)then
-        if(bigcal_all_nclstr.gt.0.or.gen_event_type .eq. 8
-     ,        .or.HSNUM_FPTRACK.gt.0
+        if((bigcal_all_nclstr.gt.0.or.gen_event_type .eq. 8
+     ,        .or.HSNUM_FPTRACK.gt.0)
      ,        ) then
-          call b_ntuple_keep(ABORT,err,.false.)
-          call sane_ntuple_keep(ABORT,err)
-          call SANE_DUMP_NTUP_VAR()
-          call  B_reset_event(ABORT,err)
+              call SANE_DUMP_NTUP_VAR()
+              call b_ntuple_keep(ABORT,err,.false.)
+              
+              call sane_ntuple_keep(ABORT,err)
+              call SANE_DUMP_NTUP_VAR()  
+ 
+c          call  B_reset_event(ABORT,err)
           bigcal_all_nclstr=0
           bigcal_nmaxima=0
         endif
-c      else if(sane_ntuple_type.eq.2)then 
-c         call sane_ntuple_keep(ABORT,err)
       endif
       
       if(abort) then
