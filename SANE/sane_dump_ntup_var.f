@@ -39,8 +39,8 @@
          yclust(i) = 0
 
 	 cer_num(i) = 0
-	 if (i .le. 15) cer_tdc(i) = 0
-	 if (i .le. 15) cer_adc(i) = 0
+	 cer_tdc(i) = 0
+	 cer_adc(i) = 0
 
 	 luc_row(i) = 0
 	 ladc_pos(i) = 0
@@ -64,5 +64,51 @@
       hms_yptar    = 0
       hms_xptar    = 0
       hms_delta    = 0
+
+      do j=1,maxcl
+         E_clust(j) = 0
+         X_clust(j) = 0 
+         Y_clust(j) = 0
+         Z_clust(j) = 0
+         X_clust_r(j) = 0 
+         Y_clust_r(j) = 0
+         Z_clust_r(j) = 0
+         luc_h(j) = 0
+         trc_hx(j) = 0
+         trc_hy1(j) = 0
+         trc_hy2(j) = 0
+         do i=1,20
+            X_luc(i,j) = 0 
+            Y_luc(i,j) = 0 
+            Z_luc(i,j) = 0
+            X_luc_r(i,j) = 0
+            Y_luc_r(i,j) = 0
+            Z_luc_r(i,j) = 0
+            X_trc(i,j) = 0
+            Z_trc(i,j) = 0
+            Y1_trc(i,j) = 0
+            Z1_trc(i,j) = 0
+            Y2_trc(i,j) = 0
+            Z2_trc(i,j) = 0
+         enddo
+         do i=1,3
+            Tr_Vertex(i,j) = 0 
+            Tr_Vertex_r(i,j) = 0
+         enddo
+         cer_h(j) = 0
+         cerb_time(j) = 0
+         cerb_adc(j) = 0
+         bigc_time(j) = 0
+         bigc_adc(j) = 0
+         Theta_e(j) = 0
+         Phi_e(j) = 0
+         Delta_Y(j) = 0
+         Delta_X(j) = 0
+         X_Bjorken(j) = 0
+         Q2(j) = 0
+         W2(j) = 0
+         ENue(j) = 0
+ 
+      enddo
      
       end
