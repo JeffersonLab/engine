@@ -1,4 +1,4 @@
- 2    subroutine sane_ntup_close(ABORT,err)
+      subroutine sane_ntup_close(ABORT,err)
 
       implicit none
       save
@@ -44,7 +44,7 @@
       call HCDIR(sane_ntuple_directory,' ') ! go to ntuple directory
 
       call G_add_path(here,msg)
-c      call G_log_message('INFO: '//msg)
+      call G_log_message('INFO: '//msg)
 
 c      write(*,*) HEXIST(9502),sane_ntuple_directory
       cycle= 0
@@ -62,10 +62,19 @@ c      write(*,*) HEXIST(9502),sane_ntuple_directory
 
       call HROUT(10111,cycle,' ')
       call HROUT(10112,cycle,' ')
+      call HROUT(10113,cycle,' ')
+      call HROUT(10114,cycle,' ')
       call HROUT(10121,cycle,' ')
       call HROUT(10122,cycle,' ')
       call HROUT(10125,cycle,' ')
       call HROUT(10126,cycle,' ')
+      call HROUT(10128,cycle,' ')
+      do i =1,18
+       call HROUT(17100+i,cycle,' ')  
+       call HROUT(17200+i,cycle,' ')  
+       call HROUT(18100+i,cycle,' ')  
+       call HROUT(18200+i,cycle,' ')  
+      enddo
       do i =1,8
          call HROUT(10500+i,cycle,' ')
          call HROUT(10510+i,cycle,' ')
@@ -75,14 +84,19 @@ c      write(*,*) HEXIST(9502),sane_ntuple_directory
          call HROUT(10560+i,cycle,' ')
          call HROUT(10570+i,cycle,' ')
          call HROUT(10580+i,cycle,' ')
+         call HROUT(10710+i,cycle,' ')
+         call HROUT(10720+i,cycle,' ')
+         call HROUT(10730+i,cycle,' ')
+         call HROUT(10740+i,cycle,' ')
+
       enddo
-      if ( sane_ntuple_type .eq. 1) then
+c      if ( sane_ntuple_type .eq. 1) then
          do i =1,28
             call HROUT(10150+i,cycle,' ')
             call HROUT(20150+i,cycle,' ')
             call HROUT(20250+i,cycle,' ')
         enddo
-      endif
+c      endif
       call HROUT(10200,cycle,' ')
       do i =0,6
          call HROUT(10210+i,cycle,' ')
@@ -123,9 +137,11 @@ c      call HROUT(10614,cycle,' ')
 c      call HROUT(10620,cycle,' ')
 c      call HROUT(10621,cycle,' ')
       call HROUT(10622,cycle,' ')
+      call HROUT(10623,cycle,' ')
+
 c      call HPRINT(9502)
  
-c      write(*,*)name
+      write(*,*)name!,10623
       call HREND(name)
       call G_IO_control(io,'FREE',ABORT,err)
       close(io)
