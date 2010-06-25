@@ -3,7 +3,7 @@ include ../../etc/Makefile
 include ../../etc/Makefile.flags
 
 
-osources = sane_neurale.f  sane_neuralx.f  sane_neuraly.f \
+osources = sane_n100xye.f \
            sane_analyze_pedestal.f  sane_ntup_close.f    sane_ntup_register.f \
            sane_calc_pedestal.f     sane_ntup_init.f     sane_ntup_shutdown.f \
            sane_clear_event.f       sane_ntuple_keep.f   sane_register_variables.f \
