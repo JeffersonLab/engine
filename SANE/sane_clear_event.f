@@ -11,6 +11,7 @@
       call lucite_sane_clear_event(ABORT,err)
       call cerenkov_sane_clear_event(ABORT,err)
       call tracker_sane_clear_event(ABORT,err)
+      call SANE_DUMP_NTUP_VAR()
 
       end
 
