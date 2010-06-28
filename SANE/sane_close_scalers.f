@@ -28,28 +28,30 @@
 c         write(*,*)'MMM'
 c      endif
 c      if(.not.charge_data_open.and.gscaler_change(538).ne.hel_p_scaler)then
-        hel_p_scaler= gscaler_change(538)
+c        hel_p_scaler= gscaler_change(538)
+        hel_p_scaler= 0.985*gscaler_change(510)-gscaler_change(538)
         hel_p_trig= g_hel_pos
         dtime_p =1.
-        if(abs(g_hel_pos).gt.0)then
-           dtime_p = gscaler_change(538)/float(g_hel_pos)
+        if(abs(hel_p_scaler).gt.0.0)then
+           dtime_p = float(g_hel_pos)/float(hel_p_scaler)
         endif
         call NANcheckF(dtime_p,0)
         g_hel_pos =0
 c        write(*,*)'MMM P'
 c      endif
 c      if(.not.charge_data_open.and.gscaler_change(546).ne.hel_n_scaler)then
-        hel_n_scaler= gscaler_change(546)
+c        hel_n_scaler= 0.985*gscaler_change(510)-gscaler_change(538)
+        hel_n_scaler=gscaler_change(538)
         hel_n_trig= g_hel_neg
-        dtime_n=1
-        if(abs(g_hel_neg).gt.0.0)then
-           dtime_n = gscaler_change(546)/float(g_hel_neg)
+         dtime_n=1.
+        if(abs(hel_n_scaler).gt.0.0)then
+           dtime_n =float(g_hel_neg)/float(hel_n_scaler)
         endif
         call NANcheckF(dtime_n,0)
         g_hel_neg =0
 c        write(*,*)'MMM N'
       endif
-c      write(*,*)'Writing Last SCALER'
+      write(*,*)'Writing Last SCALER'
       if(.not.polarization_data_open)then
           write(polarization_data_unit,*)gen_event_ID_number,polarea, polarization,half_plate
           polarization_ch = .FALSE.
