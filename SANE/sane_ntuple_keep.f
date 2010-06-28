@@ -2,6 +2,7 @@
 
       implicit none
       save
+      integer iflag_write
 
       character*13 here
       parameter(here='sane_ntuple_keep')
@@ -66,9 +67,10 @@
 c      write(*,*)'Starting sane'
 c     INQUIRE(FILE="input.txt",EXIST=file_exist)
 c     write(*,*)file_exist
+c      write(*,*)nclust
 
       if(.not.sane_ntuple_exists) return
-       if(.not.charge_data_open.and.charge_ch)then
+      if(.not.charge_data_open.and.charge_ch)then
          charge2s = gbcm1_charge-tcharge
          tcharge = gbcm1_charge
          charge2s_help = gbcm1_charge_help -tcharge_help 
@@ -78,8 +80,8 @@ c     write(*,*)file_exist
 c         write(*,*)'MMM'
 c      endif
 c      if(.not.charge_data_open.and.gscaler_change(538).ne.hel_p_scaler)then
-        hel_p_scaler=gscaler_change(538)
-c        hel_p_scaler= 0.985*gscaler_change(510)-gscaler_change(538)
+c        hel_p_scaler=gscaler_change(538)
+        hel_p_scaler= 0.985*gscaler_change(510)-gscaler_change(538)
         hel_p_trig= g_hel_pos
         dtime_p =1.
         if(abs(hel_p_scaler).gt.0)then
@@ -91,7 +93,8 @@ c        write(*,*)'MMM P'
 c      endif
 c      if(.not.charge_data_open.and.gscaler_change(546).ne.hel_n_scaler)then
 
-        hel_n_scaler= 0.985*gscaler_change(510)-gscaler_change(538)
+c        hel_n_scaler= 0.985*gscaler_change(510)-gscaler_change(538)
+        hel_n_scaler=gscaler_change(538)
         hel_n_trig= g_hel_neg
         dtime_n=1
         if(abs(hel_n_scaler).gt.0.0)then
@@ -142,6 +145,7 @@ c         write(*,*)'HELP charge Had',tcharge,gbcm1_charge
      ,           hel_p_scaler_old,hel_p_trig_old,dtime_p_old,
      ,           hel_n_scaler_old,hel_n_trig_old,dtime_n_old
 
+         
 c         write(*,*)'HELP charge NOW',tcharge_old,gbcm1_charge
          charge2s = charge2s_old 
          tcharge = tcharge_old
@@ -176,6 +180,10 @@ c      if(polarization_ch)then
 c         write(*,*)polarea,charge2s,tcharge,hel_n_trig,hel_p_trig,hel_p_scaler
 c      endif
 c      write(*,*)gbcm1_charge
+
+
+
+
       T_trgHMS     = gmisc_dec_data(11,1)
       call NANcheckF(T_trgHMS,3)
       T_trgBIG     = gmisc_dec_data(12,1) 
@@ -254,11 +262,10 @@ c                  call HFILL(10126, float(luc_row(luc_hit)), float(ladc_neg(luc
 c            
 c         endif
 c      enddo
-
-       ceradc_hit = 0
        do i=1,12
           cer_adc_save(i) = -10000.
-          enddo
+       enddo
+       ceradc_hit = 0
       do i=1,CERENKOV_SANE_RAW_TOT_HITS
          if (ceradc_hit .le. 15) then
             ceradc_hit = ceradc_hit + 1
@@ -271,10 +278,13 @@ c      enddo
             call HFILL(10112,float(ceradc_num(ceradc_hit)),float(cer_adc(ceradc_hit)), 1.)
          endif
        enddo
-c
+
       cer_hit = 0
+c      write(*,*)'c, ',CERENKOV_SANE_RAW_COUNTER_NUM
+c      write(*,*)'a, ' ,CERENKOV_SANE_RAW_ADC
       do i=1,CERENKOV_SANE_RAW_TOT_HITS2
-         if(CERENKOV_SANE_RAW_TDC(i).gt.0 .and. cer_hit .le. 50)then
+         if(CERENKOV_SANE_RAW_TDC(i).gt.0)then
+            if(cer_hit.le.50)then
             cer_hit         =  cer_hit+1
             cer_num(cer_hit)   =  CERENKOV_SANE_RAW_COUNTER_NUM2(i)
             call CORRECT_RAW_TIME_SANE(CERENKOV_SANE_RAW_TDC(i),cer_tdc(cer_hit))
@@ -289,17 +299,19 @@ c            if ( T_trgBIG.ge.40) then
 c               call HFILL(10500+cer_num(cer_hit),float(cer_adcc(cer_hit)),float(cer_tdc(cer_hit)),1.)
 c            endif
          endif
+         endif
       enddo
+
 c
        
 c
 c      write(*,*)'Cer sane done'
 
       x1t_hit         =  0
-      if(x1t_hit.gt.300) go to 10
       do i=1,TRACKER_SANE_RAW_TOT_HITS_X
          if(TRACKER_SANE_RAW_TDC_X(i).gt.0)then
             x1t_hit         =  x1t_hit+1
+            if(x1t_hit.gt.300) go to 10
             x1t_row(x1t_hit)   =  TRACKER_SANE_RAW_COUNTER_X(i)
             call CORRECT_RAW_TIME_SANE(TRACKER_SANE_RAW_TDC_X(i),x1t_tdc(x1t_hit))
             x1t_x(x1t_hit)     =  -12.32+0.37422*(x1t_row(x1t_hit)-1)
@@ -310,6 +322,8 @@ c      write(*,*)'Cer sane done'
             call NANcheck(x1t_tdc(x1t_hit),TRACKER_SANE_X_ID)
          endif
       enddo
+ 10   CONTINUE
+
       y1t_hit=0
       y2t_hit=0
 c      write(*,*)gen_event_ID_number,TRACKER_SANE_RAW_TOT_HITS_Y
@@ -431,6 +445,8 @@ c                  write(*,*)ww2
 c         endif
 
       endif
+
+
       rast_x       = gfry_raw_adc
       call NANcheckF(rast_x,3)
       rast_y       = gfrx_raw_adc
@@ -464,14 +480,18 @@ c      endif
       sem_y        = ntbpmy/10.
       call NANcheckF(sem_y,3)
       call HFILL(10214,sem_x,sem_y, 1.)
+
       
       n_clust = nclust
       do i =1,  n_clust
 
+
           call Bigcal_Betta(i)
-          call icer(i)
-      call PHYSICS_VARIABLES(i,SANE_IF_ELECTRON_ANGLE_THETA,SANE_IF_ELECTRON_ANGLE_PHI)
+
+c          write(*,*)Theta_e(i),Phi_e(i),cer_h(i)
+          call PHYSICS_VARIABLES(i,Theta_e(i),Phi_e(i))
 c          call Bigcal_Betta(i)
+
           call tracker(i)
           call TrackerCoordnate(i)
           call GeometryMatch(i)
@@ -486,6 +506,7 @@ c         endif
       enddo
 c      write(*,*)'Sane is Done'
 c      
+
          abort=.not.HEXIST(sane_ntuple_ID)
          if(abort) then
             call G_build_note(':Ntuple ID#$ does not exist',
@@ -514,8 +535,33 @@ c     Gamma1E,Gamma2E,dist,cosg1g2,Pg1(4),Pg2(4)
                dist =sqrt((X_clust(1)-X_clust(2))**2+(Y_clust(1)-Y_clust(2))**2)
 
                
-               if(dist.gt.20.and.dist.lt.80)
-     ,              call HF1(10622,sqrt(Pi0Mass),1.)
+               if(dist.gt.20.and.dist.lt.80)then
+                  call HF1(10622,sqrt(Pi0Mass),1.)
+c                  write(*,*)1,sqrt(Pi0Mass)
+               endif
+
+               Pg1(1) = Pg1(4)*sin(Theta_e(1)*3.1415926536/180.)*cos(Phi_e(1)*3.1415926536/180.)
+               Pg1(2) = Pg1(4)*sin(Theta_e(1)*3.1415926536/180.)*sin(Phi_e(1)*3.1415926536/180.)
+               Pg1(3) = Pg1(4)*cos(Theta_e(1)*3.1415926536/180.)
+               
+               Pg2(1) = Pg2(4)*sin(Theta_e(2)*3.1415926536/180.)*cos(Phi_e(2)*3.1415926536/180.)
+               Pg2(2) = Pg2(4)*sin(Theta_e(2)*3.1415926536/180.)*sin(Phi_e(2)*3.1415926536/180.)
+               Pg2(3) = Pg2(4)*cos(Theta_e(2)*3.1415926536/180.)
+c               write(*,*)Pg1,sin(Theta_e(1)*3.14159/180.),cos(Phi_e(1)*3.1415926536/180.)
+c               write(*,*)Pg2,Theta_e(2),Phi_e(2)
+c               write(*,*)sqrt(pg1(1)**2+pg1(2)**2+pg1(3)**2)
+c               write(*,*)sqrt(pg2(1)**2+pg2(2)**2+pg2(3)**2)
+               cosg1g2= (pg1(1)*pg2(1)+pg1(2)*pg2(2)+pg1(3)*pg2(3))/
+     ,              sqrt(pg1(1)**2+pg1(2)**2+pg1(3)**2)/
+     ,              sqrt(pg2(1)**2+pg2(2)**2+pg2(3)**2)
+               
+               Pi0Mass = 2*pg1(4)*pg2(4)*(1-cosg1g2)
+               if(dist.gt.20.and.dist.lt.80)then
+                  call HF1(10623,sqrt(Pi0Mass),1.)
+c                  write(*,*)'INTO 10623'
+c                  write(*,*)2,sqrt(Pi0Mass),Pi0Mass,cosg1g2
+               endif
+
             endif
 c            icycle=999999
 c               write(*,*)sane_ntuple_segmentevents,gen_event_ID_number
@@ -528,53 +574,32 @@ c               write(*,*)sane_ntuple_segmentevents,gen_event_ID_number
                      sane_ntuple_segmentevents = sane_ntuple_segmentevents + 1
                   endif
                endif
-               call NANcheck(nclust,40)
-c               WRITE(*,*) 'NCLUST =',NCLUST
-               do i=1,nclust
-c                   WRITE(*,*) ncellclust(I),ncellbad(i),ncellx(i),ncelly(i)
-c                   write(*,*) xmoment(i),ymoment(i),eclust(i),aclust(i),xclust(i),yclust(i)
-                   call NANcheck(ncellclust(i),40+i)
-                   call NANcheck(ncellbad(i),50+i)
-                   call NANcheck(ncellx(i),60+i)
-                   call NANcheck(ncelly(i),60+i)
-                   call NANcheckF(xmoment(i),90+i)
-                   call NANcheckF(ymoment(i),90+i)
-                   call NANcheckF(eclust(i),90+i)
-                   call NANcheckF(aclust(i),90+i)
-                   call NANcheckF(xclust(i),90+i)
-                   call NANcheckF(yclust(i),90+i)
-                   do j=1,ncellclust(i)
-c                     write(*,*) iycell(j,i),ixcell(j,i),cellbad(j,i),xcell(j,i),ycell(j,i),eblock(j,i),ablock(j,i)
-                   call NANcheck(iycell(j,i),70+i)
-                   call NANcheck(ixcell(j,i),80+i)
-                   call NANcheck(cellbad(j,i),90+i)
-                   call NANcheckF(xcell(j,i),90+i)
-                   call NANcheckF(ycell(j,i),90+i)
-                   call NANcheckF(eblock(j,i),90+i)
-                   call NANcheckF(ablock(j,i),90+i)
-                    enddo
-                  enddo
                call HFNT(sane_ntuple_ID)
-            elseif (sane_ntuple_type.eq.3.and.nclust.eq.2.and.
-     ,              cer_h(1).eq.0.and.cer_h(2).eq.0)then
+            elseif (sane_ntuple_type.eq.3.and.
+     ,              ((nclust.eq.2.and.cer_h(1).eq.0.and.cer_h(2).eq.0).or.
+     ,              (nclust.eq.1.and.cer_h(1).eq.0.and.e_clust(1).gt.1.4).or.
+     ,              (nclust.eq.2.and.cer_h(1).gt.0.and.cer_h(2).gt.0)).or.
+     ,              nclust.eq.2
+     ,              )then
+               if(nclust.eq.2.and.cer_h(1).gt.0.and.cer_h(2).gt.0)nclust=20
+               if(nclust.eq.2.and.(cer_h(1).eq.0.or.cer_h(2).eq.0))nclust=21
+               if(nclust.eq.21.and.cer_h(1).eq.0.and.cer_h(2).eq.0)nclust=2
                if(sane_ntuple_max_segmentevents.gt.0) then
                   if(sane_ntuple_segmentevents.gt.sane_ntuple_max_segmentevents)then
                      call sane_ntup_change(ABORT,err)
                      sane_ntuple_segmentevents=0
                   else 
-                     sane_ntuple_segmentevents = sane_ntuple_segmentevents + 1
+                     sane_ntuple_segmentevents = sane_ntuple_segmentevents + 2
                   endif
                endif
-c
-c
-              call HFNT(sane_ntuple_ID)
+              
+               call HFNT(sane_ntuple_ID)
 
             endif
             
          endif
          
 c      endif
- 10   CONTINUE
   
       return 
   18   write(*,*)'HELP charge error',charge2s,gbcm1_charge
@@ -597,6 +622,15 @@ c
       save
 
 c find largest value of trigger time, to check rollover
+      if(TRIGGER_F1_START_TDC_COUNTER(
+     >        SANE_TRIGGER_COUNTER) .gt.f1trigmax) then
+        write(6,'('' SANE trigger time max='',i8)')
+     >  TRIGGER_F1_START_TDC_COUNTER(
+     >        SANE_TRIGGER_COUNTER)
+        f1trigmax = 
+     >  TRIGGER_F1_START_TDC_COUNTER(
+     >        SANE_TRIGGER_COUNTER)
+      endif
       if(RAW_TDC.gt.0)then
          CORRECTED_TDC =  RAW_TDC - 
      ,        TRIGGER_F1_START_TDC_COUNTER(SANE_TRIGGER_COUNTER)
@@ -619,7 +653,7 @@ c
       integer did
       if(l.ne.l)then
          l=0
-        write(*,*)did
+c         write(*,*)did
       endif
       end
       subroutine NANcheckF(l,did)
