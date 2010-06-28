@@ -114,7 +114,7 @@ c      character*256 b_tree_filename
       integer*4 cer_hit,ceradc_hit
       integer*4 cer_num(50)
       integer*4 cer_tdc(50),cer_adcc(50)
-      integer*4 ceradc_num(15),cer_adc(15)
+      integer*4 ceradc_num(15),cer_adc(50)
       common/SANECER/cer_hit, cer_num, cer_tdc,cer_adcc
       common/SANEADC/ceradc_hit, ceradc_num,cer_adc
       
@@ -157,7 +157,7 @@ c      character*256 b_tree_filename
      ,     hms_cer_npe1,hms_cer_npe2, hms_cer_adc1,hms_cer_adc2
       
       integer*4 maxcl
-      parameter (maxcl=50)  ! needs to match maxnclust in b_ntuple.cmn
+      parameter (maxcl=50)
       integer*4 n_clust
       integer*4 luc_h(maxcl)
       integer*4 trc_hx(maxcl)
@@ -191,7 +191,9 @@ c      character*256 b_tree_filename
       real*4 Theta_e(maxcl),Phi_e(maxcl)
       real*4 Delta_Y(maxcl),Delta_X(maxcl)
       real*4 X_Bjorken(maxcl), Q2(maxcl), W2(maxcl), ENue(maxcl)
-      integer*4 cer_h(maxcl)
+      integer*4 cer_h(maxcl),cer_geom(maxcl)
+      integer*4 cerb_time(maxcl),
+     ,     cerb_adc(maxcl),bigc_time(maxcl),bigc_adc(maxcl),cerbc_num(maxcl)
       COMMON/SANEPHYS/n_clust,
      $        E_clust,
      $        X_clust, Y_clust,
@@ -212,11 +214,15 @@ c      character*256 b_tree_filename
      $        Y2_trc,
      $        Z2_trc,
      $        Tr_Vertex, Tr_Vertex_r,
-     $        cer_h,
+     $        cer_h,cer_geom,
+     $     cerb_time,
+     $     cerb_adc,bigc_time,bigc_adc,cerbc_num,
      $        Theta_e,Phi_e,
      $        Delta_Y,Delta_X,
      $        X_Bjorken, Q2,
      $         W2, ENue
+
+
 c      COMMON/SANEPHYS/n_clust, 
 c     ,     E_clust, 
 c     ,     X_clust, Y_clust, Z_clust, 
