@@ -16,8 +16,9 @@
       integer ixmax,iymax
 c      real Etot3pm,Etot3mp,Etot3mm,Etot3pp,Etot,etot9
       real xmomsqr,xmom,xmomsq,ymomsqr,ymom,ymomsq
-      real Emt,Etot,etot9,xx(5,5),yy(5,5)
-      double precision VectorN(12)
+      real Emt,Etot,etot9,xx(5,5),yy(5,5),eyx(5,5)
+*      double precision VectorN(12)
+      double precision VectorN(27)
       double precision COORE,coorX2,coorY2
       integer jmax
       real emax
@@ -25,150 +26,81 @@ c      real Etot3pm,Etot3mp,Etot3mm,Etot3pp,Etot,etot9
       double precision FixX,FixY,FixE
       common/SNEU/FixX,FixY,FixE
       real temp_phi,temp_th
+      double precision sane_n100xye      
+
+
       
 
+      call       NueralParam(inum,ixmax,iymax,jmax,etot,
+     ,     XX,YY,Eyx)    
 
-
-
-c      do mm=1,32
-c         do kk=1,56
-c            EBLOCKS(mm,kk)=0
-c         enddo
-c      enddo
-c      emax =0 
-c      jmax =0
-c      do jj=1,ncellclust(inum)
-c         
-c         EBLOCKS(ixcell(jj,inum),iycell(jj,inum))=eblock(jj,inum)
-c         if(EBLOCKS(ixcell(jj,inum),iycell(jj,inum)).gt.emax)then
-c            emax = EBLOCKS(ixcell(jj,inum),iycell(jj,inum))
-c            jmax = jj            
-c         endif
-c      enddo
-
-c      Etot=0
-c      iymax = iycell(jmax,inum)
-c      ixmax = ixcell(jmax,inum)
+*          call NueralParam(inum,Emax,Emt,Etot9,Etot,
+*     ,        xmomsqr,xmom,xmomsq,ymomsqr,ymom,ymomsq,
+*     ,        ixmax,iymax,jmax,XX,YY)    
       
-c      do mm=ixmax-2,ixmax+2           
-c         do kk=iymax-2,iymax+2
-c            if(mm.gt.0.and.kk.gt.0.and.mm.lt.33.and.kk.lt.57)then
-c               if(EBLOCKS(mm,kk).gt.0.01.and.
-c     ,              EBLOCKS(mm,kk).eq.EBLOCKS(mm,kk))then
-c                  Etot=Etot+EBLOCKS(mm,kk)
-c                  
-c               endif
-c            endif
-c         enddo
-c      enddo
-c      Etot9=0
-c      do mm=ixmax-1,ixmax+1           
-c         do kk=iymax-1,iymax+1
-c            if(mm.gt.0.and.kk.gt.0.and.mm.lt.33.and.kk.lt.57)then
-c               if(EBLOCKS(mm,kk).gt.0.01.and.
-c     ,              EBLOCKS(mm,kk).eq.EBLOCKS(mm,kk))then
-c                  Etot9=Etot9+EBLOCKS(mm,kk)
-c               endif
-c            endif
-c         enddo
-c      enddo
 
-c      Etot3pm =0
-c      do kk=iymax-1,iymax
-c         do mm=ixmax,ixmax+1
-c            if(mm.gt.0.and.kk.gt.0.and.mm.lt.33.and.kk.lt.57)then
-c               if(EBLOCKS(mm,kk).gt.0.01.and.
-c     ,              EBLOCKS(mm,kk).eq.EBLOCKS(mm,kk))then
-c                  Etot3pm = Etot3pm+EBLOCKS(mm,kk)
-c               endif            
-c            endif
-c            
-c         enddo
-c      enddo
-c      Etot3pp =0
-c      do kk=iymax,iymax+1
-c         do mm=ixmax,ixmax+1
-c            if(mm.gt.0.and.kk.gt.0.and.mm.lt.33.and.kk.lt.57)then
-c               if(EBLOCKS(mm,kk).gt.0.01.and.
-c     ,              EBLOCKS(mm,kk).eq.EBLOCKS(mm,kk))then
-c                  Etot3pp = Etot3pp+EBLOCKS(mm,kk)
-c               endif            
-c            endif
-c            
-c         enddo
-c      enddo
-c      Etot3mp =0
-c      
-c      do kk=iymax,iymax+1
-c         do mm=ixmax-1,ixmax
-c            if(mm.gt.0.and.kk.gt.0.and.mm.lt.33.and.kk.lt.57)then
-c               if(EBLOCKS(mm,kk).gt.0.01.and.
-c     ,              EBLOCKS(mm,kk).eq.EBLOCKS(mm,kk))then
-c                  Etot3mp = Etot3mp+EBLOCKS(mm,kk)
-c               endif            
-c            endif
-c         enddo
-c      enddo
-
-c            VectorN(1) = DBLE(ixcell(jmax,inum))
-c            VectorN(2) = DBLE(iycell(jmax,inum))
-c            VectorN(3) = emax
-c            VectorN(4) = emax/Etot
-c            VectorN(5) = Etot
-c            VectorN(6) = Etot9
-c            VectorN(7) = Etot3mm
-c            VectorN(8) = Etot3pp
-c            VectorN(9) = Etot3pm
-c            VectorN(10) =Etot3mp 
-c            VectorN(11) = DBLE(ncellclust(inum))
-
-          call NueralParam(inum,Emax,Emt,Etot9,Etot,
-     ,        xmomsqr,xmom,xmomsq,ymomsqr,ymom,ymomsq,
-     ,        ixmax,iymax,jmax,XX,YY)    
  
-         VectorN(1) = Emax 
-         VectorN(2) = emax/Etot
-         VectorN(3) = Etot9
-         VectorN(4) = Etot
-         VectorN(5) = xmomsqr
-         VectorN(6) = xmom
-         VectorN(7) = xmomsq
-         VectorN(8) = ymomsqr
-         VectorN(9) = ymom
-         VectorN(10) =ymomsq
-         VectorN(11) = DBLE(ixmax)
-         VectorN(12) =DBLE(iymax)
+         VectorN(1)   = eyx(1,1)
+         VectorN(2)   = eyx(2,1)
+         VectorN(3)   = eyx(3,1)
+         VectorN(4)   = eyx(4,1)
+         VectorN(5)   = eyx(5,1)
+         VectorN(6)   = eyx(1,2)
+         VectorN(7)   = eyx(2,2)
+         VectorN(8)   = eyx(3,2)
+         VectorN(9)   = eyx(4,2)
+         VectorN(10)  = eyx(5,2)
+         VectorN(11)  = eyx(1,3)
+         VectorN(12)  = eyx(2,3)
+         VectorN(13)  = eyx(3,3)
+         VectorN(14)  = eyx(4,3)
+         VectorN(15)  = eyx(5,3)
+         VectorN(16)  = eyx(1,4)
+         VectorN(17)  = eyx(2,4)
+         VectorN(18)  = eyx(3,4)
+         VectorN(19)  = eyx(4,4)
+         VectorN(20)  = eyx(5,4)
+         VectorN(21)  = eyx(1,5)
+         VectorN(22)  = eyx(2,5)
+         VectorN(23)  = eyx(3,5)
+         VectorN(24)  = eyx(4,5)
+         VectorN(25)  = eyx(5,5)
 
-            call neuralx(VectorN,0)
-            call neuraly(VectorN,0)
-            call neurale(VectorN,0)
+         VectorN(26) = DBLE(ixmax)
+         VectorN(27) =DBLE(iymax)
+      
 
-            COORX2 = FixX
-            COORY2 = FixY
-            COORE  = FixE
-c            write(*,*)FixX,FixY,FixE
 
+c           call neuralx(VectorN,0)
+c           call neuraly(VectorN,0)
+c           call neurale(VectorN,0)
+
+            COORX2 = sane_n100xye(VectorN,0)
+            COORY2 = sane_n100xye(VectorN,1)
+            COORE  = sane_n100xye(VectorN,2)
+      
+
+
+c            write(*,*)COORX2,COORY2,COORE
       x_clust(inum) = xcell(jmax,inum)+coorX2
       Y_clust(inum) = ycell(jmax,inum)+coorY2
+c            write(*,*)"X ",xclust(inum),x_clust(inum)
+c            write(*,*)"Y ",yclust(inum),y_clust(inum)
       xclust(inum) = x_clust(inum)
       yclust(inum) = Y_clust(inum)
 
-c      write(*,*)1
-c                           write(*,*)inum,x_clust(inum),xclust(inum),ixcell(jmax,inum),xcell(jmax,inum)
-c      if(coory.gt.5)write(*,*)coorY2
-c      if(Etot+COORE.gt.5.7)then
-c         write(55,*)'BAD CLUSTER'
-c         do jj=1,ncellclust(inum)
-c            
-c            write(55,*)ixcell(jj,inum),iycell(jj,inum),eblock(jj,inum)
-c         enddo
-c      endif
+
+c      NN_delX = coorX2
+c      NN_delY = coorY2
+c      NN_delE = coorE
+
 
       if(ncellclust(inum).gt.6)then
          call HFILL(10227,y_clust(inum),Y_clust(inum)-yclust(inum),1.)
       endif
       Z_clust(inum) = Bigcal_SHIFT(3) !to be 335 cm 
       E_clust(inum) = Etot+COORE
+      eclust(inum)  = e_clust(inum)
 c      write(*,*)X_clust(inum),Y_clust(inum),Z_clust(inum),E_clust(inum)
 c      write(*,*)Xclust(inum),Yclust(inum),Eclust(inum)
       Vector(1)         = x_clust(inum)
@@ -179,24 +111,43 @@ c      write(*,*)Xclust(inum),Yclust(inum),Eclust(inum)
       X_clust_r(inum) =  Vector_r(1)
       Y_clust_r(inum) =  Vector_r(2)
       Z_clust_r(inum) =  Vector_r(3)
-           call NANcheckF(E_clust(inum),33)
-           call NANcheckF(x_clust(inum),33)
-           call NANcheckF(y_clust(inum),33)
-           call NANcheckF(Z_clust(inum),33)
-           call NANcheckF(X_clust_r(inum),33)
-           call NANcheckF(Y_clust_r(inum),33)
-           call NANcheckF(Z_clust_r(inum),33)
+      call NANcheckF(E_clust(inum),33)
+      call NANcheckF(x_clust(inum),33)
+      call NANcheckF(y_clust(inum),33)
+      call NANcheckF(Z_clust(inum),33)
+      call NANcheckF(X_clust_r(inum),33)
+      call NANcheckF(Y_clust_r(inum),33)
+      call NANcheckF(Z_clust_r(inum),33)
+
 c                           write(*,*)inum,x_clust(inum),xclust(inum),ixcell(jmax,inum),xcell(jmax,inum)
 cc
 cc     OBTAIN Angles THeta and Phi Assuming the particle was Electron
 c     Angles are in degree
 c      write(*,*)E_clust(inum),xclust(inum),yclust(inum),Z_clust(inum) 
-      call CORRECT_ANGLES(
-     ,          X_clust_r(inum)-slow_rast_x,
-     ,          Y_clust_r(inum)-slow_rast_y-Bigcal_SHIFT(2),
-     ,          Z_clust_r(inum),E_clust(inum)*1000,
-     ,          SANE_IF_ELECTRON_ANGLE_THETA,
-     ,          SANE_IF_ELECTRON_ANGLE_PHI)
+
+c
+c     Calling cerenkov for info
+c
+c  
+
+    
+      call icer(inum)
+      if(cer_h(inum).gt.0)then
+         call CORRECT_ANGLES(
+     ,        X_clust_r(inum)-slow_rast_x,
+     ,        Y_clust_r(inum)-slow_rast_y-Bigcal_SHIFT(2),
+     ,        Z_clust_r(inum),E_clust(inum),
+     ,        SANE_IF_ELECTRON_ANGLE_THETA,
+     ,        SANE_IF_ELECTRON_ANGLE_PHI,1)
+      else
+         call CORRECT_ANGLES(
+     ,        X_clust_r(inum)-slow_rast_x,
+     ,        Y_clust_r(inum)-slow_rast_y-Bigcal_SHIFT(2),
+     ,        Z_clust_r(inum),E_clust(inum),
+     ,        SANE_IF_ELECTRON_ANGLE_THETA,
+     ,        SANE_IF_ELECTRON_ANGLE_PHI,0)
+         
+      endif
       Theta_e(inum) = SANE_IF_ELECTRON_ANGLE_THETA
       Phi_e(inum) = SANE_IF_ELECTRON_ANGLE_PHI
       
@@ -667,9 +618,14 @@ ccccccccccc
       real T_trgBIG_CUT_U,T_trgBIG_CUT_D
       common /B_TIME_SHIFT/i4,itrig
       real amax,dtime
+      real Brow,a64c
+      integer iBnum,ibcol,ibrow
+c      integer BIGCAL_CER_330_SHIT(8)
+c      data BIGCAL_CER_330_SHIT/0,-3,1,1,3,3,1,3/
       
       cer_h(inum)=0
-      i4=1
+      cer_geom(inum)=0
+      
       if(ncellclust(inum).gt.4)then
          i4=1
          itrig = 1
@@ -697,16 +653,36 @@ c     i4 = iycell(k,inum)
 c     write(*,*)"i4=",i4,k,iycell(k,inum)
 c     endif
 c     enddo
-         
          do i=1, min(cer_hit,50)
             if(cer_num(i).lt.9)then
                cer_n = cer_num(i)
-c               write(*,*)tclust8(inum)
-c               write(*,*)cer_num(i),CER_SANE_TIME_WALK(cer_num(i))
-               cer_tdc(i) = cer_tdc(i) +
-     ,              CER_SANE_TIME_WALK(cer_num(i))/float(cer_adcc(i))
+c                  write(*,*)1,cer_tdc(i),cer_adcc(i),cer_num(i)
+
+
+                 iBnum = 10700+icol64hit(ncell64clust(inum),inum)*10+cer_num(i)
+                 Brow=float( irow64hit(ncell64clust(inum),inum) )               
+                 call HF2( iBnum,Brow,float(cer_tdc(i))+2090,1.)
+              if(grun.le.72487)then
+              
+                 if(abs(cer_tdc(i)+1678).lt.60)cer_tdc(i)=100000
+                 
+                 if(grun.le.72487.and.icol64hit(ncell64clust(inum),inum).eq.1.and.
+     ,                abs(BIGCAL_CER_COL1_SHIFT(irow64hit(ncell64clust(inum),inum),cer_num(i))).lt.0.0001)cer_tdc(i)=100000
+                 if(grun.le.72487.and.icol64hit(ncell64clust(inum),inum).eq.2.and.
+     ,              abs(BIGCAL_CER_COL2_SHIFT(irow64hit(ncell64clust(inum),inum),cer_num(i))).lt.0.0001)cer_tdc(i)=100000
+                 
+                 if(icol64hit(ncell64clust(inum),inum).eq.1)
+     ,                cer_tdc(i) = cer_tdc(i) -BIGCAL_CER_COL1_SHIFT(irow64hit(ncell64clust(inum),inum),cer_num(i))
+                 if(icol64hit(ncell64clust(inum),inum).eq.2)
+     ,                cer_tdc(i) = cer_tdc(i) -BIGCAL_CER_COL2_SHIFT(irow64hit(ncell64clust(inum),inum),cer_num(i))
+                 
+                 iBnum = 10730+cer_num(i)
+                 Brow=float( irow64hit(ncell64clust(inum),inum) )               
+                 call HF2( iBnum,Brow,float(cer_tdc(i))+2090,1.)
+              endif
 
 ccccccccccccccccccccccccccc
+ 
                if(y_clust(inum).gt.(CER_SANE_GEOM_CUT_LOW(cer_n)*4-1)-120..and.
      ,              y_clust(inum).lt.(CER_SANE_GEOM_CUT_HI(cer_n)*4+1)-120.and.
      ,              CER_SANE_GEOM_CUT_X(cer_n)*x_clust(inum).gt.-20)then
@@ -714,8 +690,6 @@ ccccccccccccccccccccccccccc
 c                     write(*,*)T_trgBIG
                      call HFILL(10560+cer_num(i),T_trgBIG,float(cer_tdc(i)),1.)
                      call HFILL(10570+cer_num(i),T_trgBETA,float(cer_tdc(i)),1.)
-c                  write(*,*)cer_num(i)
-c                     if(cer_num(i).eq.8)write(*,*)T_trgBIG
                   endif
                endif
 
@@ -724,35 +698,12 @@ c
 c     Trigger SHIFT COrrections
 c
 c
-               if(int(T_trgBETA-45).gt.0 .and. int(T_trgBETA-45) .le. 30)then
+               if(int(T_trgBETA-45).gt.0.and. int(T_trgBETA-45) .le. 30)then
                   cer_tdc(i) = cer_tdc(i) -T_TRGBETA_SHIFT(int(T_trgBETA-45))
-c                  write(*,*)T_trgBETA,int(T_trgBETA-45),T_TRGBETA_SHIFT(int(T_trgBETA-45))
-               
-c                  write(*,*)T_TRGBETA_SHIFT
-               endif
-               if(grun.ge.72278.and.grun.le.72348)then
-                  if(T_trgBIG.lt.39)then
-                     if(cer_num(i).eq.1.or.cer_num(i).eq.2.or.
-     ,                    cer_num(i).eq.6.or.
-     ,                    cer_num(i).eq.3.or.cer_num(i).eq.7)then
-                        cer_tdc(i)=0
-                     else
-                        if(cer_tdc(i).lt.-1657)cer_tdc(i)=0
-                     endif
-
-                     if(cer_num(i).eq.6)cer_tdc(i)=cer_tdc(i)-1700
-                  
-                  endif
-                  if(cer_num(i).eq.4.or.cer_num(i).eq.5.or.
-     ,                 cer_num(i).eq.6.or.cer_num(i).eq.8)then
-                     if(cer_tdc(i).gt.-1657)then
-                        cer_tdc(i)=cer_tdc(i)-900
-                     endif
-                  endif
                endif
                if(grun.le.72487)then
                   
-                  if(T_trgBIG.gt.42.and.cer_num(i).ne.5)cer_tdc(i)=0
+                  if(T_trgBIG.gt.42.and.cer_num(i).ne.5)cer_tdc(i)=100000
                   
                endif
 
@@ -761,51 +712,90 @@ c                  write(*,*)T_TRGBETA_SHIFT
 c     write(*,*)cer_n,CER_SANE_GEOM_CUT_LOW(cer_n),CER_SANE_GEOM_CUT_HI(cer_n)
                if(y_clust(inum).gt.(CER_SANE_GEOM_CUT_LOW(cer_n)-1)*4-120..and.
      ,              y_clust(inum).lt.(CER_SANE_GEOM_CUT_HI(cer_n)+1)*4-120.and.
-     ,              CER_SANE_GEOM_CUT_X(cer_n)*xclust(inum).gt.-20.and.
+     ,              CER_SANE_GEOM_CUT_X(cer_n)*x_clust(inum).gt.-20.and.
      ,              T_trgBIG.ge.T_trgBIG_CUT_D.and.T_trgBIG.le.T_trgBIG_CUT_U)then
 
+c               write(*,*)1,2,cer_tdc(i),cer_adcc(i),cer_num(i)
                      call HFILL(10580+cer_num(i),T_trgBIG,float(cer_tdc(i)),1.)
-
-c     write(*,*)BIG_TIME_SHIFT_CH(i4),iycell(1,inum)
-                  if(iycell(1,inum).ge.33.and.ixcell(1,inum).le.15)itrig=3
-                  if(cer_tdc(i).gt.-1450.and.itrig.eq.3.and.BIG_TIME_SHIFT_CH(itrig).ne.0)then
-                     itrig=3
-c     write(*,*)itrig,BIG_TIME_SHIFT_CH(itrig),cer_num(i)
-                  elseif(cer_tdc(i).lt.-1450.and.itrig.eq.3.and.BIG_TIME_SHIFT_CH(itrig).ne.0)then
-                     cer_tdc(i)=0
-                     itrig=1
-                  else
-                     itrig=1 
-                  endif
-
-                  cer_tdc(i) = cer_tdc(i) -BIG_TIME_SHIFT_CH(i4)-BIG_TIME_SHIFT_CH(itrig)
+ 
                   
                   if(aclust(inum).gt.500)then
                      call HFILL(10520+cer_num(i),aclust(inum),float(cer_tdc(i)),1.)
                      if(grun.le.72487)then !!!!!!!!!!!!!! NEEDS TO BE CHANGED TO CORRECT ONE
                         cer_tdc(i) = cer_tdc(i) - 
-     ,                       (BIGCAL_CER_TIME_WALK_SHIFT(cer_num(i))-BIGCAL_CER_TIME_WALK_SLOPE(cer_num(i))/aclust(inum))
+     ,                       (BIGCAL_CER_TIME_WALK_SHIFT(cer_num(i))-
+     ,                       BIGCAL_CER_TIME_WALK_SLOPE(cer_num(i))/aclust(inum)-
+     ,                       CER_SANE_TIME_WALK(cer_num(i))/cer_adcc(i))
                      endif
                      
                   endif
+c                  write(*,*)cer_tdc(i),cer_adcc(i),cer_num(i)
                   call HFILL(10530+cer_num(i),aclust(inum),float(cer_tdc(i)),1.)
                   call HFILL(10500+cer_num(i),float(cer_adcc(i)),float(cer_tdc(i)),1.)
-                  
+                  ibcol = icol64hit(ncell64clust(inum),inum)
+                  ibrow = irow64hit(ncell64clust(inum),inum)
+                  a64c  = s64(ncell64clust(inum),inum)
+                  iBnum = 17000+ibrow+100*ibcol
+                  if(iBnum.eq.106)write(*,*)iBnum,a64c,cer_tdc(i)
+                  call HF2(iBnum,a64c,float(cer_tdc(i)),1.)
+                 
                   
                   
                endif
-               if(
-     ,              abs(cer_tdc(i)-CER_SANE_MEAN(cer_num(i))).lt.
-     ,              CER_SANE_SIGMA(cer_n)
-     ,              )then
-                  if(!cer_adcc(i).gt.CER_SANE_ADC_CUT(cer_n)/4.and.
-     ,                 T_trgBIG.ge.T_trgBIG_CUT_D.and.T_trgBIG.le.T_trgBIG_CUT_U)then
-                     if(y_clust(inum).gt.(CER_SANE_GEOM_CUT_LOW(cer_n)*4-1)-120..and.
-     ,                    y_clust(inum).lt.(CER_SANE_GEOM_CUT_HI(cer_n)*4+1)-120.and.
-     ,                    CER_SANE_GEOM_CUT_X(cer_n)*x_clust(inum).gt.-20)then
+
+               cerb_time(inum)=cer_tdc(i)
+               cerb_adc(inum) = cer_adcc(i)
+               bigc_time(inum) = tclust64(inum)!-(5000/s64(ncell64clust(inum),inum)-4)
+               if(grun.gt.72487.and.icol64hit(ncell64clust(inum),inum).eq.1.and.
+     ,              abs(BIGCAL_CERB_COL1_SHIFT(irow64hit(ncell64clust(inum),inum),cer_num(i))).lt.0.0001)bigc_time(inum)=100000
+               if(grun.gt.72487.and.icol64hit(ncell64clust(inum),inum).eq.2.and.
+     ,              abs(BIGCAL_CERB_COL2_SHIFT(irow64hit(ncell64clust(inum),inum),cer_num(i))).lt.0.0001)bigc_time(inum)=100000
+               
+               if(icol64hit(ncell64clust(inum),inum).eq.1)
+     ,              bigc_time(inum) = bigc_time(inum) -BIGCAL_CERB_COL1_SHIFT(irow64hit(ncell64clust(inum),inum),cer_num(i))
+               if(icol64hit(ncell64clust(inum),inum).eq.2)
+     ,              bigc_time(inum) = bigc_time(inum) -BIGCAL_CERB_COL2_SHIFT(irow64hit(ncell64clust(inum),inum),cer_num(i))
+
+c               write(*,*)grun,bigc_time(inum),ncell64clust(inum),inum
+c               if(grun.gt.72487)then
+c                  iBnum = 10700+icol64hit(ncell64clust(inum),inum)*10+cer_num(i)
+c                  Brow=float( irow64hit(ncell64clust(inum),inum) )               
+c                  call HF2( iBnum,Brow,float(bigc_time(inum))-330,1.)
+c               endif
+
+c               bigc_time(inum) = bigc_time(inum) -(5000/s64(ncell64clust(inum),inum)-4)
+
+               
+               bigc_adc(inum)  = s64(ncell64clust(inum),inum)
+               iBnum = 18000+ibrow+100*ibcol
+               call HF2(iBnum,float(bigc_adc(inum)),float(bigc_time(inum)),1.)
+
+               if(              
+     ,              T_trgBIG.ge.T_trgBIG_CUT_D.and.T_trgBIG.le.T_trgBIG_CUT_U)then
+                  if(y_clust(inum).gt.(CER_SANE_GEOM_CUT_LOW(cer_n)*4-1)-120..and.
+     ,                 y_clust(inum).lt.(CER_SANE_GEOM_CUT_HI(cer_n)*4+1)-120.and.
+     ,                 CER_SANE_GEOM_CUT_X(cer_n)*x_clust(inum).gt.-20)then
+                     cer_geom(inum)=cer_geom(inum)+1
+                     
+                     iBnum = 10740+cer_num(i)
+                     Brow=float( irow64hit(ncell64clust(inum),inum) )               
+                     call HF2( iBnum,Brow,float(cer_tdc(i))+2090,1.)
+
+                     if(
+     ,                    abs(cer_tdc(i)-CER_SANE_MEAN(cer_num(i))).lt.
+     ,                    CER_SANE_SIGMA(cer_n)
+     ,                    )then
+
                         cer_h(inum)=cer_h(inum)+1
+                        cerb_time(inum)=cerb_time(inum)+cer_tdc(i)
+                        cerb_adc(inum) = cerb_adc(inum)+cer_adcc(i)
+                        cerbc_num(inum) = cer_num(i)
+
 c                        write(*,*)cer_h(inum),cer_hit,cer_n
                         call HFILL(10540+cer_num(i),float(cer_adcc(i)),float(cer_tdc(i)),1.)
+                        call HF1(10113,tclust64(inum),1.)
+                        call HF2(10114,tclust64(inum),float(cer_tdc(i)),1.)
+
                         do j=1, ncellclust(inum) 
 c                           write(*,*)inum,x_clust(inum),xclust(inum),ixcell(j,inum),xcell(j,inum)
                            call HFILL(10510+cer_n,float(ixcell(j,inum)),float(iycell(j,inum)), 1.)
@@ -815,6 +805,8 @@ c                           write(*,*)inum,x_clust(inum),xclust(inum),ixcell(j,i
                endif
             endif
          enddo
+         if(cer_h(inum).gt.0)cerb_time(inum)=cerb_time(inum)/float(cer_h(inum))
+
       endif
       end
 c
@@ -916,7 +908,7 @@ c
 c     Real Angles
 c
 ccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      Subroutine CORRECT_ANGLES(X,Y,Z,EE,TH,PHI)
+      Subroutine CORRECT_ANGLES(X,Y,Z,EE,TH,PHI,cer_stat,srx,sry)
       IMPLICIT NONE
 c
 c     X = X(Bigcal)-X(raster)
@@ -929,23 +921,60 @@ cccccccccccc
       include 'sane_data_structures.cmn'
       include 'gen_run_info.cmn'
       real*4 X,Y,Z,TH,Phi,thr,phr,EE 
-      real*4 DIST
+      real*4 DIST,srx,sry
+      real*8 P_th(10),P_phi(10)
+
+      integer cer_stat
+      data P_th /
+     ,     -2.199987805718,      1.312318933346,      0.644032653274,      
+     ,     2.001711272282  ,    4.831055345667,
+     ,     0.596870277140   ,   0.237530064696 ,    -0.444891749961,
+     ,     -0.668604044519  ,   -1.988327254812/
+      data P_Phi /
+     ,     -1.206886920591,      3.898203794202,      1.409952555564 , 
+     ,     -0.737821993549,      4.693839032660,
+     ,     -0.853486677346,     -3.282568717839 ,     1.891695882259,    
+     ,     1.158605334109 ,    -4.578605424909/
       DIST = sqrt(X**2+Y**2+Z**2)
       thr  = acos(Z/Dist)
       phr= atan2(y/Dist,x/Dist)
+
       if(gen_run_number.lt.72900)then
          SANE_BETA_OMEGA=40
       else
          SANE_BETA_OMEGA=140
       endif
-         
-      call POLYNOM_CORRECTION(SANE_TRANSFORM_MATRIX_THETA, 
-     ,     SANE_TRANSFORM_MATRIX_PHI,thr,
-     ,     phr,EE,TH,PHI,SANE_BETA_OMEGA)
+      if(cer_stat.gt.0)then
+         call POLYNOM_CORRECTION(SANE_TRANSFORM_MATRIX_THETA, 
+     ,        SANE_TRANSFORM_MATRIX_PHI,thr,
+     ,        phr,EE,TH,PHI,srx,sry)
+c      if(x.lt.179.and.y.gt.10)
+c     .     write(*,*)thr*180/3.1415926,th,phr*180/3.1415926,phi
+
+      else
+c            phi=phr*180/3.14159
+c            th = thr*180/3.14159
+
+         DIST = sqrt((X-srx)**2+(Y-sry)**2+Z**2)
+         thr  = acos(Z/Dist)
+         phr= atan2((y-sry)/Dist,(x-srx)/Dist)
+         th  = THR*180/3.1415926+
+     ,        (P_th(1)+P_th(2)*phr+P_th(3)*thr+P_th(4)*phr**2+P_th(5)*thr**2)/EE+
+     ,        (P_th(6)+P_th(7)*thr+P_th(8)*phr+P_th(9)*phr**2+P_th(10)*thr**2)/EE**2
+         phi = phR*180/3.1415926
+     ,        +(P_phi(1)+P_phi(2)*phr+P_phi(3)*phr**2+
+     ,        P_phi(4)*phr**3+P_phi(5)*thr+P_phi(6)*thr**2+
+     ,        P_phi(7)*thr**3+P_phi(8)*phr*thr+
+     ,        P_phi(9)*phr**2*thr+
+     ,        P_phi(10)*phr*thr**2)
+      endif
+  
+c      write(*,*)phr*180/3.141-90,phi,SANE_BETA_OMEGA
+
 c      write(28,*)thr*180/3.1415926,th,phr*180/3.1415926-phi,SANE_BETA_OMEGA,gen_run_number
       end
 ccccccc
-      Subroutine POLYNOM_CORRECTION(P_th,P_phi,thr,phr,EE,TH,PHI,omega)
+      Subroutine POLYNOM_CORRECTION(P_th,P_phi,thr,phr,EE,TH,PHI,srx,sry)
       IMPLICIT NONE
       
 c
@@ -955,40 +984,27 @@ c     EE Energy in GEV
 c     Output :TH and Phi Correctes in degrees
 cc      
       real*4 TH,Phi,thr,phr,EE
-      REAL*8 OMEGA
-      real*4 P_th(14),P_phi(39),COSOM,SINOM
+      REAL*8 OMEGA,srx,sry
+      real*4 P_th(15),P_phi(15),COSOM,SINOM
       cosom = cos(omega*3.1415926/180.)
       sinom = sin(omega*3.1415926/180.)
-
+c      write(*,*)P_th
+      
          th  = THR*180/3.1415926+
-     ,      ((P_th(1)+P_th(2)*phr+P_th(3)*thr+P_th(4)*phr**2+P_th(5)*thr**2)/EE)*
-     ,        (P_th(6)*cosom+P_th(7)*sinom)+
-     ,      ((P_th(8)+P_th(9)*thr+P_th(10)*phr+
-     ,        P_th(11)*phr**2+P_th(12)*thr**2)/EE**2)*
-     ,       (P_th(13)*cosom+P_th(14)*sinom)
+     ,           (p_th(1)+p_th(2)*thr+p_th(3)*phr+p_th(4)*thr**2+
+     ,           p_th(5)*phr**2+p_th(6)*thr*phr)*
+     ,           (p_th(7)+p_th(8)/EE+p_th(9)/EE**2)*
+     ,           (p_th(10)+p_th(11)*srx+p_th(12)*srx**2)*
+     ,           (p_th(13)+p_th(14)*sry+p_th(15)*sry**2)
+ 
 
 
-
-         phi = phR*180/3.1415926
-     ,        +(P_phi(1)*cosom+P_phi(2)*phr*cosom+P_phi(3)*phr**2*cosom+
-     ,        P_phi(4)*phr**3*cosom+P_phi(5)*thr*cosom+P_phi(6)*thr**2*cosom+
-     ,        P_phi(7)*thr**3*cosom+P_phi(8)*phr*thr*cosom+
-     ,        P_phi(9)*phr**2*thr*cosom+
-     ,        P_phi(10)*phr*thr**2*cosom)+
-     ,        ( P_phi(11)*cosom+P_phi(12)*phr*cosom+P_phi(13)*phr**2*cosom+
-     ,        P_phi(14)*thr*cosom+P_phi(15)*thr**2*cosom+
-     ,        P_phi(16)*phr*thr*cosom)/EE
-     ,        +(P_phi(17)*sinom+P_phi(18)*phr*sinom+P_phi(19)*phr**2*sinom+
-     ,        P_phi(20)*phr**3*sinom+P_phi(21)*thr*sinom+P_phi(22)*thr**2*sinom+
-     ,        P_phi(23)*thr**3*sinom+P_phi(24)*phr*thr*sinom+
-     ,        P_phi(25)*phr**2*thr*sinom+
-     ,        P_phi(26)*phr*thr**2*sinom)+
-     ,        ( P_phi(27)*sinom+P_phi(28)*phr*sinom+
-     ,        P_phi(29)*phr**2*sinom+
-     ,        P_phi(30)*thr*sinom+P_phi(31)*thr**2*sinom+
-     ,        P_phi(32)*phr*thr*sinom)/EE+
-     ,         P_phi(33)*sinom**2+P_phi(34)*sinom**3+P_phi(35)*sinom**4+
-     ,        P_phi(36)*sinom**5+P_phi(37)*sinom**6+P_phi(38)*sinom**7
+         phi = phR*180/3.1415926+
+     ,           (p_phi(1)+p_phi(2)*thr+p_phi(3)*phr+p_phi(4)*thr**2+
+     ,           p_phi(5)*phr**2+p_phi(6)*thr*phr)*
+     ,           (p_phi(7)+p_phi(8)/EE+p_phi(9)/EE**2)*
+     ,           (p_phi(10)+p_phi(11)*srx+p_phi(12)*srx**2)*
+     ,           (p_phi(13)+p_phi(14)*sry+p_phi(15)*sry**2)
 
       end
 
@@ -1133,8 +1149,12 @@ c     endif
       real*4 deg2rad, Mp,shelicity
       Mp = 0.938272309
       deg2rad = 3.1415926536/180.
-      if(cer_h(inum).gt.0.and.
-     ,     E_clust(inum).gt.1.and.
+      ENue(inum)      = 0
+      Q2(inum)        = 0
+      X_Bjorken(inum) = 0
+      W2(inum)        = 0
+      if(cer_h(inum).ge.0.and.
+     ,     E_clust(inum).gt.0.6.and.
      ,     E_clust(inum).lt.GEBeam)then
          thetar= theta*deg2rad
          phir= phi*deg2rad
@@ -1144,7 +1164,7 @@ c     endif
          X_Bjorken(inum) = Q2(inum)/( 2*Mp*ENue(inum) )
          W2(inum)        = Mp**2 + 2*Mp*ENue(inum) -Q2(inum)
          ihistnum        = (Q2(inum)-2.5)+1
-c      WRITE(*,*)cer_h(inum),E_clust(inum),X_Bjorken(inum),theta,(1-cos(thetar))
+c        WRITE(*,*)cer_h(inum),E_clust(inum),X_Bjorken(inum),theta,(1-cos(thetar))
          
          call NANcheckF(ENue(inum),5)
          call NANcheckF(Q2(inum),5)
