@@ -5,8 +5,12 @@
 *     Author:   H. Baghdasaryan     18 Jan,2008
 *
 * $Log$
-* Revision 1.1.2.12  2010/02/03 23:42:10  jones
-* add parameters BIGCAL_CER_TIME_WALK_SHIFT and BIGCAL_CER_TIME_WALK_SLOPE
+* Revision 1.1.2.13  2010/06/28 13:37:46  jones
+* Add
+*      real BIGCAL_CER_COL1_SHIFT(19,9)
+*       real BIGCAL_CER_COL2_SHIFT(19,8)
+*       real BIGCAL_CERB_COL1_SHIFT(19,9)
+*       real BIGCAL_CERB_COL2_SHIFT(19,8)
 *
 * Revision 1.1.2.11  2009/09/16 19:04:05  jones
 * Add SANE_HMS_ANGLE_THETA,SANE_HMS_ANGLE_PHI from hms_data_structures.cmn
@@ -276,6 +280,10 @@ c
 c
       real BIGCAL_CER_TIME_WALK_SHIFT(8)
       real BIGCAL_CER_TIME_WALK_SLOPE(8)
+      real BIGCAL_CER_COL1_SHIFT(19,9)
+      real BIGCAL_CER_COL2_SHIFT(19,8)
+      real BIGCAL_CERB_COL1_SHIFT(19,9)
+      real BIGCAL_CERB_COL2_SHIFT(19,8)
 
       COMMON/CER_CALIB/
      &     CER_SANE_MEAN,
@@ -287,7 +295,11 @@ c
      &     CER_SANE_GEOM_CUT_X,
      &     CER_SANE_TIME_WALK,
      &     BIGCAL_CER_TIME_WALK_SHIFT,
-     &     BIGCAL_CER_TIME_WALK_SLOPE
+     &     BIGCAL_CER_TIME_WALK_SLOPE,
+     $     BIGCAL_CER_COL1_SHIFT,
+     &     BIGCAL_CER_COL2_SHIFT,
+     $     BIGCAL_CERB_COL1_SHIFT,
+     &     BIGCAL_CERB_COL2_SHIFT
 
 c
 c
@@ -348,7 +360,7 @@ c
 c     Parameters for Tracking Tranformatio
 c
 c
-      real SANE_TRANSFORM_MATRIX_THETA(14),SANE_TRANSFORM_MATRIX_PHI(38)
+      real SANE_TRANSFORM_MATRIX_THETA(15),SANE_TRANSFORM_MATRIX_PHI(15)
       COMMON/SANE_TRANSFORM/SANE_TRANSFORM_MATRIX_THETA,SANE_TRANSFORM_MATRIX_PHI
 
 ccc    END of the RAW DATA
