@@ -275,7 +275,7 @@ c      enddo
             call NANcheck(ceradc_hit,CERENKOV_SANE_ID2)
             call NANcheck(ceradc_num(ceradc_hit),CERENKOV_SANE_ID2)
             call NANcheck(cer_adc(ceradc_hit),CERENKOV_SANE_ID2)
-            call HFILL(10112,float(ceradc_num(ceradc_hit)),float(cer_adc(ceradc_hit)), 1.)
+c           call HFILL(10112,float(ceradc_num(ceradc_hit)),float(cer_adc(ceradc_hit)), 1.)
          endif
        enddo
 
@@ -289,7 +289,7 @@ c      write(*,*)'a, ' ,CERENKOV_SANE_RAW_ADC
             cer_num(cer_hit)   =  CERENKOV_SANE_RAW_COUNTER_NUM2(i)
             call CORRECT_RAW_TIME_SANE(CERENKOV_SANE_RAW_TDC(i),cer_tdc(cer_hit))
             cer_adcc(cer_hit) = cer_adc_save(cer_num(cer_hit))
-            call HFILL(10111,float(cer_num(cer_hit)),float(cer_TDC(cer_hit)), 1.)
+c            call HFILL(10111,float(cer_num(cer_hit)),float(cer_TDC(cer_hit)), 1.)
 
             call NANcheck(cer_hit,CERENKOV_SANE_ID)
             call NANcheck(cer_num(cer_hit),CERENKOV_SANE_ID)
@@ -316,7 +316,7 @@ c      write(*,*)'Cer sane done'
             call CORRECT_RAW_TIME_SANE(TRACKER_SANE_RAW_TDC_X(i),x1t_tdc(x1t_hit))
             x1t_x(x1t_hit)     =  -12.32+0.37422*(x1t_row(x1t_hit)-1)
 
-            call HFILL(10100,float(x1t_row(x1t_hit)),float(x1t_tdc(x1t_hit)),1.) 
+c            call HFILL(10100,float(x1t_row(x1t_hit)),float(x1t_tdc(x1t_hit)),1.) 
             call NANcheck(x1t_hit,TRACKER_SANE_X_ID)
             call NANcheck(x1t_row(x1t_hit),TRACKER_SANE_X_ID)
             call NANcheck(x1t_tdc(x1t_hit),TRACKER_SANE_X_ID)
@@ -339,7 +339,7 @@ c               write(*,*)'Tracker TDC', y1t_hit,TRACKER_SANE_RAW_TDC_Y(i)
                y1t_row(y1t_hit)   =  TRACKER_SANE_RAW_COUNTER_Y(i)
                call CORRECT_RAW_TIME_SANE(TRACKER_SANE_RAW_TDC_Y(i),y1t_tdc(y1t_hit))
                y1t_y(y1t_hit)     =  -22.225+(y1t_row(y1t_hit)-1)*0.35
-               call HFILL(10101,float(y1t_row(y1t_hit)),float(y1t_tdc(y1t_hit)),1.) 
+c               call HFILL(10101,float(y1t_row(y1t_hit)),float(y1t_tdc(y1t_hit)),1.) 
                call NANcheck(y1t_hit,TRACKER_SANE_Y_ID)
                call NANcheck(y1t_row(y1t_hit),TRACKER_SANE_Y_ID)
                call NANcheck(y1t_tdc(y1t_hit),TRACKER_SANE_Y_ID)
@@ -350,7 +350,7 @@ c               write(*,*)'Tracker TDC', y1t_hit,TRACKER_SANE_RAW_TDC_Y(i)
                y2t_row(y2t_hit)   =  TRACKER_SANE_RAW_COUNTER_Y(i)-128
                call CORRECT_RAW_TIME_SANE(TRACKER_SANE_RAW_TDC_Y(i),y2t_tdc(y2t_hit))
                y2t_y(y2t_hit)     =  -22.4+(y2t_row(y2t_hit)-1)*0.35
-               call HFILL(10102,float(y2t_row(y2t_hit)),float(y2t_tdc(y2t_hit)),1.) 
+c              call HFILL(10102,float(y2t_row(y2t_hit)),float(y2t_tdc(y2t_hit)),1.) 
                call NANcheck(y2t_hit,TRACKER_SANE_Y_ID)
                call NANcheck(y2t_row(y2t_hit),TRACKER_SANE_Y_ID)
                call NANcheck(y2t_tdc(y2t_hit),TRACKER_SANE_Y_ID)
@@ -483,12 +483,10 @@ c      endif
 
       
       n_clust = nclust
+      if ( n_clust .gt. 15) n_clust = 15
       do i =1,  n_clust
 
-
           call Bigcal_Betta(i)
-
-c          write(*,*)Theta_e(i),Phi_e(i),cer_h(i)
           call PHYSICS_VARIABLES(i,Theta_e(i),Phi_e(i))
 c          call Bigcal_Betta(i)
 
