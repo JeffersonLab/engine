@@ -81,7 +81,6 @@ c           call neurale(VectorN,0)
       
 
 
-c            write(*,*)COORX2,COORY2,COORE
       x_clust(inum) = xcell(jmax,inum)+coorX2
       Y_clust(inum) = ycell(jmax,inum)+coorY2
 c            write(*,*)"X ",xclust(inum),x_clust(inum)
@@ -130,7 +129,6 @@ c     Calling cerenkov for info
 c
 c  
 
-    
       call icer(inum)
       if(cer_h(inum).gt.0)then
          call CORRECT_ANGLES(
@@ -138,14 +136,14 @@ c
      ,        Y_clust_r(inum)-slow_rast_y-Bigcal_SHIFT(2),
      ,        Z_clust_r(inum),E_clust(inum),
      ,        SANE_IF_ELECTRON_ANGLE_THETA,
-     ,        SANE_IF_ELECTRON_ANGLE_PHI,1)
+     ,        SANE_IF_ELECTRON_ANGLE_PHI,1,slow_rast_x,slow_rast_y)
       else
          call CORRECT_ANGLES(
      ,        X_clust_r(inum)-slow_rast_x,
      ,        Y_clust_r(inum)-slow_rast_y-Bigcal_SHIFT(2),
      ,        Z_clust_r(inum),E_clust(inum),
      ,        SANE_IF_ELECTRON_ANGLE_THETA,
-     ,        SANE_IF_ELECTRON_ANGLE_PHI,0)
+     ,        SANE_IF_ELECTRON_ANGLE_PHI,0,slow_rast_x,slow_rast_y)
          
       endif
       Theta_e(inum) = SANE_IF_ELECTRON_ANGLE_THETA
@@ -155,7 +153,6 @@ c
       call NANcheckF(Theta_e(inum),33)
       call NANcheckF(Phi_e(inum),33)
 c                           write(*,*)inum,x_clust(inum),xclust(inum),ixcell(jmax,inum),xcell(jmax,inum)
-      
       
       end
 cccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -306,8 +303,8 @@ c
             if(cut1.or.cut2)then
                call HFILL(10108,y2t_y(i)-TrackerY2_SHIFT(2),TrackerY2_SHIFT(3)/Bigcal_SHIFT(3)*
      ,              (y_clust(inum))-Bigcal_SHIFT(2),1.)
-               call HFILL(10109,float(y2t_row(i)),TrackerY2_SHIFT(3)/Bigcal_SHIFT(3)*
-     ,              (y_clust(inum))-Bigcal_SHIFT(2),1.)
+c               call HFILL(10109,float(y2t_row(i)),TrackerY2_SHIFT(3)/Bigcal_SHIFT(3)*
+c     ,              (y_clust(inum))-Bigcal_SHIFT(2),1.)
                if(cer_h(inum).gt.0)then
                   call HFILL(10105,float(y2t_row(i)),float(y2t_tdc(i)),1.) 
                endif
@@ -432,8 +429,8 @@ c            cut2 = .TRUE.
 
                   call HFILL(10121, float(luc_row(i)), float(ltdc_pos(i)), 1.)
                   call HFILL(10122, float(luc_row(i)), float(ltdc_neg(i)), 1.)
-                  call HFILL(10125, float(luc_row(i)), float(ladc_pos(i)), 1.)
-                  call HFILL(10126, float(luc_row(i)), float(ladc_neg(i)), 1.)
+c                 call HFILL(10125, float(luc_row(i)), float(ladc_pos(i)), 1.)
+c                 call HFILL(10126, float(luc_row(i)), float(ladc_neg(i)), 1.)
             endif
             endif
 
@@ -469,12 +466,12 @@ C
 
 c                  if(luc_row(i).eq.18)write(*,*)xDelta1-Lucite_SHIFT(1)
 
-                  call HFILL(10150+luc_row(i),xDelta1-Lucite_SHIFT(1),
-     ,                 sqrt(Lucite_SHIFT(3)**2+luc_y(i)**2)/sqrt(Bigcal_SHIFT(3)**2+
-     ,                 y_clust(inum)**2)*xclust(inum),1.)
-                  call HFILL(20150+luc_row(i),(xDelta1-Lucite_SHIFT(1))*
-     ,                 Bigcal_SHIFT(3)/Lucite_SHIFT(3),
-     ,                 Xclust(inum),1.)
+c                  call HFILL(10150+luc_row(i),xDelta1-Lucite_SHIFT(1),
+c     ,                 sqrt(Lucite_SHIFT(3)**2+luc_y(i)**2)/sqrt(Bigcal_SHIFT(3)**2+
+c     ,                 y_clust(inum)**2)*xclust(inum),1.)
+c                  call HFILL(20150+luc_row(i),(xDelta1-Lucite_SHIFT(1))*
+c     ,                 Bigcal_SHIFT(3)/Lucite_SHIFT(3),
+c     ,                 Xclust(inum),1.)
 c     endif
       if(abs(xclust(inum)).lt.5)then
                   call HFILL(10131, float(luc_row(i)), float(ltdc_pos(i)), 1.)
@@ -578,7 +575,7 @@ c                        write(*,*)Y2_trc(trc_hy2(inum),inum),Y1_trc(trc_hy1(inu
                         call HFILL(10220,Yfake,yfake-y_clust(inum),1.)
                         call HFILL(10221,yfake,Y_luc_av(inum)*Bigcal_SHIFT(3)/Z_luc_av(inum)-yclust(inum),1.)
                         call HFILL(10225,eclust(inum),yfake-y_clust(inum),1.)
-                        call HFILL(20250+ibar,xcell(jmax,inum),ycell(jmax,inum),1.)
+c                        call HFILL(20250+ibar,xcell(jmax,inum),ycell(jmax,inum),1.)
                         if(yfake.gt.50)then
                            call HFILL(10222,xclust(inum),(yfake-y_clust(inum)),1.)
                         endif
@@ -625,8 +622,7 @@ c      data BIGCAL_CER_330_SHIT/0,-3,1,1,3,3,1,3/
       
       cer_h(inum)=0
       cer_geom(inum)=0
-      
-      if(ncellclust(inum).gt.4)then
+      if(ncellclust(inum).gt.4 .and. ncell64clust(inum) .gt. 0)then
          i4=1
          itrig = 1
          amax = ablock(1,inum)
@@ -658,10 +654,9 @@ c     enddo
                cer_n = cer_num(i)
 c                  write(*,*)1,cer_tdc(i),cer_adcc(i),cer_num(i)
 
-
                  iBnum = 10700+icol64hit(ncell64clust(inum),inum)*10+cer_num(i)
-                 Brow=float( irow64hit(ncell64clust(inum),inum) )               
-                 call HF2( iBnum,Brow,float(cer_tdc(i))+2090,1.)
+                 Brow=float( irow64hit(ncell64clust(inum),inum) )
+                  call HF2( iBnum,Brow,float(cer_tdc(i))+2090,1.)
               if(grun.le.72487)then
               
                  if(abs(cer_tdc(i)+1678).lt.60)cer_tdc(i)=100000
@@ -682,12 +677,10 @@ c                  write(*,*)1,cer_tdc(i),cer_adcc(i),cer_num(i)
               endif
 
 ccccccccccccccccccccccccccc
- 
                if(y_clust(inum).gt.(CER_SANE_GEOM_CUT_LOW(cer_n)*4-1)-120..and.
      ,              y_clust(inum).lt.(CER_SANE_GEOM_CUT_HI(cer_n)*4+1)-120.and.
      ,              CER_SANE_GEOM_CUT_X(cer_n)*x_clust(inum).gt.-20)then
                   if(T_trgBIG.gt.T_trgBIG_CUT_D)then
-c                     write(*,*)T_trgBIG
                      call HFILL(10560+cer_num(i),T_trgBIG,float(cer_tdc(i)),1.)
                      call HFILL(10570+cer_num(i),T_trgBETA,float(cer_tdc(i)),1.)
                   endif
@@ -698,6 +691,7 @@ c
 c     Trigger SHIFT COrrections
 c
 c
+
                if(int(T_trgBETA-45).gt.0.and. int(T_trgBETA-45) .le. 30)then
                   cer_tdc(i) = cer_tdc(i) -T_TRGBETA_SHIFT(int(T_trgBETA-45))
                endif
@@ -718,7 +712,6 @@ c     write(*,*)cer_n,CER_SANE_GEOM_CUT_LOW(cer_n),CER_SANE_GEOM_CUT_HI(cer_n)
 c               write(*,*)1,2,cer_tdc(i),cer_adcc(i),cer_num(i)
                      call HFILL(10580+cer_num(i),T_trgBIG,float(cer_tdc(i)),1.)
  
-                  
                   if(aclust(inum).gt.500)then
                      call HFILL(10520+cer_num(i),aclust(inum),float(cer_tdc(i)),1.)
                      if(grun.le.72487)then !!!!!!!!!!!!!! NEEDS TO BE CHANGED TO CORRECT ONE
@@ -729,7 +722,6 @@ c               write(*,*)1,2,cer_tdc(i),cer_adcc(i),cer_num(i)
                      endif
                      
                   endif
-c                  write(*,*)cer_tdc(i),cer_adcc(i),cer_num(i)
                   call HFILL(10530+cer_num(i),aclust(inum),float(cer_tdc(i)),1.)
                   call HFILL(10500+cer_num(i),float(cer_adcc(i)),float(cer_tdc(i)),1.)
                   ibcol = icol64hit(ncell64clust(inum),inum)
@@ -742,7 +734,6 @@ c                  write(*,*)cer_tdc(i),cer_adcc(i),cer_num(i)
                   
                   
                endif
-
                cerb_time(inum)=cer_tdc(i)
                cerb_adc(inum) = cer_adcc(i)
                bigc_time(inum) = tclust64(inum)!-(5000/s64(ncell64clust(inum),inum)-4)
@@ -766,10 +757,11 @@ c               endif
 c               bigc_time(inum) = bigc_time(inum) -(5000/s64(ncell64clust(inum),inum)-4)
 
                
-               bigc_adc(inum)  = s64(ncell64clust(inum),inum)
+                   ibcol = icol64hit(ncell64clust(inum),inum)
+                  ibrow = irow64hit(ncell64clust(inum),inum)
+              bigc_adc(inum)  = s64(ncell64clust(inum),inum)
                iBnum = 18000+ibrow+100*ibcol
                call HF2(iBnum,float(bigc_adc(inum)),float(bigc_time(inum)),1.)
-
                if(              
      ,              T_trgBIG.ge.T_trgBIG_CUT_D.and.T_trgBIG.le.T_trgBIG_CUT_U)then
                   if(y_clust(inum).gt.(CER_SANE_GEOM_CUT_LOW(cer_n)*4-1)-120..and.
@@ -778,7 +770,7 @@ c               bigc_time(inum) = bigc_time(inum) -(5000/s64(ncell64clust(inum),
                      cer_geom(inum)=cer_geom(inum)+1
                      
                      iBnum = 10740+cer_num(i)
-                     Brow=float( irow64hit(ncell64clust(inum),inum) )               
+                     Brow=float( irow64hit(ncell64clust(inum),inum) ) 
                      call HF2( iBnum,Brow,float(cer_tdc(i))+2090,1.)
 
                      if(
@@ -793,8 +785,8 @@ c               bigc_time(inum) = bigc_time(inum) -(5000/s64(ncell64clust(inum),
 
 c                        write(*,*)cer_h(inum),cer_hit,cer_n
                         call HFILL(10540+cer_num(i),float(cer_adcc(i)),float(cer_tdc(i)),1.)
-                        call HF1(10113,tclust64(inum),1.)
-                        call HF2(10114,tclust64(inum),float(cer_tdc(i)),1.)
+c                        call HF1(10113,tclust64(inum),1.)
+c                        call HF2(10114,tclust64(inum),float(cer_tdc(i)),1.)
 
                         do j=1, ncellclust(inum) 
 c                           write(*,*)inum,x_clust(inum),xclust(inum),ixcell(j,inum),xcell(j,inum)
