@@ -151,13 +151,17 @@ c      character*256 b_tree_filename
      ,     hms_xtar,hms_ytar,hms_yptar,hms_xptar,
      ,     hms_delta, hms_start,
      ,     hsshtrk_s, hsshsum_s, hsbeta_s,
+     ,     hms_cer_npe1,hms_cer_npe2, hms_cer_adc1,hms_cer_adc2
+
+      COMMON/RASTINFO/
      ,     rast_x, rast_y,
      ,     slow_rast_x, slow_rast_y,
-     ,     sem_x,sem_y,i_helicity, 
-     ,     hms_cer_npe1,hms_cer_npe2, hms_cer_adc1,hms_cer_adc2
+     ,     sem_x,sem_y,i_helicity 
+
       
+
       integer*4 maxcl
-      parameter (maxcl=50)
+      parameter (maxcl=15)
       integer*4 n_clust
       integer*4 luc_h(maxcl)
       integer*4 trc_hx(maxcl)
