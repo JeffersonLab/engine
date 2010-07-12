@@ -49,25 +49,25 @@
 c      write(*,*) HEXIST(9502),sane_ntuple_directory
       cycle= 0
       call HROUT(id,cycle,' ')
-      call HROUT(10100,cycle,' ')
-      call HROUT(10101,cycle,' ')
-      call HROUT(10102,cycle,' ')
+c      call HROUT(10100,cycle,' ')
+c      call HROUT(10101,cycle,' ')
+c      call HROUT(10102,cycle,' ')
       call HROUT(10103,cycle,' ')
       call HROUT(10104,cycle,' ')
       call HROUT(10105,cycle,' ')
       call HROUT(10106,cycle,' ')
       call HROUT(10107,cycle,' ')
       call HROUT(10108,cycle,' ')
-      call HROUT(10109,cycle,' ')
+c      call HROUT(10109,cycle,' ')
 
-      call HROUT(10111,cycle,' ')
-      call HROUT(10112,cycle,' ')
-      call HROUT(10113,cycle,' ')
-      call HROUT(10114,cycle,' ')
+c      call HROUT(10111,cycle,' ')
+c      call HROUT(10112,cycle,' ')
+c      call HROUT(10113,cycle,' ')
+c      call HROUT(10114,cycle,' ')
       call HROUT(10121,cycle,' ')
       call HROUT(10122,cycle,' ')
-      call HROUT(10125,cycle,' ')
-      call HROUT(10126,cycle,' ')
+c      call HROUT(10125,cycle,' ')
+c      call HROUT(10126,cycle,' ')
       call HROUT(10128,cycle,' ')
       do i =1,18
        call HROUT(17100+i,cycle,' ')  
@@ -92,9 +92,9 @@ c      write(*,*) HEXIST(9502),sane_ntuple_directory
       enddo
 c      if ( sane_ntuple_type .eq. 1) then
          do i =1,28
-            call HROUT(10150+i,cycle,' ')
-            call HROUT(20150+i,cycle,' ')
-            call HROUT(20250+i,cycle,' ')
+c            call HROUT(10150+i,cycle,' ')
+c            call HROUT(20150+i,cycle,' ')
+c            call HROUT(20250+i,cycle,' ')
         enddo
 c      endif
       call HROUT(10200,cycle,' ')
