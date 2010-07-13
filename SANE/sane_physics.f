@@ -195,7 +195,7 @@ c
 ccccc
 c      write(*,*)'Tracker Start X',nclust
 c      write(*,*)ixcell(1,inum),iycell(1,inum),ncellclust(inum)
-      if(cer_h(inum).ge.0)then
+      if(cer_h(inum).ge.0 .and. i4 .gt. 0)then
          do i=1,x1t_hit
             x1t_tdc(i)=x1t_tdc(i)-BIG_TIME_SHIFT_CH(i4)
 c     
@@ -362,10 +362,10 @@ ccccccccccccccccccccccccccccccccccccc
       logical cut,cut1,cut2
       common /B_TIME_SHIFT/i4,itrig
       luc=0
-      ip=0
-      if(luc_hit.gt.0
+      ip=0      
+       if(luc_hit.gt.0
      ,     .and.cer_h(inum).ge.0
-     ,     )then
+     ,     .and. i4 .gt. 0)then
          do i=1,luc_hit
             ltdc_pos(i) = ltdc_pos(i) -BIG_TIME_SHIFT_CH(i4)!-BIG_TIME_SHIFT_CH(itrig)
             ltdc_neg(i) = ltdc_neg(i) -BIG_TIME_SHIFT_CH(i4)!-BIG_TIME_SHIFT_CH(itrig)
