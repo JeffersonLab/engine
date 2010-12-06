@@ -1,5 +1,10 @@
       subroutine g_examine_epics_event
 * $Log$
+* Revision 1.5.20.1.2.4  2010/12/06 18:31:13  jones
+* Add IF statements to set half wave plate status during analysis
+* according run number
+* Exception for run 72608 and 72612
+*
 * Revision 1.5.20.1.2.3  2009/09/02 13:38:35  jones
 * add readout of halfwave plate status
 *
@@ -74,7 +79,19 @@ c
      1  numevent,', craw3=',craw(3)
         return
       endif
-
+c
+      half_plate=+1  ! before run 72412
+      if (gen_run_number .ge.   72412) half_plate=  -1
+      if (gen_run_number .ge.   72609) half_plate=  +1
+      if (gen_run_number .ge.   72613) half_plate=  -1
+      if (gen_run_number .ge.   72618) half_plate=  +1
+      if (gen_run_number .ge.   72733) half_plate=  -1
+      if (gen_run_number .ge.   72832) half_plate=  +1
+      if (gen_run_number .ge.   72896) half_plate=  -1
+      if (gen_run_number .ge.   72926) half_plate=  +1
+      if (gen_run_number .ge.   72953) half_plate=  -1
+      if (gen_run_number .ge.   73012) half_plate=  +1
+c
 cccc      write (6,*) 'epics,evlen',evlen,numevent,craw(3)
 
       evlen=g_important_length(buffer(1:4*(craw(3)-1)))
@@ -100,9 +117,11 @@ c              write(*,*)"HERE IS POLARIZATION",polarea
            if (buffer(i:i+14).eq.'IGL1I00DI24_24M') then
               read(buffer(i+16:j-1),*,err=20)HALFWAVE
 c     write(*,*)'WAVE PLATE ',HALFWAVE
+              if ( gen_run_number .eq. 72608 .or. gen_run_number .eq. 72612) then
               half_plate=0.
               if(HALFWAVE.eq.0)half_plate=-1.
               if(HALFWAVE.eq.1)half_plate=1.
+              endif
            endif
         ENDIF
  20     i = j + 1
@@ -114,6 +133,6 @@ c     & grep NMR_A | awk '{ print $2}'>fort.21")
 c      read(21,*)polarea
 c      write(*,*)'HERE IS EPIC EVENT',polarea
 c      close(21)
-
+c        write(*,*) gen_run_number," halfwave = ", half_plate,halfwave
       return
       end
