@@ -1,5 +1,10 @@
 #
 # $Log$
+# Revision 1.24.4.3  2010/12/16 15:29:09  jones
+# 1) Updated for gfortran
+# 2) Add s_select_best_track_using_scin.f and s_select_best_track_prune.f
+#    since these files have been added to STRACKING.
+#
 # Revision 1.24.4.2  2004/07/07 22:33:11  jones
 # Match 1.25 on main branch
 #
@@ -83,6 +88,7 @@
 #
 NEWSTYLE = 1
 include ../../etc/Makefile
+include ../../etc/Makefile.flags
 
 osources = s_cal.f s_cer.f s_chamnum.f s_dpsifun.f s_drift_dist_calc.f \
 	s_drift_time_calc.f s_fcnchisq.f s_find_best_stub.f \
@@ -93,7 +99,7 @@ osources = s_cal.f s_cer.f s_chamnum.f s_dpsifun.f s_drift_dist_calc.f \
 	s_tdc_time_per_channel.f s_tdc_zero.f s_tof.f s_track.f s_track_fit.f \
 	s_trans_cal.f s_trans_dc.f s_trans_scin.f s_wire_center_calc.f \
 	s_print_decoded_dc.f s_print_raw_dc.f
-newstuff = s_cal.f s_clusters_cal.f s_correct_cal.f s_fill_dc_dec_hist.f \
+newstuff = s_clusters_cal.f s_correct_cal.f s_fill_dc_dec_hist.f \
 	s_fill_dc_fp_hist.f s_init_cal.f s_init_scin.f s_prt_cal_clusters.f \
 	s_prt_cal_decoded.f s_prt_cal_raw.f s_prt_cal_sparsified.f \
 	s_prt_cal_tests.f s_prt_cal_tracks.f s_prt_dec_scin.f \
@@ -103,7 +109,8 @@ newstuff = s_cal.f s_clusters_cal.f s_correct_cal.f s_fill_dc_dec_hist.f \
 newerstuff = s_fill_dc_target_hist.f s_targ_trans_init.f \
 	s_init_physics.f s_physics_stat.f \
 	s_strip_scin.f s_choose_single_hit.f s_solve_3by3.f \
-	s_dump_tof.f s_select_best_track.f s_scin_eff.f s_scin_eff_shutdown.f \
+	s_dump_tof.f s_select_best_track.f s_select_best_track_using_scin.f \
+	s_scin_eff.f s_scin_eff_shutdown.f \
 	s_cal_eff.f s_cal_eff_shutdown.f s_analyze_pedestal.f \
 	s_calc_pedestal.f s_trans_misc.f s_fill_cal_hist.f s_init_histid.f \
 	s_cer_eff.f s_cer_eff_shutdown.f s_init_cer.f s_trans_cer.f \
@@ -111,7 +118,7 @@ newerstuff = s_fill_dc_target_hist.f s_targ_trans_init.f \
 	s_report_bad_data.f s_dc_trk_eff.f s_dc_trk_eff_shutdown.f \
 	s_find_easy_space_point.f s_aero.f s_track_tests.f s_lucite.f \
 	s_correct_cal_pos.f s_correct_cal_neg.f s_cal_calib.f\
-	s_satcorr.f s_yptarcalib.f s_ytarcalib.f s_xptarcalib.f
+	s_satcorr.f s_yptarcalib.f s_ytarcalib.f s_xptarcalib.f s_select_best_track_prune.f
 makeregstuff = r_sos_filenames.f r_sos_tracking.f r_sos_geometry.f \
 	 r_sos_track_histid.f r_sos_recon_elements.f r_sos_physics_sing.f \
 	r_sos_scin_parms.f r_sos_scin_tof.f r_sos_calorimeter.f \
@@ -121,7 +128,7 @@ makeregstuff = r_sos_filenames.f r_sos_tracking.f r_sos_geometry.f \
 
 sources = $(osources) $(newstuff) $(newerstuff) $(makeregstuff)
 
-ifeq ($(ARCH),AIX)
+ifeq ($(MYOS),AIX)
 xsources := $(filter-out s_link_stubs.f s_track_tests.f ,$(sources))
 sources = s_link_stubs_aix.f s_track_tests_aix.f $(xsources)
 ../s_%_aix.f : ../s_%.f
