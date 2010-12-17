@@ -422,7 +422,7 @@ c
      
       if(luc_hit.gt.0
      ,     .and.cer_h(inum).ge.0
-     ,     i4 .gt. 0)then
+     ,     .and. i4 .gt. 0)then
          do i=1,luc_hit
             ltdc_pos(i) = ltdc_pos(i) -BIG_TIME_SHIFT_CH(i4)!-BIG_TIME_SHIFT_CH(itrig)
             ltdc_neg(i) = ltdc_neg(i) -BIG_TIME_SHIFT_CH(i4)!-BIG_TIME_SHIFT_CH(itrig)
