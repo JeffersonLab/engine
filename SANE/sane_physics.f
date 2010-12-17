@@ -235,7 +235,7 @@ c
 c     Do the tracking only for particles wth cerenkov
 c
 c
-      if(cer_h(inum).ge.0)then
+      if(cer_h(inum).ge.0 .and. i4 .gt. 0)then
          do i=1,x1t_hit
 c
 c     for Some runs part of bigcal had timing shift. if this shift is there then correct for it
@@ -422,7 +422,7 @@ c
      
       if(luc_hit.gt.0
      ,     .and.cer_h(inum).ge.0
-     ,     )then
+     ,     i4 .gt. 0)then
          do i=1,luc_hit
             ltdc_pos(i) = ltdc_pos(i) -BIG_TIME_SHIFT_CH(i4)!-BIG_TIME_SHIFT_CH(itrig)
             ltdc_neg(i) = ltdc_neg(i) -BIG_TIME_SHIFT_CH(i4)!-BIG_TIME_SHIFT_CH(itrig)
