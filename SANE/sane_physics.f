@@ -697,11 +697,11 @@ c     write(*,*)"i4=",i4,k,iycell(k,inum)
 c     endif
 c     enddo
          do i=1, min(cer_hit,50)
-            if(cer_num(i).lt.9)then
+            if(cer_num(i).lt.9 .and. ncell64clust(inum) .gt. 0)then
                cer_n = cer_num(i)
 c                  write(*,*)1,cer_tdc(i),cer_adcc(i),cer_num(i)
 
-
+               
                  iBnum = 10700+icol64hit(ncell64clust(inum),inum)*10+cer_num(i)
                  Brow=float( irow64hit(ncell64clust(inum),inum) )               
                  call HF2( iBnum,Brow,float(cer_tdc(i))+2090,1.)
@@ -775,19 +775,21 @@ c               write(*,*)1,2,cer_tdc(i),cer_adcc(i),cer_num(i)
 c                  write(*,*)cer_tdc(i),cer_adcc(i),cer_num(i)
                   call HFILL(10530+cer_num(i),aclust(inum),float(cer_tdc(i)),1.)
                   call HFILL(10500+cer_num(i),float(cer_adcc(i)),float(cer_tdc(i)),1.)
+                  if (ncell64clust(inum) .gt. 0) then
                   ibcol = icol64hit(ncell64clust(inum),inum)
                   ibrow = irow64hit(ncell64clust(inum),inum)
                   a64c  = s64(ncell64clust(inum),inum)
                   iBnum = 17000+ibrow+100*ibcol
                   if(iBnum.eq.106)write(*,*)iBnum,a64c,cer_tdc(i)
                   call HF2(iBnum,a64c,float(cer_tdc(i)),1.)
-                 
+                  endif
                   
                   
                endif
 
                bigc_time(inum) = tclust64(inum)!-(5000/s64(ncell64clust(inum),inum)-4)
-               if(grun.gt.72487.and.icol64hit(ncell64clust(inum),inum).eq.1.and.
+                   if (ncell64clust(inum) .gt. 0) then
+              if(grun.gt.72487.and.icol64hit(ncell64clust(inum),inum).eq.1.and.
      ,              abs(BIGCAL_CERB_COL1_SHIFT(irow64hit(ncell64clust(inum),inum),cer_num(i))).lt.0.0001)bigc_time(inum)=100000
                if(grun.gt.72487.and.icol64hit(ncell64clust(inum),inum).eq.2.and.
      ,              abs(BIGCAL_CERB_COL2_SHIFT(irow64hit(ncell64clust(inum),inum),cer_num(i))).lt.0.0001)bigc_time(inum)=100000
@@ -796,7 +798,7 @@ c                  write(*,*)cer_tdc(i),cer_adcc(i),cer_num(i)
      ,              bigc_time(inum) = bigc_time(inum) -BIGCAL_CERB_COL1_SHIFT(irow64hit(ncell64clust(inum),inum),cer_num(i))
                if(icol64hit(ncell64clust(inum),inum).eq.2)
      ,              bigc_time(inum) = bigc_time(inum) -BIGCAL_CERB_COL2_SHIFT(irow64hit(ncell64clust(inum),inum),cer_num(i))
-
+                 endif
 c               write(*,*)grun,bigc_time(inum),ncell64clust(inum),inum
 c               if(grun.gt.72487)then
 c                  iBnum = 10700+icol64hit(ncell64clust(inum),inum)*10+cer_num(i)
