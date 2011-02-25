@@ -1,6 +1,16 @@
       subroutine g_analyze_scaler_bank(event,roc,ABORT,err)
 *     
 *     $Log$
+*     Revision 1.4.14.2.2.6  2011/02/25 20:24:28  jones
+*     Fix problem with scaler(503) . It should be 1MHz but before
+*     run 72476 it was 0.998MHz.  This 0.998 Mhz clock was also
+*     going into the helicity  plus and minus scalers ( 516 and 515).
+*     To get the charge for plus and minus need the fraction of time
+*     for each. Use the scaler(174) which is another 1MHz clock
+*     for the absolute time. Then scale the time by ratio of
+*     516/503 or 515/503 to get the time for the plus and minus
+*     helicity.
+*
 *     Revision 1.4.14.2.2.5  2009/11/11 16:22:00  jones
 *     Switch to
 *     delta_time_help = max(gscaler_change(516)/gclock_rate,.0001D00)
@@ -257,6 +267,10 @@ c
       delta_time = max(gscaler_change(gclock_index)/gclock_rate,.0001D00)
       delta_time_help = max(gscaler_change(516)/gclock_rate,.0001D00)
       delta_time_helm = max(gscaler_change(515)/gclock_rate,.0001D00)
+      if (gen_run_number .lt. 72476) then
+            delta_time_help =delta_time*gscaler_change(516)/gscaler_change(503)
+            delta_time_helm =delta_time*gscaler_change(515)/gscaler_change(503)
+            endif
        if ( gen_run_number .ge. 72476 .and. gen_run_number .le. 72588) then ! period when problem with clock signal
           delta_time_help = 0.4926*delta_time
           delta_time_helm = 0.4926*delta_time
@@ -264,7 +278,8 @@ c
 c
                skip_events = .false.
                if (syncfilter_on .and. delta_time .gt. 2.5 ) then
-                 write(*,*) ' Skip events for this scaler read since delta_time = ',delta_time
+                 write(*,*) ' Skip events for 
+     >  this scaler read since delta_time = ',delta_time
                  skip_events = .true.
                endif
 c
@@ -334,13 +349,27 @@ c
 
 *     Write out pertinent charge scaler rates for each scaler event.
 
-            if (g_charge_scaler_filename.ne.' ') then
+            if (g_charge_scaler_filename.ne.' ' .and. ave_current_bcm(1) .ge. g_beam_on_thresh_cur(1)) then
+c              write(G_LUN_CHARGE_SCALER,1001) gscaler_event_num, !scaler event num
+c    &              gscaler_change(gunser_index)/delta_time, !scaler rate(Hz)
+c    &              gscaler_change(gbcm1_index)/delta_time, !scaler rate(Hz)
+c    &              gscaler_change(gbcm2_index)/delta_time, !scaler rate(Hz)
+c    &              gscaler_change(gbcm3_index)/delta_time, !scaler rate(Hz)
+c    &              delta_time  !time since last scaler event (sec)
                write(G_LUN_CHARGE_SCALER,1001) gscaler_event_num, !scaler event num
-     &              gscaler_change(gunser_index)/delta_time, !scaler rate(Hz)
-     &              gscaler_change(gbcm1_index)/delta_time, !scaler rate(Hz)
-     &              gscaler_change(gbcm2_index)/delta_time, !scaler rate(Hz)
-     &              gscaler_change(gbcm3_index)/delta_time, !scaler rate(Hz)
-     &              delta_time  !time since last scaler event (sec)
+     > g_beam_on_bcm_charge(1),g_beam_on_bcm_charge_help(1),g_beam_on_bcm_charge_helm(1),
+     > (g_beam_on_bcm_charge_help(1)
+     >   +g_beam_on_bcm_charge_helm(1))/g_beam_on_bcm_charge(1),
+     > g_beam_on_bcm_charge_help(1)/g_beam_on_bcm_charge(1),
+     > g_beam_on_bcm_charge_helm(1)/g_beam_on_bcm_charge(1),
+     > ave_current_bcm(1)*delta_time, ave_current_bcm_help(1)*delta_time_help,
+     > ave_current_bcm_helm(1)*delta_time_helm,
+     > (ave_current_bcm_help(1)*delta_time_help
+     >+ave_current_bcm_helm(1)*delta_time_helm)/(ave_current_bcm(1)*delta_time),
+     > delta_time,delta_time_help,delta_time_helm,
+     > (delta_time_help+delta_time_helm)/delta_time,
+     > g_beam_on_run_time_help(1)/g_beam_on_run_time(1),g_beam_on_run_time_helm(1)/g_beam_on_run_time(1),
+     > (g_beam_on_run_time_help(1)+g_beam_on_run_time_helm(1))/g_beam_on_run_time(1)
             endif
          endif
 
@@ -349,7 +378,8 @@ c
 
 
 *     
- 1001 format(i6,4f13.2,f12.6)
+* 1001 format(i6,4f13.2,f12.6)
+ 1001 format(i6,17(1x,f8.5))
 
       return
       end
