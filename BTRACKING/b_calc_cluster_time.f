@@ -111,7 +111,7 @@ c      write(*,*) 'breftime = ',breftime
             icell8 = icol8 + 4*(irow8-1)
 
             if(bigcal_tdc_det_ngood(icell8).gt.0) then
-               if(n8 .eq. 0) then ! first channel with a tdc hit
+               if(n8 .eq. 0 ) then ! first channel with a tdc hit
                   n8 = n8 + 1
                   n8cut = n8cut + 1
 
@@ -160,6 +160,7 @@ c     for the first channel, take the hit which is closest to the trigger time:
                         goto 101
                      endif
                   enddo
+                  if (n8 .eq. 10) goto 101 ! mkj 
 c     if we make it to here without jumping out of this if-block, then 
 c     the tdc channel is unique!!!!
                   n8 = n8 + 1
@@ -240,7 +241,7 @@ c     take hit with min. time difference relative to moving average of cluster
  104        continue
 
             if(bigcal_ttrig_det_ngood(icell64).gt.0) then
-               if(n64.eq.0) then ! first trig. tdc channel with a hit
+               if(n64.eq.0 ) then ! first trig. tdc channel with a hit
                   n64 = n64 + 1
                   n64cut = n64cut + 1
 
@@ -292,6 +293,7 @@ c     take hit with min. time difference relative to moving average of cluster
                         goto 102
                      endif
                   enddo
+                  if (n64 .eq. 6) goto 102 ! mkj
 c     if we make it to this point without jumping out of the if block, then
 c     the trig. tdc channel is unique!!!!!!!!!!!!!!!!!!!!!!!!!!
                   n64 = n64 + 1
