@@ -16,8 +16,11 @@
  *
  * Revision History:
  *   $Log$
- *   Revision 1.3  2008/09/25 00:01:30  jones
- *   Updated to run with gfortran compiler
+ *   Revision 1.4  2011/03/04 15:24:29  jones
+ *   Add check for 64bit by looking for LP64
+ *
+ *   Revision 1.2.24.1.2.1  2011/03/03 20:09:01  jones
+ *   Add check for 64bit by looking for LP64
  *
  *   Revision 1.2.24.1  2007/09/10 21:32:47  pcarter
  *   Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
@@ -96,7 +99,7 @@ static DAINT stack[1000];			/* The stack */
 #define USEMEMCPY
 #endif
 
-#if defined(__osf__) && defined(__alpha)
+#if (defined(__osf__) && defined(__alpha)) || defined(__LP64__)
 #undef USEMEMCPY
 #define NOTPOSIX
 #define POINTER64
