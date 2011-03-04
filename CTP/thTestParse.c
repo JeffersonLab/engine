@@ -16,6 +16,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.4.24.2  2011/03/04 16:32:20  jones
+ *   Used to be %li and %ld, but that makes 8 byte result stuffed into 4 byte lval
+ *
  *   Revision 1.4.24.1  2007/09/10 21:32:47  pcarter
  *   Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
  *
@@ -376,10 +379,12 @@ char *thGetTok(char *linep, int *tokenid, char **tokstr,
     switch(thIDToken(string))
       {
       case TOKINT:
+	/* Used to be %li and %ld, but that makes 8 byte result stuffed into
+	   4 byte *tokval */
 	if(string[0] == '0' && (string[1] == 'x' || string[1] == 'X')) {
-	  sscanf(string,"%li",tokval); /* Treat as Hex */
+	  sscanf(string,"%i",tokval); /* Treat as Hex */
 	} else {
-	  sscanf(string,"%ld",tokval); /* Treat as decimal */
+	  sscanf(string,"%d",tokval); /* Treat as decimal */
 	}
 	*tokenid = OPPUSHINT;
 	break;
@@ -674,7 +679,7 @@ thStatus thEvalImed(char *line, DADOUBLE *d, DAINT *i)
       if(exptype == OPRDOUBLE) {
       codenext = (CODEPTR) (DADOUBLE **) ((DADOUBLE **)codenext + 1);/*phil*/
       } else {			/* Assume ints, floats have size */
-        codenext = (CODEPTR) (DAINT **) ((DAINT **)codenext + 1);/*phil*/
+        codenext = (CODEPTR) (DAINT *) ((DAINT *)codenext + 1);/*phil*/
       }
     }
 #ifdef RDOUBLE
@@ -913,10 +918,12 @@ thStatus thBookaTest(char *line, CODEPTR *codeheadp, CODEPTR *codenextp,
 	    *codenext++ = *(DAINT *)&f;
 	  } else {
 	    DAINT i;
+	    /* Used to be %li and %ld, but that makes 8 byte result
+	       stuffed into 4 byte i */
 	    if(token[0] == '0' && (token[1] == 'x' || token[1] == 'X')) {
-	      sscanf(token,"%li",&i); /* Treat as Hex */
+	      sscanf(token,"%i",&i); /* Treat as Hex */
 	    } else {
-	      sscanf(token,"%ld",&i); /* Treat as decimal */
+	      sscanf(token,"%d",&i); /* Treat as decimal */
 	    }
 	    *codenext++ = i;
 	  }

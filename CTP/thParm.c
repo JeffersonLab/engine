@@ -16,6 +16,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.4.24.1  2011/03/04 16:32:18  jones
+ *   Used to be %li and %ld, but that makes 8 byte result stuffed into 4 byte lval
+ *
  *   Revision 1.4  2003/02/21 20:55:24  saw
  *   Clean up some types and casts to reduce compiler warnings.
  *
@@ -350,10 +353,12 @@ thStatus thParmLineSet(char *line)
       switch(toktyp)
 	{
 	case TOKINT:
+	  /* Used to be %li and %ld, but that makes 8 byte result
+	     stuffed into 4 byte lval */
 	  if(args[i][0] == '0' && (args[i][1] == 'x' || args[i][1] == 'X')) {
-	    sscanf(args[i],"%li",&lval); /* Treat as Hex */
+	    sscanf(args[i],"%i",&lval); /* Treat as Hex */
 	  } else {
-	    sscanf(args[i],"%ld",&lval); /* Treat as decimal */
+	    sscanf(args[i],"%d",&lval); /* Treat as decimal */
 	  }
 	  dval = lval;
 	  break;
