@@ -23,6 +23,9 @@
  *
  * Revision History:
  *   $Log$
+ *   Revision 1.5.22.1  2011/03/04 16:21:24  jones
+ *   Add check for 64bit by looking for LP64
+ *
  *   Revision 1.5  2002/10/02 15:59:25  saw
  *   Fix gcc3 compatibity
  *
@@ -149,7 +152,7 @@ extern  int  swapped_fread();
 extern  void swapped_intcpy();
 extern  void swapped_memcpy();
 
-#if defined(__osf__) && defined(__alpha)
+#if (defined(__osf__) && defined(__alpha)) || defined(__LP64__)
 #define BIT64
 #endif
 

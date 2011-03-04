@@ -1,4 +1,4 @@
-#ifdef __osf__
+#if defined(__osf__) || defined(__LP64__)
 #define BIT64
 #endif
 /*-----------------------------------------------------------------------------
@@ -19,6 +19,9 @@
  *
  * Revision History:
  *  $Log$
+ *  Revision 1.5.22.1  2011/03/04 16:21:23  jones
+ *  Add check for 64bit by looking for LP64
+ *
  *  Revision 1.5  2003/02/21 20:55:24  saw
  *  Clean up some types and casts to reduce compiler warnings.
  *
