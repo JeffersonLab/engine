@@ -115,7 +115,7 @@
       REAL     u(5),x,y,uT(6)
       
       LOGICAL  ok
-      real p                ! momentum (MeV). (mom<0 for e-, mom>0 for p,d)
+      real p,pp,p_spec                ! momentum (MeV). (mom<0 for e-, mom>0 for p,d)
       real mass               ! mass of particle (MeV)
       integer spect            
       REAL*8 TARGET_COORD(6),Eprot,Pprot
@@ -197,7 +197,9 @@ c       write(*,*)dx,th,p,mass
 
       ctheta = COS(th*degree)
       stheta = SIN(th*degree)
-      eng = spect*sqrt(p**2+mass**2)/MeV
+      p_spec = p
+      pp=(uT(6)-1)*p_spec
+      eng = spect*sqrt(pp**2+mass**2)/MeV
 
       do i=1,6
          vtfirst(i) = vt(i)
@@ -229,6 +231,8 @@ c      endif
             xx = xx + (vTx(1)-vT(1))*0.01 
             u(5) = xx
          CALL hmsReconXtar (u,uT,ok)
+         pp=(uT(6)-1)*p_spec
+      eng = spect*sqrt(p**2+mass**2)/MeV
 c         write(*,*)'1 ',REF_VAL*(uu1T(1)+1.*uu1T(2))-x*ref_val,REF_VAL*(uu1T(3)+1.*uu1T(4))-y*ref_val
 c         write(*,*)'2 ',REF_VAL*(uu2T(1)+1.*uu2T(2))-x*ref_val,REF_VAL*(uu2T(3)+1.*uu2T(4))-y*ref_val
 c         write(*,*)'3 ',REF_VAL*(uu3T(1)+1.*uu3T(2))-x*ref_val,REF_VAL*(uu3T(3)+1.*uu3T(4))-y*ref_val
