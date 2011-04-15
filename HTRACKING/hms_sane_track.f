@@ -232,7 +232,7 @@ c      endif
             u(5) = xx
          CALL hmsReconXtar (u,uT,ok)
          pp=(uT(6)-1)*p_spec
-      eng = spect*sqrt(p**2+mass**2)/MeV
+      eng = spect*sqrt(pp**2+mass**2)/MeV
 c         write(*,*)'1 ',REF_VAL*(uu1T(1)+1.*uu1T(2))-x*ref_val,REF_VAL*(uu1T(3)+1.*uu1T(4))-y*ref_val
 c         write(*,*)'2 ',REF_VAL*(uu2T(1)+1.*uu2T(2))-x*ref_val,REF_VAL*(uu2T(3)+1.*uu2T(4))-y*ref_val
 c         write(*,*)'3 ',REF_VAL*(uu3T(1)+1.*uu3T(2))-x*ref_val,REF_VAL*(uu3T(3)+1.*uu3T(4))-y*ref_val
