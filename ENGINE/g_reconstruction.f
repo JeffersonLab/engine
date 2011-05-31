@@ -14,6 +14,10 @@
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
 * $Log$
+* Revision 1.13.24.9.2.7  2011/05/31 15:34:47  jones
+* increment g_hel_pos and g_hel_neg for trigtype=1,2,3 or 4 .
+* Before incremented just for trigtype=4
+*
 * Revision 1.13.24.9.2.6  2009/09/29 13:59:53  jones
 * Add lines:
 *             if(gen_event_trigtype(4).eq.1)then
@@ -146,10 +150,21 @@ C     SORTING F1 TRIGGERS BY COUNTERS
 C
       CALL f1trigger_sort_by_counter()
 
-            if(gen_event_trigtype(4).eq.1)then
-              if(gbeam_helicity_TS.eq.1)g_hel_pos = g_hel_pos+1
+c            if(gen_event_trigtype(4).eq.1)then
+c              if(gbeam_helicity_TS.eq.1)g_hel_pos = g_hel_pos+1
+c              if(gbeam_helicity_TS.eq.-1)g_hel_neg = g_hel_neg+1
+c            endif
+
+            if(gen_event_trigtype(4).eq.1.or.
+     ,           gen_event_trigtype(1).eq.1.or.
+     ,           gen_event_trigtype(3).eq.1.or.
+     ,           gen_event_trigtype(2).eq.1.)then
+c               if(gen_event_trigtype(4).eq.1.and.nclust.eq.0)write(*,*)0
+              if(gbeam_helicity_TS.eq.1)g_hel_pos= g_hel_pos+1
               if(gbeam_helicity_TS.eq.-1)g_hel_neg = g_hel_neg+1
             endif
+c            write(*,*)g_hel_pos_tot,g_hel_pos,g_hel_neg_tot,g_hel_neg,
+c     ,           gscaler_change(535),gscaler_change(536),gscaler_change(537),gscaler_change(538)
 
 *
 *
