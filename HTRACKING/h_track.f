@@ -13,6 +13,9 @@
 *- 
 *-   Created 19-JAN-1994   D. F. Geesaman
 * $Log$
+* Revision 1.5.26.3  2011/10/25 16:12:30  jones
+* Elminate unneed variables and include files
+*
 * Revision 1.5.26.2  2011/10/25 16:07:07  jones
 * back to original h_track.f wihtout trying to do only one stub.
 *
@@ -45,20 +48,11 @@
       character*(*) err
       integer*4 ierr
       character*5  line_err
-      integer*4 i,j,tot_hit,num_trk,k,m,n,num_extra
-      integer*4 itrk1,exhits,p
-      integer*4 hit(25),hits,goodhit(12),nhit
-      integer*4 extra_index(6)
-      real*4 hchi2_min
-      logical hit_in_space_point
 *
       INCLUDE 'hms_data_structures.cmn'
       INCLUDE 'hms_tracking.cmn'
       INCLUDE 'gen_constants.par'
       INCLUDE 'gen_units.par'
-      include 'hms_scin_tof.cmn'
-      include 'hms_scin_parms.cmn'
-      include "hms_geometry.cmn"
 
 *
 *--------------------------------------------------------
