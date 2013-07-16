@@ -15,7 +15,7 @@
 #	CEBAF Data Acquisition Group
 #
 #  Revision History:
-#    $Log$
+#    $Log: Makefile,v $
 #    Revision 1.6  2008/09/25 00:10:31  jones
 #    Updated to run with gfortran compiler
 #

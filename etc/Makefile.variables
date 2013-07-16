@@ -10,8 +10,8 @@ unexport getversion gccversion g77flags message #except these ones
 CFLAGS = -Wall -W -O -ggdb #-pg #-pedantic
 #CFLAGS = -Wall -W
 CXXFLAGS := $(CFLAGS)
-#FFLAGS = -O -ffixed-line-length-132 -ggdb -Wall -W -fbounds-check #-pg #-pedantic
-FFLAGS = -O -ffixed-line-length-132 -ggdb -Wall -W  #-pg #-pedantic
+FFLAGS = -O -ffixed-line-length-132 -ggdb -Wall -W -fbounds-check #-pg #-pedantic
+#FFLAGS = -O -ffixed-line-length-132 -ggdb -Wall -W  #-pg #-pedantic
 CC = gcc
 CXX = g++
 ifeq ($(gccversion),4)
