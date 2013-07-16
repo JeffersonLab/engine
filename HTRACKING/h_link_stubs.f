@@ -9,7 +9,7 @@
 *     hty_track_criterion      for t_y
 *
 *     d.f. geesaman           17 January 1994
-* $Log$
+* $Log: h_link_stubs.f,v $
 * Revision 1.9  2003/04/01 15:21:33  jones
 *  minor change
 *
@@ -91,11 +91,17 @@ c
       ABORT= .FALSE.
       err=' '
       hntracks_fp=0
+       if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,3i5)' ) 'In h_link_stubs ev # =',gen_event_ID_number,hsingle_stub,hnspace_points_tot
+        endif
       if(hsingle_stub.eq.0 ) then
 *     loop over all pairs of space points
        if(hnspace_points_tot.ge.2) then ! return if less than 2 space points
         do isp1=1,hnspace_points_tot-1  ! loop over all points
 *     is this point all ready associated with a track
+       if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,2i5)' ) 'singel_stub sp pt  =',isp1,hntracks_fp
+        endif
          tryflag=1
          if(hntracks_fp.gt.0) then
           do itrack=1,hntracks_fp           
@@ -109,6 +115,9 @@ c
           enddo                         ! end loop over tracks
          endif
 *     if space point not all ready part of a track then look for matches
+       if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,2i5)' ) 'Try flag =',tryflag
+        endif
          if( tryflag .eq.1) then
           newtrack=1
           do isp2=isp1+1,hnspace_points_tot
@@ -132,7 +141,7 @@ c
      $       ' hstubminx = ',hstubminx
        endif
        if (abs(hstubminy) .gt. hyt_track_criterion) then
-        write(13,*) 'event # ',gen_event_ID_number,
+        write(13,*) 'event # ',
      $       ' hstubminy =            ',hstubminy
        endif
        if (abs(hstubminxp) .gt. hxpt_track_criterion) then
@@ -146,7 +155,13 @@ c
        close(13)
       endif
 ******************************************************
-            if      (abs(dposx) .lt. hxt_track_criterion
+       if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,4(f10.5,1x))' ) 'criterion='
+     >,hxt_track_criterion, hyt_track_criterion
+     >,hxpt_track_criterion, hypt_track_criterion
+              write(hluno,'(a,4(f10.5,1x))' ) 'dpos =',dposx,dposy,dposxp,dposyp
+        endif
+             if      (abs(dposx) .lt. hxt_track_criterion
      &         .and. abs(dposy) .lt. hyt_track_criterion
      &         .and. abs(dposxp).lt. hxpt_track_criterion
      &         .and. abs(dposyp).lt. hypt_track_criterion) then
@@ -167,6 +182,11 @@ c
                hxp_sp1(hntracks_fp)=hbeststub(isp1,3)
                hxp_sp2(hntracks_fp)=hbeststub(isp2,3)
                newtrack=0               ! make no more tracks in this loop
+        if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,3i5,4(f10.5,1x))' ) 'track =', hntracks_fp,isp1,isp2
+     >,hbeststub(isp1,1),hbeststub(isp1,2),hbeststub(isp1,3)
+     >,hbeststub(isp2,1),hbeststub(isp2,2),hbeststub(isp2,3)
+        endif
               else                      !!  MEC - added the next 3 lines to 
                hntracks_fp = 0          !!  fail events with more than the 
                return                   !!  Max # of allowed tracks.
@@ -174,6 +194,9 @@ c
              else
 *     check if there is another space point in same chamber
               itrack=0
+        if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a)' ) 'another space point in chamber' 
+        endif
               do while (itrack.lt.sptracks)
                itrack=itrack+1
                track=stub_tracks(itrack)

@@ -41,13 +41,16 @@
       integer*4 nspace_points_tot,nplanes_mult,nplanes_hit,nplanes_single
       integer*4 hits_plane(hdc_planes_per_chamber,hmax_hits_per_point+1)
       integer*4 maxplane(hdc_planes_per_chamber)
-      integer*4 hit_order(hmax_hits_per_point)
+      integer*4 hit_order(hmax_hits_per_point+2)
 *
 *     temporary initialization
       ABORT= .FALSE.
       err=' '
 *
 cc      write(6,*) "IN h_sp_multiwire"  !! MEC       
+        if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,i5)') ' multiwire # of sp pts =', nspace_points
+        endif
 
 
       nspace_points_tot = nspace_points
@@ -77,13 +80,17 @@ cc     &  space_point_hits(point,9),space_point_hits(point,10)
 *-  Count the number of hits in each plane and fill array with the hit #'s associated with each plane
 
         do j = 3,space_point_hits(point,1)+2   !! Loop over all hits in sp -         !!
-          hit = space_point_hits(point,j)      !! count multiple hits in each plane  !! 
+          hit = min(space_point_hits(point,j),hmax_hits_per_point)     !! count multiple hits in each plane  !! 
           hit_order(hit) = j-2
           plane = hdc_plane_num(hit)
           if(plane.GT.6) plane = plane - hdc_planes_per_chamber  
           nhits_plane(plane) = nhits_plane(plane) + 1
           hits_plane(plane,1) = nhits_plane(plane)
           hits_plane(plane,nhits_plane(plane)+1) = hit
+        if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,3i5)') ' Counting multiple hits hit =',hit,plane,nhits_plane(plane)  
+        endif
+          
         enddo
 
 *-  End counting
@@ -103,6 +110,9 @@ cc     &  space_point_hits(point,9),space_point_hits(point,10)
 
 *-  End counting 
 
+        if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,i5)') ' new sp  =',nspace_points_new
+        endif
 cc        write(6,*) "NEW SP:  ",nspace_points_new
 cc        write(6,*) "sp",point,":",nhits_plane    !! MEC
 c        write(6,*) "sp",point,":  # planes with single hit:",nplanes_single,"  

@@ -91,6 +91,9 @@ cc          write(6,*) "Missing Y-hit!!"
 cc        write(6,*) "SP #:  ", point,"  # of planes hit:  ",nplanes_hit
 
       enddo
+        if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,i5)') ' number of space pts and good space pts =',nspace_points,nspace_points_good
+        endif
 
 *-  End loop over SPs
 

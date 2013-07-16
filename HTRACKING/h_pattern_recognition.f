@@ -13,7 +13,7 @@
 *- 
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
-* $Log$
+* $Log: h_pattern_recognition.f,v $
 * Revision 1.14  2003/04/01 13:49:27  jones
 * Modifications to tracking codes.
 * Mainly fix problems at high rates. (M. E. Christy)
@@ -134,11 +134,17 @@
             if(hdc_plane_num(i).eq.yplane) yy=i
             if(hdc_plane_num(i).eq.yprimeplane) yyprime=i
           enddo
+      if(hdebugprintrawdc.ne.0 ) then
+         write(hluno,*) ' yplane,ypplane ',yplane,yprimeplane,yy,yyprime 
+        endif
           if((hdc_hits_per_plane(yplane).eq.1) .and.
      &         (hdc_hits_per_plane(yprimeplane).eq.1).and.
      &         ((hdc_wire_center(yy)-hdc_wire_center(yyprime))**2.lt.
      &         (hspace_point_criterion(ich))) .and.
      &         (hncham_hits(ich).le.6)) then
+      if(hdebugprintrawdc.ne.0 ) then
+                write(hluno,'(a,i5)') ' find easy space point ',ich
+        endif
             call h_find_easy_space_point(hncham_hits(ich),hit_number(ihit+1),
      &           hdc_wire_center(ihit+1),hdc_plane_num(ihit+1),
      &           hspace_point_criterion(ich),hmax_space_points,yy-ihit,
@@ -150,30 +156,58 @@
      $           ,hysp(1),hmax_space_points,hnspace_points(ich), space_points,
      $           space_point_hits)
           else
-            call find_space_points(hncham_hits(ich),hit_number(ihit+1),
+       if(hdebugprintrawdc.ne.0 ) then
+                write(hluno,'(a,2i5,2f15.5)') 
+     > ' find hard space point ch ,# sp pts =',ich,hnspace_points(ich),hxsp(1),hysp(1)
+        endif
+           call find_space_points(hncham_hits(ich),hit_number(ihit+1),
      &           hdc_wire_center(ihit+1),
      &           hdc_plane_num(ihit+1),hspace_point_criterion(ich),
      &           hxsp(1),hysp(1),hmax_space_points,
      &           hnspace_points(ich), space_points, space_point_hits)
           endif
+        if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,2i5)') ' return find hard space pt ch=',ich,space_point_hits(1,2)
+        endif
 *
           if (hnspace_points(ich).gt.0) then
 *    If two hits in same plane, choose one with minimum drift time
 
              if ( h_remove_sppt_if_one_y_plane .eq. 1) then
+        if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,i5)') ' call destroy space point ch =',ich
+        endif
              call h_sp_destroy(ABORT,err,hnspace_points(ich),
      &           space_point_hits,space_points,ich)
              endif
 c
+        if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,i5)') ' call multiwire ch =',ich
+        endif
              call h_sp_multiwire(ABORT,err,hnspace_points(ich),
      &           space_point_hits,space_points)
 c
+        if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,i5)' ) ' call choose single hit ch =',ich
+        endif
             call h_choose_single_hit(ABORT,err,hnspace_points(ich),
      &           space_point_hits)
 * Select on minimum number of combinations and hits
+        if(hdebugprintrawdc.ne.0 ) then
+         write(hluno,'(a,i5,i5)' ) 
+     >' call select space points cham , # of space pt =',ich,hnspace_points(ich)
+        endif
             call select_space_points(hmax_space_points,hnspace_points(ich),
      &           space_points,space_point_hits,hmin_hit(ich),hmin_combos(ich),
      $           easy_space_point)
+       if(hdebugprintrawdc.ne.0 ) then
+              write(hluno, '(a,i5)' ) 
+     > ' after select_space points sapce pts =',hnspace_points(ich)
+              do i=1,hnspace_points(ich)
+                 write(hluno, '(2(a,i5))' ) 
+     > " space pt =",i," number of combos " , space_point_hits(i,2)
+              enddo
+        endif
           endif
 
 
@@ -202,6 +236,10 @@ c
 * time offset per card will cancel much of the error caused by this.  The
 * alternative is to check by card, rather than by plane and this is harder.
 *
+       if(hdebugprintrawdc.ne.0 ) then
+              write(hluno, '(a,i5)' ) 
+     > ' total  space pts = ',hnspace_points_tot
+        endif
       if(hnspace_points_tot.gt.0) then
         do isp=1,hnspace_points_tot
           xdist = hspace_points(isp,1)
@@ -214,11 +252,16 @@ c
             else                        !readout from top/bottom
               time_corr = xdist*hdc_readout_corr(pln)/hdc_wire_velocity
             endif
-            
+c            write(*,*) isp,hspace_point_hits(isp,1),ihit,hit
             hdc_drift_time(hit)=hdc_drift_time(hit) - hdc_central_time(pln)
      &           + hdc_drifttime_sign(pln)*time_corr
             hdc_drift_dis(hit) = h_drift_dist_calc
      &           (pln,hdc_wire_num(hit),hdc_drift_time(hit))
+        if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,3i5,5(f10.5,1x))' )
+     > ' time correction ch =',isp,hit,pln,hdc_drift_time(hit)
+     >,hdc_drift_dis(hit) ,hdc_central_time(pln),hdc_drifttime_sign(pln),time_corr
+        endif
 *
 * djm 8/25/94
 * Stuff drift time and distance into registered variables for histogramming and tests.
@@ -229,6 +272,7 @@ c
      &           hdc_card_no(hdc_wire_num(hit),hdc_plane_num(hit))
           enddo
         enddo
+c        write(*,*) 'end'
       endif
 *     
 *     Histogram hdc_DECODED_DC

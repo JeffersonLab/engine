@@ -1,6 +1,6 @@
       subroutine h_calc_pedestal(ABORT,err)
 *
-* $Log$
+* $Log: h_calc_pedestal.f,v $
 * Revision 1.14  2003/09/05 16:56:59  jones
 * Merge in online03 changes (mkj)
 *
@@ -176,7 +176,6 @@
           hcal_ped_change(ind)=hcal_new_ped_pos(blk)-
      &                         hcal_pos_ped_mean(blk) 
         endif
-        
 
         if (num.gt.hcal_min_peds .and. hcal_min_peds.ne.0) then
           hcal_pos_ped_mean(blk)=hcal_new_ped_pos(blk)

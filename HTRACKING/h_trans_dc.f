@@ -12,7 +12,7 @@
 *-   Output: ABORT           - success or failure
 *-         : err             - reason for failure, if any
 *- 
-* $Log$
+* $Log: h_trans_dc.f,v $x1
 * Revision 1.15  2002/10/02 13:42:43  saw
 * Check that user hists are defined before filling
 *
@@ -82,6 +82,7 @@
       external h_drift_dist_calc
       integer*4 ihit,goodhit,old_wire,old_pln,wire,pln,chamber
       real*4 histval
+      integer j
 *
       ABORT= .FALSE.
       err= ' '
@@ -145,7 +146,6 @@
 *     $                   (pln,wire,hdc_drift_time(goodhit))
                     hdc_hits_per_plane(pln) = hdc_hits_per_plane(pln) + 1
                     hwire_mult(wire,pln) = hwire_mult(wire,pln)+1
-                    
                   endif                 ! end test on duplicate wire
                   old_pln = pln
                   old_wire  = wire
@@ -167,9 +167,20 @@
 *
 *
 *     Dump decoded banks if flag is set
+
       if(hdebugprintdecodeddc.ne.0) then
         call h_print_decoded_dc(ABORT,err)
       endif
+      if(hdebugprintrawdc.ne.0 .and. HDC_TOT_HITS.GT.0) then
+       write(hluno,'(''     HDC_TOT_HITS='',I4,f15.5)') HDC_TOT_HITS,hstart_time
+         write(hluno,'('' Num  Plane     Wire          TDC Value'')')
+         do j=1,HDC_TOT_HITS
+         write(hluno,'(3i5,2(f10.4,1x),f8.6,1x,2(f10.4,1x))')
+     &     j,HDC_PLANE_NUM(j),HDC_WIRE_NUM(j),
+     &        HDC_drift_time(j),HDC_wire_center(j)
+     &   ,hdc_pitch(HDC_PLANE_NUM(j)),hdc_center(HDC_PLANE_NUM(j)),hdc_central_wire(HDC_PLANE_NUM(j))
+           enddo
+       endif
 *     
       RETURN
       END

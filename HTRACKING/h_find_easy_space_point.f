@@ -4,7 +4,7 @@
      &  y_hit,yp_hit,easy_space_point,
      &  nspace_points,space_points,space_point_hits)
 *
-* $Log$
+* $Log: h_find_easy_space_point.f,v $
 * Revision 1.1  1995/10/25 15:00:13  cdaq
 * Initial revision
 *
@@ -53,6 +53,7 @@
 * loop over all hits, find x of space point.
       do k = 1, ncham_hits
         if (k.ne.y_hit .and. k.ne.yp_hit) then !x-like hits
+       write(hluno,*) 'Test x like points ',k,  wire_center(k),yt,hysp(ipln(k)),hxsp(ipln(k))          
           x_pos(k) = ( wire_center(k)-yt*hysp(ipln(k)) )/hxsp(ipln(k))
           xt = xt + x_pos(k)
           num_xhits = num_xhits + 1
@@ -61,10 +62,16 @@
         endif
       enddo
       xt = xt / float(max(1,num_xhits))
+      if(hdebugprintrawdc.ne.0 ) then
+       write(hluno,*) 'mean x = ',xt,' max_dist = ',max_dist
+      endif    
 
       easy_space_point = .true.
       do k = 1, ncham_hits
         if (k.ne.y_hit .and. k.ne.yp_hit) then
+      if(hdebugprintrawdc.ne.0 ) then
+       write(hluno,*) 'Test x like points ',k, x_pos(k),abs(xt-x_pos(k))
+      endif               
           if (abs(xt-x_pos(k)).ge.max_dist) easy_space_point=.false.
         endif
       enddo
@@ -79,6 +86,9 @@
         enddo
         space_points(1,1)=xt
         space_points(1,2)=yt
+       if(hdebugprintrawdc.ne.0 ) then
+         write(hluno,*) 'space point x y ',space_points(1,1),space_points(1,2)
+        endif
       endif
 
       return

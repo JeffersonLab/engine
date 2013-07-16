@@ -9,7 +9,7 @@
 *-         : err             - reason for failure, if any
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
-* $Log$
+* $Log: h_print_raw_dc.f,v $
 * Revision 1.2  1995/05/22 19:39:17  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
@@ -32,17 +32,18 @@
        include 'gen_units.par'
        include 'hms_tracking.cmn'
        include 'hms_geometry.cmn'          
+       INCLUDE 'gen_event_info.cmn'
 *
 *--------------------------------------------------------
        ABORT = .FALSE.
        err = ' '
-       write(hluno,'(''        HMS_RAW_DC BANKS'')')
+       write(hluno,'(''        HMS_RAW_DC BANKS event ='',i10)') gen_event_ID_number
        write(hluno,'(''     HDC_RAW_TOT_HITS='',I4)') HDC_RAW_TOT_HITS
        if(HDC_RAW_TOT_HITS.GT.0) then
          write(hluno,'('' Num  Plane     Wire          TDC Value'')')
          write(hluno,'(1x,i2,2x,i3,7x,i4,5x,i10)')
      &     (j,HDC_RAW_PLANE_NUM(j),HDC_RAW_WIRE_NUM(j),
-     &        HDC_RAW_TDC(j),j=1,HDC_RAW_TOT_HITS)    
+     &        HDC_RAW_TDC(j),j=1,HDC_RAW_TOT_HITS)
        endif
        RETURN
        END

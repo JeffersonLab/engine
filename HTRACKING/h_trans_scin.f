@@ -8,7 +8,10 @@
 * needed for the drift chamber and tof analysis.
 *
 * modifications:
-* $Log$
+* $Log: h_trans_scin.f,v $
+* Revision 1.20.16.1  2005/03/15 21:19:06  jones
+* Add code to filter the scintillator tdc hits and group them by time. ( P. Bosted)
+*
 * Revision 1.21  2005/03/15 21:08:08  jones
 * Add code to filter the scintillator tdc hits and group them by time. ( P. Bosted)
 *
@@ -279,7 +282,6 @@
           negtime(ihit) = negtime(ihit) - hscin_neg_phc_coeff(ihit) * 
      1         sqrt(max(0.,(neg_ph(ihit)/hscin_neg_minph(ihit)-1.)))
           negtime(ihit) = negtime(ihit) - hscin_neg_time_offset(ihit)
-          
 * Find hit position.  If postime larger, then hit was nearer negative side.
           dist_from_center = 0.5*(negtime(ihit) - postime(ihit))
      1         * hscin_vel_light(ihit)
@@ -310,6 +312,7 @@
       do ihit = 1 , hscin_tot_hits
         if (htwo_good_times(ihit)) then
           fptime  = hscin_cor_time(ihit) - hscin_zpos(ihit)/(29.979*hbeta_pcent)
+          h_rfptime(hscin_plane_num(ihit))=fptime
           if(hidscinalltimes.gt.0) call hf1(hidscinalltimes,fptime,1.)
           if (abs(fptime-hstart_time_center).le.hstart_time_slop) then
             time_sum = time_sum + fptime

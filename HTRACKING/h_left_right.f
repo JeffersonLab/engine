@@ -4,7 +4,7 @@
 *     It then fills the HDC_WIRE_COORD variable for each hit in a good
 *     space point.
 *     d. f. geesaman           17 January 1994
-* $Log$
+* $Log: h_left_right.f,v $
 * Revision 1.13  1999/02/23 18:39:52  csa
 * (JRA) Correct two typos in 4/6 code
 *
@@ -240,6 +240,10 @@
           nplusminus = 2**(numhits-2)
         endif
 *     use bit value of integer word to set + or -
+        if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,2i5)' ) ' number of p/m , # of hits=',
+     >    nplusminus,numhits
+        endif
         do pmloop=0,nplusminus-1
           iswhit = 1
           do ihit=1,numhits
@@ -309,7 +313,8 @@
                     enddo
                  endif
              else
-                write(6,*) 'pindex=',pindex,' in h_left_right','gplanehdc1/2=',gplanehdc1(isp),gplanehdc2(isp)
+                write(6,*) 'pindex=',pindex
+     > ,' in h_left_right','gplanehdc1/2=',gplanehdc1(isp),gplanehdc2(isp)
              endif ! 4/6 plane tracking
           endif
         enddo                           ! end loop on possible left-right
@@ -333,6 +338,7 @@
      &         HDC_WIRE_CENTER(hspace_point_hits(isp,ihit+2)) +
      &         plusminusbest(ihit)*HDC_DRIFT_DIS(hspace_point_hits(isp,ihit
      $         +2))
+          
         enddo
 *
 *     stubs are calculated in rotated coordinate system
@@ -358,6 +364,10 @@
         hbeststub(isp,2)=stub(2)
         hbeststub(isp,3)=stub(3)
         hbeststub(isp,4)=stub(4)
+        if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,i5,4(f10.5,1x))' ) ' l/r space point =',isp,stub(1),stub(2),stub(3), stub(4)
+        endif
+        
 *
       enddo                             ! end loop over space points
 *
