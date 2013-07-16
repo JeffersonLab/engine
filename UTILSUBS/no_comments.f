@@ -1,6 +1,6 @@
       SUBROUTINE NO_Comments(string) 
 *
-* $Log$
+* $Log: no_comments.f,v $
 * Revision 1.3  1996/05/24 16:01:47  saw
 * (SAW) Relocate data statements for f2c compatibility
 *

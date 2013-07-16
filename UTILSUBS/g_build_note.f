@@ -13,7 +13,7 @@
 *- 
 *-   Created  20-Nov-1993 Kevin B. Beard, Hampton U.
 *-   Modified 18-Jan-1994 K.B.Beard, HU, so wild=" " gets skipped
-*     $Log$
+*     $Log: g_build_note.f,v $
 *     Revision 1.3  1994/06/08 17:40:56  cdaq
 *     (KBB) new version
 *

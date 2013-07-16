@@ -14,7 +14,7 @@
 *-   Created  25-MAR-1992   Kevin B. Beard 
 *-   Modified 19-OCT-1992   KBB	(fix phi)
 *-   Modified for hall C 9/1/93: KBB
-*     $Log$
+*     $Log: g_xyz_sph.f,v $
 *     Revision 1.1  1994/02/09 14:18:59  cdaq
 *     Initial revision
 *

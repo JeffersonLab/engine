@@ -1,6 +1,6 @@
 	subroutine sub_string(string,old,new)
 ********************* substitute new char. for old char. in string
-* $Log$
+* $Log: sub_string.f,v $
 * Revision 1.1  1994/04/15 18:12:37  cdaq
 * Initial revision
 *

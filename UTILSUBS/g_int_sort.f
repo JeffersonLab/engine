@@ -11,7 +11,7 @@
 *- 
 *-   Created  17-Jul-1993 K.B.Beard
 *-   Modified for hall C 9/1/93: KBB
-*     $Log$
+*     $Log: g_int_sort.f,v $
 *     Revision 1.1  1994/02/09 14:16:05  cdaq
 *     Initial revision
 *

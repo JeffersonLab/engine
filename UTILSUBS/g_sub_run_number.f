@@ -1,6 +1,6 @@
       subroutine g_sub_run_number(string,number)
 *
-* $Log$
+* $Log: g_sub_run_number.f,v $
 * Revision 1.4  1996/09/05 21:06:54  saw
 * (SAW) fix a bug
 *

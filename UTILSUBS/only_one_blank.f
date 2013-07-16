@@ -1,6 +1,6 @@
         SUBROUTINE only_one_blank(string) 
 *
-* $Log$
+* $Log: only_one_blank.f,v $
 * Revision 1.1  1994/02/22 20:02:18  cdaq
 * Initial revision
 *

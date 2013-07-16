@@ -7,7 +7,7 @@
 *- 
 *-   Created  20-NOV-1993   Kevin B. Beard, Hampton U. 
 *-   Modified  7-Dec-1993   KBB; updated for new include file
-*     $Log$
+*     $Log: g_log_message.f,v $
 *     Revision 1.1  1994/02/09 14:15:58  cdaq
 *     Initial revision
 *

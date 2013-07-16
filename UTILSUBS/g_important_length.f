@@ -8,7 +8,7 @@
 *- 
 *-   Created  24-MAR-1992   Kevin B. Beard 
 *-   Modified 9/1/93 for hall C: KBB
-*     $Log$
+*     $Log: g_important_length.f,v $
 *     Revision 1.1  1994/02/09 14:16:13  cdaq
 *     Initial revision
 *

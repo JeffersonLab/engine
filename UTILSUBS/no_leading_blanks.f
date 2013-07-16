@@ -1,6 +1,6 @@
        SUBROUTINE NO_leading_blanks(string)
 *
-* $Log$
+* $Log: no_leading_blanks.f,v $
 * Revision 1.2  1996/05/24 16:02:54  saw
 * (SAW) Relocate data statements for f2c compatibility
 *

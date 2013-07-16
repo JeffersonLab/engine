@@ -12,7 +12,7 @@
 *- 
 *-   Created  8-Apr-1992   Kevin B. Beard
 *-   Modified for hall C 9/1/93: KBB
-*     $Log$
+*     $Log: g_sort.f,v $
 *     Revision 1.1  1994/02/09 14:18:04  cdaq
 *     Initial revision
 *

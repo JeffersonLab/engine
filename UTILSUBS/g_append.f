@@ -8,7 +8,7 @@
 *-   Outputs : prefix	- suffixed prefix
 *- 
 *-   Created  17-May-1994   Kevin B. Beard, Hampton U. 
-* $Log$
+* $Log: g_append.f,v $
 * Revision 1.1  1994/05/27 16:11:41  cdaq
 * Initial revision
 *

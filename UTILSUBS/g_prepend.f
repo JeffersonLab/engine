@@ -8,7 +8,7 @@
 *-   Outputs : suffix	- prepended suffix
 *- 
 *-   Created  7-Dec-1993   Kevin B. Beard, Hampton U. 
-*     $Log$
+*     $Log: g_prepend.f,v $
 *     Revision 1.1  1994/02/09 14:17:14  cdaq
 *     Initial revision
 *

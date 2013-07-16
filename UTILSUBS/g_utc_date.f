@@ -14,7 +14,7 @@
 *-             sec	- sec. (0-59)
 *- 
 *-   Created 27-Apr-1992   Kevin B. Beard
-* $Log$
+* $Log: g_utc_date.f,v $
 * Revision 1.2  1995/03/21 15:35:10  cdaq
 * (SAW) Replace variable min with minute
 *

@@ -9,7 +9,7 @@
 *- 
 *-   Created  2-Dec-1992   Kevin B. Beard 
 *-   Modified for hall C 9/1/93: KBB
-*     $Log$
+*     $Log: g_wrap_note.f,v $
 *     Revision 1.4  1996/09/05 21:07:18  saw
 *     (SAW) Watch for Null's
 *

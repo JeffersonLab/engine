@@ -9,7 +9,7 @@
 *         err           - current error message
 * Output: any_FAIL      - OR of previous failure or current
 *         err           - appended error message
-* $Log$
+* $Log: g_reg_c.f,v $
 * Revision 1.2  1994/06/17 02:51:45  cdaq
 * (SAW) Fix typo in here
 *

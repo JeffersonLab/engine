@@ -1,6 +1,6 @@
 	SUBROUTINE UP_shift(InPut)
 *
-* $Log$
+* $Log: up_shift.f,v $
 * Revision 1.1  1994/02/22 20:03:26  cdaq
 * Initial revision
 *

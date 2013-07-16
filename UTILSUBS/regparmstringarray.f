@@ -1,6 +1,6 @@
       integer function regparmstringarray(name, strings, size)
 *
-* $Log$
+* $Log: regparmstringarray.f,v $
 * Revision 1.1  1994/08/18 03:50:34  cdaq
 * Initial revision
 *

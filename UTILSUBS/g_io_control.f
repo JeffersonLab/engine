@@ -12,7 +12,7 @@
 *-   Created   8-Apr-1994   Kevin B. Beard, Hampton U.
 *-   Modified 11-Apr-1994   KBB; added FREE, removed CLOSE, 
 *-                               more efficient parsing
-* $Log$
+* $Log: g_io_control.f,v $
 * Revision 1.4  1996/11/22 17:07:02  saw
 * (SAW) Change .eq. to .eqv. for AIX compatibility
 *

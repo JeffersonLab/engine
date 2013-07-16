@@ -1,6 +1,6 @@
 	SUBROUTINE UP_case(string)
 *
-* $Log$
+* $Log: up_case.f,v $
 * Revision 1.1  1994/02/22 20:03:16  cdaq
 * Initial revision
 *

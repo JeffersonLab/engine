@@ -10,7 +10,7 @@
 *-
 *-   Created  8-Jul-1993 Kevin B. Beard 
 *-   Modified 9/1/93 for hall C: KBB
-*     $Log$
+*     $Log: g_shift_len.f,v $
 *     Revision 1.2  1996/09/05 21:06:17  saw
 *     (SAW) Change from function to subroutine
 *

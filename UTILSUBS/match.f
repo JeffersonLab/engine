@@ -1,6 +1,6 @@
 	LOGICAL FUNCTION match(test,pattern)
 *
-* $Log$
+* $Log: match.f,v $
 * Revision 1.1  1994/02/22 20:01:00  cdaq
 * Initial revision
 *

@@ -9,7 +9,7 @@
 *-   Created  26-MAR-1992   Kevin B. Beard 
 *-   Modified for hall C 9/1/93: KBB
 *-   Modified 11/19/93 for warning: KBB
-*     $Log$
+*     $Log: g_rep_err.f,v $
 *     Revision 1.4  1996/11/22 17:08:00  saw
 *     (SAW) Cleanup
 *

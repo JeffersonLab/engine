@@ -1,6 +1,6 @@
 	SUBROUTINE NO_nulls(line)
 *
-* $Log$
+* $Log: no_nulls.f,v $
 * Revision 1.1  1994/02/22 20:01:49  cdaq
 * Initial revision
 *

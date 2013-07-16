@@ -1,6 +1,6 @@
        SUBROUTINE NO_blanks(string)
 *
-* $Log$
+* $Log: no_blanks.f,v $
 * Revision 1.1  1994/02/22 20:01:14  cdaq
 * Initial revision
 *

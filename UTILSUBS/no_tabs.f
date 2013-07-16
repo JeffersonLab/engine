@@ -1,6 +1,6 @@
 	SUBROUTINE NO_tabs(line)
 *
-* $Log$
+* $Log: no_tabs.f,v $
 * Revision 1.1  1994/02/22 20:05:11  cdaq
 * Initial revision
 *

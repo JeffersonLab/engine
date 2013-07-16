@@ -1,6 +1,6 @@
        SUBROUTINE squeeze(line,nonblank)
 *
-* $Log$
+* $Log: squeeze.f,v $
 * Revision 1.2  1996/05/24 16:03:33  saw
 * (SAW) Relocate data statements for f2c compatibility
 *

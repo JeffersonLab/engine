@@ -8,7 +8,7 @@
 *-   Outputs : mss	- prpended error message
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard, Hampton U. 
-*-    $Log$
+*-    $Log: g_add_path.f,v $
 *-    Revision 1.1  1994/02/09 14:13:19  cdaq
 *-    Initial revision
 *-

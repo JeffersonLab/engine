@@ -1,6 +1,6 @@
        SUBROUTINE SHIFTall(InPut,OUTPUT) 
 *
-* $Log$
+* $Log: shiftall.f,v $
 * Revision 1.1  1994/02/22 20:02:34  cdaq
 * Initial revision
 *

@@ -12,7 +12,7 @@
 *- example: 
 *    Run#332 Event sequence#55 ID#51 Type#1 Class#4 8-Jun-1994 14:11:33 GMT
 *
-* $Log$
+* $Log: g_rep_where.f,v $
 * Revision 1.2  1995/03/21 15:35:00  cdaq
 * (SAW) Replace variable min with minute
 *
