@@ -3,7 +3,7 @@
 *- subroutine copies adc and tdc data into fixed array, it allows for
 *  sparsified adc and tdc readout
 *- this is a complete routine and should have no additional user code
-* $Log$
+* $Log: hack_copyevt.f,v $
 * Revision 1.2  1995/05/24 13:47:29  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

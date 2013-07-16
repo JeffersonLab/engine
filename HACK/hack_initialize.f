@@ -1,7 +1,7 @@
 * ----------------------------------------------------------------------
 *--  file HACK_INITIALIZE.F 
 *--  Initialization for User Develpment Code
-* $Log$
+* $Log: hack_initialize.f,v $
 * Revision 1.1  1994/07/25 18:03:30  cdaq
 * Initial revision
 *

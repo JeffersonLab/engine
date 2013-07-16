@@ -2,7 +2,7 @@
 *-- file: hack_shutdown.f
 *-- this subroutine does User Devolpment tasks after the
 *     all events have been collected.
-* $Log$
+* $Log: hack_shutdown.f,v $
 * Revision 1.1  1994/07/25 18:03:54  cdaq
 * Initial revision
 *

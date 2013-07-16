@@ -15,7 +15,7 @@
 *-  After all events have been processed, hack_shutdown in file
 *    HACK_SHUTDOWN.F is called to allow final manipulations, e.g.
 *    printed output.
-* $Log$
+* $Log: hack_anal.f,v $
 * Revision 1.4  1995/10/11 14:02:00  cdaq
 * (JRA) Cleanup
 *

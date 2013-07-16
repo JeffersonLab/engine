@@ -3,7 +3,7 @@
 * ----------------------------------------------------------------------
 *--  file hack_register_variables.f
 *--  Initialization for User Develpment Code
-* $Log$
+* $Log: hack_register_variables.f,v $
 * Revision 1.4  1995/10/11 14:12:40  cdaq
 * (SAW) Call makereg generated r_hack_ instead of making explicit reg calls
 *
