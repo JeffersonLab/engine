@@ -2,7 +2,7 @@
 *     Wrappers for F2C intrinsic functions that have different names
 *     from standard f77s.
 *
-* $Log$
+* $Log: trig_wrappers.f,v $
 * Revision 1.1  1999/02/24 15:29:17  saw
 * Add to CVS tree
 *

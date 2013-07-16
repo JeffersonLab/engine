@@ -2,7 +2,7 @@
 *     Wrappers for F2C intrinsic functions that have different names
 *     from standard f77s.
 *
-* $Log$
+* $Log: bit_wrappers.f,v $
 * Revision 1.4  2008/09/25 00:08:06  jones
 * Updated to run with gfortran compiler
 *

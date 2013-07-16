@@ -3,7 +3,7 @@
 # Hall C analyzer to platforms other than HPUX.  For example, it contains
 # definitions of some fortran functions that are missing under F2C/Linux.
 #
-# $Log$
+# $Log: Makefile.Unix,v $
 # Revision 1.6  2008/09/25 00:08:06  jones
 # Updated to run with gfortran compiler
 #

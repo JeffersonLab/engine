@@ -1,7 +1,7 @@
 *
 *     Wrappers for the ran function for f2c fortran
 *
-* $Log$
+* $Log: ran_wrappers.f,v $
 * Revision 1.1  1999/02/24 15:29:17  saw
 * Add to CVS tree
 *

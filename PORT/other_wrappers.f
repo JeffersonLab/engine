@@ -2,7 +2,7 @@
 *     Wrapperse for G77 intrinsic functions that have different names from
 *     other f77's
 *
-* $Log$
+* $Log: other_wrappers.f,v $
 * Revision 1.1  2000/11/30 14:24:44  saw
 * JIDNNT function
 *
