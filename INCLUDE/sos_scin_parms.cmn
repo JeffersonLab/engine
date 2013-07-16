@@ -11,7 +11,7 @@
 *       Modified 23 March 1994   DFG
 *           Add definition of snum_scin_elements and set parameter value
 *
-* $Log$
+* $Log: sos_scin_parms.cmn,v $
 * Revision 1.8  1996/09/04 16:31:26  saw
 * (JRA) Add misc scaler
 *

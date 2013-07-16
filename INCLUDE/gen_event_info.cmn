@@ -1,7 +1,7 @@
 **************************begin: gen_event_info.cmn ***********************
 *- 
 *-   Created   22-Apr-1994   Kevin B. Beard, Hampton Univ.
-* $Log$
+* $Log: gen_event_info.cmn,v $
 * Revision 1.2  1994/08/03 20:10:42  cdaq
 * (SAW) Add "CTPTYPE=event" directive for auto generation of CTP reg calls
 *

@@ -1,6 +1,10 @@
 * sos_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the sos time of flight.
-* $Log$
+* $Log: sos_scin_tof.cmn,v $
+* Revision 1.8.16.1  2005/03/15 21:17:52  jones
+* Add variables htof_tolerance and stof_tolerance to be used
+* to filter the scintillator tdc hits and group them by time. ( P. Bosted)
+*
 * Revision 1.9  2005/03/15 21:14:28  jones
 * Add variables htof_tolerance and stof_tolerance to be used to filter the scintillator tdc hits and group them by time. ( P. Bosted)
 *

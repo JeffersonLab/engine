@@ -1,7 +1,7 @@
 *    This include file contains all the epics extracted variables, 
 *    which should be parsed to the engine for further use.
 *
-* $Log$
+* $Log: gen_epics.cmn,v $
 * Revision 1.1  1999/02/24 14:39:05  saw
 * Added to official source tree by csa.
 *

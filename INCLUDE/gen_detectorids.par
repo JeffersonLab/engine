@@ -4,7 +4,7 @@
 *     It would be nice if the data file that set's up the unpacker could
 *     use symbolic names instead of numbers.
 *
-*     $Log$
+*     $Log: gen_detectorids.par,v $
 *     Revision 1.8  2002/12/20 21:52:34  jones
 *     Modified by Hamlet for new HMS aerogel
 *

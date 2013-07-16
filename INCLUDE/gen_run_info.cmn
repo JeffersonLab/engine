@@ -1,7 +1,7 @@
 **************************begin: gen_run_info.cmn ***********************
 *- 
 *-   Created   22-Apr-1994   Kevin B. Beard, Hampton Univ.
-* $Log$
+* $Log: gen_run_info.cmn,v $
 * Revision 1.7  1996/09/04 15:46:13  saw
 * (JRA) Add prescale factors and some a debugging  flag
 *

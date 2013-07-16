@@ -6,7 +6,7 @@
 *     hack_anal subroutine for each event.
 *-- any additional arrays or variables my be added by the user
 *---------------------------------------------------------------------------
-* $Log$
+* $Log: hack_.cmn,v $
 * Revision 1.3  1996/01/17 15:58:04  cdaq
 * (JRA) Hacked it a bit
 *

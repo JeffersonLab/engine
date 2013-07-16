@@ -3,7 +3,7 @@
 *-   Created    8-Apr-1994   Kevin B. Beard, Hampton Univ.
 *........................................................................
 *- Misc. info. required for SOS Ntuple
-* $Log$
+* $Log: s_ntuple.cmn,v $
 * Revision 1.4  2004/02/17 16:41:45  jones
 * Add parameters and variables needed for segmenting rzdat files
 *

@@ -1,6 +1,6 @@
 *      sos_statistics.cmn
 *      common blocks containing event statistics for s_reconstruction
-* $Log$
+* $Log: sos_statistics.cmn,v $
 * Revision 1.13  2003/09/05 20:41:27  jones
 * Merge in online03 changes (mkj)
 *

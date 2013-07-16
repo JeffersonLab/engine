@@ -16,7 +16,7 @@
 *                change HPLANE_LABEL      to hdc_plane_name
 *                add     hdc_xcenter
 *                        hdc_ycenter
-* $Log$
+* $Log: hms_geometry.cmn,v $
 * Revision 1.11  1996/09/04 15:49:59  saw
 * (JRA) Make hdc_nrwire integer
 *

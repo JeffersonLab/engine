@@ -10,7 +10,7 @@
 *
 *      Created 9 April 1994	D. F. Geesaman
 *
-* $Log$
+* $Log: sos_id_histid.cmn,v $
 * Revision 1.11  1999/02/23 19:20:42  csa
 * (JRA) Add sidscindpos_pid, cleanup
 *

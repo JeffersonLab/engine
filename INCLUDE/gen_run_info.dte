@@ -1,7 +1,7 @@
 **************************begin: gen_run_info.dte ***********************
 *- 
 *-   Created   24-May-1994   Kevin B. Beard, Hampton Univ.
-* $Log$
+* $Log: gen_run_info.dte,v $
 * Revision 1.3  1995/07/28 15:15:48  cdaq
 * (SAW) Change .TRUE. to 1 for f2c compatibility
 *

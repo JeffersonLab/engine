@@ -1,7 +1,7 @@
 *
 *      HMS calorimeter. Parameters from hms_positions.parm
 *
-* $Log$
+* $Log: hms_calorimeter.cmn,v $
 * Revision 1.12  1999/02/23 19:08:04  csa
 * Add hcal_fv_test
 *

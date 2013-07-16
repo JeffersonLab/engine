@@ -1,7 +1,8 @@
 *    This include file contains all the variables required for h_physics
-* $Log$
-* Revision 1.11  2005/03/23 16:35:04  jones
-* Add new code s_select_best_track_prune.f and h_select_best_track_prune.f (P Bosted)
+* $Log: hms_physics_sing.cmn,v $
+* Revision 1.10.6.1  2005/03/23 16:53:47  jones
+* Add new variables for new code STRACKING/s_select_best_track_prune.f and
+* HTRACKING/h_select_best_track_prune.f
 *
 * Revision 1.10  2004/02/26 22:14:53  jones
 * Add parameter  hsel_using_scin. When hsel_using_scin= 1 then new code

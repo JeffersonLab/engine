@@ -3,7 +3,7 @@
 *     Common block to hold the raw scaler information and
 *     quantities calculated from the scaler events (time, current, etc...)
 *
-* $Log$
+* $Log: gen_scalers.cmn,v $
 * Revision 1.13  2004/05/11 18:23:26  jones
 * Add logical variable skip_events to BEAMCURRENT common block
 *

@@ -3,7 +3,7 @@
 *-   Created    1-Nov-1994   
 *........................................................................
 *- Misc. info. required for HMS sieve slit Ntuple
-* $Log$
+* $Log: h_sieve_ntuple.cmn,v $
 * Revision 1.2  1995/05/22 19:05:58  cdaq
 * (SAW) Correct some CTP class types
 *

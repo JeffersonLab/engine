@@ -17,7 +17,7 @@
 *                change SPLANE_LABEL      to sdc_plane_name
 *                add     sdc_xcenter
 *                        sdc_ycenter
-* $Log$
+* $Log: sos_geometry.cmn,v $
 * Revision 1.8  1996/09/04 16:28:21  saw
 * (JRA) Make hdc_nrwire integer
 *

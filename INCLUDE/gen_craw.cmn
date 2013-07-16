@@ -4,7 +4,7 @@
 *     Buffer to hold the raw event for off-line analysis.  (Not used for
 *     online as CODA supplies the buffer.)
 *
-* $Log$
+* $Log: gen_craw.cmn,v $
 * Revision 1.2  1999/03/19 15:22:31  saw
 * (SAW) Increase maximum event size from 20000 to 40000
 *
