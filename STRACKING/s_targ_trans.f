@@ -18,7 +18,7 @@
 *-   
 *-Modified 21-JAN-94  D.F.Geesaman
 *-            Add ABORT and err
-* $Log$
+* $Log: s_targ_trans.f,v $
 * Revision 1.15  1999/02/23 19:01:10  csa
 * (JRA) Correct (another) hut(5) error
 *

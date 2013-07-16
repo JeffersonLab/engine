@@ -15,7 +15,7 @@
 *-      Output Bank: SOS_DECODED_CAL
 *-
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
-* $Log$
+* $Log: s_trans_cal.f,v $
 * Revision 1.8  2004/05/12 15:38:59  jones
 * Initialize ssshsum and ssshtrk to zero.
 *

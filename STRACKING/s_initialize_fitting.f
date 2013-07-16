@@ -2,7 +2,7 @@
 *     This subroutine does the MINUIT initialization for track fitting
 *
 *     d.f. geesaman               8 Sept 1993
-* $Log$
+* $Log: s_initialize_fitting.f,v $
 * Revision 1.3  1996/09/05 20:09:06  saw
 * (JRA) Cosmetic
 *

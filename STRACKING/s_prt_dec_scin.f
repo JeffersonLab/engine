@@ -9,7 +9,7 @@
 *-         : err             - reason for failure, if any
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
-* $Log$
+* $Log: s_prt_dec_scin.f,v $
 * Revision 1.7  1996/01/17 19:00:09  cdaq
 * (JRA)
 *

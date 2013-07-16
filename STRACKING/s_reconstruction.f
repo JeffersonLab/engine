@@ -8,7 +8,7 @@
 *-   Output: ABORT              - success or failure
 *-         : err             - reason for failure, if any
 *- 
-* $Log$
+* $Log: s_reconstruction.f,v $
 * Revision 1.13  1996/11/07 19:53:12  saw
 * (WH) Add lucite information
 *

@@ -1,6 +1,6 @@
       subroutine s_analyze_pedestal(ABORT,err)
 *
-* $Log$
+* $Log: s_analyze_pedestal.f,v $
 * Revision 1.10  1999/06/10 16:55:48  csa
 * (JRA) Removed two calorimeter debugging statements
 *

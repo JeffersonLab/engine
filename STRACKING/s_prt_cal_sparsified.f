@@ -7,7 +7,7 @@
 *-      Created: 19 Mar 1994      Tsolak A. Amatuni
 *-      Modified 25 Mar 1994      DFG
 *-                                change name and lun
-* $Log$
+* $Log: s_prt_cal_sparsified.f,v $
 * Revision 1.3  1999/01/29 17:34:59  saw
 * Add variables for second tubes on shower counter
 *

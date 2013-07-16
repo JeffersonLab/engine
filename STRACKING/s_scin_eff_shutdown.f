@@ -15,7 +15,7 @@
 * s_scin_eff calculates efficiencies for the hodoscope.
 * s_scin_eff_shutdown does some final manipulation of the numbers.
 *
-* $Log$
+* $Log: s_scin_eff_shutdown.f,v $
 * Revision 1.9  1999/02/23 18:59:27  csa
 * (JRA) Remove sdebugcalcpeds stuff
 *

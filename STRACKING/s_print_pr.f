@@ -2,7 +2,7 @@
 *     subroutine to dump output of S_PATTERN_RECOGNITION
 *     All the results are contained in sos_tracking.inc
 *     d.f. geesaman          5 September 1993
-* $Log$
+* $Log: s_print_pr.f,v $
 * Revision 1.2  1995/05/22 19:45:45  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

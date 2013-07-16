@@ -21,7 +21,7 @@
 *-      Modified 25 Mar 1994      DFG
 *-                                Change name of print routine
 *-               11 Apr 1994      DFG Check if E_t =0 before division
-* $Log$
+* $Log: s_clusters_cal.f,v $
 * Revision 1.4  1999/02/03 21:13:44  saw
 * Code for new Shower counter tubes
 *

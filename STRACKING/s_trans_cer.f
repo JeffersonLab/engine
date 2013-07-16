@@ -6,7 +6,7 @@
 *
 * s_trans_cer fills the sos_decoded_cer common block
 * with track independent corrections and parameters
-* $Log$
+* $Log: s_trans_cer.f,v $
 * Revision 1.2  1996/01/17 18:45:10  cdaq
 * (JRA) Make scer_adc pedestal subtracted value
 *
@@ -44,6 +44,7 @@
           scer_num_hits = scer_num_hits + 1
           scer_tube_num(scer_num_hits) = tube
           scer_npe(tube) = scer_adc(tube) * scer_adc_to_npe(tube)
+*          write(*,*)tube,scer_adc(tube),scer_adc_to_npe(tube),scer_npe_sum
           scer_npe_sum = scer_npe_sum + scer_npe(tube)
         endif
       enddo

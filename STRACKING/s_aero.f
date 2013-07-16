@@ -13,7 +13,7 @@
 *-   Created 13-MAY-1995     H. Breuer and R. Mohring, UMD
 *-                           SOS Aerogel detector calibration routine
 *-
-* $Log$
+* $Log: s_aero.f,v $
 * Revision 1.3  1996/11/07 19:48:28  saw
 * (JRA) Handle over and underflows
 *

@@ -15,7 +15,7 @@
 * s_dc_trk_eff calculates efficiencies for the drift chambers,
 *   using the tracking information.
 *
-* $Log$
+* $Log: s_dc_trk_eff.f,v $
 * Revision 1.2  1996/01/17 17:09:36  cdaq
 * (JRA) Change array sizes from sdc_num_planes to SMAX_NUM_DC_PLANES
 *

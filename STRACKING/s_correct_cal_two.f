@@ -11,7 +11,7 @@
 *-
 *-      Created 27 September 1999      SAW
 *
-* $Log$
+* $Log: s_correct_cal_two.f,v $
 * Revision 1.2  2003/03/21 22:58:02  jones
 * Subroutines had arguments with abort,errmsg . But these arguments were not
 * used when the subroutine was called. Also abort ,errmsg were not used in the

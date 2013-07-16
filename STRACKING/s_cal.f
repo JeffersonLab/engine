@@ -14,7 +14,7 @@
 *- 
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
-* $Log$
+* $Log: s_cal.f,v $
 * Revision 1.9  2003/04/03 00:45:01  jones
 * Update to calorimeter calibration (V. Tadevosyan)
 *

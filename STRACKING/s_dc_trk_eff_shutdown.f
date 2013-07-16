@@ -15,7 +15,7 @@
 * s_dc_trk_eff calculates efficiencies for the chambers (using tracking)
 * s_dc_trk_eff_shutdown does some final manipulation of the numbers.
 *
-* $Log$
+* $Log: s_dc_trk_eff_shutdown.f,v $
 * Revision 1.1  1995/10/09 20:05:32  cdaq
 * Initial revision
 *

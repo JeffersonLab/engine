@@ -2,7 +2,7 @@
 *     subroutine to dump output of S_LEFT_RIGHT
 *     All the results are contained in sos_tracking.inc
 *     d.f. geesaman          5 September 1993
-* $Log$
+* $Log: s_print_stubs.f,v $
 * Revision 1.3  1995/05/22 19:45:46  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

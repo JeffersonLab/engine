@@ -12,7 +12,7 @@
 *  trackeff.test;  if you change something here, make sure it agrees with the
 *  the tests there!!
 *
-* $Log$
+* $Log: s_track_tests.f,v $
 * Revision 1.3  2002/09/26 14:54:03  jones
 *    Add variables sweet1xscin,sweet1yscin,sweet2xscin,sweet2yscin
 *    which record which scint got hit inside the defined scint region

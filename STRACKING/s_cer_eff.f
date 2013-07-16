@@ -13,7 +13,7 @@
 *
 * author: Chris Cothran
 * created: 5/25/95
-* $Log$
+* $Log: s_cer_eff.f,v $
 * Revision 1.4  1999/02/10 18:20:29  csa
 * Changed sscer_et test to use momentum-normalized variable
 *

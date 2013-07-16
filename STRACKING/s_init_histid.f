@@ -6,7 +6,7 @@
 *     Author:	D. F. Geesaman
 *     Date:      9 April 1994
 *
-* $Log$
+* $Log: s_init_histid.f,v $
 * Revision 1.7  1999/02/23 18:58:40  csa
 * (JRA) Add pos/neg cal stuff
 *

@@ -7,7 +7,7 @@
 *     Modified: 9 April 1994        DFG
 *                                   Transfer ID in common block
 *                                   Implement flag to turn block on
-* $Log$
+* $Log: s_fill_dc_fp_hist.f,v $
 * Revision 1.5  2002/07/31 20:20:58  saw
 * Only try to fill user hists that are defined
 *

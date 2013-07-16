@@ -12,7 +12,7 @@
 *-
 *-      Created 27 January 1999      SAW
 *
-* $Log$
+* $Log: s_correct_cal_neg.f,v $
 * Revision 1.4  2003/04/03 00:45:01  jones
 * Update to calorimeter calibration (V. Tadevosyan)
 *

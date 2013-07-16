@@ -7,7 +7,7 @@
 *
 * Version:  0.1 (In development)
 *
-* $Log$
+* $Log: s_targ_trans_init.f,v $
 * Revision 1.6  2008/09/25 00:08:35  jones
 * Updated to run with gfortran compiler
 *

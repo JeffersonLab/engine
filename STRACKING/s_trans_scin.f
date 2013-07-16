@@ -7,7 +7,10 @@
 * with track independant corrections and parameters
 * needed for the drift chamber and tof analysis.
 *
-* $Log$
+* $Log: s_trans_scin.f,v $
+* Revision 1.13.16.1  2005/03/15 21:19:27  jones
+* Add code to filter the scintillator tdc hits and group them by time. ( P. Bosted)
+*
 * Revision 1.14  2005/03/15 21:13:09  jones
 * Add code to filter the scintillator tdc hits and group them by time. ( P. Bosted)
 *

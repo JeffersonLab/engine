@@ -1,5 +1,5 @@
 #
-# $Log$
+# $Log: Makefile.Unix,v $
 # Revision 1.28  2008/09/25 00:08:35  jones
 # Updated to run with gfortran compiler
 #

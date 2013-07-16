@@ -12,7 +12,7 @@
 *-      Modified 25 Mar 1994      DFG
 *-                                Change name of print routines
 *-                5 Apr 1994      DFG Move print routine to s_raw_dump_all
-* $Log$
+* $Log: s_sparsify_cal.f,v $
 * Revision 1.13  2002/07/31 20:20:58  saw
 * Only try to fill user hists that are defined
 *

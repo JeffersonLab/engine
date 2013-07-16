@@ -14,12 +14,9 @@
 *- 
 *-   Created 22-FEB-1994   John Arrington
 *
-* $Log$
-* Revision 1.15  2008/09/25 00:08:35  jones
-* Updated to run with gfortran compiler
-*
-* Revision 1.14.6.1  2007/09/10 20:28:01  pcarter
-* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
+* $Log: s_tof.f,v $
+* Revision 1.13.16.1  2005/03/15 21:19:27  jones
+* Add code to filter the scintillator tdc hits and group them by time. ( P. Bosted)
 *
 * Revision 1.14  2005/03/15 21:13:09  jones
 * Add code to filter the scintillator tdc hits and group them by time. ( P. Bosted)
@@ -139,7 +136,7 @@
         betap = p/sqrt(p*p+spartmass*spartmass)
 
 ! Calculate all corrected hit times and histogram
-! This uses a copy of code below. Results are saved in time_pos,neg
+! This uses a copy of code below. Results are save in time_pos,neg
 ! including the z-pos. correction assuming nominal value of betap
 ! Code is currently hard-wired to look for a peak in the
 ! range of 0 to 100 nsec, with a group of times that all

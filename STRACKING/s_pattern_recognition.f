@@ -13,7 +13,7 @@
 *- 
 *-   Created 30-AUG-1993   D. F. Geesaman
 *-   Modified 19-JAN-1994  DFG    Include standard error form
-* $Log$
+* $Log: s_pattern_recognition.f,v $
 * Revision 1.10  1996/09/05 20:09:36  saw
 * (JRA) Cosmetic
 *

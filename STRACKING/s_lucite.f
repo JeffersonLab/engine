@@ -10,7 +10,7 @@
 *-   Output: ABORT           - success or failure
 *-         : err             - reason for failure, if any
 *-
-* $Log$
+* $Log: s_lucite.f,v $
 * Revision 1.1  1996/11/07 19:50:56  saw
 * Initial revision
 *

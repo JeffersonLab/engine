@@ -15,7 +15,7 @@
 * s_dc_eff calculates efficiencies for the hodoscope.
 * s_dc_eff_shutdown does some final manipulation of the numbers.
 *
-* $Log$
+* $Log: s_dc_eff_shutdown.f,v $
 * Revision 1.2  1996/09/05 13:29:49  saw
 * (JRA) Cosmetic
 *

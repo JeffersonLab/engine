@@ -4,7 +4,7 @@
 *     wire
 *
 *     d.f. geesaman      17 feb 1994        first dummy routine
-* $Log$
+* $Log: s_tdc_time_per_channel.f,v $
 * Revision 1.3  1995/05/22 19:45:57  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

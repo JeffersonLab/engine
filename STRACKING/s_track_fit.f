@@ -4,7 +4,7 @@
 *     Called by S_TRACK
 *
 *     d.f. geesaman         8 Sept 1993
-* $Log$
+* $Log: s_track_fit.f,v $
 * Revision 1.8  1996/01/17 18:56:08  cdaq
 * (JRA) Fill sdc_plane_wirecenter and sdc_plane_wirecoord arrays
 *

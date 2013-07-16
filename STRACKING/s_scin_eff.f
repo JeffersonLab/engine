@@ -14,7 +14,7 @@
 *
 * s_scin_eff calculates efficiencies for the hodoscope.
 *
-* $Log$
+* $Log: s_scin_eff.f,v $
 * Revision 1.8  2003/09/05 20:01:02  jones
 * Merge in online03 changes (mkj)
 *

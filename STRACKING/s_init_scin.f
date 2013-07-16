@@ -13,7 +13,7 @@
 * modifications:
 *       23 March 1993   DFG
 *            Remove /nolist from include statement. UNIX doesn't like it.
-* $Log$
+* $Log: s_init_scin.f,v $
 * Revision 1.6  1996/04/30 17:32:20  saw
 * (JRA) Calculate expected particle velocity
 *

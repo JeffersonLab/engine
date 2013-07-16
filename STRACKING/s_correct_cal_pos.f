@@ -10,7 +10,7 @@
 *-
 *-      Created 15 Mar 1994      Tsolak A. Amatuni
 *
-* $Log$
+* $Log: s_correct_cal_pos.f,v $
 * Revision 1.4  2003/03/21 22:58:02  jones
 * Subroutines had arguments with abort,errmsg . But these arguments were not
 * used when the subroutine was called. Also abort ,errmsg were not used in the

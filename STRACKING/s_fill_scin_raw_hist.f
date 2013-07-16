@@ -8,7 +8,7 @@
 *     Modified  9 April 1994     DFG
 *                                Add CTP flag to turn on histogramming
 *                                id's in sos_id_histid
-* $Log$
+* $Log: s_fill_scin_raw_hist.f,v $
 * Revision 1.7  1996/01/17 19:04:54  cdaq
 * (JRA)
 *

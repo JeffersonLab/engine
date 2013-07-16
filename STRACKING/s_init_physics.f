@@ -8,7 +8,7 @@
 *-         : err             - reason for failure, if any
 *- 
 *-   Created 6-6-94          D. F. Geesaman
-* $Log$
+* $Log: s_init_physics.f,v $
 * Revision 1.6  1999/02/10 18:15:40  csa
 * Bug fix in sin/cossthetas calculations
 *

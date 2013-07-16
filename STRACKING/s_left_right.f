@@ -8,7 +8,7 @@
 *     It then fills the SDC_WIRE_COORD variable for each hit in a good
 *     space point.
 *     d. f. geesaman           31 August 1993
-* $Log$
+* $Log: s_left_right.f,v $
 * Revision 1.13  2008/09/25 00:08:35  jones
 * Updated to run with gfortran compiler
 *

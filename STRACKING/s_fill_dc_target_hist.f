@@ -4,7 +4,7 @@
 *
 *     Author:	D. F. Geesaman
 *     Date:     3 May 1994
-* $Log$
+* $Log: s_fill_dc_target_hist.f,v $
 * Revision 1.4  2002/07/31 20:20:58  saw
 * Only try to fill user hists that are defined
 *

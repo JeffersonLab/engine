@@ -6,7 +6,7 @@
 *
 * s_strip_scin converts the raw hits to arrays over hits
 * with good TDC values.
-* $Log$
+* $Log: s_strip_scin.f,v $
 * Revision 1.7  1999/02/23 19:00:39  csa
 * (JRA) Remove sdebugcalcpeds stuff
 *

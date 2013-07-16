@@ -11,7 +11,10 @@
 *-   Output: ABORT           - success or failure
 *-         : err             - reason for failure, if any
 *- 
-*- $Log$
+*- $Log: s_select_best_track_prune.f,v $
+*- Revision 1.1.2.1  2005/03/23 16:56:02  jones
+*-  new code STRACKING/s_select_best_track_prune.f
+*-
 *- Revision 1.1  2005/03/23 16:34:08  jones
 *- Add new code s_select_best_track_prune.f (P Bosted)
 *-

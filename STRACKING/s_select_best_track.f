@@ -11,12 +11,12 @@
 *-   Output: ABORT           - success or failure
 *-         : err             - reason for failure, if any
 *- 
-*- $Log$
-*- Revision 1.6  2005/03/23 16:34:09  jones
-*- Add new code s_select_best_track_prune.f (P Bosted)
+*- $Log: s_select_best_track.f,v $
+*- Revision 1.4.16.2  2005/03/23 16:56:02  jones
+*-  new code STRACKING/s_select_best_track_prune.f
 *-
-*- Revision 1.5  2005/03/23 16:18:14  jones
-*- Add new code s_select_best_track_using_scin.f . Copy of code used for HMS.
+*- Revision 1.4.16.1  2004/08/20 17:32:50  cdaq
+*- updated to include _select_using_scin codes
 *-
 *- Revision 1.4  1995/07/20 19:01:37  cdaq
 *- (CC) Fix bug in best chisq finding

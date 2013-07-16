@@ -1,7 +1,7 @@
       function s_chamnum(ispace_point)
 *     This function returns the chamber number of a space point
 *      d.f. geesaman              8 Sept 1993
-* $Log$
+* $Log: s_chamnum.f,v $
 * Revision 1.2  1995/05/22 19:45:33  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

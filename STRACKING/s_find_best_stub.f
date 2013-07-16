@@ -6,7 +6,7 @@
 *     This is called in a loop over all combinations of plusminus
 *     
 *     d. f. geesaman
-* $Log$
+* $Log: s_find_best_stub.f,v $
 * Revision 1.5  1996/01/17 19:05:23  cdaq
 * (JRA)
 *

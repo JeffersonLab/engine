@@ -12,7 +12,7 @@
 *-   Output: ABORT           - success or failure
 *-         : err             - reason for failure, if any
 *- 
-* $Log$
+* $Log: s_trans_dc.f,v $
 * Revision 1.13  2002/07/31 20:20:58  saw
 * Only try to fill user hists that are defined
 *

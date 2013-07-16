@@ -9,7 +9,7 @@
 *     sty_track_criterion      for t_y
 *
 *     d.f. geesaman           7-September 1993
-* $Log$
+* $Log: s_link_stubs.f,v $
 * Revision 1.7  1996/09/05 19:55:23  saw
 * (DVW) Added some track tests
 *

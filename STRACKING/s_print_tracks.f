@@ -1,7 +1,7 @@
       subroutine s_print_tracks
 *     prints the output of track matching
 *     d.f. geesaman           7 Sept 1993
-* $Log$
+* $Log: s_print_tracks.f,v $
 * Revision 1.3  1995/05/22 19:45:47  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

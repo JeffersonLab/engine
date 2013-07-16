@@ -1,6 +1,6 @@
       subroutine s_dump_peds(ABORT,err)
 *
-* $Log$
+* $Log: s_dump_peds.f,v $
 * Revision 1.7  2008/09/25 00:08:35  jones
 * Updated to run with gfortran compiler
 *

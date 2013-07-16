@@ -8,7 +8,7 @@
 *-      Modified: 25 March 1994   DFG
 *-                                Change name
 *-                                Change lun
-* $Log$
+* $Log: s_prt_cal_decoded.f,v $
 * Revision 1.2  1995/05/22 19:45:48  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

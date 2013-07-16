@@ -12,7 +12,7 @@
 *-         : err             - reason for failure, if any
 *- 
 *-   Created 19-JAN-1994   D. F. Geesaman
-* $Log$
+* $Log: s_track.f,v $
 * Revision 1.5  1996/09/04 20:19:45  saw
 * (JRA) Initialize sstubmin variables
 *

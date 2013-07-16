@@ -4,7 +4,7 @@
      &  x_hit,xp_hit,easy_space_point,
      &  nspace_points,space_points,space_point_hits)
 *
-* $Log$
+* $Log: s_find_easy_space_point.f,v $
 * Revision 1.1  1995/10/26 14:18:53  cdaq
 * Initial revision
 *

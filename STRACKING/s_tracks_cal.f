@@ -17,7 +17,7 @@
 *-      Modified 9 Apr 1998       Added a switch to turn on the fiducial
 *-                                cut.  The default for this is now no cut.
 *-                                K.G. Vansyoc
-* $Log$
+* $Log: s_tracks_cal.f,v $
 * Revision 1.11  2008/09/25 00:08:35  jones
 * Updated to run with gfortran compiler
 *

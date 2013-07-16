@@ -9,7 +9,7 @@
 *-                                Change name
 *-                                Change lun
 *-                7 Apr 1994      DFG  Change print order
-* $Log$
+* $Log: s_prt_cal_raw.f,v $
 * Revision 1.4  1999/01/29 17:34:59  saw
 * Add variables for second tubes on shower counter
 *

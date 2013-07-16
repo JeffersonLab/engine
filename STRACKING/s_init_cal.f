@@ -5,7 +5,7 @@
 *-      Purpose: SOS Calorimeter Initialization
 *-
 *-      Created: 20 Mar 1994      Tsolak A. Amatuni
-* $Log$
+* $Log: s_init_cal.f,v $
 * Revision 1.3  1995/05/22 19:45:40  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

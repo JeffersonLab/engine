@@ -4,7 +4,7 @@
 *     wire chambers
 *
 *     d.f. geesaman              17 feb 1994
-* $Log$
+* $Log: s_wire_center_calc.f,v $
 * Revision 1.5  1996/09/04 20:17:35  saw
 * (??) Cosmetic
 *

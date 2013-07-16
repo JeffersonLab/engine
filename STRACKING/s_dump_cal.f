@@ -16,7 +16,7 @@
 * This data is analyzed by independent routines to fit the gains for each
 * block.
 *
-* $Log$
+* $Log: s_dump_cal.f,v $
 * Revision 1.4  1999/06/10 16:56:30  csa
 * (JRA) Added ycal, emeas calculations, changed test condition
 *

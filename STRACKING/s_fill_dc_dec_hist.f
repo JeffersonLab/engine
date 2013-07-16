@@ -7,7 +7,7 @@
 *     Modified:  9 April 1994     D. F. Geesaman
 *                                 Put id's in sos_tracking_histid
 *                                 implement flag to turn block off
-* $Log$
+* $Log: s_fill_dc_dec_hist.f,v $
 * Revision 1.6  2002/07/31 20:20:58  saw
 * Only try to fill user hists that are defined
 *

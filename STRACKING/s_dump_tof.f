@@ -17,7 +17,7 @@
 * pulse height walk, time lag from the hit to the pmt signal, and time offsets
 * for each signal.
 *
-* $Log$
+* $Log: s_dump_tof.f,v $
 * Revision 1.7  1999/11/04 20:36:47  saw
 * Linux/G77 compatibility fixes
 *

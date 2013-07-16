@@ -8,7 +8,7 @@
 *-      Input Parameters: x,y - impact point coordinates
 *-
 *-      Created 15 Mar 1994      Tsolak A. Amatuni
-* $Log$
+* $Log: s_correct_cal.f,v $
 * Revision 1.7  2003/04/03 00:45:01  jones
 * Update to calorimeter calibration (V. Tadevosyan)
 *

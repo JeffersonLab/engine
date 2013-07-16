@@ -9,7 +9,7 @@
 *-         : err             - reason for failure, if any
 *- 
 *-   Created 5-APR-1994   D. F. Geesaman
-* $Log$
+* $Log: s_raw_dump_all.f,v $
 * Revision 1.2  1995/05/22 19:45:53  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

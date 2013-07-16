@@ -7,7 +7,7 @@
 * created: 5/25/95
 *
 * s_init_cer initializes parameters relevant to the SOS Cerenkov.
-* $Log$
+* $Log: s_init_cer.f,v $
 * Revision 1.1  1995/08/31 15:05:05  cdaq
 * Initial revision
 *

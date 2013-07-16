@@ -7,7 +7,7 @@
 *     d.f. geesaman           2 Sept 1993
 *     modified                14 feb 1994 for CTP input.
 *                             Change SPLANE_PARAM to individual arrays
-* $Log$
+* $Log: s_generate_geometry.f,v $
 * Revision 1.7  1996/09/05 13:30:18  saw
 * (JRA) Format statement changes
 *

@@ -13,7 +13,7 @@
 * modified  D. F. Geesaman     21 Jan 94
 *              changed name for s_target_dump to s_print_tar_tracks
 *              made output lun sluno
-* $Log$
+* $Log: s_print_tar_tracks.f,v $
 * Revision 1.3  1995/05/22 19:45:46  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

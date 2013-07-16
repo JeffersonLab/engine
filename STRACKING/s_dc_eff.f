@@ -14,7 +14,7 @@
 *
 * s_dc_eff calculates efficiencies for the drift chambers.
 *
-* $Log$
+* $Log: s_dc_eff.f,v $
 * Revision 1.1  1995/08/31 15:07:28  cdaq
 * Initial revision
 *

@@ -4,7 +4,7 @@
 *     wire chambers
 *
 *     d.f. geesaman              17 feb 1994
-* $Log$
+* $Log: s_drift_time_calc.f,v $
 * Revision 1.5  1995/10/09 20:16:16  cdaq
 * (JRA) Remove monte carlo data option
 *

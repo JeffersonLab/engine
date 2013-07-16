@@ -1,7 +1,7 @@
       subroutine s_print_links
 *     prints the output of link matching
 *     d.f. geesaman           7 Sept 1993
-* $Log$
+* $Log: s_print_links.f,v $
 * Revision 1.2  1995/05/22 19:45:45  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

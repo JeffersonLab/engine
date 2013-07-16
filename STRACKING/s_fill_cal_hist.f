@@ -7,7 +7,7 @@
 *     Copied from:  s_fill_scin_raw_hist
 *
 *
-* $Log$
+* $Log: s_fill_cal_hist.f,v $
 * Revision 1.10  2002/12/19 22:05:45  jones
 *    sidcalposhits and sidcalneghits are integer*4 not logical
 *  so sidcalposhits(col).gt.0 replaces sidcalposhits(col) in if statement

@@ -5,7 +5,7 @@
 *     d.f. geesaman             8 September 1993
 *     modified   dfg            14 Feb 1993   Change SPLANE_PARAM to 
 *                                             sdc_sigma
-* $Log$
+* $Log: s_fcnchisq.f,v $
 * Revision 1.3  1995/05/22 19:45:37  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

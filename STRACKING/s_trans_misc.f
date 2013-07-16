@@ -5,7 +5,7 @@
 *
 * s_trans_misc fills the sos_decoded_misc common block
 *
-* $Log$
+* $Log: s_trans_misc.f,v $
 * Revision 1.6  1999/01/27 16:02:45  saw
 * Check if some hists are defined before filling
 *

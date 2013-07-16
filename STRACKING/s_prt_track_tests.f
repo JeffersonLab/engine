@@ -7,7 +7,7 @@
 * s_prt_track_tests dumps the sos_track_tests bank.
 *
 * modifications:
-* $Log$
+* $Log: s_prt_track_tests.f,v $
 * Revision 1.2  1995/05/22 19:45:52  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
