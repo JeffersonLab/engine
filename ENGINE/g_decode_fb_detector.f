@@ -4,7 +4,7 @@
 *----------------------------------------------------------------------
 *- Created ?   Steve Wood, CEBAF
 *- Corrected  3-Dec-1993 Kevin Beard, Hampton U.
-* $Log$
+* $Log: g_decode_fb_detector.f,v $
 * Revision 1.23  2003/09/05 15:31:23  jones
 * Merge in online03 changes (mkj)
 *
@@ -104,6 +104,7 @@
       integer subaddbit
       logical printerr  !flag to turn off printing of error after 1 time.
       logical firsttime
+      logical plane_test
 *
       integer*4 jishft, jiand, jieor
 *     
@@ -227,7 +228,8 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddresses
 *     the sort order is found.
 *     
                 h = hitcount
-                do while(h .gt. 0 .and. (plane .lt. planelist(h)
+                if ( h .gt. 0) then
+                do while((plane .lt. planelist(h)
      $               .or.(plane .eq. planelist(h).and. counter .lt.
      $               counterlist(h))))
 *
@@ -237,8 +239,10 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddresses
                   counterlist(h+1) = counterlist(h)
                   signal0(h+1) = signal0(h)
                   h = h - 1
+                  if ( h .eq.0) goto 888
                 enddo
-                h = h + 1               ! Put hit pointer to blank
+                endif
+ 888            h = h + 1       ! Put hit pointer to blank
                 planelist(h) = plane
                 counterlist(h) = counter
                 signal0(h) = signal
@@ -249,17 +253,25 @@ c        if (subadd .lt. '7F'X) then     ! Only valid subaddresses
 *     the same counter or earlier in the sort order is found.
 *     
                 h = hitcount
-                do while(h .gt. 0 .and. (plane .lt. planelist(h)
-     $               .or.(plane .eq. planelist(h).and. counter .lt.
+c                  write(*,*) ' mkj' ,h
+                if ( h .gt.0) then
+                do while( (h .gt. 0) .and. (((h .gt. 0).and.plane .lt. planelist(h))
+     $               .or.( (h .gt. 0).and.plane .eq. planelist(h).and. counter .lt.
      $               counterlist(h))))
                   h = h - 1
+c                  write(*,*) ' mkj' ,h
+                  if (h .le.0) goto878
                 enddo
+                endif
+ 878            continue
 *
 *     If plane/counter match is not found, then need to shift up the array
 *     to make room for the new hit.
 *                
-                if(h.le.0.or.plane.ne.planelist(h) ! Plane and counter
-     $               .or.counter.ne.counterlist(h)) then ! not found
+c                  write(*,*) ' mkj2' ,h
+                plane_test=.false.
+                if ( h .gt.0) plane_test=(plane.ne.planelist(h).or.counter.ne.counterlist(h))
+                if(h.eq.0.or.plane_test) then ! not found
                   if(hitcount.lt.maxhits) then
                     h = h + 1
                     do hshift=hitcount,h,-1 ! Shift up to make room
