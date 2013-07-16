@@ -2,7 +2,7 @@
 *
 *     ONLINE ENGINE - Hall C online Analyzer
 *
-* $Log$
+* $Log: usrgo.f,v $
 * Revision 1.1  1994/06/14 20:42:05  cdaq
 * Initial revision
 *

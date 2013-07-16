@@ -1,7 +1,7 @@
 *
 *     ONLINE ENGINE - Hall C online Analyzer
 *
-* $Log$
+* $Log: usrmain.f,v $
 * Revision 1.2  1994/06/16 18:36:15  cdaq
 * (SAW) Move register, g_init_filenames call and map file reading to usrdownload
 *

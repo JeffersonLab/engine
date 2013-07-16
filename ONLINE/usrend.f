@@ -1,6 +1,6 @@
       subroutine usrend
 *
-* $Log$
+* $Log: usrend.f,v $
 * Revision 1.1  1994/06/14 20:42:02  cdaq
 * Initial revision
 *

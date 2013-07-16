@@ -1,6 +1,6 @@
       subroutine usrprestart(run_number, run_type)
 *
-* $Log$
+* $Log: usrprestart.f,v $
 * Revision 1.1  1994/06/14 20:42:13  cdaq
 * Initial revision
 *

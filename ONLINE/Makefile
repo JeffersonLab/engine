@@ -1,5 +1,5 @@
 #
-# $Log$
+# $Log: Makefile,v $
 # Revision 1.6  2003/02/14 18:10:21  jones
 # Add if statement for Alpha OSF1 (E. Brash)
 #

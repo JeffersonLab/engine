@@ -2,7 +2,7 @@
 *
 *     ONLINE ENGINE - Hall C online Analyzer
 *
-* $Log$
+* $Log: usrevent.f,v $
 * Revision 1.2  1994/07/07 15:21:24  cdaq
 * (SAW) Add scaler analysis
 *

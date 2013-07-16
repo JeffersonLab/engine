@@ -1,6 +1,6 @@
       subroutine usrdump
 *
-* $Log$
+* $Log: usrdump.f,v $
 * Revision 1.1  1994/06/14 20:42:33  cdaq
 * Initial revision
 *

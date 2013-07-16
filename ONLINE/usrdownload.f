@@ -2,7 +2,7 @@
 *
 *     ONLINE ENGINE - Hall C online Analyzer
 *
-* $Log$
+* $Log: usrdownload.f,v $
 * Revision 1.2  1994/06/16 18:37:06  cdaq
 * (SAW) Move in code from usrmain
 *
