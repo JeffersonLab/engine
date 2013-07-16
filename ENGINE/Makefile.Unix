@@ -1,5 +1,5 @@
 #
-# $Log$
+# $Log: Makefile.Unix,v $
 # Revision 1.29  2008/09/25 00:06:33  jones
 # Updated to run with gfortran compiler
 #
@@ -114,8 +114,9 @@ general_source = $(decode_source) g_clear_event.f \
 	g_calc_beam_pedestal.f g_calc_bpm_pedestal.f g_calc_raster_pedestal.f \
 	g_target_initialize.f g_trans_misc.f g_dump_peds.f g_get_next_event.f \
 	g_preproc_event.f g_preproc_open.f g_write_event.f \
-	g_examine_epics_event.f \
-	g_analyze_scaler_bank.f g_analyze_scalers_by_banks.f g_apply_offsets.f 
+	g_examine_epics_event.f g_examine_picture_event.f \
+	g_analyze_scaler_bank.f g_analyze_scalers_by_banks.f g_apply_offsets.f\
+	h_field03.f params03.f  
 hms_source = h_clear_event.f h_initialize.f h_keep_results.f \
 	h_proper_shutdown.f h_reset_event.f \
 	h_register_variables.f h_apply_offsets.f h_fieldcorr.f \
