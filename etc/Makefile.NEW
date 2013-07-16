@@ -71,7 +71,13 @@ all:  $(SUBDIRNAME) $(SUBDIRNAME)/Makefile
 	$(MAKE) -C $(SUBDIRNAME)
 
 $(MAKEFILENAME):
+	@echo change in $(CURDIR)/$(MAKEFILENAME)
 	(cd $(SUBDIRNAME) ; ln -f -s ../$(MAKEFILENAME) Makefile)
+
+$(SUBDIRNAME)/Makefile: $(MAKEFILENAME)
+	@echo copy $(CURDIR)/$(MAKEFILENAME)
+	cp $(CURDIR)/$(MAKEFILENAME) $(CURDIR)/$(SUBDIRNAME)/Makefile
+
 
 $(SUBDIRNAME):
 	mkdir $(SUBDIRNAME)
