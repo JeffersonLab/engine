@@ -15,7 +15,7 @@
 *-         : err             - reason for failure, if any
 *- 
 *-   Created 10-JUN-1994     D. F. Geesaman
-* $Log$
+* $Log: h_physics_stat.f,v $
 * Revision 1.6  1995/10/10 16:50:08  cdaq
 * (JRA) Comment out some redundant efficiency calculations
 *

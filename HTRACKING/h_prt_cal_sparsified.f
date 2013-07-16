@@ -7,7 +7,7 @@
 *-      Created: 19 Mar 1994      Tsolak A. Amatuni
 *-      Modified 25 Mar 1994      DFG
 *-                                change name and lun
-* $Log$
+* $Log: h_prt_cal_sparsified.f,v $
 * Revision 1.3  1998/12/17 22:02:39  saw
 * Support extra set of tubes on HMS shower counter
 *

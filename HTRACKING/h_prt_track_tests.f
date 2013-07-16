@@ -7,7 +7,7 @@
 * h_prt_track_tests dumps the hms_track_tests bank.
 *
 * modifications:
-* $Log$
+* $Log: h_prt_track_tests.f,v $
 * Revision 1.2  1995/05/22 19:39:24  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

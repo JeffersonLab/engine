@@ -14,7 +14,7 @@
 *
 * h_cal_eff calculates efficiencies for the hodoscope.
 *
-* $Log$
+* $Log: h_cal_eff.f,v $
 * Revision 1.8  2002/10/02 13:42:42  saw
 * Check that user hists are defined before filling
 *

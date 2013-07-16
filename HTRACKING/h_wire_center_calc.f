@@ -7,7 +7,7 @@
 *          
 *     modified   dfg  18 feb 1994
 *                         add option to reverse plane wire numbering
-* $Log$
+* $Log: h_wire_center_calc.f,v $
 * Revision 1.5  1996/09/04 14:24:38  saw
 * (??) Cosmetic
 *

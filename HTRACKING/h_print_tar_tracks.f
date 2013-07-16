@@ -13,7 +13,7 @@
 * modified: D. F. Geesaman       21 Jan 1994
 *            changed name from h_target_dump to h_print_tar_tracks
 *            made outpu lun hluno
-* $Log$
+* $Log: h_print_tar_tracks.f,v $
 * Revision 1.3  1995/05/22 19:39:18  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

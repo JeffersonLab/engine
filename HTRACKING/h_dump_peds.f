@@ -1,6 +1,6 @@
       subroutine h_dump_peds(ABORT,err)
 *
-* $Log$
+* $Log: h_dump_peds.f,v $
 * Revision 1.7  2002/12/20 21:53:34  jones
 * Modified by Hamlet for new HMS aerogel
 *

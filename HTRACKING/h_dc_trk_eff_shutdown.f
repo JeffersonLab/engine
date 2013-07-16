@@ -15,7 +15,7 @@
 * h_dc_trk_eff calculates efficiencies for the chambers (using tracking)
 * h_dc_trk_eff_shutdown does some final manipulation of the numbers.
 *
-* $Log$
+* $Log: h_dc_trk_eff_shutdown.f,v $
 * Revision 1.1  1995/10/09 20:04:23  cdaq
 * Initial revision
 *

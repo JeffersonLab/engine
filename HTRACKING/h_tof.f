@@ -22,7 +22,10 @@
 * hodoscope ADC and TDC information, the track, and
 * the correction parameters.
 *
-* $Log$
+* $Log: h_tof.f,v $
+* Revision 1.18.16.1  2005/03/15 21:19:06  jones
+* Add code to filter the scintillator tdc hits and group them by time. ( P. Bosted)
+*
 * Revision 1.19  2005/03/15 21:08:08  jones
 * Add code to filter the scintillator tdc hits and group them by time. ( P. Bosted)
 *

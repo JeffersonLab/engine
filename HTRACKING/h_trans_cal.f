@@ -15,7 +15,7 @@
 *-      Output Bank: HMS_DECODED_CAL
 *-
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
-* $Log$
+* $Log: h_trans_cal.f,v $
 * Revision 1.8  2004/03/03 19:26:25  jones
 * Initialize  hsshsum and hsshtrk to zero.
 *

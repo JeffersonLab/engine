@@ -6,7 +6,7 @@
 *     Author:	D. F. Geesaman
 *     Date:      9 April 1994
 *
-* $Log$
+* $Log: h_init_histid.f,v $
 * Revision 1.8  2002/12/20 21:53:33  jones
 * Modified by Hamlet for new HMS aerogel
 *

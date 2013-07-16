@@ -15,7 +15,7 @@
 * h_dc_trk_eff calculates efficiencies for the drift chambers,
 *   using the tracking information.
 *
-* $Log$
+* $Log: h_dc_trk_eff.f,v $
 * Revision 1.2  1996/01/17 18:19:40  cdaq
 * (JRA) Change array sizes from hdc_num_planes to HMAX_NUM_DC_PLANES
 *

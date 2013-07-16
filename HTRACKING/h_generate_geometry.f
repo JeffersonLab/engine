@@ -7,7 +7,7 @@
 *     d.f. geesaman           2 Sept 1993
 *     modified                14 feb 1994 for CTP input.
 *                             Change HPLANE_PARAM to individual arrays
-* $Log$
+* $Log: h_generate_geometry.f,v $
 * Revision 1.9  1999/02/10 18:23:48  csa
 * Added 4/6 tracking code (D. Meekins)
 *

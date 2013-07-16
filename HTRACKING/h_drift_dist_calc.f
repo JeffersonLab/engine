@@ -4,7 +4,7 @@
 *     wire chambers
 *
 *     d.f. geesaman              17 feb 1994
-* $Log$
+* $Log: h_drift_dist_calc.f,v $
 * Revision 1.7  1996/04/30 12:35:14  saw
 * (JRA) Add drift time correction for disc card
 *

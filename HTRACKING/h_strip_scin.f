@@ -6,7 +6,7 @@
 *
 * h_strip_scin converts the raw hits to arrays over hits
 * with good TDC values.
-* $Log$
+* $Log: h_strip_scin.f,v $
 * Revision 1.11  1999/02/23 18:49:18  csa
 * (JRA) Remove hdebugcalcpeds stuff
 *

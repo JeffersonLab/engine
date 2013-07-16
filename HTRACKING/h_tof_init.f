@@ -8,7 +8,7 @@
 * for fitting the tof of the particle.
 *
 * modifications: 31 Mar 1994    DFG  Check for 0 hits
-* $Log$
+* $Log: h_tof_init.f,v $
 * Revision 1.6  1995/05/22 19:39:30  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

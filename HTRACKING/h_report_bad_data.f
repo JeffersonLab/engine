@@ -16,7 +16,7 @@
 * 
 * author: John Arrington
 * created: 8/17/95
-* $Log$
+* $Log: h_report_bad_data.f,v $
 * Revision 1.3  1996/08/30 20:34:49  saw
 * (JRA) Don't report difference between input pedestals and pedestals from
 *       pedestal events

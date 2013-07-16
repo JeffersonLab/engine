@@ -21,7 +21,7 @@
 *-      Modified 25 Mar 1994      DFG
 *-                                Change name of print routine
 *                10 Apr 1994      DFG Protect for Et=0 division
-* $Log$
+* $Log: h_clusters_cal.f,v $
 * Revision 1.5  1999/02/03 21:13:23  saw
 * Code for new Shower counter tubes
 *

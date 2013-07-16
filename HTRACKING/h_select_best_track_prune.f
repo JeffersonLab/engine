@@ -11,7 +11,7 @@
 *-   Output: ABORT           - success or failure
 *-         : err             - reason for failure, if any
 *- 
-*- $Log$
+*- $Log: h_select_best_track_prune.f,v $
 *- Revision 1.2  2008/09/25 00:12:08  jones
 *- Updated for gfortran compiler
 *-

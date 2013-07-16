@@ -11,7 +11,7 @@
 *-         : err             - reason for failure, if any
 *- 
 *-   Created 28-JUN-1994   D. F. Geesaman
-* $Log$
+* $Log: h_choose_single_hit.f,v $
 * Revision 1.4  1996/01/16 21:45:35  cdaq
 * (JRA) Misc changes
 *

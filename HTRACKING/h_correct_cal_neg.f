@@ -12,7 +12,7 @@
 *-
 *-      Created 09 October 1997      H. Mkrtchyan
 *
-* $Log$
+* $Log: h_correct_cal_neg.f,v $
 * Revision 1.6  2003/04/03 00:43:13  jones
 * Update to calibration (V. Tadevosyan0
 *

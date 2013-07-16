@@ -17,7 +17,7 @@
 *- 
 *-   Created 24-JUN-1998   J. Volmer
 *-                           Dummy Shell routine
-* $Log$
+* $Log: h_satcorr.f,v $
 * Revision 1.2  2003/12/19 19:53:15  jones
 * Add fit to 2003 data by T. Horn which should be applicable to data the
 * using field00.f or later to set magnets.

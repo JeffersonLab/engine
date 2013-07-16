@@ -13,7 +13,7 @@
 *- 
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
-* $Log$
+* $Log: h_cer.f,v $
 * Revision 1.2  1995/05/22 19:39:06  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

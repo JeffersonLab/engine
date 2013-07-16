@@ -16,7 +16,7 @@
 *     ray(4) = tan(yp)
 *
 *     d.f. geesaman                   17 January 1994
-* $Log$
+* $Log: h_dpsifun.f,v $
 * Revision 1.3  1995/05/22 19:39:08  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

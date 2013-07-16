@@ -1,7 +1,7 @@
       function h_chamnum(ispace_point)
 *     This function returns the chamber number of a space point
 *      d.f. geesaman              17 January  1994
-* $Log$
+* $Log: h_chamnum.f,v $
 * Revision 1.3  1996/04/30 12:32:51  saw
 * (JRA) Remove (unneeded?) check on plane range
 *

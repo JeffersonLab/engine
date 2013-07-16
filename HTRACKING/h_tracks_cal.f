@@ -17,7 +17,14 @@
 *-      Modified 9 Apr 1998       Added a switch to turn on the fiducial
 *-                                cut.  The default for this is now no cut.
 *-                                K.G. Vansyoc
-* $Log$
+* $Log: h_tracks_cal.f,v $
+* Revision 1.9.12.1  2005/03/15 20:12:29  jones
+* Modify the criterion for matching track and calorimeter cluster. As before,
+* the track must hit within (0.5*hcal_block_xsize + hcal_slop) of the cluster
+* position. Previously if more than one cluster was within (0.5*hcal_block_xsize + hcal_slop) then the last cluster in the loop was associated with the track.
+* Now, if more than one cluster meets that condition then cluster which has a position
+* closest to the track is associated with the track. ( T. Horn)
+*
 * Revision 1.10  2005/03/15 20:09:12  jones
 * Modify the criterion for matching track and calorimeter cluster. As before,
 * the track must hit within (0.5*scal_block_xsize + scal_slop) of the cluster

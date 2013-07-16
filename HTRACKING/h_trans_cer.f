@@ -6,7 +6,7 @@
 *
 * h_trans_cer fills the hms_decoded_cer common block
 * with track independent corrections and parameters
-* $Log$
+* $Log: h_trans_cer.f,v $
 * Revision 1.2  1996/01/16 21:38:47  cdaq
 * (JRA) Make hcer_adc pedestal subtracted value
 *

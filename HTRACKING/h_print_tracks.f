@@ -1,7 +1,7 @@
       subroutine h_print_tracks
 *     prints the output of hms track fittinh
 *     d.f. geesaman           17 January 1994
-* $Log$
+* $Log: h_print_tracks.f,v $
 * Revision 1.3  1995/05/22 19:39:19  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

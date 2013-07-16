@@ -15,7 +15,7 @@
 *- 
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
 *
-* $Log$
+* $Log: h_cal.f,v $
 * Revision 1.11  2003/04/03 00:43:13  jones
 * Update to calibration (V. Tadevosyan0
 *

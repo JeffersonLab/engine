@@ -7,7 +7,7 @@
 *     Modified: 9 April 1994        DFG
 *                                   Transfer ID in common block
 *                                   Implement flag to turn block on
-* $Log$
+* $Log: h_fill_dc_fp_hist.f,v $
 * Revision 1.5  1995/05/22 19:39:11  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

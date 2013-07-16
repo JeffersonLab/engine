@@ -5,7 +5,7 @@
 *
 * h_trans_misc fills the hms_decoded_misc common block
 *
-* $Log$
+* $Log: h_trans_misc.f,v $
 * Revision 1.7  1999/01/27 16:02:39  saw
 * Check if some hists are defined before filling
 *

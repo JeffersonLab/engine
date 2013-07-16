@@ -9,7 +9,7 @@
 *     Modified  9 April 1994     DFG
 *                                Add CTP flag to turn on histogramming
 *                                id's in hms_id_histid
-* $Log$
+* $Log: h_fill_scin_raw_hist.f,v $
 * Revision 1.9  2002/07/31 20:17:52  saw
 * Check that user hists are defined before filling
 *

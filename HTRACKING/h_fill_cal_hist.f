@@ -7,7 +7,7 @@
 *     Copied from:  h_fill_scin_raw_hist
 *
 *
-* $Log$
+* $Log: h_fill_cal_hist.f,v $
 * Revision 1.9  2002/10/02 13:42:43  saw
 * Check that user hists are defined before filling
 *

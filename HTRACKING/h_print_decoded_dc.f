@@ -9,7 +9,7 @@
 *-         : err             - reason for failure, if any
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
-* $Log$
+* $Log: h_print_decoded_dc.f,v $
 * Revision 1.4  1995/10/10 16:51:54  cdaq
 * (JRA) Remove drift distance from print out
 *

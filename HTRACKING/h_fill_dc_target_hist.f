@@ -4,7 +4,7 @@
 *
 *     Author:	D. F. Geesaman
 *     Date:     3 May 1994
-* $Log$
+* $Log: h_fill_dc_target_hist.f,v $
 * Revision 1.3  1995/05/22 19:39:11  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

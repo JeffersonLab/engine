@@ -8,7 +8,7 @@
 *     Modified:  9 April 1994     D. F. Geesaman
 *                                 Put id's in hms_tracking_histid
 *                                 implement flag to turn block off
-* $Log$
+* $Log: h_fill_dc_dec_hist.f,v $
 * Revision 1.6  2002/10/02 13:42:43  saw
 * Check that user hists are defined before filling
 *

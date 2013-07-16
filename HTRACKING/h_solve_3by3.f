@@ -3,7 +3,7 @@
 *     Remember AA must be a symmetrix matrix
 *     Used in find_best_stub.f
 
-* $Log$
+* $Log: h_solve_3by3.f,v $
 * Revision 1.4  1995/10/10 17:36:37  cdaq
 * (JRA) Cleanup
 *

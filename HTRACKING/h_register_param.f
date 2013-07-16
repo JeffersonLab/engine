@@ -12,7 +12,7 @@
 *-
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
-* $Log$
+* $Log: h_register_param.f,v $
 * Revision 1.11  2002/12/20 21:53:34  jones
 * Modified by Hamlet for new HMS aerogel
 *

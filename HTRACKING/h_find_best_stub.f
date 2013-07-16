@@ -6,7 +6,7 @@
 *     This is called in a loop over all combinations of plusminus
 *     
 *     d. f. geesaman
-* $Log$
+* $Log: h_find_best_stub.f,v $
 * Revision 1.6  1996/01/16 21:51:00  cdaq
 * (JRA)
 *
@@ -80,14 +80,15 @@ ccc      call h_solve_3by3(TT,pindex,dstub)
      &     HAAINV3(2,3,pindex)*TT(3)
       dstub(3)=HAAINV3(1,3,pindex)*TT(1) + HAAINV3(2,3,pindex)*TT(2) +
      &     HAAINV3(3,3,pindex)*TT(3)
-
+ 
 * calculate chi2.  Remember one power of sigma is in hstubcoef
       chi2=0.
       stub(1)=dstub(1)
       stub(2)=dstub(2)
       stub(3)=dstub(3)
+      
       stub(4)=0.
-      do hit=1,numhits
+       do hit=1,numhits
         chi2=chi2+((dpos(hit))/hdc_sigma(pl(hit))
      &       -hstubcoef(pl(hit),1)*stub(1)
      &       -hstubcoef(pl(hit),2)*stub(2)

@@ -9,7 +9,7 @@
 *-         : err             - reason for failure, if any
 *- 
 *-   Created 29-FEB-1994   D. F. Geesaman
-* $Log$
+* $Log: h_prt_raw_scin.f,v $
 * Revision 1.6  1995/07/20 19:08:41  cdaq
 * (SAW) Fix format
 *

@@ -12,7 +12,7 @@
 *-         : err             - reason for failure, if any
 *- 
 *-   Created 19-JAN-1994   D. F. Geesaman
-* $Log$
+* $Log: h_track.f,v $
 * Revision 1.5  1996/09/04 13:37:02  saw
 * (JRA) Initialize hstubmin variables
 *

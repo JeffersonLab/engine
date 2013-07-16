@@ -1,6 +1,6 @@
       subroutine h_analyze_pedestal(ABORT,err)
 *
-* $Log$
+* $Log: h_analyze_pedestal.f,v $
 * Revision 1.9  2002/12/20 21:53:34  jones
 * Modified by Hamlet for new HMS aerogel
 *

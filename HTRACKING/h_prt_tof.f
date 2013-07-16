@@ -7,7 +7,7 @@
 * h_prt_tof dumps the hms_scin_tof bank.
 *
 * modifications:
-* $Log$
+* $Log: h_prt_tof.f,v $
 * Revision 1.5  1996/01/24 15:59:22  saw
 * (JRA) Add scin.center column to output
 *

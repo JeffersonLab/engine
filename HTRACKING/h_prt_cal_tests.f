@@ -7,7 +7,7 @@
 *-      Created: 20 Mar 1994      Tsolak A. Amatuni
 *-      Modified 25 Mar 1994      DFG
 *-                                Change name and lun
-* $Log$
+* $Log: h_prt_cal_tests.f,v $
 * Revision 1.2  1995/05/22 19:39:22  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *

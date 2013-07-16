@@ -7,7 +7,7 @@
 *-      Created: 20 Mar 1994      Tsolak A. Amatuni
 *-      Modified 25 Mar 1994      DFG
 *-                                Change name and lun
-* $Log$
+* $Log: h_prt_cal_tracks.f,v $
 * Revision 1.5  2003/03/21 22:21:51  jones
 * Modified and rearrange routines to calibrate the HMS calorimeter (V. Tadevosyan)
 *

@@ -8,7 +8,7 @@
 *                           17 Feb 1994        dfg
 *                              remove minuit. Make fit linear
 *                              still does not do errors properly
-* $Log$
+* $Log: h_track_fit.f,v $
 * Revision 1.11  1996/01/16 21:42:18  cdaq
 * (JRA) Remove slices code, misc fixes, reindent.
 *

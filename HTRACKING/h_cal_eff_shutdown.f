@@ -15,7 +15,7 @@
 * h_cal_eff calculates efficiencies for the calorimeter.
 * h_cal_eff_shutdown does some final manipulation of the numbers.
 *
-* $Log$
+* $Log: h_cal_eff_shutdown.f,v $
 * Revision 1.5  1999/02/23 18:35:24  csa
 * (JRA) Remove hdebugcalcpeds stuff
 *

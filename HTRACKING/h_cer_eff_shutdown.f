@@ -11,7 +11,7 @@
 * 
 * author: Chris Cothran
 * created: 5/25/95
-* $Log$
+* $Log: h_cer_eff_shutdown.f,v $
 * Revision 1.1  1995/08/31 14:54:31  cdaq
 * Initial revision
 *

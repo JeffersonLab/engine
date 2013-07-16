@@ -7,7 +7,7 @@
 * created: 5/25/95
 *
 * h_init_cer initializes parameters relevant to the HMS Cerenkov.
-* $Log$
+* $Log: h_init_cer.f,v $
 * Revision 1.1  1995/08/31 14:53:56  cdaq
 * Initial revision
 *

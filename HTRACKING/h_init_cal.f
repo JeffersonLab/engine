@@ -5,7 +5,7 @@
 *-      Purpose: HMS Calorimeter Initialization
 *-
 *-      Created: 20 Mar 1994      Tsolak A. Amatuni
-* $Log$
+* $Log: h_init_cal.f,v $
 * Revision 1.5  2003/04/03 00:43:13  jones
 * Update to calibration (V. Tadevosyan0
 *

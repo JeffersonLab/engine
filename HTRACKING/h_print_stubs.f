@@ -2,7 +2,7 @@
 *     subroutine to dump output of H_LEFT_RIGHT
 *     All the results are contained in hms_tracking.inc
 *     d.f. geesaman          17 January 1994
-* $Log$
+* $Log: h_print_stubs.f,v $
 * Revision 1.2  1995/05/22 19:39:18  cdaq
 * (SAW) Split gen_data_data_structures into gen, hms, sos, and coin parts"
 *
