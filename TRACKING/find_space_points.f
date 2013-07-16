@@ -3,7 +3,7 @@
      &  xsp,ysp,nspace_point_len,
      &  nspace_points,space_points,space_point_hits)
 *       Created D.F. Geesaman     Sept 1993       
-* $Log$
+* $Log: find_space_points.f,v $
 * Revision 1.6  1996/01/17 19:20:25  cdaq
 * (JRA) Misc. fixes, reindent
 *
@@ -213,10 +213,9 @@
               hit_point=space_point_hits(nspace_points,1)+1
               space_point_hits(nspace_points,1)= hit_point
               space_point_hits(nspace_points,hit_point+2)=hit(4)
-            endif         
+            endif
           endif                         ! end check on 0 space points
         enddo                           ! end loop over combos
       endif                             ! end check if no valid combos
-
       return
       end

@@ -6,7 +6,7 @@
 *     number of hits > min_hits
 *     number of combinations > min_combos
 *     dfg              30 august 1993
-* $Log$
+* $Log: select_space_points.f,v $
 * Revision 1.3  1996/01/17 19:20:48  cdaq
 * (JRA) Add eash_space_point argument
 *

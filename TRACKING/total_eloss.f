@@ -15,7 +15,7 @@
 *-    Output: loss            -   energy loss for the arm requested
 *-    Created   1-Dec-1995  Rolf Ent
 *
-* $Log$
+* $Log: total_eloss.f,v $
 * Revision 1.8  2003/09/05 20:06:07  jones
 * Merge in online03 changes (mkj)
 *

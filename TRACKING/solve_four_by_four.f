@@ -3,7 +3,7 @@
 *     Remember AA must be a symmetrix matrix
 *     Used in find_best_stub.f and h_track_fit
 *     d.f. geesaman       1 september 1993
-* $Log$
+* $Log: solve_four_by_four.f,v $
 * Revision 1.1  1994/02/21 16:44:35  cdaq
 * Initial revision
 *
