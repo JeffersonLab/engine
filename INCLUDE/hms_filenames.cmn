@@ -1,9 +1,9 @@
 ******************* begin: hms_filenames.cmn ***********************
 *
 *-Common block with filenames
-* $Log$
-* Revision 1.5  2005/02/16 20:46:02  saw
-* Add filename for hms root tree
+* $Log: hms_filenames.cmn,v $
+* Revision 1.4.16.1  2004/06/30 19:33:10  cdaq
+* Add h_angle_output_filename (DJG)
 *
 * Revision 1.4  1996/01/17 16:00:24  cdaq
 * (JRA) Add threshold and pedestal output filenames
@@ -20,19 +20,21 @@
 *     CTPTYPE=parm
 *
       character*80 h_recon_coeff_filename
+      character*80 h_recon_cosy_filename
       character*80 h_report_template_filename    ! CTP file with hms report
       character*80 h_report_blockname
       character*80 h_report_output_filename
       character*80 h_threshold_output_filename
       character*80 h_pedestal_output_filename
-      character*80 h_tree_filename
+      character*80 h_angle_output_filename
 *
       common /hms_filenames/
      $     h_recon_coeff_filename,
+     $     h_recon_cosy_filename,
      $     h_report_template_filename,
      $     h_report_blockname,
      $     h_report_output_filename,
      $     h_threshold_output_filename,
      $     h_pedestal_output_filename,
-     $     h_tree_filename
+     $     h_angle_output_filename
 *

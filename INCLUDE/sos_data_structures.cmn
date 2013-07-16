@@ -4,7 +4,13 @@
 *
 *     Author:	D. F. Geesaman		1 September 1993
 *
-* $Log$
+* $Log: sos_data_structures.cmn,v $
+* Revision 1.10.12.2  2004/09/07 18:42:10  cdaq
+* added pretrigger signals to hms and sos ntuples
+*
+* Revision 1.10.12.1  2004/09/07 18:03:39  cdaq
+* added spcentral_set
+*
 * Revision 1.10  2003/09/05 20:37:14  jones
 * Merge in online03 changes (mkj)
 *
@@ -52,12 +58,14 @@
       REAL*4  STHETA_LAB     ! SOS LAB ANGLE THETA (RADIANS)
       REAL*4  SPHI_LAB       ! SOS LAB ANGLE PHI 
       REAL*4  SPCENTRAL      ! SOS CENTRAL MOMENUTM (GEV)
+      REAL*4  SPCENTRAL_SET  ! SOS CENTRAL MOMENUTM (GEV) (no offset)
       REAL*4  SBFIELD        ! SOS B FIELD INCLUDING SIGN
       REAL*4  SPARTMASS      ! EXPECTED MASS OF DETECTED PARTICLE IN SOS
       COMMON/SOS_SPECTROMETER/
      &     STHETA_LAB,
      &     SPHI_LAB,
      &     SPCENTRAL,
+     &     SPCENTRAL_SET,
      &     SBFIELD,
      &     SPARTMASS
 *
@@ -625,6 +633,13 @@
       REAL*4 SSTHET_GAMMA
       REAL*4 SSX_bj
 *
+      real*4 sspipre               ! sos pipre TDC value
+      real*4 sselhi                ! sos elhi TDC value
+      real*4 ssello                ! sos ello TDC value
+      real*4 ssprhi                ! sos pre-shower hi TDC value
+      real*4 ssprlo                ! sos pre-shower lo TDC value
+      real*4 ssshlo                ! sos shower lo TDC value
+*
       INTEGER*4 SSNUM_FPTRACK      ! Index of focal plane track chosen
       INTEGER*4 SSNUM_TARTRACK     ! Index of target track chosen
       INTEGER*4 SSID_LUND          ! LUND particle ID code -- not yet filled
@@ -674,7 +689,13 @@
      & SSCORRE,
      & SSOMEGA,
      & SSTHET_GAMMA,
-     & SSX_bj
+     & SSX_bj,
+     & sspipre,
+     & sselhi,
+     & ssello,
+     & ssprhi,
+     & ssprlo,
+     & ssshlo
 *     & SSTHETAQ, SSPHIQ,
 *
       COMMON/SOS_PHYSICS_I4/

@@ -1,6 +1,6 @@
 *     hms_statistics.cmn
 *     common blocks containing event statistics for h_reconstruction
-* $Log$
+* $Log: hms_statistics.cmn,v $
 * Revision 1.12  2003/09/05 21:05:10  jones
 * Merge in online03 changes (mkj)
 *
@@ -60,15 +60,19 @@
 *
       integer*4 hstat_numevents
       integer*4 hstat_trk(hnum_scin_planes,hnum_scin_elements)
+      integer*4 hstat_trk_del(hnum_scin_planes,hnum_scin_elements,20)
       integer*4 hstat_poshit(hnum_scin_planes,hnum_scin_elements)
       integer*4 hstat_neghit(hnum_scin_planes,hnum_scin_elements)
       integer*4 hstat_orhit(hnum_scin_planes,hnum_scin_elements)
       integer*4 hstat_andhit(hnum_scin_planes,hnum_scin_elements)
+      integer*4 hstat_andhit_del(hnum_scin_planes,hnum_scin_elements,20)
       integer*4 hstat_trksum(hnum_scin_planes)
+      integer*4 hstat_trksum_del(hnum_scin_planes,20)
       integer*4 hstat_possum(hnum_scin_planes)
       integer*4 hstat_negsum(hnum_scin_planes)
       integer*4 hstat_orsum(hnum_scin_planes)
       integer*4 hstat_andsum(hnum_scin_planes)
+      integer*4 hstat_andsum_del(hnum_scin_planes,20)
       real*4 hstat_peff(hnum_scin_planes,hnum_scin_elements)
       real*4 hstat_neff(hnum_scin_planes,hnum_scin_elements)
       real*4 hstat_oeff(hnum_scin_planes,hnum_scin_elements)
@@ -77,24 +81,34 @@
       real*4 hstat_negeff(hnum_scin_planes)
       real*4 hstat_oreff(hnum_scin_planes)
       real*4 hstat_andeff(hnum_scin_planes)
+      real*4 hstat_andeff_del(hnum_scin_planes,20)
       real*4 heff_s1
       real*4 heff_s2
       real*4 heff_stof
       real*4 heff_4_of_4
       real*4 heff_3_of_4
+      real*4 heff_3_of_4_del(20)
+      real*4 heff_s1_del(20)
+      real*4 heff_s2_del(20)
+      real*4 heff_stof_del(20)
+
 
       common/hscin_statistics/
      &  hstat_numevents,
      &  hstat_trk,         !# of times track points near center of scin.
+     &  hstat_trk_del,         !# of times track points near center of scin.
      &  hstat_poshit,      !# of times the pos tube on scintillator fired
      &  hstat_neghit,      !# of times the pos tube on scintillator fired
      &  hstat_orhit,       !# of times either tube fired
      &  hstat_andhit,      !# of times both tubes fired
+     &  hstat_andhit_del,      !# of times both tubes fired
      &  hstat_trksum,      !summed over all counters on plane
+     &  hstat_trksum_del,      !summed over all counters on plane
      &  hstat_possum,      !summed over all counters on plane
      &  hstat_negsum,      !summed over all counters on plane
      &  hstat_orsum,       !summed over all counters on plane
      &  hstat_andsum,      !summed over all counters on plane
+     &  hstat_andsum_del,      !summed over all counters on plane
      &  hstat_peff,        !pos efficiency for given counter.
      &  hstat_neff,        !neg efficiency for given counter.
      &  hstat_oeff,        !or  efficiency for given counter.
@@ -102,10 +116,15 @@
      &  hstat_poseff,      !efficiency over all counters on plane
      &  hstat_negeff,      !efficiency over all counters on plane
      &  hstat_oreff,       !efficiency over all counters on plane
+     &  hstat_andeff_del,      !efficiency over all counters on plane
      &  hstat_andeff,      !efficiency over all counters on plane
      &  hstat_slop,        !distance allowed from center of scintillator.
      &  hstat_mineff,      !give warning if effic. < hstat_mineff
      &  hstat_maxchisq,    !maximum chisq allowed to use track for eff. calc.
+     &  heff_3_of_4_del,   !calculated trigger eff. for 3/4 planes.
+     &  heff_s1_del,       !calculated trigger eff. for s1 =(s1x .or. s1y).
+     &  heff_s2_del,       !calculated trigger eff. for s2 =(s2x .or. s2y).
+     &  heff_stof_del,     !calculated trigger eff. for stof =(s1 .and. s2).
      &  heff_s1,           !calculated trigger eff. for s1 =(s1x .or. s1y).
      &  heff_s2,           !calculated trigger eff. for s2 =(s2x .or. s2y).
      &  heff_stof,         !calculated trigger eff. for stof =(s1 .and. s2).
@@ -187,3 +206,5 @@
       common/htrig_hodostatistics/
      &   htrig_hodoshouldflag,
      &   htrig_hododidflag
+
+*

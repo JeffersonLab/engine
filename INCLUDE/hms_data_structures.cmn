@@ -4,7 +4,13 @@
 *
 *     Author:   D. F. Geesaman          1 September 1993
 *
-* $Log$
+* $Log: hms_data_structures.cmn,v $
+* Revision 1.12.12.4  2004/10/03 02:34:34  cdaq
+* Added more trigger variables
+*
+* Revision 1.12.12.1  2004/06/28 17:33:40  cdaq
+* new variables like x_si, etc.
+*
 * Revision 1.12  2003/09/05 20:39:18  jones
 * Merge in online03 changes (mkj)
 *
@@ -63,6 +69,7 @@
       REAL*4  HTHETA_LAB     ! HMS LAB ANGLE THETA (RADIANS)
       REAL*4  HPHI_LAB       ! HMS LAB ANGLE PHI 
       REAL*4  HPCENTRAL      ! HMS CENTRAL MOMENUTM (GEV)
+      REAL*4  HPCENTRAL_SET  ! HMS CENTRAL MOMENUTM SET POINT - no offset(GEV)
       REAL*4  HBFIELD        ! HMS B FIELD INCLUDING SIGN
       REAL*4  HPARTMASS      ! EXPECTED MASS OF DETECTED PARTICLE IN HMS
 
@@ -70,6 +77,7 @@
      &     HTHETA_LAB,
      &     HPHI_LAB,
      &     HPCENTRAL,
+     &     HPCENTRAL_SET,
      &     HBFIELD,
      &     HPARTMASS
 *
@@ -595,6 +603,21 @@
       real*4 hsy                   ! fraction of lepton''s E lost in lab
       real*4 hsw                   ! Invariant mass of recoil system
       real*4 hsw2                  ! Invariant mass**2 of recoil system
+      real*4 hsnu                  ! Ebeam-HSenergy
+      real*4 hsx_bj		   ! Bjorken x
+      real*4 y_scale		   ! scaling variable y
+      real*4 yscale		   ! real function that calculates Y
+      real*4 xsi_scale	           ! nachtmann variable (=x at Q2=1)
+      real*4 yscale_eps	           ! separation energy
+      real*4 hspipre               ! hms pipre TDC value
+      real*4 hselreal              ! hms elreal TDC value
+      real*4 hselclean             ! hms elclean TDC value
+      real*4 hstrig                ! hms trig TDC value
+      real*4 hselhi                ! hms elhi TDC value
+      real*4 hsello                ! hms ello TDC value
+      real*4 hsprhi                ! hms pre-shower hi TDC value
+      real*4 hsprlo                ! hms pre-shower lo TDC value
+      real*4 hsshlo                ! hms shower lo TDC value
 *
       INTEGER*4 HSNUM_FPTRACK    ! Index of focal plane track chosen
       INTEGER*4 HSNUM_TARTRACK   ! Index of target track chosen
@@ -642,7 +665,20 @@
      & hsw,
      & hsw2,
      & hscorrp,
-     & hscorre
+     & hscorre,
+     & hsnu,
+     & hsx_bj,
+     & y_scale,
+     & xsi_scale,
+     & hspipre,
+     & hselreal,
+     & hselclean,
+     & hstrig,
+     & hselhi,
+     & hsello,
+     & hsprhi,
+     & hsprlo,
+     & hsshlo
 *     & hsthetaq,hsphiq
 *
       COMMON/HMS_PHYSICS_I4/

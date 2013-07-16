@@ -1,12 +1,38 @@
+* xucc comment begin
+*  (1) change CPHIPQ (Azimuthal angle of hadron about q) into CPHIPI
+* (Azimuthal angle of pion and e- scat plane) THis is because in fpi
+* experiments, the hadron is pion
+*  (2) change W2 into C_W2, and OMEGA into C_OMEGA just because Jochen
+* like it
+*  (3) add new parameter
+*    real*4 c_epsilon,c_gamma_v,c_e_bind,ce_exc,ctphix,ctphiy
+*      real*4 cmin_t,cmmx,cmex,ce_excx
+* (4) add parameter
+*      real*4 ccointime_hms_shift
+*      real*4 ccointime_sos_shift
+* (5) remove parameter 
+* REAL*4 P_SOS_CORR,P_HMS_CORR
+* Simply because they are not necessary for fpi experiments
+* xucc comment end
+
 *****************begin: coin_data_structures.cmn*************************
 *
 *     include file     coin_data_structures.cmn
 *
 *     Author:	D. F. Geesaman		1 September 1993
 *
-* $Log$
-* Revision 1.4  2003/12/18 18:11:02  jones
-* Added variables C_costhcm,C_phicm calculated in ENGINE/delta_physics.f
+* $Log: coin_data_structures.cmn,v $
+* Revision 1.4.10.1  2004/06/18 15:30:50  cdaq
+* replaced with fpi2 version
+*
+* Revision 1.3.2.3  2003/08/12 17:35:57  cdaq
+* Add variables for e00-108 (hamlet)
+*
+* Revision 1.3.2.2  2003/07/03 14:05:33  cdaq
+* update for fpi-2 (xu)
+*
+* Revision 1.3.4.1  2003/03/07 13:10:04  xu
+* more variables
 *
 * Revision 1.3  1999/02/23 19:04:41  csa
 * Add some physics vars, cleanup
@@ -36,10 +62,22 @@
       REAL*4 CTIME_COIN_COR        ! Corrected Coincidence time
       REAL*4 CS                    ! s computed from spectrometers only
       REAL*4 CTHETAPQ              ! Angle between q and hadron
-      REAL*4 CPHIPQ                ! Azimuthal angle of hadron about q
-      REAL*4 W2,C_INVMASS,P_SOS_CORR,P_HMS_CORR,OMEGA
+
+*     REAL*4 CPHIPQ                ! Azimuthal angle of hadron about q
+      real*4 CPHIPI                ! Azimuthal angle of pion and e- scat plane
+      REAL*4 C_W2,C_BIGQ2,C_INVMASS,C_OMEGA
+
+      REAL*4 X_bj,qabs,z_m,pt2
+
+*     REAL*4 P_SOS_CORR,P_HMS_CORR   ! remove this line by xucc
+
       REAL*4 CMISSING_MOM_PAR,CMISSING_MOM_PERP,CMISSING_MOM_OOP
-      REAL*4 C_BIGQ2,C_costhcm,C_phicm
+   
+* xucc added begin
+      real*4 c_epsilon,c_gamma_v,c_e_bind,ce_exc,ctphix,ctphiy
+      real*4 cmin_t,cmmx,cmex,ce_excx
+* xucc added end        
+
 *
       COMMON/COIN_PHYSICS_R4/
      &     CMISSING_MASS,
@@ -50,28 +88,49 @@
      &     CMISSING_MOMZ,
      &     CMISSING_E,
      &     CTIME_COIN_COR,
-     &     CS,
-     &     CTHETAPQ,
-     &     CPHIPQ,
-     &     W2,
-     &     C_INVMASS,
-     &     P_SOS_CORR,
-     &     P_HMS_CORR,
-     &     OMEGA,
-     &     CMISSING_MOM_PAR,
-     &     CMISSING_MOM_PERP,
-     &     CMISSING_MOM_OOP,
-     &     C_BIGQ2,C_costhcm,C_phicm
+*    xucc change begin
+     &     cs, cthetapq, cphipi,
+     &     c_w2,c_bigq2,c_invmass,
+     &     c_omega,x_bj,qabs,z_m,pt2,
+     &     cmissing_mom_par,cmissing_mom_perp,cmissing_mom_oop,
+     &     cmin_t,c_epsilon,c_gamma_v,c_e_bind,ce_exc,ctphix,ctphiy,
+     &     cmmx,cmex,ce_excx
+*    xucc change end
+
+*     &     CS,
+*     &     CTHETAPQ,
+*     &     CPHIPQ,
+*     &     W2,
+*     &     C_INVMASS,
+*     &     P_SOS_CORR,
+*     &     P_HMS_CORR,
+*     &     OMEGA,
+*     &     CMISSING_MOM_PAR,
+*     &     CMISSING_MOM_PERP,
+*     &     CMISSING_MOM_OOP,
+*     &     C_BIGQ2
 
 *
 *     CTPTYPE=event
 *
       real*4 ccointime_hms
       real*4 ccointime_sos
+*
+*     CTPTYPE=parm
+*     
+*     xucc added begin
+      real*4 ccointime_hms_shift
+      real*4 ccointime_sos_shift
+*     xucc added end
 
       common/coin_timing_vars/
      &    ccointime_hms,
-     &    ccointime_sos
+     &    ccointime_sos,
+*    xucc added begin
+     &    ccointime_hms_shift,
+     &    ccointime_sos_shift
+*    xucc added end
+
 *
 *                                          
 *******************end: coin_data_structures.cmn*************************

@@ -7,7 +7,7 @@
 *                            15 Feb 
 *                            separate dimensioning and number of planes
 *                           and chambers
-* $Log$
+* $Log: hms_tracking.cmn,v $
 * Revision 1.27  2003/04/01 13:55:09  jones
 * Add variables hntracks_max_fp and h_remove_sppt_if_one_y_plane to
 * hms_tracking.cmn
@@ -150,9 +150,9 @@
       integer*4 hmax_chamber_hits
       parameter (hmax_chamber_hits=544)
       integer*4 hmax_space_points   ! maximum number of space points
-      parameter (hmax_space_points=50)
+      parameter (hmax_space_points=100)
       integer*4 hmax_hits_per_point ! maximum number of hits per point
-      parameter (hmax_hits_per_point=20)
+      parameter (hmax_hits_per_point=100)
       integer*4 hnum_fpray_param    ! number of ray parameters in focal plane
       parameter (hnum_fpray_param=4)
       integer*4 hdc_num_cards       ! #/discriminator cards
@@ -314,6 +314,10 @@
       integer*4 hdc_didhit(hmax_num_dc_planes,hdc_max_wires_per_plane)
       integer*4 hdc_shouldsum(hmax_num_dc_planes)
       integer*4 hdc_didsum(hmax_num_dc_planes)
+      integer*4 hdc_shouldhit_del(hmax_num_dc_planes,hdc_max_wires_per_plane,20)
+      integer*4 hdc_didhit_del(hmax_num_dc_planes,hdc_max_wires_per_plane,20)
+      integer*4 hdc_shouldsum_del(hmax_num_dc_planes,20)
+      integer*4 hdc_didsum_del(hmax_num_dc_planes,20)
       integer*4 hdc_eff(hmax_num_dc_planes)
       real*4 hdc_track_coord(hntracks_max,hmax_num_dc_planes)
       real*4 hsdc_track_coord(hmax_num_dc_planes)
@@ -325,6 +329,10 @@
      &   hdc_didhit,        !times a wire did fire.
      &   hdc_shouldsum,     !sum over plane.
      &   hdc_didsum,        !sum over plane.
+     &   hdc_shouldhit_del,     !times a wire should have fired.
+     &   hdc_didhit_del,        !times a wire did fire.
+     &   hdc_shouldsum_del,     !sum over plane.
+     &   hdc_didsum_del,        !sum over plane.
      &   hdc_eff,           !effic. per plane.
      &   hdc_min_wire_eff,  !warning level for wire effic.
      &   hdc_min_plane_eff, !warning level for plane effic.
@@ -400,7 +408,7 @@
       integer hslope
       integer hbestxpscin
       integer hbestypscin
-      integer hgoodscinhits
+      integer hgoodscinhits,hgoodscinhits_x(16)
       integer hxloscin(hmax_num_chambers),hxhiscin(hmax_num_chambers)
       integer hyloscin(hmax_num_chambers),hyhiscin(hmax_num_chambers)
       integer htrack_eff_test_num_scin_planes
@@ -450,6 +458,6 @@
      &    hslope,
      &    hbestxpscin,
      &    hbestypscin,
-     &    hgoodscinhits,
+     &    hgoodscinhits,hgoodscinhits_x,
      &    hxloscin,hxhiscin,hyloscin,hyhiscin,
      &    htrack_eff_test_num_scin_planes

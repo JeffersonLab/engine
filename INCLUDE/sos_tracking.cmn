@@ -4,7 +4,7 @@
 *     modified  dfg          10 Feb 94
 *                              change name to sos_tracking.cmn
 *                              put sluno and debugflags from parameters to CTP
-* $Log$
+* $Log: sos_tracking.cmn,v $
 * Revision 1.18  1999/02/23 19:22:52  csa
 * (JRA) Remove sdebugcalcpeds
 *
@@ -120,7 +120,7 @@
       integer*4 smax_space_points   ! maximum number of space points
       parameter (smax_space_points=50)
       integer*4 smax_hits_per_point ! maximum number of hits per point
-      parameter (smax_hits_per_point=15)
+      parameter (smax_hits_per_point=50)
       integer*4 snum_fpray_param    ! number of ray parameters in focal plane
       parameter (snum_fpray_param=4)
       integer*4 sdc_num_cards       ! #/discriminator cards
