@@ -15,7 +15,7 @@
  * Author:  Chip Watson, CEBAF Data Acquisition Group
  *
  * Revision History:
- *   $Log$
+ *   $Log: evtest.c,v $
  *   Revision 1.1  1998/12/07 22:11:05  saw
  *   Initial setup
  *

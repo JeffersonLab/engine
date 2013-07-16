@@ -15,7 +15,7 @@
  * Author:  Chip Watson
  *
  * Revision History:
- *   $Log$
+ *   $Log: ceMsg.h,v $
  *   Revision 1.1  1998/12/07 22:11:04  saw
  *   Initial setup
  *

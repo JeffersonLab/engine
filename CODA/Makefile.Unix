@@ -15,7 +15,7 @@
 #  Author:  Chip Watson, CEBAF Data Acquisition Group
 # 
 #  Revision History:
-#    $Log$
+#    $Log: Makefile.Unix,v $
 #    Revision 1.5  2008/09/24 23:59:56  jones
 #    Updated to run with gfortran compiler
 #

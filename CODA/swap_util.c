@@ -15,7 +15,7 @@
  * Author:  Jie Chen, CEBAF Data Acquisition Group
  *
  * Revision History:
- *   $Log$
+ *   $Log: swap_util.c,v $
  *   Revision 1.1  1998/12/07 22:11:05  saw
  *   Initial setup
  *

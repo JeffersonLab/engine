@@ -22,13 +22,7 @@
  *                        decompress the data on the fly.
  *
  * Revision History:
- *   $Log$
- *   Revision 1.6  2011/03/04 15:24:50  jones
- *   Add check for 64bit by looking for LP64
- *
- *   Revision 1.5.26.1  2011/03/03 20:10:23  jones
- *   Check for 64bit by looking for LP64
- *
+ *   $Log: evio.c,v $
  *   Revision 1.5  2002/10/02 15:59:25  saw
  *   Fix gcc3 compatibity
  *
