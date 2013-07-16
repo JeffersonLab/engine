@@ -7,7 +7,7 @@
 * Modified from HMS version, h_one_ev_detectors, March 1995 by
 * Derek van Westrum (vanwestr@cebaf.gov)
 *
-* $Log$
+* $Log: s_one_ev_detectors.f,v $
 * Revision 1.2  1995/09/18 14:38:09  cdaq
 * (SAW) Remove unneeded declartions
 *

@@ -5,7 +5,7 @@
 *
 * July 1995  Derek van Westrum (vanwestr@cebaf.gov)
 *
-* $Log$
+* $Log: s_one_ev_det_reset.f,v $
 * Revision 1.2  1996/01/17 16:40:27  cdaq
 * (SAW) Change an include file name
 *

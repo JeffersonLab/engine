@@ -5,7 +5,7 @@
 *
 * 1992, Pat Welch, Oregon State University, tpw@physics.orst.edu
 *
-* $Log$
+* $Log: g_ugsvolu.f,v $
 * Revision 1.1  1995/03/14 21:27:25  cdaq
 * Initial revision
 *

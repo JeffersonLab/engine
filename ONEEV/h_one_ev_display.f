@@ -5,7 +5,7 @@
 *
 * August, 1994, Pat Welch, Oregon State University, tpw@physics.orst.edu
 * Modified by Derek van Westrum (vanwestr@cebaf.gov) Jul 1995
-* $Log$
+* $Log: h_one_ev_display.f,v $
 * Revision 1.5  1996/01/17 16:31:18  cdaq
 * (DVW) Add iview argument, make improvements.
 *

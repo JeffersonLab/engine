@@ -3,7 +3,7 @@
 *- Return an interesting event or give up after a wait
 *
 *	4-Oct-1994 K.B.Beard, Hampton U.
-* $Log$
+* $Log: revdis_getev.f,v $
 * Revision 1.2  1996/01/17 16:32:49  cdaq
 * (SAW) Change an include file name
 *

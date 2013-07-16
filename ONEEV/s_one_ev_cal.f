@@ -1,6 +1,6 @@
       subroutine s_one_ev_cal
 *
-* $Log$
+* $Log: s_one_ev_cal.f,v $
 * Revision 1.3  1996/11/22 15:35:56  saw
 * (SAW) Fix some error messages at startup, some code cleanup
 *

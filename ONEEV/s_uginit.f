@@ -7,7 +7,7 @@
 * Modified from HMS version, h_uginit, March 1995 by
 * Derek van Westrum (vanwestr@cebaf.gov)
 *
-* $Log$
+* $Log: s_uginit.f,v $
 * Revision 1.1  1995/07/31 15:15:28  cdaq
 * Initial revision
 *

@@ -8,7 +8,7 @@
 * Modified from HMS version, h_one_ev_display, on March 1995 by
 * Derek van Westrum (vanwestr@cebaf.gov)
 *
-* $Log$
+* $Log: s_one_ev_display.f,v $
 * Revision 1.3  1996/01/17 16:31:33  cdaq
 * (DVW) Add iview argument, make improvements.
 *

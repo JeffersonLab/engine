@@ -1,5 +1,5 @@
       SUBROUTINE GLVOLU (NLEV, LNAM, LNUM, IER)
-* $Log$
+* $Log: glvolu.f,v $
 * Revision 1.2  1996/09/04 19:46:28  saw
 * (SAW) Comment out debugging statement
 *

@@ -1,6 +1,6 @@
       subroutine revdis_init(ABORT,err)
 *--------------------------------------------------------
-* $Log$
+* $Log: revdis_init.f,v $
 * Revision 1.4  2003/02/14 18:27:22  jones
 * minor change to run on  Alpha OSF1 systems (E. Brash)
 *

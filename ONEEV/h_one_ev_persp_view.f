@@ -1,6 +1,6 @@
       subroutine h_one_ev_persp_view
 *
-* $Log$
+* $Log: h_one_ev_persp_view.f,v $
 * Revision 1.1  1995/09/18 14:44:02  cdaq
 * Initial revision
 *

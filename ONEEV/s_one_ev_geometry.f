@@ -12,7 +12,7 @@
 * Modified from HMS version, h_one_ev_geometry, March 1995 by
 * Derek van Westrum (vanwestr@cebaf.gov)
 *
-* $Log$
+* $Log: s_one_ev_geometry.f,v $
 * Revision 1.5  1996/11/22 15:37:10  saw
 * (SAW) Don't let U&V wires extend beyond chamber.  Some code cleanup.
 *

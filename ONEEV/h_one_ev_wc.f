@@ -1,6 +1,6 @@
       subroutine h_one_ev_wc
 *
-* $Log$
+* $Log: h_one_ev_wc.f,v $
 * Revision 1.2  1996/01/17 16:39:33  cdaq
 * (DVW) Fixes
 *

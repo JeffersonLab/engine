@@ -1,6 +1,6 @@
       subroutine h_one_ev_cal
 *
-* $Log$
+* $Log: h_one_ev_cal.f,v $
 * Revision 1.3  1996/11/22 15:36:14  saw
 * (SAW) Fix some error messages at startup, some code cleanup
 *

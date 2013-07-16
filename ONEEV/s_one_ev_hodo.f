@@ -1,6 +1,6 @@
       Subroutine s_one_ev_hodo
 *
-* $Log$
+* $Log: s_one_ev_hodo.f,v $
 * Revision 1.3  1996/11/22 15:38:35  saw
 * (SAW) Fix some startup errors
 *

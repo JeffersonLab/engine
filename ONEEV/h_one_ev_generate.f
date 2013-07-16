@@ -1,6 +1,6 @@
       subroutine h_one_ev_generate
 *
-* $Log$
+* $Log: h_one_ev_generate.f,v $
 * Revision 1.2  1996/09/04 20:06:16  saw
 * (SAW) hdc_nrwire already integer, don't nint it.
 *

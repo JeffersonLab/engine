@@ -1,5 +1,5 @@
 #
-# $Log$
+# $Log: Makefile.Unix,v $
 # Revision 1.13  2003/02/14 18:25:17  jones
 # added if statements for Alpha OSF1 systems (E. Brash)
 #

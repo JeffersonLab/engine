@@ -2,7 +2,7 @@
 *
 *- standalone DISPLAY for hall C
 *
-* $Log$
+* $Log: evdisplay.f,v $
 * Revision 1.7  1998/12/01 21:47:10  saw
 * (SAW) Put correct number of arguments in g_rep_err call
 *

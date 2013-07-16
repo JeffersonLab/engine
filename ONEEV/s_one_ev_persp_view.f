@@ -1,6 +1,6 @@
       subroutine s_one_ev_persp_view
 *
-* $Log$
+* $Log: s_one_ev_persp_view.f,v $
 * Revision 1.2  1996/01/17 16:38:44  cdaq
 * (DVW) Tweak args in gdraw calls
 *

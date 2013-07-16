@@ -4,7 +4,7 @@
 *
 * August, 1994, Pat Welch, Oregon State University, tpw@physics.orst.edu
 *
-* $Log$
+* $Log: h_one_ev_detectors.f,v $
 * Revision 1.2  1995/09/18 14:38:33  cdaq
 * (SAW) Remove unneeded declartions
 *

@@ -1,6 +1,6 @@
       subroutine s_one_ev_track
 *
-* $Log$
+* $Log: s_one_ev_track.f,v $
 * Revision 1.1  1996/01/17 16:38:09  cdaq
 * Initial revision
 *

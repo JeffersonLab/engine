@@ -5,7 +5,7 @@
 *     Return -1 to exit, 0 to go to the next event, or a number to review
 *     the current event with a different view.
 *
-* $Log$
+* $Log: revdis_ask.f,v $
 * Revision 1.1  1996/01/17 16:31:52  cdaq
 * Initial revision
 *

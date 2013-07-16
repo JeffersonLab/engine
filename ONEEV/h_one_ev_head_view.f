@@ -1,6 +1,6 @@
       subroutine h_one_ev_head_view
 *
-* $Log$
+* $Log: h_one_ev_head_view.f,v $
 * Revision 1.1  1995/09/18 14:43:31  cdaq
 * Initial revision
 *

@@ -8,7 +8,7 @@
 * Note: Subdivided volumes won't work for doing coordinate transforms.  Or
 *	at least I didn't see a method around them.  So I have defined all
 *	the subvolumes explicitly. (TPW)
-* $Log$
+* $Log: h_one_ev_geometry.f,v $
 * Revision 1.8  1996/11/22 15:36:37  saw
 * (SAW) Some code cleanup
 *

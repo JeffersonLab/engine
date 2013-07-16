@@ -1,6 +1,6 @@
       subroutine s_one_ev_wc
 *
-* $Log$
+* $Log: s_one_ev_wc.f,v $
 * Revision 1.1  1996/01/17 16:38:04  cdaq
 * Initial revision
 *

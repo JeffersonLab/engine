@@ -1,6 +1,6 @@
       subroutine h_one_ev_topside_view
 *
-* $Log$
+* $Log: h_one_ev_topside_view.f,v $
 * Revision 1.1  1996/01/17 16:35:46  cdaq
 * Initial revision
 *

@@ -4,7 +4,7 @@
 *
 * August, 1994, Pat Welch, Oregon State University, tpw@physics.orst.edu
 *
-* $Log$
+* $Log: h_uginit.f,v $
 * Revision 1.1  1995/03/14 21:27:13  cdaq
 * Initial revision
 *
