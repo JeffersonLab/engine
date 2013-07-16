@@ -24,7 +24,7 @@
 #define TYPE_BANK 0x10
 
 #define MAX_EVENT_LEN 163840
-#define MAX_REALLYBIGBUFFER 3000000
+#define MAX_REALLYBIGBUFFER 9000000
 
 void list_banks(int evno, int *buffer);
 void printbadstuff(int evno, int *buffer);

@@ -1,14 +1,13 @@
-.DELETE_ON_ERROR: ;
+MYOS := $(subst -,,$(shell uname))
 
-include ../etc/Makefile.variables
+CFLAGS=-L../../$(MYOS)/lib
 
-.PHONY: all
-
-override CFLAGS += -L../../$(MYOS)/lib
+CC=gcc
 
 all: syncfilter
 
 syncfilter: syncfilter.c ../../$(MYOS)/lib/libcoda.a
+
 	$(CC) $(CFLAGS) -o syncfilter syncfilter.c -lcoda
 	$(CP) syncfilter ../../$(MYOS)/bin/syncfilter
 	$(RM) syncfilter
