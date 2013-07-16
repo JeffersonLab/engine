@@ -14,7 +14,7 @@
 *
 * h_scin_eff calculates efficiencies for the hodoscope.
 *
-* $Log$
+* $Log: h_scin_eff.f,v $
 * Revision 1.8  2003/09/05 21:08:34  jones
 * Merge in online03 changes plus changes from E. Christy and E. Segbefia to
 * account for multiple scattering introduced by the aerogel (mkj)
@@ -76,6 +76,8 @@
       logical good_tdc_oneside(hnum_scin_planes)
       logical good_tdc_bothsides(hnum_scin_planes)
       logical otherthreehit
+      integer idel
+      real delcut
 
       save
 
@@ -133,6 +135,12 @@
         if(abs(dist).le.hstat_slop .and.    !hit in middle of scin.
      &    hschi2perdeg.le.hstat_maxchisq.and.(hsshtrk.GE.0.05)) then
           hstat_trk(pln,cnt)=hstat_trk(pln,cnt)+1
+              do idel=1,20
+                 delcut=-10.0+(idel-1)
+                 if (hsdelta .gt. delcut .and. hsdelta .le. (delcut+1)) then
+                   hstat_trk_del(pln,cnt,idel)=hstat_trk_del(pln,cnt,idel)+1
+                 endif 
+              enddo
           lookat(pln) = .true.
         endif
         hitplane(pln) = 0
@@ -161,6 +169,12 @@ cc     &            hitplane(pln),abs(cnt-hit_cnt(pln))
               hstat_poshit(pln,hit_cnt(pln))=hstat_poshit(pln,hit_cnt(pln))+1
               hstat_neghit(pln,hit_cnt(pln))=hstat_neghit(pln,hit_cnt(pln))+1
               hstat_andhit(pln,hit_cnt(pln))=hstat_andhit(pln,hit_cnt(pln))+1
+              do idel=1,20
+                 delcut=-10.0+(idel-1)
+                 if (hsdelta .gt. delcut .and. hsdelta .le. (delcut+1)) then
+                   hstat_andhit_del(pln,hit_cnt(pln),idel)=hstat_andhit_del(pln,hit_cnt(pln),idel)+1
+                 endif 
+              enddo
               hstat_orhit(pln,hit_cnt(pln))=hstat_orhit(pln,hit_cnt(pln))+1
             else                            !pos fired
               hstat_poshit(pln,hit_cnt(pln))=hstat_poshit(pln,hit_cnt(pln))+1

@@ -12,17 +12,7 @@
 *  trackeff.test;  if you change something here, make sure it agrees with the
 *  the tests there!!
 *
-* $Log$
-* Revision 1.4  2005/11/15 18:39:18  jones
-* 1) Eliminate statements which checked if scintillator hits
-* where outside "good" region.
-* 2) Eliminate  check that front and back hodoscope hits
-* near each other.
-* 3) These changes eliminate a bias in the routine in favor
-* of one-track events which gives wrong tracking efficiency
-* at high rates.
-* ( T.Horn, M.E. Christy, D. Gaskell)
-*
+* $Log: h_track_tests.f,v $
 * Revision 1.3  2002/09/26 14:50:10  jones
 *    Add variables sweet1xscin,sweet1yscin,sweet2xscin,sweet2yscin
 *    which record which scint got hit inside the defined scint region
@@ -295,6 +285,11 @@
        hhitsweet2x=0
        hhitsweet2y=0
        hgoodscinhits=0
+
+       do i=hxloscin(1),hxhiscin(1)
+          hgoodscinhits_x(i)=0
+       enddo
+       
 *first x plane.  first see if there are hits inside the scin region
        do i=hxloscin(1),hxhiscin(1)
           if (hscinhit(1,i).EQ.1) then
@@ -302,12 +297,26 @@
              sweet1xscin=i
           endif
        enddo
+*  next make sure nothing fired outside the good region
+       do i=1,hxloscin(1)-1
+          if (hscinhit(1,i).EQ.1) hhitsweet1x=-1
+       enddo
+       do i=hxhiscin(1)+1,hscin_1x_nr
+          if (hscinhit(1,i).EQ.1) hhitsweet1x=-1
+       enddo
 *second x plane.  first see if there are hits inside the scin region
        do i=hxloscin(2),hxhiscin(2)
           if (hscinhit(3,i).EQ.1) then
              hhitsweet2x=1
              sweet2xscin=i
           endif
+       enddo
+*  next make sure nothing fired outside the good region
+       do i=1,hxloscin(2)-1
+          if (hscinhit(3,i).EQ.1) hhitsweet2x=-1
+       enddo
+       do i=hxhiscin(2)+1,hscin_2x_nr
+          if (hscinhit(3,i).EQ.1) hhitsweet2x=-1
        enddo
 
 *first y plane.  first see if there are hits inside the scin region
@@ -317,6 +326,13 @@
              sweet1yscin=i
           endif
        enddo
+*  next make sure nothing fired outside the good region
+       do i=1,hyloscin(1)-1
+          if (hscinhit(2,i).EQ.1) hhitsweet1y=-1
+       enddo
+       do i=hyhiscin(1)+1,hscin_1y_nr
+          if (hscinhit(2,i).EQ.1) hhitsweet1y=-1
+       enddo
 *second y plane.  first see if there are hits inside the scin region
        do i=hyloscin(2),hyhiscin(2)
           if (hscinhit(4,i).EQ.1) then
@@ -324,12 +340,28 @@
              sweet2yscin=i
           endif
        enddo
+*  next make sure nothing fired outside the good region
+       do i=1,hyloscin(2)-1
+          if (hscinhit(4,i).EQ.1) hhitsweet2y=-1
+       enddo
+       do i=hyhiscin(2)+1,hscin_2y_nr
+          if (hscinhit(4,i).EQ.1) hhitsweet2y=-1
+       enddo
 
        testsum=hhitsweet1x+hhitsweet1y+hhitsweet2x+hhitsweet2y
 * now define a 3/4 or 4/4 trigger of only good scintillators the value
 * is specified in htracking.param...
-       if (testsum.GE.htrack_eff_test_num_scin_planes) hgoodscinhits=1
-
+       if (testsum.GE.htrack_eff_test_num_scin_planes) then
+          hgoodscinhits=1
+          do i=hxloscin(1),hxhiscin(1)
+             if (sweet1xscin.EQ.i)hgoodscinhits_x(i)=1
+          enddo       
+       endif
+* require front/back hodoscopes be close to each other
+       if (hgoodscinhits.eq.1 .and. htrack_eff_test_num_scin_planes.eq.4) then
+          if (abs(sweet1xscin-sweet2xscin).gt.3) hgoodscinhits=0
+          if (abs(sweet1yscin-sweet2yscin).gt.2) hgoodscinhits=0
+       endif
 
 *******************************************************************************
 *     Here's where we start writing to the files.  Uncomment these lines and
@@ -346,7 +378,7 @@
              write(12,*) 'too many hits, event number           ',gen_event_ID_number
           endif
           if (.not.hplanesgt) then
-             write(12,*)  'too few planes event number                    ',
+             write(12,*)  'too few planes event number           ',
      $            gen_event_ID_number
           endif
           if (hhitsplanes.AND.(.not.hspacepoints)) then

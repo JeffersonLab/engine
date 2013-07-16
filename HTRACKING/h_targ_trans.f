@@ -15,7 +15,7 @@
 *-           = 1      Normal return.
 *-           = 2      Matrix elements not initted correctly.
 *-    
-* $Log$
+* $Log: h_targ_trans.f,v $
 * Revision 1.16  1999/02/23 18:50:38  csa
 * (JRA) Correct (another) hut(5) error
 *
@@ -174,6 +174,28 @@
          hut_rot(4) = hut(4) + hut(3)*h_ang_slope_y
          hut_rot(5) = hut(5)
 * Compute COSY sums.
+
+         if((hut_rot(4).lt.0.000567*hut_rot(3)+0.016
+     $     .and.hut_rot(4).gt.0.00091*hut_rot(3)+0.00773
+     $     .and.hut_rot(4).gt.0.00034*hut_rot(3)+0.01226)
+     $     .or.(hut_rot(4).gt.0.00055*hut_rot(3)-0.0165
+     $     .and.hut_rot(4).lt.0.00091*hut_rot(3)-0.00773
+     $     .and.hut_rot(4).lt.0.00045*hut_rot(3)-0.00114)) then 
+
+
+
+         do i = 1,h_num_cosy_terms
+            term = 1.
+            do j = 1,5
+               if (h_cosy_expon(j,i).ne.0.)
+     $             term = term*hut_rot(j)**h_cosy_expon(j,i)
+            enddo
+            sum(1) = sum(1) + term*h_cosy_coeff(1,i)
+            sum(2) = sum(2) + term*h_cosy_coeff(2,i)
+            sum(3) = sum(3) + term*h_cosy_coeff(3,i)
+            sum(4) = sum(4) + term*h_cosy_coeff(4,i)
+         enddo
+        else
          do i = 1,h_num_recon_terms
             term = 1.
             do j = 1,5
@@ -185,6 +207,7 @@
             sum(3) = sum(3) + term*h_recon_coeff(3,i)
             sum(4) = sum(4) + term*h_recon_coeff(4,i)
          enddo
+        endif
 * Protext against asin argument > 1.
 c         if(sum(1).gt. 1.0) sum(1)=  0.99
 c         if(sum(1).lt. -1.0) sum(1)= -.99

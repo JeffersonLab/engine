@@ -15,7 +15,7 @@
 * h_dc_eff calculates efficiencies for the hodoscope.
 * h_dc_eff_shutdown does some final manipulation of the numbers.
 *
-* $Log$
+* $Log: h_dc_eff_shutdown.f,v $
 * Revision 1.2  1996/08/30 19:54:11  saw
 * (JRA) Cosmetic
 *
@@ -52,7 +52,7 @@
         if (hdc_plane_eff(ind) .le. hdc_min_eff(ind) .and. num.ge.1000) then
           if (.not.written_header) then
             write(lunout,*)
-            write(lunout,'(a,f6.3)') ' HMS DC planes with low raw hit (hits/trig) efficiencies'
+c            write(lunout,'(a,f6.3)') ' HMS DC planes with low raw hit (hits/trig) efficiencies'
             written_header = .true.
           endif
           write(lunout,'(5x,a,i2,a,f5.3,a,f5.3)') 'eff. for plane #',ind,' is ',

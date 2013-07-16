@@ -49,27 +49,30 @@ c
 
 c        Choose clean single electron tracks within HMS momentum acceptance.
          if(  (hntracks_fp.eq.1).and.
-     &        (hnclusters_cal.eq.1).and.
      &        (hntracks_cal.eq.1).and.
      &        (abs(hdelta_tar(1)).lt.10.).and.
-     &        (hcer_npe_sum.gt.4).and.
-     &        (abs(hbeta(1)-1.).lt.0.1).and.
+     &        (hcer_npe_sum.gt.15).and.
+     &        (abs(hbeta(1)-0.9).lt.0.1).and.
+     &        ((hcal_et/hpcentral).gt.0.6).and.
+     &        ((hcal_et/hpcentral).lt.1.4).and.
      &        spare_id .ne. 0 ) then
 ***   &     (hbeta_chisq(1).ge.0.).and.(hbeta_chisq(1).lt.1.)  ) then
-
-c
-            write_out = .false.
-            do ihit=1,hcal_num_hits
-               nblk=(hcal_cols(ihit)-1)*hmax_cal_rows+hcal_rows(ihit)
-               nct_hit_blk(nblk) = nct_hit_blk(nblk) + 1
-               if (nct_hit_blk(nblk) .lt. 4000) write_out = .true.
-            enddo
+*              write(*,*)hcal_et,hpcentral                
+c  
+*            write_out = .false.
+*            do ihit=1,hcal_num_hits
+*               nblk=(hcal_cols(ihit)-1)*hmax_cal_rows+hcal_rows(ihit)
+*               nct_hit_blk(nblk) = nct_hit_blk(nblk) + 1
+*               if (nct_hit_blk(nblk) .lt. 4000) write_out = .true.
+*            enddo
+            write_out = .true.
 c
             if (write_out) then
 c
-               write(spare_id,'(i2,1x,f7.4,2(1x,f5.1,1x,f9.6))')
+               write(spare_id,'(i2,1x,f7.4,2(1x,f5.1,1x,f9.6),1x,i10))')
      &              hcal_num_hits,hp_tar(1),
-     &              htrack_xc(1),hxp_fp(1),htrack_yc(1),hyp_fp(1)
+     &              htrack_xc(1),hxp_fp(1),htrack_yc(1),hyp_fp(1),
+     &              gen_event_id_number
 
                do ihit=1,hcal_num_hits
 
@@ -206,6 +209,7 @@ c
 	real*8 e0
 	real*8 ac(npmts)
 	real*8 au(npmts)
+	real*8 t
 	real*8 s
 	integer nev
 	logical*1 eod
@@ -403,7 +407,6 @@ c	write(*,'(2e10.3,i5)') (ac(i),au(i),i,i=1,npmts)
 	real*8 ac(npmts)
 	real*8 au(npmts)
 	real*8 qm(npmts,npmts)
-c	real*8 qm(100,100) !Phil
 	real*8 t
 	real*8 s
 	integer ifail
@@ -566,11 +569,7 @@ C--                ELIMINATION
       NP=N
 C
          DO 70 J=1,N
-      IF ((J-K).EQ.0) THEN
-          GOTO 30
-      ELSE
-          GOTO 34
-      END IF
+      IF (J-K) 34,30,34
 C
    30 A(KJ)=1.0D0/PIVOT
       RI(J)=0.0D0
@@ -578,7 +577,7 @@ C
       GO TO 70
 C
    34 ELM=-A(KJ)
-      RI(J)=ELM/PIVOT
+   40 RI(J)=ELM/PIVOT
       IF (ELM.EQ.0.0D0) GO TO 50
 C
       JL=J

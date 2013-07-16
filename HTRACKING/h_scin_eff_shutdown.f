@@ -15,7 +15,7 @@
 * h_scin_eff calculates efficiencies for the hodoscope.
 * h_scin_eff_shutdown does some final manipulation of the numbers.
 *
-* $Log$
+* $Log: h_scin_eff_shutdown.f,v $
 * Revision 1.9  1999/02/23 18:40:48  csa
 * (JRA) Remove hdebugcalcpeds stuff
 *
@@ -61,7 +61,7 @@
       include 'hms_tracking.cmn'
 
       logical written_header
-      integer pln,cnt
+      integer pln,cnt,idel
       integer lunout
       real*4 num_real,nhits_real
       real*4 p1,p2,p3,p4         !prob. of having both tubes fire for planes1-4
@@ -80,6 +80,10 @@
         hstat_possum(pln)=0
         hstat_negsum(pln)=0
         hstat_andsum(pln)=0
+        do idel=1,20
+        hstat_andsum_del(pln,idel)=0
+        hstat_trksum_del(pln,idel)=0
+        enddo
         hstat_orsum(pln)=0
         do cnt=1,hnum_scin_counters(pln)
           num_real=float(max(1,hscin_zero_num(pln,cnt)))
@@ -89,6 +93,10 @@
           hstat_possum(pln)=hstat_possum(pln)+hstat_poshit(pln,cnt)
           hstat_negsum(pln)=hstat_negsum(pln)+hstat_neghit(pln,cnt)
           hstat_andsum(pln)=hstat_andsum(pln)+hstat_andhit(pln,cnt)
+          do idel=1,20
+           hstat_andsum_del(pln,idel)=hstat_andsum_del(pln,idel)+hstat_andhit_del(pln,cnt,idel)
+           hstat_trksum_del(pln,idel)=hstat_trksum_del(pln,idel)+hstat_trk_del(pln,cnt,idel)
+          enddo
           hstat_orsum(pln)=hstat_orsum(pln)+hstat_orhit(pln,cnt)
 *
 * write out list of possible problms
@@ -123,6 +131,9 @@
         hstat_negeff(pln)=hstat_negsum(pln)/max(1.,float(hstat_trksum(pln)))
         hstat_andeff(pln)=hstat_andsum(pln)/max(1.,float(hstat_trksum(pln)))
         hstat_oreff(pln)=hstat_orsum(pln)/max(1.,float(hstat_trksum(pln)))
+           do idel=1,20
+      hstat_andeff_del(pln,idel)=hstat_andsum_del(pln,idel)/max(1.,float(hstat_trksum_del(pln,idel)))
+           enddo
       enddo
 
       write(lunout,*) ' '
@@ -144,6 +155,30 @@
       heff_stof=heff_s1 * heff_s2
       heff_3_of_4=p1234+p123+p124+p134+p234
       heff_4_of_4=p1234
+c
+      do idel=1,20
+      p1=hstat_andeff_del(1,idel)
+      p2=hstat_andeff_del(2,idel)
+      p3=hstat_andeff_del(3,idel)
+      p4=hstat_andeff_del(4,idel)
 
+! probability that ONLY the listed planes had triggers
+      p1234= p1*p2*p3*p4
+      p123 = p1*p2*p3*(1.-p4)
+      p124 = p1*p2*(1.-p3)*p4
+      p134 = p1*(1.-p2)*p3*p4
+      p234 = (1.-p1)*p2*p3*p4
+
+
+      heff_s1_del(idel) = 1. - ((1.-p1)*(1.-p2))
+      heff_s2_del(idel) = 1. - ((1.-p3)*(1.-p4))
+      heff_stof_del(idel) =heff_s1_del(idel) * heff_s2_del(idel)
+      heff_3_of_4_del(idel)=p1234+p123+p124+p134+p234
+      write(62,'(a,f4.1,a,f6.4,a,f6.4,4f8.4,8i10)') 
+     >' delta = ',-10.0+(idel-1)+0.5,' tofeff = ', heff_stof_del(idel),
+     >' 34eff = ', heff_3_of_4_del(idel), (hstat_andeff_del(pln,idel),pln=1,4), 
+     > (hstat_andsum_del(pln,idel),pln=1,4),(hstat_trksum_del(pln,idel),pln=1,4)
+       enddo
+c
       return
       end
