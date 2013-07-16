@@ -7,7 +7,10 @@
 *           : err        - reason for failure, if any
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
-* $Log$
+* $Log: s_ntuple_keep.f,v $
+* Revision 1.8.10.1  2004/09/07 18:39:52  cdaq
+* added pretrigger signals to hms and sos ntuples
+*
 * Revision 1.8  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -89,6 +92,18 @@ c
       endif
 *
       m= 0
+      m= m+1
+      s_Ntuple_contents(m)= sspipre      ! SOS pipre TDC value
+      m= m+1
+      s_Ntuple_contents(m)= sselhi       ! SOS elhi TDC value
+      m= m+1
+      s_Ntuple_contents(m)= ssello       ! SOS ello TDC value
+      m= m+1
+      s_Ntuple_contents(m)= ssprhi       ! SOS prhi TDC value
+      m= m+1
+      s_Ntuple_contents(m)= ssprlo       ! SOS prlo TDC value
+      m= m+1
+      s_Ntuple_contents(m)= ssshlo       ! SOS shlo TDC value
       m= m+1
       s_Ntuple_contents(m)= SSOMEGA !
       m= m+1
@@ -189,7 +204,20 @@ c      s_Ntuple_contents(m)= smisc_dec_data(5,2)
       m= m+1
 c      s_Ntuple_contents(m)= smisc_dec_data(6,2) 
        s_Ntuple_contents(m)= scer_adc(4)
-
+      m= m+1
+       s_Ntuple_contents(m)= sntracks_fp
+      m= m+1
+       s_Ntuple_contents(m)= scal_et
+      m= m+1
+       s_Ntuple_contents(m)= sgoodscinhits
+      m= m+1
+       s_Ntuple_contents(m)= scal_e1
+      m= m+1
+       s_Ntuple_contents(m)= scal_e2
+      m= m+1
+       s_Ntuple_contents(m)= scal_e3
+      m= m+1
+       s_Ntuple_contents(m)= scal_e4
 
 * Experiment dependent entries start here.
 

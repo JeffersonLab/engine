@@ -1,6 +1,6 @@
       subroutine g_dump_peds(ABORT,err)
 *
-* $Log$
+* $Log: g_dump_peds.f,v $
 * Revision 1.1  1996/04/29 19:46:35  saw
 * Initial revision
 *

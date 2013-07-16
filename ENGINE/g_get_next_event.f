@@ -11,7 +11,7 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified 1-Dec-1993    KBB: borrowed L.Dennis's hall B routines
-* $Log$
+* $Log: g_get_next_event.f,v $
 * Revision 1.5  2002/09/25 13:50:49  jones
 *    a.  include file gen_run_info.cmn
 *    b.  add code for segmented runs
@@ -71,7 +71,6 @@
         maxsize= LENGTH_CRAW
 
         status = evread(g_data_source_in_hndl,CRAW,maxsize)
-
         if(status.ne.0) then
            if(g_segment.ge.0) then ! This is a segmented run, look for more
 

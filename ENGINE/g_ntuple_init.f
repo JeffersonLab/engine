@@ -12,7 +12,7 @@
 *-         : err	- reason for failure, if any
 *- 
 *-Created  6-September-1995 SAW
-* $Log$
+* $Log: g_ntuple_init.f,v $
 * Revision 1.1  1995/10/09 18:43:07  cdaq
 * Initial revision
 *

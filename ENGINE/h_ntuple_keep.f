@@ -7,7 +7,13 @@
 *           : err        - reason for failure, if any
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
-* $Log$
+* $Log: h_ntuple_keep.f,v $
+* Revision 1.10.10.2  2004/09/07 18:39:47  cdaq
+* added pretrigger signals to hms and sos ntuples
+*
+* Revision 1.10.10.1  2004/06/23 19:30:31  cdaq
+* removed duplicate 'hsshtrk' entry
+*
 * Revision 1.10  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -58,6 +64,8 @@
       INCLUDE 'hms_scin_tof.cmn'
       INCLUDE 'gen_scalers.cmn'
       include 'hms_track_histid.cmn'  !temp junk.
+      INCLUDE 'hms_calorimeter.cmn'
+      INCLUDE 'hms_cer_parms.cmn'
 *
       logical HEXIST	!CERNLIB function
 *
@@ -84,31 +92,43 @@ c
 ************************************************
       m= 0
 *  
+*      m= m+1
+*      h_Ntuple_contents(m)= hspipre      ! HMS pipre TDC value
+*      m= m+1
+*      h_Ntuple_contents(m)= hselhi       ! HMS elhi TDC value
+*      m= m+1
+*      h_Ntuple_contents(m)= hsello       ! HMS ello TDC value
+*      m= m+1
+*      h_Ntuple_contents(m)= hsprhi       ! HMS prhi TDC value
+*      m= m+1
+*      h_Ntuple_contents(m)= hsprlo       ! HMS prlo TDC value
+*      m= m+1
+*      h_Ntuple_contents(m)= hsshlo       ! HMS shlo TDC value
       m= m+1
       h_Ntuple_contents(m)= HCER_NPE_SUM ! cerenkov photoelectron spectrum
+      m=m+1
+      h_Ntuple_contents(m)= HSP	         ! Lab momentum of chosen track in GeV/c
       m= m+1
-      h_Ntuple_contents(m)= HSP	        ! Lab momentum of chosen track in GeV/c
-      m= m+1
-      h_Ntuple_contents(m)= HSENERGY    ! Lab total energy of chosen track in GeV
+      h_Ntuple_contents(m)= HSENERGY     ! Lab total energy of chosen track in GeV
       m= m+1
       h_Ntuple_contents(m)= gbcm1_charge ! Charge of last scaler event
       m= m+1
-      h_Ntuple_contents(m)= HSDELTA	! Spectrometer delta of chosen track
+      h_Ntuple_contents(m)= HSDELTA	 ! Spectrometer delta of chosen track
       m= m+1
-      h_Ntuple_contents(m)= HSTHETA	! Lab Scattering angle in radians
+      h_Ntuple_contents(m)= HSTHETA	 ! Lab Scattering angle in radians
       m= m+1
-      h_Ntuple_contents(m)= HSPHI	! Lab Azymuthal angle in radians
+      h_Ntuple_contents(m)= HSPHI	 ! Lab Azymuthal angle in radians
       m= m+1
-      h_Ntuple_contents(m)= HINVMASS	! Invariant Mass of remaing hadronic system
+      h_Ntuple_contents(m)= HINVMASS	 ! Invariant Mass of remaing hadronic system
       m= m+1
-      h_Ntuple_contents(m)= HSZBEAM! Lab Z coordinate of intersection of beam
-c                                ! track with spectrometer ray
+      h_Ntuple_contents(m)= HSZBEAM      ! Lab Z coordinate of intersection of beam
+c                                        ! track with spectrometer ray
       m= m+1
-      h_Ntuple_contents(m)= HSDEDX(1)	! DEDX of chosen track in 1st scin plane
+      h_Ntuple_contents(m)= HSDEDX(1)	 ! DEDX of chosen track in 1st scin plane
       m= m+1
-      h_Ntuple_contents(m)= HSBETA	! BETA of chosen track
+      h_Ntuple_contents(m)= HSBETA	 ! BETA of chosen track
       m= m+1
-      h_Ntuple_contents(m)= HSTRACK_ET	! Total shower energy of chosen track
+      h_Ntuple_contents(m)= HSSHTRK	 ! Total shower energy of chosen track
       m= m+1
       h_Ntuple_contents(m)= HSTRACK_PRESHOWER_E	! preshower of chosen track
       m= m+1
@@ -131,7 +151,6 @@ c                                ! track with spectrometer ray
       h_Ntuple_contents(m)= float(gen_event_ID_number)
       m= m+1
       h_Ntuple_contents(m)= float(gen_event_type)
-c
       m= m+1
       h_Ntuple_contents(m)= gfrx_raw_adc
       m= m+1
@@ -152,6 +171,23 @@ c
       h_Ntuple_contents(m)= gbpm_x(3)
       m= m+1
       h_Ntuple_contents(m)= gbpm_y(3)
+      m= m+1
+      h_Ntuple_contents(m)= hseloss
+      m= m+1
+      h_Ntuple_contents(m)= hntracks_fp
+      m= m+1
+      h_Ntuple_contents(m)= hcal_et
+      m= m+1
+      h_Ntuple_contents(m)= hgoodscinhits 
+      m= m+1
+      h_Ntuple_contents(m)= hcal_e1
+      m= m+1
+      h_Ntuple_contents(m)= hcal_e2
+      m= m+1
+      h_Ntuple_contents(m)= hcal_e3
+      m= m+1
+      h_Ntuple_contents(m)= hcal_e4
+ 
 
 * Experiment dependent entries start here.
 

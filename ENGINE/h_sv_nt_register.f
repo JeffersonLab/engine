@@ -10,7 +10,7 @@
 *           : err        - reason for failure, if any
 *
 *     Created: 1-Nov-1994 : added Ntuples
-* $Log$
+* $Log: h_sv_nt_register.f,v $
 * Revision 1.1  1995/01/27 20:05:51  cdaq
 * Initial revision
 *

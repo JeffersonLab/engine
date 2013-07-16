@@ -9,7 +9,13 @@
 *           : err        - reason for failure, if any
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
-* $Log$
+* $Log: h_ntuple_init.f,v $
+* Revision 1.11.10.2  2004/09/07 18:39:34  cdaq
+* added pretrigger signals to hms and sos ntuples
+*
+* Revision 1.11.10.1  2004/06/23 19:30:25  cdaq
+* removed duplicate 'hsshtrk' entry
+*
 * Revision 1.11  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -116,12 +122,24 @@ c
          ABORT = .true.
         RETURN
        endif
-       write(*,*) ' Using segmented hms rzdat files first filename: ',file
+       write(*,*) 'Using segmented hms rzdat files first filename: ',file
        else
-         write(*,*) ' Not using segmented hms rzdat files first filename: ',file  
+       write(*,*) 'Not using segmented hms rzdat files first filename: ',file  
       endif
 *
       m= 0
+*      m=m+1
+*      h_Ntuple_tag(m)= 'hspipre'
+*      m=m+1
+*      h_Ntuple_tag(m)= 'hselhi'
+*      m=m+1
+*      h_Ntuple_tag(m)= 'hsello'
+*      m=m+1
+*      h_Ntuple_tag(m)= 'hsprhi'
+*      m=m+1
+*      h_Ntuple_tag(m)= 'hsprlo'
+*      m=m+1
+*      h_Ntuple_tag(m)= 'hsshlo'
       m= m+1
       h_Ntuple_tag(m)= 'hcer_npe' ! cerenkov photoelectron spectrum
       m= m+1
@@ -169,9 +187,6 @@ c
       h_Ntuple_tag(m)= 'eventID'
       m= m+1
       h_Ntuple_tag(m)= 'ev_type'
-
-* Experiment dependent entries start here.
-c
       m= m+1
       h_Ntuple_tag(m)= 'gfrx_raw'
       m= m+1
@@ -192,7 +207,24 @@ c
       h_Ntuple_tag(m)= 'bpmc_x'
       m= m+1
       h_Ntuple_tag(m)= 'bpmc_y'
-
+      m= m+1
+      h_Ntuple_tag(m)= 'hseloss'
+      m=m+1
+      h_Ntuple_tag(m)= 'hntracks_fp'
+      m=m+1
+      h_Ntuple_tag(m)= 'hcal_et'
+      m=m+1
+      h_Ntuple_tag(m)= 'hgoodsc'
+      m=m+1
+      h_Ntuple_tag(m)= 'hcal_e1'
+      m=m+1
+      h_Ntuple_tag(m)= 'hcal_e2'
+      m=m+1
+      h_Ntuple_tag(m)= 'hcal_e3'
+      m=m+1
+      h_Ntuple_tag(m)= 'hcal_e4' 
+      
+      
       h_Ntuple_size= m     !total size
 * Open ntuple
 

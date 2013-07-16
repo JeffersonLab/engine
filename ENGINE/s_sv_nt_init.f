@@ -9,7 +9,7 @@
 *           : err        - reason for failure, if any
 *
 *     Created: 1-Nov-1994  
-* $Log$
+* $Log: s_sv_nt_init.f,v $
 * Revision 1.4  1998/12/01 15:58:54  saw
 * (SAW) Output file name fixup
 *
@@ -41,7 +41,7 @@
       parameter (default_title= 'sSieveSlits')   
       integer default_bank,default_recL
       parameter (default_bank= 8000)    !4 bytes/word
-      parameter (default_recL= 1024)    !record length
+      parameter (default_recL= 4096)    !record length
       character*80 title,file
       character*80 directory,name
       character*1000 pat,msg

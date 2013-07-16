@@ -9,7 +9,7 @@
 *           : err        - reason for failure, if any
 *
 *     Created: 1-Nov-1994  
-* $Log$
+* $Log: h_sv_nt_init.f,v $
 * Revision 1.6  1996/11/05 21:42:08  saw
 * (DD) Add gas cerenkov to ntuple
 *
@@ -49,7 +49,7 @@
       parameter (default_title= 'SieveSlits')   
       integer default_bank,default_recL
       parameter (default_bank= 8000)    !4 bytes/word
-      parameter (default_recL= 1024)    !record length
+      parameter (default_recL= 4096)    !record length
       character*80 title,file
       character*80 directory,name
       character*1000 pat,msg

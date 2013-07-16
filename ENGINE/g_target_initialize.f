@@ -12,7 +12,7 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 *-
-* $Log$
+* $Log: g_target_initialize.f,v $
 * Revision 1.1  1996/01/22 15:11:55  saw
 * Initial revision
 *

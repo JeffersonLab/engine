@@ -23,7 +23,7 @@
 
       integer default_bank,default_recL
       parameter (default_bank= 8000)    !4 bytes/word
-      parameter (default_recL= 1024)    !record length
+      parameter (default_recL= 4096)    !record length
       character*80 title,file
       character*80 directory,name
       character*1000 pat,msg
