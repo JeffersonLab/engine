@@ -1,6 +1,6 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
-* $Log$
+* $Log: g_decode_scalers.f,v $
 * Revision 1.1  1994/06/22 20:59:25  cdaq
 * Initial revision
 *

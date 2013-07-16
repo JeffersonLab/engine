@@ -9,7 +9,7 @@
 *
 *  created  apr-30-1996 Dave Meekins
 *
-* $Log$
+* $Log: g_write_event.f,v $
 * Revision 1.1  1996/06/10 17:47:32  saw
 * Initial revision
 *

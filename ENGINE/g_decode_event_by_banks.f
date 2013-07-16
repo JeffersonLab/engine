@@ -14,7 +14,7 @@
 *-        err         explanation for failure
 *-
 *-     Created   3-Dec-1993   Kevin Beard, Hampton U.
-*-    $Log$
+*-    $Log: g_decode_event_by_banks.f,v $
 *-    Revision 1.7  2008/09/25 00:06:33  jones
 *-    Updated to run with gfortran compiler
 *-

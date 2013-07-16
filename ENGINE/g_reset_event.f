@@ -11,7 +11,7 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  3-Dec-1993   Kevin B. Beard, Hampton U.
-* $Log$
+* $Log: g_reset_event.f,v $
 * Revision 1.11  1996/01/22 15:15:01  saw
 * (JRA) Put BPM/Raster data into MISC data structures
 *

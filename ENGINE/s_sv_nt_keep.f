@@ -7,7 +7,7 @@
 *           : err        - reason for failure, if any
 *
 *     Created: 1-Nov-1994  
-* $Log$
+* $Log: s_sv_nt_keep.f,v $
 * Revision 1.3  1996/11/05 21:44:04  saw
 * (DD) Add gas cerenkov to ntuple
 *

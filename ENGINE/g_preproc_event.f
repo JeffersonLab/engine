@@ -8,7 +8,7 @@
 *
 *
 *   created apr-29-1996 Dave Meekins
-* $Log$
+* $Log: g_preproc_event.f,v $
 * Revision 1.1  1996/06/10 17:47:43  saw
 * Initial revision
 *

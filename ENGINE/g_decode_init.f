@@ -9,7 +9,7 @@
 *- 
 *-   Created   3-Dec-1993   Kevin B. Beard
 *
-* $Log$
+* $Log: g_decode_init.f,v $
 * Revision 1.3  1996/01/16 20:54:59  cdaq
 * no change
 *

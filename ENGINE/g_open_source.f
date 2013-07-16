@@ -9,7 +9,7 @@
 *- 
 *-   Created  30-Nov-1993   Kevin B. Beard
 *
-* $Log$
+* $Log: g_open_source.f,v $
 * Revision 1.5  2002/09/25 13:51:30  jones
 *     add code for analyzing segmented data files.
 *

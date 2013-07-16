@@ -14,7 +14,7 @@
 *-        err         explanation for failure
 *-
 *-     Created   20-Jun-1998   Stephen Wood
-*-    $Log$
+*-    $Log: g_analyze_scalers_by_banks.f,v $
 *-    Revision 1.2  1999/11/04 20:35:15  saw
 *-    Linux/G77 compatibility fixes
 *-

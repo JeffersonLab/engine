@@ -11,7 +11,7 @@
 *- 
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
-*-      $Log$
+*-      $Log: s_reset_event.f,v $
 *-      Revision 1.15  1999/08/20 14:52:18  saw
 *-      Put in warning if Xscin_tdc_max is bigger than 4094
 *-

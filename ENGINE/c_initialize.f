@@ -9,7 +9,7 @@
 *-         : err             - reason for failure, if any
 *- 
 *-   Created  8-Nov-1993   Kevin B. Beard
-* $Log$
+* $Log: c_initialize.f,v $
 * Revision 1.9  2002/12/27 21:49:43  jones
 *     Ioana Niculescu modified total_eloss call
 *

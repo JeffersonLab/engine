@@ -1,6 +1,6 @@
       subroutine g_output_thresholds(lunout,roc,slot,signalcount,
      &               elements_per_plane,signal0,signal1,sigma0,sigma1)
-* $Log$
+* $Log: g_output_thresholds.f,v $
 * Revision 1.7  2003/09/05 15:53:04  jones
 * Merge in online03 changes (mkj)
 *

@@ -9,7 +9,7 @@
 *-         : err	- reason for failure, if any
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
-* $Log$
+* $Log: c_proper_shutdown.f,v $
 * Revision 1.8  1996/01/16 21:07:45  cdaq
 * no change
 *

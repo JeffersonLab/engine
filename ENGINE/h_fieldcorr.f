@@ -21,7 +21,7 @@
 *-           run only (not event-by-event).
 *-
 *-
-* $Log$
+* $Log: h_fieldcorr.f,v $
 * Revision 1.2  2003/02/21 14:55:26  jones
 * Added write statements
 *

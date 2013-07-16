@@ -5,7 +5,7 @@
 *
 * g_trans_misc fills the gen_decoded_misc common block
 *
-* $Log$
+* $Log: g_trans_misc.f,v $
 * Revision 1.2  2002/09/25 14:37:32  jones
 * character*1024 errmsg changed to character*(*) errmsgCVS: ----------------------------------------------------------------------
 *

@@ -7,7 +7,7 @@
 *-         : err	- reason for failure, if any
 *- 
 *-   Created  14-Jun-1994   S.A. Wood
-* $Log$
+* $Log: g_dump_histograms.f,v $
 * Revision 1.3  2002/09/25 14:42:06  jones
 * Replace call HREND(nametag) with call HRENDC(nametag) and close(IO)
 *

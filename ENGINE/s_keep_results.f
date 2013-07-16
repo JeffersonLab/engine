@@ -10,7 +10,7 @@
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
 *
-* $Log$
+* $Log: s_keep_results.f,v $
 * Revision 1.6  1996/09/04 15:17:33  saw
 * (JRA) Make SSNUM_FPTRACK.gt.0 instead of SNTRACKS_FP .gt. 0 the
 *       criteria for adding to ntuples

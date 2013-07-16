@@ -12,7 +12,7 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  6-Dec-1993   K.B.Beard: adopt new errors
-* $Log$
+* $Log: c_clear_event.f,v $
 * Revision 1.5  1999/02/23 16:39:34  csa
 * Fixed thinko on last rev
 *

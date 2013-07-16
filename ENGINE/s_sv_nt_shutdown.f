@@ -9,7 +9,7 @@
 *           : err        - reason for failure, if any
 *
 *     Created: 1-Nov-1994   added Ntuples
-* $Log$
+* $Log: s_sv_nt_shutdown.f,v $
 * Revision 1.2  2003/02/12 16:03:21  jones
 * Modified Call G_build_note to have the needed 7 variables instead of 6
 *

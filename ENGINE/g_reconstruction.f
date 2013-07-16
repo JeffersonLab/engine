@@ -13,7 +13,7 @@
 *- 
 *-   Created  20-Oct-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new error routines
-* $Log$
+* $Log: g_reconstruction.f,v $
 * Revision 1.13  1996/01/22 15:23:34  saw
 * (SAW) Add calls to analyze beam position
 *

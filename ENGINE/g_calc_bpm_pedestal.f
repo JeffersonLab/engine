@@ -1,6 +1,6 @@
       subroutine g_calc_bpm_pedestal(ABORT,err)
 *
-* $Log$
+* $Log: g_calc_bpm_pedestal.f,v $
 * Revision 1.2  1996/04/29 19:43:42  saw
 * (JRA) Update bpm calculations
 *

@@ -10,7 +10,7 @@
 *- 
 *-   Created  30-Nov-1995   John Arrington, Caltech.
 *-
-* $Log$
+* $Log: g_examine_go_info.f,v $
 * Revision 1.4  2003/09/05 15:37:28  jones
 * Merge in online03 changes (mkj)
 *

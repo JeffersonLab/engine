@@ -9,7 +9,7 @@
 *           : err        - reason for failure, if any
 *
 *     Created: 8-Apr-1994  K.B.Beard, HU: added Ntuples
-* $Log$
+* $Log: h_ntuple_shutdown.f,v $
 * Revision 1.6  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *

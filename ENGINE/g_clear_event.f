@@ -11,7 +11,7 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard, Hampton U.
 *-   Modified 19-Nov-1993   Kevin B. Beard for new error standards
-*-      $Log$
+*-      $Log: g_clear_event.f,v $
 *-      Revision 1.10  1996/09/04 14:33:10  saw
 *-      (SAW) Don't use gmc_abort since gmc stuff not called
 *-

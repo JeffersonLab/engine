@@ -10,7 +10,7 @@
 *           : err        - reason for failure, if any
 *
 *     Created: 8-Apr-1994  K.B.Beard, HU: added Ntuples
-* $Log$
+* $Log: s_ntuple_register.f,v $
 * Revision 1.2  1994/06/17 02:56:26  cdaq
 * (KBB) Upgrade
 *

@@ -26,7 +26,7 @@
 *
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton U.
-* $Log$
+* $Log: g_decode_fb_bank.f,v $
 * Revision 1.32  2003/09/05 15:22:56  jones
 * Merge in online03 changes (mkj)
 *

@@ -30,7 +30,7 @@
 *                        furthermore, ignore embedded comments (i.e., 
 *                        don't print out stuff following the ';').
 *
-* $Log$
+* $Log: g_ctp_database.f,v $
 * Revision 1.7  1999/11/04 20:35:15  saw
 * Linux/G77 compatibility fixes
 *

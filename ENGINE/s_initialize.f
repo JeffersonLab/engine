@@ -10,7 +10,7 @@
 *- 
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
-* $Log$
+* $Log: s_initialize.f,v $
 * Revision 1.16  1996/09/04 15:17:01  saw
 * (JRA) Reorder calls
 *

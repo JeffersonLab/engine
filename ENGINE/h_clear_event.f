@@ -11,7 +11,7 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *
-* $Log$
+* $Log: h_clear_event.f,v $
 * Revision 1.15  2002/12/20 21:55:23  jones
 * Modified by Hamlet for new HMS aerogel
 *

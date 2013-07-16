@@ -1,12 +1,6 @@
       subroutine g_analyze_scalers(event,ABORT,err)
 *
-* $Log$
-* Revision 1.16  2008/09/25 00:06:33  jones
-* Updated to run with gfortran compiler
-*
-* Revision 1.15.20.1  2007/09/10 20:33:37  pcarter
-* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
-*
+* $Log: g_analyze_scalers.f,v $
 * Revision 1.15  2003/09/05 20:54:41  jones
 * Merge in online03 changes (mkj)
 *

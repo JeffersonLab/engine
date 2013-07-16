@@ -1,6 +1,6 @@
       subroutine g_calc_beam_pedestal(ABORT,err)
 *
-* $Log$
+* $Log: g_calc_beam_pedestal.f,v $
 * Revision 1.4  2003/09/05 15:33:55  jones
 * Merge in online03 changes (mkj)
 *

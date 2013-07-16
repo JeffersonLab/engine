@@ -15,7 +15,7 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 *
-* $Log$
+* $Log: h_reset_event.f,v $
 * Revision 1.17  2002/12/20 21:55:23  jones
 * Modified by Hamlet for new HMS aerogel
 *

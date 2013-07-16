@@ -10,7 +10,7 @@
 *- 
 *-   Created  8-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993   KBB for new errors
-* $Log$
+* $Log: h_initialize.f,v $
 * Revision 1.15  1996/09/04 14:40:46  saw
 * (JRA) Reorder some calls
 *

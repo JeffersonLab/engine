@@ -11,7 +11,7 @@
 *
 *
 *     I don't know what other crap I need to fill in here
-* $Log$
+* $Log: g_preproc_open.f,v $
 * Revision 1.1  1996/06/10 17:48:15  saw
 * Initial revision
 *

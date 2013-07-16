@@ -12,7 +12,7 @@
 *           : err        - reason for failure, if any
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
-* $Log$
+* $Log: c_register_variables.f,v $
 * Revision 1.9  1996/01/16 21:09:28  cdaq
 * no change
 *

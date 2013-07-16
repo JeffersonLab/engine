@@ -11,7 +11,7 @@
 *-         : err	- reason for failure, if any
 *- 
 *-   Created  30-June-1995 SAW
-*  $Log$
+*  $Log: g_ntuple_shutdown.f,v $
 *  Revision 1.2  1995/09/01 15:46:13  cdaq
 *  (JRA) Add call to sos sieve slit ntuple
 *

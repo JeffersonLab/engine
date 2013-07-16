@@ -1,6 +1,6 @@
       subroutine g_analyze_beam_pedestal(ABORT,err)
 *
-* $Log$
+* $Log: g_analyze_beam_pedestal.f,v $
 * Revision 1.3  1999/02/23 16:49:21  csa
 * (JRA) Add gmisc_dec_data
 *

@@ -6,7 +6,7 @@
 * g_analyze_misc takes the gen_decoded_misc common block and
 *   generates decoded bpm/raster information.
 *
-* $Log$
+* $Log: g_analyze_misc.f,v $
 * Revision 1.9  2003/09/05 15:17:37  jones
 * Merge in online03 changes (mkj)
 *

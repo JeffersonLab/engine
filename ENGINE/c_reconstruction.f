@@ -10,7 +10,7 @@
 *- 
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
-* $Log$
+* $Log: c_reconstruction.f,v $
 * Revision 1.6  1996/01/16 21:08:42  cdaq
 * no change
 *

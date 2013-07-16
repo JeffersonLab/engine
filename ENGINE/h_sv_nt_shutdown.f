@@ -9,7 +9,7 @@
 *           : err        - reason for failure, if any
 *
 *     Created: 1-Nov-1994   added Ntuples
-* $Log$
+* $Log: h_sv_nt_shutdown.f,v $
 * Revision 1.2  2003/02/13 15:08:20  jones
 * subroutine call G_build_note had 6 instead needed 7 arguments
 *

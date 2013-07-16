@@ -9,7 +9,7 @@
 *-         : err	- reason for failure, if any
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
-* $Log$
+* $Log: h_proper_shutdown.f,v $
 * Revision 1.10  1995/10/09 18:55:48  cdaq
 * (JRA) Add bypass switches to efficiency shutdown routine calls
 *

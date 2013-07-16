@@ -11,7 +11,7 @@
 *- 
 *-   Created  2-Nov-1993   Kevin B. Beard
 *-   Modified 20-Nov-1993  KBB for new errors
-* $Log$
+* $Log: s_clear_event.f,v $
 * Revision 1.12  1999/02/23 18:27:50  csa
 * Add call to s_ntuple_clear
 *

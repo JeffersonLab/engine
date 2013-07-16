@@ -18,7 +18,7 @@
 *     Modified: 17-May-1994 Kevin B. Beard, Hampton U.
 *     Modified: 24-May-1994 K.B.Beard
 *
-* $Log$
+* $Log: g_register_variables.f,v $
 * Revision 1.11  1996/01/16 17:08:55  cdaq
 * no change
 *

@@ -1,6 +1,6 @@
       SUBROUTINE G_klugeup_kinematics(ABORT,err)
 *--------------------------------------------------------
-* $Log$
+* $Log: g_kludgeup_kinematics.f,v $
 * Revision 1.4  2008/09/25 00:06:33  jones
 * Updated to run with gfortran compiler
 *

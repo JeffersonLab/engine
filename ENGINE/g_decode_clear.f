@@ -14,7 +14,7 @@
 *-
 *-     by Steve Wood
 *-      modified by Kevin Beard Dec.3,1993
-* $Log$
+* $Log: g_decode_clear.f,v $
 * Revision 1.3  1996/01/16 20:31:54  cdaq
 * (SAW) Start "roc" index at zero instead of one.
 *

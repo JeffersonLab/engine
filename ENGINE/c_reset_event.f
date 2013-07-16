@@ -12,7 +12,7 @@
 *- 
 *-   Created  29-Oct-1993   Kevin B. Beard
 *-   Modified  6-Dec-1993   K.B.Beard: adopt new errors
-* $Log$
+* $Log: c_reset_event.f,v $
 * Revision 1.3  1996/01/16 21:10:22  cdaq
 * no change
 *

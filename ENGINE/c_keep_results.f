@@ -9,7 +9,7 @@
 *-         : err	- reason for failure, if any
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
-* $Log$
+* $Log: c_keep_results.f,v $
 * Revision 1.5  1996/09/04 15:29:30  saw
 * * (JRA) Make HSNUM_FPTRACK.gt.0 and SSNUM_FPTRACK.gt.0  instead of
 *         HNTRACKS_FP .gt. 0 and HNTRACKS_FP .gt. 0 as criteria for

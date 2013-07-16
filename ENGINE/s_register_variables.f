@@ -13,7 +13,7 @@
 *
 *     Created: 9-Feb-1994  Stephen A. Wood
 *
-* $Log$
+* $Log: s_register_variables.f,v $
 * Revision 1.11  1996/01/16 16:27:28  cdaq
 * no change
 *

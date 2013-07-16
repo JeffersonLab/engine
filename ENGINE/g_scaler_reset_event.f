@@ -14,7 +14,7 @@
 *- All standards are from "Proposal for Hall C Analysis Software
 *- Vade Mecum, Draft 1.0" by D.F.Geesamn and S.Wood, 7 May 1993
 *
-* $Log$
+* $Log: g_scaler_reset_event.f,v $
 * Revision 1.5  2003/09/05 16:34:34  jones
 * Merge in online03 changes (mkj)
 *

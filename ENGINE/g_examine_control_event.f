@@ -9,7 +9,7 @@
 *-         : err                - reason for failure, if any
 *- 
 *-   Created  17-May-1994   Kevin B. Beard, Hampton U.
-* $Log$
+* $Log: g_examine_control_event.f,v $
 * Revision 1.8  2008/09/25 00:06:33  jones
 * Updated to run with gfortran compiler
 *

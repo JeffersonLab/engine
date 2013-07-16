@@ -9,9 +9,9 @@
 *-         : err	- reason for failure, if any
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
-* $Log$
-* Revision 1.14  2004/07/08 20:09:47  saw
-* Flush CTP Root trees
+* $Log: g_proper_shutdown.f,v $
+* Revision 1.13.10.1  2004/07/09 14:12:47  saw
+* Add function calls to fill CTP ROOT Trees
 *
 * Revision 1.13  2004/02/17 17:27:10  jones
 * Only dump histograms when g_histout_filename is set.

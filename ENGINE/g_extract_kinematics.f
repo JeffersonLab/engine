@@ -1,5 +1,5 @@
       subroutine g_extract_kinematics(ebeam,phms,thms,psos,tsos,ntarg)
-* $Log$
+* $Log: g_extract_kinematics.f,v $
 * Revision 1.6  2003/09/05 15:41:05  jones
 * Merge in online03 changes (mkj)
 *

@@ -1,6 +1,6 @@
       subroutine g_calc_raster_pedestal(ABORT,err)
 *
-* $Log$
+* $Log: g_calc_raster_pedestal.f,v $
 * Revision 1.3  1999/02/23 16:56:46  csa
 * (JRA) Remove slow raster stuff
 *

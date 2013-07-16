@@ -5,7 +5,7 @@
 *
 *     csa 4/15/97
 *
-* $Log$
+* $Log: s_ntuple_clear.f,v $
 * Revision 1.1  1999/02/24 14:50:24  saw
 * Dummy routine
 *
