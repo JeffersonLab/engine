@@ -4,8 +4,7 @@
 # variable ROOTSYS is undefined, or uncomment "#ROOTSYS=" line below.
 # The same must be done in CTP/Makefile.Unix
 
-# ROOTSYS=
-
+ROOTSYS=
 
 disp_objs = glvolu.o 
 
@@ -41,7 +40,8 @@ STRACKINGLIB = $(LIBROOT)/libstracking.a
 HACKLIB = $(LIBROOT)/libhack.a
 CERNLIBS = -lgeant$(GEANTVER) -lpawlib -lgraflib -lgrafX11 -lpacklib -lmathlib
 OURGENLIBS = $(ENGINELIB) $(HTRACKINGLIB) $(STRACKINGLIB) $(TRACKINGLIB) \
-	$(HACKLIB) $(UTILLIB) $(CODALIB) $(CTPLIB) $(CTPCLIENTLIB) 
+	$(HACKLIB) $(UTILLIB) $(CODALIB) $(CTPLIB) $(CTPCLIENTLIB) \
+	$(BTRACKINGLIB) $(SANETRACKINGLIB) $(F1TRIGGER) $(SEM)
 MAKEREG=$(Csoft)/../$(MYOS)/bin/makereg
 
 ifeq ($(MYOS),HPUX)
@@ -75,16 +75,14 @@ endif
 
 ifeq ($(MYOS),Linux)  
    override FFLAGS += -I$(Csoft)/INCLUDE
-
-
    DISPFLAGS=$(FFLAGS)
    ifeq ($(MYREALOS),Darwin)
       OTHERLIBS += -L$(CERN_ROOT)/lib -lpacklib -lc -lm
    else
-      OTHERLIBS += -L$(CERN_ROOT)/lib -lpacklib -lc -lm -lnsl
+    OTHERLIBS += -L$(CERN_ROOT)/lib -lpacklib -lc -lm -lnsl 
+ #    OTHERLIBS +=-L/usr/lib64/cernlib/2006/lib -Wl,-static -lpacklib -lkernlib -Wl,-dy -lm -lnsl -lcrypt -ldl	 
    endif 
    OURLIBS := $(OURGENLIBS) $(LIBROOT)/libport.a
-
 endif
 
 ifeq ($(MYOS),SunOS)
@@ -109,6 +107,7 @@ ifeq ($(MYOS),AIX)
   OURLIBS := $(OURGENLIBS) $(LIBROOT)/libport.a
 endif
 
+# There are no r_%.f files used or built -- this rule isn't used
 r_%.f : %.cmn $(MAKEREG)
 	$(MAKEREG) $< -o $@ -e /dev/null
 
@@ -129,10 +128,7 @@ evdisplay.o: evdisplay.f
 	$(FC) $(FFLAGS) -c $< -o $@
 
 engine_replay_$(MYOS): Makefile engine.o  $(OURLIBS)
-
-
 	$(FC) -o $@ $(FFLAGS) engine.o $(OURLIBS) $(OTHERLIBS)
-
 
 engine_replay: engine_replay_$(MYOS)
 	$(RM) ../../$(MYOS)/bin/engine_replay
@@ -153,12 +149,3 @@ evdisplay: $(disp_objs) Makefile evdisplay.o $(disp_objs) $(ONEEVLIB) $(OURLIBS)
 
 clean:
 	$(RM) *.o r_*.f engine_replay engine_replay_$(MYOS) evdisplay
-
-
-
-
-
-
-
-
-
