@@ -1,6 +1,10 @@
 * hms_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the hms time of flight.
-* $Log$
+* $Log: hms_scin_tof.cmn,v $
+* Revision 1.11.16.1  2005/03/15 21:17:52  jones
+* Add variables htof_tolerance and stof_tolerance to be used
+* to filter the scintillator tdc hits and group them by time. ( P. Bosted)
+*
 * Revision 1.12  2005/03/15 21:14:28  jones
 * Add variables htof_tolerance and stof_tolerance to be used to filter the scintillator tdc hits and group them by time. ( P. Bosted)
 *
@@ -120,6 +124,7 @@
 *
 *     CTPTYPE=event
 *
+      real*4 h_rfptime(hnum_scin_planes)    !time at fp from 
       real*4 h_fptime(hnum_scin_planes)    !time at fp from all hits in 1 plane
       real*4 h_fptimedif(6)                !fp time differences
       real*4 hbeta_notrk
@@ -128,6 +133,7 @@
       real*4 hbeta_pcent                   !beta for central momentum
 
       common/htof_notrk/
+     &  h_rfptime,
      &  h_fptime,
      &  h_fptimedif,
      &  hbeta_notrk,
