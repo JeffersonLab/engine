@@ -1,5 +1,5 @@
 #
-# $Log$
+# $Log: Makefile.Unix,v $
 # Revision 1.22  2008/09/25 00:01:29  jones
 # Updated to run with gfortran compiler
 #
@@ -76,7 +76,7 @@
 # variable ROOTSYS is undefined, or uncomment "#ROOTSYS=" line below.
 # The same must be done in EXE/Makefile
 
-#ROOTSYS=
+ROOTSYS=
 
 
 NEWSTYLE = 1

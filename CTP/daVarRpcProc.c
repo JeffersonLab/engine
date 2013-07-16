@@ -17,7 +17,7 @@
  * Author:  Stephen Wood, CEBAF Hall C
  *
  * Revision History:
- *   $Log$
+ *   $Log: daVarRpcProc.c,v $
  *   Revision 1.3  2008/09/25 00:01:29  jones
  *   Updated to run with gfortran compiler
  *

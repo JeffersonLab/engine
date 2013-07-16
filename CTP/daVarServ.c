@@ -15,7 +15,7 @@
  * Author:  Stephen Wood, CEBAF Hall C
  *
  * Revision History:
- *  $Log$
+ *  $Log: daVarServ.c,v $
  *  Revision 1.3  2003/02/21 20:55:24  saw
  *  Clean up some types and casts to reduce compiler warnings.
  *

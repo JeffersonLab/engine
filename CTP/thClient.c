@@ -18,7 +18,7 @@
  * Author:  Stephen Wood, CEBAF Hall C
  *
  * Revision History:
- *  $Log$
+ *  $Log: thClient.c,v $
  *  Revision 1.6  2011/03/04 15:24:04  jones
  *  Add check for 64bit by looking for LP64
  *

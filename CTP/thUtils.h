@@ -15,7 +15,7 @@
  * Author:  Stephen Wood, CEBAF Hall C
  *
  * Revision History:
- *   $Log$
+ *   $Log: thUtils.h,v $
  *   Revision 1.2  2008/09/25 00:01:28  jones
  *   Updated to run with gfortran compiler
  *

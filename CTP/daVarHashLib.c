@@ -15,7 +15,7 @@
  * Author:  Jie Chen, CEBAF Data Acquisition Group
  *
  * Revision History:
- * $Log$
+ * $Log: daVarHashLib.c,v $
  * Revision 1.2  1999/11/04 20:34:04  saw
  * Alpha compatibility.
  * New RPC call needed for root event display.
@@ -24,7 +24,7 @@
  * Revision 1.1  1996/07/31 20:33:15  saw
  * Initial revision
  *
- *   $Log$
+ *   $Log: daVarHashLib.c,v $
  *   Revision 1.2  1999/11/04 20:34:04  saw
  *   Alpha compatibility.
  *   New RPC call needed for root event display.

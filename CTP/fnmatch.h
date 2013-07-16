@@ -1,4 +1,4 @@
-/* $Log$
+/* $Log: fnmatch.h,v $
 /* Revision 1.1  1999/06/23 13:40:25  saw
 /* Need for Linux
 /*

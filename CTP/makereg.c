@@ -1,6 +1,6 @@
 /* makereg.c version 1.0.  August 1994, Allen Boozer
    Report bugs to adb2y@virginia.edu
- $Log$
+ $Log: makereg.c,v $
  Revision 1.2  2008/09/25 00:01:29  jones
  Updated to run with gfortran compiler
 

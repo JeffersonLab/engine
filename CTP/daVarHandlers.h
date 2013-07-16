@@ -15,7 +15,7 @@
  * Author:  Stephen A. Wood, CEBAF Hall C
  *
  * Revision History:
- *  $Log$
+ *  $Log: daVarHandlers.h,v $
  *  Revision 1.2  1999/11/04 20:34:04  saw
  *  Alpha compatibility.
  *  New RPC call needed for root event display.
@@ -28,7 +28,7 @@
  *  Add pending callback requests structure definition
  *
  *	  Revision 1.2  1993/05/11  17:34:58  saw
- *	  Fix $Log$
+ *	  Fix $Log: daVarHandlers.h,v $
  *	  Fix Revision 1.2  1999/11/04 20:34:04  saw
  *	  Fix Alpha compatibility.
  *	  Fix New RPC call needed for root event display.

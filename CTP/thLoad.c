@@ -16,7 +16,7 @@
  * Author:  Stephen Wood, CEBAF Hall C
  *
  * Revision History:
- *   $Log$
+ *   $Log: thLoad.c,v $
  *   Revision 1.5  2004/07/13 15:04:53  saw
  *   Get count of groups on begin line correct when there are other attributes
  *

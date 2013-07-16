@@ -15,7 +15,7 @@
  * Author:  Jie Chen, CEBAF Data Acquisition Group
  *
  * Revision History:
- *   $Log$
+ *   $Log: daVarHash.h,v $
  *   Revision 1.1  1998/12/07 22:11:09  saw
  *   Initial setup
  *

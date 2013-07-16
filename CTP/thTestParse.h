@@ -1,6 +1,6 @@
 /*
  * Revision History:
- * $Log$
+ * $Log: thTestParse.h,v $
  * Revision 1.1  1998/12/07 22:11:13  saw
  * Initial setup
  *

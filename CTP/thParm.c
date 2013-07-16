@@ -15,7 +15,7 @@
  * Author:  Stephen Wood, CEBAF Hall C
  *
  * Revision History:
- *   $Log$
+ *   $Log: thParm.c,v $
  *   Revision 1.5  2011/03/04 15:25:59  jones
  *   Used to be %li and %ld, but that makes 8 byte result stuffed into 4 byte lval
  *

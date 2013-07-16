@@ -15,7 +15,7 @@
  * Author:  Stephen Wood, CEBAF Hall C
  *
  * Revision History:
- *   $Log$
+ *   $Log: thTestExecute.c,v $
  *   Revision 1.4  2011/03/04 15:24:29  jones
  *   Add check for 64bit by looking for LP64
  *

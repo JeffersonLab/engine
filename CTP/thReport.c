@@ -15,7 +15,7 @@
  * Author:  Stephen Wood, CEBAF Hall C
  *
  * Revision History:
- * $Log$
+ * $Log: thReport.c,v $
  * Revision 1.3  2002/07/31 20:07:48  saw
  * Add files for ROOT Trees
  *

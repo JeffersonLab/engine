@@ -15,7 +15,7 @@
  * Author:  Stephen Wood, CEBAF Hall C
  *
  * Revision History:
- *   $Log$
+ *   $Log: thTestParse.c,v $
  *   Revision 1.6  2011/03/04 15:25:50  jones
  *   Used to be %li and %ld, but that makes 8 byte result stuffed into 4 byte lval
  *

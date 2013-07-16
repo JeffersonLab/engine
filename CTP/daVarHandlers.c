@@ -15,7 +15,7 @@
  * Author:  Stephen Wood, CEBAF Hall C
  *
  * Revision History:
- *   $Log$
+ *   $Log: daVarHandlers.c,v $
  *   Revision 1.1  1998/12/07 22:11:09  saw
  *   Initial setup
  *

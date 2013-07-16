@@ -15,7 +15,7 @@
  * Author:  Stephen Wood, CEBAF Hall C
  *
  * Revision History:
- *   $Log$
+ *   $Log: thInternal.h,v $
  *   Revision 1.3  2004/07/08 20:06:09  saw
  *   Always have CTP Tree routines (perhaps dummy) available
  *
