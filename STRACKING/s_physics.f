@@ -20,7 +20,10 @@
 *-                           Dummy Shell routine
 *
 *
-* $Log$
+* $Log: s_physics.f,v $
+* Revision 1.21.12.1  2004/07/12 03:08:03  cdaq
+* issue with mmx fixed?
+*
 * Revision 1.21  2003/11/28 14:57:30  jones
 * Added variable ssxp_tar_temp = ssxp_tar + s_oopcentral_offset  (MKJ)
 *
@@ -175,6 +178,7 @@
 
       call s_satcorr(ABORT,err)
       ssp = spcentral*(1.0 + ssdelta/100.) !Momentum in GeV
+
       ssenergy = sqrt(ssp*ssp+spartmass*spartmass)        
 
       sstrack_et   = strack_et(itrkfp)

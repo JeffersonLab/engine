@@ -1,6 +1,12 @@
       subroutine s_calc_pedestal(ABORT,err)
 *
-* $Log$
+* $Log: s_calc_pedestal.f,v $
+* Revision 1.13.16.2  2004/07/08 21:15:47  cdaq
+* SOS cer peds correct, set it so SOS cer thresholds are always written as 0
+*
+* Revision 1.13.16.1  2004/07/06 21:14:44  cdaq
+* hardwired scer peds to 0
+*
 * Revision 1.13  1999/02/23 18:57:19  csa
 * (JRA) Sparsify aerogel/lucite channels, cleanup
 *
@@ -297,7 +303,8 @@ c
         slot=3
         write(SPAREID,*) 'slot=',slot
         do ind=1,4
-          write(SPAREID,*) int(scer_new_adc_threshold(ind))
+c          write(SPAREID,*) int(scer_new_adc_threshold(ind))
+          write(SPAREID,*) '0'
         enddo
         do ind=5,64
           write(SPAREID,'(a6)') '  4000'
