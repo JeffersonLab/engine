@@ -30,6 +30,8 @@
 *--------------------------------------------------------
       call h_ntuple_shutdown(ABORT,err)
 *
+      call h_dc_ntuple_shutdown(ABORT,err)
+*
       call h_sv_nt_shutdown(ABORT,err)
 *
       call s_ntuple_shutdown(ABORT,err)

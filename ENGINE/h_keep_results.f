@@ -61,6 +61,15 @@
          err= ' '
       ENDIF
 *
+*
+      call h_dc_ntuple_keep(ABORT,err)! check for good tracks
+*
+      IF(ABORT) THEN
+         call G_add_path(here,err)
+      ELSE
+         err= ' '
+      ENDIF
+*
 * Need to fix up the bloody error reporting
 *
       if(HSNUM_FPTRACK.gt.0)call h_sv_nt_keep(ABORT,err) ! at least one track

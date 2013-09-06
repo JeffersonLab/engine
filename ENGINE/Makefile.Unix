@@ -120,7 +120,7 @@ general_source = $(decode_source) g_clear_event.f \
 hms_source = h_clear_event.f h_initialize.f h_keep_results.f \
 	h_proper_shutdown.f h_reset_event.f \
 	h_register_variables.f h_apply_offsets.f h_fieldcorr.f \
-	h_ntuple_close.f h_ntuple_open.f h_ntuple_change.f       
+	h_ntuple_close.f h_ntuple_open.f h_ntuple_change.f h_dc_ntuple_close.f h_dc_ntuple_open.f h_dc_ntuple_change.f       
 sos_source = s_clear_event.f s_initialize.f s_keep_results.f \
 	s_proper_shutdown.f s_reset_event.f \
 	s_register_variables.f s_apply_offsets.f s_fieldcorr.f \
@@ -134,6 +134,8 @@ ntuple_source = g_ntuple_init.f g_ntuple_shutdown.f \
 	c_ntuple_register.f c_ntuple_shutdown.f \
 	h_ntuple_clear.f h_ntuple_init.f h_ntuple_keep.f \
 	h_ntuple_register.f h_ntuple_shutdown.f \
+	h_dc_ntuple_clear.f h_dc_ntuple_init.f h_dc_ntuple_keep.f \
+	h_dc_ntuple_register.f h_dc_ntuple_shutdown.f \
 	s_ntuple_clear.f s_ntuple_init.f s_ntuple_keep.f \
 	s_ntuple_register.f s_ntuple_shutdown.f \
 	h_sv_nt_init.f h_sv_nt_keep.f \
@@ -143,7 +145,7 @@ ntuple_source = g_ntuple_init.f g_ntuple_shutdown.f \
 gmakeregstuff = r_gen_filenames.f r_gen_run_info.f r_gen_event_info.f \
 	r_gen_scalers.f r_gen_run_pref.f r_gen_data_structures.f
 cmakeregstuff = r_coin_filenames.f r_c_ntuple.f r_coin_data_structures.f
-hmakeregstuff = r_h_ntuple.f r_h_sieve_ntuple.f r_hms_data_structures.f
+hmakeregstuff = r_h_ntuple.f r_h_dc_ntuple.f r_h_sieve_ntuple.f r_hms_data_structures.f
 smakeregstuff = r_s_ntuple.f r_sos_data_structures.f
 replay_source = engine.f
 

@@ -72,6 +72,7 @@
       call r_hms_filenames
 
       call r_h_ntuple
+      call r_h_dc_ntuple
 
       call r_h_sieve_ntuple
 
@@ -84,6 +85,14 @@
       ABORT= ABORT .or. FAIL
 *
       call h_ntuple_register(FAIL,why)  ! Remove this when ctp files fixed
+      IF(err.NE.' ' .and. why.NE.' ') THEN  !keep warnings
+        call G_append(err,' & '//why)
+      ELSEIF(why.NE.' ') THEN
+        err= why
+      ENDIF
+      ABORT= ABORT .or. FAIL
+*
+      call h_dc_ntuple_register(FAIL,why)  ! Remove this when ctp files fixed
       IF(err.NE.' ' .and. why.NE.' ') THEN  !keep warnings
         call G_append(err,' & '//why)
       ELSEIF(why.NE.' ') THEN

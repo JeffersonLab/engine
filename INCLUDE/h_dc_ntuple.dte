@@ -1,0 +1,15 @@
+**************************begin: h_dc_ntuple.dte ***********************
+*- 
+*
+      data h_dc_Ntuple_exists/.FALSE./
+      data h_dc_Ntuple_ID/0/
+      data h_dc_Ntuple_file/' '/
+      data h_dc_Ntuple_name/' '/
+      data h_dc_Ntuple_title/' '/
+      data h_dc_Ntuple_directory/' '/
+      data h_dc_Ntuple_IOchannel/0/
+      data h_dc_Ntuple_size/0/
+      data h_dc_Ntuple_tag/HMAX_dc_Ntuple_size*' '/
+      data h_dc_Ntuple_contents/HMAX_dc_Ntuple_size*0/
+*
+****************************end: h_dc_ntuple.dte ***********************

@@ -1,0 +1,96 @@
+      subroutine h_dc_Ntuple_init(ABORT,err)
+*----------------------------------------------------------------------
+*
+*
+*----------------------------------------------------------------------
+      implicit none
+      save
+*
+      character*13 here
+      parameter (here='h_dc_Ntuple_init')
+*
+      logical ABORT
+      character*(*) err
+*
+      INCLUDE 'h_dc_ntuple.cmn'
+      INCLUDE 'gen_routines.dec'
+      include 'hms_data_structures.cmn'
+      include 'gen_run_info.cmn'
+*
+      character*80 default_name
+      parameter (default_name= 'HMSdcntuple')
+c
+      character*80 file
+      character*80 name
+      character*1000 pat,msg
+      integerilo,fn_len,m
+      character*1 ifile
+
+      INCLUDE 'h_dc_ntuple.dte'
+*
+*--------------------------------------------------------
+      err= ' '
+      ABORT = .FALSE.
+*
+      IF(h_dc_Ntuple_exists) THEN
+        call h_dc_Ntuple_shutdown(ABORT,err)
+        If(ABORT) Then
+          call G_add_path(here,err)
+          RETURN
+        EndIf
+      ENDIF
+*
+      call NO_nulls(h_dc_Ntuple_file)     !replace null characters with blanks
+*
+*-if name blank, just forget it
+      write(*,*) ' h-dc file = ',h_dc_Ntuple_file
+      IF(h_dc_Ntuple_file.EQ.' ') RETURN   !do nothing
+      h_dc_Ntuple_ID= default_h_dc_Ntuple_ID
+      h_dc_Ntuple_name= default_name
+      IF(h_dc_Ntuple_title.EQ.' ') THEN
+        msg= name//' '//h_dc_Ntuple_file
+        call only_one_blank(msg)
+        h_dc_Ntuple_title= msg
+      ENDIF
+
+      file= h_dc_Ntuple_file
+      call g_sub_run_number(file,gen_run_number)
+
+
+*     * only needed if using more than one file      
+      if (h_dc_Ntuple_max_segmentevents .gt. 0) then
+       h_dc_Ntuple_filesegments = 1
+
+       ifile = char(ichar('0')+h_dc_Ntuple_filesegments)
+ 
+       fn_len = g_important_length(file)
+       ilo=index(file,'.hbook')
+       if ((ilo.le.1).or.(ilo.gt.fn_len-5)) then
+         ilo=index(file,'.rzdat')
+       endif  
+
+       if ((ilo.gt.1).and.(ilo.lt.fn_len)) then
+         file = file(1:ilo-1) // '.' // ifile // file(ilo:fn_len)
+       else
+         ABORT = .true.
+        RETURN
+       endif
+       write(*,*) 'Using segmented hms rzdat files first filename: ',file
+       else
+       write(*,*) 'Not using segmented hms rzdat files first filename: ',file  
+      endif
+*
+
+      call h_dc_Ntuple_open(file,ABORT,err)      
+
+      IF(ABORT) THEN
+        err= ':unable to create HMS Ntuple'
+        call G_add_path(here,err)
+      ELSE
+        pat= ':created HMS Ntuple'
+        call G_add_path(here,pat)
+        call G_log_message('INFO: '//pat)
+      ENDIF
+
+      RETURN
+      END  
