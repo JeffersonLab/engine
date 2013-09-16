@@ -435,6 +435,7 @@
       REAL*4 HCHI2PERDOF_FP        ! fp chi2 per degree of freedom
       INTEGER*4 HNFREE_FP          ! NUMBER OF DEGREES OF FREEDOM IN FIT
       INTEGER*4 HNTRACK_HITS      ! LIST OF HITS ON EACH TRACK
+      real*4  htrack_leftright    ! left-right combination of hits on each track
       REAL*4  HDEL_FP              !  FOCAL PLANE ERROR MATRIX
       REAL*4  HX_FP_rot            ! x in rotated focal plane
       REAL*4  HY_FP_rot            ! y in rotated f plane
@@ -457,6 +458,7 @@
      6     HCHI2_FP(HNTRACKS_MAX),
      7     HDEL_FP(4,4,HNTRACKS_MAX),
      8     HNTRACK_HITS(HNTRACKS_MAX,HNTRACKHITS_MAX+1),
+     $     htrack_leftright(hntracks_max,hntrackhits_max),
      9     HNFREE_FP(HNTRACKS_MAX),
      A     HNTRACKS_FP,HCHI2PERDOF_FP(HNTRACKS_MAX),
      >     HX_FP_rot(HNTRACKS_MAX),
@@ -592,23 +594,23 @@
       REAL*4 HSYP_TAR 
       REAL*4 HSBETA_CHISQ
 *
-      real*4 hsmass2               ! Mass squared
+      real*4 hsmass2             ! Mass squared
       real*4 hst                   ! invariant t 
       real*4 hsu                   ! invariant u
       real*4 hseloss
       real*4 hsq3                  ! Lab frame momentum transfer
 *      real*4 hsthetaq, hsphiq      ! Direction of q3
       real*4 hsbigq2               ! Q**2
-      real*4 hsx                   ! fraction of nucleon p carried by quark
-      real*4 hsy                   ! fraction of lepton''s E lost in lab
-      real*4 hsw                   ! Invariant mass of recoil system
+      real*4 hsx   ! fraction of nucleon p carried by quark
+      real*4 hsy ! fraction of lepton''s E lost in lab
+      real*4 hsw ! Invariant mass of recoil system
       real*4 hsw2                  ! Invariant mass**2 of recoil system
-      real*4 hsnu                  ! Ebeam-HSenergy
-      real*4 hsx_bj		   ! Bjorken x
-      real*4 y_scale		   ! scaling variable y
-      real*4 yscale		   ! real function that calculates Y
-      real*4 xsi_scale	           ! nachtmann variable (=x at Q2=1)
-      real*4 yscale_eps	           ! separation energy
+      real*4 hsnu! Ebeam-HSenergy
+      real*4 hsx_bj ! Bjorken x
+      real*4 y_scale ! scaling variable y
+      real*4 yscale ! real function that calculates Y
+      real*4 xsi_scale ! nachtmann variable (=x at Q2=1)
+      real*4 yscale_eps ! separation energy
       real*4 hspipre               ! hms pipre TDC value
       real*4 hselreal              ! hms elreal TDC value
       real*4 hselclean             ! hms elclean TDC value

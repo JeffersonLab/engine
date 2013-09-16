@@ -115,6 +115,7 @@
           plusminusknown(ihit) = 0
           if(pl(ihit).eq.2 .OR. pl(ihit).eq.8)  isa_y1 = ihit
           if(pl(ihit).eq.5 .OR. pl(ihit).eq.11) isa_y2 = ihit
+c          write(hluno,*) " hit, plane, wc = ",ihit,pl(ihit),wc(ihit)
         enddo
 
 * djm 10/2/94 check bad hdc pattern units to set the index for the inverse
@@ -232,6 +233,7 @@
             plusminusknown(isa_y1) = 1
             plusminusknown(isa_y2) = -1
           endif
+c          write(hluno,*) plusminusknown(isa_y1),plusminusknown(isa_y2),isa_y1,isa_y2,wc(isa_y2),wc(isa_y1)
           if ((numhits-2).lt.0) then
              write(6,*) 'h_left_right: numhits-2 < 0'
           elseif ((numhits-2).eq.0) then
@@ -257,14 +259,15 @@
               endif
               iswhit = iswhit + 1
             endif
+c            write(hluno,*) pmloop,ihit,plusminus(ihit) 
           enddo
 
           if (pindex.ge.0 .and. pindex.le.14) then
             call h_find_best_stub(numhits,hits,pl,pindex,plusminus,stub,chi2)
 *jv            if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
 *jv     $           ''   chi2='',e14.6)') pmloop,chi2
-            if(hdebugstubchisq.ne.0) write(6,'(''hms  pmloop='',i4,
-     $           ''   chi2='',e14.6)') pmloop,chi2
+            if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
+     $           ''   chi2='',e14.6)') pmloop,chi2,minchi2
 
 * Take best chi2 IF x' of the stub agrees with x' as expected from x.
 * Sometimes an incorrect x' gives a good chi2 for the stub, even though it is
@@ -282,6 +285,7 @@
                 minchi2=chi2
                 do idummy=1,numhits
                   plusminusbest(idummy)=plusminus(idummy)
+c                  write(hluno,*) " +/- = ",idummy,plusminus(idummy)
                 enddo
                 do idummy=1,4
                   hbeststub(isp,idummy)=stub(idummy)
@@ -338,7 +342,7 @@
      &         HDC_WIRE_CENTER(hspace_point_hits(isp,ihit+2)) +
      &         plusminusbest(ihit)*HDC_DRIFT_DIS(hspace_point_hits(isp,ihit
      $         +2))
-          
+         hspace_point_leftright(isp,ihit) = plusminusbest(ihit)          
         enddo
 *
 *     stubs are calculated in rotated coordinate system
@@ -365,7 +369,7 @@
         hbeststub(isp,3)=stub(3)
         hbeststub(isp,4)=stub(4)
         if(hdebugprintrawdc.ne.0 ) then
-              write(hluno,'(a,i5,4(f10.5,1x))' ) ' l/r space point =',isp,stub(1),stub(2),stub(3), stub(4)
+              write(hluno,'(a,i5,5(f10.5,1x))' ) ' l/r space point =',isp,stub(1),stub(2),stub(3), stub(4),minchi2
         endif
         
 *

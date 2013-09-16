@@ -61,8 +61,10 @@
       integer*4 ihit,ierr
       integer*4 hit,pln
       integer*4 i,j                             ! loop index
+      integer*4 fix_lr
+      parameter (fix_lr=0)
 *      real*4 z_slice
-
+c
       real*8   h_dpsifun
       real*8   pos
       real*8   ray1(4)
@@ -100,7 +102,15 @@ c        hdc_sing_res(pln)=1000
 *     are there enough degrees of freedom
           hnfree_fp(itrk)=hntrack_hits(itrk,1)-hnum_fpray_param
           if(hnfree_fp(itrk).gt.0) then
-
+c
+             if ( fix_lr .eq. 1) then
+             do ihit=2,hntrack_hits(itrk,1)+1
+                hit = hntrack_hits(itrk,ihit)
+                hdc_wire_coord(hit) = hdc_wire_center(hit) + 
+     $               htrack_leftright(itrk,ihit-1) * 
+     $               hdc_drift_dis(hit)
+             enddo
+             endif
 *     initialize parameters
             do i=1,hnum_fpray_param
               TT(i)=0.
@@ -110,6 +120,7 @@ c        hdc_sing_res(pln)=1000
                 TT(i)=TT(i)+((hdc_wire_coord(hit)*
      &               hplane_coeff(remap(i),pln))
      &               /(hdc_sigma(pln)*hdc_sigma(pln)))
+c                write(hluno,'(a,i3,3(f10.5,1x))') " hit = ",hit,hdc_wire_coord(hit),hplane_coeff(remap(i),pln),hdc_sigma(pln)
               enddo 
             enddo
             do i=1,hnum_fpray_param
@@ -131,6 +142,12 @@ c        hdc_sing_res(pln)=1000
 *
 *     solve four by four equations
             call solve_four_by_four(TT,AA,dray,ierr)
+c            write(hluno,'(a,4(f10.5,1x))') "dray = ",dray
+c            write(hluno,'(a,4(e15.7,1x))') "TT = ",TT
+c            write(hluno,'(a,4(e15.7,1x))') "AA = ",(AA(i,1),i=1,4)
+c            write(hluno,'(a,4(e15.7,1x))') "AA = ",(AA(i,2),i=1,4)
+c            write(hluno,'(a,4(e15.7,1x))') "AA = ",(AA(i,3),i=1,4)
+c            write(hluno,'(a,4(e15.7,1x))') "AA = ",(AA(i,4),i=1,4)
 *
             if(ierr.ne.0) then
               dray(1)=10000.
