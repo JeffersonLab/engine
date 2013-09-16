@@ -493,7 +493,8 @@ c
 * Comment out the following three lines if they cause trouble or
 * if wish is unavailable.
 *
-      write(system_string,*) './runstats ',file(1:index(file,' ')-1), ' ',
+      write(system_string,*) 
+     >'./runstats ',file(1:index(file,' ')-1), ' ',
      $     gen_run_number, ' > /dev/null &'
       call system(system_string)
 *
@@ -617,7 +618,8 @@ c
              endif            
 c
                if (syncfilter_on) then 
-                 if (  insync .eq. 1 .or.  skip_events ) write(*,*) ' Skipping out-of-sync events'
+                 if (  insync .eq. 1 .or.  skip_events ) 
+     > write(*,*) ' Skipping out-of-sync events'
                  if ( ave_current_bcm(bcm_for_threshold_cut)  .le. g_beam_on_thresh_cur(bcm_for_threshold_cut)
      >  .or. insync .eq. 1 .or. skip_events ) then
                   do ii=1,MAX_NUM_SCALERS
@@ -632,7 +634,8 @@ c
 c
                if (analyzed_events(0) .le. 1 ) then
                   write(*,*) '************'
-                  write(*,*) ' Will not analyze events until after first scaler read'
+                  write(*,*) 
+     > ' Will not analyze events until after first scaler read'
                   write(*,*) '************'
                endif
 *
@@ -648,7 +651,8 @@ c
      &           .and.gen_run_hist_dump_interval.gt.0) then
                 lastdump=physics_events   ! Wait for next interval of dump_int.
                 call g_proper_shutdown(ABORT,err)
-                print 112,"Finished dumping histograms/scalers for first",
+                print 112,
+     >"Finished dumping histograms/scalers for first",
      &             physics_events," events"
  112            format (a,i8,a)
               endif
@@ -661,7 +665,8 @@ c
 c
                   if (skipped_events_scal .gt. 0 ) then
                   write(*,*) '************'
-                  write(*,*) ' Will not analyze SOS,HMS or coin events until after first scaler read'
+                  write(*,*) ' Will not analyze SOS,HMS or coin"
+     >," events until after first scaler read'
                   write(*,*) ' Recorded events :',(recorded_events(mkj),mkj=1,3)
                   write(*,*) ' Analyzed events :',(analyzed_events(mkj),mkj=1,3)
                   write(*,*) '************'
@@ -696,7 +701,7 @@ c
                   mss= err
                 endif
 
-                if (num_events_skipped.lt.(gen_run_starting_event-1) .and.
+                if (gen_event_ID_number.lt.(gen_run_starting_event) .and.
      &              gen_event_type.ne.4) then ! always analyze peds.
                   num_events_skipped = num_events_skipped + 1
                 else
@@ -734,7 +739,8 @@ c
                     start_time=time()     !reset start time for analysis rate
                     groupname='ped'
                   else
-                    write(6,*) 'gen_event_type= ',gen_event_type,' for call to g_keep_results'
+                    write(6,*) 'gen_event_type= '
+     >        ,gen_event_type,' for call to g_keep_results'
                   endif
 
                   If(.NOT.problems .and. groupname.ne.' ') Then
@@ -842,6 +848,7 @@ c
 
         if(gen_run_stopping_event.gt.0 .and. gen_event_ID_number.gt.0) then
           EoF=EoF .or. gen_run_stopping_event.le.sum_analyzed+sum_analyzed_skipped-analyzed_events(4)
+          EoF=EoF .or. gen_run_stopping_event.eq.gen_event_ID_number
         EndIf
 *
 *- Here is where we insert a check for an Remote Proceedure Call (RPC)
@@ -921,14 +928,16 @@ c...
       call G_log_message(mss)
       DO i=1,gen_MAX_trigger_types
         If(recorded_events(i).GT.0) Then
-          write(mss,'(" events of type:",i3," # skipped for bad sync:",i12)')
+          write(mss
+     >,'(" events of type:",i3," # skipped for bad sync:",i12)')
      &             i,skipped_badsync_events(i)
           call G_log_message(mss)
         ENDIF
       ENDDO
       DO i=1,gen_MAX_trigger_types
         If(recorded_events(i).GT.0) Then
-          write(mss,'("  events of type:",i3," # skipped for low current:",i12)')
+          write(mss,
+     >'("  events of type:",i3," # skipped for low current:",i12)')
      &             i,skipped_lowbcm_events(i)
           call G_log_message(mss)
         ENDIF
