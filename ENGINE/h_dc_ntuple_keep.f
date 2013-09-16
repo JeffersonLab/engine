@@ -59,6 +59,10 @@ c
           dc_xpfp(m)=hxp_fp(m)
           dc_yfp(m)=hy_fp(m)
           dc_ypfp(m)=hyp_fp(m)
+          dc_xptg(m)=hxp_tar(m)
+          dc_ytg(m)=hy_tar(m)
+          dc_yptg(m)=hyp_tar(m)
+          dc_delta(m)=hdelta_tar(m)
           enddo
 * Fill ntuple for this event
       ABORT= .NOT.HEXIST(h_dc_Ntuple_ID)

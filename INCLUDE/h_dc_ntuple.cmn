@@ -38,6 +38,8 @@
       common/GINFO/evnum,evtype
       integer*4 dc_ntr
       real*4 dc_xfp(20),dc_yfp(20),dc_xpfp(20),dc_ypfp(20)
+      real*4 dc_ytg(20),dc_xptg(20),dc_yptg(20),dc_delta(20)
       common/DCINFO/dc_ntr,dc_xfp,dc_yfp,dc_xpfp,dc_ypfp
+     >,dc_ytg,dc_xptg,dc_yptg,dc_delta
 ****************************end: h_dc_ntuple.cmn ***********************
 
