@@ -49,13 +49,15 @@
 *
 cc      write(6,*) "IN h_sp_multiwire"  !! MEC       
         if(hdebugprintrawdc.ne.0 ) then
-              write(hluno,'(a,i5)') ' multiwire # of sp pts =', nspace_points
+              write(hluno,'(a,i5)') 'Start multiwire # of sp pts =', nspace_points
         endif
 
 
       nspace_points_tot = nspace_points
       do point = 1,nspace_points              !!  Start loop over SPs  !!
-
+        if(hdebugprintrawdc.ne.0 ) then
+c              write(hluno,'(a,i5)') 'Looping thru  sp pts =',point
+        endif
 cc       write(6,*) "orig SP  ",space_point_hits(point,1),space_point_hits(point,2),
 cc     &  space_point_hits(point,3),space_point_hits(point,4),
 cc     &         space_point_hits(point,5),space_point_hits(point,6),
@@ -79,6 +81,10 @@ cc     &  space_point_hits(point,9),space_point_hits(point,10)
 
 *-  Count the number of hits in each plane and fill array with the hit #'s associated with each plane
 
+        if(hdebugprintrawdc.ne.0 ) then
+c              write(hluno,'(a)') 
+c     >    ' Counting multiple hits plane hits/plane'
+        endif
         do j = 3,space_point_hits(point,1)+2   !! Loop over all hits in sp -         !!
           hit = min(space_point_hits(point,j),hmax_hits_per_point)     !! count multiple hits in each plane  !! 
           hit_order(hit) = j-2
@@ -88,7 +94,7 @@ cc     &  space_point_hits(point,9),space_point_hits(point,10)
           hits_plane(plane,1) = nhits_plane(plane)
           hits_plane(plane,nhits_plane(plane)+1) = hit
         if(hdebugprintrawdc.ne.0 ) then
-              write(hluno,'(a,3i5)') ' Counting multiple hits hit =',hit,plane,nhits_plane(plane)  
+c              write(hluno,'(3i5)') hit,plane,nhits_plane(plane)  
         endif
           
         enddo
@@ -111,7 +117,8 @@ cc     &  space_point_hits(point,9),space_point_hits(point,10)
 *-  End counting 
 
         if(hdebugprintrawdc.ne.0 ) then
-              write(hluno,'(a,i5)') ' new sp  =',nspace_points_new
+c             write(hluno,'(a,4i5)') 'nplanes_hit  ='
+c    >,nplanes_hit,nspace_points_new,nspace_points_check,nplanes_single
         endif
 cc        write(6,*) "NEW SP:  ",nspace_points_new
 cc        write(6,*) "sp",point,":",nhits_plane    !! MEC
@@ -140,6 +147,12 @@ c     &# with mult hits:",nplanes_mult  !!  MEC
               endif 
             enddo
           enddo
+        if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,6i5)') 'Max plane and hits  ='
+     >,maxplane(1),nhits_plane(maxplane(1))
+     >,maxplane(2),nhits_plane(maxplane(2))
+     >,maxplane(3),nhits_plane(maxplane(3))
+        endif
 
 c          write(6,*) "Max hit order is:  ",maxplane         
 
@@ -153,7 +166,13 @@ c          write(6,*) "Max hit order is:  ",maxplane
             do n3 = 1,nhits_plane(maxplane(3)) 
               ntot = ntot + 1
               newsp_num = nspace_points_tot + ntot - 1                    
+             if(hdebugprintrawdc.ne.0 ) then
+c              write(hluno,'(a,3i5)') 'newsp_num   =',newsp_num,nspace_points_tot,ntot
+              endif
               if(n1.EQ.1.AND.n2.EQ.1.AND.n3.EQ.1) newsp_num = point  !!  Copy first clone over original SP  !!
+             if(hdebugprintrawdc.ne.0 ) then
+c                write(hluno,'(a,i5)') ' Copy over original SP   =',newsp_num
+              endif
               space_points(newsp_num,1) = space_points(point,1)
               space_points(newsp_num,2) = space_points(point,2) 
               space_point_hits(newsp_num,1) = nplanes_hit
@@ -172,6 +191,7 @@ c          write(6,*) "Max hit order is:  ",maxplane
 
 *-  Loop over clones and order hits in same way as parent SP
          
+          if ( 1 .eq. -1) then
           do i = 1,ntot
             newsp_num = nspace_points_tot + i  - 1
             if(i.EQ.1) newsp_num = point 
@@ -187,7 +207,7 @@ c          write(6,*) "Max hit order is:  ",maxplane
               enddo
             enddo
           enddo
-
+          endif
 *-  End order clone hits
 
 
@@ -202,6 +222,9 @@ c            enddo
 c          enddo
      
           nspace_points_tot = nspace_points_tot + ntot - 1  !! add new SPs to running total
+          if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,i5)') 'Updated nspace_points_tot =',nspace_points_tot
+          endif
         else
           ntot = 1
         endif
@@ -225,6 +248,9 @@ c        write(6,*) space_point_hits(i,1),space_point_hits(i,2),space_point_hits
 c     &             space_point_hits(i,4),space_point_hits(i,5),space_point_hits(i,6),
 c     &              space_point_hits(i,7),space_point_hits(i,8)
 c      enddo
+        if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,'(a,i5)') 'Finish multiwire # of sp pts =', nspace_points
+        endif
 
 *     
       return
