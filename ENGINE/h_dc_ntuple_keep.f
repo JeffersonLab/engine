@@ -28,6 +28,9 @@
       logical HEXIST	!CERNLIB function
 *
       integer m
+      integer chi_ind(20),i,j
+      real*4 chimin
+      logical found
 
       real proton_mass
       parameter ( proton_mass = 0.93827247 ) ! [GeV/c^2]
@@ -53,16 +56,38 @@ c
        evnum=float(gen_event_ID_number)
        evtype= float(gen_event_type)
        if (evtype .ne. 1) return
+       do i=1,20
+          chi_ind(i)=0
+       enddo
        dc_ntr=HNTRACKS_FP
        do m=1,dc_ntr
           dc_xfp(m)=hx_fp(m)
           dc_xpfp(m)=hxp_fp(m)
           dc_yfp(m)=hy_fp(m)
           dc_ypfp(m)=hyp_fp(m)
-          dc_xptg(m)=hxp_tar(m)
-          dc_ytg(m)=hy_tar(m)
-          dc_yptg(m)=hyp_tar(m)
-          dc_delta(m)=hdelta_tar(m)
+       enddo
+       do i=1,dc_ntr
+          chimin=100000.
+          do j=1,dc_ntr
+             if ( hchi2_fp(j) .lt. chimin .and. chi_ind(j) .eq.0) then
+                chimin=hchi2_fp(j)
+                endif
+             enddo
+          found = .false.
+          do j=1,dc_ntr
+            if ( hchi2_fp(j) .eq. chimin .and. chi_ind(j) .eq.0 .and. .not. found) then
+              chi_ind(j) = i
+              found = .true.
+              endif
+          enddo 
+         enddo
+        do i=1,dc_ntr
+           m=chi_ind(i)
+          dc_chi2(i)=hchi2_fp(m)
+          dc_xptg(i)=hxp_tar(m)
+          dc_ytg(i)=hy_tar(m)
+          dc_yptg(i)=hyp_tar(m)
+          dc_delta(i)=hdelta_tar(m)
           enddo
 * Fill ntuple for this event
       ABORT= .NOT.HEXIST(h_dc_Ntuple_ID)
