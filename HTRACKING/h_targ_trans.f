@@ -156,7 +156,7 @@
 
          hut(5)= -gbeam_y/100. ! spectrometer target X in meter!
                                 ! note that pos. spect. X = neg. beam Y
-
+         hut(5) = 0.0 ! mkj for hcana test
 ! now transform 
 *         hx_fp_rot(itrk)=  hut(1) + h_det_offset_x    ! include detector offset
 *         hy_fp_rot(itrk)=  hut(3) + h_det_offset_y 
@@ -177,10 +177,10 @@
 
          if((hut_rot(4).lt.0.000567*hut_rot(3)+0.016
      $     .and.hut_rot(4).gt.0.00091*hut_rot(3)+0.00773
-     $     .and.hut_rot(4).gt.0.00034*hut_rot(3)+0.01226)
+     $     .and.hut_rot(4).gt.0.00034*hut_rot(3)+0.01226 .and. 1 .eq. -1)
      $     .or.(hut_rot(4).gt.0.00055*hut_rot(3)-0.0165
      $     .and.hut_rot(4).lt.0.00091*hut_rot(3)-0.00773
-     $     .and.hut_rot(4).lt.0.00045*hut_rot(3)-0.00114)) then 
+     $     .and.hut_rot(4).lt.0.00045*hut_rot(3)-0.00114 .and. 1 .eq. -1) ) then 
 
 
 
