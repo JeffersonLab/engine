@@ -61,8 +61,8 @@
       integer*4 ihit,ierr
       integer*4 hit,pln
       integer*4 i,j                             ! loop index
-      integer*4 fix_lr
-      parameter (fix_lr=0)
+c      integer*4 fix_lr
+c      parameter (fix_lr=0)
 *      real*4 z_slice
 c
       real*8   h_dpsifun
@@ -103,7 +103,8 @@ c        hdc_sing_res(pln)=1000
           hnfree_fp(itrk)=hntrack_hits(itrk,1)-hnum_fpray_param
           if(hnfree_fp(itrk).gt.0) then
 c
-             if ( fix_lr .eq. 1) then
+          write(66,*) ' hdc _fix = ',hdc_fix_lr
+             if ( hdc_fix_lr .eq. 1) then
              do ihit=2,hntrack_hits(itrk,1)+1
                 hit = hntrack_hits(itrk,ihit)
                 hdc_wire_coord(hit) = hdc_wire_center(hit) + 

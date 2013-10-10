@@ -109,6 +109,7 @@
 *
 *      CTPTYPE=parm
 *
+      integer*4 hdc_fix_lr  ! number of bins for drift time lookup table
       integer*4 hdriftbins_max  ! number of bins for drift time lookup table
       parameter (hdriftbins_max=138)
       real*4    hdriftbins         ! number of bins for drift time lookup table
@@ -127,7 +128,7 @@
      $     hfract(hdriftbins_max,hmax_num_dc_planes),
      $     hdriftbinsz,
      $     hdrift1stbin,
-     $     hdriftbins
+     $     hdriftbins,hdc_fix_lr
 
       equivalence (hwc1x1fract(1),hfract(1,1))
       equivalence (hwc1y1fract(1),hfract(1,2))
