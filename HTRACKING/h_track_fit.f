@@ -61,7 +61,7 @@
       integer*4 ihit,ierr
       integer*4 hit,pln
       integer*4 i,j                             ! loop index
-c      integer*4 fix_lr
+c      integer*4 fixlr
 c      parameter (fix_lr=0)
 *      real*4 z_slice
 c
@@ -103,7 +103,6 @@ c        hdc_sing_res(pln)=1000
           hnfree_fp(itrk)=hntrack_hits(itrk,1)-hnum_fpray_param
           if(hnfree_fp(itrk).gt.0) then
 c
-          write(66,*) ' hdc _fix = ',hdc_fix_lr
              if ( hdc_fix_lr .eq. 1) then
              do ihit=2,hntrack_hits(itrk,1)+1
                 hit = hntrack_hits(itrk,ihit)
