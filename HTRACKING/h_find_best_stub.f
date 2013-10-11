@@ -1,4 +1,4 @@
-      subroutine h_find_best_stub(numhits,hits,pl,pindex,plusminus,stub,chi2)
+      subroutine h_find_best_stub(isp,numhits,hits,pl,pindex,plusminus,stub,chi2)
 *     This subroutine does a linear least squares fit of a line to the
 *     hits in an individual chamber. It assumes that the y slope is 0 
 *     The wire coordinate is calculated
@@ -36,7 +36,7 @@
       include "hms_geometry.cmn"
 
 *     input quantities
-      integer*4 numhits
+      integer*4 isp,numhits
       integer*4 hits(*)
       real*4 plusminus(*)
 *
@@ -62,6 +62,11 @@
         dpos(hit)=HDC_WIRE_CENTER(hits(hit)) +
      &       plusminus(hit)*HDC_DRIFT_DIS(hits(hit)) -
      &       hpsi0(pl(hit))
+        if (hdc_fix_propcorr .eq. 1) then
+        dpos(hit)=HDC_WIRE_CENTER(hits(hit)) +
+     &       plusminus(hit)*hspace_point_driftdis(isp,hit) -
+     &       hpsi0(pl(hit))
+          endif
         do i=1,3
           TT(i)=TT(i)+((dpos(hit))*hstubcoef(pl(hit),i))/hdc_sigma(pl(hit))
         enddo
@@ -80,6 +85,7 @@ ccc      call h_solve_3by3(TT,pindex,dstub)
      &     HAAINV3(2,3,pindex)*TT(3)
       dstub(3)=HAAINV3(1,3,pindex)*TT(1) + HAAINV3(2,3,pindex)*TT(2) +
      &     HAAINV3(3,3,pindex)*TT(3)
+
  
 * calculate chi2.  Remember one power of sigma is in hstubcoef
       chi2=0.

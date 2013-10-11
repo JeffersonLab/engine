@@ -134,16 +134,13 @@
             if(hdc_plane_num(i).eq.yplane) yy=i
             if(hdc_plane_num(i).eq.yprimeplane) yyprime=i
           enddo
-      if(hdebugprintrawdc.ne.0 ) then
-         write(hluno,*) ' yplane,ypplane ',yplane,yprimeplane,yy,yyprime 
-        endif
           if((hdc_hits_per_plane(yplane).eq.1) .and.
      &         (hdc_hits_per_plane(yprimeplane).eq.1).and.
      &         ((hdc_wire_center(yy)-hdc_wire_center(yyprime))**2.lt.
      &         (hspace_point_criterion(ich))) .and.
      &         (hncham_hits(ich).le.6)) then
       if(hdebugprintrawdc.ne.0 ) then
-                write(hluno,'(a,i5)') ' find easy space point ',ich
+                write(hluno,'(a,i5)') 'Looking at chamber =',ich
         endif
             call h_find_easy_space_point(hncham_hits(ich),hit_number(ihit+1),
      &           hdc_wire_center(ihit+1),hdc_plane_num(ihit+1),
@@ -156,10 +153,6 @@
      $           ,hysp(1),hmax_space_points,hnspace_points(ich), space_points,
      $           space_point_hits)
           else
-       if(hdebugprintrawdc.ne.0 ) then
-                write(hluno,'(a,2i5,2f15.5)') 
-     > ' find hard space point ch ,# sp pts =',ich,hnspace_points(ich),hxsp(1),hysp(1)
-        endif
            call find_space_points(hncham_hits(ich),hit_number(ihit+1),
      &           hdc_wire_center(ihit+1),
      &           hdc_plane_num(ihit+1),hspace_point_criterion(ich),
@@ -167,7 +160,7 @@
      &           hnspace_points(ich), space_points, space_point_hits)
           endif
         if(hdebugprintrawdc.ne.0 ) then
-              write(hluno,'(a,2i5)') ' return find hard space pt ch=',ich,space_point_hits(1,2)
+              write(hluno,'(a,2i5)') 'Num of space points found = ',hnspace_points(ich)
         endif
 *
           if (hnspace_points(ich).gt.0) then
@@ -181,22 +174,12 @@
      &           space_point_hits,space_points,ich)
              endif
 c
-        if(hdebugprintrawdc.ne.0 ) then
-              write(hluno,'(a,i5)') ' call multiwire ch =',ich
-        endif
              call h_sp_multiwire(ABORT,err,hnspace_points(ich),
      &           space_point_hits,space_points)
 c
-        if(hdebugprintrawdc.ne.0 ) then
-              write(hluno,'(a,i5)' ) ' call choose single hit ch =',ich
-        endif
             call h_choose_single_hit(ABORT,err,hnspace_points(ich),
      &           space_point_hits)
 * Select on minimum number of combinations and hits
-        if(hdebugprintrawdc.ne.0 ) then
-         write(hluno,'(a,i5,i5)' ) 
-     >' call select space points cham , # of space pt =',ich,hnspace_points(ich)
-        endif
             call select_space_points(hmax_space_points,hnspace_points(ich),
      &           space_points,space_point_hits,hmin_hit(ich),hmin_combos(ich),
      $           easy_space_point)
@@ -257,10 +240,18 @@ c            write(*,*) isp,hspace_point_hits(isp,1),ihit,hit
      &           + hdc_drifttime_sign(pln)*time_corr
             hdc_drift_dis(hit) = h_drift_dist_calc
      &           (pln,hdc_wire_num(hit),hdc_drift_time(hit))
+            hdc_drift_time_spt(isp,ihit) =  - hstart_time
+     &                   - float(hdc_tdc(hit))*hdc_tdc_time_per_channel
+     &                   + hdc_plane_time_zero(pln) - hdc_central_time(pln)
+     &           + hdc_drifttime_sign(pln)*time_corr
+            hspace_point_driftdis(isp,ihit) = h_drift_dist_calc
+     &           (pln,hdc_wire_num(hit),hdc_drift_time_spt(isp,ihit))
         if(hdebugprintrawdc.ne.0 ) then
-              write(hluno,'(a,3i5,5(f10.5,1x))' )
-     > ' time correction ch =',isp,hit,pln,hdc_drift_time(hit)
-     >,hdc_drift_dis(hit) ,hdc_central_time(pln),hdc_drifttime_sign(pln),time_corr
+c              write(hluno,'(a,3i5,7(f10.5,1x))' )
+c     > ' time correction ch =',isp,hit,pln,hdc_drift_time(hit)
+c     >,hdc_drift_dis(hit)
+c     >,hdc_drift_time_spt(isp,ihit),hspace_point_driftdis(isp,ihit)
+c     > ,hdc_central_time(pln),hdc_drifttime_sign(pln),time_corr
         endif
 *
 * djm 8/25/94

@@ -103,12 +103,28 @@ c        hdc_sing_res(pln)=1000
           hnfree_fp(itrk)=hntrack_hits(itrk,1)-hnum_fpray_param
           if(hnfree_fp(itrk).gt.0) then
 c
-             if ( hdc_fix_lr .eq. 1) then
+             if ( hdc_fix_lr .eq. 1 .and. hdc_fix_propcorr .eq. 0) then
              do ihit=2,hntrack_hits(itrk,1)+1
                 hit = hntrack_hits(itrk,ihit)
                 hdc_wire_coord(hit) = hdc_wire_center(hit) + 
      $               htrack_leftright(itrk,ihit-1) * 
      $               hdc_drift_dis(hit)
+             enddo
+             endif
+c
+             if ( hdc_fix_lr .eq. 1 .and. hdc_fix_propcorr .eq. 1) then
+             do ihit=2,hntrack_hits(itrk,1)+1
+                hit = hntrack_hits(itrk,ihit)
+                hdc_wire_coord(hit) = hdc_wire_center(hit) + 
+     $               htrack_leftright(itrk,ihit-1) * 
+     $               htrack_driftdis(itrk,ihit-1)
+             enddo
+             endif
+c
+             if ( hdc_fix_lr .eq. 0 .and. hdc_fix_propcorr .eq. 1) then
+             do ihit=2,hntrack_hits(itrk,1)+1
+                hit = hntrack_hits(itrk,ihit)
+                hdc_wire_coord(hit) = htrack_wirecoord(itrk,ihit-1)
              enddo
              endif
 *     initialize parameters
