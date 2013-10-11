@@ -299,6 +299,10 @@ c
      &          hspace_point_hits(spindex,ihit+2)                
            htrack_leftright(itrack,hntrack_hits(itrack,1))=
      $          hspace_point_leftright(spindex,ihit)
+           htrack_driftdis(itrack,hntrack_hits(itrack,1))=
+     $          hspace_point_driftdis(spindex,ihit)
+           htrack_wirecoord(itrack,hntrack_hits(itrack,1))=
+     $          hspace_point_wirecoord(spindex,ihit)
           endif                         ! end test on too many hits
          enddo                          ! end loop over space point hits
         enddo                           ! end loop over space points
