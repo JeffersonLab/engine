@@ -436,6 +436,9 @@
       INTEGER*4 HNFREE_FP          ! NUMBER OF DEGREES OF FREEDOM IN FIT
       INTEGER*4 HNTRACK_HITS      ! LIST OF HITS ON EACH TRACK
       real*4  htrack_leftright    ! left-right combination of hits on each track
+      real*4  htrack_driftdis     ! correct drfit distance of  hits on each track
+      real*4  htrack_wirecoord     ! wire coordinate of hit on each track ( could have wrong LR if hit used in multiple spacepoints
+                                   ! have this in case one wants to check hdc_fix_propcorr without check hdc_fix_lr
       REAL*4  HDEL_FP              !  FOCAL PLANE ERROR MATRIX
       REAL*4  HX_FP_rot            ! x in rotated focal plane
       REAL*4  HY_FP_rot            ! y in rotated f plane
@@ -459,6 +462,8 @@
      7     HDEL_FP(4,4,HNTRACKS_MAX),
      8     HNTRACK_HITS(HNTRACKS_MAX,HNTRACKHITS_MAX+1),
      $     htrack_leftright(hntracks_max,hntrackhits_max),
+     $     htrack_driftdis(hntracks_max,hntrackhits_max),
+     $     htrack_wirecoord(hntracks_max,hntrackhits_max),
      9     HNFREE_FP(HNTRACKS_MAX),
      A     HNTRACKS_FP,HCHI2PERDOF_FP(HNTRACKS_MAX),
      >     HX_FP_rot(HNTRACKS_MAX),

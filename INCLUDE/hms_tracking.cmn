@@ -109,7 +109,8 @@
 *
 *      CTPTYPE=parm
 *
-      integer*4 hdc_fix_lr  ! number of bins for drift time lookup table
+      integer*4 hdc_fix_lr  !
+      integer*4 hdc_fix_propcorr  !
       integer*4 hdriftbins_max  ! number of bins for drift time lookup table
       parameter (hdriftbins_max=138)
       real*4    hdriftbins         ! number of bins for drift time lookup table
@@ -128,7 +129,7 @@
      $     hfract(hdriftbins_max,hmax_num_dc_planes),
      $     hdriftbinsz,
      $     hdrift1stbin,
-     $     hdriftbins,hdc_fix_lr
+     $     hdriftbins,hdc_fix_lr,hdc_fix_propcorr
 
       equivalence (hwc1x1fract(1),hfract(1,1))
       equivalence (hwc1y1fract(1),hfract(1,2))
@@ -204,6 +205,9 @@
                                    ! (n,2) = number of valid combinations
                                    ! (n,3...) hit numbers for space point
       real*4 hspace_point_leftright
+      REAL*4 HDC_DRIFT_TIME_spt
+      real*4 hspace_point_driftdis
+      real*4 hspace_point_wirecoord
       real*4 hspace_points         ! array of x, y of space points
       real*4 hbeststub             ! array of stubs fit to each space point
       real*4 hdc_sing_drifttime    ! array of fully corrected drift times for each plane
@@ -217,6 +221,9 @@
      &     hspace_points(hmax_space_points,2),
      &     hspace_point_hits(hmax_space_points,hmax_hits_per_point+2),
      &     hspace_point_leftright(hmax_space_points,hmax_hits_per_point),
+     &     hspace_point_driftdis(hmax_space_points,hmax_hits_per_point),
+     &     hspace_point_wirecoord(hmax_space_points,hmax_hits_per_point),
+     1     HDC_DRIFT_TIME_spt(hmax_space_points,hmax_hits_per_point),
      &     hnspace_points(hmax_num_chambers),
      &     hnspace_points_tot,
      &     hbeststub(hmax_space_points,hnum_fpray_param+2),

@@ -263,11 +263,9 @@ c            write(hluno,*) pmloop,ihit,plusminus(ihit)
           enddo
 
           if (pindex.ge.0 .and. pindex.le.14) then
-            call h_find_best_stub(numhits,hits,pl,pindex,plusminus,stub,chi2)
+            call h_find_best_stub(isp,numhits,hits,pl,pindex,plusminus,stub,chi2)
 *jv            if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
 *jv     $           ''   chi2='',e14.6)') pmloop,chi2
-            if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
-     $           ''   chi2='',e14.6)') pmloop,chi2,minchi2
 
 * Take best chi2 IF x' of the stub agrees with x' as expected from x.
 * Sometimes an incorrect x' gives a good chi2 for the stub, even though it is
@@ -281,6 +279,9 @@ c            write(hluno,*) pmloop,ihit,plusminus(ihit)
               endif
               xp_fit=stub(3)-htanbeta(pl(1))/(1.0+stub(3)*htanbeta(pl(1)))
               xp_expect = hspace_points(isp,1)/875. ! **TUNE DEPENDANT**
+c            if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
+c     $           ''   chi2='',9e14.6)') pmloop,minchi2,chi2,stub
+c     >     ,xp_fit,xp_expect,hstub_max_xpdiff
               if (abs(xp_fit-xp_expect).le.hstub_max_xpdiff) then
                 minchi2=chi2
                 do idummy=1,numhits
@@ -340,9 +341,11 @@ c                  write(hluno,*) " +/- = ",idummy,plusminus(idummy)
         do ihit=1,numhits
           HDC_WIRE_COORD(hspace_point_hits(isp,ihit+2))=
      &         HDC_WIRE_CENTER(hspace_point_hits(isp,ihit+2)) +
-     &         plusminusbest(ihit)*HDC_DRIFT_DIS(hspace_point_hits(isp,ihit
-     $         +2))
-         hspace_point_leftright(isp,ihit) = plusminusbest(ihit)          
+     &         plusminusbest(ihit)*HDC_DRIFT_DIS(hspace_point_hits(isp,ihit+2))
+        hspace_point_leftright(isp,ihit) = plusminusbest(ihit)          
+        hspace_point_wirecoord(isp,ihit) = 
+     &         HDC_WIRE_CENTER(hspace_point_hits(isp,ihit+2)) +
+     &         plusminusbest(ihit)*hspace_point_driftdis(isp,ihit)
         enddo
 *
 *     stubs are calculated in rotated coordinate system
