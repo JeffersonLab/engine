@@ -1,6 +1,6 @@
 # If you're not using GCC version 3 or 4 and Linux or Mac OS X, you'll proably
 # need to make some changes to the makefiles and possibly the source code.
-getversion = --version | head -1 | sed 's/.*) //' | sed 's/\..*//'
+getversion = --version | head -1 | sed 's/.*GCC) //' | sed 's/\..*//'
 gccversion = $(shell gcc $(getversion))
 g77flags = -Wimplicit
 
