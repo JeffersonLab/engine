@@ -93,7 +93,7 @@
      >'dc_xfp(dc_ntr):R*4,dc_yfp(dc_ntr):R*4,'//
      >'dc_xpfp(dc_ntr):R*4,dc_ypfp(dc_ntr):R*4,dc_chi2(dc_ntr):R*4,'//
      >'dc_ytg(dc_ntr):R*4,dc_xptg(dc_ntr):R*4,'//
-     >'dc_yptg(dc_ntr):R*4,dc_delta(dc_ntr):R*4')
+     >'dc_yptg(dc_ntr):R*4,dc_delta(dc_ntr):R*4,dc_ptar(dc_ntr):R*4')
       call HCDIR(h_dc_Ntuple_directory,'R')      !record Ntuple directory
 
       CALL HCDIR(directory,' ')       !reset CERNLIB directory
