@@ -60,6 +60,7 @@ c
           chi_ind(i)=0
        enddo
        dc_ntr=HNTRACKS_FP
+       if (dc_ntr .gt.HNTRACKS_MAX) dc_ntr=HNTRACKS_MAX
        do m=1,dc_ntr
           dc_xfp(m)=hx_fp(m)
           dc_xpfp(m)=hxp_fp(m)
@@ -67,7 +68,7 @@ c
           dc_ypfp(m)=hyp_fp(m)
        enddo
        do i=1,dc_ntr
-          chimin=100000.
+          chimin=10000000.
           do j=1,dc_ntr
              if ( hchi2_fp(j) .lt. chimin .and. chi_ind(j) .eq.0) then
                 chimin=hchi2_fp(j)
@@ -88,6 +89,7 @@ c
           dc_ytg(i)=hy_tar(m)
           dc_yptg(i)=hyp_tar(m)
           dc_delta(i)=hdelta_tar(m)
+          dc_ptar(i)=hp_tar(m)
           enddo
 * Fill ntuple for this event
       ABORT= .NOT.HEXIST(h_dc_Ntuple_ID)
