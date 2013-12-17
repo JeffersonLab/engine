@@ -58,8 +58,8 @@ c
        evtype= float(gen_event_type)
        hdc_ntr=0
        sdc_ntr=0
-       if (evtype .ne. 2) return
-       if (evtype .eq. 1) then
+       if (evtype .gt. 3) return
+       if (evtype .eq. 1 .or. evtype .eq. 3) then
        do i=1,20
           chi_ind(i)=0
        enddo
@@ -96,7 +96,7 @@ c
           hdc_ptar(i)=hp_tar(m)
           enddo
        endif
-       if (evtype .eq. 2) then
+       if (evtype .eq. 2 .or. evtype .eq. 3) then
        do i=1,20
           chi_ind(i)=0
        enddo
