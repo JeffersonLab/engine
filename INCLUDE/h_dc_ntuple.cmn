@@ -36,10 +36,15 @@
 *
       real*4 evnum,evtype
       common/GINFO/evnum,evtype
-      integer*4 dc_ntr
-      real*4 dc_xfp(20),dc_yfp(20),dc_xpfp(20),dc_ypfp(20),dc_chi2(20)
-      real*4 dc_ytg(20),dc_xptg(20),dc_yptg(20),dc_delta(20),dc_ptar(20)
-      common/DCINFO/dc_ntr,dc_xfp,dc_yfp,dc_xpfp,dc_ypfp,dc_chi2
-     >,dc_ytg,dc_xptg,dc_yptg,dc_delta,dc_ptar
+      integer*4 hdc_ntr
+      real*4 hdc_xfp(20),hdc_yfp(20),hdc_xpfp(20),hdc_ypfp(20),hdc_chi2(20)
+      real*4 hdc_ytg(20),hdc_xptg(20),hdc_yptg(20),hdc_delta(20),hdc_ptar(20)
+      common/HDCINFO/hdc_ntr,hdc_xfp,hdc_yfp,hdc_xpfp,hdc_ypfp,hdc_chi2
+     >,hdc_ytg,hdc_xptg,hdc_yptg,hdc_delta,hdc_ptar
+      integer*4 sdc_ntr
+      real*4 sdc_xfp(20),sdc_yfp(20),sdc_xpfp(20),sdc_ypfp(20),sdc_chi2(20)
+      real*4 sdc_ytg(20),sdc_xptg(20),sdc_yptg(20),sdc_delta(20),sdc_ptar(20)
+      common/SDCINFO/sdc_ntr,sdc_xfp,sdc_yfp,sdc_xpfp,sdc_ypfp,sdc_chi2
+     >,sdc_ytg,sdc_xptg,sdc_yptg,sdc_delta,sdc_ptar
 ****************************end: h_dc_ntuple.cmn ***********************
 
