@@ -111,6 +111,8 @@
       ENDIF
       ABORT= ABORT .or. FAIL
 *
+*
+      call h_dc_ntuple_keep(ABORT,err)! check for good tracks
 *-COIN
       call C_keep_results(FAIL,why)
       IF(err.NE.' ' .and. why.NE.' ') THEN

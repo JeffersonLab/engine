@@ -15,6 +15,7 @@
 *
       INCLUDE 'h_dc_ntuple.cmn'
       INCLUDE 'hms_data_structures.cmn'
+      INCLUDE 'sos_data_structures.cmn'
       INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_event_info.cmn'
       INCLUDE 'hms_tracking.cmn'
@@ -55,42 +56,83 @@ c
 * Experiment dependent entries start here.
        evnum=float(gen_event_ID_number)
        evtype= float(gen_event_type)
-       if (evtype .ne. 1) return
+       hdc_ntr=0
+       sdc_ntr=0
+       if (evtype .ne. 2) return
+       if (evtype .eq. 1) then
        do i=1,20
           chi_ind(i)=0
        enddo
-       dc_ntr=HNTRACKS_FP
-       if (dc_ntr .gt.HNTRACKS_MAX) dc_ntr=HNTRACKS_MAX
-       do m=1,dc_ntr
-          dc_xfp(m)=hx_fp(m)
-          dc_xpfp(m)=hxp_fp(m)
-          dc_yfp(m)=hy_fp(m)
-          dc_ypfp(m)=hyp_fp(m)
+       hdc_ntr=HNTRACKS_FP
+       if (hdc_ntr .gt.HNTRACKS_MAX) hdc_ntr=HNTRACKS_MAX
+       do m=1,hdc_ntr
+          hdc_xfp(m)=hx_fp(m)
+          hdc_xpfp(m)=hxp_fp(m)
+          hdc_yfp(m)=hy_fp(m)
+          hdc_ypfp(m)=hyp_fp(m)
        enddo
-       do i=1,dc_ntr
+       do i=1,hdc_ntr
           chimin=10000000.
-          do j=1,dc_ntr
+          do j=1,hdc_ntr
              if ( hchi2_fp(j) .lt. chimin .and. chi_ind(j) .eq.0) then
                 chimin=hchi2_fp(j)
                 endif
              enddo
           found = .false.
-          do j=1,dc_ntr
+          do j=1,hdc_ntr
             if ( hchi2_fp(j) .eq. chimin .and. chi_ind(j) .eq.0 .and. .not. found) then
               chi_ind(j) = i
               found = .true.
               endif
           enddo 
          enddo
-        do i=1,dc_ntr
+        do i=1,hdc_ntr
            m=chi_ind(i)
-          dc_chi2(i)=hchi2_fp(m)
-          dc_xptg(i)=hxp_tar(m)
-          dc_ytg(i)=hy_tar(m)
-          dc_yptg(i)=hyp_tar(m)
-          dc_delta(i)=hdelta_tar(m)
-          dc_ptar(i)=hp_tar(m)
+          hdc_chi2(i)=hchi2_fp(m)
+          hdc_xptg(i)=hxp_tar(m)
+          hdc_ytg(i)=hy_tar(m)
+          hdc_yptg(i)=hyp_tar(m)
+          hdc_delta(i)=hdelta_tar(m)
+          hdc_ptar(i)=hp_tar(m)
           enddo
+       endif
+       if (evtype .eq. 2) then
+       do i=1,20
+          chi_ind(i)=0
+       enddo
+       sdc_ntr=SNTRACKS_FP
+       if (sdc_ntr .gt.SNTRACKS_MAX) sdc_ntr=SNTRACKS_MAX
+       do m=1,sdc_ntr
+          sdc_xfp(m)=sx_fp(m)
+          sdc_xpfp(m)=sxp_fp(m)
+          sdc_yfp(m)=sy_fp(m)
+          sdc_ypfp(m)=syp_fp(m)
+       enddo
+       do i=1,sdc_ntr
+          chimin=10000000.
+          do j=1,sdc_ntr
+             if ( schi2_fp(j) .lt. chimin .and. chi_ind(j) .eq.0) then
+                chimin=schi2_fp(j)
+                endif
+             enddo
+          found = .false.
+          do j=1,sdc_ntr
+            if ( schi2_fp(j) .eq. chimin .and. chi_ind(j) .eq.0 .and. .not. found) then
+              chi_ind(j) = i
+              found = .true.
+              endif
+          enddo 
+         enddo
+        do i=1,sdc_ntr
+           m=chi_ind(i)
+          sdc_chi2(i)=schi2_fp(m)
+          sdc_xptg(i)=sxp_tar(m)
+          sdc_ytg(i)=sy_tar(m)
+          sdc_yptg(i)=syp_tar(m)
+          sdc_delta(i)=sdelta_tar(m)
+          sdc_ptar(i)=sp_tar(m)
+          enddo
+      endif
 * Fill ntuple for this event
       ABORT= .NOT.HEXIST(h_dc_Ntuple_ID)
       IF(ABORT) THEN
