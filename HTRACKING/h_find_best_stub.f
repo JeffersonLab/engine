@@ -38,15 +38,15 @@
 *     input quantities
       integer*4 isp,numhits
       integer*4 hits(*)
-      real*4 plusminus(*)
+      real*8 plusminus(*)
 *
 *     output quantitites
       real*8 dstub(3)               !x,y,xp of local line fit
-      real*4 stub(4)
-      real*4 chi2                  ! chi2 of fit      
+      real*8 stub(4)
+      real*8 chi2                  ! chi2 of fit      
 *
 *     local variables
-      real*4 dpos(hmax_hits_per_point)
+      real*8 dpos(hmax_hits_per_point)
       integer*4 pl(hmax_hits_per_point) !keep name same as in h_left_right.f
       integer*4 pindex                  ! passed from h_left_right to h_solve_3by3
       real*8 TT(3)
@@ -67,6 +67,7 @@
      &       plusminus(hit)*hspace_point_driftdis(isp,hit) -
      &       hpsi0(pl(hit))
           endif
+c        write(hluno,*) ' hit = ',hit,dpos(hit),HDC_WIRE_CENTER(hits(hit)),HDC_DRIFT_DIS(hits(hit)),hpsi0(pl(hit))
         do i=1,3
           TT(i)=TT(i)+((dpos(hit))*hstubcoef(pl(hit),i))/hdc_sigma(pl(hit))
         enddo

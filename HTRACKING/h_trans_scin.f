@@ -323,10 +323,12 @@
       if (time_num.eq.0) then
         hgood_start_time = .false.
         hstart_time = hstart_time_center
+        
       else
         hgood_start_time = .true.
         hstart_time = time_sum / float(time_num)
       endif
+c                    hstart_time=35.
 
 
 *     Dump decoded bank if hdebugprintscindec is set

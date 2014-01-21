@@ -16,10 +16,10 @@
       write(sluno,
      &  '(''  NUMBER OF TRACKS FROM SOS LINKED STUBS='',i4)') SNTRACKS_FP
         if(SNTRACKS_FP.gt.0) then
-        write(sluno,'(''  Track   HITS'')')
+        write(sluno,'(''  Track   Plane Wire'')')
           do itrack=1,SNTRACKS_FP
-           write(sluno,1000) itrack,(SNTRACK_HITS(itrack,ihit),
-     &        ihit=2,SNTRACK_HITS(itrack,1)+1) 
+           write(sluno,1000) itrack,(sdc_plane_num(SNTRACK_HITS(itrack,ihit)),
+     &sdc_wire_num(SNTRACK_HITS(itrack,ihit)),ihit=2,SNTRACK_HITS(itrack,1)+1) 
 1000  format(2x,i3,2x,24i3)
           enddo
         endif

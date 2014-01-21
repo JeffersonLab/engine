@@ -211,8 +211,9 @@ c          endif
           if (pindex.ge.0 .and. pindex.le.14) then
             call s_find_best_stub(numhits,hits,pl,pindex,plusminus,stub,chi2)
             if(sdebugstubchisq.ne.0) then
-              write(sluno,'('' sos pmloop='',i4,''   chi2='',e14.6)')
-     &             pmloop,chi2
+      write(sluno
+     >,'('' Space pt = '',i4,'' pmloop='',i4,''   chi2='',e14.6)')
+     &             isp,pmloop,chi2
             endif
             if (chi2.lt.minchi2)  then
               minchi2=chi2

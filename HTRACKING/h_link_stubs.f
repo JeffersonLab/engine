@@ -163,9 +163,11 @@ c
      >,hxt_track_criterion, hyt_track_criterion
      >,hxpt_track_criterion, hypt_track_criterion
               write(hluno,'(a,4(f10.5,1x))' ) 'dpos =',dposx,dposy,dposxp,dposyp
-              write(hluno,'(a,4(f10.5,1x))' ) 'stub 1 ='
+              write(hluno,'(a,i3,a,4(f10.5,1x))' ) ' spt = '
+     > ,isp1,'stub ='
      >,hbeststub(isp1,1),hbeststub(isp1,2),hbeststub(isp1,3),hbeststub(isp1,4)
-              write(hluno,'(a,4(f10.5,1x))' ) 'stub 2 ='
+              write(hluno,'(a,i3,a,4(f10.5,1x))' )  ' spt = '
+     > ,isp2,'stub ='
      >,hbeststub(isp2,1),hbeststub(isp2,2),hbeststub(isp2,3),hbeststub(isp2,4)
         endif
              if      (abs(dposx) .lt. hxt_track_criterion
@@ -190,7 +192,7 @@ c
                hxp_sp2(hntracks_fp)=hbeststub(isp2,3)
                newtrack=0               ! make no more tracks in this loop
         if(hdebugprintrawdc.ne.0 ) then
-              write(hluno,'(a,3i5,6(f10.5,1x))' ) 'track =', hntracks_fp,isp1,isp2
+              write(hluno,'(a,3i5,6(f10.5,1x))' ) ' Found first track =', hntracks_fp,isp1,isp2
      >,hbeststub(isp1,1),hbeststub(isp1,2),hbeststub(isp1,3)
      >,hbeststub(isp2,1),hbeststub(isp2,2),hbeststub(isp2,3)
         endif
@@ -206,13 +208,13 @@ c
 *     check if there is another space point in same chamber
               itrack=0
               do while (itrack.lt.sptracks)
-               if(hdebugprintrawdc.ne.0 )  then
-                  write(hluno,'(a,2i5)') " itrack , sptracks = ",itrack,sptracks
-               endif
                itrack=itrack+1
                track=stub_tracks(itrack)
                spoint=0
                duppoint=0
+               if(hdebugprintrawdc.ne.0 )  then
+                  write(hluno,'(a,3i5)') " track,itrack , sptracks = ",track,itrack,sptracks
+               endif
                do isp=1,track_space_points(track,1)
                 if(h_chamnum(isp2).eq.
      &               h_chamnum(track_space_points(track,isp+1))) then
@@ -237,9 +239,6 @@ c
                 else
                  if(hntracks_fp.lt.hntracks_max_fp) then ! are there too many 
                   hntracks_fp=hntracks_fp+1 ! increment the number of tracks
-        if(hdebugprintrawdc.ne.0 ) then
-              write(hluno,'(a,i5)' ) 'Foun antoher track = ',hntracks_fp 
-        endif
                   sptracks= sptracks+1  ! one track with this seed
                   stub_tracks(sptracks) = hntracks_fp
                   track_space_points(hntracks_fp,1)
@@ -252,6 +251,11 @@ c
                     track_space_points(hntracks_fp,isp+1)= isp2
                    endif                ! end check for dup on copy
                   enddo                 ! end copy of track
+       if(hdebugprintrawdc.ne.0 ) then
+              write(hluno,* ) 'Track space points =',(track_space_points(hntracks_fp,isp+1),isp=1,track_space_points(hntracks_fp,1))
+              write(hluno,'(a,i5)' ) 'Found another track = ',hntracks_fp 
+        endif
+                  
                  else                      !!  MEC - added the next 3 lines to 
         if(hdebugprintrawdc.ne.0 ) then
               write(hluno,'(a,i5)' ) 
