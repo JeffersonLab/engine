@@ -97,7 +97,7 @@
      &                      hdc_ycenter(chamber)*cos(hdc_alpha_angle(pln))
         enddo
       endif
-      
+      hstart_time=32.
 *     Are there any raw hits
       if(hdc_raw_tot_hits.gt.0) then
 *     loop over all raw hits
@@ -137,7 +137,6 @@
      &                     * ((hdc_nrwire(pln)+(1-wire))
      &                     - hdc_central_wire(pln)) - hdc_center(pln)
                     endif
-
                     hdc_drift_time(goodhit) = - hstart_time
      &                   - float(hdc_tdc(goodhit))*hdc_tdc_time_per_channel
      &                   + hdc_plane_time_zero(pln)

@@ -133,7 +133,7 @@
      &                  * ( (sdc_nrwire(pln) + (1 - wire))
      &                  - sdc_central_wire(pln) ) - sdc_center(pln)
                     endif
-
+                    sstart_time=32.
                     sdc_drift_time(goodhit) = - sstart_time
      &                  - float(sdc_tdc(goodhit))*sdc_tdc_time_per_channel
      &                  + sdc_plane_time_zero(pln)
