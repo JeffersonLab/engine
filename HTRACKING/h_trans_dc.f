@@ -97,7 +97,6 @@
      &                      hdc_ycenter(chamber)*cos(hdc_alpha_angle(pln))
         enddo
       endif
-      hstart_time=32.
 *     Are there any raw hits
       if(hdc_raw_tot_hits.gt.0) then
 *     loop over all raw hits
