@@ -56,12 +56,19 @@ c
 * Experiment dependent entries start here.
        evnum=float(gen_event_ID_number)
        evtype= float(gen_event_type)
+* scin
+       hscin_starttime=hstart_time
+       hscin_rfptime(1)=h_rfptime(1)
+       hscin_rfptime(2)=h_rfptime(2)
+       hscin_rfptime(3)=h_rfptime(3)
+       hscin_rfptime(4)=h_rfptime(4)
+*
        hdc_ntr=0
        sdc_ntr=0
        if (evtype .gt. 3) return
        if (evtype .eq. 1 .or. evtype .eq. 3) then
        do i=1,20
-          chi_ind(i)=0
+          chi_ind(i)=i
        enddo
        hdc_ntr=HNTRACKS_FP
        if (hdc_ntr .gt.HNTRACKS_MAX) hdc_ntr=HNTRACKS_MAX
@@ -71,6 +78,7 @@ c
           hdc_yfp(m)=hy_fp(m)
           hdc_ypfp(m)=hyp_fp(m)
        enddo
+       if ( 1 .eq. -1 )then ! sort by chisq
        do i=1,hdc_ntr
           chimin=10000000.
           do j=1,hdc_ntr
@@ -86,6 +94,7 @@ c
               endif
           enddo 
          enddo
+        endif
         do i=1,hdc_ntr
            m=chi_ind(i)
           hdc_chi2(i)=hchi2_fp(m)
@@ -98,7 +107,7 @@ c
        endif
        if (evtype .eq. 2 .or. evtype .eq. 3) then
        do i=1,20
-          chi_ind(i)=0
+          chi_ind(i)=i
        enddo
        sdc_ntr=SNTRACKS_FP
        if (sdc_ntr .gt.SNTRACKS_MAX) sdc_ntr=SNTRACKS_MAX
@@ -108,8 +117,9 @@ c
           sdc_yfp(m)=sy_fp(m)
           sdc_ypfp(m)=syp_fp(m)
        enddo
+       if ( 1 .eq. -1) then
        do i=1,sdc_ntr
-          chimin=10000000.
+             chimin=10000000.
           do j=1,sdc_ntr
              if ( schi2_fp(j) .lt. chimin .and. chi_ind(j) .eq.0) then
                 chimin=schi2_fp(j)
@@ -123,6 +133,7 @@ c
               endif
           enddo 
          enddo
+       endif
         do i=1,sdc_ntr
            m=chi_ind(i)
           sdc_chi2(i)=schi2_fp(m)
