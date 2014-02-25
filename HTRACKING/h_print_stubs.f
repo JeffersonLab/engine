@@ -25,12 +25,12 @@
         do i=1,hnspace_points_tot
           write(hluno,1001) i,(hbeststub(i,j),j=1,4)
         enddo
-        write(hluno,'('' hit         HDC_WIRE_CENTER  HDC_DRIFT_DIS     '',
-     &         '' HDC_WIRE_COORD'')')
-        do i=1,HDC_TOT_HITS
-          write(hluno,1002) i,HDC_WIRE_CENTER(i),HDC_DRIFT_DIS(i),
-     &       HDC_WIRE_COORD(i)
-1002  format(3x,i3,4x,e16.8,2x,e16.8,2x,e16.8)
+        do i=1,hnspace_points_tot
+           write(hluno,'(a,i3,a)') ' space point = ',i
+     > ,' hit-number  plane  '
+           do j=1,hspace_point_hits(i,1)
+              write(hluno,'(T20,i4,3x,i4)') hspace_point_hits(i,2+j),HDC_PLANE_NUM( hspace_point_hits(i,2+j))
+           enddo 
         enddo
       endif
       return

@@ -26,13 +26,14 @@
       write(sluno,'('' chamber='',i3,''   min_hit='',i4,''  min_combos='',i3)')
      &      (i,smin_hit(i),smin_combos(i),i=1,sdc_num_chambers)  
       if(snspace_points_tot.ge.1) then
-         write(sluno,'('' point       x         y     number  number  hits'')')
+      write(sluno,'('' point       x         y     number  number  hits'')')
          write(sluno,'('' number                       hits   combos'')')
-1001  format(3x,i3,f10.4,f10.4,3x,i3,6x,i3,5x,11i3)
+1001  format(3x,i3,f10.4,f10.4,3x,i3,6x,i3,5x,24i3)
          do i=1,snspace_points_tot
          write(sluno,1001) i, sspace_points(i,1),sspace_points(i,2),
      &   sspace_point_hits(i,1), sspace_point_hits(i,2),
-     &   (sspace_point_hits(i,j+2),j=1,sspace_point_hits(i,1))
+     &   (sdc_plane_num(sspace_point_hits(i,j+2))
+     >   ,sdc_wire_num(sspace_point_hits(i,j+2)),j=1,sspace_point_hits(i,1))
          enddo
       endif
       return

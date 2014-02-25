@@ -67,16 +67,16 @@
       integer*4 numhits
       integer*4 hits(hmax_hits_per_point),pl(hmax_hits_per_point)
       integer*4 pindex,icounter
-      real*4 wc(hmax_hits_per_point)
+      real*8 wc(hmax_hits_per_point)
       integer*4 plane, isa_y1, isa_y2
       integer*4 plusminusknown(hmax_hits_per_point)
-      real*4 plusminus(hmax_hits_per_point)
-      real*4 plusminusbest(hmax_hits_per_point),tmppmbest(hmax_hits_per_point)
-      real*4 tmpbeststub(hnum_fpray_param)
-      real*4 chi2
-      real*4 minchi2,tmpminchi2
-      real*4 xp_fit, xp_expect, minxp
-      real*4 stub(4)
+      real*8 plusminus(hmax_hits_per_point)
+      real*8 plusminusbest(hmax_hits_per_point),tmppmbest(hmax_hits_per_point)
+      real*8 tmpbeststub(hnum_fpray_param)
+      real*8 chi2
+      real*8 minchi2,tmpminchi2
+      real*8 xp_fit, xp_expect, minxp
+      real*8 stub(4)
       logical smallAngOK
 *
       ABORT= .FALSE.
@@ -264,6 +264,8 @@ c            write(hluno,*) pmloop,ihit,plusminus(ihit)
 
           if (pindex.ge.0 .and. pindex.le.14) then
             call h_find_best_stub(isp,numhits,hits,pl,pindex,plusminus,stub,chi2)
+            if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
+     $           ''   chi2='',5f12.5)') pmloop,chi2,stub
 *jv            if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
 *jv     $           ''   chi2='',e14.6)') pmloop,chi2
 
@@ -279,9 +281,9 @@ c            write(hluno,*) pmloop,ihit,plusminus(ihit)
               endif
               xp_fit=stub(3)-htanbeta(pl(1))/(1.0+stub(3)*htanbeta(pl(1)))
               xp_expect = hspace_points(isp,1)/875. ! **TUNE DEPENDANT**
-c            if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
-c     $           ''   chi2='',9e14.6)') pmloop,minchi2,chi2,stub
-c     >     ,xp_fit,xp_expect,hstub_max_xpdiff
+            if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
+     $           ''   chi2='',9e14.6)') pmloop,minchi2,chi2,stub
+     >     ,xp_fit,xp_expect,hstub_max_xpdiff
               if (abs(xp_fit-xp_expect).le.hstub_max_xpdiff) then
                 minchi2=chi2
                 do idummy=1,numhits

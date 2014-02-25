@@ -543,7 +543,7 @@ c Start data analysis
          write(6,*) ' ******'
       endif
 c
-      write(*,*) ' mkj start do while'
+c      write(*,*) ' mkj start do while'
       DO WHILE(.NOT.problems .and. .NOT.ABORT .and. .NOT.EoF)
         mss= ' '
         g_replay_time=time()-start_time
