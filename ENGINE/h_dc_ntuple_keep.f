@@ -29,8 +29,8 @@
       logical HEXIST	!CERNLIB function
 *
       integer m
-      integer chi_ind(20),i,j
-      real*4 chimin
+      integer chi_ind(20),i,j,jj,kk
+      real*4 chimin,value
       logical found
 
       real proton_mass
@@ -78,22 +78,31 @@ c
           hdc_yfp(m)=hy_fp(m)
           hdc_ypfp(m)=hyp_fp(m)
        enddo
-       if ( 1 .eq. -1 )then ! sort by chisq
-       do i=1,hdc_ntr
-          chimin=10000000.
-          do j=1,hdc_ntr
-             if ( hchi2_fp(j) .lt. chimin .and. chi_ind(j) .eq.0) then
-                chimin=hchi2_fp(j)
-                endif
-             enddo
-          found = .false.
-          do j=1,hdc_ntr
-            if ( hchi2_fp(j) .eq. chimin .and. chi_ind(j) .eq.0 .and. .not. found) then
-              chi_ind(j) = i
-              found = .true.
+       if ( 1 .eq. 1 )then ! sort by chisq
+       jj=1
+       kk=chi_ind(1)
+       value=hchi2_fp(kk)
+       do i=2,hdc_ntr
+             if ( hchi2_fp(chi_ind(i)) .lt. value) then
+                jj=i
+                value=hchi2_fp(chi_ind(i))
               endif
-          enddo 
+        enddo
+        chi_ind(1) = chi_ind(jj)
+        chi_ind(jj) = kk
+        do i=2,hdc_ntr
+           jj=i
+           kk=chi_ind(i)
+           value=hchi2_fp(kk)
+20        continue
+           if (value .lt. hchi2_fp(chi_ind(jj-1))) then
+               chi_ind(jj)=chi_ind(jj-1)
+               jj=jj-1
+               goto 20
+               endif
+           chi_ind(jj)=kk
          enddo
+
         endif
         do i=1,hdc_ntr
            m=chi_ind(i)
@@ -117,23 +126,32 @@ c
           sdc_yfp(m)=sy_fp(m)
           sdc_ypfp(m)=syp_fp(m)
        enddo
-       if ( 1 .eq. -1) then
-       do i=1,sdc_ntr
-             chimin=10000000.
-          do j=1,sdc_ntr
-             if ( schi2_fp(j) .lt. chimin .and. chi_ind(j) .eq.0) then
-                chimin=schi2_fp(j)
-                endif
-             enddo
-          found = .false.
-          do j=1,sdc_ntr
-            if ( schi2_fp(j) .eq. chimin .and. chi_ind(j) .eq.0 .and. .not. found) then
-              chi_ind(j) = i
-              found = .true.
+       if ( 1 .eq. 1 )then ! sort by chisq
+       jj=1
+       kk=chi_ind(1)
+       value=schi2_fp(kk)
+       do i=2,sdc_ntr
+             if ( schi2_fp(chi_ind(i)) .lt. value) then
+                jj=i
+                value=schi2_fp(chi_ind(i))
               endif
-          enddo 
+        enddo
+        chi_ind(1) = chi_ind(jj)
+        chi_ind(jj) = kk
+        do i=2,sdc_ntr
+           jj=i
+           kk=chi_ind(i)
+           value=schi2_fp(kk)
+40        continue
+           if (value .lt. schi2_fp(chi_ind(jj-1))) then
+               chi_ind(jj)=chi_ind(jj-1)
+               jj=jj-1
+               goto 40
+               endif
+           chi_ind(jj)=kk
          enddo
-       endif
+
+        endif
         do i=1,sdc_ntr
            m=chi_ind(i)
           sdc_chi2(i)=schi2_fp(m)
