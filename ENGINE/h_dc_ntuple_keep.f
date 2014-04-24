@@ -66,6 +66,14 @@ c
        hdc_ntr=0
        sdc_ntr=0
        if (evtype .gt. 3) return
+* fill raster info
+       frx_raw_adc=gfrx_raw_adc
+       fry_raw_adc=gfry_raw_adc
+       frx_adc=gfrx_adc
+       fry_adc=gfry_adc
+       frx=gfrx
+       fry=gfry
+*
        if (evtype .eq. 1 .or. evtype .eq. 3) then
        do i=1,20
           chi_ind(i)=i

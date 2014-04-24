@@ -91,6 +91,8 @@
       call hbset('BSIZE',8176,status)
       call HBNT(id,title,' ')
       call HBNAME(id,'GINFO',evnum,'evnum:R*4,evtype:R*4')
+      call HBNAME(id,'RASTINFO',frx_raw_adc,'frx_raw_adc:R*4,fry_raw_adc:R*4'//
+     >',frx_adc:R*4,fry_adc:R*4,frx:R*4,fry:R*4')
       call HBNAME(id,'HDCINFO',hdc_ntr,'hdc_ntr[0,20]:I*4,'//
      >'hdc_xfp(hdc_ntr):R*4,hdc_yfp(hdc_ntr):R*4,'//
      >'hdc_xpfp(hdc_ntr):R*4,hdc_ypfp(hdc_ntr):R*4,hdc_chi2(hdc_ntr):R*4,'//
