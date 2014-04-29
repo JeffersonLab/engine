@@ -1,6 +1,6 @@
 * hms_cer_parms.cmn
 *
-* $Log$
+* $Log: hms_cer_parms.cmn,v $
 * Revision 1.2  2002/12/20 21:52:33  jones
 * Modified by Hamlet for new HMS aerogel
 *
@@ -40,8 +40,8 @@
 *
       real*4 hcer_adc_to_npe(hcer_num_mirrors)
 
-      integer*4 hcer_ped(hcer_num_mirrors)
-      integer*4 hcer_width(hcer_num_mirrors)
+      real*4 hcer_ped(hcer_num_mirrors)
+      real*4 hcer_width(hcer_num_mirrors)
 
       common/hms_cer_trans/
      &   hcer_ped,

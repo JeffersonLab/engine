@@ -7,12 +7,15 @@
 *- Loops through data until it encounters an error.
 *-
 *-   Created  18-Nov-1993   Kevin B. Beard, Hampton Univ.
-* $Log$
-* Revision 1.43  2008/09/25 00:06:33  jones
-* Updated to run with gfortran compiler
+* $Log: engine.f,v $
+* Revision 1.41.6.3  2004/07/09 14:12:46  saw
+* Add function calls to fill CTP ROOT Trees
 *
-* Revision 1.42  2004/07/08 20:10:01  saw
-* Close CTP Root trees
+* Revision 1.41.6.2  2004/06/30 19:31:49  cdaq
+* Add call to g_examine_picture_event (DJG)
+*
+* Revision 1.41.6.1  2004/06/18 11:24:11  cdaq
+*  Fixed so that runstats works under Linux
 *
 * Revision 1.41  2004/05/27 23:51:28  jones
 * Initialize EoF = .false.
@@ -284,7 +287,6 @@ c
          If(ABORT) STOP
          err= ' '
       ENDIF
-
       call engine_command_line(.false.) ! Set CTP vars from command line
 *
 * If there is a g_ctp_database_filename set, pass the run number
@@ -417,6 +419,9 @@ c
           else if (gen_event_type.eq.141 .or. gen_event_type.eq.142 .or.
      &             gen_event_type.eq.144) then
 *             write(6,*) 'HV information event, event type=',gen_event_type
+	  else if (gen_event_type.eq.146..or.gen_event_type.eq.147) then
+c	     write(6,*) 'Cheesy poofs! - picture event'
+c	     call g_examine_picture_event
           else if (gen_event_type.eq.251) then
              syncfilter_on = .true.
           else
@@ -488,8 +493,9 @@ c
 * Comment out the following three lines if they cause trouble or
 * if wish is unavailable.
 *
-      write(system_string,*) 'runstats ',file(1:index(file,' ')-1), ' ',
-     $     gen_run_number, '> /dev/null &'
+      write(system_string,*) 
+     >'./runstats ',file(1:index(file,' ')-1), ' ',
+     $     gen_run_number, ' > /dev/null &'
       call system(system_string)
 *
 *-zero entire event buffer
@@ -537,10 +543,10 @@ c Start data analysis
          write(6,*) ' ******'
       endif
 c
+c      write(*,*) ' mkj start do while'
       DO WHILE(.NOT.problems .and. .NOT.ABORT .and. .NOT.EoF)
         mss= ' '
         g_replay_time=time()-start_time
-
         call G_clear_event(ABORT,err)   !clear out old data
         problems= problems .OR. ABORT
 
@@ -555,7 +561,6 @@ c
           problems= problems .OR. ABORT
           if(.NOT.ABORT) total_event_count= total_event_count+1
         EndIf
-
         if(mss.NE.' ' .and. err.NE.' ') then
           call G_append(mss,' & '//err)
         elseif(err.NE.' ') then
@@ -601,7 +606,6 @@ c
             write(6,*) " it is best to do it using the kinematics file"
             write(6,*) " ***********"
           endif
-
           if(jieor(jiand(CRAW(2),'FFFF'x),'10CC'x).eq.0) then ! Physics event
 	    if (gen_event_type.eq.0) then          !scaler event.
               analyzed_events(gen_event_type)=analyzed_events(gen_event_type)+1
@@ -614,7 +618,8 @@ c
              endif            
 c
                if (syncfilter_on) then 
-                 if (  insync .eq. 1 .or.  skip_events ) write(*,*) ' Skipping out-of-sync events'
+                 if (  insync .eq. 1 .or.  skip_events ) 
+     > write(*,*) ' Skipping out-of-sync events'
                  if ( ave_current_bcm(bcm_for_threshold_cut)  .le. g_beam_on_thresh_cur(bcm_for_threshold_cut)
      >  .or. insync .eq. 1 .or. skip_events ) then
                   do ii=1,MAX_NUM_SCALERS
@@ -629,7 +634,8 @@ c
 c
                if (analyzed_events(0) .le. 1 ) then
                   write(*,*) '************'
-                  write(*,*) ' Will not analyze events until after first scaler read'
+                  write(*,*) 
+     > ' Will not analyze events until after first scaler read'
                   write(*,*) '************'
                endif
 *
@@ -645,26 +651,29 @@ c
      &           .and.gen_run_hist_dump_interval.gt.0) then
                 lastdump=physics_events   ! Wait for next interval of dump_int.
                 call g_proper_shutdown(ABORT,err)
-                print 112,"Finished dumping histograms/scalers for first",
+                print 112,
+     >"Finished dumping histograms/scalers for first",
      &             physics_events," events"
  112            format (a,i8,a)
               endif
             else				!REAL physics event.
 c
-               if (analyzed_events(0) .le. 1 .and. gen_event_type .le. 3) then
-                  if (skipped_events_scal .eq. 0 ) then
-                  write(*,*) '************'
-                  write(*,*) ' Will not analyze SOS,HMS or coin events until after first scaler read'
-                  write(*,*) ' Analyzed events :',(analyzed_events(mkj),mkj=1,4)
-                  write(*,*) '************'
-                  endif
+               if (analyzed_events(0) .eq. 0 .and. gen_event_type .le. 3) then
                   skipped_events_scal = skipped_events_scal + 1
                   goto 868      ! kludge mkj
                endif
 c
+                  if (skipped_events_scal .gt. 0 ) then
+                  write(*,*) '************'
+                  write(*,*) ' Will not analyze SOS,HMS or coin"
+     >," events until after first scaler read'
+                  write(*,*) ' Recorded events :',(recorded_events(mkj),mkj=1,3)
+                  write(*,*) ' Analyzed events :',(analyzed_events(mkj),mkj=1,3)
+                  write(*,*) '************'
+                  endif
 c
               if(gen_event_type.le.gen_MAX_trigger_types .and.
-     $           gen_run_enable(gen_event_type-1).ne.0) then
+     $           gen_run_enable(min(gen_event_type,gen_MAX_trigger_types)).ne.0) then
 c
                if ( insync .eq. 1 .and. gen_event_type .le. 3 .and. syncfilter_on ) then
                   skipped_badsync_events(gen_event_type)=skipped_badsync_events(gen_event_type) + 1
@@ -683,16 +692,16 @@ c
                   goto 868
                endif
 c
+
                 call g_examine_physics_event(CRAW,ABORT,err)
                 problems = problems .or.ABORT
-
                 if(mss.NE.' ' .and. err.NE.' ') then
                   call G_append(mss,' & '//err)
                 elseif(err.NE.' ') then
                   mss= err
                 endif
 
-                if (num_events_skipped.lt.gen_run_starting_event .and.
+                if (gen_event_ID_number.lt.(gen_run_starting_event) .and.
      &              gen_event_type.ne.4) then ! always analyze peds.
                   num_events_skipped = num_events_skipped + 1
                 else
@@ -709,6 +718,8 @@ c
                       problems= problems .OR. ABORT
                     else		!gen_event_type=0, scaler event
                     endif
+                  else
+                     write(*,*) ' mkj problem event_type=',gen_event_type
                   endif
 
                   if(mss.NE.' ' .and. err.NE.' ') then
@@ -728,7 +739,8 @@ c
                     start_time=time()     !reset start time for analysis rate
                     groupname='ped'
                   else
-                    write(6,*) 'gen_event_type= ',gen_event_type,' for call to g_keep_results'
+                    write(6,*) 'gen_event_type= '
+     >        ,gen_event_type,' for call to g_keep_results'
                   endif
 
                   If(.NOT.problems .and. groupname.ne.' ') Then
@@ -836,6 +848,7 @@ c
 
         if(gen_run_stopping_event.gt.0 .and. gen_event_ID_number.gt.0) then
           EoF=EoF .or. gen_run_stopping_event.le.sum_analyzed+sum_analyzed_skipped-analyzed_events(4)
+          EoF=EoF .or. gen_run_stopping_event.eq.gen_event_ID_number
         EndIf
 *
 *- Here is where we insert a check for an Remote Proceedure Call (RPC)
@@ -915,14 +928,16 @@ c...
       call G_log_message(mss)
       DO i=1,gen_MAX_trigger_types
         If(recorded_events(i).GT.0) Then
-          write(mss,'(" events of type:",i3," # skipped for bad sync:",i12)')
+          write(mss
+     >,'(" events of type:",i3," # skipped for bad sync:",i12)')
      &             i,skipped_badsync_events(i)
           call G_log_message(mss)
         ENDIF
       ENDDO
       DO i=1,gen_MAX_trigger_types
         If(recorded_events(i).GT.0) Then
-          write(mss,'("  events of type:",i3," # skipped for low current:",i12)')
+          write(mss,
+     >'("  events of type:",i3," # skipped for low current:",i12)')
      &             i,skipped_lowbcm_events(i)
           call G_log_message(mss)
         ENDIF
@@ -942,8 +957,8 @@ c...
       implicit none
       integer iarg
       character*132 arg
-c      integer iargc
-c      external iargc
+c     integer iargc
+c     external iargc
       logical outputflag
 *
 * Process command line args that set CTP variables

@@ -76,7 +76,7 @@
 # variable ROOTSYS is undefined, or uncomment "#ROOTSYS=" line below.
 # The same must be done in EXE/Makefile
 
-#ROOTSYS=
+ROOTSYS=
 
 
 NEWSTYLE = 1

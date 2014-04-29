@@ -1,6 +1,6 @@
         SUBROUTINE get_values(string,n,values,ok) 
 *
-* $Log$
+* $Log: get_values.f,v $
 * Revision 1.1  1994/02/22 20:00:24  cdaq
 * Initial revision
 *
@@ -18,41 +18,41 @@
         PARAMETER (quote='''')
 c................................................................ 
         n=0
-	orig= string
-        CALL no_tabs(orig)			!remove tabs
-        DO WHILE (INDEX(orig,quote).ne.0)	!remove quote marks 
+        orig= string
+        CALL no_tabs(orig)                      !remove tabs
+        DO WHILE (INDEX(orig,quote).ne.0)       !remove quote marks 
           i=INDEX(orig,quote) 
           orig(i:i)=' ' 
         ENDDO 
-        DO WHILE (INDEX(orig,'::').ne.0) 	!replace sequence marks
+        DO WHILE (INDEX(orig,'::').ne.0)        !replace sequence marks
           i=INDEX(orig,'::') 
           orig(i:i+1)='^ '
         ENDDO 
-        DO WHILE (INDEX(orig,':').ne.0) 	!replace seperator marks
+        DO WHILE (INDEX(orig,':').ne.0)         !replace seperator marks
           i=INDEX(orig,':') 
           orig(i:i)=','
         ENDDO 
-        CALL NO_blanks(orig)			!remove blanks
-	CALL UP_case(ORIG)			!shift to upper case
+        CALL NO_blanks(orig)		        !remove blanks
+        CALL UP_case(ORIG)                      !shift to upper case
         IF(orig.EQ.' ') THEN
-          ok=.false.				!nothing to read
+          ok=.false.                            !nothing to read
           RETURN
         ENDIF 
 c
         line= orig
 	j= INDEX(line,',')
-	IF(j.gt.0) line(j:)=' '		!get first line
+	IF(j.gt.0) line(j:)=' '	                 !get first line
 c
         DO WHILE (orig.NE.' ')
 c
-	  divider= INDEX(line,'*')			!duplicate
-	  If(divider.eq.0) divider= INDEX(line,'^')	!sequence
+	  divider= INDEX(line,'*')                      !duplicate
+	  If(divider.eq.0) divider= INDEX(line,'^')     !sequence
 c
 	  If(divider.eq.0) Then
 		cycle=1
 		this= line
 	  ElseIf(divider.eq.1) Then
-                GOTO 2222 			!illegal
+                GOTO 2222                                !illegal
 	  Else
 		cycle=2
 		this= line(1:divider-1)
@@ -72,12 +72,12 @@ c
               this(last_hex:)=' ' 
               CALL squeeze(this,i)
               IF(this.eq.' ') goto 2222
-              READ(this(1:i),'(z)',err=2222) v(j)
+              READ(this(1:i),'(z1)',err=2222) v(j)
             elseif(oct) then
               this(last_oct:)=' ' 
               CALL squeeze(this,i)
               IF(this.eq.' ') goto 2222
-              READ(this(1:i),'(o)',err=2222) v(j)
+              READ(this(1:i),'(o1)',err=2222) v(j)
             elseif(bin) then
               this(last_binary:)=' '
               CALL squeeze(this,i)
@@ -95,7 +95,7 @@ c
             else
               CALL squeeze(this,i)
               IF(this.eq.' ') goto 2222
-              READ(this(1:i),'(i)',err=2222) v(j)
+              READ(this(1:i),'(i1)',err=2222) v(j)
             endif
 c
 	    this= line(divider+1:)	 
