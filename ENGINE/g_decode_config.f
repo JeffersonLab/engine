@@ -20,7 +20,7 @@
 *
 *     Created  16-NOV-1993   Stephen Wood, CEBAF
 *     Modified  3-Dec-1993   Kevin Beard, Hampton Univ.; rewrote parsing
-* $Log$
+* $Log: g_decode_config.f,v $
 * Revision 1.7  2002/09/25 14:40:33  jones
 *    Add call to G_IO_control to get spareID for unit number to open file
 *     and call at end to G_IO_control free the unit number.
@@ -73,6 +73,7 @@
       integer*4 did, plane, counter, signal, nsubadd, bsubadd
       integer*4 lastroc, lastslot
       integer N_lines_read
+      integer nt,ncomma
 
       logical echo,debug,override
       character*26 lo,HI
@@ -182,9 +183,21 @@
                      endif
                   endif
                else
-
-                  read(line(1:llen),'(4i15)') subadd, plane, counter,
+                  ncomma = 0
+                  do nt=1,llen
+                      if (line(nt:nt) .eq. ',') ncomma=ncomma+1
+                     enddo
+                     if (ncomma .eq. 3) then
+                  read(line(1:llen),*) subadd, plane, counter,
      $                 signal
+                     elseif (ncomma .eq. 2) then
+                  read(line(1:llen),*) subadd, plane, counter
+                     signal=0
+                     else
+                        write(*,*) ' Error in g_decode_config.f '
+                       write(*,*) ' reading line : ', line(1:llen)
+                       stop
+                     endif
                   If(OK .and. (roc.ne.lastroc.or.slot.ne.lastslot)) Then
                      if(g_decode_slotpointer(roc,slot).le.0) then
                         g_decode_slotpointer(roc,slot) =

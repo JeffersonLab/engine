@@ -10,7 +10,7 @@
 *-         : err                - reason for failure, if any
 *- 
 *-   Created  17-May-1994   Kevin B. Beard, Hampton U.
-* $Log$
+* $Log: g_examine_physics_event.f,v $
 * Revision 1.4  1999/11/04 20:35:16  saw
 * Linux/G77 compatibility fixes
 *
@@ -45,7 +45,8 @@ ccc      LOGICAL process
 *
       integer evtype
       logical eventidbank, nontrivial
-      integer EventIDbank_size,EventIDbank_desc
+      integer EventIDbank_size
+      integer*8 EventIDbank_desc
 *
       integer*4 jiand,jishft,jieor
 *
@@ -64,7 +65,8 @@ ccc      LOGICAL process
 *
       gen_run_total_events= gen_run_total_events+1
       gen_event_type= EvType
-*
+
+*     
       ABORT= EvType.LT.0 .or. EvType.GT.gen_MAX_trigger_types
       If(ABORT) Then
          write(err,'(":illegal physics type #",i3," sequential #",i10)')
@@ -85,7 +87,7 @@ ccc      process= gen_run_enable(EvType)
       If(nontrivial) Then
          EventIDbank= buffer(1).GE.6 .and. 
      &        buffer(3).EQ.EventIDbank_size  
-     &        .and. buffer(4).EQ.EventIDbank_desc
+c     &        .and.  buffer(4).EQ.EventIDbank_desc
 *     
          if(EventIDbank) then
 *
