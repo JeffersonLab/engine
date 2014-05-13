@@ -1,4 +1,24 @@
       subroutine s_Ntuple_keep(ABORT,err)
+* xucc comments begin
+* in additoon to comments on s_ntuple_init.f                         
+* we have three additional include files
+*      include 'sos_calorimeter.cmn'
+*      include 'gen_run_info.cmn'
+*      include 'gen_data_structures.cmn'
+* And we also notice that
+* SSSHTRK and SSPRTRK actually is SSTRACK_ET and SSTRACK_PRESHOWER_E
+* but since they have different names in our include files
+* we changed them here
+* 
+*  However we need check the difference on this guessing.
+* notice that we have tracked beta, and tracked deposit energy
+* as well as untracked ones? How about the original 
+* total information on SCAL?
+* the same question exists on HCAL.
+* xucc comments end
+
+
+
 *----------------------------------------------------------------------
 *
 *     Purpose : Add entry to the SOS Ntuple
@@ -7,18 +27,9 @@
 *           : err        - reason for failure, if any
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
-* $Log$
-* Revision 1.8  2004/02/17 17:26:34  jones
-* Changes to enable possiblity of segmenting rzdat files
-*
-* Revision 1.7.2.3  2003/08/12 17:35:34  cdaq
-* Add variables for e00-108 (hamlet)
-*
-* Revision 1.7.2.2  2003/06/26 12:39:55  cdaq
-* changes for e01-001  (mkj)
-*
-* Revision 1.7.2.1  2003/04/04 12:54:42  cdaq
-* add beam parameters to ntuple
+* $Log: s_ntuple_keep.f,v $
+* Revision 1.7.4.1  2003/03/05 22:53:52  xu
+* new variables
 *
 * Revision 1.7  1996/09/04 15:18:21  saw
 * (JRA) Modify ntuple contents
@@ -54,15 +65,20 @@
 *
       INCLUDE 's_ntuple.cmn'
       INCLUDE 'sos_data_structures.cmn'
-      INCLUDE 'gen_data_structures.cmn'
       INCLUDE 'gen_event_info.cmn'
       INCLUDE 'sos_tracking.cmn'
       INCLUDE 'sos_physics_sing.cmn'
       INCLUDE 'sos_scin_tof.cmn'
       include 'sos_track_histid.cmn'
       include 'sos_aero_parms.cmn'
-      include 'sos_scin_parms.cmn'
-      INCLUDE 'sos_calorimeter.cmn'
+      INCLUDE 'sos_scin_parms.cmn'
+*     xucc added begin
+      include 'sos_calorimeter.cmn'
+      include 'gen_run_info.cmn'
+      include 'gen_data_structures.cmn'
+      include 'gen_scalers.cmn'
+*     xucc added end
+
 *
       logical HEXIST    !CERNLIB function
 *
@@ -70,8 +86,6 @@
 
       real proton_mass
       parameter ( proton_mass = 0.93827247 ) ! [GeV/c^2]
-      
-      real Wsq
 *
 *--------------------------------------------------------
       err= ' '
@@ -90,20 +104,6 @@ c
 *
       m= 0
       m= m+1
-      s_Ntuple_contents(m)= SSOMEGA !
-      m= m+1
-      s_Ntuple_contents(m)= SSBIGQ2 !
-      m= m+1
-      s_Ntuple_contents(m)= SSX_bj !
-      m= m+1
-      s_Ntuple_contents(m)= SSQ3 !
-      Wsq=SINVMASS*SINVMASS
-      m= m+1
-      s_Ntuple_contents(m)= Wsq !
-      m= m+1
-      s_Ntuple_contents(m)= SSTHET_GAMMA !
-
-      m= m+1
       s_Ntuple_contents(m)= SCER_NPE_SUM ! cerenkov photoelectron spectrum
       m= m+1
       s_Ntuple_contents(m)= SSP	! Lab momentum of chosen track in GeV/c
@@ -118,17 +118,42 @@ c
       m= m+1
       s_Ntuple_contents(m)= SINVMASS	! Invariant Mass of remaing hadronic system
       m= m+1
+      s_Ntuple_contents(m)= SSBIGQ2     ! Four momentum transfer magnitud
+      m= m+1
       s_Ntuple_contents(m)= SSZBEAM! Lab Z coordinate of intersection of beam
                                 ! track with spectrometer ray
       m= m+1
       s_Ntuple_contents(m)= SSDEDX(1)	! DEDX of chosen track in 1st scin plane
       m= m+1
-      s_Ntuple_contents(m)= SSBETA	! BETA of chosen track
+* xucc added begin
+      s_Ntuple_contents(m)= SBETA_NOTRK ! untracked BETA of chosen track
       m= m+1
-      s_Ntuple_contents(m)= SSSHTRK	! Total shower energy / momentum
+* xucc added end 
+
+      s_Ntuple_contents(m)= SSBETA	! tracked BETA of chosen track
       m= m+1
-      s_Ntuple_contents(m)= SSTRACK_PRESHOWER_E	! preshower of chosen track
+
+*  xucc added begin
+      s_Ntuple_contents(m)= SSSHSUM     ! untracked Norm. Total shower energy of chosen track
       m= m+1
+* xucc added end
+
+* xucc changing begin
+*      s_Ntuple_contents(m)= SSTRACK_ET	! Total shower energy of chosen track
+*      m= m+1
+*      s_Ntuple_contents(m)= SSTRACK_PRESHOWER_E	! preshower of chosen track
+*      m= m+1
+
+*   the following SSSHTRK and SSPRTRK actually is SSTRACK_ET and SSTRACK_PRESHOWER_E
+* but since they have different names in our include files
+* we changed them here
+      s_Ntuple_contents(m)= SSSHTRK     ! tracked Norm. Total shower energy of chosen track
+      m= m+1
+      s_Ntuple_contents(m)= SSPRTRK     ! tracked normalized preshower of chosen track
+      m= m+1
+* xucc changing end
+
+
       s_Ntuple_contents(m)= SSX_FP		! X focal plane position 
       m= m+1
       s_Ntuple_contents(m)= SSY_FP
@@ -147,51 +172,65 @@ c
       m= m+1
       s_Ntuple_contents(m)= float(gen_event_type)
       m= m+1
+      s_Ntuple_contents(m)= scal_et
+      m= m+1
+      s_Ntuple_contents(m)= sntracks_fp
+      m= m+1
+      s_Ntuple_contents(m)= sgoodscinhits
+      m= m+1
       s_Ntuple_contents(m)= sstart_time
       m= m+1
       s_Ntuple_contents(m)= saer_npe_sum
-c
-      m= m+1
-      s_Ntuple_contents(m)= gfrx_raw_adc
-      m= m+1
-      s_Ntuple_contents(m)= gfry_raw_adc
-      m= m+1
-      s_Ntuple_contents(m)= gbeam_x
-      m= m+1
-      s_Ntuple_contents(m)= gbeam_y
-      m= m+1
-      s_Ntuple_contents(m)= gbpm_x(1)
-      m= m+1
-      s_Ntuple_contents(m)= gbpm_y(1)
+
+
+* Experiment dependent entries start here.
+* xucc added begin
       m= m+1
       s_Ntuple_contents(m)= gbpm_x(2)
       m= m+1
       s_Ntuple_contents(m)= gbpm_y(2)
       m= m+1
-      s_Ntuple_contents(m)= gbpm_x(3)
+      s_Ntuple_contents(m)= smisc_dec_data(10,1)
       m= m+1
-      s_Ntuple_contents(m)= gbpm_y(3)
+      s_Ntuple_contents(m)= smisc_dec_data(9,1)
       m= m+1
-      s_Ntuple_contents(m)= smisc_dec_data(2,2)
+      s_Ntuple_contents(m)= smisc_dec_data(43,1)
       m= m+1
-      s_Ntuple_contents(m)= smisc_dec_data(3,2) 
+      s_Ntuple_contents(m)= smisc_dec_data(44,1)
       m= m+1
-      s_Ntuple_contents(m)= smisc_dec_data(4,2) 
+      s_Ntuple_contents(m)= smisc_dec_data(45,1)
       m= m+1
-c      s_Ntuple_contents(m)= smisc_dec_data(7,1) 
-       s_Ntuple_contents(m)= scer_adc(1)
+      s_Ntuple_contents(m)= smisc_dec_data(46,1)
       m= m+1
-c      s_Ntuple_contents(m)= smisc_dec_data(8,1) 
-       s_Ntuple_contents(m)= scer_adc(2)
+      s_Ntuple_contents(m)= smisc_dec_data(47,1)
       m= m+1
-c      s_Ntuple_contents(m)= smisc_dec_data(5,2) 
-       s_Ntuple_contents(m)= scer_adc(3)
+      s_Ntuple_contents(m)= smisc_dec_data(27,1)
       m= m+1
-c      s_Ntuple_contents(m)= smisc_dec_data(6,2) 
-       s_Ntuple_contents(m)= scer_adc(4)
+      s_Ntuple_contents(m)= smisc_dec_data(30,1)
+      m= m+1
+      s_Ntuple_contents(m)= smisc_dec_data(28,1)
+      m= m+1
+      s_Ntuple_contents(m)= smisc_dec_data(29,1)
+      m= m+1
+      s_Ntuple_contents(m)= smisc_dec_data(31,1)
+      m= m+1
+      s_Ntuple_contents(m)= smisc_dec_data(42,1)
+      m= m+1
+      s_Ntuple_contents(m)= smisc_dec_data(41,1)
+      m= m+1
+      s_Ntuple_contents(m)= gfrx_raw_adc
+      m= m+1
+      s_Ntuple_contents(m)= gfry_raw_adc
+      m= m+1
+      s_Ntuple_contents(m)= gscaler(346)
+      m= m+1
+      s_Ntuple_contents(m)= gscaler(350)
+      m= m+1
+      s_Ntuple_contents(m)= gscaler(186)
+      m= m+1
+      s_Ntuple_contents(m)= gscaler(190)
 
-
-* Experiment dependent entries start here.
+* xucc added end
 
 
 * Fill ntuple for this event
@@ -206,3 +245,8 @@ c      s_Ntuple_contents(m)= smisc_dec_data(6,2)
 *
       RETURN
       END      
+
+
+
+
+

@@ -109,8 +109,6 @@
 *
 *      CTPTYPE=parm
 *
-      integer*4 hdc_fix_lr  !
-      integer*4 hdc_fix_propcorr  !
       integer*4 hdriftbins_max  ! number of bins for drift time lookup table
       parameter (hdriftbins_max=138)
       real*4    hdriftbins         ! number of bins for drift time lookup table
@@ -129,7 +127,7 @@
      $     hfract(hdriftbins_max,hmax_num_dc_planes),
      $     hdriftbinsz,
      $     hdrift1stbin,
-     $     hdriftbins,hdc_fix_lr,hdc_fix_propcorr
+     $     hdriftbins
 
       equivalence (hwc1x1fract(1),hfract(1,1))
       equivalence (hwc1y1fract(1),hfract(1,2))
@@ -152,9 +150,9 @@
       integer*4 hmax_chamber_hits
       parameter (hmax_chamber_hits=544)
       integer*4 hmax_space_points   ! maximum number of space points
-      parameter (hmax_space_points=100)
+      parameter (hmax_space_points=50)
       integer*4 hmax_hits_per_point ! maximum number of hits per point
-      parameter (hmax_hits_per_point=100)
+      parameter (hmax_hits_per_point=20)
       integer*4 hnum_fpray_param    ! number of ray parameters in focal plane
       parameter (hnum_fpray_param=4)
       integer*4 hdc_num_cards       ! #/discriminator cards
@@ -204,10 +202,6 @@
                                    ! (n,1) = number of hits
                                    ! (n,2) = number of valid combinations
                                    ! (n,3...) hit numbers for space point
-      real*4 hspace_point_leftright
-      REAL*4 HDC_DRIFT_TIME_spt
-      real*4 hspace_point_driftdis
-      real*4 hspace_point_wirecoord
       real*4 hspace_points         ! array of x, y of space points
       real*4 hbeststub             ! array of stubs fit to each space point
       real*4 hdc_sing_drifttime    ! array of fully corrected drift times for each plane
@@ -215,18 +209,16 @@
 
 *
       common/HMS_TRACKING/
-     &     hdc_num_chambers,hdc_num_planes,hdc_planes_per_chamber,
+     &     hdc_num_chambers,hdc_num_planes,
+     &     hdc_planes_per_chamber,
      &     hdc_hits_per_plane(hmax_num_dc_planes),
-     &     gplanehdc1(hmax_space_points),gplanehdc2(hmax_space_points),
+     &     gplanehdc1(hmax_space_points),
+     &     gplanehdc2(hmax_space_points),
      &     hspace_points(hmax_space_points,2),
      &     hspace_point_hits(hmax_space_points,hmax_hits_per_point+2),
-     &     hspace_point_leftright(hmax_space_points,hmax_hits_per_point),
-     &     hspace_point_driftdis(hmax_space_points,hmax_hits_per_point),
-     &     hspace_point_wirecoord(hmax_space_points,hmax_hits_per_point),
-     1     HDC_DRIFT_TIME_spt(hmax_space_points,hmax_hits_per_point),
      &     hnspace_points(hmax_num_chambers),
      &     hnspace_points_tot,
-     &     hbeststub(hmax_space_points,hnum_fpray_param+2),
+     &     hbeststub(hmax_space_points,hnum_fpray_param),
      &     hncham_hits(hmax_num_chambers),
      &     htrack_fit_num,
      &     hspace_point_criterion(hmax_num_chambers),
@@ -322,10 +314,6 @@
       integer*4 hdc_didhit(hmax_num_dc_planes,hdc_max_wires_per_plane)
       integer*4 hdc_shouldsum(hmax_num_dc_planes)
       integer*4 hdc_didsum(hmax_num_dc_planes)
-      integer*4 hdc_shouldhit_del(hmax_num_dc_planes,hdc_max_wires_per_plane,20)
-      integer*4 hdc_didhit_del(hmax_num_dc_planes,hdc_max_wires_per_plane,20)
-      integer*4 hdc_shouldsum_del(hmax_num_dc_planes,20)
-      integer*4 hdc_didsum_del(hmax_num_dc_planes,20)
       integer*4 hdc_eff(hmax_num_dc_planes)
       real*4 hdc_track_coord(hntracks_max,hmax_num_dc_planes)
       real*4 hsdc_track_coord(hmax_num_dc_planes)
@@ -337,10 +325,6 @@
      &   hdc_didhit,        !times a wire did fire.
      &   hdc_shouldsum,     !sum over plane.
      &   hdc_didsum,        !sum over plane.
-     &   hdc_shouldhit_del,     !times a wire should have fired.
-     &   hdc_didhit_del,        !times a wire did fire.
-     &   hdc_shouldsum_del,     !sum over plane.
-     &   hdc_didsum_del,        !sum over plane.
      &   hdc_eff,           !effic. per plane.
      &   hdc_min_wire_eff,  !warning level for wire effic.
      &   hdc_min_plane_eff, !warning level for plane effic.
@@ -408,44 +392,76 @@
       logical hfoundtrack, hcleantrack
       integer hnumhits1,hnumhits2,hnumplanes1,hnumplanes2
       integer hnumscins1,hnumscins2,hnumscins3,hnumscins4
+      integer htotscins
       integer hstubtest
       real*4 hstubminx,hstubminy,hstubminxp,hstubminyp
       integer hscinhit(4,16)
       integer hnclust(4)
       integer hthreescin(4)
+      integer htotscin(4)
+      integer thtotscin1
+      integer thtotscin2
+      integer thtotscin3
+      integer thtotscin4
       integer hslope
       integer hbestxpscin
       integer hbestypscin
-      integer hgoodscinhits,hgoodscinhits_x(16)
+      integer hgoodscinhits
       integer hxloscin(hmax_num_chambers),hxhiscin(hmax_num_chambers)
       integer hyloscin(hmax_num_chambers),hyhiscin(hmax_num_chambers)
       integer htrack_eff_test_num_scin_planes
 
       common/dereks_hms_track_tests/
-     &h1hit1,h1hit2,h1hit3,h1hit4,h1hit5,h1hit6,h1hit7,
-     &h1hit8,h1hit9,h1hit10,h1hit11,h1hit12,
-     &hnumhit1,hnumhit2,hnumhit3,hnumhit4,hnumhit5,hnumhit6,
-     &hnumhit7,hnumhit8,hnumhit9,hnumhit10,hnumhit11,hnumhit12,
-     &h1hitslt,h2hitslt,h1planesgt,h2planesgt,hhitslt,hplanesgt,
-     &hstublt,f1hspacepoints,f2hspacepoints,fhspacepoints,
-     &hhitsplanes,hhitsplanessps,hhitsplanesspsstubs,
-     &hspacepoints,
-     &htest1,htest2,
-     &hfoundtrack,
-     &hcleantrack,
-     &hnumhits1,hnumhits2,hnumplanes1,hnumplanes2,
-     &hnumscins1,hnumscins2,hnumscins3,hnumscins4,
-     &hstubtest,
-     &hstubminx,
-     &hstubminy,
-     &hstubminxp,
-     &hstubminyp,
-     &hscinhit,
-     &hnclust,
-     &hthreescin,
-     &hslope,
-     &hbestxpscin,
-     &hbestypscin,
-     &hgoodscinhits,hgoodscinhits_x,
-     &hxloscin,hxhiscin,hyloscin,hyhiscin,
-     &htrack_eff_test_num_scin_planes
+     &    h1hit1,
+     &    h1hit2,
+     &    h1hit3,
+     &    h1hit4,
+     &    h1hit5,
+     &    h1hit6,
+     &    h1hit7,
+     &    h1hit8,
+     &    h1hit9,
+     &    h1hit10,
+     &    h1hit11,
+     &    h1hit12,
+     &	  hnumhit1,hnumhit2,hnumhit3,hnumhit4,hnumhit5,hnumhit6,
+     &    hnumhit7,hnumhit8,hnumhit9,hnumhit10,hnumhit11,hnumhit12,
+     &    h1hitslt,
+     &    h2hitslt,
+     &    h1planesgt,
+     &    h2planesgt,
+     &    hhitslt,
+     &    hplanesgt,
+     &    hstublt,
+     &    f1hspacepoints,
+     &    f2hspacepoints,
+     &    fhspacepoints,
+     &    hhitsplanes,
+     &    hhitsplanessps,
+     &    hhitsplanesspsstubs,
+     &    hspacepoints,
+     &    htest1,htest2,
+     &    hfoundtrack,
+     &    hcleantrack,
+     &    hnumhits1,hnumhits2,hnumplanes1,hnumplanes2,
+     &    hnumscins1,hnumscins2,hnumscins3,hnumscins4,
+     &    htotscins,
+     &    hstubtest,
+     &    hstubminx,
+     &    hstubminy,
+     &    hstubminxp,
+     &    hstubminyp,
+     &	  hscinhit,
+     &    hnclust,
+     &    hthreescin,
+     &    htotscin,
+     &    thtotscin1,
+     &    thtotscin2,
+     &    thtotscin3,
+     &    thtotscin4,
+     &    hslope,
+     &    hbestxpscin,
+     &    hbestypscin,
+     &    hgoodscinhits,
+     &    hxloscin,hxhiscin,hyloscin,hyhiscin,
+     &    htrack_eff_test_num_scin_planes

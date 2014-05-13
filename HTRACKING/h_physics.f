@@ -19,7 +19,7 @@
 *-   Created 19-JAN-1994   D. F. Geesaman
 *-                           Dummy Shell routine
 *
-* $Log$
+* $Log: h_physics.f,v $
 * Revision 1.23  2003/11/28 14:57:03  jones
 * Added variable hsxp_tar_temp = hsxp_tar + h_oopcentral_offset  (MKJ)
 *
@@ -29,6 +29,7 @@
 * Revision 1.21.2.3  2003/09/04 21:30:12  jones
 * Add h_oopcentraloffset (mkj)
 *
+* $Log: h_physics.f,v $
 * Revision 1.21.2.2  2003/07/15 19:04:52  cdaq
 * add calculation of hsinplane
 *
@@ -148,6 +149,7 @@
 *--------------------------------------------------------
 *
       ierr=0
+*      hphi_lab=0.0
 
       if (hsnum_fptrack.le.0) return    ! No Good track 
 
@@ -160,6 +162,9 @@
       hsy_tar      = hy_tar(hsnum_tartrack)
       hsxp_tar     = hxp_tar(hsnum_tartrack) ! This is an angle (radians)
       hsxp_tar_temp     = hsxp_tar + h_oopcentral_offset
+*      hsxp_tar     = hsxp_tar + h_oopcentral_offset
+*     hsxp_tar     = hsxp_tar + hphicentral_offset
+
       hsyp_tar     = hyp_tar(hsnum_tartrack) ! This is an angle (radians)
       hsbeta       = hbeta(itrkfp)
       hsbeta_chisq = hbeta_chisq(itrkfp)
@@ -172,6 +177,7 @@
 
 *     Correct delta (this must be called AFTER filling 
 *     focal plane quantites).
+
 
       call h_satcorr(ABORT,err)
       hsp = hpcentral*(1.0 + hsdelta/100.) !Momentum in GeV
@@ -189,6 +195,8 @@
       hscal_sumb   = hcal_e2/p_nonzero
       hscal_sumc   = hcal_e3/p_nonzero
       hscal_sumd   = hcal_e4/p_nonzero
+
+
       hsprsum      = hscal_suma
       hsshsum      = hcal_et/p_nonzero
       hsprtrk      = hstrack_preshower_e/p_nonzero
@@ -300,7 +308,11 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 
       hstheta_1st = htheta_lab*TT/180. - atan(hsyp_tar) ! rough scat
                                                         ! angle
-      hsinplane = htheta_lab*TT/180. - atan(hsyp_tar) ! rough scat angle
+*      hsinplane = htheta_lab*TT/180. - atan(hsyp_tar) ! rough scat angle
+
+      hsinplane = htheta_lab*TT/180. - hsyp_tar ! rough scat angle
+
+!      write(*,*) 'TH - h_physics',hsinplane,hyp_tar(hsnum_tartrack),hstheta_1st
 
       if (hpartmass .lt. 2.*mass_electron) then ! for electron
         if (gtarg_z(gtarg_num).gt.0.) then
@@ -333,7 +345,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 *     This coordinate system is a just a simple rotation away from the
 *     TRANSPORT coordinate system used in the spectrometers
 
-      hsp_z = hsp/sqrt(1.+hsxp_tar_temp**2+hsyp_tar**2)
+      hsp_z = hsp/sqrt(1.+hsxp_tar**2+hsyp_tar**2)
             
 *     Initial Electron
 
@@ -346,7 +358,7 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 *     - gaw 98/10/5
 
       hs_kpvec(1) =  hsenergy
-      hs_kpvec(2) =  hsp_z*hsxp_tar_temp
+      hs_kpvec(2) =  hsp_z*hsxp_tar
       hs_kpvec(3) =  hsp_z*(hsyp_tar*coshthetas-sinhthetas)
       hs_kpvec(4) =  hsp_z*(hsyp_tar*sinhthetas+coshthetas)
 
@@ -364,11 +376,10 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 
       sinhstheta = sin(hstheta)
       coshstheta = cos(hstheta)
-c      write(*,*) ' hsphi = ',hsphi,hphi_lab,hs_kpvec(3),hs_kpvec(2)
 
       hsphi = hphi_lab + hsphi
 
-c      if (hsphi .gt. 0.) hsphi = hsphi - tt
+*      if (hsphi .gt. 0.) hsphi = hsphi - tt
 
 *     hszbeam is the intersection of the beam ray with the
 *     spectrometer as measured along the z axis.
@@ -382,7 +393,19 @@ c      if (hsphi .gt. 0.) hsphi = hsphi - tt
 
 *     Target particle 4-momentum
 
+c      hs_tvec(1) = gtarg_mass(gtarg_num)*m_amu
+C     Convert to proton mass!  Protons forever hahahahahahahahah!
+
+*      hs_tvec(1) = mass_nucleon
+
+**** get the correct mass for dummy target subtraction
+
       hs_tvec(1) = gtarg_mass(gtarg_num)*m_amu
+
+      if ((gtarg_num.eq.17).or.(gtarg_num.eq.18)) then
+!         write(6,*) 'TH: h_physics: dummy target!!'
+      hs_tvec(1) = gtarg_mass(11)*m_amu         
+      endif
       hs_tvec(2) = 0.
       hs_tvec(3) = 0.
       hs_tvec(4) = 0.
@@ -411,6 +434,8 @@ c      if (hsphi .gt. 0.) hsphi = hsphi - tt
 
 *     Magnitudes
 
+*         write(6,*) 'so, what is W?', W2
+
          hsq3    = sqrt(scalar(hs_qvec,hs_qvec))
          hsbigq2 = -mink(hs_qvec,hs_qvec) 
          W2      = mink(Wvec,Wvec)
@@ -419,6 +444,8 @@ c      if (hsphi .gt. 0.) hsphi = hsphi - tt
          else
             hinvmass = 0.
          endif
+
+         
 
 *     Calculate elastic scattering kinematical correction
 

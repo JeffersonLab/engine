@@ -14,7 +14,7 @@
 *
 * s_scin_eff calculates efficiencies for the hodoscope.
 *
-* $Log$
+* $Log: s_scin_eff.f,v $
 * Revision 1.8  2003/09/05 20:01:02  jones
 * Merge in online03 changes (mkj)
 *
@@ -59,6 +59,7 @@
       include 'sos_scin_tof.cmn'
       include 'sos_statistics.cmn'
       include 'sos_id_histid.cmn'
+      include 'sos_calorimeter.cmn'
 
       integer pln,cnt,pln2
       integer hit_cnt(snum_scin_planes)
@@ -110,43 +111,76 @@
         call hf1(sidscindpos(pln),histval,1.)
       enddo
 
+      do nhit=1,sscin_tot_hits
+        cnt=sscin_counter_num(nhit)
+        pln=sscin_plane_num(nhit)
+
+*  Determine if one or both PMTs had a good tdc.
+        if (sgood_tdc_pos(ssnum_fptrack,nhit) .and. 
+     &      sgood_tdc_neg(ssnum_fptrack,nhit) ) good_tdc_bothsides(pln)=.true.
+        if (sgood_tdc_pos(ssnum_fptrack,nhit) .or. 
+     &      sgood_tdc_neg(ssnum_fptrack,nhit) ) good_tdc_oneside(pln)=.true.
+
+      enddo                 !loop over ssnum_pmt_hit
+
+
 *   Record position differences between track and center of scin. and
 *   increment 'should have hit' counters
       do pln=1,snum_scin_planes
         cnt=hit_cnt(pln)
         dist=hit_dist(pln)
+        otherthreehit = .true.
+        do pln2=1,snum_scin_planes         !see of one of the others missed or pln2=pln
+            if (.not.(good_tdc_bothsides(pln2) .or. pln2.eq.pln)) then
+              otherthreehit=.false.
+            endif
+        enddo    
         if(abs(dist).le.sstat_slop .and.    !hit in middle of scin.
-     &           sschi2perdeg.le.sstat_maxchisq) then
-          sstat_trk(pln,hit_cnt(pln))=sstat_trk(pln,hit_cnt(pln))+1
+     &       sschi2perdeg.le.sstat_maxchisq.and.(ssshtrk.ge.0.05)) then
+          if(otherthreehit) then
+             sstat_trk(pln,hit_cnt(pln))=sstat_trk(pln,hit_cnt(pln))+1
+          endif
         endif
       enddo
+
 
       do nhit=1,sscin_tot_hits
         cnt=sscin_counter_num(nhit)
         pln=sscin_plane_num(nhit)
+        otherthreehit = .true.
+        do pln2=1,snum_scin_planes         !see of one of the others missed or pln2=pln
+            if (.not.(good_tdc_bothsides(pln2) .or. pln2.eq.pln)) then
+              otherthreehit=.false.
+            endif
+        enddo    
+
 
 *  Record the hits if track is near center of track and the chisquared of the 
 *  track is good.
+
+ 
         if(abs(hit_dist(pln)).le.sstat_slop .and. cnt.eq.hit_cnt(pln) .and. 
-     &          sschi2perdeg.le.sstat_maxchisq) then
+     &      sschi2perdeg.le.sstat_maxchisq.and.(ssshtrk.ge.0.05)) then
 
-          if (sgood_tdc_pos(ssnum_fptrack,nhit)) then
-            if (sgood_tdc_neg(ssnum_fptrack,nhit)) then    !both fired
-              sstat_poshit(pln,hit_cnt(pln))=sstat_poshit(pln,hit_cnt(pln))+1
-              sstat_neghit(pln,hit_cnt(pln))=sstat_neghit(pln,hit_cnt(pln))+1
-              sstat_andhit(pln,hit_cnt(pln))=sstat_andhit(pln,hit_cnt(pln))+1
-              sstat_orhit(pln,hit_cnt(pln))=sstat_orhit(pln,hit_cnt(pln))+1
-            else                            !pos fired
-              sstat_poshit(pln,hit_cnt(pln))=sstat_poshit(pln,hit_cnt(pln))+1
-              sstat_orhit(pln,hit_cnt(pln))=sstat_orhit(pln,hit_cnt(pln))+1
-            endif
-          else   !no pos tdc
-            if (sgood_tdc_neg(ssnum_fptrack,nhit)) then    !neg fired
-              sstat_neghit(pln,hit_cnt(pln))=sstat_neghit(pln,hit_cnt(pln))+1
-              sstat_orhit(pln,hit_cnt(pln))=sstat_orhit(pln,hit_cnt(pln))+1
-            endif       !if neg tdc fired.
-          endif       !if pos tdc fired.
+          if(otherthreehit) then
 
+             if (sgood_tdc_pos(ssnum_fptrack,nhit)) then
+               if (sgood_tdc_neg(ssnum_fptrack,nhit)) then    !both fired
+                 sstat_poshit(pln,hit_cnt(pln))=sstat_poshit(pln,hit_cnt(pln))+1
+                 sstat_neghit(pln,hit_cnt(pln))=sstat_neghit(pln,hit_cnt(pln))+1
+                 sstat_andhit(pln,hit_cnt(pln))=sstat_andhit(pln,hit_cnt(pln))+1
+                 sstat_orhit(pln,hit_cnt(pln))=sstat_orhit(pln,hit_cnt(pln))+1
+               else                            !pos fired
+                 sstat_poshit(pln,hit_cnt(pln))=sstat_poshit(pln,hit_cnt(pln))+1
+                 sstat_orhit(pln,hit_cnt(pln))=sstat_orhit(pln,hit_cnt(pln))+1
+               endif
+             else   !no pos tdc
+               if (sgood_tdc_neg(ssnum_fptrack,nhit)) then    !neg fired
+                 sstat_neghit(pln,hit_cnt(pln))=sstat_neghit(pln,hit_cnt(pln))+1
+                 sstat_orhit(pln,hit_cnt(pln))=sstat_orhit(pln,hit_cnt(pln))+1
+               endif       !if neg tdc fired.
+             endif       !if pos tdc fired.
+          endif ! If signal from other three planes for plane considered
         endif       !if hit was on good track.
 
 

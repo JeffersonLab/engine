@@ -10,7 +10,7 @@
 *
 *      Created 9 April 1994	D. F. Geesaman
 *
-* $Log$
+* $Log: sos_id_histid.cmn,v $
 * Revision 1.11  1999/02/23 19:20:42  csa
 * (JRA) Add sidscindpos_pid, cleanup
 *
@@ -114,6 +114,8 @@
 *
 *      flags to turn on (.eq.1) or off (.eq. 0) hard coded histograms
        integer*4 sturnon_scin_raw_hist
+       integer*4 sturnon_scin_raw_2d
 *
        common/sos_id_hist_flags/
-     &      sturnon_scin_raw_hist
+     &      sturnon_scin_raw_hist,
+     &      sturnon_scin_raw_2d

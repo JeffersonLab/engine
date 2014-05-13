@@ -1,11 +1,10 @@
 *    This include file contains all the variables required for s_physics
-* $Log$
-* Revision 1.11  2005/03/23 16:35:04  jones
-* Add new code s_select_best_track_prune.f and h_select_best_track_prune.f (P Bosted)
+* $Log: sos_physics_sing.cmn,v $
+* Revision 1.10  2005/03/09 bosted
+* updated to include _select_purge variable
 *
-* Revision 1.10  2005/03/23 16:16:28  jones
-* Add variable ssel_using_scin . Set ssel_using_scin = 1 in param files and new code
-* used to select best track for SOS.
+* Revision 1.9.12.1  2004/08/20 17:34:11  cdaq
+* updated to include _select_using_scin codes
 *
 * Revision 1.9  2003/09/08 21:03:18  jones
 * Change s_phicentral_offset to s_oopcentral_offset (mkj)
@@ -85,6 +84,7 @@
       real*4 sprune_chibeta             ! Maximum beta chisq
       real*4 sprune_fptime              ! Maximum fptime - nominal
       integer sprune_npmt               ! Minimum PMTs for track
+      real*4 sprune_she                 ! Minimum Shower Energy in GeV
 
        INTEGER*4 ssel_using_scin       ! =1 select best track using scin info
                                       ! = 0 select best track suing just chi2
@@ -108,7 +108,8 @@
      &     sprune_df,
      &     sprune_chibeta,
      &     sprune_npmt,
-     &     sprune_fptime
+     &     sprune_fptime,
+     &     sprune_she
 *
       COMMON/sos_chose_one_track_i4/
      &     ssel_ndegreesmin,

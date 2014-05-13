@@ -14,7 +14,7 @@
 *
 * h_scin_eff calculates efficiencies for the hodoscope.
 *
-* $Log$
+* $Log: h_scin_eff.f,v $
 * Revision 1.8  2003/09/05 21:08:34  jones
 * Merge in online03 changes plus changes from E. Christy and E. Segbefia to
 * account for multiple scattering introduced by the aerogel (mkj)
@@ -86,6 +86,9 @@
         check_hit(pln) = 2
       enddo
  
+! TH notes - Project to scintillator paddle excluding outer 0.5cm
+!  of each paddle.
+
       if (hschi2perdeg.le.hstat_maxchisq) hstat_numevents=hstat_numevents+1
 
       hit_pos(1)=hsx_fp + hsxp_fp*(hscin_1x_zpos+0.5*hscin_1x_dzpos)
@@ -125,26 +128,62 @@
      &    check_hit(pln) = 1        
       enddo
 
-*   Record position differences between track and center of scin. and
-*   increment 'should have hit' counters
-      do pln=1,hnum_scin_planes
-        cnt=hit_cnt(pln)
-        dist=hit_dist(pln)
-        if(abs(dist).le.hstat_slop .and.    !hit in middle of scin.
-     &    hschi2perdeg.le.hstat_maxchisq.and.(hsshtrk.GE.0.05)) then
-          hstat_trk(pln,cnt)=hstat_trk(pln,cnt)+1
-          lookat(pln) = .true.
-        endif
-        hitplane(pln) = 0
-      enddo
 
       do nhit=1,hscin_tot_hits
         cnt=hscin_counter_num(nhit)
         pln=hscin_plane_num(nhit)
 
+*  Determine if one or both PMTs had a good tdc.
+        if (hgood_tdc_pos(hsnum_fptrack,nhit) .and. 
+     &      hgood_tdc_neg(hsnum_fptrack,nhit) ) good_tdc_bothsides(pln)=.true.
+        if (hgood_tdc_pos(hsnum_fptrack,nhit) .or. 
+     &      hgood_tdc_neg(hsnum_fptrack,nhit) ) good_tdc_oneside(pln)=.true.
+
+      enddo                 !loop over hsnum_pmt_hit
+
+*   Record position differences between track and center of scin. and
+*   increment 'should have hit' counters
+
+! TH - notes: To prevent tracking dependence of scint efficiency (if track
+!  reconstructed slightly wrong) have conditions:
+!  1) Require track to point to cluster in calorimeter: hsshtrk > 0.05
+!  Note that track points to center of paddle - given some slop value
+      do pln=1,hnum_scin_planes
+        cnt=hit_cnt(pln)
+        dist=hit_dist(pln)
+        otherthreehit=.true.
+        do pln2 = 1,hnum_scin_planes	!see of one of the others missed or pln2=pln
+          if (.not.(good_tdc_bothsides(pln2) .or. pln2.eq.pln)) then
+	      otherthreehit = .false.
+	  endif
+	enddo
+        if(abs(dist).le.hstat_slop .and.    !hit in middle of scin.
+     &    hschi2perdeg.le.hstat_maxchisq.and.(hsshtrk.GE.0.05)) then
+          if(otherthreehit) then
+             hstat_trk(pln,cnt)=hstat_trk(pln,cnt)+1
+             lookat(pln) = .true.
+          endif
+        endif
+          hitplane(pln) = 0
+      enddo
+
+
+      do nhit=1,hscin_tot_hits
+        cnt=hscin_counter_num(nhit)
+        pln=hscin_plane_num(nhit)
+
+        otherthreehit = .true.
+        do pln2 = 1,hnum_scin_planes	!see of one of the others missed or pln2=pln
+          if (.not.(good_tdc_bothsides(pln2) .or. pln2.eq.pln)) then
+	      otherthreehit = .false.
+	  endif
+	enddo
+
 *  Record the hits as a "didhit" if track is near center of scintillator, 
 *  the chisquared of the track is good, and it is the 1st "didhit" in that 
 *  plane. 
+! TH notes: increments array hitplane for FIRST good hit ONLY. So what
+!  about two-track events etc?
 
 cc        write(6,*)lookat(pln),hscin_tot_hits,nhit,pln,cnt,hit_cnt(pln),
 cc     &            hitplane(pln),abs(cnt-hit_cnt(pln))
@@ -154,27 +193,29 @@ cc     &            hitplane(pln),abs(cnt-hit_cnt(pln))
      &     .LE.check_hit(pln)).and.(hsshtrk.GE.0.05).
      &     and.hitplane(pln).EQ.0.and.hschi2perdeg.le.hstat_maxchisq) then
            
-          hitplane(pln) = hitplane(pln) + 1
+          if(otherthreehit) then
+             hitplane(pln) = hitplane(pln) + 1
 
-          if (hgood_tdc_pos(hsnum_fptrack,nhit)) then
-            if (hgood_tdc_neg(hsnum_fptrack,nhit)) then    !both fired
-              hstat_poshit(pln,hit_cnt(pln))=hstat_poshit(pln,hit_cnt(pln))+1
-              hstat_neghit(pln,hit_cnt(pln))=hstat_neghit(pln,hit_cnt(pln))+1
-              hstat_andhit(pln,hit_cnt(pln))=hstat_andhit(pln,hit_cnt(pln))+1
-              hstat_orhit(pln,hit_cnt(pln))=hstat_orhit(pln,hit_cnt(pln))+1
-            else                            !pos fired
-              hstat_poshit(pln,hit_cnt(pln))=hstat_poshit(pln,hit_cnt(pln))+1
-              hstat_orhit(pln,hit_cnt(pln))=hstat_orhit(pln,hit_cnt(pln))+1
-            endif
-          else   !no pos tdc
-            if (hgood_tdc_neg(hsnum_fptrack,nhit)) then    !neg fired
-              hstat_neghit(pln,hit_cnt(pln))=hstat_neghit(pln,hit_cnt(pln))+1
-              hstat_orhit(pln,hit_cnt(pln))=hstat_orhit(pln,hit_cnt(pln))+1
-            endif       !if neg tdc fired.
-          endif       !if pos tdc fired.
-
-        endif       !if hit was on good track.
-
+             if (hgood_tdc_pos(hsnum_fptrack,nhit)) then
+                if (hgood_tdc_neg(hsnum_fptrack,nhit)) then    !both fired
+                   hstat_poshit(pln,hit_cnt(pln))=hstat_poshit(pln,hit_cnt(pln))+1
+                   hstat_neghit(pln,hit_cnt(pln))=hstat_neghit(pln,hit_cnt(pln))+1
+                   hstat_andhit(pln,hit_cnt(pln))=hstat_andhit(pln,hit_cnt(pln))+1
+                   hstat_orhit(pln,hit_cnt(pln))=hstat_orhit(pln,hit_cnt(pln))+1
+                else                            !pos fired
+                   hstat_poshit(pln,hit_cnt(pln))=hstat_poshit(pln,hit_cnt(pln))+1
+                   hstat_orhit(pln,hit_cnt(pln))=hstat_orhit(pln,hit_cnt(pln))+1
+                endif
+             else   !no pos tdc
+                if (hgood_tdc_neg(hsnum_fptrack,nhit)) then    !neg fired
+                   hstat_neghit(pln,hit_cnt(pln))=hstat_neghit(pln,hit_cnt(pln))+1
+                   hstat_orhit(pln,hit_cnt(pln))=hstat_orhit(pln,hit_cnt(pln))+1
+                endif       !if neg tdc fired.
+             endif       !if pos tdc fired.
+          endif ! if other three planes had a signal
+                        
+        endif !if hit was on good track.
+          
 
 *   Increment pos/neg/both fired.  Track indepenant, so no chisquared cut (but
 *   note that only scintillators on the track are examined.
@@ -190,14 +231,8 @@ cc     &            hitplane(pln),abs(cnt-hit_cnt(pln))
             hneggood(pln,cnt)=hneggood(pln,cnt)+1
           endif
         endif
+      enddo ! End loop over hscin_tot_hits
 
-*  Determine if one or both PMTs had a good tdc.
-        if (hgood_tdc_pos(hsnum_fptrack,nhit) .and. 
-     &      hgood_tdc_neg(hsnum_fptrack,nhit) ) good_tdc_bothsides(pln)=.true.
-        if (hgood_tdc_pos(hsnum_fptrack,nhit) .or. 
-     &      hgood_tdc_neg(hsnum_fptrack,nhit) ) good_tdc_oneside(pln)=.true.
-
-      enddo                 !loop over hsnum_pmt_hit
 
 *  For each plane, see of other 3 fired.  This means that they were enough
 *  to form a 3/4 trigger, and so the fraction of times this plane fired is

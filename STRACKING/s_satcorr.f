@@ -17,7 +17,7 @@
 *- 
 *-   Created 24-JUN-1998   J. Volmer
 *-                           Dummy Shell routine
-* $Log$
+* $Log: s_satcorr.f,v $
 * Revision 1.2  2003/09/05 20:00:03  jones
 * Merge in online03 changes (mkj)
 *
@@ -52,6 +52,7 @@
 *     local variables 
 *
       REAL*4 deltacorr,p0corr
+      real*4 c1,c2 ! TH - Add for new correction to ssdelta
 
 *--------------------------------------------------------
 *
@@ -61,22 +62,50 @@
       p0corr=0.
       deltacorr=0.
 
+!      if (genable_sos_satcorr.ne.0) then
+!         if (spcentral.gt.0.96296) then
+!            deltacorr = 46.729-137.21*spcentral+181.15*spcentral**2
+!     >               -76.089*spcentral**3
+!         else
+!            deltacorr = 14.6369
+!         endif
+
+! -------------------------------------------------------------------------
+! TH - Try new ssdelta/ssxpfp correction based on 2003 Heep data
+! and fit to Em va ssxpfp of form C1*ssxpfp + C2*ssxpfp**2
+! Correct by region in ssxpfp.
+! Fix values below pSOS=1.0 to parametrization value at pSOS=1.0
+
       if (genable_sos_satcorr.ne.0) then
-         if (spcentral.gt.0.96296) then
-            deltacorr = 46.729-137.21*spcentral+181.15*spcentral**2
-     >               -76.089*spcentral**3
+         if (spcentral.gt.1.0) then
+            if (ssxp_fp .gt. -0.06) then
+               c1 = 0.6067 - 34.318*(spcentral-1.1984)**4
+               c2 = 11.078 - 73.930*(spcentral-0.7847)**4
+            else
+               c1 = 0
+               c2 = 3.6746 - 78.690*(spcentral-0.9000)**4
+            endif
          else
-            deltacorr = 14.6369
+            if (ssxp_fp .gt. -0.06) then
+               c1 = 0.6
+               c2 = 11.0
+            else
+               c1 = 0
+               c2 = 3.
+            endif
          endif
 
-c         p0corr = .225
-c         if (spcentral.gt.1.483) p0corr=p0corr-16.7*(spcentral-1.483)**2
+! -------------------------------------------------------------------------
+
       endif
 
 *      write(6,*)' s_satcorr: ssdelta, ssxp_fp =',ssdelta, ssxp_fp
 *      write(6,*)' s_satcorr: deltacorr, p0corr =',deltacorr,p0corr
 c      ssdelta = ssdelta + deltacorr*ssxp_fp**2 + p0corr
-       ssdelta = ssdelta + deltacorr*ssxp_fp**2 
+
+!       ssdelta = ssdelta + deltacorr*ssxp_fp**2 
+       ssdelta = ssdelta + c1*ssxp_fp + c2*ssxp_fp**2 
+
 *      write(6,*)' s_satcorr: ssdelta =',ssdelta
 
       ABORT= ierr.ne.0 .or. ABORT

@@ -20,7 +20,14 @@
 *-                           Dummy Shell routine
 *
 *
-* $Log$
+* $Log: s_physics.f,v $
+* Revision 1.19.4.2  2004/07/01 14:46:35  jones
+* Add calls to s_ytarcalib, s_yptarcalib, s_xptarcalib which are new subroutines added by C. Xu for the fpi2 branch of analyzer
+*
+* Revision 1.19.4.1  2004/07/01 14:43:10  jones
+* New version for fpi2 branch
+*
+* $Log: s_physics.f,v $
 * Revision 1.21  2003/11/28 14:57:30  jones
 * Added variable ssxp_tar_temp = ssxp_tar + s_oopcentral_offset  (MKJ)
 *
@@ -170,10 +177,15 @@
       ssxp_fp = sxp_fp(itrkfp) ! This is a slope (dx/dz)
       ssyp_fp = syp_fp(itrkfp) ! This is a slope (dy/dz)
 
+
 *     Correct delta (this must be called AFTER filling 
 *     focal plane quantites).
 
       call s_satcorr(ABORT,err)
+      call s_ytarcalib(ABORT,err)
+      call s_yptarcalib(ABORT,err)
+      call s_xptarcalib(ABORT,err)
+c
       ssp = spcentral*(1.0 + ssdelta/100.) !Momentum in GeV
       ssenergy = sqrt(ssp*ssp+spartmass*spartmass)        
 
@@ -300,7 +312,8 @@ c     &           (dist(ip),ip=1,12),(res(ip),ip=1,12)
 
       sstheta_1st = stheta_lab*TT/180. + atan(ssyp_tar) ! rough scat angle
 c
-      ssinplane = stheta_lab*TT/180. + atan(ssyp_tar) ! In plane scat angle (rad)
+!      ssinplane = stheta_lab*TT/180. + atan(ssyp_tar) ! In plane scat angle (rad)
+      ssinplane = stheta_lab*TT/180. + ssyp_tar ! In plane scat angle (rad)
 
       if (spartmass .lt. 2.*mass_electron) then ! for electron
         if (gtarg_z(gtarg_num).gt.0.) then
@@ -381,7 +394,15 @@ c      if (ssphi .lt. 0.) ssphi = ssphi + tt
 
 *     Target particle 4-momentum
 
+**** get the correct mass for dummy target subtraction
+
       ss_tvec(1) = gtarg_mass(gtarg_num)*m_amu
+
+      if ((gtarg_num.eq.17).or.(gtarg_num.eq.18)) then
+*         write(6,*) 'dummy target!!'
+        ss_tvec(1) = gtarg_mass(11)*m_amu         
+      endif
+
       ss_tvec(2) = 0.
       ss_tvec(3) = 0.
       ss_tvec(4) = 0.

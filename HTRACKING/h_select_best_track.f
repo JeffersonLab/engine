@@ -11,10 +11,7 @@
 *-   Output: ABORT           - success or failure
 *-         : err             - reason for failure, if any
 *- 
-*- $Log$
-*- Revision 1.6  2005/03/23 16:33:32  jones
-*- Add new code s_select_best_track_prune.f (P Bosted)
-*-
+*- $Log: h_select_best_track.f,v $
 *- Revision 1.5  2004/02/26 22:23:17  jones
 *- Add if statement to use subroutine h_select_best_track_using_scin.f
 *- when hsel_using_scin .eq. 1 . Otherwise picks the best track the old

@@ -1,10 +1,6 @@
 * hms_scin_tof.cmn:   common block used by the subroutines that
 *       calculate the hms time of flight.
-* $Log$
-* Revision 1.12  2005/03/15 21:14:28  jones
-* Add variables htof_tolerance and stof_tolerance to be used to filter the scintillator tdc hits and group them by time. ( P. Bosted)
-*
-*
+* $Log: hms_scin_tof.cmn,v $
 * Revision 1.11  1996/04/30 13:40:30  saw
 * (JRA) Add hbeta_p, hbeta_pcent
 *
@@ -80,7 +76,6 @@
       real*4 hscin_tdc_to_time
       real*4 hstart_time_center    ! center of time window on scin. hits
       real*4 hstart_time_slop      ! 1/2 width of time window on scin. hits
-      real*4 htof_tolerance        ! tolerance for tof window in nsec
 *
 *     CTPTYPE=event
 *
@@ -90,6 +85,8 @@
       logical*4 hgood_plane_time(hntracks_max,hnum_scin_planes)
       logical*4 hgood_beta(hntracks_max)
       logical*4 hscin_on_track(hntracks_max,hmax_scin_hits)
+      logical*4 hgood_tdc_pos_pmtcut(hntracks_max,hmax_scin_hits)
+      logical*4 hgood_tdc_neg_pmtcut(hntracks_max,hmax_scin_hits)
 
       common/hms_scin_tof/
      &     hntof,
@@ -115,7 +112,7 @@
      &     hscin_time_fp,               !scin time (ave) projected to fp
      &     hstart_time_center,
      &     hstart_time_slop,
-     &     htof_tolerance
+     &     hgood_tdc_pos_pmtcut, hgood_tdc_neg_pmtcut ! good tdc excluding given PMTs
 
 *
 *     CTPTYPE=event

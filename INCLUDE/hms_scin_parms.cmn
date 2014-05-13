@@ -10,7 +10,7 @@
 *
 *       Modified 23 March 1994   DFG
 *           Add definition of hnum_scin_elements and set parameter value
-* $Log$
+* $Log: hms_scin_parms.cmn,v $
 * Revision 1.11  1996/09/04 16:24:13  saw
 * (JRA) Add misc scaler
 *
@@ -181,10 +181,15 @@
 *
       integer*4 hmisc_dec_data(hmax_misc_hits,hnum_misc_planes)
       integer*4 hmisc_scaler(hmax_misc_hits,hnum_misc_planes)
+* TH - try adding aerogel TDC
+      integer*4 haero_dec_data(hmax_misc_hits,hnum_misc_planes)
+      integer*4 haero_scaler(hmax_misc_hits,hnum_misc_planes)
 
       common/hms_misc_parms/
      &   hmisc_dec_data,
-     &   hmisc_scaler
+     &   hmisc_scaler,
+     &   haero_dec_data,
+     &   haero_scaler
 
 
       integer*4 hscin_zero_pos(hnum_scin_planes,hnum_scin_elements)
@@ -197,4 +202,16 @@
      &    hscin_zero_pos,hscin_zero_neg,
      &    hscin_zero_num,
      &    hscin_zero_pave,hscin_zero_nave
- 
+       
+      integer*4 quad_num
+      parameter(quad_num=12)
+      real*4 hscin_area_should(hnum_scin_planes,hnum_scin_elements,quad_num)
+      real*4 hscin_area_did(hnum_scin_planes,hnum_scin_elements,quad_num)
+      real*4 hscin_eff_pln(hnum_scin_planes,hnum_scin_elements,quad_num)
+      real*4 hscin_min_pos(hnum_scin_planes)
+      real*4 hscin_max_pos(hnum_scin_planes)
+      real*4 hscin_step_size(hnum_scin_planes)
+      real*4 e_should(hnum_scin_planes), e_did(hnum_scin_planes)
+      common /hms_paddle_eff/
+     &    hscin_area_should,hscin_area_did,hscin_eff_pln,hscin_max_pos,
+     &    hscin_min_pos,hscin_step_size,e_should,e_did

@@ -9,7 +9,7 @@
 *     sty_track_criterion      for t_y
 *
 *     d.f. geesaman           7-September 1993
-* $Log$
+* $Log: s_link_stubs.f,v $
 * Revision 1.7  1996/09/05 19:55:23  saw
 * (DVW) Added some track tests
 *
@@ -80,6 +80,13 @@
      $      access='append')
       endif
       sstubtest = 0
+
+!!!! TH - Add this to make SOS tracking consistent with HMS tracking
+c
+      if (SNTRACKS_MAX_FP .eq. 0) SNTRACKS_MAX_FP = 10 ! in case not set in param file.
+      if (SNTRACKS_MAX_FP .gt. SNTRACKS_MAX) SNTRACKS_MAX_FP = SNTRACKS_MAX ! in case set too high  in param file.
+c
+!!!!
 *
       ABORT= .FALSE.
       err=' '
