@@ -120,7 +120,7 @@
       integer*4 smax_space_points   ! maximum number of space points
       parameter (smax_space_points=50)
       integer*4 smax_hits_per_point ! maximum number of hits per point
-      parameter (smax_hits_per_point=50)
+      parameter (smax_hits_per_point=15)
       integer*4 snum_fpray_param    ! number of ray parameters in focal plane
       parameter (snum_fpray_param=4)
       integer*4 sdc_num_cards       ! #/discriminator cards
@@ -153,7 +153,10 @@
       real*4 syt_track_criterion    ! stub link criterion on y_t
       real*4 sxpt_track_criterion   ! stub link criterion on xp_t
       real*4 sypt_track_criterion   ! stub link criterion on yp_t
+      real*4 sstub_max_xpdiff       ! stub criterion for l/r determination
       real*4 sspace_point_criterion ! maximum distance**2 to join pairs/combos.
+      INTEGER*4 SNTRACKS_MAX_FP       ! NUMBER OF TRACKS ALLOWED IN FOCAL PLANE
+      integer*4 s_remove_sppt_if_one_y_plane ! flag used in h_pattern_recognition.f
 *
 *     CTPTYPE=event
 *
@@ -200,6 +203,7 @@
      &     smax_pr_hits(smax_num_chambers),
      &     sxt_track_criterion,syt_track_criterion,
      &     sxpt_track_criterion,sypt_track_criterion,
+     &     sstub_max_xpdiff,
      &     sdc_sing_drifttime(smax_num_dc_planes),
      &     sdc_sing_driftdis(smax_num_dc_planes),
      &     sdc_wire_velocity,
@@ -209,7 +213,8 @@
      &     sdc_readout_x(smax_num_dc_planes),
      &     sdc_card_delay(sdc_num_cards),
      &     sdc_card_no(sdc_max_wires_per_plane,smax_num_dc_planes),
-     &     sdc_sing_cardid(smax_num_dc_planes)
+     &     sdc_sing_cardid(smax_num_dc_planes),
+     &     SNTRACKS_MAX_FP,s_remove_sppt_if_one_y_plane
 
 
 *----------------------------------------------------------------------

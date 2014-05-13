@@ -15,7 +15,7 @@
 * s_dc_eff calculates efficiencies for the hodoscope.
 * s_dc_eff_shutdown does some final manipulation of the numbers.
 *
-* $Log$
+* $Log: s_dc_eff_shutdown.f,v $
 * Revision 1.2  1996/09/05 13:29:49  saw
 * (JRA) Cosmetic
 *
@@ -63,6 +63,16 @@
       do ind = 1 , sdc_num_chambers
         sdc_cham_eff(ind) = float(sdc_cham_hits(ind))/num
       enddo
+
+      sdcaveeff1 = (sdc_plane_eff(1)+sdc_plane_eff(2)+sdc_plane_eff(3)+sdc_plane_eff(4)+sdc_plane_eff(5)+sdc_plane_eff(6))/6
+      sdcaveeff2 = (sdc_plane_eff(7)+sdc_plane_eff(8)+sdc_plane_eff(9)+sdc_plane_eff(10)+sdc_plane_eff(11)+sdc_plane_eff(12))/6
+      sdcaveeff=(sdcaveeff1+sdcaveeff2)/2  
+      sdc5of6_1=(6-5*sdcaveeff1)*sdcaveeff1*sdcaveeff1*sdcaveeff1*sdcaveeff1*sdcaveeff1
+      sdc5of6_2=(6-5*sdcaveeff2)*sdcaveeff2*sdcaveeff2*sdcaveeff2*sdcaveeff2*sdcaveeff2
+      sdc_5_of_6_eff=sdc5of6_1*sdc5of6_2
+
+
+!      write(*,*) 'TH - s_dc_eff_shutdown.f ', sdcaveeff1, sdcaveeff2,sdcaveeff,sdc5of6_1,sdc5of6_2,sdc_5_of_6_eff
 
       return
       end

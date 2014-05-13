@@ -17,22 +17,7 @@
 *-      Modified 9 Apr 1998       Added a switch to turn on the fiducial
 *-                                cut.  The default for this is now no cut.
 *-                                K.G. Vansyoc
-* $Log$
-* Revision 1.11  2008/09/25 00:08:35  jones
-* Updated to run with gfortran compiler
-*
-* Revision 1.10.6.1  2007/09/10 20:28:01  pcarter
-* Implemented changes to allow compilation on RHEL 3,4,5 and MacOSX
-*
-* Revision 1.10  2005/03/15 20:08:23  jones
-* Modify the criterion for matching track and calorimeter cluster. As before,
-* the track must hit within (0.5*scal_block_xsize + scal_slop) of the cluster
-* position. Previously if more than one cluster was within
-* (0.5*scal_block_xsize + scal_slop) then the last cluster in the loop was
-* associated with the track. Now, if more than one cluster meets that
-* condition then cluster which has a position closest to the track is
-* associated with the track.
-*
+* $Log: s_tracks_cal.f,v $
 * Revision 1.9  2003/04/03 00:45:01  jones
 * Update to calorimeter calibration (V. Tadevosyan)
 *
@@ -107,12 +92,33 @@
         strack_xc(nt)        = xf
         strack_yc(nt)        = yf
 
+! TH - Note these limits are calculated in s_init_cal.f:
+!    scal_fv_xmin = scal_xmin+5
+!    scal_fv_xmax = scal_xmax-5
+!    
+!    scal_xmin = scal_4ta_top(1) = -55.0-5.64 (this is from PARAM/scal.pos)
+!    scal_xmax = scal_4ta_top(scal_4ta_nr) + scal_block_size 
+!  where scal_4ta_nr is the number of shower counter blocks per layer 
+!  (nr=11). Note that X,Y position is the same for each block.
+!
+!    scal_block_size = scal_4ta_top(2) - scal_4ta_top(1)
+
+! TH Temporarily hardcode elastic region for calorimeter as fiducial region
+!    in which track is allowed: XCAL=[-33,30], YCAL=[-18,18]
+!
+!        scal_fv_xmax=30
+!        scal_fv_xmin=-33
+!        scal_fv_ymax=18
+!        scal_fv_ymin=-18
+
+
         track_in_fv = (xf.le.scal_fv_xmax  .and.  xf.ge.scal_fv_xmin  .and.
      &                 xb.le.scal_fv_xmax  .and.  xb.ge.scal_fv_xmin  .and.
      &                 yf.le.scal_fv_ymax  .and.  yf.ge.scal_fv_ymin  .and.
      &                 yb.le.scal_fv_ymax  .and.  yb.ge.scal_fv_ymin)
 
 
+! TH - Note that scal_fv_test is set in PARAM/scal.param
 
 * Initialize scluster_track(nt)
         if(scal_fv_test.eq.0) then         !not using fv test

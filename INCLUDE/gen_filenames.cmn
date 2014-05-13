@@ -1,7 +1,7 @@
 ******************* begin: gen_filenames.cmn ***********************
 *
 *-Common block with filenames
-*     $Log$
+*     $Log: gen_filenames.cmn,v $
 *     Revision 1.14  2003/09/05 20:10:27  jones
 *     Merge in online03 changes (mkj)
 *
@@ -79,6 +79,8 @@
       character*80 g_decode_map_filename ! File containing unpack map
       character*80 g_report_template_filename
       character*80 g_report_output_filename
+      character*80 g_report_template_sync_filename
+      character*80 g_report_output_sync_filename
       character*80 g_report_blockname
       character*80 g_label              ! A string that can label reports, etc
       character*80 g_ctp_database_filename ! Run number dependent variables
@@ -104,6 +106,8 @@
      $     g_decode_map_filename,
      $     g_report_template_filename,
      $     g_report_output_filename,
+     $     g_report_template_sync_filename,
+     $     g_report_output_sync_filename,
      $     g_report_blockname,
      $     g_label,
      $     g_ctp_database_filename,

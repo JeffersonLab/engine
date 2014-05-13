@@ -15,10 +15,7 @@
 *-      Output Bank: HMS_DECODED_CAL
 *-
 *-      Created: 15 Mar 1994      Tsolak A. Amatuni
-* $Log$
-* Revision 1.8  2004/03/03 19:26:25  jones
-* Initialize  hsshsum and hsshtrk to zero.
-*
+* $Log: h_trans_cal.f,v $
 * Revision 1.7  1999/02/04 18:18:14  saw
 * Fix calculation of energy for blocks with two tubes
 *
@@ -72,8 +69,6 @@
       hcal_e3    =0.
       hcal_e4    =0.
       hcal_et    =0.
-      hsshsum = 0.
-      hsshtrk = 0.
 *
       hcal_e1_pos    =0.
       hcal_e1_neg    =0.

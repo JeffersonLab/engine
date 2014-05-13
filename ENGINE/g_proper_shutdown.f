@@ -9,7 +9,7 @@
 *-         : err	- reason for failure, if any
 *- 
 *-   Created  20-Nov-1993   Kevin B. Beard for new error standards
-* $Log$
+* $Log: g_proper_shutdown.f,v $
 * Revision 1.14  2004/07/08 20:09:47  saw
 * Flush CTP Root trees
 *
@@ -127,6 +127,22 @@
           err_report = 'threp failed to create report in file '//file
         endif
       endif
+
+**** TH - Add sync report file here
+*
+      if(g_report_blockname.ne.' '.and.
+     $     g_report_output_sync_filename.ne.' ') then
+
+        file = g_report_output_sync_filename
+        call g_sub_run_number(file, gen_run_number)
+
+        ierr = threp(g_report_blockname,file)
+        if(ierr.ne.0) then
+          bad_report = .true.
+          err_report = 'threp failed to create report in file '//file
+        endif
+      endif
+**
 
       ABORT= bad_HMS .or. bad_SOS .or. bad_COIN .or. bad_HBK
      $     .or. bad_report

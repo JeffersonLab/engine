@@ -6,7 +6,7 @@
 *     Author:	D. F. Geesaman
 *     Date:      9 April 1994
 *
-* $Log$
+* $Log: h_init_histid.f,v $
 * Revision 1.8  2002/12/20 21:53:33  jones
 * Modified by Hamlet for new HMS aerogel
 *
@@ -89,6 +89,7 @@ c
       character*7 hscinplanename(HNUM_SCIN_PLANES)
       character*6 posadc,negadc,postdc,negtdc
       character*7 hposadc,hnegadc,hpostdc,hnegtdc
+      character*9 posadctdc, negadctdc
 
       data wiremap/'_wiremap'/       
       data drifttime/'_drifttime'/
@@ -110,6 +111,8 @@ c
       data hpostdc /'hpostdc'/
       data hnegtdc /'hnegtdc'/
 
+      data posadctdc /'pos2d'/
+      data negadctdc /'neg2d'/
 *     
       SAVE
 *--------------------------------------------------------
@@ -179,7 +182,13 @@ c
         histname = hnegtdc//hscinplanenum(plane)
         hidscinallnegtdc(plane) = thgetid(histname)
         histname = hposadc//hscinplanenum(plane)
+
+*        print *, 'h_init_histid: histname ', histname
+
         hidscinallposadc(plane) = thgetid(histname)
+
+*        print *, hidscinallposadc(plane)
+
         histname = hnegadc//hscinplanenum(plane)
         hidscinallnegadc(plane) = thgetid(histname)
 
@@ -191,6 +200,13 @@ c
         hidsumposadc(plane) = thgetid(histname)
         histname = "hsumnegadc"//hscinplanenum(plane)
         hidsumnegadc(plane) = thgetid(histname)
+* For 2D histograms
+*        histname = "hposadctdc"//hscinplanenum(plane)
+*        print *, '#### histname ', histname
+*        hidscinposadctdc(plane, 1) = thgetid(histname)
+*        print *, hidscinposadctdc(plane, 1)
+*        histname = "hnegadctdc"//hscinplanenum(plane)
+*        hidscinnegadctdc(plane, 1) = thgetid(histname)
 
         histname = "hscindpos"//hscinplanenum(plane)
         hidscindpos(plane) = thgetid(histname)
@@ -223,7 +239,22 @@ c
           else
             write(histname,'(a7,i2,a6)') hscinplanename(plane),counter,negtdc
           endif
-          hidscinnegtdc(plane,counter) = thgetid(histname)     
+          hidscinnegtdc(plane,counter) = thgetid(histname)  
+
+
+          if(counter.lt.10) then
+            write(histname,'(a7,i1,a9)') hscinplanename(plane),counter,posadctdc
+          else
+            write(histname,'(a7,i2,a9)') hscinplanename(plane),counter,posadctdc
+          endif
+          hidscinposadctdc(plane,counter) = thgetid(histname)
+*          write(*,*) '####', histname, hidscinposadctdc(plane,counter), plane, counter 
+          if(counter.lt.10) then
+            write(histname,'(a7,i1,a9)') hscinplanename(plane),counter,negadctdc
+          else
+            write(histname,'(a7,i2,a9)') hscinplanename(plane),counter,negadctdc
+          endif
+          hidscinnegadctdc(plane,counter) = thgetid(histname)   
         enddo                           ! end loop over scintillator counters
       enddo                             ! end loop over scintillator plane
 

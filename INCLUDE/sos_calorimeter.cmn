@@ -1,6 +1,6 @@
 *
 *      SOS calorimeter. Parameters from sos_positions.parm
-* $Log$
+* $Log: sos_calorimeter.cmn,v $
 * Revision 1.11  1999/10/11 13:42:41  saw
 * Cosmetic
 *
@@ -152,7 +152,7 @@
 *      SOS calorimeter. Cluster data, filled by s_clusters_cal
 *
       integer*4 snclusters_max    !Number of clusters allowed in the calorimeter
-      parameter (snclusters_max=5) !Set the maximum to 5
+      parameter (snclusters_max=15) !Set the maximum to 5
       integer*4 snclusters_cal     !Number of clusters found
       integer*4 scluster_hit       !Link pointer to cluster number for each hit
       integer*4 scluster_size      !Number of hits in a cluster
