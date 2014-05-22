@@ -73,6 +73,7 @@
       real*8 gscaler_saved(MAX_NUM_SCALERS)  ! prev_scalers - scalers
       real*4 g_run_time                       !time of run at most recent scaler event
       real*4 g_beam_on_run_time(2)               ! accumulated time of run for which
+      real*4 g_beam_on_run_time_saved(2)               ! accumulated time of run for which
                                               ! beam current exceeded beam_on_thresh_cur.
       real*8 ave_current_bcm(3)
       integer g_replay_time                   !time since start of run (from cpu clock) 
@@ -82,7 +83,7 @@
       common /SCALERS/ gscaler, gscaler_old, gscaler_change,
      $     ave_current_bcm,gscaler_skipped,gscaler_saved,
      $     gclock_rate, g_run_time, gclock_index, g_replay_time,
-     $     gscaler_nroll, g_beam_on_run_time,syncfilter_on,insync 
+     $     gscaler_nroll, g_beam_on_run_time,g_beam_on_run_time_saved,syncfilter_on,insync 
 
 c For Gen it is noticed that some scaler channels are randomly clearing
 c themselves.  The following is to
@@ -128,6 +129,7 @@ c themselves.  The following is to
       real*8 gbcm3_charge
       real*8 gunser_charge
       real*8 g_beam_on_bcm_charge(2)   ! "beam on" accumulated charge
+      real*8 g_beam_on_bcm_charge_saved(2)   ! "beam on" accumulated charge
       integer*4 gscaler_event_num
       logical skip_events
 
@@ -136,7 +138,7 @@ c themselves.  The following is to
      &    gbcm1_gain, gbcm2_gain, gbcm3_gain, gunser_gain,
      &    gbcm1_offset, gbcm2_offset, gbcm3_offset, gunser_offset,
      &    gbcm1_charge, gbcm2_charge, gbcm3_charge, gunser_charge,
-     &    g_beam_on_bcm_charge, g_beam_on_thresh_cur,
+     &    g_beam_on_bcm_charge, g_beam_on_bcm_charge_saved, g_beam_on_thresh_cur,
      &    gbcm1_index, gbcm2_index, gbcm3_index, gunser_index,bcm_for_threshold_cut,
      &    gscaler_event_num,skip_events
       common/ WRITESCALERS/

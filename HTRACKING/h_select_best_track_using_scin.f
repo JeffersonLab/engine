@@ -53,6 +53,8 @@
 *     Need to test to chose the best track
       HSNUM_FPTRACK = 0
       HSNUM_TARTRACK = 0
+
+
       if( HNTRACKS_FP.GT. 0) then                  !!! (1) !!!
          chi2min= 1e10
 	 goodtrack = 0
@@ -75,6 +77,7 @@
                 hscinhit(i,j)=0
                enddo
              enddo
+
              do i=1,hscin_tot_hits
                hscinhit(hscin_plane_num(i),hscin_counter_num(i))=1
              enddo
@@ -83,6 +86,10 @@ c
         hit_cnt(4)=nint((hhodo_center(4,1)-hit_pos(4))/hscin_2y_spacing)+1
         hit_cnt(4)=max(min(hit_cnt(4),nint(hnum_scin_counters(4))),1)                
 	hit_dist(4)=hit_pos(4)-(hhodo_center(4,1)-hscin_2y_spacing*(hit_cnt(4)-1))
+
+
+!        write(*,*) '$$$$$ S2Y',hit_pos(4),hit_cnt(4),hit_dist(4)
+
 	 
 ** hhodo_center(4.1) = 31.35
 ** hscin_2y_spacing = 7.5
@@ -119,6 +126,8 @@ c
 	enddo 
 	y2d(track)=zap
 	endif                            !!! (4) !!!
+
+!        write(*,*) 'TEST S2Y',y2d(track)
 	
 	if(hntracks_fp.eq.1) y2d(track)=0.
 
@@ -126,6 +135,8 @@ c
         hit_cnt(3)=nint((hit_pos(3)-hhodo_center(3,1))/hscin_2x_spacing)+1
         hit_cnt(3)=max(min(hit_cnt(3),nint(hnum_scin_counters(3))),1)
         hit_dist(3)=hit_pos(3)-(hscin_2x_spacing*(hit_cnt(3)-1)+hhodo_center(3,1))         
+
+!        write(*,*) 'S2X',hit_pos(3),hit_cnt(3),hit_dist(3)
       
         if(hntracks_fp.gt.1) then           !!! (4) !!!
 	zap=0.
@@ -155,9 +166,10 @@ c
 	x2d(track)=zap
 	endif                            !!! (4) !!!
 	
+!        write(*,*) 'TEST S2X',y2d(track),x2d(track),y2dmin,x2dmin
+        
 	if(hntracks_fp.eq.1) x2d(track)=0.
-
-	      if(y2d(track).le.y2dmin) then  
+	       if(y2d(track).le.y2dmin) then  
  	       if(y2d(track).lt.y2dmin) then
 	         x2dmin=100.                
 	         chi2min=1e10 
@@ -204,7 +216,9 @@ c
 
         HSNUM_TARTRACK = goodtrack
         HSNUM_FPTRACK  = goodtrack
-	 
+
+!        write(*,*) 'Good track selected:',goodtrack
+!        pause
 
         if(goodtrack.eq.0) return       ! return if no valid tracks
       endif    !!! (1) !!!

@@ -109,9 +109,10 @@
 *
 * Misc. variables.
 
-      integer*4        i,j,itrk
+      integer*4        i,j,itrk,cnt
 
       real*8           sum(4),hut(5),term,hut_rot(5)
+      real*8           t_ztemp, hxptar_write,t_hsinplane
 *=============================Executable Code =============================
       ABORT= .FALSE.
       err= ' '
@@ -131,9 +132,11 @@
          hlink_tar_fp(itrk) = itrk
 
 * Reset COSY sums.
-         do i = 1,4
+         hx_tar(itrk)=0.
+         do cnt=1,2
+           do i = 1,4
             sum(i) = 0.
-         enddo
+           enddo
 
 
 * Load track data into local array, Converting to COSY units.
@@ -154,9 +157,25 @@
 
          hut(4) = hyp_fp(itrk) + h_ang_offset_y           !radians
 
-         hut(5)= -gbeam_y/100. ! spectrometer target X in meter!
-                                ! note that pos. spect. X = neg. beam Y
-         hut(5) = 0.0 ! mkj for hcana test
+!         hut(5)= -gbeam_y/100. + hx_tar(itrk)   ! spectrometer target X in meter!
+                                                ! note that pos. spect. X = neg. beam Y
+
+!-----------------------------------------------------------------------------
+
+!! TH: The following are tests for the FR calibration wrt possible 
+!! needed new calibrations for su04 - NOTE that multiplying by a factor 
+!! of 1.25 seems to eliminate all kinematic correlationsA
+!
+!         hut(5)= gbeam_y/100. ! spectrometer target X in meter!
+!         hut(5)= -gbeam_y*1.25/100. ! spectrometer target X in meter!
+
+! TH - Try same for Fpi2/pSOS=1.74 data. Seems to require larger correction
+! though
+
+         hut(5)= -gbeam_y*1.5/100. ! spectrometer target X in meter!
+!-----------------------------------------------------------------------------
+
+
 ! now transform 
 *         hx_fp_rot(itrk)=  hut(1) + h_det_offset_x    ! include detector offset
 *         hy_fp_rot(itrk)=  hut(3) + h_det_offset_y 
@@ -168,46 +187,26 @@
 *         hut_rot(4)= hyp_fp_rot(itrk)
 *        h*_fp_rot never used except here, so remove the intermediate step.
 
-         hut_rot(1) = hut(1)
-         hut_rot(2) = hut(2) + hut(1)*h_ang_slope_x
-         hut_rot(3) = hut(3)
-         hut_rot(4) = hut(4) + hut(3)*h_ang_slope_y
-         hut_rot(5) = hut(5)
+
+           hut_rot(1) = hut(1)
+           hut_rot(2) = hut(2) + hut(1)*h_ang_slope_x
+           hut_rot(3) = hut(3)
+           hut_rot(4) = hut(4) + hut(3)*h_ang_slope_y
+           hut_rot(5) = hut(5)
 * Compute COSY sums.
+           do i = 1,h_num_recon_terms
+              term = 1.
+              do j = 1,5
+                 if (h_recon_expon(j,i).ne.0.)
+     $               term = term*hut_rot(j)**h_recon_expon(j,i)
+              enddo
+              sum(1) = sum(1) + term*h_recon_coeff(1,i)
+              sum(2) = sum(2) + term*h_recon_coeff(2,i)
+              sum(3) = sum(3) + term*h_recon_coeff(3,i)
+              sum(4) = sum(4) + term*h_recon_coeff(4,i)
+           enddo
 
-         if((hut_rot(4).lt.0.000567*hut_rot(3)+0.016
-     $     .and.hut_rot(4).gt.0.00091*hut_rot(3)+0.00773
-     $     .and.hut_rot(4).gt.0.00034*hut_rot(3)+0.01226 .and. 1 .eq. -1)
-     $     .or.(hut_rot(4).gt.0.00055*hut_rot(3)-0.0165
-     $     .and.hut_rot(4).lt.0.00091*hut_rot(3)-0.00773
-     $     .and.hut_rot(4).lt.0.00045*hut_rot(3)-0.00114 .and. 1 .eq. -1) ) then 
 
-
-
-         do i = 1,h_num_cosy_terms
-            term = 1.
-            do j = 1,5
-               if (h_cosy_expon(j,i).ne.0.)
-     $             term = term*hut_rot(j)**h_cosy_expon(j,i)
-            enddo
-            sum(1) = sum(1) + term*h_cosy_coeff(1,i)
-            sum(2) = sum(2) + term*h_cosy_coeff(2,i)
-            sum(3) = sum(3) + term*h_cosy_coeff(3,i)
-            sum(4) = sum(4) + term*h_cosy_coeff(4,i)
-         enddo
-        else
-         do i = 1,h_num_recon_terms
-            term = 1.
-            do j = 1,5
-               if (h_recon_expon(j,i).ne.0.)
-     $             term = term*hut_rot(j)**h_recon_expon(j,i)
-            enddo
-            sum(1) = sum(1) + term*h_recon_coeff(1,i)
-            sum(2) = sum(2) + term*h_recon_coeff(2,i)
-            sum(3) = sum(3) + term*h_recon_coeff(3,i)
-            sum(4) = sum(4) + term*h_recon_coeff(4,i)
-         enddo
-        endif
 * Protext against asin argument > 1.
 c         if(sum(1).gt. 1.0) sum(1)=  0.99
 c         if(sum(1).lt. -1.0) sum(1)= -.99
@@ -217,13 +216,37 @@ c         if(sum(3).lt. -1.0) sum(3)= -.99
      
 * Load output values.
 
-         hx_tar(itrk) = 0.              ! ** No beam raster yet **
+
+!         hx_tar(itrk) = 0.              ! ** No beam raster yet **
          hy_tar(itrk) = sum(2)*100.     !cm.
          hxp_tar(itrk) = sum(1)         !Slope xp
          hyp_tar(itrk) = sum(3)         !Slope yp
 
-         hz_tar(itrk) = 0.0             !Track is at origin
+!         hz_tar(itrk) = 0.0             !Track is at origin
          hdelta_tar(itrk) = sum(4)*100. !percent.
+
+
+
+!!!!!!
+!! TH: Calculate hz_tar
+!! NOTE hz_tar is really hszbeam (see h_physics.f) and what I call 
+!! t_ztemp is really z_tar and hz_tar is really zbeam.
+!! SIN(THETA) = hztar/hszbeam
+
+         t_hsinplane = htheta_lab*TT/180. - hyp_tar(itrk)
+ 
+         hz_tar(itrk) = hy_tar(itrk)*(Sin(htheta_lab*TT/180.)
+     >                + cos(htheta_lab*TT/180)/tan(t_hsinplane))
+
+         t_ztemp = hz_tar(itrk)/100. * sin(htheta_lab*TT/180.) ! m        
+         hx_tar(itrk) = - t_ztemp*hxp_tar(itrk) 
+
+!         write(*,*) 'TH - h_targ_trans',cnt,hxp_tar(itrk),hx_tar(itrk),hut(5),hy_tar(itrk)
+!         write(*,*) 'TH - h_targ_trans',cnt,hytar(itrk),hztar(itrk)
+
+         enddo ! end loop for xtar calculation
+
+!!!!!!
 
 * Apply offsets to reconstruction.
          hdelta_tar(itrk) = hdelta_tar(itrk) + hdelta_offset

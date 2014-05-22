@@ -42,6 +42,7 @@
       parameter (here = 'h_trans_misc')
 
       integer*4 ihit,ich,isig
+      integer*4 aich,aisig ! TH -add
 
       save
 
@@ -55,10 +56,12 @@
         isig=hmisc_raw_addr1(ihit)
         hmisc_dec_data(ich,isig) = hmisc_raw_data(ihit)
         hmisc_scaler(ich,isig) = hmisc_scaler(ich,isig) + 1
-        if (isig.eq.1.and.hidmisctdcs.gt.0) then        !TDC
+       if (isig.eq.1.and.hidmisctdcs.gt.0) then        !TDC
           call hf1(hidmisctdcs,float(hmisc_dec_data(ich,isig)),1.)
         endif
       enddo
+
+
 
       return
       end

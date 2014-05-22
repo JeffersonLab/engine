@@ -114,6 +114,8 @@
 *
 *      flags to turn on (.eq.1) or off (.eq. 0) hard coded histograms
        integer*4 sturnon_scin_raw_hist
+       integer*4 sturnon_scin_raw_2d
 *
        common/sos_id_hist_flags/
-     &      sturnon_scin_raw_hist
+     &      sturnon_scin_raw_hist,
+     &      sturnon_scin_raw_2d

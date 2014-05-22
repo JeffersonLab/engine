@@ -22,9 +22,6 @@
 *     Author:	D. F. Geesaman		1 September 1993
 *
 * $Log: coin_data_structures.cmn,v $
-* Revision 1.4.10.1  2004/06/18 15:30:50  cdaq
-* replaced with fpi2 version
-*
 * Revision 1.3.2.3  2003/08/12 17:35:57  cdaq
 * Add variables for e00-108 (hamlet)
 *
@@ -53,6 +50,7 @@
 *     CTPTYPE=event
 *
       REAL*4 CMISSING_MASS         ! Missing mass of undetected hadron system
+      REAL*4 CMMD_PIONCT         ! pion ct add Dummy Missing Mass for LD2
       REAL*4 CMISSING_MOM          ! Magnitude of missing momentum 
       REAL*4 CMISSING_MOMS         ! Missing momentum with an attitude adjustment
       REAL*4 CMISSING_MOMX         ! X component of missing momentum
@@ -76,11 +74,14 @@
 * xucc added begin
       real*4 c_epsilon,c_gamma_v,c_e_bind,ce_exc,ctphix,ctphiy
       real*4 cmin_t,cmmx,cmex,ce_excx
+      real*4 thmissing_mass
+      real*4 th_krel
 * xucc added end        
 
 *
       COMMON/COIN_PHYSICS_R4/
      &     CMISSING_MASS,
+     &     CMMD_PIONCT,
      &     CMISSING_MOM,
      &     CMISSING_MOMS,
      &     CMISSING_MOMX,
@@ -94,7 +95,8 @@
      &     c_omega,x_bj,qabs,z_m,pt2,
      &     cmissing_mom_par,cmissing_mom_perp,cmissing_mom_oop,
      &     cmin_t,c_epsilon,c_gamma_v,c_e_bind,ce_exc,ctphix,ctphiy,
-     &     cmmx,cmex,ce_excx
+     &     cmmx,cmex,ce_excx,
+     &     thmissing_mass,th_krel
 *    xucc change end
 
 *     &     CS,

@@ -74,6 +74,10 @@
       integer*4 hidscinnegadc(HNUM_SCIN_PLANES,hnum_scin_elements)
       integer*4 hidscinpostdc(HNUM_SCIN_PLANES,hnum_scin_elements)
       integer*4 hidscinnegtdc(HNUM_SCIN_PLANES,hnum_scin_elements)
+
+      integer*4 hidscinposadctdc(HNUM_SCIN_PLANES,hnum_scin_elements)
+      integer*4 hidscinnegadctdc(HNUM_SCIN_PLANES,hnum_scin_elements)
+
       integer*4 hidscinalltimes
       integer*4 hidscindpos(HNUM_SCIN_PLANES)
       integer*4 hidscindpos_pid(HNUM_SCIN_PLANES)
@@ -133,13 +137,20 @@ c
      &     hidscindpos_pid,
      &     hidhaero_adc_pos_pedsubtr,hidhaero_adc_neg_pedsubtr,
      &     hidhaero_adc_pos_hits,hidhaero_adc_neg_hits,
-     &     hidhaero_tdc_pos_hits,hidhaero_tdc_neg_hits
+     &     hidhaero_tdc_pos_hits,hidhaero_tdc_neg_hits,
+     &     hidscinposadctdc,hidscinnegadctdc
 
 *
 *     CTPTYPE=parm
 *
 *      flags to turn on (.eq.1) or off (.eq. 0) hard coded histograms
        integer*4 hturnon_scin_raw_hist
+
+*      flags to turn on (.eq.1) or off (.eq. 0) hard coded histograms
+*      for 2D ADC_TDC 
+       integer*4 hturnon_scin_raw_2d
 *
        common/hms_id_hist_flags/
-     &      hturnon_scin_raw_hist
+     &      hturnon_scin_raw_hist,
+     &      hturnon_scin_raw_2d
+

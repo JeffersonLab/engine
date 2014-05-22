@@ -38,9 +38,9 @@ c
       ncall=ncall+1
 
       if (ncall .eq. 1) then
-	call g_IO_control(spare_id,'ANY',ABORT,err)  !get IO channel
-	 call SYSTEM ('rm s_cal_calib_raw_data')
+         call g_IO_control(spare_id,'ANY',ABORT,err) !get IO channel
          open(spare_id,file='s_cal_calib.raw_data')
+*         open(spare_id,file='s_cal_calib.raw_data',access='append')
          do ipmt=1,66
             nct_hit_blk(ipmt)=0
          enddo
@@ -54,24 +54,26 @@ c        Choose clean single electron tracks within SOS momentum acceptance.
      &        (sntracks_cal.eq.1).and.
      &        (scer_npe_sum.gt.4).and.
      &        (abs(sdelta_tar(1)).lt.20.).and.
-     &        (scal_et/spcentral.gt.0.85).and.
-!     &        (abs(sbeta(1)-1.).lt.0.1).and.
      &        spare_id .ne. 0 ) then
+*     &        (abs(sbeta(1)-1.).lt.0.1).and.
 ***   &     (sbeta_chisq(1).ge.0.).and.(sbeta_chisq(1).lt.1.)  ) then
 
 c
-            write_out = .false.
-            do ihit=1,scal_num_hits
-               nblk=(scal_cols(ihit)-1)*smax_cal_rows+scal_rows(ihit)
-               nct_hit_blk(nblk) = nct_hit_blk(nblk) + 1
-               if (nct_hit_blk(nblk) .lt. 4000) write_out = .true.
-            enddo
+*            write_out = .false.
+*            do ihit=1,scal_num_hits
+*               nblk=(scal_cols(ihit)-1)*smax_cal_rows+scal_rows(ihit)
+*               nct_hit_blk(nblk) = nct_hit_blk(nblk) + 1
+*               if (nct_hit_blk(nblk) .lt. 4000) write_out = .true.
+*            enddo
+
+            write_out = .true.
 c
             if (write_out) then
 c
                write(spare_id,'(i2,1x,f7.4,2(1x,f5.1,1x,f9.6))')
      &              scal_num_hits,sp_tar(1),
      &              strack_xc(1),sxp_fp(1),strack_yc(1),syp_fp(1)
+*     &              gen_event_id_number
 
                do ihit=1,scal_num_hits
 
@@ -135,6 +137,9 @@ c
       real*4 sig,avr,t
       real*4 qdc
       integer nev
+      real*4 old_thr_lo,old_thr_hi
+      logical conv
+      integer it
 
       real s_correct_cal_neg, s_correct_cal_pos, s_correct_cal
 
@@ -142,42 +147,69 @@ c
 *     Get thresholds on total_signal/p_tar.
 *
       open(lun,file='s_cal_calib.raw_data',err=989)
-      avr=0.
-      sig=0.
-      nev=0
-      do while(.true.)
-         read(lun,*,end=3) nhit,eb,x,xp,y,yp
-         qdc=0.
-         do nh=1,nhit
-            read(lun,*,end=3) adc_pos,adc_neg,nb
-            nc=(nb-1)/nrow+1
-            xh=x+xp*(nc-0.5)*zbl
-            yh=y+yp*(nc-0.5)*zbl
-            if(nb.le.num_negs) then
-               qdc=qdc+adc_pos*s_correct_cal_pos(xh,yh)*0.5
-               qdc=qdc+adc_neg*s_correct_cal_neg(xh,yh)*0.5
-            else
-               qdc=qdc+adc_pos*s_correct_cal(xh,yh)
+
+      thr_lo=0.
+      thr_hi=1.E+8
+      it=0
+      conv=.false.
+
+      do while(.not.conv)
+
+         old_thr_lo=thr_lo
+         old_thr_hi=thr_hi
+
+         avr=0.
+         sig=0.
+         nev=0
+         do while(.true.)
+
+            read(lun,*,end=3) nhit,eb,x,xp,y,yp
+            qdc=0.
+            do nh=1,nhit
+               read(lun,*,end=3) adc_pos,adc_neg,nb
+               nc=(nb-1)/nrow+1
+               xh=x+xp*(nc-0.5)*zbl
+               yh=y+yp*(nc-0.5)*zbl
+               if(nb.le.num_negs) then
+                  qdc=qdc+adc_pos*s_correct_cal_pos(xh,yh)*0.5
+                  qdc=qdc+adc_neg*s_correct_cal_neg(xh,yh)*0.5
+               else
+                  qdc=qdc+adc_pos*s_correct_cal(xh,yh)
+               end if
+            enddo
+            eb=eb*1000.
+            t=qdc/eb
+c            if(it.eq.0) write(11,*) t
+c            write(lun,*) t,nhit,eb,x,xp,y,yp,nev
+
+            if(t.gt.thr_lo.and.t.lt.thr_hi) then
+               avr=avr+t
+               sig=sig+t*t
+               nev=nev+1
             end if
-         enddo
-         eb=eb*1000.
-         t=qdc/eb
-c          write(lun,*) t
-c         write(lun,*) t,nhit,eb,x,xp,y,yp,nev
-         avr=avr+t
-         sig=sig+t*t
-         nev=nev+1
-c         print*,eb,qdc,nev
-      end do
+c            print*,eb,qdc,nev
 
- 3    close(lun)
-c      print*,avr,sig,nev
-      avr=avr/nev
-      sig=sqrt(sig/nev-avr*avr)
-      thr_lo=avr-3.*sig
-      thr_hi=avr+3.*sig
-c      write(*,*) 'thr_lo=',thr_lo,'   thr_hi=',thr_hi
+         end do                 !while.true.
 
+ 3       rewind(lun)
+c         print*,avr,sig,nev
+         avr=avr/nev
+         sig=sqrt(sig/nev-avr*avr)
+         thr_lo=amax1(avr-3.*sig,avr/2.) !electomagnetic shower never deposit
+         thr_hi=avr+3.*sig               !less than half of the primary energy.
+
+         it=it+1
+         
+         write(*,*) 'thresholds:',thr_lo,thr_hi,'  it=',it
+c         pause
+
+         conv=it.gt.1
+         conv=conv.and.abs(thr_lo-old_thr_lo).lt.0.10*thr_lo
+         conv=conv.and.abs(thr_hi-old_thr_hi).lt.0.10*thr_hi
+
+      end do                    !while .not.conv.
+
+      close(lun)
       return
 
  989  write(*,*) ' error opening file s_cal_calib.raw_data, channel',lun,
@@ -215,7 +247,9 @@ c
 	integer i,j
 	integer nf(npmts)
 	integer minf
-	parameter (minf=200) ! minimum number to hit pmt before including pmt in  calib
+*	parameter (minf=200) ! minimum number to hit pmt before including pmt in  calib
+*	parameter (minf=100)
+        parameter (minf=50)
 	integer nums(npmts)
 	integer numsel
 	real*8 q0s(npmts)
@@ -289,7 +323,7 @@ c	      print*,nums(numsel),numsel,nf(i)
 	end do
 c	print*,'numsel =',numsel
 	write(*,'(''Number of events for each PMT for calib for run '',i7,'', '',
-     1    i6,'' events processed'')') nrun,nev
+	1    i6,'' events processed'')') nrun,nev
 	write(*,*) ' PMT with less than', minf,' events  are not included in calibration.'
 	write(*,*)
 	write(*,11) 'scal_pos_gain_cor=',(nf(i),i=       1,  nrow)
@@ -328,7 +362,7 @@ c	write(*,'(2e10.3,i5)') (ac(i),au(i),i,i=1,npmts)
 	open(spare_id,file=fn)
 
 	write(spare_id,'(''; Calibration constants for run '',i7,'', '',
-     1    i6,'' events processed'')') nrun,nev
+	1    i6,'' events processed'')') nrun,nev
 	write(spare_id,*)
 
         write(spare_id,10) 'scal_pos_gain_cor=',(ac(i)*1.D+3,i=       1,  nrow)
@@ -353,7 +387,7 @@ c	write(*,'(2e10.3,i5)') (ac(i),au(i),i,i=1,npmts)
 
 	write(*,*)
 	write(*,'(''Calibration constants for run '',i7,'', '',
-     1    i6,'' events processed'')') nrun,nev
+	1    i6,'' events processed'')') nrun,nev
 	write(*,*)
 	write(*,*) ' constants written to ',fn
 	write(*,*)
@@ -427,7 +461,7 @@ c	do i=1,npmts
 c	   do j=1,npmts
 c	      jp=j+(i-1)*npmts
 c	      qm(j,i)=aux(jp)
-c	      write(66,'(e12.5)') qm(j,i)
+cD	      write(66,'(e12.5)') qm(j,i)
 c	   end do
 c	end do
 c
@@ -628,3 +662,16 @@ c  100 IFAIL=1
 c     RETURN
 c     END
 *=======================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+

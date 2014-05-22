@@ -243,6 +243,14 @@
         ierr = thload(file)
       endif
 *
+*** TH: Add report file for sync here
+*
+      if((first_time.or.g_report_rebook)
+     $     .and.g_report_template_sync_filename.ne.' ') then
+        file = g_report_template_sync_filename
+        call g_sub_run_number(file,gen_run_number)
+        ierr = thload(file)
+      endif
 
       if((first_time.or.g_report_rebook)
      $     .and.g_stats_template_filename.ne.' ') then

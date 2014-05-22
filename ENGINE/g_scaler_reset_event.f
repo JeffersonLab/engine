@@ -79,6 +79,13 @@
       g_beam_on_run_time(2) = 0.    ! Have to do this, because I have to accumlate
       g_beam_on_bcm_charge(2) = 0.
 *
+*** TH - same for uncorrected
+*
+      g_beam_on_run_time_saved(1) = 0.    ! Have to do this, because I have to accumlate
+      g_beam_on_bcm_charge_saved(1) = 0.
+      g_beam_on_run_time_saved(2) = 0.    ! Have to do this, because I have to accumlate
+      g_beam_on_bcm_charge_saved(2) = 0.
+*
       ABORT= .FALSE.
       err= ' '
       RETURN

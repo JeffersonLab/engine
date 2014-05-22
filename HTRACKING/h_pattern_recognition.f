@@ -139,9 +139,6 @@
      &         ((hdc_wire_center(yy)-hdc_wire_center(yyprime))**2.lt.
      &         (hspace_point_criterion(ich))) .and.
      &         (hncham_hits(ich).le.6)) then
-      if(hdebugprintrawdc.ne.0 ) then
-                write(hluno,'(a,i5)') 'Looking at chamber =',ich
-        endif
             call h_find_easy_space_point(hncham_hits(ich),hit_number(ihit+1),
      &           hdc_wire_center(ihit+1),hdc_plane_num(ihit+1),
      &           hspace_point_criterion(ich),hmax_space_points,yy-ihit,
@@ -153,23 +150,17 @@
      $           ,hysp(1),hmax_space_points,hnspace_points(ich), space_points,
      $           space_point_hits)
           else
-           call find_space_points(hncham_hits(ich),hit_number(ihit+1),
+            call find_space_points(hncham_hits(ich),hit_number(ihit+1),
      &           hdc_wire_center(ihit+1),
      &           hdc_plane_num(ihit+1),hspace_point_criterion(ich),
      &           hxsp(1),hysp(1),hmax_space_points,
      &           hnspace_points(ich), space_points, space_point_hits)
           endif
-        if(hdebugprintrawdc.ne.0 ) then
-              write(hluno,'(a,2i5)') 'Num of space points found = ',hnspace_points(ich)
-        endif
 *
           if (hnspace_points(ich).gt.0) then
 *    If two hits in same plane, choose one with minimum drift time
 
              if ( h_remove_sppt_if_one_y_plane .eq. 1) then
-        if(hdebugprintrawdc.ne.0 ) then
-              write(hluno,'(a,i5)') ' call destroy space point ch =',ich
-        endif
              call h_sp_destroy(ABORT,err,hnspace_points(ich),
      &           space_point_hits,space_points,ich)
              endif
@@ -183,14 +174,6 @@ c
             call select_space_points(hmax_space_points,hnspace_points(ich),
      &           space_points,space_point_hits,hmin_hit(ich),hmin_combos(ich),
      $           easy_space_point)
-       if(hdebugprintrawdc.ne.0 ) then
-              write(hluno, '(a,i5)' ) 
-     > ' after select_space points sapce pts =',hnspace_points(ich)
-              do i=1,hnspace_points(ich)
-                 write(hluno, '(2(a,i5))' ) 
-     > " space pt =",i," number of combos " , space_point_hits(i,2)
-              enddo
-        endif
           endif
 
 
@@ -219,10 +202,6 @@ c
 * time offset per card will cancel much of the error caused by this.  The
 * alternative is to check by card, rather than by plane and this is harder.
 *
-       if(hdebugprintrawdc.ne.0 ) then
-              write(hluno, '(a,i5)' ) 
-     > ' total  space pts = ',hnspace_points_tot
-        endif
       if(hnspace_points_tot.gt.0) then
         do isp=1,hnspace_points_tot
           xdist = hspace_points(isp,1)
@@ -235,23 +214,11 @@ c
             else                        !readout from top/bottom
               time_corr = xdist*hdc_readout_corr(pln)/hdc_wire_velocity
             endif
+            
             hdc_drift_time(hit)=hdc_drift_time(hit) - hdc_central_time(pln)
      &           + hdc_drifttime_sign(pln)*time_corr
             hdc_drift_dis(hit) = h_drift_dist_calc
      &           (pln,hdc_wire_num(hit),hdc_drift_time(hit))
-            hdc_drift_time_spt(isp,ihit) =  - hstart_time
-     &                   - float(hdc_tdc(hit))*hdc_tdc_time_per_channel
-     &                   + hdc_plane_time_zero(pln) - hdc_central_time(pln)
-     &           + hdc_drifttime_sign(pln)*time_corr
-            hspace_point_driftdis(isp,ihit) = h_drift_dist_calc
-     &           (pln,hdc_wire_num(hit),hdc_drift_time_spt(isp,ihit))
-        if(hdebugprintrawdc.ne.0 ) then
-              write(hluno,'(a,3i5,7(f10.5,1x))' )
-     > ' time correction ch =',isp,hit,pln,hdc_drift_time(hit)
-     >,hdc_drift_dis(hit)
-     >,hdc_drift_time_spt(isp,ihit),hspace_point_driftdis(isp,ihit)
-     > ,hdc_central_time(pln),hdc_drifttime_sign(pln),time_corr
-        endif
 *
 * djm 8/25/94
 * Stuff drift time and distance into registered variables for histogramming and tests.
@@ -262,7 +229,6 @@ c
      &           hdc_card_no(hdc_wire_num(hit),hdc_plane_num(hit))
           enddo
         enddo
-c        write(*,*) 'end'
       endif
 *     
 *     Histogram hdc_DECODED_DC

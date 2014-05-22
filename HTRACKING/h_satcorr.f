@@ -53,6 +53,8 @@
 *     local variables 
 *
       REAL*4 p0corr
+      real*4 deltacor ! correction to delta to correct missing
+                      ! mass/Yptar correlation
       
 *--------------------------------------------------------
 *
@@ -60,14 +62,38 @@
       ABORT=.FALSE.
 
       p0corr=0.
+      deltacor=0
+
 
       if(genable_hms_satcorr.eq. 1999) then
          if (hpcentral.lt.3.215) p0corr=-1.1298*(hpcentral-3.215)**2
          hsdelta = hsdelta + p0corr*hsxp_fp
       else if(genable_hms_satcorr .eq. 2000) then
-         p0corr = 0.82825*hpcentral-1.223      
+! Original parametrization - assumes no out-of-plane offset in HMS
+!         p0corr = 0.82825*hpcentral-1.223      
+!----------------------------------------------------------------
+! TH - New parm based on DG/TH 2004/2003refit with out-of-plane
+!  offset of 1mrad in HMS
+         p0corr = -0.7498+0.1778*hpcentral**2
+     >            +exp(-0.000069843*hpcentral**2)
+!----------------------------------------------------------------
          hsdelta = hsdelta + p0corr*hsxp_fp
       endif
+
+
+! Correct hsdelta to correct missingmass/hsyptar correlation
+!         deltacor = -4.80816 + 2.25411*hpcentral
+!         hsdelta = hsdelta + deltacor*hsyp_fp
+
+
+! Correct hsdelta to correct missingmass/hsyptar correlation
+         if (hsyp_fp.gt.0) then
+            deltacor = 13.649 - 63242*(hsxp_fp+0.10447)**4
+         else
+            deltacor=0
+         endif         
+
+          hsdelta = hsdelta + deltacor*hsyp_fp          
 
 *      hsdelta = hsdelta + 0.
 

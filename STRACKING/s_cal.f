@@ -61,6 +61,8 @@
       real*4 s_correct_cal_pos !External function to compute "cor_pos"
       real*4 s_correct_cal_neg !External function to compute "cor_neg"
 
+      integer*4 t_notracks,t_nocaltracks
+
       include 'sos_data_structures.cmn'
       include 'sos_calorimeter.cmn'
       include 'gen_run_info.cmn' !To get run number.
@@ -95,6 +97,24 @@
 *     Return if there are no tracks found or none of the found tracks
 *     matches a cluster in the calorimeter
 *            
+
+!!!! TH - Check at which condition the test below fails - no tracks or
+!!!!      or no cal tracks.
+
+!      t_notracks=0
+!      t_nocaltracks=0
+
+!      if(sntracks_fp.le.0) then
+!         t_notracks = t_notracks+1
+!         write(*,*) 'TH - scal.f: no track', sntracks_cal,t_notracks
+!      endif
+!      if(sntracks_cal.le.0) then
+!         t_nocaltracks = t_nocaltracks+1
+!         write(*,*) 'TH - scal.f: no cal track', sntracks_fp,t_nocaltracks
+!      endif      
+!!!! Resume nominal algorithm
+
+
       if(sntracks_fp .le.0) go to 100   !Return
       if(sntracks_cal.le.0) go to 100   !Return
 
@@ -134,7 +154,7 @@ c...
             endif
 
             if(scal_num_neg_columns.ge.3) then
-               print *,"Extra tubes on more than two layers not supported"
+               print *,'Extra tubes on more than two layers not supported'
             endif
 
             strack_e3(nt)=cor*scluster_e3(nc)  
@@ -149,9 +169,11 @@ c...
 
       enddo                     !End loop over detetor tracks       
 
+!      write(*,*) 'TH- scal total:',t_notracks,t_nocaltracks
+
  100  continue
       if(sdbg_tests_cal.gt.0) call s_prt_cal_tests
-
+    
       return
       end
 

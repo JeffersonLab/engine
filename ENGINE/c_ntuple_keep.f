@@ -8,15 +8,6 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log: c_ntuple_keep.f,v $
-* Revision 1.10.10.3  2004/07/12 03:07:34  cdaq
-* problem with mmx fixed?
-*
-* Revision 1.10.10.2  2004/06/23 19:32:25  cdaq
-* removed ssnum_fp and hsnum_fp from c ntuple
-*
-* Revision 1.10.10.1  2004/06/18 15:27:19  cdaq
-* replaced with fpi2 version
-*
 * Revision 1.10  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -84,8 +75,14 @@
 *
       integer m
 *     xucc added begin 
-      real*4 ztar_dummy,ztard1,ztard2,ddegrad
+      real*4 ztar_dummy,ztard1,ztard2,ddegrad,dh,ds
+      real*4 hcolx,hcoly,scolx,scoly
+
+
+
       parameter (ddegrad=0.0174533)  ! Z target information
+      parameter (dh=169.545)  ! 
+      parameter (ds=129.375)  ! 
 *     xucc added end
 *
 *--------------------------------------------------------
@@ -108,6 +105,8 @@ c
       m= 0
       m= m+1
       c_Ntuple_contents(m)= ccointime_hms ! Corrected Coincidence time
+      m= m+1
+      c_Ntuple_contents(m)= hmisc_dec_data(10,1) ! Uncorrected Coincidence time
       m= m+1
       c_Ntuple_contents(m)= gbpm_beam_x   ! Mean Beam X Position
       m= m+1
@@ -150,6 +149,8 @@ c
       c_Ntuple_contents(m)= ztar_dummy   
       m= m+1
 *     xucc added end
+      hcoly=hsy_tar+hsyp_tar*dh
+      hcolx=hsxp_tar*(dh+ztar_dummy*cos(ztard1))
 
       c_Ntuple_contents(m)= HSP	        ! Lab momentum
       m= m+1
@@ -169,7 +170,9 @@ c
       c_Ntuple_contents(m)= ztar_dummy   
       m= m+1
 *     xucc added end 
-*      print *,'ssp2 =',ssp,' m= ',m
+      scoly=ssy_tar+ssyp_tar*ds
+      scolx=ssxp_tar*(ds+ztar_dummy*cos(ztard1))
+
       c_Ntuple_contents(m)= SSP	! Lab momentum of chosen track in GeV/c
       m= m+1
       c_Ntuple_contents(m)= SSXP_TAR    ! 
@@ -226,7 +229,9 @@ c
 
       c_Ntuple_contents(m)= cmex  ! missing energy
       m= m+1
-      c_Ntuple_contents(m)= cmmx ! missing mass
+      c_Ntuple_contents(m)= thmissing_mass ! missing mass of neutron and A>1 system
+      m= m+1
+      c_Ntuple_contents(m)= th_krel ! relative momentum
       m= m+1
 * 
  
@@ -288,6 +293,8 @@ c
       m=m+1
       c_ntuple_contents(m)=  hsmass2
       m=m+1
+      c_ntuple_contents(m)=  haero_npe_sum
+      m=m+1
       c_ntuple_contents(m)=  haero_pos_npe_sum
       m=m+1
       c_ntuple_contents(m)=  haero_neg_npe_sum
@@ -309,15 +316,26 @@ c
       c_ntuple_contents(m)=   ctphiy
       m= m+1
       c_Ntuple_contents(m)= HBETA_NOTRK 
-c     xempt adding on June 22 '04
       m= m+1
-      c_Ntuple_contents(m)= HSTHETA ! Lab Scattering angle in radians
+      c_ntuple_contents(m)=   hcoly      
+      m=m+1
+      c_ntuple_contents(m)=   hcolx
+      m=m+1
+      c_ntuple_contents(m)=   scoly
       m= m+1
-      c_Ntuple_contents(m)= HSPHI	! Lab Scattering angle in radians
+      c_Ntuple_contents(m)= scolx 
+! TH comment out for Garth replay pass2
       m= m+1
-      c_Ntuple_contents(m)= SSTHETA	! Lab Scattering angle in radians
+      c_Ntuple_contents(m)= hntracks_fp
       m= m+1
-      c_Ntuple_contents(m)= SSPHI	! Lab Azymuthal angle in radians
+      c_Ntuple_contents(m)= sntracks_fp
+      m= m+1
+      c_Ntuple_contents(m)= hseloss
+! TH
+
+!      c_Ntuple_contents(m)= ccointime_sos ! Corrected Coincidence time SOS
+!      m= m+1
+!      c_Ntuple_contents(m)= hmisc_dec_data(9,1) ! Uncorrected Coincidence time SOS
 
 c       write(6,*)'ssz_beam =',sszbeam
 c       write(6,*)'hsmass2 =',hsmass2

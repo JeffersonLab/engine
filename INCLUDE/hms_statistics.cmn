@@ -87,6 +87,7 @@
       real*4 heff_stof
       real*4 heff_4_of_4
       real*4 heff_3_of_4
+      real*4 heff_2_of_4
       real*4 heff_3_of_4_del(20)
       real*4 heff_s1_del(20)
       real*4 heff_s2_del(20)
@@ -129,8 +130,8 @@
      &  heff_s2,           !calculated trigger eff. for s2 =(s2x .or. s2y).
      &  heff_stof,         !calculated trigger eff. for stof =(s1 .and. s2).
      &  heff_4_of_4,       !calculated trigger eff. for 4/4 planes.
-     &  heff_3_of_4        !calculated trigger eff. for 3/4 planes.
-
+     &  heff_3_of_4,        !calculated trigger eff. for 3/4 planes.
+     &  heff_2_of_4        !calculated trigger eff. for 2/4 planes.(1or2 and 3or
 
 *
 *     CTPTYPE=parm
@@ -182,6 +183,12 @@
       integer*4 hdc_cham_hits(hmax_num_chambers)
       real*4 hdc_plane_eff(hmax_num_dc_planes) !effic=events(pln)/tot_events
       real*4 hdc_cham_eff(hmax_num_chambers)
+      real*4 hdcaveeff1
+      real*4 hdcaveeff2
+      real*4 hdcaveeff
+      real*4 hdc5of6_1
+      real*4 hdc5of6_2
+      real*4 hdc_5_of_6_eff
 
       common/hdc_statistics/
      &   hdc_tot_events,
@@ -189,7 +196,13 @@
      &   hdc_min_eff,
      &   hdc_plane_eff,
      &   hdc_cham_hits,
-     &   hdc_cham_eff
+     &   hdc_cham_eff,
+     &   hdcaveeff1,
+     &   hdcaveeff2,
+     &   hdcaveeff,
+     &   hdc5of6_1,
+     &   hdc5of6_2,
+     &   hdc_5_of_6_eff
 
 
 * The logical variables just record if that particular event passed the test

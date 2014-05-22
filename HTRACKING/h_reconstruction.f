@@ -11,9 +11,6 @@
 *-   Created  8-Nov-1993   Kevin B. Beard, HU
 *-   Modified 20-Nov-1993   KBB for new errors
 * $Log: h_reconstruction.f,v $
-* Revision 1.13.16.1  2004/10/03 02:35:28  cdaq
-* Trigger TDC readouts for all events (not just ones with tracks)
-*
 * Revision 1.13  2002/12/20 21:53:33  jones
 * Modified by Hamlet for new HMS aerogel
 *
@@ -78,8 +75,6 @@
       include 'hms_scin_parms.cmn'
       include 'hms_bypass_switches.cmn'
       include 'hms_statistics.cmn'
-      include 'gen_scalers.cmn'
-
 *
 *     Local variables
       integer*4 istat
@@ -174,26 +169,6 @@ c      h_recon_num= h_recon_num + 1
       endif                     ! end test on hbypass_track
 *     only proceed if the number of tracks is greater than one
 *     
-      hspipre      = hmisc_dec_data(30,1) ! HMS pipre TDC
-      hstrig       = hmisc_dec_data(13,1) ! HMS trig TDC
-      hselreal     = hmisc_dec_data(29,1) ! HMS elreal TDC
-!      hselclean    = hmisc_dec_data(29,1) ! HMS elreal TDC
-      hselhi       = hmisc_dec_data(41,1) ! HMS elhi TDC
-      hsello       = hmisc_dec_data(42,1) ! HMS ello TDC
-      hsprhi       = hmisc_dec_data(43,1) ! HMS prhi TDC
-      hsprlo       = hmisc_dec_data(44,1) ! HMS prlo TDC
-      hsshlo       = hmisc_dec_data(45,1) ! HMS pshlo TDC
-      
-      if(hspipre.gt.0) then
-         gscaler(353)=gscaler(353)+1
-      endif
-      if(hselreal.gt.0) then
-          gscaler(354)=gscaler(354)+1
-      endif
-      if(hselclean.gt.0) then
-         gscaler(354)=gscaler(354)+1
-      endif
-
       if(HNTRACKS_FP .lt. 1) then
 c         don't want error message every time a track is not found.
 c         ABORT=.FALSE.

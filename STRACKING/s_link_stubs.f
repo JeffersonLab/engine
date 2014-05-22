@@ -80,6 +80,13 @@
      $      access='append')
       endif
       sstubtest = 0
+
+!!!! TH - Add this to make SOS tracking consistent with HMS tracking
+c
+      if (SNTRACKS_MAX_FP .eq. 0) SNTRACKS_MAX_FP = 10 ! in case not set in param file.
+      if (SNTRACKS_MAX_FP .gt. SNTRACKS_MAX) SNTRACKS_MAX_FP = SNTRACKS_MAX ! in case set too high  in param file.
+c
+!!!!
 *
       ABORT= .FALSE.
       err=' '

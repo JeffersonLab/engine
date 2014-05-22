@@ -12,13 +12,9 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log: s_select_best_track_prune.f,v $
-*- Revision 1.1.2.1  2005/03/23 16:56:02  jones
-*-  new code STRACKING/s_select_best_track_prune.f
-*-
-*- Revision 1.1  2005/03/23 16:34:08  jones
-*- Add new code s_select_best_track_prune.f (P Bosted)
-*-
 *
+* Revision 1.1  2005/03/08 bosted
+* Initial revision
 *-
 *--------------------------------------------------------
       IMPLICIT NONE
@@ -69,18 +65,21 @@ c
         sprune_chibeta= max(2.,  sprune_chibeta)
         sprune_fptime= max(5.,  sprune_fptime)
         sprune_npmt  = max(6 ,  sprune_npmt)  
+        sprune_she   = max(0.1,  sprune_she)  
         write(*,'(1x,'' using following SOS limits''/
      >    1x,''abs(xptar)<'',f6.3/
      >    1x,''abs(yptar)<'',f6.3/
      >    1x,''abs(ytar)<'',f6.3/
      >    1x,''abs(delta)<'',f6.3/
+     >    1x,''shower energy >'',f6.3, '' GeV''/
      >    1x,''abs(beta-betap)<'',f6.3/
      >    1x,''ndegfreedom trk>='',i2/
      >    1x,''beta chisq>'',f6.1/
      >    1x,''num PMT hits >='',i3/
      >    1x,''abs(fptime-sstart_time_center)<'',f6.1)') 
-     >    sprune_xp,sprune_yp,sprune_ytar,sprune_delta,
-     >    sprune_beta,sprune_df,sprune_chibeta,sprune_npmt,sprune_fptime
+     >    sprune_xp,sprune_yp,sprune_ytar,sprune_delta,sprune_she,
+     >    sprune_beta,sprune_df,sprune_chibeta,sprune_npmt,
+     >    sprune_fptime
       endif
 c
 c
@@ -155,6 +154,22 @@ c
             if(abs(sdelta_tar(track)) .ge. sprune_delta) then 
               keep(track) = .false. 
               reject(track) = reject(track) + 20
+            endif
+          enddo
+        endif
+
+! Prune on shower energy in GeV
+        ngood=0
+        do track = 1, SNTRACKS_FP
+          if(strack_et(track) .ge. sprune_she .and. keep(track)) then
+            ngood = ngood + 1
+          endif
+        enddo
+        if(ngood.gt.0) then
+          do track = 1, SNTRACKS_FP
+            if(strack_et(track) .lt. sprune_she) then 
+              keep(track) = .false. 
+              reject(track) = reject(track) + 40
             endif
           enddo
         endif
@@ -290,18 +305,18 @@ c
         sSNUM_FPTRACK  = goodtrack
       endif
 ! for debugging
-      if( sNTRACKS_FP.GT. 100) then
+      if( sNTRACKS_FP.GT.   200) then
            write(*,'(/)')
            do trk = 1, sNTRACKS_FP
-             write(*,'(3i3,4L2,7f6.1,L2,i9)') trk,sNFREE_FP(trk),
+             write(*,'(3i3,4L2,7f6.1,L2,f6.2)') trk,sNFREE_FP(trk),
      >          snum_pmt_hit(trk),
      >         sgood_plane_time(trk,1),sgood_plane_time(trk,3),
      >         sgood_plane_time(trk,2),sgood_plane_time(trk,4),
      >         stime_at_fp(trk),sbeta(trk),sbeta_chisq(trk),
      >         sdelta_tar(trk),sy_tar(trk),sxp_tar(trk),syp_tar(trk),
-     >         keep(trk),reject(trk)
+     >         keep(trk),strack_et(trk)
            enddo
-           write(*,'(1x,''good trk='',2i4)') goodtrack
+           write(*,'(1x,''sos good trk='',2i4)') goodtrack
       endif
       return
       end

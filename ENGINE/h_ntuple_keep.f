@@ -8,15 +8,6 @@
 *
 *     Created: 11-Apr-1994  K.B.Beard, Hampton U.
 * $Log: h_ntuple_keep.f,v $
-* Revision 1.10.10.2  2004/09/07 18:39:47  cdaq
-* added pretrigger signals to hms and sos ntuples
-*
-* Revision 1.10.10.1  2004/06/23 19:30:31  cdaq
-* removed duplicate 'hsshtrk' entry
-*
-* Revision 1.10  2004/02/17 17:26:34  jones
-* Changes to enable possiblity of segmenting rzdat files
-*
 * Revision 1.8.2.1  2003/04/04 12:55:11  cdaq
 * add beam quantities to ntuple (MKJ)
 *
@@ -62,14 +53,29 @@
       INCLUDE 'hms_tracking.cmn'
       INCLUDE 'hms_physics_sing.cmn'
       INCLUDE 'hms_scin_tof.cmn'
+      INCLUDE 'hms_scin_parms.cmn'
       INCLUDE 'gen_scalers.cmn'
       include 'hms_track_histid.cmn'  !temp junk.
       INCLUDE 'hms_calorimeter.cmn'
-      INCLUDE 'hms_cer_parms.cmn'
+      INCLUDE 'hms_aero_parms.cmn'
 *
       logical HEXIST	!CERNLIB function
 *
       integer m
+
+	real*8 save_threescin1,save_hnclust1 ! TH - Add for scin hit checks
+	real*8 save_threescin2,save_hnclust2 ! TH - Add for scin hit checks
+	real*8 save_threescin3,save_hnclust3 ! TH - Add for scin hit checks
+	real*8 save_threescin4,save_hnclust4 ! TH - Add for scin hit checks
+	real*8 save_htotscin1,save_htotscin2 ! TH - Add for scin hit checks
+	real*8 save_htotscin3,save_htotscin4 ! TH - Add for scin hit checks
+
+	common /save_track/ save_threescin1,save_hnclust1,
+     >                      save_threescin2,save_hnclust2,
+     >                      save_threescin3,save_hnclust3,
+     >                      save_threescin4,save_hnclust4,
+     >                      save_htotscin1,save_htotscin2,
+     >                      save_htotscin3,save_htotscin4
 
       real proton_mass
       parameter ( proton_mass = 0.93827247 ) ! [GeV/c^2]
@@ -92,45 +98,47 @@ c
 ************************************************
       m= 0
 *  
-*      m= m+1
-*      h_Ntuple_contents(m)= hspipre      ! HMS pipre TDC value
-*      m= m+1
-*      h_Ntuple_contents(m)= hselhi       ! HMS elhi TDC value
-*      m= m+1
-*      h_Ntuple_contents(m)= hsello       ! HMS ello TDC value
-*      m= m+1
-*      h_Ntuple_contents(m)= hsprhi       ! HMS prhi TDC value
-*      m= m+1
-*      h_Ntuple_contents(m)= hsprlo       ! HMS prlo TDC value
-*      m= m+1
-*      h_Ntuple_contents(m)= hsshlo       ! HMS shlo TDC value
       m= m+1
       h_Ntuple_contents(m)= HCER_NPE_SUM ! cerenkov photoelectron spectrum
-      m=m+1
-      h_Ntuple_contents(m)= HSP	         ! Lab momentum of chosen track in GeV/c
       m= m+1
-      h_Ntuple_contents(m)= HSENERGY     ! Lab total energy of chosen track in GeV
+      h_Ntuple_contents(m)= HSP	        ! Lab momentum of chosen track in GeV/c
       m= m+1
-      h_Ntuple_contents(m)= gbcm1_charge ! Charge of last scaler event
+      h_Ntuple_contents(m)= HSENERGY    ! Lab total energy of chosen track in GeV
       m= m+1
-      h_Ntuple_contents(m)= HSDELTA	 ! Spectrometer delta of chosen track
+      h_Ntuple_contents(m)= gbcm2_charge ! Charge of last scaler event
       m= m+1
-      h_Ntuple_contents(m)= HSTHETA	 ! Lab Scattering angle in radians
+      h_Ntuple_contents(m)= g_beam_on_bcm_charge(2) ! Charge of last scaler event
       m= m+1
-      h_Ntuple_contents(m)= HSPHI	 ! Lab Azymuthal angle in radians
+      h_Ntuple_contents(m)= HSDELTA	! Spectrometer delta of chosen track
       m= m+1
-      h_Ntuple_contents(m)= HINVMASS	 ! Invariant Mass of remaing hadronic system
+      h_Ntuple_contents(m)= HSTHETA	! Lab Scattering angle in radians
       m= m+1
-      h_Ntuple_contents(m)= HSZBEAM      ! Lab Z coordinate of intersection of beam
-c                                        ! track with spectrometer ray
+      h_Ntuple_contents(m)= HSPHI	! Lab Azymuthal angle in radians
       m= m+1
-      h_Ntuple_contents(m)= HSDEDX(1)	 ! DEDX of chosen track in 1st scin plane
+      h_Ntuple_contents(m)= HINVMASS	! Invariant Mass of remaing hadronic system
       m= m+1
-      h_Ntuple_contents(m)= HSBETA	 ! BETA of chosen track
+      h_Ntuple_contents(m)= HSBIGQ2     ! Four momentum transfer magnitud
       m= m+1
-      h_Ntuple_contents(m)= HSSHTRK	 ! Total shower energy of chosen track
+      h_Ntuple_contents(m)= HSZBEAM! Lab Z coordinate of intersection of beam
+c                                ! track with spectrometer ray
       m= m+1
-      h_Ntuple_contents(m)= HSTRACK_PRESHOWER_E	! preshower of chosen track
+      h_Ntuple_contents(m)= HSDEDX(1)	! DEDX of chosen track in 1st scin plane
+      m= m+1
+      h_Ntuple_contents(m)= HSBETA	! BETA of chosen track
+      m= m+1
+      h_Ntuple_contents(m)= HBETA_NOTRK ! untracked BETA 
+      m= m+1
+      h_Ntuple_contents(m)= HSSHSUM	! Untracked Total shower energy of chosen track
+      m= m+1
+      h_Ntuple_contents(m)= HSSHTRK	! Tracked Total shower energy of chosen track
+      m= m+1
+      h_Ntuple_contents(m)= HSPRTRK	! Tracked preshower of chosen track
+      m= m+1
+      h_Ntuple_contents(m)= HAERO_NPE_SUM
+      m= m+1
+      h_Ntuple_contents(m)= HAERO_POS_NPE_SUM
+      m= m+1
+      h_Ntuple_contents(m)= HAERO_NEG_NPE_SUM
       m= m+1
       h_Ntuple_contents(m)= HSX_FP		! X focal plane position 
       m= m+1
@@ -152,6 +160,13 @@ c                                        ! track with spectrometer ray
       m= m+1
       h_Ntuple_contents(m)= float(gen_event_type)
       m= m+1
+      h_Ntuple_contents(m)= hcal_et
+      m= m+1
+      h_Ntuple_contents(m)= hntracks_fp
+      m= m+1
+      h_Ntuple_contents(m)= hgoodscinhits
+c
+      m= m+1
       h_Ntuple_contents(m)= gfrx_raw_adc
       m= m+1
       h_Ntuple_contents(m)= gfry_raw_adc
@@ -159,6 +174,14 @@ c                                        ! track with spectrometer ray
       h_Ntuple_contents(m)= gbeam_x
       m= m+1
       h_Ntuple_contents(m)= gbeam_y
+*      m= m+1
+*      h_Ntuple_contents(m)= HSX_S1	
+*      m= m+1
+*      h_Ntuple_contents(m)= HSX_S2	
+*      m= m+1
+*      h_Ntuple_contents(m)= HSY_S1	
+*      m= m+1
+*      h_Ntuple_contents(m)= HSY_S2	
       m= m+1
       h_Ntuple_contents(m)= gbpm_x(1)
       m= m+1
@@ -172,22 +195,61 @@ c                                        ! track with spectrometer ray
       m= m+1
       h_Ntuple_contents(m)= gbpm_y(3)
       m= m+1
-      h_Ntuple_contents(m)= hseloss
+      h_Ntuple_contents(m)= hmisc_dec_data(34,1)
       m= m+1
-      h_Ntuple_contents(m)= hntracks_fp
+      h_Ntuple_contents(m)= hcer_adc(1)
       m= m+1
-      h_Ntuple_contents(m)= hcal_et
+      h_Ntuple_contents(m)= hcer_adc(2)
       m= m+1
-      h_Ntuple_contents(m)= hgoodscinhits 
+      h_Ntuple_contents(m)= hmisc_dec_data(35,1)
       m= m+1
-      h_Ntuple_contents(m)= hcal_e1
+      h_Ntuple_contents(m)= hmisc_dec_data(10,1)
       m= m+1
-      h_Ntuple_contents(m)= hcal_e2
+      h_Ntuple_contents(m)= hmisc_dec_data(9,1)
       m= m+1
-      h_Ntuple_contents(m)= hcal_e3
+      h_Ntuple_contents(m)= hmisc_dec_data(31,1)
       m= m+1
-      h_Ntuple_contents(m)= hcal_e4
- 
+      h_Ntuple_contents(m)= hmisc_dec_data(41,1)
+      m= m+1
+      h_Ntuple_contents(m)= hmisc_dec_data(42,1)
+      m= m+1
+      h_Ntuple_contents(m)= hmisc_dec_data(43,1)
+      m= m+1
+      h_Ntuple_contents(m)= hmisc_dec_data(44,1)
+      m= m+1
+      h_Ntuple_contents(m)= hmisc_dec_data(45,1)
+      m= m+1
+      h_Ntuple_contents(m)= hmisc_dec_data(27,1)
+      m= m+1
+      h_Ntuple_contents(m)= hmisc_dec_data(30,1)
+      m= m+1
+      h_Ntuple_contents(m)= hmisc_dec_data(28,1)
+      m= m+1
+      h_Ntuple_contents(m)= gscaler(185)
+      m= m+1
+      h_Ntuple_contents(m)= gscaler(189)
+      m= m+1
+      h_Ntuple_contents(m)= gscaler(345)
+      m= m+1
+      h_Ntuple_contents(m)= gscaler(349)
+      m= m+1
+      h_Ntuple_contents(m)= gscaler(160)
+      m= m+1
+      h_Ntuple_contents(m)= hnumscins1
+      m= m+1
+      h_Ntuple_contents(m)= hnumscins2
+      m= m+1
+      h_Ntuple_contents(m)= hnumscins3
+      m= m+1
+      h_Ntuple_contents(m)= hnumscins4
+      m= m+1
+      h_Ntuple_contents(m)= hscal_suma
+      m= m+1
+      h_Ntuple_contents(m)= hscal_sumb
+      m= m+1
+      h_Ntuple_contents(m)= hscal_sumc
+      m= m+1
+      h_Ntuple_contents(m)= hscal_sumd
 
 * Experiment dependent entries start here.
 

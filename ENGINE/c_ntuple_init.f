@@ -10,12 +10,6 @@
 *
 *     Created: 8-Apr-1994  K.B.Beard, Hampton Univ.
 * $Log: c_ntuple_init.f,v $
-* Revision 1.10.10.2  2004/06/23 19:32:17  cdaq
-* removed ssnum_fp and hsnum_fp from c ntuple
-*
-* Revision 1.10.10.1  2004/06/18 15:27:36  cdaq
-* replaced with fpi2 version
-*
 * Revision 1.10  2004/02/17 17:26:34  jones
 * Changes to enable possiblity of segmenting rzdat files
 *
@@ -130,6 +124,8 @@
       m= 0
       m=m+1
       c_Ntuple_tag(m)= 'cointime'      ! Corrected Coincidence Time
+      m= m+1
+      c_Ntuple_tag(m)= 'ucointime'      ! Uncorrected Coincidence Time
       m= m+1
       c_Ntuple_tag(m)= 'bpmxmean'         ! Mean Beam X Position
       m= m+1
@@ -247,6 +243,8 @@ c      m= m+1
       m=m+1
       c_Ntuple_tag(m)= 'mmx'
       m=m+1
+      c_Ntuple_tag(m)= 'krel'
+      m=m+1
 *  seems to add some new infor about excitation energy
 *     xucc added end
 
@@ -305,6 +303,8 @@ c      m= m+1
       m=m+1
       c_ntuple_tag(m)= 'hsmass2'
       m=m+1
+      c_ntuple_tag(m)= 'haero_sum'
+      m=m+1
       c_ntuple_tag(m)= 'haero_pos_npe_sum'
       m=m+1
       c_ntuple_tag(m)= 'haero_neg_npe_sum'
@@ -326,15 +326,25 @@ c      m= m+1
       c_ntuple_tag(m)= 'ctphiy'
       m=m+1
       c_ntuple_tag(m)= 'hsbeta_ntrk'
-c     xempt adding on June 22 '04
+      m=m+1
+      c_ntuple_tag(m)= 'hcoly'
+      m=m+1
+      c_ntuple_tag(m)= 'hcolx'
+      m=m+1
+      c_ntuple_tag(m)= 'scoly'
+      m=m+1
+      c_ntuple_tag(m)= 'scolx'
+! Th comment out for Garth replay pass2
       m= m+1
-      c_ntuple_tag(m)= 'hstheta' ! Lab Scattering angle in radians
+      c_Ntuple_tag(m)= 'hntrks'
       m= m+1
-      c_ntuple_tag(m)= 'hsphi'	! Lab Scattering angle in radians
+      c_Ntuple_tag(m)= 'sntrks'
       m= m+1
-      c_ntuple_tag(m)= 'sstheta' ! Lab Scattering angle in radians
-      m= m+1
-      c_ntuple_tag(m)= 'ssphi' ! Lab Azymuthal angle in radians
+      c_Ntuple_tag(m)= 'theloss'
+! TH
+!      c_ntuple_tag(m)= 'altcointime'
+!      m=m+1
+!      c_ntuple_tag(m)= 'sctimer'
 * end of xucc adding on June 21,2003
 
 *      m=m+1

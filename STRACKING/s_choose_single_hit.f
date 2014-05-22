@@ -55,7 +55,7 @@
 *
 *     loop over all space points
       do point =1,nspace_points
-        startnum = min(space_point_hits(point,1),smax_hits_per_point+1)
+        startnum = space_point_hits(point,1)
         finalnum=0
           
         do j=3,startnum+2
@@ -66,9 +66,7 @@
           hit1 = space_point_hits(point,j)
           plane1 = sdc_plane_num(hit1)
           drifttime1 = sdc_drift_time(hit1)
-          if (startnum .gt. smax_hits_per_point) write(*,*) ' mkj s_choos_sing_hit ',
-     >' startnum .gt. smax_hits_per_point ',startnum,smax_hits_per_point
-          do k=j+1,min(startnum,smax_hits_per_point)+2
+          do k=j+1,startnum+2
             hit2 = space_point_hits(point,k)
             plane2 = sdc_plane_num(hit2)
             drifttime2 = sdc_drift_time(hit2)
@@ -81,14 +79,14 @@
             endif                       ! end test on equal planes
           enddo                         ! end loop on k
         enddo                           ! end loop on j
-        do j=3,min(startnum,smax_hits_per_point)+2
+        do j=3,startnum+2
           if(goodhit(j).gt.0) then
             finalnum = finalnum + 1
             hits(finalnum)=space_point_hits(point,j)
           endif                         ! end check on good hit
         enddo
 *     copy good hits to space_point_hits
-        space_point_hits(point,1) = min(finalnum,smax_hits_per_point)
+        space_point_hits(point,1) = finalnum
         do j = 1, finalnum
           space_point_hits(point,j+2) = hits(j)
         enddo                           ! end of copy 

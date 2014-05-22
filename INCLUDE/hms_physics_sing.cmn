@@ -1,8 +1,8 @@
 *    This include file contains all the variables required for h_physics
 * $Log: hms_physics_sing.cmn,v $
-* Revision 1.10.6.1  2005/03/23 16:53:47  jones
-* Add new variables for new code STRACKING/s_select_best_track_prune.f and
-* HTRACKING/h_select_best_track_prune.f
+* Revision 1.11  2005/03/08 bosted
+* added new variables for pruning method of selecting best track
+* if hsel_using_prune=1, then use new pruning coe and variables
 *
 * Revision 1.10  2004/02/26 22:14:53  jones
 * Add parameter  hsel_using_scin. When hsel_using_scin= 1 then new code
@@ -90,6 +90,7 @@
       real*4 hprune_chibeta             ! Maximum beta chisq
       real*4 hprune_fptime              ! Maximum fptime - nominal
       integer hprune_npmt               ! Minimum PMTs for track
+      real*4 hprune_she                 ! Minimum Shower Energy in GeV
                  
       INTEGER*4 hsel_ndegreesmin        ! Minimum number of degrees of freedom
       INTEGER*4 hsel_using_scin       ! =1 select best track using scin info
@@ -114,7 +115,8 @@
      &     hprune_df,
      &     hprune_chibeta,
      &     hprune_npmt,
-     &     hprune_fptime
+     &     hprune_fptime,
+     &     hprune_she
 *
       COMMON/hms_chose_one_track_i4/
      &     hsel_ndegreesmin,

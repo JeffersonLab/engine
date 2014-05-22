@@ -285,11 +285,6 @@
        hhitsweet2x=0
        hhitsweet2y=0
        hgoodscinhits=0
-
-       do i=hxloscin(1),hxhiscin(1)
-          hgoodscinhits_x(i)=0
-       enddo
-       
 *first x plane.  first see if there are hits inside the scin region
        do i=hxloscin(1),hxhiscin(1)
           if (hscinhit(1,i).EQ.1) then
@@ -298,6 +293,7 @@
           endif
        enddo
 *  next make sure nothing fired outside the good region
+! TH - 2 track check 
        do i=1,hxloscin(1)-1
           if (hscinhit(1,i).EQ.1) hhitsweet1x=-1
        enddo
@@ -312,6 +308,7 @@
           endif
        enddo
 *  next make sure nothing fired outside the good region
+! TH - 2track check 
        do i=1,hxloscin(2)-1
           if (hscinhit(3,i).EQ.1) hhitsweet2x=-1
        enddo
@@ -327,6 +324,7 @@
           endif
        enddo
 *  next make sure nothing fired outside the good region
+! TH - 2track check
        do i=1,hyloscin(1)-1
           if (hscinhit(2,i).EQ.1) hhitsweet1y=-1
        enddo
@@ -341,6 +339,7 @@
           endif
        enddo
 *  next make sure nothing fired outside the good region
+! TH - 2 track check
        do i=1,hyloscin(2)-1
           if (hscinhit(4,i).EQ.1) hhitsweet2y=-1
        enddo
@@ -351,14 +350,12 @@
        testsum=hhitsweet1x+hhitsweet1y+hhitsweet2x+hhitsweet2y
 * now define a 3/4 or 4/4 trigger of only good scintillators the value
 * is specified in htracking.param...
-       if (testsum.GE.htrack_eff_test_num_scin_planes) then
-          hgoodscinhits=1
-          do i=hxloscin(1),hxhiscin(1)
-             if (sweet1xscin.EQ.i)hgoodscinhits_x(i)=1
-          enddo       
-       endif
+       
+        if (testsum.GE.htrack_eff_test_num_scin_planes) hgoodscinhits=1
+
 * require front/back hodoscopes be close to each other
        if (hgoodscinhits.eq.1 .and. htrack_eff_test_num_scin_planes.eq.4) then
+! TH - 2track check
           if (abs(sweet1xscin-sweet2xscin).gt.3) hgoodscinhits=0
           if (abs(sweet1yscin-sweet2yscin).gt.2) hgoodscinhits=0
        endif
@@ -378,7 +375,7 @@
              write(12,*) 'too many hits, event number           ',gen_event_ID_number
           endif
           if (.not.hplanesgt) then
-             write(12,*)  'too few planes event number           ',
+             write(12,*)  'too few planes event number                    ',
      $            gen_event_ID_number
           endif
           if (hhitsplanes.AND.(.not.hspacepoints)) then

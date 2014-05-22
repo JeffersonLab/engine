@@ -99,6 +99,9 @@
       integer SPAREID
       parameter (SPAREID=67)
 
+
+      
+
 *
 * HODOSCOPE PEDESTALS
 *
@@ -176,6 +179,7 @@
           hcal_ped_change(ind)=hcal_new_ped_pos(blk)-
      &                         hcal_pos_ped_mean(blk) 
         endif
+        
 
         if (num.gt.hcal_min_peds .and. hcal_min_peds.ne.0) then
           hcal_pos_ped_mean(blk)=hcal_new_ped_pos(blk)
@@ -235,8 +239,19 @@
 * AEROGEL CERENKOV PEDESTALS
 *
 *
+
+!!! TH - initialize
+
+      do pmt = 1 , hmax_aero_hits
+         haero_pos_ped_mean(pmt)=0
+         haero_neg_ped_mean(pmt)=0
+      enddo         
+
+!!!
+
       ind = 0
       do pmt = 1 , hmax_aero_hits
+
 
 *calculate new pedestal values, positive tubes first
         num=max(1.,float(haero_pos_ped_num(pmt)))
@@ -247,6 +262,11 @@
         haero_new_threshold_pos(pmt) = haero_new_ped_pos(pmt)+15.
 c
         haero_new_threshold_pos(pmt) = 400. ! mkj 4/9/03 force to 400 
+!        haero_new_threshold_pos(pmt) = 0. 
+
+!!! TH - why this threshold? - because Hamlet said so. Still wants peds
+!!! but below 1 pe peak - so still get pedestal for essentially all
+!!! events. - essentially means that aerogel sparsified
 c
 *note channels with 2 sigma difference from parameter file values.
 * JRA - don't have the necessary variables (e.g. haero_all_ped_pos),
@@ -268,6 +288,7 @@ c
         haero_new_threshold_neg(pmt) = haero_new_ped_neg(pmt)+15.
 c
         haero_new_threshold_neg(pmt) = 400. ! mkj 4/9/03 force to 400 
+!        haero_new_threshold_neg(pmt) = 0. 
  
         if (num.gt.haero_min_peds .and. haero_min_peds.ne.0) then
           haero_neg_ped_mean(pmt) = haero_new_ped_neg(pmt)
@@ -276,16 +297,20 @@ c
 
       enddo
 
-*      print *, ' '
-*      print *, 'haero_pos_ped_mean =', haero_neg_ped_mean
-*      print *, ' '
-*      print *, 'haero_neg_ped_mean =', haero_pos_ped_mean
-*      print *, ' '
-*      print *, 'haero_pos_adc_threshold =', haero_new_threshold_pos
-*      print *, ' '
-*      print *, 'haero_neg_adc_threshold =', haero_new_threshold_neg
-*      print *, ' '
-
+      print *, '########## '
+      print *, 'haero_min_peds =', haero_min_peds
+      print *, ' '
+      print *, 'num =', num
+      print *, ' '
+      print *, 'haero_pos_ped_mean =', haero_neg_ped_mean
+      print *, ' '
+      print *, 'haero_neg_ped_mean =', haero_pos_ped_mean
+      print *, ' '
+      print *, 'haero_pos_adc_threshold =', haero_new_threshold_pos
+      print *, ' '
+      print *, 'haero_neg_adc_threshold =', haero_new_threshold_neg
+      print *, '########## '
+!      pause
 *.........................................................................
 *
 * MISC. PEDESTALS

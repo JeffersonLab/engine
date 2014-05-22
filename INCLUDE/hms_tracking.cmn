@@ -408,6 +408,7 @@
       logical hfoundtrack, hcleantrack
       integer hnumhits1,hnumhits2,hnumplanes1,hnumplanes2
       integer hnumscins1,hnumscins2,hnumscins3,hnumscins4
+      integer htotscins
       integer hstubtest
       real*4 hstubminx,hstubminy,hstubminxp,hstubminyp
       integer hscinhit(4,16)
@@ -435,6 +436,7 @@
      &hcleantrack,
      &hnumhits1,hnumhits2,hnumplanes1,hnumplanes2,
      &hnumscins1,hnumscins2,hnumscins3,hnumscins4,
+     &htotscins,
      &hstubtest,
      &hstubminx,
      &hstubminy,

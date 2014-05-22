@@ -7,9 +7,6 @@
 *
 * Version:  0.1 (In development)
 * $Log: h_targ_trans_init.f,v $
-* Revision 1.7  2008/09/25 00:12:08  jones
-* Updated for gfortran compiler
-*
 * Revision 1.6  2004/02/19 16:41:45  jones
 * Can set filename for the HMS matrix elements using the parameter
 * h_recon_coeff_filename . If parameter is not set then uses
@@ -97,7 +94,7 @@ c      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
 * Open and read in coefficients.
 
       if ( h_recon_coeff_filename .eq. ' ' ) then
-         h_recon_coeff_filename = 'DATFILES/hms_recon_coeff.dat'
+         h_recon_coeff_filename = 'hms_recon_coeff.dat'
       endif
          write(*,*) ' ********'
          write(*,*) ' Opening HMS matrix element file ',h_recon_coeff_filename
@@ -123,6 +120,10 @@ c      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
         if(line(1:14).eq.'h_z_true_focus')read(line,1201,err=94)h_z_true_focus
         read (chan,1001,err=94) line
       enddo
+
+!      write(*,*) 'TH - h_targ_trans_init.f',h_ang_offset_x,h_z_true_focus,
+!     >      h_det_offset_x,h_det_offset_y, h_ang_offset_y
+
 * Read in reconstruction coefficients and exponents.
       line=' '
       read (chan,1001,err=94) line
@@ -132,9 +133,15 @@ c      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
          if (h_num_recon_terms.gt.hmax_recon_elements) goto 96
          read (line,1200,err=94) (h_recon_coeff(i,h_num_recon_terms),i=1,4)
      $        ,(h_recon_expon(j,h_num_recon_terms),j=1,5)
-c         write(66,1200) (h_recon_coeff(i,h_num_recon_terms),i=1,4)
-c     $        ,(h_recon_expon(j,h_num_recon_terms),j=1,5)
          read (chan,1001,err=94) line
+
+!---------------------------------------------------------------------
+! TH - HMS matrix elements read in test
+!         write(*,*) 'COEFF', h_recon_coeff(1,h_num_recon_terms)
+!         write(*,*) 'EXP', h_recon_expon(1,h_num_recon_terms)
+!         pause
+!----------------------------------------------------------------------
+
       enddo
 
 * Data read in OK.
@@ -165,109 +172,6 @@ c     $        ,(h_recon_expon(j,h_num_recon_terms),j=1,5)
  100  close (unit=chan)
 *     free lun
 c      call G_IO_control(chan,'FREE',ABORT,err) !"FINISH"="FREE"
-
-      h_recon_initted = h_recon_initted + 2
-
-
-* Reset flag, and zero arrays.
-      err= ' '
-      ABORT = .FALSE.
-c      h_recon_initted = 0
-      do j = 1,hmax_recon_elements
-         do i = 1,4
-            h_cosy_coeff(i,j) = 0.
-            h_cosy_expon(i,j) = 0.
-         enddo
-         h_cosy_expon(5,j) = 0.
-      enddo
-      h_ang_slope_x=0.0
-      h_ang_slope_y=0.0
-      h_ang_offset_x=0.0
-      h_ang_offset_y=0.0
-      h_det_offset_x=0.0
-      h_det_offset_y=0.0
-      h_z_true_focus=0.0
-
-      istat = 1                         !Assume success.
-* Get an I/O unit to open datafiles.
-c      call G_IO_control(chan,'ANY',ABORT,err) !"ASK"="ANY"
-      chan = G_LUN_TEMP
-
-* Open and read in coefficients.
-
-      if ( h_recon_cosy_filename .eq. ' ' ) then
-         h_recon_cosy_filename = 'DATFILES/hms_cosy_coeff.dat'
-      endif
-         write(*,*) ' ********'
-         write(*,*) ' Opening HMS matrix element file ',h_recon_cosy_filename
-         write(*,*) ' ********'
-      open (unit=chan,status='old',file=h_recon_cosy_filename,err=193)
-
-
-* Read header comments.
-
-      line = '!'
-      do while (line(1:1).eq.'!')
-        read (chan,1001,err=195) line
-      enddo
-
-* Read in focal plane rotation coefficients.
-      do while (line(1:4).ne.' ---')
-        if(line(1:13).eq.'h_ang_slope_x')read(line,1201,err=195)h_ang_slope_x
-        if(line(1:13).eq.'h_ang_slope_y')read(line,1201,err=195)h_ang_slope_y
-        if(line(1:14).eq.'h_ang_offset_x')read(line,1201,err=195)h_ang_offset_x
-        if(line(1:14).eq.'h_ang_offset_y')read(line,1201,err=195)h_ang_offset_y
-        if(line(1:14).eq.'h_det_offset_x')read(line,1201,err=195)h_det_offset_x
-        if(line(1:14).eq.'h_det_offset_y')read(line,1201,err=195)h_det_offset_y
-        if(line(1:14).eq.'h_z_true_focus')read(line,1201,err=195)h_z_true_focus
-        read (chan,1001,err=195) line
-      enddo
-* Read in reconstruction coefficients and exponents.
-      line=' '
-      read (chan,1001,err=195) line
-      h_num_cosy_terms = 0
-      do while (line(1:4).ne.' ---')
-         h_num_cosy_terms = h_num_cosy_terms + 1
-         if (h_num_cosy_terms.gt.hmax_recon_elements) goto 197
-         read (line,1200,err=195) (h_cosy_coeff(i,h_num_cosy_terms),i=1,4)
-     $        ,(h_cosy_expon(j,h_num_cosy_terms),j=1,5)
-c         write(76,1200) (h_cosy_coeff(i,h_num_cosy_terms),i=1,4)
-c     $        ,(h_cosy_expon(j,h_num_cosy_terms),j=1,5)
-         read (chan,1001,err=195) line
-      enddo
-
-* Data read in OK.
-
-      h_recon_initted = h_recon_initted - 2
-      goto 200
-
-* File reading or data processing errors.
-
- 193   istat = 2                 !Error opening file.
-* If file does not exist, report err and then continue for development
-      err = 'error opening file '//h_recon_coeff_filename
-      call g_rep_err(ABORT,err)
-      goto 200
-
- 195   istat = 4                 !Error reading or processing data.
-      ABORT=.true.
-      err = 'error processing file '//h_recon_coeff_filename
-      goto 200
-
- 197   istat = 6                 !Too much data in file for arrays.
-      ABORT=.true.
-      err = 'too much data in file '//h_recon_coeff_filename
-      goto 200
-
-* Done with open file.
-
- 200  close (unit=chan)
-*     free lun
-c      call G_IO_control(chan,'FREE',ABORT,err) !"FINISH"="FREE"
-
-
-
-
       return
 
 *============================ Format Statements ===============================

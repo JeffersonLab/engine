@@ -114,19 +114,29 @@
 *
 * GAS CERENKOV PEDESTALS
 *
+!      do ihit = 1 , scer_tot_hits
+!        pmt=scer_tube_num(ihit)       ! no sparsification yet - NEED TO FIX!!!!
+!        if (scer_raw_adc(ihit) .le. scer_ped_limit(pmt)) then
+!          scer_ped_sum2(pmt) = scer_ped_sum2(pmt) +
+!     $       scer_raw_adc(ihit)*scer_raw_adc(ihit)
+!          scer_ped_sum(pmt) = scer_ped_sum(pmt) + scer_raw_adc(ihit)
+!          scer_ped_num(pmt) = scer_ped_num(pmt) + 1
+!          if (scer_ped_num(pmt).eq.nint(scer_min_peds/5.)) then
+!            scer_ped_limit(pmt) = 100 +
+!     &              scer_ped_sum(pmt) / scer_ped_num(pmt)
+!          endif
+!        endif
+!      enddo
+
+! TH - 2007 correction to adjust to 1999 version of the Analyzer
       do ihit = 1 , scer_tot_hits
-        pmt=scer_tube_num(ihit)       ! no sparsification yet - NEED TO FIX!!!!
-        if (scer_raw_adc(ihit) .le. scer_ped_limit(pmt)) then
-          scer_ped_sum2(pmt) = scer_ped_sum2(pmt) +
-     $       scer_raw_adc(ihit)*scer_raw_adc(ihit)
-          scer_ped_sum(pmt) = scer_ped_sum(pmt) + scer_raw_adc(ihit)
-          scer_ped_num(pmt) = scer_ped_num(pmt) + 1
-          if (scer_ped_num(pmt).eq.nint(scer_min_peds/5.)) then
-            scer_ped_limit(pmt) = 100 +
-     &              scer_ped_sum(pmt) / scer_ped_num(pmt)
-          endif
-        endif
+         pmt=scer_tube_num(ihit) ! no sparsification yet - NEED TO FIX!!!!
+         scer_ped_sum2(pmt) = scer_ped_sum2(pmt) +
+     $        scer_raw_adc(ihit)*scer_raw_adc(ihit)
+         scer_ped_sum(pmt) = scer_ped_sum(pmt) + scer_raw_adc(ihit)
+         scer_ped_num(pmt) = scer_ped_num(pmt) + 1
       enddo
+
 *
 *
 * AEROGEL CERENKOV PEDESTALS

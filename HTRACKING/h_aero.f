@@ -50,7 +50,7 @@
       logical ABORT
       character*(*) err
 *
-     
+
       integer*4 ihit,npmt
 *
       INCLUDE 'hms_data_structures.cmn'
@@ -62,9 +62,6 @@
 *--------------------------------------------------------
 *
 
-C      print*,'h_aero: haero_pos_gain =',haero_pos_gain
-C      print*,'h_aero: haero_neg_gain =',haero_neg_gain
-C      pause
 
       ABORT= .FALSE.
       err= ' '
@@ -90,7 +87,12 @@ C      pause
 
       enddo
 
-
+!!! TH - haero_tot_hits = hmax_hits = 8 
+!!! which is the number of PMT's on each side
+!!! 
+!!! TH  - we are looping over the number of PMTs here. 
+!!! Note: haero_pos_ped_mean is identical with haero_pos_ped_sum/num
+!!! as calculated in h_calc_pedestal.f
 
       do ihit = 1,haero_tot_hits
 
@@ -103,43 +105,52 @@ C      pause
 * an input that is too large. Tubes with this characteristic will
 * be assigned NPE = 100.0.
 
+!!! TH - For ADC value less than zero assume what is said above is true
+!!!      and assign haero_npe=0 for these pmts.
+
+!!! TH - Make this algorithm even more identical to the cerenkov
+!!!      npe calculation by including a test on the pedestal width
+!!!      Note: haero_pos_ped_rms is the calculated pedestal width - an
+!!!            array of size hmax_aero_hits (8)
+
         npmt=haero_pair_num(ihit)
-
-           if (haero_adc_pos(ihit).lt.8000.) then
-              haero_pos_npe(npmt) = haero_pos_gain(npmt) *
-     &             (haero_adc_pos(ihit)-haero_pos_ped_mean(npmt))
+           if(haero_adc_pos(ihit).gt.0) then
+              if (haero_adc_pos(ihit).lt.8000.) then
+                if (haero_adc_pos(ihit).gt.haero_pos_ped_rms(ihit)) then
+                    haero_pos_npe(npmt) = haero_pos_gain(npmt) *
+     >              (haero_adc_pos(ihit)-haero_pos_ped_mean(npmt))
+                    haero_adc_pos_hits = haero_adc_pos_hits + 1
+                    haero_tot_good_hits = haero_tot_good_hits + 1
+                 endif
+              else
+                 haero_pos_npe(npmt) = 100.
+              endif
            else
-              haero_pos_npe(npmt) = 100.
+! TH - Check default value for ADC info if PMT not there
+!              write(*,*) '$$$$ ',haero_adc_pos(ihit),
+!     >                           haero_pos_ped_mean(npmt)
+                 haero_pos_npe(npmt)=0.
            endif
-
-           if (haero_adc_neg(ihit).lt.8000.) then
-              haero_neg_npe(npmt) = haero_neg_gain(npmt) * 
-     &             (haero_adc_neg(ihit)-haero_neg_ped_mean(npmt))
+           if(haero_adc_neg(ihit).gt.0) then
+              if (haero_adc_neg(ihit).lt.8000.) then
+                if (haero_adc_neg(ihit).gt.haero_neg_ped_rms(ihit)) then
+                    haero_neg_npe(npmt) = haero_neg_gain(npmt) * 
+     >              (haero_adc_neg(ihit)-haero_neg_ped_mean(npmt))
+                    haero_adc_neg_hits = haero_adc_neg_hits + 1
+                    haero_tot_good_hits = haero_tot_good_hits + 1
+                 endif
+              else
+                 haero_neg_npe(npmt) = 100.
+              endif
            else
-              haero_neg_npe(npmt) = 100.
+                 haero_neg_npe(npmt) = 0.
            endif
 c
+          
         haero_pos_npe_sum = haero_pos_npe_sum + haero_pos_npe(npmt)
         haero_neg_npe_sum = haero_neg_npe_sum + haero_neg_npe(npmt)
 
 *
-
-
-
-*
-* sum positive and negative hits 
-* To fill haero_tot_good_hits
-
-        if (haero_pos_npe(npmt).ge.0.3) then
-            haero_adc_pos_hits = haero_adc_pos_hits + 1
-            haero_tot_good_hits = haero_tot_good_hits + 1
-        endif
-
-        if (haero_neg_npe(npmt).ge.0.3) then
-            haero_adc_neg_hits = haero_adc_neg_hits + 1
-            haero_tot_good_hits = haero_tot_good_hits + 1
-        endif
-
         if (haero_tdc_pos(npmt).ge.0.and.haero_tdc_pos(npmt).le.8000.)
      &       haero_tdc_pos_hits = haero_tdc_pos_hits + 1 
         
@@ -148,17 +159,16 @@ c
 
       enddo
 
-      if (haero_neg_npe_sum.ge.0.5.or.haero_pos_npe_sum.ge.0.5) then
-         haero_npe_sum = haero_neg_npe_sum + haero_pos_npe_sum
-      else
-         haero_npe_sum = 0.0
-      endif
+!!! TH - sum everything since already take into account adc 
+!!       values less than zero above.
+
+      haero_npe_sum = haero_neg_npe_sum + haero_pos_npe_sum
+
 
 * If the total hits are 0, then give a noticable ridiculous NPE.
 
       if (haero_tot_hits.lt.1) then
-
-         haero_npe_sum=0.0
+         haero_npe_sum=-10.0
       endif
 
 

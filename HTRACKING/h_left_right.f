@@ -67,16 +67,16 @@
       integer*4 numhits
       integer*4 hits(hmax_hits_per_point),pl(hmax_hits_per_point)
       integer*4 pindex,icounter
-      real*8 wc(hmax_hits_per_point)
+      real*4 wc(hmax_hits_per_point)
       integer*4 plane, isa_y1, isa_y2
       integer*4 plusminusknown(hmax_hits_per_point)
-      real*8 plusminus(hmax_hits_per_point)
-      real*8 plusminusbest(hmax_hits_per_point),tmppmbest(hmax_hits_per_point)
-      real*8 tmpbeststub(hnum_fpray_param)
-      real*8 chi2
-      real*8 minchi2,tmpminchi2
-      real*8 xp_fit, xp_expect, minxp
-      real*8 stub(4)
+      real*4 plusminus(hmax_hits_per_point)
+      real*4 plusminusbest(hmax_hits_per_point),tmppmbest(hmax_hits_per_point)
+      real*4 tmpbeststub(hnum_fpray_param)
+      real*4 chi2
+      real*4 minchi2,tmpminchi2
+      real*4 xp_fit, xp_expect, minxp
+      real*4 stub(4)
       logical smallAngOK
 *
       ABORT= .FALSE.
@@ -115,7 +115,6 @@
           plusminusknown(ihit) = 0
           if(pl(ihit).eq.2 .OR. pl(ihit).eq.8)  isa_y1 = ihit
           if(pl(ihit).eq.5 .OR. pl(ihit).eq.11) isa_y2 = ihit
-c          write(hluno,*) " hit, plane, wc = ",ihit,pl(ihit),wc(ihit)
         enddo
 
 * djm 10/2/94 check bad hdc pattern units to set the index for the inverse
@@ -233,7 +232,6 @@ c          write(hluno,*) " hit, plane, wc = ",ihit,pl(ihit),wc(ihit)
             plusminusknown(isa_y1) = 1
             plusminusknown(isa_y2) = -1
           endif
-c          write(hluno,*) plusminusknown(isa_y1),plusminusknown(isa_y2),isa_y1,isa_y2,wc(isa_y2),wc(isa_y1)
           if ((numhits-2).lt.0) then
              write(6,*) 'h_left_right: numhits-2 < 0'
           elseif ((numhits-2).eq.0) then
@@ -242,10 +240,6 @@ c          write(hluno,*) plusminusknown(isa_y1),plusminusknown(isa_y2),isa_y1,i
           nplusminus = 2**(numhits-2)
         endif
 *     use bit value of integer word to set + or -
-        if(hdebugprintrawdc.ne.0 ) then
-              write(hluno,'(a,2i5)' ) ' number of p/m , # of hits=',
-     >    nplusminus,numhits
-        endif
         do pmloop=0,nplusminus-1
           iswhit = 1
           do ihit=1,numhits
@@ -259,15 +253,14 @@ c          write(hluno,*) plusminusknown(isa_y1),plusminusknown(isa_y2),isa_y1,i
               endif
               iswhit = iswhit + 1
             endif
-c            write(hluno,*) pmloop,ihit,plusminus(ihit) 
           enddo
 
           if (pindex.ge.0 .and. pindex.le.14) then
-            call h_find_best_stub(isp,numhits,hits,pl,pindex,plusminus,stub,chi2)
-            if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
-     $           ''   chi2='',5f12.5)') pmloop,chi2,stub
+            call h_find_best_stub(numhits,hits,pl,pindex,plusminus,stub,chi2)
 *jv            if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
 *jv     $           ''   chi2='',e14.6)') pmloop,chi2
+            if(hdebugstubchisq.ne.0) write(6,'(''hms  pmloop='',i4,
+     $           ''   chi2='',e14.6)') pmloop,chi2
 
 * Take best chi2 IF x' of the stub agrees with x' as expected from x.
 * Sometimes an incorrect x' gives a good chi2 for the stub, even though it is
@@ -281,14 +274,10 @@ c            write(hluno,*) pmloop,ihit,plusminus(ihit)
               endif
               xp_fit=stub(3)-htanbeta(pl(1))/(1.0+stub(3)*htanbeta(pl(1)))
               xp_expect = hspace_points(isp,1)/875. ! **TUNE DEPENDANT**
-            if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
-     $           ''   chi2='',9e14.6)') pmloop,minchi2,chi2,stub
-     >     ,xp_fit,xp_expect,hstub_max_xpdiff
               if (abs(xp_fit-xp_expect).le.hstub_max_xpdiff) then
                 minchi2=chi2
                 do idummy=1,numhits
                   plusminusbest(idummy)=plusminus(idummy)
-c                  write(hluno,*) " +/- = ",idummy,plusminus(idummy)
                 enddo
                 do idummy=1,4
                   hbeststub(isp,idummy)=stub(idummy)
@@ -320,8 +309,7 @@ c                  write(hluno,*) " +/- = ",idummy,plusminus(idummy)
                     enddo
                  endif
              else
-                write(6,*) 'pindex=',pindex
-     > ,' in h_left_right','gplanehdc1/2=',gplanehdc1(isp),gplanehdc2(isp)
+                write(6,*) 'pindex=',pindex,' in h_left_right','gplanehdc1/2=',gplanehdc1(isp),gplanehdc2(isp)
              endif ! 4/6 plane tracking
           endif
         enddo                           ! end loop on possible left-right
@@ -343,11 +331,8 @@ c                  write(hluno,*) " +/- = ",idummy,plusminus(idummy)
         do ihit=1,numhits
           HDC_WIRE_COORD(hspace_point_hits(isp,ihit+2))=
      &         HDC_WIRE_CENTER(hspace_point_hits(isp,ihit+2)) +
-     &         plusminusbest(ihit)*HDC_DRIFT_DIS(hspace_point_hits(isp,ihit+2))
-        hspace_point_leftright(isp,ihit) = plusminusbest(ihit)          
-        hspace_point_wirecoord(isp,ihit) = 
-     &         HDC_WIRE_CENTER(hspace_point_hits(isp,ihit+2)) +
-     &         plusminusbest(ihit)*hspace_point_driftdis(isp,ihit)
+     &         plusminusbest(ihit)*HDC_DRIFT_DIS(hspace_point_hits(isp,ihit
+     $         +2))
         enddo
 *
 *     stubs are calculated in rotated coordinate system
@@ -373,10 +358,6 @@ c                  write(hluno,*) " +/- = ",idummy,plusminus(idummy)
         hbeststub(isp,2)=stub(2)
         hbeststub(isp,3)=stub(3)
         hbeststub(isp,4)=stub(4)
-        if(hdebugprintrawdc.ne.0 ) then
-              write(hluno,'(a,i5,5(f10.5,1x))' ) ' l/r space point =',isp,stub(1),stub(2),stub(3), stub(4),minchi2
-        endif
-        
 *
       enddo                             ! end loop over space points
 *

@@ -94,6 +94,8 @@
       logical*4 hgood_plane_time(hntracks_max,hnum_scin_planes)
       logical*4 hgood_beta(hntracks_max)
       logical*4 hscin_on_track(hntracks_max,hmax_scin_hits)
+      logical*4 hgood_tdc_pos_pmtcut(hntracks_max,hmax_scin_hits)
+      logical*4 hgood_tdc_neg_pmtcut(hntracks_max,hmax_scin_hits)
 
       common/hms_scin_tof/
      &     hntof,
@@ -119,7 +121,8 @@
      &     hscin_time_fp,               !scin time (ave) projected to fp
      &     hstart_time_center,
      &     hstart_time_slop,
-     &     htof_tolerance
+     &     htof_tolerance,
+     &     hgood_tdc_pos_pmtcut, hgood_tdc_neg_pmtcut ! good tdc excluding given PMTs
 
 *
 *     CTPTYPE=event

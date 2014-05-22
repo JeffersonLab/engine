@@ -625,6 +625,9 @@
       real*4 hsprhi                ! hms pre-shower hi TDC value
       real*4 hsprlo                ! hms pre-shower lo TDC value
       real*4 hsshlo                ! hms shower lo TDC value
+      real*4 hsscin                ! hms 3/4 TDC value
+      real*4 hsstof                ! hms stof TDC value
+      real*4 hscer                 ! hms cer TDC value
 *
       INTEGER*4 HSNUM_FPTRACK    ! Index of focal plane track chosen
       INTEGER*4 HSNUM_TARTRACK   ! Index of target track chosen
@@ -632,6 +635,14 @@
       INTEGER*4 HSNFREE_FP 
       INTEGER*4 HSNUM_SCIN_HIT   ! # OF SCINTILLATORS ON TRACK
       INTEGER*4 HSNUM_PMT_HIT    ! # OF HODOSCOPE PMTS ON TRACK
+  
+      integer*8   num_elclean
+      integer*8   num_elreal
+      integer*8   num_pipre
+	
+
+      common /TRIGCHECK/num_elclean,num_elreal,num_pipre
+
 *
       COMMON/HMS_PHYSICS_R4/
      & HSP,
@@ -685,6 +696,9 @@
      & hsello,
      & hsprhi,
      & hsprlo,
+     & hsscin,
+     & hsstof,
+     & hscer,
      & hsshlo
 *     & hsthetaq,hsphiq
 *

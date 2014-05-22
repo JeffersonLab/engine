@@ -40,6 +40,7 @@ c
       if (ncall .eq. 1) then
 	call g_IO_control(spare_id,'ANY',ABORT,err)  !get IO channel
          open(spare_id,file='h_cal_calib.raw_data')
+*         open(spare_id,file='h_cal_calib.raw_data',access='append')
          do ipmt=1,78
             nct_hit_blk(ipmt)=0
          enddo
@@ -49,16 +50,17 @@ c
 
 c        Choose clean single electron tracks within HMS momentum acceptance.
          if(  (hntracks_fp.eq.1).and.
+     &        (hnclusters_cal.eq.1).and.
      &        (hntracks_cal.eq.1).and.
      &        (abs(hdelta_tar(1)).lt.10.).and.
-     &        (hcer_npe_sum.gt.15).and.
-     &        (abs(hbeta(1)-0.9).lt.0.1).and.
-     &        ((hcal_et/hpcentral).gt.0.6).and.
-     &        ((hcal_et/hpcentral).lt.1.4).and.
+     &        (hcer_npe_sum.gt.4).and.
      &        spare_id .ne. 0 ) then
+!     &        (abs(hbeta(1)-0.9).lt.0.1).and.
+!     &        (hcal_et/hpcentral.gt.0.7).and.
+!     &        (hcal_et/hpcentral.lt.1.5).and.
 ***   &     (hbeta_chisq(1).ge.0.).and.(hbeta_chisq(1).lt.1.)  ) then
-*              write(*,*)hcal_et,hpcentral                
-c  
+
+c
 *            write_out = .false.
 *            do ihit=1,hcal_num_hits
 *               nblk=(hcal_cols(ihit)-1)*hmax_cal_rows+hcal_rows(ihit)
@@ -290,7 +292,7 @@ c	      print*,nums(numsel),numsel,nf(i)
 	end do
 c	print*,'numsel =',numsel
 	write(*,'(''Number of events for each PMT for calib for run '',i7,'', '',
-     1    i6,'' events processed'')') nrun,nev
+	1    i6,'' events processed'')') nrun,nev
 	write(*,*) ' PMT with less than', minf,' events  are not included in calibration.'
 	write(*,*)
 	write(*,11) 'hcal_pos_gain_cor=',(nf(i),i=       1,  nrow)
@@ -329,7 +331,7 @@ c	write(*,'(2e10.3,i5)') (ac(i),au(i),i,i=1,npmts)
 	open(spare_id,file=fn)
 
 	write(spare_id,'(''; Calibration constants for run '',i7,'', '',
-     1    i6,'' events processed'')') nrun,nev
+	1    i6,'' events processed'')') nrun,nev
 	write(spare_id,*)
 
         write(spare_id,10) 'hcal_pos_gain_cor=',(ac(i)*1.D+3,i=       1,  nrow)
@@ -354,7 +356,7 @@ c	write(*,'(2e10.3,i5)') (ac(i),au(i),i,i=1,npmts)
 
 	write(*,*)
 	write(*,'(''Calibration constants for run '',i7,'', '',
-     1    i6,'' events processed'')') nrun,nev
+	1    i6,'' events processed'')') nrun,nev
 	write(*,*)
 	write(*,*) ' constants written to ',fn
 	write(*,*)

@@ -166,6 +166,12 @@
       integer*4 sdc_cham_hits(smax_num_chambers)
       real*4 sdc_plane_eff(smax_num_dc_planes) !effic=events(pln)/tot_events
       real*4 sdc_cham_eff(smax_num_chambers)
+      real*4 sdcaveeff1
+      real*4 sdcaveeff2
+      real*4 sdcaveeff
+      real*4 sdc5of6_1
+      real*4 sdc5of6_2
+      real*4 sdc_5_of_6_eff
 
       common/sdc_statistics/
      &   sdc_tot_events,
@@ -173,7 +179,14 @@
      &   sdc_min_eff,
      &   sdc_plane_eff,
      &   sdc_cham_hits,
-     &   sdc_cham_eff
+     &   sdc_cham_eff,
+     &   sdcaveeff1,
+     &   sdcaveeff2,
+     &   sdcaveeff,
+     &   sdc5of6_1,
+     &   sdc5of6_2,
+     &   sdc_5_of_6_eff
+
 
 * The logical variables just record if that particular event passed the test
 * for 'plane should have fired' and 'plane did fire'.  In CTP tests, we'll

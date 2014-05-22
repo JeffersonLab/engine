@@ -18,20 +18,6 @@
 *-                                cut.  The default for this is now no cut.
 *-                                K.G. Vansyoc
 * $Log: h_tracks_cal.f,v $
-* Revision 1.9.12.1  2005/03/15 20:12:29  jones
-* Modify the criterion for matching track and calorimeter cluster. As before,
-* the track must hit within (0.5*hcal_block_xsize + hcal_slop) of the cluster
-* position. Previously if more than one cluster was within (0.5*hcal_block_xsize + hcal_slop) then the last cluster in the loop was associated with the track.
-* Now, if more than one cluster meets that condition then cluster which has a position
-* closest to the track is associated with the track. ( T. Horn)
-*
-* Revision 1.10  2005/03/15 20:09:12  jones
-* Modify the criterion for matching track and calorimeter cluster. As before,
-* the track must hit within (0.5*scal_block_xsize + scal_slop) of the cluster
-* position. Previously if more than one cluster was within (0.5*scal_block_xsize + scal_slop) then the last cluster in the loop was associated with the track.
-* Now, if more than one cluster meets that condition then cluster which has a position
-* closest to the track is associated with the track. ( T. Horn)
-*
 * Revision 1.9  2003/03/21 22:21:51  jones
 * Modified and rearrange routines to calibrate the HMS calorimeter (V. Tadevosyan)
 *
@@ -81,8 +67,8 @@
       real*4 delta_x    !Distance between track & cluster in X projection
       logical*4 track_in_fv
 
-      integer*4 t_nt, t_nc
-      real*4 t_minx, temp_x
+      integer*4 t_nt,t_nc
+      real*4 t_minx,temp_x
 
       include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
@@ -127,29 +113,24 @@
         if( (hcal_fv_test.ne.0.and.track_in_fv) .or. hcal_fv_test.eq.0) then
 
           if(hnclusters_cal.gt.0) then
-!! TH - Initialize minimum distance between track and cluster location.
-            t_minx = 99999
-            t_nt = 1
-            t_nc = 1
+             t_minx=9
+             t_nt = 1
+             t_nc = 1
             do nc=1,hnclusters_cal
-!! TH - Distance to match track with cluster
               delta_x=abs(xf-hcluster_xc(nc))
               if(delta_x.le.(0.5*hcal_block_xsize + hcal_slop)) then
-!! TH - Check the deviation distance for each track for each cluster. If 
-!!      distance smaller assign to t_minx. Eventually want to associate 
-!!      the track with the smallest deviation to the cluster. Increment 
-!!      tracks for calorimeter though whenever condition above is passed.
-
-                 temp_x = delta_x
-                 if(temp_x.lt.t_minx) then
-                    t_minx = temp_x
-                    t_nt = nt
-                    t_nc = nc
-                 endif
-                 hntracks_cal      =hntracks_cal+1
+                temp_x = delta_x
+                if(temp_x.lt.t_minx) then
+                   t_minx = temp_x
+                   t_nt = nt
+                   t_nc = nc
+                endif
+!                hcluster_track(nt)=nc   !Track matches cluster #nc
+                hntracks_cal      =hntracks_cal+1
               endif                     !End ... if matched
             enddo                       !End loop over clusters
-            hcluster_track(t_nt)=t_nc   !Track matches cluster #nc with min deviation
+
+                hcluster_track(t_nt)=t_nc   !Track matches cluster #nc with min deviation
           endif                         !End ... if number of clusters > 0
         endif                           
       enddo                             !End loop over detector tracks

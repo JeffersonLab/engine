@@ -12,12 +12,6 @@
 *-         : err             - reason for failure, if any
 *- 
 *- $Log: h_select_best_track_prune.f,v $
-*- Revision 1.2  2008/09/25 00:12:08  jones
-*- Updated for gfortran compiler
-*-
-*- Revision 1.1  2005/03/23 16:33:32  jones
-*- Add new code s_select_best_track_prune.f (P Bosted)
-*-
 *
 * Revision 1.1  2005/03/08 bosted
 * Initial revision
@@ -48,7 +42,7 @@ c
       logical first,keep(1000)
       real*4 chi2perdeg,chi2min,betap,p
 c
-c      integer*4 i,j
+      integer*4 i,j
       data first /.true./
 *--------------------------------------------------------
 *
@@ -71,17 +65,19 @@ c      integer*4 i,j
         hprune_chibeta= max(2.,  hprune_chibeta)
         hprune_fptime= max(5.,  hprune_fptime)
         hprune_npmt  = max(6,  hprune_npmt)  
+        hprune_she   = max(0.1,  hprune_she)  
         write(*,'(1x,'' using following HMS limits''/
      >    1x,''abs(xptar)<'',f6.3/
      >    1x,''abs(yptar)<'',f6.3/
      >    1x,''abs(ytar)<'',f6.3/
      >    1x,''abs(delta)<'',f6.3/
+     >    1x,''shower energy >'',f6.3, '' GeV''/
      >    1x,''abs(beta-betap)<'',f6.3/
      >    1x,''ndegfreedom trk>='',i2/
      >    1x,''beta chisq>'',f6.1/
      >    1x,''num PMT hits >='',i3/
      >    1x,''abs(fptime-hstart_time_center)<'',f6.1)') 
-     >    hprune_xp,hprune_yp,hprune_ytar,hprune_delta,
+     >    hprune_xp,hprune_yp,hprune_ytar,hprune_delta,hprune_she,
      >    hprune_beta,hprune_df,hprune_chibeta,hprune_npmt,hprune_fptime
       endif
 c
@@ -157,6 +153,22 @@ c
             if(abs(hdelta_tar(track)) .ge. hprune_delta) then 
               keep(track) = .false. 
               reject(track) = reject(track) + 20
+            endif
+          enddo
+        endif
+
+! Prune on shower energy in GeV
+        ngood=0
+        do track = 1, HNTRACKS_FP
+          if(htrack_et(track) .ge. hprune_she .and. keep(track)) then
+            ngood = ngood + 1
+          endif
+        enddo
+        if(ngood.gt.0) then
+          do track = 1, HNTRACKS_FP
+            if(htrack_et(track) .lt. hprune_she) then 
+              keep(track) = .false. 
+              reject(track) = reject(track) + 40
             endif
           enddo
         endif
@@ -292,18 +304,18 @@ c
         HSNUM_FPTRACK  = goodtrack
       endif
 ! for debugging
-      if( HNTRACKS_FP.GT. 100) then
+      if( HNTRACKS_FP.GT. 200) then
            write(*,'(/)')
            do trk = 1, HNTRACKS_FP
-             write(*,'(3i3,4L2,7f6.1,L2,i9)') trk,HNFREE_FP(trk),
+             write(*,'(3i3,4L2,7f6.1,L2,f6.2)') trk,HNFREE_FP(trk),
      >          hnum_pmt_hit(trk),
      >         hgood_plane_time(trk,1),hgood_plane_time(trk,3),
      >         hgood_plane_time(trk,2),hgood_plane_time(trk,4),
      >         htime_at_fp(trk),hbeta(trk),hbeta_chisq(trk),
      >         hdelta_tar(trk),hy_tar(trk),hxp_tar(trk),hyp_tar(trk),
-     >         keep(trk),reject(trk)
+     >         keep(trk),htrack_et(trk)
            enddo
-           write(*,'(1x,''good trk='',2i4)') goodtrack
+           write(*,'(1x,''hms good trk='',2i4)') goodtrack
       endif
       return
       end

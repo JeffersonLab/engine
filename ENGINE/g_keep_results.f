@@ -11,8 +11,8 @@
 *-   Created  20-Nov-1993   Kevin B. Beard, HU
 *
 * $Log: g_keep_results.f,v $
-* Revision 1.9.16.1  2004/07/09 14:12:47  saw
-* Add function calls to fill CTP ROOT Trees
+* Revision 1.10  2004/07/08 20:09:25  saw
+* Fill CTP Root trees every event
 *
 * Revision 1.9  2002/09/25 14:38:21  jones
 *    a. character*20 groupname changed to character*(*) groupname
@@ -111,8 +111,6 @@
       ENDIF
       ABORT= ABORT .or. FAIL
 *
-*
-      call h_dc_ntuple_keep(ABORT,err)! check for good tracks
 *-COIN
       call C_keep_results(FAIL,why)
       IF(err.NE.' ' .and. why.NE.' ') THEN

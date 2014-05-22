@@ -9,6 +9,7 @@
 *     Modified  9 April 1994     DFG
 *                                Add CTP flag to turn on histogramming
 *                                id's in hms_id_histid
+*
 * $Log: h_fill_scin_raw_hist.f,v $
 * Revision 1.9  2002/07/31 20:17:52  saw
 * Check that user hists are defined before filling
@@ -48,6 +49,7 @@
       logical ABORT
       character*(*) err
       real*4 histval
+      real*4 histval_x,histval_y
       real*4 rcnt
       integer*4 pln,cnt,ihit
       include 'hms_data_structures.cmn'
@@ -57,6 +59,7 @@
       SAVE
 *--------------------------------------------------------
 *
+
       ABORT= .FALSE.
       err= ' '
 *
@@ -118,6 +121,7 @@ c          call hf1(hidscinplane,histval,1.)
 
 
 * Do we want to histogram raw scintillators
+!! To fill these histograms, set hturnon_scin_raw=1 in PARAM/hdebug.param
 
           if(hturnon_scin_raw_hist .ne. 0 ) then
             histval = hscin_all_adc_pos(ihit)-hscin_all_ped_pos(pln,cnt)
@@ -132,8 +136,24 @@ c          call hf1(hidscinplane,histval,1.)
             histval = FLOAT(hscin_all_tdc_neg(ihit))
             if (hidscinnegtdc(pln,cnt).gt.0)
      $           call hf1(hidscinnegtdc(pln,cnt),histval,1.)
+*            write(*,*) 'scin_raw_hist', hidscinposadc(pln,cnt)
+          endif
+
+* Do we want to histogram raw scintillators adc/tdc (2D histograms)
+!! To fill these histograms, set hturnon_scin_raw_2d=1 in PARAM/hdebug.param
+
+          if(hturnon_scin_raw_2d .ne. 0 ) then
+            histval_x = (hscin_all_adc_pos(ihit)-hscin_all_ped_pos(pln,cnt))
+            histval_y = FLOAT(hscin_all_tdc_pos(ihit))
+*          write(*,*) 'scin_raw_2d',histval_x,histval_y,hidscinposadctdc(pln,cnt), pln,cnt
+          if (hidscinposadctdc(pln,cnt).gt.0)
+     $      call hf2(hidscinposadctdc(pln,cnt),histval_x,histval_y,1.)
+          histval_x = (hscin_all_adc_neg(ihit)-hscin_all_ped_neg(pln,cnt))
+          histval_y = FLOAT(hscin_all_tdc_neg(ihit))
+          if (hidscinnegadctdc(pln,cnt).gt.0)
+     $      call hf2(hidscinnegadctdc(pln,cnt),histval_x,histval_y,1.)
           endif                         ! end test on histogramming flag
-        enddo                           ! end loop over hits
+       enddo                           ! end loop over hits
       endif                             ! end test on zero hits       
 
       return

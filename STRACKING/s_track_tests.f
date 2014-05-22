@@ -295,12 +295,13 @@
           endif
        enddo
 *  next make sure nothing fired outside the good region
-       do i=1,sxloscin(1)-1
-          if (sscinhit(1,i).EQ.1) shitsweet1x=-1
-       enddo
-       do i=sxhiscin(1)+1,sscin_1x_nr
-          if (sscinhit(1,i).EQ.1) shitsweet1x=-1
-       enddo
+! TH - 2 track check
+!       do i=1,sxloscin(1)-1
+!          if (sscinhit(1,i).EQ.1) shitsweet1x=-1
+!       enddo
+!       do i=sxhiscin(1)+1,sscin_1x_nr
+!          if (sscinhit(1,i).EQ.1) shitsweet1x=-1
+!       enddo
 *second x plane.  first see if there are hits inside the scin region
        do i=sxloscin(2),sxhiscin(2)
           if (sscinhit(3,i).EQ.1) then
@@ -309,12 +310,13 @@
           endif
        enddo
 *  next make sure nothing fired outside the good region
-       do i=1,sxloscin(2)-1
-          if (sscinhit(3,i).EQ.1) shitsweet2x=-1
-       enddo
-       do i=sxhiscin(2)+1,sscin_2x_nr
-          if (sscinhit(3,i).EQ.1) shitsweet2x=-1
-       enddo
+! TH - 2track check 
+!       do i=1,sxloscin(2)-1
+!          if (sscinhit(3,i).EQ.1) shitsweet2x=-1
+!       enddo
+!       do i=sxhiscin(2)+1,sscin_2x_nr
+!          if (sscinhit(3,i).EQ.1) shitsweet2x=-1
+!       enddo
 
 *first y plane.  first see if there are hits inside the scin region
        do i=syloscin(1),syhiscin(1)
@@ -324,12 +326,13 @@
           endif
        enddo
 *  next make sure nothing fired outside the good region
-       do i=1,syloscin(1)-1
-          if (sscinhit(2,i).EQ.1) shitsweet1y=-1
-       enddo
-       do i=syhiscin(1)+1,sscin_1y_nr
-          if (sscinhit(2,i).EQ.1) shitsweet1y=-1
-       enddo
+! TH - 2track check 
+!       do i=1,syloscin(1)-1
+!          if (sscinhit(2,i).EQ.1) shitsweet1y=-1
+!       enddo
+!       do i=syhiscin(1)+1,sscin_1y_nr
+!          if (sscinhit(2,i).EQ.1) shitsweet1y=-1
+!       enddo
 *second y plane.  first see if there are hits inside the scin region
        do i=syloscin(2),syhiscin(2)
           if (sscinhit(4,i).EQ.1) then
@@ -338,12 +341,13 @@
           endif
        enddo
 *  next make sure nothing fired outside the good region
-       do i=1,syloscin(2)-1
-          if (sscinhit(4,i).EQ.1) shitsweet2y=-1
-       enddo
-       do i=syhiscin(2)+1,sscin_2y_nr
-          if (sscinhit(4,i).EQ.1) shitsweet2y=-1
-       enddo
+! TH - 2track check 
+!       do i=1,syloscin(2)-1
+!          if (sscinhit(4,i).EQ.1) shitsweet2y=-1
+!       enddo
+!       do i=syhiscin(2)+1,sscin_2y_nr
+!          if (sscinhit(4,i).EQ.1) shitsweet2y=-1
+!       enddo
 
        testsum=shitsweet1x+shitsweet1y+shitsweet2x+shitsweet2y
 * now define a 3/4 or 4/4 trigger of only good scintillators the value
@@ -352,8 +356,9 @@
 
 * require front/back hodoscopes be within close to each other.,
        if (sgoodscinhits.eq.1 .and. strack_eff_test_num_scin_planes.eq.4) then
-          if (abs(sweet1xscin-sweet2xscin).gt.3) sgoodscinhits=0
-          if (abs(sweet1yscin-sweet2yscin).gt.2) sgoodscinhits=0
+! TH - 2track check
+!          if (abs(sweet1xscin-sweet2xscin).gt.3) sgoodscinhits=0
+!          if (abs(sweet1yscin-sweet2yscin).gt.2) sgoodscinhits=0
        endif
 
 *******************************************************************************

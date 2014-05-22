@@ -1,4 +1,4 @@
-      SUBROUTINE C_PHYSICS(ABORT,err)
+ 7    SUBROUTINE C_PHYSICS(ABORT,err)
 *--------------------------------------------------------
 *-
 *-   Purpose and Methods : Compute coincident quantities
@@ -7,34 +7,10 @@
 *-         : err             - reason for failure, if any
 *- 
 * $Log: c_physics.f,v $
-* Revision 1.10.10.4  2004/07/14 10:51:35  cdaq
-* modified mmx and missingmass for pionct
-*
-* Revision 1.10.10.3  2004/07/12 03:07:25  cdaq
-* problem with mmx fixed?
-*
-* Revision 1.10.10.2  2004/07/09 15:30:48  cdaq
-* commit of c_physics.f before modification for pionct
-*
-* Revision 1.10.10.1  2004/06/18 15:26:59  cdaq
-* replaced with fpi2 version
-*
 * Revision 1.7.4.4  2003/12/08 17:34:53  xu
 * change shicentral_offset to oopcentral_offset
 *
 * $Log: c_physics.f,v $
-* Revision 1.10.10.4  2004/07/14 10:51:35  cdaq
-* modified mmx and missingmass for pionct
-*
-* Revision 1.10.10.3  2004/07/12 03:07:25  cdaq
-* problem with mmx fixed?
-*
-* Revision 1.10.10.2  2004/07/09 15:30:48  cdaq
-* commit of c_physics.f before modification for pionct
-*
-* Revision 1.10.10.1  2004/06/18 15:26:59  cdaq
-* replaced with fpi2 version
-*
 * Revision 1.7.2.6  2003/08/12 17:35:33  cdaq
 * Add variables for e00-108 (hamlet)
 *
@@ -145,8 +121,7 @@
 *      logical flag
       real*4 flag
       real*4 mype, myph
-* pionct_mtar added for the pionct exp, this is the target mass in GeV
-      real*4 pionct_mtar
+      real*4 th_mtar !  For missing A>1 mass - target mass in GeV
 *      real dh
   
 *     xucc added end
@@ -154,10 +129,21 @@
       ABORT = .FALSE.
       err = ' '
 
-      if(HSNUM_FPTRACK.le.0.or.SSNUM_FPTRACK.le.0
-     ^.or.scer_npe_sum.lt.0.2) then
+! TH - PASS1.UPDATE code:
+
+      if(HSNUM_FPTRACK.le.0.or.SSNUM_FPTRACK.le.0) then
         return
       endif
+
+! TH - TEST: Effect of scer cut on "pions" in SOS PID
+! Note: Configuration above is for pass1.update, so
+! comment this out and uncomment below lines.
+! NOTE: ALso change c_keep_results when reverting to PASS1.UPDATE.
+
+!      if(HSNUM_FPTRACK.le.0.or.SSNUM_FPTRACK.le.0
+!     > .or.scer_npe_sum.lt.0.2) then
+!        return
+!      endif
 
 
 *   xucc added begin
@@ -189,13 +175,16 @@ c      if (abs(targmass-mp).lt.0.01) targmass = mp  ! vanity rules: get ac      
       cmmx        = 0.
       ce_excx     = 0.
 
-c     THIS SECTION WAS COMMENTED FOR THE PIONCT EXPERIMENT, THEN SET THE
-c     SPECIAL CASE OF DEUTERIUM TO FALSE
-c      if ((gtarg_num.eq.15).or.(gtarg_num.eq.16)) then
-c         c_e_bind=0.00222445
-c         deuterium = .true.
-c      endif
-      deuterium = .false.
+      if ((gtarg_num.eq.13).or.(gtarg_num.eq.15).or.(gtarg_num.eq.16)) then
+
+! TH - uncomment this if running dummy target for ld2
+!      if ((gtarg_num.eq.18).or.(gtarg_num.eq.13).or.(gtarg_num.eq.15)
+!     >      .or.(gtarg_num.eq.16)) then
+
+         c_e_bind=0.00222445
+         deuterium = .true.
+      endif
+
 
 c      write(6,*)'c_phys: at 2'
 
@@ -207,7 +196,6 @@ c      write(6,*)'c_phys: at 2'
 
       mype = hsp
       myph = ssp
-*      print *,'ssp =',ssp
 
       if ((hpartmass.lt.2*mass_electron) .and.
      1     (spartmass.gt.2*mass_electron)) then ! HMS electron arm
@@ -354,8 +342,10 @@ c        write(6,*)'c_phys: at 3'
       z_m = hsenergy/c_omega 
       pt2 = cmissing_mom_perp*cmissing_mom_perp
 
+!      write(*,*) 'TH - c_physics.f: ',gtarg_num
+
       if ((gtarg_num.eq.17).or.(gtarg_num.eq.18)) then
-c         write(6,*) 'dummy target!!'
+         write(6,*) 'TH: engine.f - Dummy target!!'
         if(flag.eq.1.0) then
            targmass = mp
         elseif(flag.eq.0.0) then
@@ -363,13 +353,12 @@ c         write(6,*) 'dummy target!!'
         endif
       endif
 
-C     W^2 = (q + p_t)^2 = q^2 + p_t^2 + 2pq 
-C         = -Q^2 + m_t^2 + 2*omega
-C     *m_t
-C     where m_t is the mass of the target *nucleon* not the target !
-C     nucleus
-
-      c_w2 = targmass**2 + 2*targmass*c_omega - c_bigq2
+      if(deuterium) then
+!         c_w2 = md**2 + 2*md*c_omega - c_bigq2
+         c_w2 = targmass**2 + 2*targmass*c_omega - c_bigq2
+      else
+         c_w2 = targmass**2 + 2*targmass*c_omega - c_bigq2
+      endif
 
 c      write(6,*)'p_e=',p_e
 
@@ -381,6 +370,8 @@ c      write(6,*)'p_e=',p_e
          c_invmass = 1e-6
 *           write(6,*)'c_physics: Got negative W2!'
       endif
+
+
 
 *jv safety-if question
 c      write(6,*) 'c_physics: at 4'
@@ -464,6 +455,9 @@ c      write(6,*) 'missine, missing_mom=', cmissing_e,cmissing_mom
             cmissing_mass = sqrt(missingmass2)
          endif
 
+! TH - notet that actual true missing mass used in ntuple is variable
+! th_missing_mass calculated below. cmmx calculated here is not
+! used anywhere.
          if (deuterium) then
             mmx2 = cmex**2 - cmissing_mom**2
             if (mmx2.gt.0.) then
@@ -474,19 +468,21 @@ c      write(6,*) 'missine, missing_mom=', cmissing_e,cmissing_mom
          endif
 
          ce_exc = cmissing_mass-m_rec-c_e_bind    !??? c_e_bind here?, yes!!
-CCC Added for pionCT experiment
-c         mmx2=(cmissing_e-m_rec)**2 - cmissing_mom**2 !!! Nucleon missing mass
+
+! ----------------------------------------------------------------------------
+! Missing Mass for A>1
          mmx2=(cmissing_e)**2 - cmissing_mom**2 !!! Nucleon missing mass
-          if (mmx2.gt.0.) then
+         if (mmx2.gt.0.) then
            cmmx = sqrt(mmx2)
-c           print *,'w = ', c_omega ,' mt = ' , targmass, ' Phadron = ', p_h
-c           print *,'Mhadron = ', m_hadron ,' Em = ' , cmissing_e, 
-c     >          ' Pm = ', cmissing_mom
-c           print *,'MA-1 = ', m_rec, ' mmx = ', cmmx
+!           print *,'w = ', c_omega ,' mt = ' , targmass, ' Phadron = ', p_h
+!         print *,'Mhadron = ', m_hadron ,' Em = ' , cmissing_e, 
+!     >          ' Pm = ', cmissing_mom
+!           print *,'MA-1 = ', m_rec, ' mmx = ', cmmx
         else
            cmmx = -20000.
         endif    
-CCC  End addition for PionCT experiment
+! ----------------------------------------------------------------------------
+
          if (deuterium) ce_excx = cmmx-2.*m_rec   ! ??? c_e_bind not here?
 
       elseif ((m_hadron.eq.mp).and.(missingmass2.ne.0.)) then
@@ -589,14 +585,38 @@ c           write(6,*)'c_phys: phi_cm =',phi_cm
         endif
 
 *     bye now, Resonance boy!
-        
-CCC   Added for pionCT experiment
-c     print*,'targmass = ', gtarg_mass(gtarg_num)*amu 
-        pionct_mtar=gtarg_mass(gtarg_num)*amu
-        cmissing_mass=sqrt( (cmissing_e-targmass+pionct_mtar)**2
-     >       -cmissing_mom**2 )  !!! missing mass of neutron and A-1 system
-CCC   End addition for PionCT experiment
-        
+
+
+!--------------------------------------------------------------------
+
+! TH - For LD2, struck nucleon bound inside nucleus so missing
+! energy not determined by momentum
+
+        thmissing_mass=sqrt( (c_omega + (0.985*md+0.015*mp)
+     >       - sqrt(m_hadron**2 + p_h**2))**2               
+     >       -cmissing_mom**2 )  !!! missing mass of nucleon    
+
+
+        if (deuterium) th_krel = thmissing_mass**2-4.*m_rec**2   ! Relative momentum
+
+!     print*,'targmass = ', gtarg_mass(gtarg_num)*amu                          
+! Get target mass from database 
+       th_mtar=gtarg_mass(gtarg_num)*amu                                  
+! Note: targmass is the mass of the proton
+!       th_mtar is the mass of the initial nucleus in GeV
+! c_missing_e is calculated using the targmass, so need to
+! subtract targmass and use the mass of the nucleus (m_A)
+!        thmissing_mass=sqrt( (cmissing_e-targmass+th_mtar)**2               
+!     >       -cmissing_mom**2 )  !!! missing mass of neutron and A-1 system    
+! For dummy subtraction a little more tricky. Need to calculate dummy
+! missing mass using mtar=m_Al. Add this into ntuple sometime. Use
+! m_D here
+!        cmmd_th =sqrt( (cmissing_e-targmass+md)**2                       
+!     >       -cmissing_mom**2 )                                                
+
+!--------------------------------------------------------------------
+
+
 * Coincidence timing.
 cdjm I added the fudge factor of about 23 ns to get both scctime and
 * hcctime 
@@ -604,7 +624,7 @@ cdjm I added the fudge factor of about 23 ns to get both scctime and
 
        offset_ctime = - (hstime_at_fp-hstart_time_center)
      &               + (sstime_at_fp-sstart_time_center)
-     &               - hspath_cor + sspath_cor + 10. - 22.7 - 40.0
+     &               - hspath_cor + sspath_cor + 10. - 22.7
 c      offset_ctime = - (hstime_at_fp-hstart_time_center)
 c     &               + (sstime_at_fp-sstart_time_center)
 
