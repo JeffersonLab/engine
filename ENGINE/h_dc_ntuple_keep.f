@@ -62,6 +62,12 @@ c
        hscin_rfptime(2)=h_rfptime(2)
        hscin_rfptime(3)=h_rfptime(3)
        hscin_rfptime(4)=h_rfptime(4)
+       hscin_fptimedif(1)=h_fptimedif(1)
+       hscin_fptimedif(2)=h_fptimedif(2)
+       hscin_fptimedif(3)=h_fptimedif(3)
+       hscin_fptimedif(4)=h_fptimedif(4)
+       hscin_fptimedif(5)=h_fptimedif(5)
+       hscin_fptimedif(6)=h_fptimedif(6)
 *
        hdc_ntr=0
        sdc_ntr=0
