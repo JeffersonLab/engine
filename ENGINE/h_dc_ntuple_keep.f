@@ -85,6 +85,9 @@ c
           chi_ind(i)=i
        enddo
        hdc_ntr=HNTRACKS_FP
+       hdc_chi2min=hchi2min_fp
+       hdc_x2dmin=hx2dmin_fp
+       hdc_y2dmin=hy2dmin_fp
        if (hdc_ntr .gt.HNTRACKS_MAX) hdc_ntr=HNTRACKS_MAX
        do m=1,hdc_ntr
           hdc_xfp(m)=hx_fp(m)
