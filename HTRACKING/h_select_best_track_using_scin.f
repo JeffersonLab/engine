@@ -205,9 +205,12 @@ c
         HSNUM_TARTRACK = goodtrack
         HSNUM_FPTRACK  = goodtrack
 	 
-
+        HCHI2MIN_FP=chi2min
+        Hx2dMIN_FP=x2dmin
+        Hy2dMIN_FP=y2dmin
         if(goodtrack.eq.0) return       ! return if no valid tracks
       endif    !!! (1) !!!
+
       
 
       return

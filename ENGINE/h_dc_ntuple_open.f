@@ -97,7 +97,8 @@
      >'hdc_xfp(hdc_ntr):R*4,hdc_yfp(hdc_ntr):R*4,'//
      >'hdc_xpfp(hdc_ntr):R*4,hdc_ypfp(hdc_ntr):R*4,hdc_chi2(hdc_ntr):R*4,'//
      >'hdc_ytg(hdc_ntr):R*4,hdc_xptg(hdc_ntr):R*4,'//
-     >'hdc_yptg(hdc_ntr):R*4,hdc_delta(hdc_ntr):R*4,hdc_ptar(hdc_ntr):R*4')
+     >'hdc_yptg(hdc_ntr):R*4,hdc_delta(hdc_ntr):R*4,hdc_ptar(hdc_ntr):R*4,'//
+     >'hdc_chi2min:R*4,hdc_x2dmin:R*4,hdc_y2dmin:R*4')
       call HBNAME(id,'HSCININFO',hscin_starttime,'hscin_starttime:R*4,hscin_rfptime(4):R*4,hscin_fptimedif(6):R*4')
       call HBNAME(id,'SDCINFO',sdc_ntr,'sdc_ntr[0,20]:I*4,'//
      >'sdc_xfp(sdc_ntr):R*4,sdc_yfp(sdc_ntr):R*4,'//
