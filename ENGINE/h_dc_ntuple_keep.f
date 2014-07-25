@@ -79,6 +79,8 @@ c
        fry_adc=gfry_adc
        frx=gfrx
        fry=gfry
+       hdc_rnhits=hdc_raw_tot_hits
+       hdc_tnhits=HDC_TOT_HITS
 *
        if (evtype .eq. 1 .or. evtype .eq. 3) then
        do i=1,20
