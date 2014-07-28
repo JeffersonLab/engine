@@ -81,6 +81,9 @@ c
        fry=gfry
        hdc_rnhits=hdc_raw_tot_hits
        hdc_tnhits=HDC_TOT_HITS
+       do i=1,12
+          hdc_plnhits(i)=hdc_hits_per_plane(i)
+          enddo
 *
        if (evtype .eq. 1 .or. evtype .eq. 3) then
        do i=1,20
