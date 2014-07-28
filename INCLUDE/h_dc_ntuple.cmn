@@ -38,8 +38,8 @@
       common/GINFO/evnum,evtype
       real*4 frx_raw_adc,fry_raw_adc,frx_adc,fry_adc,frx,fry
       common/RASTINFO/ frx_raw_adc,fry_raw_adc,frx_adc,fry_adc,frx,fry
-      real*4 hdc_rnhits,hdc_tnhits
-      common/HDCRAWINFO/ hdc_rnhits,hdc_tnhits
+      real*4 hdc_rnhits,hdc_tnhits,hdc_plnhits
+      common/HDCRAWINFO/ hdc_rnhits,hdc_tnhits,hdc_plnhits(12)
       integer*4 hdc_ntr
       real*4 hdc_xfp(20),hdc_yfp(20),hdc_xpfp(20),hdc_ypfp(20),hdc_chi2(20)
       real*4 hdc_ytg(20),hdc_xptg(20),hdc_yptg(20),hdc_delta(20),hdc_ptar(20)
