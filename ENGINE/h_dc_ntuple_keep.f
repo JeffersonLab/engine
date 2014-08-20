@@ -100,7 +100,8 @@ c
           hdc_yfp(m)=hy_fp(m)
           hdc_ypfp(m)=hyp_fp(m)
        enddo
-       if ( 1 .eq. 1 )then ! sort by chisq
+        hdc_ngoodtr=HSNUM_TARTRACK
+       if ( 1 .eq. -1 )then ! sort by chisq
        jj=1
        kk=chi_ind(1)
        value=hchi2_fp(kk)
@@ -128,6 +129,7 @@ c
         endif
         do i=1,hdc_ntr
            m=chi_ind(i)
+          if (chi_ind(i) .eq. HSNUM_TARTRACK) hdc_ngoodtr=i
           hdc_chi2(i)=hchi2_fp(m)
           hdc_xptg(i)=hxp_tar(m)
           hdc_ytg(i)=hy_tar(m)
