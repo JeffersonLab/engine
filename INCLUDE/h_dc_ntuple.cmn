@@ -44,9 +44,10 @@
       real*4 hdc_xfp(20),hdc_yfp(20),hdc_xpfp(20),hdc_ypfp(20),hdc_chi2(20)
       real*4 hdc_ytg(20),hdc_xptg(20),hdc_yptg(20),hdc_delta(20),hdc_ptar(20)
       real*4 hdc_chi2min,hdc_x2dmin,hdc_y2dmin
+      integer*4 hdc_ngoodtr
       common/HDCINFO/hdc_ntr,hdc_xfp,hdc_yfp,hdc_xpfp,hdc_ypfp,hdc_chi2
      >,hdc_ytg,hdc_xptg,hdc_yptg,hdc_delta,hdc_ptar
-     >,hdc_chi2min,hdc_x2dmin,hdc_y2dmin
+     >,hdc_chi2min,hdc_x2dmin,hdc_y2dmin,hdc_ngoodtr
       real*4 hscin_starttime,hscin_rfptime(4)
       real*4 hscin_fptimedif(6)
       common/HSCININFO/  hscin_starttime,hscin_rfptime,hscin_fptimedif
