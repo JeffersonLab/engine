@@ -334,7 +334,7 @@
             else
             h_rfptime(ipl) =-10000.
             endif
-        write(66,*) num_hit(ipl),sum_rfptime(ipl),h_rfptime(ipl) 
+c        write(66,*) num_hit(ipl),sum_rfptime(ipl),h_rfptime(ipl) 
       enddo
       if (time_num.eq.0) then
         hgood_start_time = .false.
