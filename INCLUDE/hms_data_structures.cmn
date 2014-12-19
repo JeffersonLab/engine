@@ -432,6 +432,9 @@
       REAL*4  HXP_FP               ! X SLOPE OF TRACK IN FOCAL PLANE
       REAL*4  HYP_FP               ! Y SLOPE OF TRACK IN FOCAL PLANE
       REAL*4  HCHI2_FP             ! FIT QUALITY IN FOCAL PLANE
+      REAL*4  HCHI2MIN_FP             ! Minimum chi2
+      REAL*4  Hx2dMIN_FP             ! Minimum chi2
+      REAL*4  Hy2dMIN_FP             ! Minimum chi2
       REAL*4 HCHI2PERDOF_FP        ! fp chi2 per degree of freedom
       INTEGER*4 HNFREE_FP          ! NUMBER OF DEGREES OF FREEDOM IN FIT
       INTEGER*4 HNTRACK_HITS      ! LIST OF HITS ON EACH TRACK
@@ -459,6 +462,7 @@
      4     HXP_FP(HNTRACKS_MAX),
      5     HYP_FP(HNTRACKS_MAX),
      6     HCHI2_FP(HNTRACKS_MAX),
+     >     HCHI2MIN_FP,Hx2dMIN_FP,Hy2dMIN_FP,
      7     HDEL_FP(4,4,HNTRACKS_MAX),
      8     HNTRACK_HITS(HNTRACKS_MAX,HNTRACKHITS_MAX+1),
      $     htrack_leftright(hntracks_max,hntrackhits_max),

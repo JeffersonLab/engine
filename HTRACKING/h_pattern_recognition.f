@@ -235,7 +235,6 @@ c
             else                        !readout from top/bottom
               time_corr = xdist*hdc_readout_corr(pln)/hdc_wire_velocity
             endif
-c            write(*,*) isp,hspace_point_hits(isp,1),ihit,hit
             hdc_drift_time(hit)=hdc_drift_time(hit) - hdc_central_time(pln)
      &           + hdc_drifttime_sign(pln)*time_corr
             hdc_drift_dis(hit) = h_drift_dist_calc
@@ -247,11 +246,11 @@ c            write(*,*) isp,hspace_point_hits(isp,1),ihit,hit
             hspace_point_driftdis(isp,ihit) = h_drift_dist_calc
      &           (pln,hdc_wire_num(hit),hdc_drift_time_spt(isp,ihit))
         if(hdebugprintrawdc.ne.0 ) then
-c              write(hluno,'(a,3i5,7(f10.5,1x))' )
-c     > ' time correction ch =',isp,hit,pln,hdc_drift_time(hit)
-c     >,hdc_drift_dis(hit)
-c     >,hdc_drift_time_spt(isp,ihit),hspace_point_driftdis(isp,ihit)
-c     > ,hdc_central_time(pln),hdc_drifttime_sign(pln),time_corr
+              write(hluno,'(a,3i5,7(f10.5,1x))' )
+     > ' time correction ch =',isp,hit,pln,hdc_drift_time(hit)
+     >,hdc_drift_dis(hit)
+     >,hdc_drift_time_spt(isp,ihit),hspace_point_driftdis(isp,ihit)
+     > ,hdc_central_time(pln),hdc_drifttime_sign(pln),time_corr
         endif
 *
 * djm 8/25/94

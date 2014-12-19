@@ -62,8 +62,6 @@
       ENDIF
 *
 *
-      call h_dc_ntuple_keep(ABORT,err)! check for good tracks
-*
       IF(ABORT) THEN
          call G_add_path(here,err)
       ELSE

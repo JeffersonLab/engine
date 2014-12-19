@@ -53,7 +53,6 @@
 * loop over all hits, find x of space point.
       do k = 1, ncham_hits
         if (k.ne.y_hit .and. k.ne.yp_hit) then !x-like hits
-       write(hluno,*) 'Test x like points ',k,  wire_center(k),yt,hysp(ipln(k)),hxsp(ipln(k))          
           x_pos(k) = ( wire_center(k)-yt*hysp(ipln(k)) )/hxsp(ipln(k))
           xt = xt + x_pos(k)
           num_xhits = num_xhits + 1

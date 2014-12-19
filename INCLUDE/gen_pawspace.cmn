@@ -10,7 +10,7 @@
 *-sizes of CERNLIB working space
 *
       INTEGER G_sizeHBOOK,G_sizeHIGZ,G_sizeKUIP,G_sizePAW
-      PARAMETER (G_sizeHBOOK= 1000000)
+      PARAMETER (G_sizeHBOOK= 8000000)
       PARAMETER (G_sizeHIGZ=   50000)
       PARAMETER (G_sizeKUIP=   75000)
       PARAMETER (G_sizePAW=G_sizeHIGZ+G_sizeKUIP+

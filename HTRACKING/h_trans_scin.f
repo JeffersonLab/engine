@@ -114,6 +114,8 @@
       integer timehist(200),i,j,jmax,maxhit,nfound
       real*4 time_pos(1000),time_neg(1000),tmin,time_tolerance
       logical keep_pos(1000),keep_neg(1000),first/.true./
+      integer ipl,num_hit(hnum_scin_planes)
+      real*4 sum_rfptime(hnum_scin_planes)
       save
       
       abort = .false.
@@ -309,24 +311,40 @@
 * time values to focal plane.  use average for start time.
       time_num = 0
       time_sum = 0.
+      do ipl=1,4
+      num_hit(ipl)=0
+      sum_rfptime(ipl)=0.
+      h_rfptime(ipl)=-10000.
+      enddo
       do ihit = 1 , hscin_tot_hits
         if (htwo_good_times(ihit)) then
           fptime  = hscin_cor_time(ihit) - hscin_zpos(ihit)/(29.979*hbeta_pcent)
-          h_rfptime(hscin_plane_num(ihit))=fptime
           if(hidscinalltimes.gt.0) call hf1(hidscinalltimes,fptime,1.)
           if (abs(fptime-hstart_time_center).le.hstart_time_slop) then
+            num_hit(hscin_plane_num(ihit)) = num_hit(hscin_plane_num(ihit)) + 1
+            sum_rfptime(hscin_plane_num(ihit))=sum_rfptime(hscin_plane_num(ihit)) + fptime
             time_sum = time_sum + fptime
             time_num = time_num + 1
           endif
         endif
       enddo
+      do ipl=1,4
+            if (num_hit(ipl) .gt. 0) then
+            h_rfptime(ipl) = sum_rfptime(ipl)/num_hit(ipl)
+            else
+            h_rfptime(ipl) =-10000.
+            endif
+c        write(66,*) num_hit(ipl),sum_rfptime(ipl),h_rfptime(ipl) 
+      enddo
       if (time_num.eq.0) then
         hgood_start_time = .false.
         hstart_time = hstart_time_center
+        
       else
         hgood_start_time = .true.
         hstart_time = time_sum / float(time_num)
       endif
+c                    hstart_time=35.
 
 
 *     Dump decoded bank if hdebugprintscindec is set
