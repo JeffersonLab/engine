@@ -281,11 +281,14 @@ c            write(hluno,*) pmloop,ihit,plusminus(ihit)
               endif
               xp_fit=stub(3)-htanbeta(pl(1))/(1.0+stub(3)*htanbeta(pl(1)))
               xp_expect = hspace_points(isp,1)/875. ! **TUNE DEPENDANT**
-            if(hdebugstubchisq.ne.0) write(hluno,'(''hms  pmloop='',i4,
-     $           ''   chi2='',9e14.6)') pmloop,minchi2,chi2,stub
-     >     ,xp_fit,xp_expect,hstub_max_xpdiff
+            if(hdebugstubchisq.ne.0) write(hluno,'(''Passed chimin hms  pmloop='',i4,
+     $           ''   minchi2='',9e14.6)') pmloop,minchi2,chi2,stub
+     >     ,xp_fit,abs(xp_fit-xp_expect),hstub_max_xpdiff
               if (abs(xp_fit-xp_expect).le.hstub_max_xpdiff) then
                 minchi2=chi2
+            if(hdebugstubchisq.ne.0) write(hluno,'(''Passed xp hms  pmloop='',i4,
+     $           ''   minchi2='',9e14.6)') pmloop,minchi2,chi2,stub
+     >     ,xp_fit,xp_expect,hstub_max_xpdiff
                 do idummy=1,numhits
                   plusminusbest(idummy)=plusminus(idummy)
 c                  write(hluno,*) " +/- = ",idummy,plusminus(idummy)
