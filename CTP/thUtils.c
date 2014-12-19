@@ -747,7 +747,7 @@ int argtoInt(daVarStruct *x)
 typedef void	*pointer;
 /* Not clear why we need to do this at all */
 #ifndef linux
-extern pointer	memset( pointer, int, size_t );
+//extern pointer	memset( pointer, int, size_t );
 #endif
 #endif
 
