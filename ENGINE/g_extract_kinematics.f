@@ -90,7 +90,7 @@ c
       subroutine parse_line (line, line_len, name, value1, value2)
       implicit none
       character*(*) line
-      character*132 tmpline
+      character*300 tmpline
       integer line_len,new_len
       integer name_start,name_stop
       integer value1_start,value1_stop
