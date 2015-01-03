@@ -46,6 +46,7 @@
       real*4  hit_pos(hnum_scin_planes),hit_dist(hnum_scin_planes)          
       real*4 stub_x(HNTRACKS_MAX),stub_y(HNTRACKS_MAX)
       real*4 y2d(HNTRACKS_MAX),x2d(HNTRACKS_MAX)
+      integer*4 keep_track(HNTRACKS_MAX),reject_track(HNTRACKS_MAX)
 *--------------------------------------------------------
 *
       ABORT= .FALSE.
@@ -60,6 +61,8 @@
 	 x2dmin=100.	 
          zap=0.  
         do track = 1, HNTRACKS_FP
+          keep_track(track)=0
+          reject_track(track)=0
           if( HNFREE_FP(track).ge. hsel_ndegreesmin) then      !!! (2) !!!
            chi2perdeg = HCHI2_FP(track)/FLOAT(HNFREE_FP(track))
 *     simple particle id tests
@@ -70,6 +73,7 @@
      &             ( HTRACK_ET(track) .gt. hsel_etmin)   .and.
      &             ( HTRACK_ET(track) .lt. hsel_etmax)) then
 *first, fill the arrays of which scins were hit
+          reject_track(track)=reject_track(track)+10
              do i=1,4
                do j=1,hscin_1x_nr
                 hscinhit(i,j)=0
@@ -159,17 +163,20 @@ c
 
 	      if(y2d(track).le.y2dmin) then  
  	       if(y2d(track).lt.y2dmin) then
+          reject_track(track)=reject_track(track)+100
 	         x2dmin=100.                
 	         chi2min=1e10 
 	       endif 
 		 
 	      if(x2d(track).le.x2dmin) then
 	       if(x2d(track).lt.x2dmin) then
+          reject_track(track)=reject_track(track)+1000
 	         chi2min=1e10
 	       endif	 
 	      
  	      if(chi2perdeg.lt.chi2min) then 
-	       	      		     
+          reject_track(track)=reject_track(track)+10000
+                  keep_track(track)=1	       	      		     
                   goodtrack = track
 		  y2dmin=y2d(track)
 		  x2dmin=x2d(track)
@@ -193,6 +200,7 @@ c
 	   if( HNFREE_FP(track).ge. hsel_ndegreesmin) then  	   
             chi2perdeg = HCHI2_FP(track)/FLOAT(HNFREE_FP(track))
 	        if(chi2perdeg.lt.chi2min) then
+                  keep_track(track)=1	       	      		     
                  goodtrack = track
                  chi2min = chi2perdeg		     
                 endif 
@@ -211,7 +219,10 @@ c
         if(goodtrack.eq.0) return       ! return if no valid tracks
       endif    !!! (1) !!!
 
-      
+c      do  track = 1, HNTRACKS_FP
+c         write(*,*) track,keep_track(track),reject_track(track)
+c     > ,y2d(track),x2d(track),HCHI2_FP(track)/FLOAT(HNFREE_FP(track))
+c      enddo
 
       return
         end

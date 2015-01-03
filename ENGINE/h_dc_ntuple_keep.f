@@ -99,6 +99,7 @@ c
           hdc_xpfp(m)=hxp_fp(m)
           hdc_yfp(m)=hy_fp(m)
           hdc_ypfp(m)=hyp_fp(m)
+          hdc_et(m)=htrack_et(m)
        enddo
         hdc_ngoodtr=HSNUM_TARTRACK
        if ( 1 .eq. -1 )then ! sort by chisq
@@ -136,6 +137,7 @@ c
           hdc_yptg(i)=hyp_tar(m)
           hdc_delta(i)=hdelta_tar(m)
           hdc_ptar(i)=hp_tar(m)
+          hdc_et(i)=htrack_et(m)
           enddo
        endif
        if (evtype .eq. 2 .or. evtype .eq. 3) then

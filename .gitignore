@@ -6,3 +6,4 @@ CTP/daVarRpc_svc.c
 CTP/daVarRpc_xdr.c
 CTP/daVarRpc_clnt.c
 *~
+*#
