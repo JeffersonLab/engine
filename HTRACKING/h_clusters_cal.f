@@ -104,7 +104,8 @@
                   d_col=iabs(jcol-icol)
 *
 *-----------------Are these hits a neighbor to "seed"?
-                  if(d_row.le.1.and.d_col.le.1) then
+                  if((d_row.le.1.and.d_col.le.1) .or. 
+     > (d_row.eq.0.and.d_col.le.2) ) then
 *
 *-------------------Assign them to the same current cluster
                     hcluster_hit(jhit)=hcluster_hit(ihit)
@@ -204,7 +205,7 @@
         if(hcluster_et(nc).gt.0.) then
           hcluster_xc(nc)=hcluster_xc(nc)/hcluster_et(nc)
         else
-          hcluster_xc(nc)= -1.0         ! Set fraction negative for bad et
+          hcluster_xc(nc)= -1000.0         ! Set fraction negative for bad et
         endif
       enddo
 *

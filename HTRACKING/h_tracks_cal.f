@@ -125,14 +125,14 @@
 *----------If inside fv (or no test), Search for a cluster matching this track
 *
         if( (hcal_fv_test.ne.0.and.track_in_fv) .or. hcal_fv_test.eq.0) then
-
           if(hnclusters_cal.gt.0) then
 !! TH - Initialize minimum distance between track and cluster location.
             t_minx = 99999
-            t_nt = 1
-            t_nc = 1
+            t_nt = -1
+            t_nc = -1
             do nc=1,hnclusters_cal
 !! TH - Distance to match track with cluster
+               if (hcluster_xc(nc) .ne. -1000.) then
               delta_x=abs(xf-hcluster_xc(nc))
               if(delta_x.le.(0.5*hcal_block_xsize + hcal_slop)) then
 !! TH - Check the deviation distance for each track for each cluster. If 
@@ -148,8 +148,9 @@
                  endif
                  hntracks_cal      =hntracks_cal+1
               endif                     !End ... if matched
+              endif ! 
             enddo                       !End loop over clusters
-            hcluster_track(t_nt)=t_nc   !Track matches cluster #nc with min deviation
+            if ( t_nt .ge. 1) hcluster_track(t_nt)=t_nc   !Track matches cluster #nc with min deviation
           endif                         !End ... if number of clusters > 0
         endif                           
       enddo                             !End loop over detector tracks
