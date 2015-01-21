@@ -1,4 +1,4 @@
-MYOS := $(subst -,,$(shell uname))
+#MYOS := $(subst -,,$(shell uname))
 
 CFLAGS=-L../../$(MYOS)/lib
 

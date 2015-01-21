@@ -1,7 +1,14 @@
 # If you're not using GCC version 3 or 4 and Linux or Mac OS X, you'll proably
 # need to make some changes to the makefiles and possibly the source code.
+myostype = $(shell uname -s)
 getversion = --version | head -1 | sed 's/.*) //' | sed 's/\..*//'
-gccversion = $(shell gcc $(getversion))
+ifeq ($(myostype),Linux)
+	gccversion = $(shell gcc $(getversion))
+else
+	ifeq ($(myostype),Darwin)
+		gccversion = 4
+	endif
+endif
 g77flags = -Wimplicit
 
 export #export all variables
