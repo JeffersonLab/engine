@@ -67,8 +67,8 @@
       real*4 delta_x    !Distance between track & cluster in X projection
       logical*4 track_in_fv
 
-      integer*4 t_nt,t_nc
-      real*4 t_minx,temp_x
+      integer*4 t_nc
+      real*4 t_minx
 
       include 'hms_data_structures.cmn'
       include 'hms_calorimeter.cmn'
@@ -113,24 +113,20 @@
         if( (hcal_fv_test.ne.0.and.track_in_fv) .or. hcal_fv_test.eq.0) then
 
           if(hnclusters_cal.gt.0) then
-             t_minx=9
-             t_nt = 1
-             t_nc = 1
+             t_minx=999999.
+             t_nc = -1
             do nc=1,hnclusters_cal
               delta_x=abs(xf-hcluster_xc(nc))
               if(delta_x.le.(0.5*hcal_block_xsize + hcal_slop)) then
-                temp_x = delta_x
-                if(temp_x.lt.t_minx) then
-                   t_minx = temp_x
-                   t_nt = nt
+                if(delta_x.lt.t_minx) then
+                   t_minx = delta_x
                    t_nc = nc
                 endif
-!                hcluster_track(nt)=nc   !Track matches cluster #nc
                 hntracks_cal      =hntracks_cal+1
               endif                     !End ... if matched
             enddo                       !End loop over clusters
 
-                hcluster_track(t_nt)=t_nc   !Track matches cluster #nc with min deviation
+            hcluster_track(nt)=t_nc !Track matches cluster #nc with min deviation
           endif                         !End ... if number of clusters > 0
         endif                           
       enddo                             !End loop over detector tracks
