@@ -106,6 +106,8 @@
         xprimeplane=4+(ich-1)*sdc_planes_per_chamber
         if(sncham_hits(ich).ge.smin_hit(ich) .and.
      $     sncham_hits(ich).lt.smax_pr_hits(ich))  then
+          xx=1
+          xxprime=1
           do i=ihit+1,ihit+sncham_hits(ich)
             hit_number(i)=i
             if(sdc_plane_num(i).eq.xplane) xx=i
@@ -114,7 +116,7 @@
           if((sdc_hits_per_plane(xplane).eq.1) .and.
      &       (sdc_hits_per_plane(xprimeplane).eq.1).and.
      &       ((sdc_wire_center(xx)-sdc_wire_center(xxprime))**2.lt.
-     &       (sspace_point_criterion(ich))) .and.
+     &       sspace_point_criterion(ich)) .and.
      &       (sncham_hits(ich).le.6)) then
             call s_find_easy_space_point(sncham_hits(ich),hit_number(ihit+1),
      &        sdc_wire_center(ihit+1),sdc_plane_num(ihit+1),
